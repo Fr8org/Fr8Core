@@ -60,7 +60,7 @@ Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "terminalCloudService", "ter
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalWebRole", "terminalWebRole\terminalWebRole.csproj", "{8C7F0CB5-9CD8-40D8-A539-51F451CCB29E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalFr8CoreTests", "terminalFr8CoreTests\terminalFr8CoreTests.csproj", "{6C3090FC-50D2-4A7E-9B29-EAB9D8802F42}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalFr8CoreTests", "Tests\terminalFr8CoreTests\terminalFr8CoreTests.csproj", "{6C3090FC-50D2-4A7E-9B29-EAB9D8802F42}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerminalSqlUtilities", "TerminalSqlUtilities\TerminalSqlUtilities.csproj", "{FA105E66-8756-4F57-8230-2A52BFEBDDC6}"
 	ProjectSection(ProjectDependencies) = postProject
@@ -69,19 +69,19 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TerminalSqlUtilities", "Ter
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalGoogle", "terminalGoogle\terminalGoogle.csproj", "{CDDCCFAB-28B8-446C-8585-72D2BB78F2DC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubTests", "HubTests\HubTests.csproj", "{1E8DD13A-846B-4C36-A9C4-5997C5FD74FF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubTests", "Tests\HubTests\HubTests.csproj", "{1E8DD13A-846B-4C36-A9C4-5997C5FD74FF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalSendGrid", "terminalSendGrid\terminalSendGrid.csproj", "{1E1AB01B-F6AB-4420-BF1D-5E6EF41D76BF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalDropbox", "terminalDropbox\terminalDropbox.csproj", "{CFBA4468-222F-4255-8D94-809ACBF7AC47}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalDropboxTests", "terminalDropboxTest\terminalDropboxTests.csproj", "{42F21CE5-C8D1-4083-937B-951B92C2F93C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalDropboxTests", "Tests\terminalDropboxTests\terminalDropboxTests.csproj", "{42F21CE5-C8D1-4083-937B-951B92C2F93C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalBaseTests", "terminalBaseTests\terminalBaseTests.csproj", "{40625AD3-D5D2-4CF0-8E3E-FD232A54A808}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalBaseTests", "Tests\terminalBaseTests\terminalBaseTests.csproj", "{40625AD3-D5D2-4CF0-8E3E-FD232A54A808}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalPapertrail", "terminalPapertrail\terminalPapertrail.csproj", "{74D9BDC7-7B46-456F-B3C5-A4CDB5D74D7B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalIntegrationTests", "terminalIntegrationTests\terminalIntegrationTests.csproj", "{579BA25F-1DF5-474A-8A3E-0447FF75711C}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalIntegrationTests", "Tests\terminalIntegrationTests\terminalIntegrationTests.csproj", "{579BA25F-1DF5-474A-8A3E-0447FF75711C}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "BuildUtils", "BuildUtils", "{932981E0-0644-4BED-84A9-FEF0664F6296}"
 	ProjectSection(SolutionItems) = preProject
@@ -102,29 +102,29 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalPapertrailTests", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalExcelTests", "Tests\terminalExcelTests\terminalExcelTests.csproj", "{A854EB96-B28A-42FC-8209-3E5E9D6B208C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalGoogleTests", "terminalGoogleTests\terminalGoogleTests.csproj", "{62219AA6-9276-4935-B934-F0F50ECEF6FB}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalGoogleTests", "Tests\terminalGoogleTests\terminalGoogleTests.csproj", "{62219AA6-9276-4935-B934-F0F50ECEF6FB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalSlackTests", "terminalSlackTests\terminalSlackTests.csproj", "{1246A6D6-FB9D-4564-8E86-A9F14A7AD177}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalSlackTests", "Tests\terminalSlackTests\terminalSlackTests.csproj", "{1246A6D6-FB9D-4564-8E86-A9F14A7AD177}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalAtlassian", "terminalAtlassian\terminalAtlassian.csproj", "{89D763ED-3EA6-4303-AB29-3239095A4B06}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalAtlassianTests", "terminalAtlassianTests\terminalAtlassianTests.csproj", "{F39EA7BE-25C2-45ED-91AC-29647EFFAD2B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalAtlassianTests", "Tests\terminalAtlassianTests\terminalAtlassianTests.csproj", "{F39EA7BE-25C2-45ED-91AC-29647EFFAD2B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalSendGridTests", "terminalSendGridTests\terminalSendGridTests.csproj", "{EE3E1E99-175F-4507-96DA-421FCD0F6D9E}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalSendGridTests", "Tests\terminalSendGridTests\terminalSendGridTests.csproj", "{EE3E1E99-175F-4507-96DA-421FCD0F6D9E}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalAzureTests", "Tests\terminalAzureTests\terminalAzureTests.csproj", "{36ED6F21-1A8F-4F07-A08A-A55639891E9B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalTwilioTests", "terminalTwilioTests\terminalTwilioTests.csproj", "{6B807AB1-F549-49CB-9F52-52BC33D23443}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalTwilioTests", "Tests\terminalTwilioTests\terminalTwilioTests.csproj", "{6B807AB1-F549-49CB-9F52-52BC33D23443}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalQuickBooks", "terminalQuickBooks\terminalQuickBooks.csproj", "{3D4116CE-63DD-406C-8235-0115A8FA90F1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalQuickBooksTests", "Tests\terminalQuickBooksTests\terminalQuickBooksTests.csproj", "{6367B304-3E18-4DA6-A7E7-0893DA806953}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalSalesforceTests", "terminalSalesforceTests\terminalSalesforceTests.csproj", "{FDA06158-A81E-46B4-9F25-5AB76DFD400A}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalSalesforceTests", "Tests\terminalSalesforceTests\terminalSalesforceTests.csproj", "{FDA06158-A81E-46B4-9F25-5AB76DFD400A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalYammer", "terminalYammer\terminalYammer.csproj", "{E8BF04AC-1A7D-4CBE-80B9-E20F53699F2D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalYammerTests", "terminalYammerTests\terminalYammerTests.csproj", "{D2638CB3-33D6-443F-BC87-E20260D3C9EF}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalYammerTests", "Tests\terminalYammerTests\terminalYammerTests.csproj", "{D2638CB3-33D6-443F-BC87-E20260D3C9EF}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthMonitor.HubLauncher", "Tests\HealthMonitor.HubLauncher\HealthMonitor.HubLauncher.csproj", "{47CA975F-1F5B-4C90-9DA1-A88C53E0760A}"
 EndProject

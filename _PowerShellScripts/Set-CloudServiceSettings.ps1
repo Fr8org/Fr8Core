@@ -1,4 +1,17 @@
-﻿param(
+﻿<#
+    .SYNOPSIS
+	The script configures terminal settings in the Azure Cloud Service configuration file,
+	ServiceConfiguration.Release.cscfg. The following settings are configured: 
+	* ConnectionString: is taken from the -connectionString argument with an optional application
+	of -overrideDbName if actual database differs from what is specified in the connection string.
+	* CoreWebServerUrl: is taken from the -coreWebServerUrl argument. 
+	* {terminalName}.TerminalEndpoint: for each entry with such pattern in ServiceConfiguration.Release.cscfg
+	a record will be taken in the Terminals table of the database. If the '-inheritEndpoints 1'
+	attribute is specified, no values will be read from the database. Instead, each entry will be assigned an 
+	empty string to force terminals to retrieve the value from web.config. 
+#>
+
+param(
     [Parameter(Mandatory = $true)]
 	[string]$connectionString,
 
@@ -15,7 +28,10 @@
 	[boolean]$updateService = $false,
 
 	[Parameter(Mandatory = $false)]
-	[int]$terminalVerson = 1
+	[int]$terminalVerson = 1,
+
+	[Parameter(Mandatory = $false)]
+	[boolean]$inheritEndpoints = $false
 )
 
 $ErrorActionPreference = 'Stop'
@@ -26,26 +42,27 @@ if ([System.String]::IsNullOrEmpty($overrideDbName) -ne $true) {
 	$connectionString = $builder.ToString()
 }
 
-
-# Get terminal list 
+# Get terminal list. Don't do it if just restoring default endpoints (enherited from web.config) 
+# since in this case we only need to reset settings in the XML file to empty strings.
 $terminalList = @{}
-$commandText = 'SELECT Name, Endpoint FROM Terminals WHERE Version = ' + $terminalVerson
+if ($inheritEndpoints -ne $true) {
+	$commandText = 'SELECT Name, Endpoint FROM Terminals WHERE Version = ' + $terminalVerson
 
-$connection = new-object system.data.SqlClient.SQLConnection($connectionString)
-$command = new-object system.data.sqlclient.sqlcommand($commandText, $connection)
-$connection.Open()
-$command.CommandTimeout = 300 #5 minutes
+	$connection = new-object system.data.SqlClient.SQLConnection($connectionString)
+	$command = new-object system.data.sqlclient.sqlcommand($commandText, $connection)
+	$connection.Open()
+	$command.CommandTimeout = 300 #5 minutes
 
-$reader = $command.ExecuteReader()
-while ($reader.read()) {
-    try {
-        $terminalList.Add($reader.GetString(0), $reader.GetString(1))
-    }
-    catch {
-        #Ignore duplicates 
-    }
+	$reader = $command.ExecuteReader()
+	while ($reader.read()) {
+		try {
+			$terminalList.Add($reader.GetString(0), $reader.GetString(1))
+		}
+		catch {
+			#Ignore duplicates 
+		}
+	}
 }
-
 
 $RootDir = Split-Path -parent (Split-Path -parent $MyInvocation.MyCommand.Path)
 $ConfigPath = $RootDir+"\terminalCloudService"
@@ -70,8 +87,14 @@ if(Test-Path $ConfigFile)
 	$terminalEndpointSettings = $roleNode.ConfigurationSettings.Setting | where {$_.name -like '*.TerminalEndpoint'}
     $terminalEndpointSettings | ForEach-Object {
         $terminalName = ($_.name -split "\." )[0]
-        $_.value = $terminalList[$terminalName]
-        Write-Host "$terminalName  - "$_.value
+		if ($inheritEndpoints -eq $true) {
+			$_.value = ""
+			Write-Host "$terminalName - inherit from web.config" 
+		}
+		else {
+			$_.value = $terminalList[$terminalName]
+			Write-Host "$terminalName  - "$_.value
+		}
     }
 
 	try
