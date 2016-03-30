@@ -79,7 +79,7 @@ module dockyard.controllers {
         constructor(
             private $scope: IPlanBuilderScope,
             private LocalIdentityGenerator: services.ILocalIdentityGenerator,
-            private $state: ngState,
+            private $state: ng.ui.IStateService,
             private ActionService: services.IActionService,
             private $http: ng.IHttpService,
             private PlanService: services.IPlanService,
@@ -786,6 +786,7 @@ module dockyard.controllers {
                     if (!actionGroup.envelopes) {
                         continue;
                     }
+
 
                     for (var k = 0; k < actionGroup.envelopes.length; ++k) {
                         var envelope = actionGroup.envelopes[k];

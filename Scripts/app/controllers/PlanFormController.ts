@@ -23,7 +23,8 @@ module dockyard.controllers {
             '$scope',
             'PlanService',
             '$stateParams',
-            'StringService'
+            'StringService',
+            '$state'
         ];
 
         constructor(
@@ -31,7 +32,8 @@ module dockyard.controllers {
             private $scope: IPlanScope,
             private PlanService: services.IPlanService,
             private $stateParams: any,
-            private StringService: services.IStringService) {
+            private StringService: services.IStringService,
+            private $state: ng.ui.IStateService) {
 
             $scope.$on('$viewContentLoaded', function () {
                 // initialize core components
@@ -58,8 +60,9 @@ module dockyard.controllers {
 
                     result.$promise
                         .then(() => {
-                            $rootScope.lastResult = "success";
-                            window.location.href = '#plans/' + result.plan.id + '/builder';
+
+                            $state.go('planBuilder', { id: result.plan.id});
+                            //window.location.href = 'plans/' + result.plan.id + '/builder';
                         })
                         .catch(function (e) {
                             switch (e.status) {
