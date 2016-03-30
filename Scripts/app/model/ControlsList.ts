@@ -154,16 +154,17 @@
         constructor() {
             super("TextBlockMetaDescriptionDTO", "TextBlock");
             var tb = new model.TextBox();
-            tb.label = "Label :";
+            tb.label = "Text Content :";
             this.controls.push(tb);
         }
     }
     
     export class FilePickerMetaDescriptionDTO extends ControlMetaDescriptionDTO
     {
-        static fileExtensions: Array<string> = ["xlsx"];
+
+        static fileExtensions: Array<DropDownListItem> = [new DropDownListItem("Excel Files", ".xlsx")];
         constructor() {
-            super("FilePickerMetaDescriptionDTO", "File Picker");
+            super("FilePickerMetaDescriptionDTO", "File Uploader");
             var tb = new model.TextBox();
             tb.label = "Label :";
             this.controls.push(tb);
@@ -171,7 +172,7 @@
             var listItems: Array<DropDownListItem> = [];
             for (var i = 0; i < FilePickerMetaDescriptionDTO.fileExtensions.length; i++) {
                 var extensionValue = FilePickerMetaDescriptionDTO.fileExtensions[i];
-                listItems.push(new DropDownListItem(extensionValue, extensionValue));
+                listItems.push(extensionValue);
             }
             var allowedExtensions = new model.DropDownList();
             allowedExtensions.listItems = listItems;
@@ -193,7 +194,7 @@
         noDataMessage: string;
     }
 
-    export class ControlContainer extends ControlDefinitionDTO {
+    export class MetaControlContainer extends ControlDefinitionDTO {
         metaDescriptions: Array<ControlMetaDescriptionDTO>;
     }
 

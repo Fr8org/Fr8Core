@@ -31,11 +31,11 @@ module dockyard.directives {
                         'min-height': function () { return $(elem, this).height() + 20; },
                     }).resizable()
                     .find(elem)
-                    //.css({
-                    //    overflow: 'auto',
-                    //    width: '100%',
-                    //    height: '96%'
-                    //})
+                    .css({
+                        overflow: 'auto',
+                        width: '100%',
+                        height: '96%'
+                    })
                     ;
             }
         }
