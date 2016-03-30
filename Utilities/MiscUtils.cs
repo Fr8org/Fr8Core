@@ -14,14 +14,14 @@
         /// <returns></returns>
         public static string MaskPassword(string cs)
         {
-            var regex = new System.Text.RegularExpressions.Regex("password=([\\S^]+[^;])", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
+            var regex = new System.Text.RegularExpressions.Regex("password=([\\S^]+)[^;]", System.Text.RegularExpressions.RegexOptions.IgnoreCase);
             var match = regex.Match(cs);
             if (match == null || !match.Success || match.Groups.Count != 2)
             {
                 return cs;
             }
             var group = match.Groups[1];
-            return cs.Substring(0, group.Index) + "*****" + cs.Substring(group.Index + group.Length);
+            return cs.Substring(0, group.Index) + "*****" + cs.Substring(group.Index + group.Length + 1);
         }
     }
 }
