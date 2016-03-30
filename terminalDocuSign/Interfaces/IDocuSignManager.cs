@@ -4,6 +4,7 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json.Linq;
 using terminalDocuSign.DataTransferObjects;
+using Data.Interfaces.Manifests;
 
 namespace terminalDocuSign.Services.New_Api
 {
@@ -15,6 +16,6 @@ namespace terminalDocuSign.Services.New_Api
         IEnumerable<FieldDTO> GetEnvelopeRecipientsAndTabs(DocuSignApiConfiguration conf, string envelopeId);
         IEnumerable<FieldDTO> GetTemplateRecipientsAndTabs(DocuSignApiConfiguration conf, string templateId);
         Tuple<IEnumerable<FieldDTO>, IEnumerable<DocuSignTabDTO>> GetTemplateRecipientsTabsAndDocuSignTabs(DocuSignApiConfiguration conf, string templateId);
-        void SendAnEnvelopeFromTemplate(DocuSignApiConfiguration loginInfo, List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId);
+        void SendAnEnvelopeFromTemplate(DocuSignApiConfiguration loginInfo, List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId, StandardFileDescriptionCM file = null);
     }
 }
