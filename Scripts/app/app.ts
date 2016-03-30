@@ -29,7 +29,7 @@ var app = angular.module("app", [
 app.constant('urlPrefix', '/api');
 
 /* Configure ocLazyLoader(refer: https://github.com/ocombe/ocLazyLoad) */
-app.config(['$ocLazyLoadProvider', function ($ocLazyLoadProvider) {
+app.config(['$ocLazyLoadProvider', ($ocLazyLoadProvider) => {
     $ocLazyLoadProvider.config({
         cssFilesInsertBefore: 'ng_load_plugins_before' // load the above css files before a LINK element with this ID. Dynamic CSS files must be loaded between core and theme css files
     });
@@ -53,13 +53,13 @@ app.factory('settings', ['$rootScope', function ($rootScope) {
 
 /* Setup App Main Controller */
 app.controller('AppController', ['$scope', '$rootScope', function ($scope, $rootScope) {
-    $scope.$on('$viewContentLoaded', function () {
+    $scope.$on('$viewContentLoaded', () => {
         Metronic.initComponents(); // init core components
         //Layout.init(); //  Init entire layout(header, footer, sidebar, etc) on page load if the partials included in server side instead of loading with ng-include directive 
     });
 }]);
 
-app.config(['$mdThemingProvider', function ($mdThemingProvider) {
+app.config(['$mdThemingProvider', ($mdThemingProvider) => {
     $mdThemingProvider.definePalette('fr8Theme', {
         '50': '26a69a',
         '100': '26a69a',
@@ -81,7 +81,7 @@ app.config(['$mdThemingProvider', function ($mdThemingProvider) {
         'contrastLightColors': undefined    
     });
     $mdThemingProvider.theme('default')
-        .primaryPalette('fr8Theme')
+        .primaryPalette('fr8Theme');
 }]);
 
 /***
@@ -131,14 +131,17 @@ app.config(['applicationInsightsServiceProvider', function (applicationInsightsS
 
 
 /* Setup Rounting For All Pages */ 
-app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider, $httpProvider: ng.IHttpProvider) {
+app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationProvider', ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider, $httpProvider: ng.IHttpProvider, $locationProvider:ng.ILocationProvider) => {
+
+
+    $locationProvider.html5Mode(true);
 
     $httpProvider.interceptors.push('fr8VersionInterceptor');
 
     // Install a HTTP request interceptor that causes 'Processing...' message to display
     $httpProvider.interceptors.push(['$q','$window',($q: ng.IQService, $window: ng.IWindowService) => {
         return {
-            request: function (config: ng.IRequestConfig) {
+            request: (config: ng.IRequestConfig) => {
                 // Show page spinner If there is no request parameter suppressSpinner.
                 if (config && config.params && config.params['suppressSpinner']) {
                     // We don't want this parameter to be sent to backend so remove it if found.
