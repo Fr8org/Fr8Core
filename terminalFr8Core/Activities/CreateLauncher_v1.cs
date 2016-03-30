@@ -153,7 +153,7 @@ namespace terminalFr8Core.Actions
             ConfigurationControls.UrlInfo.Value =
                 "Launchcher can be launched with the following URL: " +
                 CloudConfigurationManager.GetSetting("CoreWebServerUrl") +
-                "dashboard#/plans/" + createdPlan.Plan.Id + "/builder?kioskMode=true";
+                "dashboard/plans/" + createdPlan.Plan.Id + "/builder?kioskMode=true";
         }
 
         protected override Task RunCurrentActivity()
