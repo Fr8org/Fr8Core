@@ -149,13 +149,23 @@ namespace terminalUtilities.Excel
             return excelRows;
         }
 
-        public static StandardTableDataCM GetTableData(string selectedFilePath, bool isFirstRowAsColumnNames = true)
+        public static byte[] GetExcelFileAsByteArray(string selectedFilePath)
+        {
+            var fileAsByteArray = RetrieveFile(selectedFilePath);
+            return fileAsByteArray;
+        }
+
+        public static StandardTableDataCM GetExcelFile(string selectedFilePath, bool isFirstRowAsColumnNames = true)
+        {
+            var fileAsByteArray = GetExcelFileAsByteArray(selectedFilePath);
+            return GetExcelFile(fileAsByteArray, selectedFilePath, isFirstRowAsColumnNames);
+        }
+
+        public static StandardTableDataCM GetExcelFile(byte[] fileAsByteArray, string selectedFilePath, bool isFirstRowAsColumnNames = true)
         {
             var ext = Path.GetExtension(selectedFilePath);
             var crateManager = ObjectFactory.GetInstance<ICrateManager>();
             // Read file from repository
-            var fileAsByteArray = RetrieveFile(selectedFilePath);
-
             // Fetch column headers in Excel file
             var headersArray = GetColumnHeaders(fileAsByteArray, ext);
 
