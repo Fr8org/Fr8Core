@@ -54,7 +54,7 @@ namespace terminalFr8Core.Actions
                 TargetPlan = new DropDownList()
                 {
                     Name = "target_plan",
-                    Label = "Target Plan"
+                    Label = "Launcher will gather information and then pass it to which Plan:"
                 };
 
                 ControlContainer = new MetaControlContainer()
@@ -151,7 +151,7 @@ namespace terminalFr8Core.Actions
 
             ConfigurationControls.UrlInfo.IsHidden = false;
             ConfigurationControls.UrlInfo.Value =
-                "Your Launcher Plan has been generated. It is currently visible to you only. Launch this plan by browsing to " +
+                "Launchcher can be launched with the following URL: " +
                 CloudConfigurationManager.GetSetting("CoreWebServerUrl") +
                 "dashboard#/plans/" + createdPlan.Plan.Id + "/builder?kioskMode=true";
         }
