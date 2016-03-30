@@ -31,7 +31,7 @@ param(
 	[int]$terminalVerson = 1,
 
 	[Parameter(Mandatory = $false)]
-	[boolean]$inheritEndpoints = $false
+	[boolean]	 = $false
 )
 
 $ErrorActionPreference = 'Stop'
