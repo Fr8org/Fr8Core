@@ -69,10 +69,11 @@ namespace terminalDocuSign.Services
             string terminalUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint");
             string prodUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultProductionUrl");
             string devUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultDevUrl");
-            string publishUrl = terminalUrl + "/terminals/terminalDocuSign/events";
+
             string connectName = "";
             string connectId = "";
 
+            Console.WriteLine("Connect creation: terminalUrl = {0}", terminalUrl);
             if (!string.IsNullOrEmpty(terminalUrl))
             {
                 if (terminalUrl.Contains(devUrl))
@@ -80,6 +81,12 @@ namespace terminalDocuSign.Services
                 else
                     if (terminalUrl.Contains(prodUrl))
                     connectName = ProdConnectName;
+
+                //otherwise docusign doesn't call the url
+                terminalUrl = terminalUrl.Contains(":53234") ? terminalUrl.Replace(":53234", "") : terminalUrl;
+                string publishUrl = terminalUrl + "/terminals/terminalDocuSign/events";
+
+                Console.WriteLine("Connect creation: publishUrl = {0}", publishUrl);
 
                 if (!string.IsNullOrEmpty(connectName))
                 {
