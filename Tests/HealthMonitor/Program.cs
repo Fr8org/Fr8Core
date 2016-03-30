@@ -216,10 +216,9 @@ namespace HealthMonitor
 
             if (failedTestsCount > 0 && failedTestsCount < 3)
             {
-                Console.WriteLine("Failed tests number = " + failedTestsCount);
+                Console.WriteLine("Failed tests number is " + failedTestsCount + ". This can be cause by some transient error.");
                 Console.WriteLine("Running failed tests again...");
                                 
-                TestReport reportAfterRetry = null;
                 var failedTests = report.Tests.Where(x => !x.Success);
 
                 foreach (var failedTest in failedTests)
@@ -229,7 +228,7 @@ namespace HealthMonitor
                     sb[indexOfLastDot] = '#';
                     
                     var failedTestName = sb.ToString();
-                    reportAfterRetry = testRunner.Run(failedTestName, skipLocal);
+                    var reportAfterRetry = testRunner.Run(failedTestName, skipLocal);
 
                     if (reportAfterRetry.Tests.First().Success)
                     {
