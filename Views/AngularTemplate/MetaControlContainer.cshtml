@@ -1,12 +1,13 @@
 ﻿<div class='form-group'>
-    <div ng-repeat="metaDescription in field.metaDescriptions track by $index" style="border-top: 1px solid; margin-bottom: 10px;">
+    <div ng-repeat="metaDescription in field.metaDescriptions track by $index" style="margin-bottom: 10px;">
+        <md-divider></md-divider>
         <div class="row" style="margin-right: 0px;">
             <div class="col-md-10">
-                <h5 style="font-weight: bold;">{{::metaDescription.type}}</h5>
+                <h5 style="font-weight: bold;">{{metaDescription.description}}-{{getIndex(metaDescription)}}</h5> 
             </div>
             <div class="col-md-2">
                 <img style="margin-top: 10px; float: right;" src="/Content/img/PlanBuilder/delete-icon.png" width="15" height="15"
-                     ng-click="removeMetaDescription(metaDescription)"
+                     ng-click="removeMetaDescription($index)"
                      class="query-builder-delete-button"/>
             </div>
         </div>
@@ -16,6 +17,7 @@
         </div>
     </div>
     <div class="col-md-12" style="padding-left: 0px;">
+        <md-divider></md-divider>
         <button style="margin-top: 15px; margin-left: 0px;" class="btn btn-primary query-builder-add-button" ng-click="addControl()" stop-click-propagation>Add UI Control</button>
     </div>
 </div>
