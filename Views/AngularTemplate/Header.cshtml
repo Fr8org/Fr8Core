@@ -45,12 +45,12 @@
                             {
 					            <ul class="dropdown-menu dropdown-menu-default">
 						            <li>
-                                        <a href="/Dashboard#/myaccount">
+                                        <a ui-sref="myaccount">
                                             <i class="icon-user"></i> My Profile
                                         </a>
 						            </li>
                                     <li>
-                                        <a href="#/changePassword">
+                                        <a ui-sref="changePassword">
                                             <i class="icon-key"></i> Change Password
                                         </a>
                                     </li>
@@ -89,7 +89,7 @@
 			<ul class="nav navbar-nav">
 
 				<li class="active">
-					<a href="#/myaccount">Home</a>
+					<a ui-sref="myaccount">Home</a>
 				</li>
 
                 <li class="menu-dropdown classic-menu-dropdown">
@@ -118,9 +118,9 @@
                     <a data-toggle="dropdown" href="#" class="dropdown-toggle">Plans <i class="fa fa-angle-down"></i></a>
                     <ul class="dropdown-menu">
 
-                        <li><a href="#/plans">Show All</a></li>
-                        <li><a href="#/plans/add">Add</a></li>
-                        <li><a href="#/findObjects/create">Find Objects</a></li>
+                        <li><a ui-sref="planList">Show All</a></li>
+                        <li><a ui-sref="planForm">Add</a></li>
+                        <li><a ui-sref="findObjects">Find Objects</a></li>
 
                     </ul>
 						</li>
@@ -129,7 +129,7 @@
                     <a data-toggle="dropdown" href="#" class="dropdown-toggle">Containers <i class="fa fa-angle-down"></i></a>
                     <ul class="dropdown-menu">
 
-                        <li><a href="#/containers">Show All</a></li>
+                        <li><a ui-sref="containers">Show All</a></li>
 
 					</ul>
 				</li>
@@ -138,9 +138,9 @@
                     <a data-toggle="dropdown" href="#" class="dropdown-toggle">Tools <i class="fa fa-angle-down"></i></a>
                     <ul class="dropdown-menu">
 
-                        <li><a href="#/managefiles">Manage Files</a></li>
-                        <li><a href="#/manageAuthTokens">Manage Auth Tokens</a></li>
-                        <li><a href="/dashboard#/solution/SearchFr8Warehouse">Search Fr8 Warehouse</a></li>
+                        <li><a ui-sref="managefiles">Manage Files</a></li>
+                        <li><a ui-sref="manageAuthTokens">Manage Auth Tokens</a></li>
+                        <li><a ui-sref="configureSolution({solutionName: 'SearchFr8Warehouse'})">Search Fr8 Warehouse</a></li>
 
                     </ul>
                 </li>

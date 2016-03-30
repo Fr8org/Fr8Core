@@ -185,9 +185,9 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
 
     // Plan form
         .state('planForm', {
-            url: "/plans/{id}",
+            url: "/plans/add",
             templateUrl: "/AngularTemplate/PlanForm",
-            data: { pageTitle: 'Plan', pageSubTitle: 'Add a new Plan' },
+            data: { pageTitle: 'Plan', pageSubTitle: 'Add a new Plan' }
         })
 
     // Plan Builder framework
