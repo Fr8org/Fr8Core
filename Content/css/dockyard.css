@@ -1074,3 +1074,12 @@ i.activity-stream-font{
     float: left; 
     padding-top: 5px;
 }
+
+.query-builder-value-row {
+    padding-left: 15px; 
+    overflow: auto;
+}
+.query-builder-operator-row {
+    float:left; 
+    width: 70px;
+}

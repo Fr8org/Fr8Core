@@ -56,7 +56,7 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 Version = "1",
-                MinPaneWidth = 550,
+                MinPaneWidth = 420,
                 WebService = webService
             });
 
