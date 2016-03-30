@@ -10,8 +10,9 @@
 <!-- END PAGE BREADCRUMB -->
 <!-- BEGIN MAIN CONTENT -->
 <div ng-controller="PlanBuilderController" class="margin-top-10" block-if="isBusy()">
-    <designer-header plan="current.plan"></designer-header>
+    <designer-header ng-show="current.plan" plan="current.plan"></designer-header>
     <div ng-if="editingMode=='advanced'" class="col-md-12" style="border-bottom: 1px solid; margin-bottom: 10px;"></div>
+    <div class="plan-loading-message" block-if="current.plan"></div>
     <div ng-repeat="pSubPlan in processedSubPlans">
         <subplan-header ng-if="editingMode=='advanced'" subplan="pSubPlan.subPlan"></subplan-header>
         <div class="route-builder-container" layout-container>
@@ -19,41 +20,47 @@
                 <div ng-if="mode !== 'solution' || $index === 0">
                     <div class="action-arrow-bottom" ng-style="{top: -group.arrowLength - 60, height: group.arrowLength + 35, left: group.arrowOffsetLeft}"></div>
                     <div dnd-list="group.envelopes" dnd-external-sources="true" dnd-drop="onActionDrop(group, item, index)" style="display: inline-block;">
-                        <div dnd-draggable="envelope.activity.id" dnd-effect-allowed="move" ng-repeat="envelope in group.envelopes track by $index">
+                        <div ng-repeat="envelope in group.envelopes track by $index">
                             <div class="action" ng-class="{'solution-action': envelope.activity.activityTemplate.category==='Solution'  && mode !== 'solution'}" layout-action>
                                 <div resizable minwidth = "{{envelope.activity.activityTemplate.minPaneWidth}}" class="ap-resize">
-                                    <div class="action-header solution-action-header handle" dropdown transfer-click-configure-pane>
-                                        <div class="action-header-icon">
-                                            <img ng-src="{{envelope.activity.activityTemplate.webService.iconPath}}" ng-if="envelope.activity.activityTemplate.webService.iconPath"/>
+                                    <md-toolbar dnd-draggable="envelope.activity.id" class="action-header solution-action-header handle" dropdown transfer-click-configure-pane>
+                                        <div class="md-toolbar-tools">
+                                            <div class="action-header-icon" style="display:flex">
+                                                <img ng-src="{{envelope.activity.activityTemplate.webService.iconPath}}" ng-if="envelope.activity.activityTemplate.webService.iconPath" />
+                                            </div>
+                                            <h2>
+                                                <span>{{envelope.activity.label}}</span>
+                                            </h2>
+                                            <span flex></span>
+                                            <md-menu>
+                                                <md-button class="md-icon-button" aria-label="More" ng-click="openMenu($mdOpenMenu, $event)">
+                                                    <md-icon md-svg-icon="Content/img/icons/more_vert.svg"></md-icon>
+                                                </md-button>
+                                                <md-menu-content width="4">
+                                                    <md-menu-item ng-if="envelope.activity.activityTemplate.needsAuthentication">
+                                                        <md-button ng-click="chooseAuthToken(envelope.activity);">
+                                                            <md-icon md-svg-icon="call:dialpad" md-menu-align-target></md-icon>
+                                                            Choose authentication
+                                                        </md-button>
+                                                    </md-menu-item>
+                                                    <md-menu-item>
+                                                        <md-button ng-click="reConfigureAction(envelope.activity);">
+                                                            <md-icon md-svg-icon="call:voicemail"></md-icon>
+                                                            Re-Configure
+                                                        </md-button>
+                                                    </md-menu-item>
+                                                    <md-menu-divider></md-menu-divider>
+                                                    <md-menu-item>
+                                                        <md-button ng-click="deleteAction(envelope.activity);">
+                                                            <md-icon md-svg-icon=""></md-icon>
+                                                            Delete
+                                                        </md-button>
+                                                    </md-menu-item>
+                                                </md-menu-content>
+                                            </md-menu>
                                         </div>
-                                        <p class="action-name">
-                                            {{envelope.activity.label}}
-                                        </p>
-                                        <a class="action-menu" dropdown-toggle stop-click-propagation>
-                                            <i class="fa fa-gear fa-5x"></i>
-                                        </a>
-                                        <ul class="dropdown-menu pull-right" role="menu">
-                                            <li role="menuitem" ng-if="envelope.activity.activityTemplate.terminal.authenticationType != 1 && envelope.activity.activityTemplate.needsAuthentication">
-                                                <a ng-click="chooseAuthToken(envelope.activity);">
-                                                    <i class="fa fa-user"></i>
-                                                    Choose authentication
-                                                </a>
-                                            </li>
-                                            <li role="menuitem">
-                                                <a ng-click="reConfigureAction(envelope.activity);">
-                                                    <i class="fa fa-refresh"></i>
-                                                    Re-Configure
-                                                </a>
-                                            </li>
-                                            <li role="menuitem">
-                                                <a ng-click="deleteAction(envelope.activity);">
-                                                    <i class="fa fa-trash-o"></i>
-                                                    Delete
-                                                </a>
-                                            </li>
-                                        </ul>
-                                    </div>
-                                    <div dnd-nodrag>
+                                    </md-toolbar>
+                                    <div>
                                         <pane-configure-action plan="current.plan" id="paneConfigureAction" current-action="envelope.activity" mode="mode"></pane-configure-action>
                                     </div>
                                 </div>
@@ -83,5 +90,5 @@
         <hr class="transition-seperator"/>
     </div>
 
-    <button ng-click="addSubPlan()" class="btn btn-primary" style="margin-left: 25px; cursor: pointer; background-color: #98AFC7;">Add Subplan</button>
+    <button ng-click="addSubPlan()" ng-show="current.plan" class="btn btn-primary" style="margin-left: 25px; cursor: pointer; background-color: #98AFC7;">Add Subplan</button>
 </div>

@@ -87,7 +87,7 @@ namespace terminalDocuSign.Controllers
             string endpoint = string.Empty;
             if (curCredentials.IsDemoAccount)
             {
-                endpoint = CloudConfigurationManager.GetSetting("environment") + "/restapi";
+                endpoint = CloudConfigurationManager.GetSetting("environment_DEMO") + "/restapi";
             }
             else
             {
@@ -108,7 +108,9 @@ namespace terminalDocuSign.Controllers
             {
                 AccountId = accountId,
                 ApiPassword = loginInfo.ApiPassword,
-                Email = curCredentials.Username
+                Email = curCredentials.Username,
+                IsDemoAccount = curCredentials.IsDemoAccount,
+                Endpoint = loginInfo.LoginAccounts[0].BaseUrl.Replace("v2/accounts/" + accountId.ToString(), "")
             };
 
             return result;

@@ -257,7 +257,7 @@
     margin-bottom: 5px;
     vertical-align: top;
     white-space: initial;
-    min-width: 330px;
+    /*min-width: 330px;*/
 }
 
     .action .pane-configure-action {
@@ -317,10 +317,10 @@ div.action-header {
 }
 
 .action-header-icon {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 6px;
+    margin-right: 10px;
+}
+#activity-header {
+   fill: rgba(255,255,255,0.87);
 }
 
     .action-header-icon:before {
@@ -331,7 +331,7 @@ div.action-header {
     }
 
     .action-header-icon img {
-        border-radius: 8px !important;
+        /*border-radius: 8px !important;*/
         /*width: 48px;*/
         max-width: 72px;
         height: 48px;
@@ -1051,6 +1051,28 @@ div.activity-list::after {
 
 .float-right {
     float: right;
+}
+
+
+.dndDraggingSource + div {
+    opacity: 0.3;
+}
+
+div.ap-resize div.dndDraggingSource {
+    opacity: 0.3;
+    display: block !important;
+}
+
+.register-container {
+    width: 600px;
+    margin: 30px auto;
+}
+
+i.activity-stream-font{
+    margin-right: 3px;
+    font-size: 40px !important;
+    float: left; 
+    padding-top: 5px;
 }
 
 .query-builder-value-row {

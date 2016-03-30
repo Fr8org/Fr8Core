@@ -46,7 +46,7 @@ namespace terminalDocuSign.Controllers
                 Category = ActivityCategory.Monitors,
                 Terminal = terminal,
                 NeedsAuthentication = true,
-                MinPaneWidth = 330,
+                MinPaneWidth = 380,
                 WebService = webService,
                 ShowDocumentation = ActivityResponseDTO.CreateDocumentationResponse("MenuItem", "Monitor_DocuSign_Envelope_Activity_SampleHelp1")
             };
@@ -90,8 +90,8 @@ namespace terminalDocuSign.Controllers
 
             var recordDocuSignEvents = new ActivityTemplateDTO
             {
-                Name = "Record_DocuSign_Events",
-                Label = "Record DocuSign Events",
+                Name = "Prepare_DocuSign_Events_For_Storage",
+                Label = "Prepare DocuSign Events For Storage",
                 Version = "1",
                 Category = ActivityCategory.Forwarders,
                 Terminal = terminal,
@@ -160,7 +160,7 @@ namespace terminalDocuSign.Controllers
                 NeedsAuthentication = true,
                 Terminal = terminal,
                 WebService = webService,
-                MinPaneWidth = 500,
+                MinPaneWidth = 420,
                 Tags = "HideChildren"
             };
 
@@ -201,8 +201,8 @@ namespace terminalDocuSign.Controllers
                 trackDocuSignRecipientsSolution,
                 queryDocusign,
                 generateDocusignReport,
-                //searchDocusignHistory,
-                //archiveDocusignTemplate,
+                searchDocusignHistory,
+                archiveDocusignTemplate,
                 getDocuSignTemplateActionTemplate
             };
 

@@ -29,10 +29,21 @@ namespace terminalDocuSign.Services.New_Api
     {
         public DocuSignApiConfiguration SetUp(AuthorizationTokenDO authTokenDO)
         {
+            string baseUrl = string.Empty;
+            string integratorKey = string.Empty;
+
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             //create configuration for future api calls
-            string baseUrl = CloudConfigurationManager.GetSetting("environment") + "restapi/";
-            string integratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey");
+            if (docuSignAuthDTO.IsDemoAccount)
+            {
+                integratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey_DEMO");
+                baseUrl = CloudConfigurationManager.GetSetting("environment_DEMO") + "restapi/";
+            }
+            else
+            {
+                integratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey");
+                baseUrl = docuSignAuthDTO.Endpoint.Replace("v2/accounts/" + docuSignAuthDTO.AccountId.ToString(), "");
+            }
             ApiClient apiClient = new ApiClient(baseUrl);
             string authHeader = "bearer " + docuSignAuthDTO.ApiPassword;
             Configuration conf = new Configuration(apiClient);
@@ -51,13 +62,19 @@ namespace terminalDocuSign.Services.New_Api
 
         public List<FieldDTO> GetTemplatesList(DocuSignApiConfiguration conf)
         {
-            var tmpApi = new TemplatesApi(conf.Configuration);
-            var result = tmpApi.ListTemplates(conf.AccountId);
-            if (result.EnvelopeTemplates != null && result.EnvelopeTemplates.Count > 0)
-                return result.EnvelopeTemplates.Where(a => !string.IsNullOrEmpty(a.Name))
-                    .Select(a => new FieldDTO(a.Name, a.TemplateId) { Availability = AvailabilityType.Configuration }).ToList();
-            else
-                return new List<FieldDTO>();
+            try {
+                var tmpApi = new TemplatesApi(conf.Configuration);
+                var result = tmpApi.ListTemplates(conf.AccountId);
+                if (result.EnvelopeTemplates != null && result.EnvelopeTemplates.Count > 0)
+                    return result.EnvelopeTemplates.Where(a => !string.IsNullOrEmpty(a.Name))
+                        .Select(a => new FieldDTO(a.Name, a.TemplateId) { Availability = AvailabilityType.Configuration }).ToList();
+                else
+                    return new List<FieldDTO>();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public JObject DownloadDocuSignTemplate(DocuSignApiConfiguration config, string selectedDocusignTemplateId)

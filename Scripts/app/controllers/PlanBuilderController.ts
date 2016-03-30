@@ -38,6 +38,7 @@ module dockyard.controllers {
         solutionName: string;
         curAggReloadingActions: Array<string>;
         addSubPlan: () => void;
+        openMenu: ($mdOpenMenu: any , ev: any) => void;
     }
 
 
@@ -114,6 +115,9 @@ module dockyard.controllers {
 
             $scope.deleteAction = <() => void>angular.bind(this, this.deleteAction);
             $scope.addSubPlan = <() => void>angular.bind(this, this.addSubPlan);
+            $scope.openMenu = function ($mdOpenMenu, ev) {
+                $mdOpenMenu(ev);
+            };
             $scope.reConfigureAction = (action: model.ActivityDTO) => {
                 var actionsArray = new Array<model.ActivityDTO>();
                 actionsArray.push(action);
@@ -226,7 +230,11 @@ module dockyard.controllers {
                 createdSubPlan.activities = [];
                 createdSubPlan.criteria = null;
                 currentPlan.subPlans.push(createdSubPlan);
-                this.renderPlan(<interfaces.IPlanVM>currentPlan);
+
+                //dirty hack
+                var processedGroup = this.LayoutService.addEmptyProcessedGroup(createdSubPlan.subPlanId);
+                this.$scope.processedSubPlans.push({ subPlan: createdSubPlan, actionGroups: processedGroup });
+                //this.renderPlan(<interfaces.IPlanVM>currentPlan);
             });
         }
 
@@ -434,7 +442,7 @@ module dockyard.controllers {
         }
 
         private renderActions(activitiesCollection: model.ActivityDTO[]) {
-            if (activitiesCollection != null && activitiesCollection.length != 0) {
+            if (activitiesCollection != null && activitiesCollection.length !== 0) {
                 this.$scope.actionGroups = this.LayoutService.placeActions(activitiesCollection,
                     this.$scope.current.plan.startingSubPlanId);
             }
@@ -541,6 +549,10 @@ module dockyard.controllers {
             this.selectAction(action, eventArgs.group);
         }
 
+        private allowsChildren(action: model.ActivityDTO) {
+            return action.activityTemplate.type === 'Loop';
+        }
+
         private addActionToUI(action: model.ActivityDTO, group: model.ActionGroup) {
             this.$scope.current.activities = action;
 
@@ -552,7 +564,21 @@ module dockyard.controllers {
                 subPlan.activities.push(action);
             }
 
-            this.renderPlan(<interfaces.IPlanVM>this.$scope.current.plan);
+            //TODO we need to change rendering code
+
+            if (this.allowsChildren(action)) {
+                this.renderPlan(<interfaces.IPlanVM>this.$scope.current.plan);
+            } else {
+                for (var i = 0; i < this.$scope.processedSubPlans.length; i++) {
+                    var curSubPlan = this.$scope.processedSubPlans[i];
+                    for (var j = 0; j < curSubPlan.actionGroups.length; j++) {
+                        var curActionGroup = <model.ActionGroup>curSubPlan.actionGroups[j];
+                        if (curActionGroup.parentId === action.parentPlanNodeId) {
+                            curActionGroup.envelopes.push(new model.ActivityEnvelope(action));
+                        }
+                    }
+                }
+            }
         }
 
         /*
@@ -721,7 +747,10 @@ module dockyard.controllers {
             }
 
             var results: Array<model.ActivityDTO> = [];
-            results = this.getAgressiveReloadingActions(this.$scope.actionGroups, callConfigureResponseEventArgs.action);
+            var subplan = this.getActionSubPlan(callConfigureResponseEventArgs.action);
+            if (subplan) {
+                results = this.getAgressiveReloadingActions(subplan.actionGroups, callConfigureResponseEventArgs.action);
+            }
 
             for (var index = 0; index < results.length; index++) {
                 if (this.$scope.curAggReloadingActions.indexOf(results[index].id) === -1) {
@@ -745,7 +774,35 @@ module dockyard.controllers {
             }, 300);
         }
 
-        private getAgressiveReloadingActions(actionGroups: Array<model.ActionGroup>, currentAction: interfaces.IActivityDTO) {
+        private getActionSubPlan(activity: interfaces.IActivityDTO): any {
+            for (var i = 0; i < this.$scope.processedSubPlans.length; ++i) {
+                var subPlan = this.$scope.processedSubPlans[i];
+                if (!subPlan.actionGroups) {
+                    continue;
+                }
+
+                for (var j = 0; j < subPlan.actionGroups.length; ++j) {
+                    var actionGroup = subPlan.actionGroups[j];
+                    if (!actionGroup.envelopes) {
+                        continue;
+                    }
+
+                    for (var k = 0; k < actionGroup.envelopes.length; ++k) {
+                        var envelope = actionGroup.envelopes[k];
+                        if (envelope.activity.id === activity.id) {
+                            return subPlan;
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        private getAgressiveReloadingActions(
+            actionGroups: Array<model.ActionGroup>,
+            currentAction: interfaces.IActivityDTO) {
+
             var results: Array<model.ActivityDTO> = [];
             actionGroups.forEach(group => {
                 group.envelopes.filter(envelope => {

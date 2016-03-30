@@ -16,6 +16,7 @@
         events: Array<ControlEvent>;
         value: string;
         isFocused: boolean;
+        isHidden: boolean;
     }
 
     export class ControlEvent {
@@ -84,6 +85,7 @@
     }
 
     export enum AvailabilityType {
+        NotSet = 0,
         Configuration = 1,
         RunTime = 2,
         Always = 3
@@ -105,12 +107,14 @@
         public label: string;
         public filterByTag: string;
         public requestUpstream: boolean;
+        public availabilityType: AvailabilityType;
     }
 
     export class DropDownList extends ControlDefinitionDTO {
         listItems: Array<DropDownListItem>;
         source: FieldSource;
         selectedKey: string;
+        
 
         constructor() {
             super();
@@ -150,16 +154,17 @@
         constructor() {
             super("TextBlockMetaDescriptionDTO", "TextBlock");
             var tb = new model.TextBox();
-            tb.label = "Label :";
+            tb.label = "Text Content :";
             this.controls.push(tb);
         }
     }
     
     export class FilePickerMetaDescriptionDTO extends ControlMetaDescriptionDTO
     {
-        static fileExtensions: Array<string> = ["xlsx"];
+
+        static fileExtensions: Array<DropDownListItem> = [new DropDownListItem("Excel Files", ".xlsx")];
         constructor() {
-            super("FilePickerMetaDescriptionDTO", "File Picker");
+            super("FilePickerMetaDescriptionDTO", "File Uploader");
             var tb = new model.TextBox();
             tb.label = "Label :";
             this.controls.push(tb);
@@ -167,7 +172,7 @@
             var listItems: Array<DropDownListItem> = [];
             for (var i = 0; i < FilePickerMetaDescriptionDTO.fileExtensions.length; i++) {
                 var extensionValue = FilePickerMetaDescriptionDTO.fileExtensions[i];
-                listItems.push(new DropDownListItem(extensionValue, extensionValue));
+                listItems.push(extensionValue);
             }
             var allowedExtensions = new model.DropDownList();
             allowedExtensions.listItems = listItems;
@@ -176,10 +181,20 @@
         }
 
     }
-    
-    
 
-    export class ControlContainer extends ControlDefinitionDTO {
+    export class ListTemplate {
+        template: Array<ControlDefinitionDTO>;
+        name: string;
+    }
+
+    export class ControlList extends ControlDefinitionDTO {
+        controlGroups: Array<Array<ControlDefinitionDTO>>;
+        templateContainer: ListTemplate;
+        addControlGroupButtonText: string;
+        noDataMessage: string;
+    }
+
+    export class MetaControlContainer extends ControlDefinitionDTO {
         metaDescriptions: Array<ControlMetaDescriptionDTO>;
     }
 

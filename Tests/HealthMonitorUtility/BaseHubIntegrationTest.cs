@@ -39,6 +39,24 @@ namespace HealthMonitor.Utility
         protected string TestEmail;
         protected string TestEmailName;
 
+        protected CredentialsDTO GetDocuSignCredentials()
+        {
+            //var creds = new CredentialsDTO()
+            //{
+            //    Username = "integration_test_runner@fr8.company",
+            //    Password = "I6HmXEbCxN",
+            //    IsDemoAccount = false
+            //};
+
+            var creds = new CredentialsDTO()
+            {
+                Username = "freight.testing@gmail.com",
+                Password = "I6HmXEbCxN",
+                IsDemoAccount = true
+            };
+            return creds;
+        }
+
         public BaseHubIntegrationTest()
         {
             ObjectFactory.Initialize();
@@ -121,7 +139,7 @@ namespace HealthMonitor.Utility
             }
         }
 
-        private Uri GetHubBaseUrl()
+        protected Uri GetHubBaseUrl()
         {
             var hubApiBaseUrl = new Uri(GetHubApiBaseUrl());
             var hubBaseUrl = new Uri(hubApiBaseUrl.Scheme + "://" + hubApiBaseUrl.Host + ":" + hubApiBaseUrl.Port);

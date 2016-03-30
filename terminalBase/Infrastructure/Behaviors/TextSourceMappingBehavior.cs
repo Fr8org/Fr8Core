@@ -5,6 +5,7 @@ using Data.Control;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.States;
 using Hub.Managers;
 
 namespace TerminalBase.Infrastructure.Behaviors
@@ -21,7 +22,7 @@ namespace TerminalBase.Infrastructure.Behaviors
             //BehaviorPrefix = "TextSourceMappingBehavior-";
         }
 
-        public void Append(IEnumerable<string> fieldIds, string upstreamSourceLabel)
+        public void Append(IEnumerable<string> fieldIds, string upstreamSourceLabel, AvailabilityType availability = AvailabilityType.NotSet)
         {
             var controlsCM = GetOrCreateStandardConfigurationControlsCM();
 
@@ -30,13 +31,13 @@ namespace TerminalBase.Infrastructure.Behaviors
                 var name = string.Concat(BehaviorPrefix, fieldId);
 
                 var textSource = new TextSource(fieldId, upstreamSourceLabel, name);
-
                 if (_reqeustUpstream)
                 {
                     textSource.Source = new FieldSourceDTO()
                     {
                         ManifestType = CrateManifestTypes.StandardDesignTimeFields,
-                        RequestUpstream = true
+                        RequestUpstream = true,
+                        AvailabilityType = availability
                     };
                 }
 

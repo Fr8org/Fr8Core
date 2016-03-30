@@ -17,7 +17,8 @@ module dockyard.tests.utils.fixtures {
             events: [],
             value: null,
             errorMessage: null,
-            isFocused: false
+            isFocused: false,
+            isHidden:false
         };
 
         public static textField: model.TextBox = {
@@ -29,10 +30,11 @@ module dockyard.tests.utils.fixtures {
             errorMessage: null,
             isFocused: false,
             value: 'test',
-            label: 'test'
+            label: 'test',
+            isHidden: false
         };
 
-        public static textBlock: model.TextBlock = new model.TextBlock('<span>teststs</span>', 'well well-lg');
+        public static textBlock: model.TextBlock = new model.TextBlock('<p>teststs</p>', 'well well-lg');
 
         public static dropDownListBox: model.DropDownList = {
             listItems: [{ key: 'test1', selected: false, value: 'value1', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null }, { key: 'test2', selected: false, value: 'value2', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null }, { key: 'test3', selected: false, value: 'value3', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null }],
@@ -40,7 +42,8 @@ module dockyard.tests.utils.fixtures {
                 manifestType: 'testManifest',
                 label: 'testLabel',
                 filterByTag: null,
-                requestUpstream: false
+                requestUpstream: false,
+                availabilityType: model.AvailabilityType.NotSet
             },
             type: 'DropDownList',
             fieldLabel: 'DropDownList Test',
@@ -50,7 +53,8 @@ module dockyard.tests.utils.fixtures {
             events: [],
             value: 'value3',
             errorMessage: null,
-            selectedKey: 'test3'
+            selectedKey: 'test3',
+            isHidden: false
         };
 
         public static radioButtonGroupField: model.RadioButtonGroup = {
@@ -66,6 +70,7 @@ module dockyard.tests.utils.fixtures {
                     events: null,
                     errorMessage: null,
                     isFocused: false,
+                    isHidden: false,
                     controls: [
                         {
                             name: 'SMS_Number',
@@ -75,7 +80,8 @@ module dockyard.tests.utils.fixtures {
                             type: "TextBox",
                             events: null,
                             errorMessage: null,
-                            isFocused: false
+                            isFocused: false,
+                            isHidden: false
                         }
                     ]
                 },
@@ -89,6 +95,7 @@ module dockyard.tests.utils.fixtures {
                     events: null,
                     errorMessage: null,
                     isFocused: false,
+                    isHidden: false,
                     controls: [
                         {
                             name: 'SMS_Number2',
@@ -99,6 +106,7 @@ module dockyard.tests.utils.fixtures {
                             events: null,
                             isFocused: false,
                             errorMessage: null,
+                            isHidden: false
                         }
                     ]
                 }
@@ -110,6 +118,7 @@ module dockyard.tests.utils.fixtures {
             type: "RadioButtonGroup",
             errorMessage: null,
             isFocused: false,
+            isHidden: false,
             events: null
         };
 
@@ -134,11 +143,13 @@ module dockyard.tests.utils.fixtures {
             textValue: null,
             errorMessage: null,
             isFocused: false,
+            isHidden: false,
             source: {
                 manifestType: 'testManifest',
                 label: 'testLabel',
                 filterByTag: null,
-                requestUpstream: false
+                requestUpstream: false,
+                availabilityType: model.AvailabilityType.NotSet
             },
             valueSource: 'test',
             listItems: [{

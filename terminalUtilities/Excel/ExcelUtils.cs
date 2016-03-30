@@ -166,10 +166,10 @@ namespace terminalUtilities.Excel
 
             if (rowsDictionary != null && rowsDictionary.Count > 0)
             {
-                var rows = CreateTableCellPayloadObjects(rowsDictionary, headersArray);
+                var rows = CreateTableCellPayloadObjects(rowsDictionary, headersArray, isFirstRowAsColumnNames);
                 if (rows != null && rows.Count > 0)
                 {
-                    curExcelPayloadRowsCrateDTO = crateManager.CreateStandardTableDataCrate("Excel Payload Rows", false, rows.ToArray());
+                    curExcelPayloadRowsCrateDTO = crateManager.CreateStandardTableDataCrate("Excel Payload Rows", isFirstRowAsColumnNames, rows.ToArray());
                 }
             }
 
@@ -192,9 +192,13 @@ namespace terminalUtilities.Excel
             return file.Retrieve(curFileDO);
         }
 
-        public static List<TableRowDTO> CreateTableCellPayloadObjects(Dictionary<string, List<Tuple<string, string>>> rowsDictionary, string[] headersArray = null)
+        public static List<TableRowDTO> CreateTableCellPayloadObjects(Dictionary<string, List<Tuple<string, string>>> rowsDictionary, string[] headersArray = null, bool includeHeadersAsFirstRow = false)
         {
             var listOfRows = new List<TableRowDTO>();
+            if (includeHeadersAsFirstRow)
+            {
+                listOfRows.Add(new TableRowDTO { Row = headersArray.Select(x => new TableCellDTO { Cell = new FieldDTO(x, x) }).ToList() });
+            }
             // Process each item in the dictionary and add it as an item in List<TableRowDTO>
             foreach (var row in rowsDictionary)
             {

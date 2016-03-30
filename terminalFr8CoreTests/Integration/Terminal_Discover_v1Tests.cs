@@ -38,7 +38,7 @@ namespace terminalFr8CoreTests.Integration
         private const string TestAndBranch = "TestAndBranch";
         private const string ExtractTableField = "ExtractTableField";
         private const string CreateLauncher = "CreateLauncher";
-        private const string LaunchAPlan = "LaunchAPlan";
+        private const string PlanLauncher = "PlanLauncher";
 
 
         public override string TerminalName
@@ -79,7 +79,7 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == TestAndBranch));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ExtractTableField));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == CreateLauncher));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == LaunchAPlan));
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == PlanLauncher));
         }
     }
 }

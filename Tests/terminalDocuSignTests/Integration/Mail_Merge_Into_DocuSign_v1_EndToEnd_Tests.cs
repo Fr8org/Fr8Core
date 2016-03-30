@@ -80,13 +80,9 @@ namespace terminalDocuSignTests.Integration
                 // Authenticate with DocuSign
                 //
 
-                var creds = new CredentialsDTO()
-                {
-                    Username = "freight.testing@gmail.com",
-                    Password = "I6HmXEbCxN",
-                    IsDemoAccount = true,
-                    TerminalId = solution.ActivityTemplate.TerminalId
-                };
+                var creds = GetDocuSignCredentials();
+                creds.TerminalId = solution.ActivityTemplate.TerminalId;
+
                 var token = await HttpPostAsync<CredentialsDTO, JObject>(_baseUrl + "authentication/token", creds);
                 Assert.AreNotEqual(token["error"].ToString(), "Unable to authenticate in DocuSign service, invalid login name or password.", "DocuSign auth error. Perhaps max number of tokens is exceeded.");
                 Assert.AreEqual(false, String.IsNullOrEmpty(token["authTokenId"].Value<string>()), "AuthTokenId is missing in API response.");
@@ -299,50 +295,17 @@ namespace terminalDocuSignTests.Integration
             emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role name");
             Assert.AreEqual(TestEmailName, emailNameField.Value, "Email Name did not save on Send DocuSign Envelope action.");
             Assert.AreEqual(TestEmailName, emailNameField.TextValue, "Email Name did not save on Send DocuSign Envelope action.");
-            //
-            // Configure Map Fields action
-            //
-
-            //// Reconfigure Map Fields to have it pick up upstream fields
-            //var mapFieldsAction = this.solution.ChildrenActions.Single(a => a.Name == "Map Fields");
-            //mapFieldsAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "actions/configure", mapFieldsAction);
-
-            //// Configure mappings
-            //crateStorage = _crateManager.FromDto(mapFieldsAction.CrateStorage);
-            //controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
-            //var mapping = controlsCrate.Content.Controls.OfType<MappingPane>().First();
-            //mapping.Value = @"[{""Key"":""Doctor"",""Value"":""Doctor""},{""Key"":""Condition"",""Value"":""Condition""}]";
-
-            //using (var crateStorage = _crateManager.GetUpdatableStorage(mapFieldsAction))
-            //{
-            //    crateStorage.Remove<StandardConfigurationControlsCM>();
-            //    crateStorage.Add(controlsCrate);
-            //}
-            //sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "actions/save", mapFieldsAction);
 
             //
             // Activate and run plan
             //
-            await HttpPostAsync<string, string>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
-
-            ////check if container state == completed
-            //var containerIds = await HttpGetAsync<IEnumerable<string>>(_baseUrl + "containers/GetIdsByName?name=" + newName);
-            //var containerState = 0; 
-            //foreach (var containerId in containerIds)
-            //{
-            //    var container = await HttpGetAsync<ContainerDTO>(_baseUrl + "containers/?id=" + containerId);
-            //    if (container.PlanId == plan.Id)
-            //    {
-            //        containerState = container.ContainerState;
-            //        break;
-            //    }
-            //}
-            //Assert.AreEqual(containerState, ContainerState.Completed);
+            var container = await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
+            Assert.AreEqual(container.ContainerState, ContainerState.Completed);
 
             //
             // Deactivate plan
             //
-            //await HttpPostAsync<string, string>(_baseUrl + "plans/deactivate?planId=" + plan.Id, null);
+            await HttpPostAsync<string, string>(_baseUrl + "plans/deactivate?planId=" + plan.Plan.Id, null);
 
             // Verify that test email has been received
             EmailAssert.EmailReceived("dse_demo@docusign.net", "Test Message from Fr8");
