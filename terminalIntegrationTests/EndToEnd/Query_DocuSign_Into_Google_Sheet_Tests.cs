@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Interfaces;
-using Data.Migrations;
 using HealthMonitor.Utility;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -11,9 +10,8 @@ using terminaBaselTests.Tools.Activities;
 using terminaBaselTests.Tools.Plans;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services;
-using terminalGoogleTests.Unit;
 
-namespace terminalGoogleTests.Integration
+namespace terminalIntegrationTests.EndToEnd
 {
     [Explicit]
     public class Query_DocuSign_Into_Google_Sheet_Tests : BaseHubIntegrationTest
@@ -73,7 +71,7 @@ namespace terminalGoogleTests.Integration
                 //file should contain 11 envelopes saved
                 var numberOfEnvelopes = dataRows.ToList().Count();
                 Assert.AreNotEqual(0, numberOfEnvelopes, "Failed to read any envelope data from excel rows. Run method may failed to write data into excel file");
-                Assert.AreEqual(11, numberOfEnvelopes, "Number of readed rows/envelopes was not in the correct count");
+                Assert.AreEqual(1, numberOfEnvelopes, "Number of readed rows/envelopes was not in the correct count");
             }
             finally {
                 //cleanup. erase the sheet
