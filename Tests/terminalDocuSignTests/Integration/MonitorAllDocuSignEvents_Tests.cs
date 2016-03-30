@@ -20,6 +20,8 @@ using terminalDocuSignTests.Fixtures;
 using Newtonsoft.Json;
 using terminalDocuSign.DataTransferObjects;
 using System.Diagnostics;
+using TerminalBase.Infrastructure;
+using Hub.Managers;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -97,12 +99,6 @@ namespace terminalDocuSignTests.Integration
                 var docuSignManager = new DocuSignManager();
                 var loginInfo = docuSignManager.SetUp(authTokenDO);
 
-                //Create connect
-                ConnectName += DateTime.Now.ToShortDateString();
-                publishUrl = "http://" + CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint") + "/terminals/terminalDocuSign/events"; 
-                var docusignConnect = new DocuSignConnect();
-                string connectId = docusignConnect.CreateOrActivateConnect(loginInfo, ConnectName, publishUrl);
-
                 //send envelope
                 await SendDocuSignTestEnvelope(docuSignManager, loginInfo, authTokenDO);
 
@@ -124,7 +120,6 @@ namespace terminalDocuSignTests.Integration
                     }
                 }
 
-                docusignConnect.DeleteConnect(loginInfo, connectId);
 
                 Assert.IsTrue(mtDataCountBefore < mtDataCountAfter);
             }

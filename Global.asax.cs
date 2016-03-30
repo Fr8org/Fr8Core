@@ -29,6 +29,7 @@ namespace HubWeb
     public class MvcApplication : HttpApplication
     {
         private static bool _IsInitialised;
+        private const string AngularRootPath = "/dashboard";
 
         protected void Application_Start()
         {
@@ -165,6 +166,10 @@ namespace HubWeb
                         break;
                 }
             }
+
+            //now we need to rewrite angular related requests
+            if (Request.Url.LocalPath.StartsWith(AngularRootPath))
+                Context.RewritePath(AngularRootPath);
         }
 
         private void RedirectToCanonicalUrl()
