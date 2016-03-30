@@ -286,7 +286,8 @@ namespace terminalFr8Core.Controllers
                 NeedsAuthentication = false,
                 Terminal = terminal,
                 WebService = webService,
-                MinPaneWidth = 350
+                MinPaneWidth = 350,
+                Tags = "AggressiveReload"
             });
 
             result.Add(new ActivityTemplateDTO
