@@ -36,13 +36,13 @@ namespace terminalDocuSign.Services.New_Api
             //create configuration for future api calls
             if (docuSignAuthDTO.IsDemoAccount)
             {
-                baseUrl = CloudConfigurationManager.GetSetting("environment_DEMO") + "restapi/";
                 integratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey_DEMO");
+                baseUrl = CloudConfigurationManager.GetSetting("environment_DEMO") + "restapi/";
             }
             else
             {
-                baseUrl = CloudConfigurationManager.GetSetting("environment") + "restapi/";
                 integratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey");
+                baseUrl = docuSignAuthDTO.Endpoint.Replace("v2/accounts/" + docuSignAuthDTO.AccountId.ToString(), "");
             }
             ApiClient apiClient = new ApiClient(baseUrl);
             string authHeader = "bearer " + docuSignAuthDTO.ApiPassword;
@@ -62,13 +62,20 @@ namespace terminalDocuSign.Services.New_Api
 
         public List<FieldDTO> GetTemplatesList(DocuSignApiConfiguration conf)
         {
-            var tmpApi = new TemplatesApi(conf.Configuration);
-            var result = tmpApi.ListTemplates(conf.AccountId);
-            if (result.EnvelopeTemplates != null && result.EnvelopeTemplates.Count > 0)
-                return result.EnvelopeTemplates.Where(a => !string.IsNullOrEmpty(a.Name))
-                    .Select(a => new FieldDTO(a.Name, a.TemplateId) { Availability = AvailabilityType.Configuration }).ToList();
-            else
-                return new List<FieldDTO>();
+            try
+            {
+                var tmpApi = new TemplatesApi(conf.Configuration);
+                var result = tmpApi.ListTemplates(conf.AccountId);
+                if (result.EnvelopeTemplates != null && result.EnvelopeTemplates.Count > 0)
+                    return result.EnvelopeTemplates.Where(a => !string.IsNullOrEmpty(a.Name))
+                        .Select(a => new FieldDTO(a.Name, a.TemplateId) { Availability = AvailabilityType.Configuration }).ToList();
+                else
+                    return new List<FieldDTO>();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public JObject DownloadDocuSignTemplate(DocuSignApiConfiguration config, string selectedDocusignTemplateId)
@@ -116,7 +123,7 @@ namespace terminalDocuSign.Services.New_Api
             return new Tuple<IEnumerable<FieldDTO>, IEnumerable<DocuSignTabDTO>>(recipientsAndTabs, docuTabs);
         }
 
-        public void SendAnEnvelopeFromTemplate(DocuSignApiConfiguration loginInfo, List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId)
+        public void SendAnEnvelopeFromTemplate(DocuSignApiConfiguration loginInfo, List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId, StandardFileDescriptionCM fileHandler = null)
         {
 
             //creatig an envelope definiton
@@ -124,6 +131,10 @@ namespace terminalDocuSign.Services.New_Api
             envDef.EmailSubject = "Test message from Fr8";
             envDef.TemplateId = curTemplateId;
             envDef.Status = "created";
+
+            //adding file
+            if (fileHandler != null)
+                envDef.Documents = new List<Document>() { new Document() { DocumentBase64 = fileHandler.TextRepresentation, FileExtension = fileHandler.Filetype, DocumentId = "1", Name = "new_document" } };
 
             //creating an envelope
             EnvelopesApi envelopesApi = new EnvelopesApi(loginInfo.Configuration);
