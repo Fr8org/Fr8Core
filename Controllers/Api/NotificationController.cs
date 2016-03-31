@@ -17,7 +17,7 @@ using Utilities.Interfaces;
 
 namespace HubWeb.Controllers
 {
-    public class NotificationController : ApiController
+    public class NotificationController : Fr8BaseApiController
     {
         private readonly IPusherNotifier _pusherNotifier;
 
@@ -31,9 +31,19 @@ namespace HubWeb.Controllers
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
-        public async Task<IHttpActionResult> Post(TerminalNotificationDTO notificationMessage)
+        public IHttpActionResult Post(TerminalNotificationDTO notificationMessage)
         {
-            string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
+            var pusherChannel = "";
+
+            if (IsThisTerminalCall())
+            {
+                var user = GetUserTerminalOperatesOn();
+                pusherChannel = $"fr8pusher_{user?.UserName}";
+            }
+            else
+            {
+                pusherChannel = $"fr8pusher_{User.Identity.Name}";
+            }
             _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_TERMINAL_NOTIFICATION, notificationMessage);
             return Ok();
         }

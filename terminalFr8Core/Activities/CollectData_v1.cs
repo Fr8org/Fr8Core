@@ -69,7 +69,7 @@ namespace terminalFr8Core.Actions
                     updateButton.Clicked = false;
                     curStorage.RemoveByLabel(CollectionControlsLabel);
                     curStorage.Add(CreateCollectionControlsCrate(controlContainer));
-
+                    
                     await PushUserNotification(new TerminalNotificationDTO
                     {
                         Type = "Success",
@@ -77,8 +77,10 @@ namespace terminalFr8Core.Actions
                         ActivityVersion = "1",
                         TerminalName = "terminalFr8Core",
                         TerminalVersion = "1",
-                        Message = "",
-                        Subject = ""
+                        Message = "Launcher can be launched with the following URL: " +
+                                    CloudConfigurationManager.GetSetting("CoreWebServerUrl") +
+                                    "api/v1/planload?id=" + curActivityDO.RootPlanNodeId ,
+                        Subject = "Launcher URL"
                     });
                 }
                 

@@ -363,22 +363,10 @@ module dockyard.controllers {
             }
 
 
-            //TODO we should create a parameter for cloning
-            if (this.$scope.view && this.$scope.viewMode === 'kiosk') {
-                //this plan should be cloned
-                this.PlanService.getClonedPlan({ id: this.$scope.planId }).$promise.then((clonedPlan: model.PlanDTO) => {
-                    //we are already using cloned plan
-                    if (clonedPlan.id === this.$scope.planId) {
             this.loadPlan();
-                    } else {
-                        this.$state.go('planBuilder', { id: clonedPlan.id, viewMode: this.$scope.viewMode, view: this.$scope.view});
-                    }
-                });
-            }
         }
 
         
-
         private createNewSolution(solutionName: string) {
             var plan = this.ActionService.createSolution({
                 solutionName: solutionName

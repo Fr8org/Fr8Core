@@ -12,5 +12,10 @@
             <p>For Plan: {{event.PlanName}}</p>
             <p>Container: {{event.ContainerId}}</p>
         </div>
+        <div ng-if="type=='fr8pusher_terminal_event'">
+            <p>Message From Activity: {{event.ActivityName}}</p>
+            <p>Subject: {{event.Subject}}</p>
+            <p>Message: {{event.Message}}</p>
+        </div>
     </div>      
 </div>

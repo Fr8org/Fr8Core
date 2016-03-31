@@ -28,6 +28,10 @@ module dockyard.directives.button {
                 $scope.eventType = 'Execution';
                 $scope.icon = 'fa fa-spinner';
             }
+            else if ($scope.type == 'fr8pusher_terminal_event') {
+                $scope.eventType = 'Execution';
+                $scope.icon = 'fa fa-spinner';
+            }
                 
         }];
 

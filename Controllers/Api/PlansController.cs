@@ -112,23 +112,6 @@ namespace HubWeb.Controllers
 
         [Fr8ApiAuthorize]
         //[Route("full/{id:guid}")]
-        [ActionName("getClonedPlan")]
-        [ResponseType(typeof(PlanDTO))]
-        [HttpGet]
-        public IHttpActionResult GetClonedPlan(Guid id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var plan = uow.PlanRepository.GetById<PlanDO>(id);
-                var result = PlanMappingHelper.MapPlanToDto(uow, plan);
-
-                return Ok(result);
-            };
-        }
-
-
-        [Fr8ApiAuthorize]
-        //[Route("full/{id:guid}")]
         [ActionName("full")]
         [ResponseType(typeof(PlanDTO))]
         [HttpGet]

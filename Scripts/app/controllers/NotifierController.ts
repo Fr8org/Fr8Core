@@ -13,6 +13,7 @@ module dockyard.controllers.NotifierController {
     export const successEvent = 'fr8pusher_generic_success';
     export const failureEvent = 'fr8pusher_generic_failure';
     export const executionEvent = 'fr8pusher_activity_execution_info';
+    export const terminalEvent = 'fr8pusher_terminal_event';
 
 
     class NotifierController {
@@ -51,6 +52,13 @@ module dockyard.controllers.NotifierController {
                     this.$scope.eventList.splice(0,0,event);
                     //ngToast.create(data);
 
+                });
+
+                PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, terminalEvent, (data: any) => {
+                    var event = new Fr8InternalEvent();
+                    event.type = successEvent;
+                    event.data = data;
+                    this.$scope.eventList.splice(0, 0, event);
                 });
 
                 PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, executionEvent, (data: any) => {
