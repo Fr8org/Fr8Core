@@ -1080,3 +1080,6 @@ i.activity-stream-font{
     float:left; 
     width: 70px;
 }
+.configuration-control-form-group{
+    margin-bottom: 5px;
+}
