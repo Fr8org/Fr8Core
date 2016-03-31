@@ -62,7 +62,8 @@ namespace terminalDocuSign.Services.New_Api
 
         public List<FieldDTO> GetTemplatesList(DocuSignApiConfiguration conf)
         {
-            try {
+            try
+            {
                 var tmpApi = new TemplatesApi(conf.Configuration);
                 var result = tmpApi.ListTemplates(conf.AccountId);
                 if (result.EnvelopeTemplates != null && result.EnvelopeTemplates.Count > 0)
@@ -122,7 +123,7 @@ namespace terminalDocuSign.Services.New_Api
             return new Tuple<IEnumerable<FieldDTO>, IEnumerable<DocuSignTabDTO>>(recipientsAndTabs, docuTabs);
         }
 
-        public void SendAnEnvelopeFromTemplate(DocuSignApiConfiguration loginInfo, List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId)
+        public void SendAnEnvelopeFromTemplate(DocuSignApiConfiguration loginInfo, List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId, StandardFileDescriptionCM fileHandler = null)
         {
 
             //creatig an envelope definiton
@@ -130,6 +131,10 @@ namespace terminalDocuSign.Services.New_Api
             envDef.EmailSubject = "Test message from Fr8";
             envDef.TemplateId = curTemplateId;
             envDef.Status = "created";
+
+            //adding file
+            if (fileHandler != null)
+                envDef.Documents = new List<Document>() { new Document() { DocumentBase64 = fileHandler.TextRepresentation, FileExtension = fileHandler.Filetype, DocumentId = "1", Name = "new_document" } };
 
             //creating an envelope
             EnvelopesApi envelopesApi = new EnvelopesApi(loginInfo.Configuration);

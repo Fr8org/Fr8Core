@@ -19,6 +19,7 @@ using TerminalBase;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Utilities;
+using System.IO;
 
 namespace terminalFr8Core.Actions
 {
@@ -73,10 +74,19 @@ namespace terminalFr8Core.Actions
             {
                 if (controlDefinitionDTO is FilePicker)
                 {
-                    var fp = (FilePicker) controlDefinitionDTO;
+                    var fp = (FilePicker)controlDefinitionDTO;
                     var uploadFilePath = fp.Value;
-                    var payloadCrate =  Crate.FromContent(RuntimeCrateLabelPrefix, ExcelUtils.GetTableData(uploadFilePath, false), AvailabilityType.RunTime);
+                    var byteArray = ExcelUtils.GetExcelFileAsByteArray(uploadFilePath);
+                    var payloadCrate = Crate.FromContent(RuntimeCrateLabelPrefix, ExcelUtils.GetExcelFile(byteArray, uploadFilePath, false), AvailabilityType.RunTime);
                     payloadCrates.Add(payloadCrate);
+
+                    //add StandardFileDescriptionCM to payload
+                    var fileDescription = new StandardFileDescriptionCM
+                    {
+                        TextRepresentation = Convert.ToBase64String(byteArray),
+                        Filetype = Path.GetExtension(uploadFilePath)
+                    };
+                    payloadCrates.Add(Crate.FromContent("File Handler", fileDescription, AvailabilityType.RunTime));
                 }
             }
 
@@ -102,11 +112,11 @@ namespace terminalFr8Core.Actions
             {
                 var confControls = GetConfigurationControls(storage);
                 var errorText = (TextBlock)confControls.Controls.FirstOrDefault(c => c.Name == "error_text");
-                
+
                 if (errorText != null)
                 {
                     confControls.Controls.Remove(errorText);
-                    
+
                 }
 
                 errorText = new TextBlock
@@ -129,7 +139,7 @@ namespace terminalFr8Core.Actions
         private async Task<List<ListItem>> GetUserPlans()
         {
             var plans = await HubCommunicator.GetPlansByName(null, CurrentFr8UserId);
-            return plans.Select(x => new ListItem { Key = x.Plan.Name, Value = x.Plan.Id.ToString()}).ToList();
+            return plans.Select(x => new ListItem { Key = x.Plan.Name, Value = x.Plan.Id.ToString() }).ToList();
         }
 
         protected async Task<Crate> CreateControlsCrate()
