@@ -5,7 +5,7 @@ using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
-namespace terminalFr8Core.Activities
+namespace terminalFr8Core.Actions
 {
     public class ActivityChooserTest_v1 : BaseTerminalActivity
     {
@@ -27,6 +27,7 @@ namespace terminalFr8Core.Activities
             {
                 AddControl(crateStorage, new ActivityChooser()
                 {
+                    Label = "Address"
                 });
             }
 
