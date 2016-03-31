@@ -185,6 +185,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="EndToEnd\GoogleIntoGoogleTests.cs" />
     <Compile Include="EndToEnd\Query_DocuSign_Into_Google_Sheet_Tests.cs" />
     <Compile Include="Fixtures\FixtureData - CoreSelfHostFactory.cs" />
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
@@ -290,7 +291,8 @@
 $(SolutionDir)\BuildUtils\xcopy.exe  $(SolutionDir)\terminalAzure\bin\terminalAzure.dll.config $(TargetDir) /C /Y
 $(SolutionDir)\BuildUtils\xcopy.exe  $(SolutionDir)\terminalFr8Core\bin\terminalFr8Core.dll.config $(TargetDir) /C /Y
 $(SolutionDir)\BuildUtils\xcopy.exe  $(SolutionDir)\terminalGoogle\bin\terminalGoogle.dll.config $(TargetDir) /C /Y
-$(SolutionDir)\BuildUtils\xcopy.exe  $(SolutionDir)\terminalExcel\bin\terminalExcel.dll.config $(TargetDir) /C /Y 
+$(SolutionDir)\BuildUtils\xcopy.exe  $(SolutionDir)\terminalExcel\bin\terminalExcel.dll.config $(TargetDir) /C /Y
+$(SolutionDir)\BuildUtils\xcopy.exe  $(SolutionDir)\Tests\terminalBaseTests\bin\debug\terminalBaseTests.dll.config $(TargetDir) /C /Y 
 	</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

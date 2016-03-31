@@ -37,11 +37,6 @@ namespace terminalFr8Core.Actions
                 {
                     Label = "Name",
                     Name = nameof(Name),
-                    Source = new FieldSourceDTO
-                    {
-                        Label = RuntimeCrateLabel,
-                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                    },
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
                 Body = new TextArea()
