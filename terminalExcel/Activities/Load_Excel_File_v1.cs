@@ -109,7 +109,7 @@ namespace terminalExcel.Actions
             {
                 throw new ActivityExecutionException("Excel file is not selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
-            CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, await Task.Run(() => ExcelUtils.GetTableData(ConfigurationControls.FilePicker.Value)), AvailabilityType.RunTime));
+            CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, await Task.Run(() => ExcelUtils.GetExcelFile(ConfigurationControls.FilePicker.Value)), AvailabilityType.RunTime));
         }
 
         private FieldDTO SelectedFileDescription
