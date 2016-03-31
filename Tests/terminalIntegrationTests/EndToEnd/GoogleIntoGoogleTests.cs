@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -37,33 +40,40 @@ namespace terminalIntegrationTests.EndToEnd
             var defaultGoogleAuthToken = GetGoogleAuthToken(googleAuthTokenId);
 
             //create a new plan
-            var thePlan = await _plansHelper.CreateNewPlan();
-            //Configure Get_Google_Sheet_Data activity
-            await _googleActivityConfigurator.AddAndConfigureGetFromGoogleSheet(thePlan, 1, "EmailList");
-            //Configure Build_Message activity
-            await _fr8ActivityConfigurator.AddAndConfigureBuildMessage(thePlan, 2, "message", "Email - [email], subject - [subject], body - [body]");
-            //Configure Save_To_Google activity
             var googleSheetApi = new GoogleSheet(new GoogleIntegration());
-            var newSpreadsheetName = Guid.NewGuid().ToString();
-            var spreasheetUri = await googleSheetApi.CreateSpreadsheet(newSpreadsheetName, defaultGoogleAuthToken);
+            var sourceSpreadsheetUri = string.Empty;
+            var destinationSpreadsheetUri = string.Empty;
+            var sourceSpreadsheetName = Guid.NewGuid().ToString();
+            var destinationSpreadsheetName = Guid.NewGuid().ToString();
             try
             {
-                await _googleActivityConfigurator.AddAndConfigureSaveToGoogleSheet(thePlan, 3, "Field Description", "Build Message", newSpreadsheetName);
+                //Save test data into test spreadsheet
+                sourceSpreadsheetUri = await googleSheetApi.CreateSpreadsheet(sourceSpreadsheetName, defaultGoogleAuthToken);
+                var sourceWorksheetUri = (await googleSheetApi.GetWorksheets(sourceSpreadsheetUri, defaultGoogleAuthToken)).Select(x => x.Key).First();
+                await googleSheetApi.WriteData(sourceSpreadsheetUri, sourceWorksheetUri, GetTestSpreadsheetContent(), defaultGoogleAuthToken);
+                var thePlan = await _plansHelper.CreateNewPlan();
+                //Configure Get_Google_Sheet_Data activity to read data from this test spreadsheet
+                await _googleActivityConfigurator.AddAndConfigureGetFromGoogleSheet(thePlan, 1, sourceSpreadsheetName);
+                //Configure Build_Message activity to build message based on the data from this spreadsheet
+                await _fr8ActivityConfigurator.AddAndConfigureBuildMessage(thePlan, 2, "message", "Email - [email], subject - [subject], body - [body]");
+                //Configure Save_To_Google activity to save this message into new test spreadsheet
+                destinationSpreadsheetUri = await googleSheetApi.CreateSpreadsheet(destinationSpreadsheetName, defaultGoogleAuthToken);
+
+                await _googleActivityConfigurator.AddAndConfigureSaveToGoogleSheet(thePlan, 3, "Field Description", "Build Message", destinationSpreadsheetName);
                 //run the plan
                 await _plansHelper.RunPlan(thePlan.Plan.Id);
 
                 var googleSheets = await googleSheetApi.GetSpreadsheets(defaultGoogleAuthToken);
 
-                Assert.IsNotNull(googleSheets.FirstOrDefault(x => x.Value == newSpreadsheetName), "New created spreadsheet was not found into existing google files.");
-                var spreadSheeturl = googleSheets.FirstOrDefault(x => x.Value == newSpreadsheetName).Key;
+                Assert.IsNotNull(googleSheets.FirstOrDefault(x => x.Value == destinationSpreadsheetName), "New created spreadsheet was not found into existing google files.");
+                var spreadSheeturl = googleSheets.FirstOrDefault(x => x.Value == destinationSpreadsheetName).Key;
 
-                //find spreadsheet
+                //Checking that new test spreadsheet contains the same message that was generated
                 var worksheets = await googleSheetApi.GetWorksheets(spreadSheeturl, defaultGoogleAuthToken);
                 Assert.IsNotNull(worksheets.FirstOrDefault(x => x.Value == "Sheet1"), "Worksheet was not found into newly created google excel file.");
                 var worksheetUri = worksheets.FirstOrDefault(x => x.Value == "Sheet1").Key;
                 var dataRows = (await googleSheetApi.GetData(spreadSheeturl, worksheetUri, defaultGoogleAuthToken)).ToArray();
 
-                //file should contain 11 envelopes saved
                 Assert.AreEqual(1, dataRows.Length, "Only one data row is expected to be in crated spreadsheet");
                 var storedData = dataRows[0].Row[0].Cell;
                 Assert.AreEqual("message", storedData.Key, "Saved message header doesn't match the expected data");
@@ -71,9 +81,45 @@ namespace terminalIntegrationTests.EndToEnd
             }
             finally
             {
-                //cleanup. erase the sheet
-                await googleSheetApi.DeleteSpreadSheet(spreasheetUri, defaultGoogleAuthToken);
+                if (!string.IsNullOrEmpty(sourceSpreadsheetUri))
+                {
+                    await googleSheetApi.DeleteSpreadSheet(sourceSpreadsheetUri, defaultGoogleAuthToken);
+                }
+                if (!string.IsNullOrEmpty(destinationSpreadsheetUri))
+                {
+                    await googleSheetApi.DeleteSpreadSheet(destinationSpreadsheetUri, defaultGoogleAuthToken);
+                }
             }
+        }
+
+        private StandardTableDataCM GetTestSpreadsheetContent()
+        {
+            return new StandardTableDataCM
+            {
+                FirstRowHeaders = true,
+                Table = new List<TableRowDTO>
+                {
+                    new TableRowDTO
+                    {
+                        Row = new List<TableCellDTO>
+                        {
+                            new TableCellDTO { Cell = new FieldDTO("email", "email") },
+                            new TableCellDTO { Cell = new FieldDTO("subject", "subject") },
+                            new TableCellDTO { Cell = new FieldDTO("body", "body") }
+                        }
+                    },
+                    new TableRowDTO
+                    {
+                        Row = new List<TableCellDTO>
+                        {
+                            new TableCellDTO { Cell = new FieldDTO("email", "fake@fake.com") },
+                            new TableCellDTO { Cell = new FieldDTO("subject", "Fake Subject") },
+                            new TableCellDTO { Cell = new FieldDTO("body", "Fake Body") }
+                        }
+                    }
+
+                }
+            };
         }
         private GoogleAuthDTO GetGoogleAuthToken(Guid authorizationTokenId)
         {
