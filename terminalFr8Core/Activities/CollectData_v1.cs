@@ -69,7 +69,19 @@ namespace terminalFr8Core.Actions
                     updateButton.Clicked = false;
                     curStorage.RemoveByLabel(CollectionControlsLabel);
                     curStorage.Add(CreateCollectionControlsCrate(controlContainer));
+
+                    await PushUserNotification(new TerminalNotificationDTO
+                    {
+                        Type = "Success",
+                        ActivityName = "CollectData",
+                        ActivityVersion = "1",
+                        TerminalName = "terminalFr8Core",
+                        TerminalVersion = "1",
+                        Message = "",
+                        Subject = ""
+                    });
                 }
+                
             }
 
             return await Task.FromResult<ActivityDO>(curActivityDO);
@@ -91,9 +103,9 @@ namespace terminalFr8Core.Actions
                 Label = "Submit",
                 Name = "submit_button",
                 Events = new List<ControlEvent>()
-                    {
-                        new ControlEvent("onClick", "requestConfig")
-                    }
+                {
+                    new ControlEvent("onClick", "requestConfig")
+                }
             };
             generatedConfigControls.Add(submitButton);
             return Crate<StandardConfigurationControlsCM>.FromContent(CollectionControlsLabel, new StandardConfigurationControlsCM(generatedConfigControls.ToArray()), AvailabilityType.Configuration);

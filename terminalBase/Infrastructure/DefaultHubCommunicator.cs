@@ -358,6 +358,16 @@ namespace TerminalBase.Infrastructure
             return await _restfulServiceClient.PostAsync<PlanDTO>(uri, jsonContent, null, await GetHMACHeader(uri, userId, jsonContent));
         }
 
+        public async Task NotifyUser(TerminalNotificationDTO notificationMessage, string userId)
+        {
+            var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+               + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/notification";
+
+            var uri = new Uri(hubUrl);
+
+            await _restfulServiceClient.PostAsync<TerminalNotificationDTO>(uri, notificationMessage, null, await GetHMACHeader(uri, userId, notificationMessage));
+        }
+
         public async Task DeletePlan(Guid planId, string userId)
         {
             var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
