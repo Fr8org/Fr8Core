@@ -141,6 +141,11 @@ namespace HubWeb
         /// </summary>
         private void NormalizeUrl()
         {
+
+            //first we need to rewrite angular related requests
+            if (Request.Url.LocalPath.StartsWith(AngularRootPath))
+                Context.RewritePath(AngularRootPath);
+
             // Ignore requests to dev and API since API clients usually cannot process 301 redirects
             if (Request.Url.PathAndQuery.ToLower().StartsWith("/api") 
                 || Request.Url.PathAndQuery.ToLower().StartsWith("/authenticationcallback")
@@ -166,10 +171,6 @@ namespace HubWeb
                         break;
                 }
             }
-
-            //now we need to rewrite angular related requests
-            if (Request.Url.LocalPath.StartsWith(AngularRootPath))
-                Context.RewritePath(AngularRootPath);
         }
 
         private void RedirectToCanonicalUrl()
