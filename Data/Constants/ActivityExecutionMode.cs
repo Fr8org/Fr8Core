@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Data.Constants
 {
-    public enum ActivityState
+    public enum ActivityExecutionMode
     {
         InitialRun = 0,
         ReturnFromChildren = 1

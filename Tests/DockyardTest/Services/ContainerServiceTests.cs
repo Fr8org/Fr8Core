@@ -141,13 +141,13 @@ namespace DockyardTest.Services
             }
         }
 */
-
+/*
         [Test]
         public async Task Execute_MoveToNextActivity_ProcessCurrentAndNextActivity()
         {
             var _activity = new Mock<IPlanNode>();
             _activity
-                .Setup(c => c.Process(It.IsAny<Guid>(), It.IsAny<ActivityState>(), It.IsAny<ContainerDO>()))
+                .Setup(c => c.Process(It.IsAny<Guid>(), It.IsAny<ActivityExecutionMode>(), It.IsAny<ContainerDO>()))
                 .Returns(Task.Delay(100))
                 .Verifiable();
             ContainerDO containerDO = FixtureData.TestContainerWithCurrentActivityAndNextActivity();
@@ -178,8 +178,9 @@ namespace DockyardTest.Services
 
             Assert.AreNotEqual(originalCurrentActivityId, containerDO.CurrentPlanNodeId);
             Assert.IsNull(containerDO.CurrentPlanNodeId);
-            _activity.Verify(p => p.Process(It.IsAny<Guid>(), It.IsAny<ActivityState>(), It.IsAny<ContainerDO>()));
+            _activity.Verify(p => p.Process(It.IsAny<Guid>(), It.IsAny<ActivityExecutionMode>(), It.IsAny<ContainerDO>()));
         }
+        */
 
         //        [Test]
         //        public async Task Execute_ProcessUntil3rdActivities_ProcessAllActivities()

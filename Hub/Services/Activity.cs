@@ -21,7 +21,7 @@ using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
-using Utilities.Interfaces;
+using Utilities;
 
 namespace Hub.Services
 {
@@ -406,11 +406,12 @@ namespace Hub.Services
             }
         }
 
-        public async Task PrepareToExecute(ActivityDO curActivity, ActivityState curActionState, ContainerDO curContainerDO, IUnitOfWork uow)
+        /*
+        public async Task PrepareToExecute(ActivityDO curActivity, ActivityExecutionMode curActionExecutionMode, ContainerDO curContainerDO, IUnitOfWork uow)
         {
             EventManager.ActionStarted(curActivity);
 
-            var payload = await Run(uow, curActivity, curActionState, curContainerDO);
+            var payload = await Run(uow, curActivity, curActionExecutionMode, curContainerDO);
 
             if (payload != null)
             {
@@ -422,18 +423,32 @@ namespace Hub.Services
 
             uow.SaveChanges();
         }
+        */
 
         // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
-        public async Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActivityState curActionState, ContainerDO curContainerDO)
+        public async Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActivityExecutionMode curActionExecutionMode, ContainerDO curContainerDO)
         {
             if (curActivityDO == null)
             {
                 throw new ArgumentNullException("curActivityDO");
             }
 
+            //FR-2642 Logic to skip execution of activities with "SkipAtRunTime" Tag
+            var template = _activityTemplate.GetByKey(curActivityDO.ActivityTemplateId);
+            if (template.Tags != null && template.Tags.Contains("SkipAtRunTime", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return null;
+            }
+
+            EventManager.ActionStarted(curActivityDO);
+
+            // Explicitly extract authorization token to make AuthTokenDTO pass to activities.
+            curActivityDO.AuthorizationToken = uow.AuthorizationTokenRepository.FindTokenById(curActivityDO.AuthorizationTokenId);
+
             try
             {
-                var actionName = curActionState == ActivityState.InitialRun ? "Run" : "ExecuteChildActivities";
+                var actionName = curActionExecutionMode == ActivityExecutionMode.InitialRun ? "Run" : "ExecuteChildActivities";
+
                 EventManager.ActivityRunRequested(curActivityDO, curContainerDO);
 
                 var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, actionName, curActivityDO, curContainerDO.Id);

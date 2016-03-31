@@ -119,7 +119,7 @@ namespace DockyardTest.Services
 
                 //Create activity mock to process the actions
                 Mock<IPlanNode> activityMock = new Mock<IPlanNode>(MockBehavior.Default);
-                activityMock.Setup(a => a.Process(FixtureData.GetTestGuidById(1), It.IsAny<ActivityState>(), It.IsAny<ContainerDO>())).Returns(Task.Delay(1));
+                activityMock.Setup(a => a.Process(FixtureData.GetTestGuidById(1), It.IsAny<ActivityExecutionMode>(), It.IsAny<ContainerDO>())).Returns(Task.Delay(1));
                 activityMock.Setup(a => a.HasChildren(It.Is<PlanNodeDO>(r => r.Id == curPlan.StartingSubPlan.Id))).Returns(true);
                 activityMock.Setup(a => a.HasChildren(It.Is<PlanNodeDO>(r => r.Id != curPlan.StartingSubPlan.Id))).Returns(false);
                 activityMock.Setup(a => a.GetFirstChild(It.IsAny<PlanNodeDO>())).Returns(curPlan.ChildNodes.First().ChildNodes.First());
@@ -131,7 +131,7 @@ namespace DockyardTest.Services
 
                 //Assert
                 //since we have only one action in the template, the process should be called exactly once
-                activityMock.Verify(activity => activity.Process(FixtureData.GetTestGuidById(1), It.IsAny<ActivityState>(), It.IsAny<ContainerDO>()), Times.Exactly(1));
+                activityMock.Verify(activity => activity.Process(FixtureData.GetTestGuidById(1), It.IsAny<ActivityExecutionMode>(), It.IsAny<ContainerDO>()), Times.Exactly(1));
             }
         }
 

@@ -2,14 +2,24 @@
 using Data.Interfaces.DataTransferObjects;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Data.Interfaces.Manifests
 {
     public class OperationalStateCM : Manifest
     {
+        public enum ActivityExecutionPhase
+        {
+            WasNotExecuted = 0,
+            ProcessingChildren = 1               
+        }
+
+        public class StackFrame
+        {
+            public Guid NodeId { get; set; }
+            public string NodeName { get; set; }
+            public ActivityExecutionPhase CurrentActivityExecutionPhase { get; set; }
+            public Guid? CurrentChildId { get; set; }
+        }
 
         public class HistoryElement
         {
@@ -33,10 +43,11 @@ namespace Data.Interfaces.Manifests
             public DateTime LastBranchTime { get; set; }
         }
 
+        public Stack<StackFrame> CallStack { get; set; } = new Stack<StackFrame>();
+
         public List<LoopStatus> Loops { get; set; }
         public List<BranchStatus> Branches { get; set; }
         public List<HistoryElement> History { get; set; }
-        //public ActivityResponse CurrentActivityResponse { get; set; }
         public ActivityErrorCode? CurrentActivityErrorCode { get; set; }
         public string CurrentActivityErrorMessage { get; set; }
         public string CurrentClientActivityName { get; set; }

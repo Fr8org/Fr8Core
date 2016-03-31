@@ -115,7 +115,7 @@ namespace DockyardTest.Services
             throw new NotImplementedException();
         }
 
-        public Task Process(Guid curActivityId, ActivityState curActionState, ContainerDO curContainerDO)
+        public Task Process(Guid curActivityId, ActivityExecutionMode curActionExecutionMode, ContainerDO curContainerDO)
         {
             if (PlanTreeHelper.Linearize(_planNodes[curActivityId]).OfType<ActivityDO>().Any(x => x.Id == curActivityId))
             {

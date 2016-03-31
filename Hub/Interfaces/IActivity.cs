@@ -26,8 +26,8 @@ namespace Hub.Interfaces
         Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, 
                                              string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null);
 
-        Task PrepareToExecute(ActivityDO curActivity, ActivityState curActionState, ContainerDO curContainerDO, IUnitOfWork uow);
-        Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActivityState curActionState, ContainerDO curContainerDO);
+        //Task PrepareToExecute(ActivityDO curActivity, ActivityExecutionMode curActionExecutionMode, ContainerDO curContainerDO, IUnitOfWork uow);
+        Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActivityExecutionMode curActionExecutionMode, ContainerDO curContainerDO);
        // string Authenticate(ActionDO curActivityDO);
         
         Task<ActivityDTO> Activate(ActivityDO curActivityDO);

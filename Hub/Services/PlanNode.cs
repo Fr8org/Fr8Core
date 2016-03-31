@@ -1,25 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using AutoMapper;
-using Data.Constants;
 using Data.Crates;
-using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-
 using Hub.Interfaces;
 using Hub.Managers;
-using Utilities.Configuration.Azure;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using Data.Interfaces.Manifests;
-using Utilities;
 
 namespace Hub.Services
 {
@@ -28,8 +19,6 @@ namespace Hub.Services
         #region Fields
 
         private readonly ICrateManager _crate;
-        private readonly IRestfulServiceClient _restfulServiceClient;
-        private readonly IPlanNode _activity;
         private readonly IActivityTemplate _activityTemplate;
         #endregion
 
@@ -37,7 +26,6 @@ namespace Hub.Services
         {
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
-            _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
         }
 
         public List<PlanNodeDO> GetUpstreamActivities(IUnitOfWork uow, PlanNodeDO curActivityDO)
@@ -295,8 +283,8 @@ namespace Hub.Services
             foreach (PlanNodeDO child in parent.ChildNodes)
                 TraverseActivity(child, visitAction);
         }
-
-        public async Task Process(Guid curActivityId, ActivityState curActionState, ContainerDO containerDO)
+        /*
+        public async Task Process(Guid curActivityId, ActivityExecutionMode curActionExecutionMode, ContainerDO containerDO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -321,13 +309,13 @@ namespace Hub.Services
                     //FR-2642 Logic to skip execution of activities with "SkipAtRunTime" Tag
                     var template = _activityTemplate.GetByKey(currentActivity.ActivityTemplateId);
                     if (!(template.Tags != null && template.Tags.Contains("SkipAtRunTime", StringComparison.InvariantCultureIgnoreCase)))
-                        await _activity.PrepareToExecute(currentActivity, curActionState, curContainerDO, uow);
+                        await _activity.PrepareToExecute(currentActivity, curActionExecutionMode, curContainerDO, uow);
                     //TODO inspect this
                     //why do we get container from db again???
                     containerDO.CrateStorage = curContainerDO.CrateStorage;
                 }
             }
-        }
+        }*/
 
         public IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, IFr8AccountDO curAccount)
         {

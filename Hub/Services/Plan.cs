@@ -424,22 +424,30 @@ namespace Hub.Services
 
             var curPlan = uow.PlanRepository.GetById<PlanDO>(planId);
             if (curPlan == null)
-                throw new ArgumentNullException("planId");
+                throw new ArgumentNullException(nameof(planId));
 
             containerDO.PlanId = curPlan.Id;
             containerDO.Name = curPlan.Name;
             containerDO.ContainerState = ContainerState.Unstarted;
 
-            if (curPayload.Length > 0)
-            {
-                using (var crateStorage = _crate.UpdateStorage(() => containerDO.CrateStorage))
+            using (var crateStorage = _crate.UpdateStorage(() => containerDO.CrateStorage))
+            { 
+                if (curPayload.Length > 0)
                 {
                     crateStorage.AddRange(curPayload);
                 }
+
+                var operationalState = new OperationalStateCM();
+                
+                operationalState.CallStack.Push(new OperationalStateCM.StackFrame
+                {
+                    NodeName = "Starting subplan",
+                    NodeId = curPlan.StartingSubPlanId,
+                });
+
+                crateStorage.Add(Crate.FromContent("Operational state", operationalState));
             }
-
-            containerDO.CurrentPlanNodeId = curPlan.StartingSubPlanId;
-
+            
             uow.ContainerRepository.Add(containerDO);
 
             //then create process node
