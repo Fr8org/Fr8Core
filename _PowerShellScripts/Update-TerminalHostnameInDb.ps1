@@ -7,7 +7,10 @@ param(
     [Parameter(Mandatory = $true)]
 	[string]$connectionString,
 
-	[Parameter(Mandatory = $true)]
+	[Parameter(Mandatory = $false)]
+	[string]$stagingHostname,
+
+	[Parameter(Mandatory = $false)]
 	[ValidateSet("staging", "sta", "production", "prod")]
 	[string]$slot,
 
@@ -40,13 +43,18 @@ $command.CommandTimeout = 20 #20 seconds
 
 if ($slot -contains "sta")
 {
+	if([string]::IsNullOrEmpty($stagingHostname))
+	{
+		throw "Specify -stagingHostname for Staging configuration"
+	}
+
 	$xml = [xml](Get-Content $defFile)
 	$roleNode = $xml.ServiceDefinition.WebRole | where {$_.name -eq 'terminalWebRole'}
 	$terminalEndpointSettings = $roleNode.Endpoints.InputEndpoint | where {($_.name -like 'terminal*') -and ($_.protocol -like 'http')}
     $terminalEndpointSettings | ForEach-Object {
 		$terminalPort = $_.port
 		$terminalName = $_.name
-		$command.CommandText = "UPDATE Terminals SET Endpoint = 'http://localhost:$terminalPort' WHERE Name = '$terminalName'"
+		$command.CommandText = "UPDATE Terminals SET Endpoint = '$stagingHostname" + ":$terminalPort' WHERE Name = '$terminalName'"
 		Write-Host "Executing: " + $command.CommandText
 		$command.ExecuteNonQuery()
     }
