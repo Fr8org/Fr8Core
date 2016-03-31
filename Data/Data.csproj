@@ -668,6 +668,10 @@
     <Compile Include="Migrations\201603311051449_Table_ObjectRolePrivileges.Designer.cs">
       <DependentUpon>201603311051449_Table_ObjectRolePrivileges.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201603311220032_OwnerOfObject_Role_Data.cs" />
+    <Compile Include="Migrations\201603311220032_OwnerOfObject_Role_Data.Designer.cs">
+      <DependentUpon>201603311220032_OwnerOfObject_Role_Data.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -1172,6 +1176,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201603311051449_Table_ObjectRolePrivileges.resx">
       <DependentUpon>201603311051449_Table_ObjectRolePrivileges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603311220032_OwnerOfObject_Role_Data.resx">
+      <DependentUpon>201603311220032_OwnerOfObject_Role_Data.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

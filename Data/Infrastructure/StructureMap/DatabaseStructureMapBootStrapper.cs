@@ -9,6 +9,8 @@ using Data.Repositories.MultiTenant.InMemory;
 using Data.Repositories.MultiTenant.Sql;
 using Data.Repositories.MultiTenant.SqlBased;
 using Data.Repositories.Plan;
+using Data.Repositories.Security;
+using Data.Repositories.Security.StorageImpl.SqlBased;
 using Microsoft.Data.Edm.Library.Values;
 using StructureMap.Configuration.DSL;
 using Utilities.Configuration.Azure;
@@ -84,7 +86,9 @@ namespace Data.Infrastructure.StructureMap
                 For<IMtConnectionProvider>().Use<SqlMtConnectionProvider>();
                 For<IMtObjectsStorage>().Use<SqlMtObjectsStorage>().Singleton();
                 For<IMtTypeStorageProvider>().Use<SqlMtTypeStorageProvider>();
-               DataAutoMapperBootStrapper.ConfigureAutoMapper();
+                For<ISqlConnectionProvider>().Use<SqlConnectionProvider>();
+                For<ISecurityObjectsStorage>().Use<SqlSecurityObjectsStorage>().Singleton();
+                DataAutoMapperBootStrapper.ConfigureAutoMapper();
             }
         }
 

@@ -19,5 +19,6 @@ namespace Data.Infrastructure.StructureMap
         bool IsAuthenticated();
         void Logout();
         ClaimsIdentity GetIdentity(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO);
+        void SetupDefaultSecurity(Guid securedObjectId);
     }
 }

@@ -12,5 +12,6 @@ namespace Data.Repositories.Security
         int RemoveObjectRolePrivilege(ISqlConnectionProvider connectionProvider, Guid objectId, Guid rolePrivilegeId);
         IEnumerable<RolePrivilege> GetRolePrivilegesForSecuredObject(ISqlConnectionProvider connectionProvider,Guid securedObjectId);
         IEnumerable<RolePrivilege> GetRolePrivilegesForFr8Account(ISqlConnectionProvider connectionProvider,Guid fr8AccountId);
+        void SetupDefaultSecurityForDataObject(ISqlConnectionProvider connectionProvider, Guid dataObjectId);
     }
 }

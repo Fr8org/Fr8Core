@@ -8,7 +8,7 @@ using Data.Infrastructure;
 
 namespace Data.Repositories.Security.StorageImpl.SqlBased
 {
-    public class SqlConnectionProvider
+    public class SqlConnectionProvider : ISqlConnectionProvider
     {
         public object ConnectionInfo
         {

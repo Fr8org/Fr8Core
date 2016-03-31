@@ -2,12 +2,15 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using Data.Repositories.Security.Entities;
+using Data.States;
 
 namespace Data.Repositories.Security.StorageImpl.SqlBased
 {
     public class SqlSecurityObjectsStorage : ISecurityObjectsStorage
     {
         private readonly string _connectionString;
+        private const string InsertRolePrivilegeCommand = "insert into dbo.RolePrivileges(id, privilegeName, roleId, createDate, lastUpdated) values (@id, @privilegeName, @roleId, @createDate, @lastUpdated)";
+        private const string InsertObjectRolePrivilegeCommand = "insert into dbo.ObjectRolePrivileges(objectId, rolePrivilegeId, createDate, lastUpdated) values (@id, @privilegeName, @roleId, @createDate, @lastUpdated)";
 
         private SqlConnection OpenConnection(ISqlConnectionProvider connectionProvider)
         {
@@ -56,7 +59,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                     var cmdText = String.Empty;
                     if (allowInsert)
                     {
-                        cmdText = "insert into dbo.RolePrivileges(id, privilegeName, roleId, createDate, lastUpdated) values (@id, @privilegeName, @roleId, @createDate, @lastUpdated)";
+                        cmdText = InsertRolePrivilegeCommand;
                     }
 
                     if (allowUpdate)
@@ -80,7 +83,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                 {
                     command.Connection = connection;
 
-                    string cmd = "select rp.id, rp.privilegeName, anr.Id as roleId, anr.Name as roleName, rp.lastUpdated, rp.createDate " +
+                    const string cmd = "select rp.id, rp.privilegeName, anr.Id as roleId, anr.Name as roleName, rp.lastUpdated, rp.createDate " +
                                  "from dbo.RolePrivileges rp                                                                            " +
                                  "inner join dbo.ObjectRolePrivileges orp on rp.Id = orp.RolePrivilegeId                                " +
                                  "inner join dbo.AspNetRoles anr on rp.RoleId = anr.Id                                                  " +
@@ -112,7 +115,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                 {
                     command.Connection = connection;
 
-                    string cmd = "select rp.id, rp.privilegeName, anr.Id as roleId, anr.Name as roleName, rp.lastUpdated, rp.createDate " +
+                    const string cmd = "select rp.id, rp.privilegeName, anr.Id as roleId, anr.Name as roleName, rp.lastUpdated, rp.createDate " +
                                  "from dbo.RolePrivileges rp                                                                            " +
                                  "inner join dbo.AspNetRoles anr on rp.RoleId = anr.Id                                                  " +
                                  "inner join dbo.AspNetUserRoles anur on anr.Id = anur.RoleId                                           " +
@@ -136,6 +139,59 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
+        public void SetupDefaultSecurityForDataObject(ISqlConnectionProvider connectionProvider, Guid dataObjectId)
+        {
+            using (var connection = OpenConnection(connectionProvider))
+            {
+                using (var transaction = connection.BeginTransaction())
+                {
+                    var rolePrivilegeIds = new List<Guid>();
+                    //select rolePrivileges for roleName OwnerOfCurrentObject
+                    using (var selectCommand = new SqlCommand())
+                    {
+                        selectCommand.Connection = connection;
+
+                        selectCommand.Parameters.AddWithValue("@roleName", Roles.OwnerOfCurrentObject);
+                        selectCommand.CommandText = "select id from dbo.RolePrivileges rp inner join dbo.AspNetRoles on rp.RoleId = anr.Id where anr.Name = @roleName";
+
+                        using (var reader = selectCommand.ExecuteReader())
+                        {
+                            while (reader.Read())
+                            {
+                                rolePrivilegeIds.Add((Guid)reader["Id"]);
+                            }
+                        }
+                    }
+
+                    using (var insertCommand = new SqlCommand())
+                    {
+                        insertCommand.Connection = connection;
+
+                        foreach (var rolePrivilegeId in rolePrivilegeIds)
+                        {
+                            insertCommand.Parameters.Clear();
+                            insertCommand.Parameters.AddWithValue("@objectId", dataObjectId);
+                            insertCommand.Parameters.AddWithValue("@rolePrivilegeId", rolePrivilegeId);
+                            insertCommand.Parameters.AddWithValue("@createDate", DateTimeOffset.UtcNow);
+                            insertCommand.Parameters.AddWithValue("@lastUpdated", DateTimeOffset.UtcNow);
+
+                            var cmdText = InsertObjectRolePrivilegeCommand;
+
+                            insertCommand.CommandText = cmdText;
+                            var affectedRows = insertCommand.ExecuteNonQuery();
+
+                            if (affectedRows == 0)
+                            {
+                                throw new Exception("Problem with Inserting new ObjectRole Privilege");
+                            }
+                        }
+                    }
+                    
+                    transaction.Commit();
+                }
+            }
+        }
+
         public int InsertObjectRolePrivilege(ISqlConnectionProvider connectionProvider, Guid objectId, Guid rolePrivilegeId)
         {
             using (var connection = OpenConnection(connectionProvider))
@@ -149,7 +205,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                     command.Parameters.AddWithValue("@createDate", DateTimeOffset.UtcNow);
                     command.Parameters.AddWithValue("@lastUpdated", DateTimeOffset.UtcNow);
 
-                    var cmdText = "insert into dbo.ObjectRolePrivileges(objectId, rolePrivilegeId, createDate, lastUpdated) values (@id, @privilegeName, @roleId, @createDate, @lastUpdated)";
+                    var cmdText = InsertObjectRolePrivilegeCommand;
                     
                     command.CommandText = cmdText;
                     var affectedRows = command.ExecuteNonQuery();

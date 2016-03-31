@@ -5,6 +5,7 @@ using Data.States.Templates;
 using System.Linq;
 using System;
 using System.Reflection;
+using Data.Infrastructure.StructureMap;
 using StructureMap;
 using Data.Interfaces;
 using Data.States;
@@ -124,6 +125,13 @@ namespace Data.Entities
             return new PlanDO();
         }
 
+        public override void AfterCreate()
+        {
+            base.AfterCreate();
+
+            var securityService = ObjectFactory.GetInstance<ISecurityServices>();
+            securityService.SetupDefaultSecurity(Id);
+        }
 
         protected override void CopyProperties(PlanNodeDO source)
         {

@@ -9,6 +9,8 @@ using Newtonsoft.Json;
 using System;
 using Data.Infrastructure;
 using System.Data.Entity.Infrastructure;
+using Data.Infrastructure.StructureMap;
+using StructureMap;
 
 
 namespace Data.Entities
@@ -80,6 +82,14 @@ namespace Data.Entities
         public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
         {
             base.OnModify(originalValues, currentValues);
+        }
+
+        public override void AfterCreate()
+        {
+            base.AfterCreate();
+
+            var securityService = ObjectFactory.GetInstance<ISecurityServices>();
+            securityService.SetupDefaultSecurity(Id);
         }
     }
 }

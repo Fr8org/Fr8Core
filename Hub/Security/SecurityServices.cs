@@ -13,6 +13,9 @@ using StructureMap;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using Data.Repositories.Security;
+using Data.Repositories.Security.Entities;
+using Data.States;
 using Hub.Exceptions;
 using Hub.Interfaces;
 
@@ -93,6 +96,18 @@ namespace Hub.Security
             }
 
             return identity;
+        }
+
+        /// <summary>
+        /// For every new created object setup default security with privileges for Read Object, Edit Object, Delete Object 
+        /// and Role OwnerOfCurrentObject
+        /// </summary>
+        /// <param name="securedObjectId"></param>
+        public void SetupDefaultSecurity(Guid securedObjectId)
+        {
+            var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorage>();
+            var sqlConnectionProvider = ObjectFactory.GetInstance<ISqlConnectionProvider>();
+            securityStorageProvider.SetupDefaultSecurityForDataObject(sqlConnectionProvider, securedObjectId);
         }
     }
 }
