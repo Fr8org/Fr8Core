@@ -312,11 +312,21 @@ namespace terminalFr8Core.Controllers
                 WebService = webService
             });
 
-
             result.Add(new ActivityTemplateDTO
             {
                 Name = "PlanLauncher",
                 Label = "Plan Launcher",
+                Version = "1",
+                Category = ActivityCategory.Processors,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                WebService = webService
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "ActivityChooserTest",
+                Label = "Activity Chooser Test",
                 Version = "1",
                 Category = ActivityCategory.Processors,
                 NeedsAuthentication = false,

@@ -53,6 +53,15 @@ namespace Data.Control
         public const string ContainerTransition = "ContainerTransition";
         public const string MetaControlContainer = "MetaControlContainer";
         public const string ControlList = "ControlList";
+        public const string ActivityChooser = "ActivityChooser";
+    }
+
+    public class ActivityChooser : ControlDefinitionDTO
+    {
+        public ActivityChooser()
+        {
+            Type = ControlTypes.ActivityChooser;
+        }
     }
 
     public class CheckBox : ControlDefinitionDTO

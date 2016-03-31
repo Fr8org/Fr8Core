@@ -869,6 +869,7 @@
     <Content Include="Views\AngularTemplate\Fr8Event.cshtml" />
     <Content Include="Views\AngularTemplate\ControlList.cshtml" />
     <Content Include="Views\AngularTemplate\Empty.cshtml" />
+    <Content Include="Views\AngularTemplate\ActivityChooser.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />
@@ -895,6 +896,7 @@
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\ActivityChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ControlList.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\MetaControlContainer.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ContainerTransition.ts" />
