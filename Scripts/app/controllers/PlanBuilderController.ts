@@ -39,6 +39,8 @@ module dockyard.controllers {
         curAggReloadingActions: Array<string>;
         addSubPlan: () => void;
         openMenu: ($mdOpenMenu: any , ev: any) => void;
+        view: string;
+        viewMode: string;
     }
 
 
@@ -70,7 +72,8 @@ module dockyard.controllers {
             '$modal',
             'AuthService',
             'ConfigureTrackerService',
-            'SubPlanService'
+            'SubPlanService',
+            '$stateParams'
         ];
 
         private _longRunningActionsCounter: number;
@@ -92,7 +95,8 @@ module dockyard.controllers {
             private $modal: any,
             private AuthService: services.AuthService,
             private ConfigureTrackerService: services.ConfigureTrackerService,
-            private SubPlanService: services.ISubPlanService
+            private SubPlanService: services.ISubPlanService,
+            private $stateParams: ng.ui.IStateParamsService
         ) {
 
             this.LayoutService.resetLayout();
@@ -103,6 +107,9 @@ module dockyard.controllers {
 
             this.setupMessageProcessing();
 
+            this.$scope.view = $stateParams['view'];
+            this.$scope.viewMode = $stateParams['viewMode'];
+            
             this.$scope.addAction = (group: model.ActionGroup) => {
                 this.addAction(group);
             }
@@ -355,9 +362,11 @@ module dockyard.controllers {
                 this.$scope.planId = $state.params.id;
             }
 
+
             this.loadPlan();
         }
 
+        
         private createNewSolution(solutionName: string) {
             var plan = this.ActionService.createSolution({
                 solutionName: solutionName
@@ -428,6 +437,27 @@ module dockyard.controllers {
                 (event: ng.IAngularEvent, callConfigureResponseEventArgs: pca.CallConfigureResponseEventArgs) => this.PaneConfigureAction_ConfigureCallResponse(callConfigureResponseEventArgs));
         }
 
+        private filterActivitiesByUICrate(activities: Array<model.ActivityDTO>, uiCrateLabel: string): Array<model.ActivityDTO> {
+
+            var filteredList: Array<model.ActivityDTO>;
+            //if our view parameter is set - we should make sure we render only activities with given crates
+            if (uiCrateLabel) {
+                filteredList = [];
+                for (var i = 0; i < activities.length; i++) {
+                    var foundUiCrate = this.CrateHelper.findByManifestTypeAndLabel(
+                        activities[i].crateStorage, 'Standard UI Controls', this.$scope.view
+                    );
+                    if (foundUiCrate !== null) {
+                        filteredList.push(activities[i]);
+                    }
+                }
+            } else {
+                filteredList = activities;
+            }
+
+            return filteredList;
+        }
+
         private renderPlan(curPlan: interfaces.IPlanVM) {
 
             this.LayoutService.resetLayout();
@@ -436,12 +466,14 @@ module dockyard.controllers {
 
             this.$scope.processedSubPlans = [];
             for (var subPlan of curPlan.subPlans) {
-                var actionGroups = this.LayoutService.placeActions(subPlan.activities, subPlan.subPlanId);
+                var activities: Array<model.ActivityDTO> = this.filterActivitiesByUICrate(subPlan.activities, this.$scope.view);
+                var actionGroups = this.LayoutService.placeActions(activities, subPlan.subPlanId);
                 this.$scope.processedSubPlans.push({ subPlan: subPlan, actionGroups: actionGroups });
             }
         }
 
         private renderActions(activitiesCollection: model.ActivityDTO[]) {
+            activitiesCollection = this.filterActivitiesByUICrate(activitiesCollection, this.$scope.view);
             if (activitiesCollection != null && activitiesCollection.length !== 0) {
                 this.$scope.actionGroups = this.LayoutService.placeActions(activitiesCollection,
                     this.$scope.current.plan.startingSubPlanId);
