@@ -319,7 +319,8 @@ module dockyard.directives.paneConfigureAction {
                 if (this.crateHelper.hasControlListCrate(this.$scope.currentAction.crateStorage)) {
                     this.crateHelper.mergeControlListCrate(
                         this.$scope.currentAction.configurationControls,
-                        this.$scope.currentAction.crateStorage
+                        this.$scope.currentAction.crateStorage,
+                        this.$scope.view
                     );
                 }
 
@@ -362,7 +363,8 @@ module dockyard.directives.paneConfigureAction {
                     if (this.crateHelper.hasControlListCrate(this.$scope.currentAction.crateStorage)) {
                         this.crateHelper.mergeControlListCrate(
                             this.$scope.currentAction.configurationControls,
-                            this.$scope.currentAction.crateStorage
+                            this.$scope.currentAction.crateStorage,
+                            this.$scope.view
                         );
                     }
 
@@ -380,7 +382,7 @@ module dockyard.directives.paneConfigureAction {
                     if (this.crateHelper.hasControlListCrate(scope.currentAction.crateStorage)) {
                         this.crateHelper.mergeControlListCrate(
                             scope.currentAction.configurationControls,
-                            scope.currentAction.crateStorage
+                            scope.currentAction.crateStorage, scope.view
                         );
                     }
 

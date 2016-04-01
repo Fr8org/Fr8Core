@@ -303,29 +303,6 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
-                Name = "CreateLauncher",
-                Label = "Create Launcher",
-                Version = "1",
-                Category = ActivityCategory.Processors,
-                NeedsAuthentication = false,
-                Terminal = terminal,
-                WebService = webService
-            });
-
-
-            result.Add(new ActivityTemplateDTO
-            {
-                Name = "PlanLauncher",
-                Label = "Plan Launcher",
-                Version = "1",
-                Category = ActivityCategory.Processors,
-                NeedsAuthentication = false,
-                Terminal = terminal,
-                WebService = webService
-            });
-
-            result.Add(new ActivityTemplateDTO
-            {
                 Name = "CollectData",
                 Label = "Collect Data",
                 Version = "1",

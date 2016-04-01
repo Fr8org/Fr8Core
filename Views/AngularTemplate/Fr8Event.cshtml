@@ -13,9 +13,9 @@
             <p>Container: {{event.ContainerId}}</p>
         </div>
         <div ng-if="type=='fr8pusher_terminal_event'">
-            <p>Message From Activity: {{event.ActivityName}}</p>
-            <p>Subject: {{event.Subject}}</p>
-            <p>Message: {{event.Message}}</p>
+            <h3>{{event.ActivityName+'-v'+event.ActivityVersion}}</h3>
+            <p style="font-weight: bold;">{{event.Subject}}</p>
+            <p ng-bind-html="event.Message | parseUrl"></p>
         </div>
     </div>      
 </div>

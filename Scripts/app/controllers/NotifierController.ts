@@ -56,7 +56,7 @@ module dockyard.controllers.NotifierController {
 
                 PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, terminalEvent, (data: any) => {
                     var event = new Fr8InternalEvent();
-                    event.type = successEvent;
+                    event.type = terminalEvent;
                     event.data = data;
                     this.$scope.eventList.splice(0, 0, event);
                 });
