@@ -58,6 +58,16 @@ namespace terminalTest.Controllers
                 Version = "1"
             });
 
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "SimpleJumperActivity",
+                Label = "SimpleJumperActivity",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1"
+            });
+
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,

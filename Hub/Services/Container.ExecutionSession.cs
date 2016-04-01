@@ -11,6 +11,7 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.DataTransferObjects.Helpers;
 using Data.Interfaces.Manifests;
+using Data.Migrations;
 using Data.States;
 using Hub.Exceptions;
 using Hub.Interfaces;
@@ -214,6 +215,10 @@ namespace Hub.Services
                     return true;
                 }
 
+                PlanNodeDO currentNode;
+                PlanNodeDO targetNode;
+                Guid id;
+
                 switch (opCode)
                 {
                     case ActivityResponse.Error:
@@ -252,23 +257,76 @@ namespace Hub.Services
                         }
                         break;
 
-                    case ActivityResponse.Jump:
+                 
+                    case ActivityResponse.JumpFar:
+                    case ActivityResponse.JumpToSubplan:
+                        id = ExtractGuidParam(activityResponse);
+                        targetNode = _uow.PlanRepository.GetById<PlanNodeDO>(id);
 
+                        if (targetNode == null)
+                        {
+                            throw new InvalidOperationException($"Unable to find node {id}");
+                        }
+
+                        currentNode = _uow.PlanRepository.GetById<PlanNodeDO>(topFrame.NodeId);
+
+                        if (currentNode.RootPlanNodeId != targetNode.RootPlanNodeId)
+                        {
+                            throw new InvalidOperationException("Can't jump to the activity from different plan.");
+                        }
+
+                        _callStack.Clear();
+                        PushFrame(id);
+                        break;
+
+                    case ActivityResponse.Jump:
+                    case ActivityResponse.JumpToActivity:
+                        id = ExtractGuidParam(activityResponse);
+                        targetNode = _uow.PlanRepository.GetById<PlanNodeDO>(id);
+
+                        if (targetNode == null)
+                        {
+                            throw new InvalidOperationException($"Unable to find node {id}");
+                        }
+
+                        currentNode = _uow.PlanRepository.GetById<PlanNodeDO>(topFrame.NodeId);
+
+                        if (currentNode.RootPlanNodeId != targetNode.RootPlanNodeId)
+                        {
+                            throw new InvalidOperationException("Can't jump to the activity from different plan.");
+                        }
+
+                        if (targetNode.ParentPlanNodeId == null && currentNode.ParentPlanNodeId == null && currentNode.Id != targetNode.Id)
+                        {
+                            throw new InvalidOperationException("Can't jump from the activities that has no parent to anywhere except the activity itself.");
+                        }
+
+                        if (targetNode.ParentPlanNodeId != currentNode.ParentPlanNodeId)
+                        {
+                            throw new InvalidOperationException("Can't jump to activity that has parent different from activity we are jumping from.");
+                        }
+                        
+                        // we are jumping after activity's Run
                         if (activityExecutionPhase == OperationalStateCM.ActivityExecutionPhase.WasNotExecuted)
                         {
+                            // remove current activity from stack. 
                             _callStack.Pop();
                         }
 
-                        PushFrame(ExtractGuidParam(activityResponse));
+                        // this is root node. Just push new frame
+                        if (_callStack.Count == 0 || currentNode.ParentPlanNode == null)
+                        {
+                            PushFrame(id);
+                        }
+                        else
+                        {
+                            var parentFrame = _callStack.Peek();
+                            // find activity that is preceeding to the one we are jumping to.
+                            var prevToJump = currentNode.ParentPlanNode.ChildNodes.OrderByDescending(x => x.Ordering).FirstOrDefault(x => x.Ordering < targetNode.Ordering);
 
-                        break;
+                            parentFrame.CurrentChildId = prevToJump?.Id;
+                        }
 
-                    case ActivityResponse.JumpToActivity:
-                    case ActivityResponse.JumpToSubplan:
-                    case ActivityResponse.JumpFar:
-                        var id = ExtractGuidParam(activityResponse);
-                        _callStack.Clear();
-                        PushFrame(id);
                         break;
 
                     case ActivityResponse.Call:

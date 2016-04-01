@@ -268,9 +268,14 @@ namespace TerminalBase.BaseClasses
                         return processPayload;
                     }
 
+                    OperationalState.CurrentActivityResponse = null;
+
                     await runMode();
 
-                    Success();
+                    if (OperationalState.CurrentActivityResponse == null)
+                    {
+                        Success();
+                    }
                 }
                 catch (ActivityExecutionException ex)
                 {
@@ -482,13 +487,13 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        protected void SetResponse(ActivityResponse response, string message = null)
+        protected void SetResponse(ActivityResponse response, string message = null, object details = null)
         {
             OperationalState.CurrentActivityResponse = ActivityResponseDTO.Create(response);
 
-            if (!string.IsNullOrWhiteSpace(message))
+            if (!string.IsNullOrWhiteSpace(message) || details != null)
             {
-                OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() {Message = message});
+                OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() {Message = message, Details = details});
             }
         }
 

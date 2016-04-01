@@ -2,6 +2,7 @@
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
@@ -27,9 +28,12 @@ namespace terminalTest.Actions
 
             var atdo = AutoMapper.Mapper.Map<ActivityTemplateDTO, ActivityTemplateDO>(activityTemplate);
 
+            string emptyCrateStorage = CrateManager.CrateStorageAsStr(new CrateStorage(Crate.FromContent("Configuration Controls", new SimpleActivity_v1.ActivityUi())));
+
             CurrentActivity.ChildNodes.Add(new ActivityDO
             {
                 Id = Guid.NewGuid(),
+                CrateStorage = emptyCrateStorage,
                 ActivityTemplate = atdo,
                 ActivityTemplateId = activityTemplate.Id,
                 Label = "main 1.1",
@@ -39,6 +43,7 @@ namespace terminalTest.Actions
             CurrentActivity.ChildNodes.Add(new ActivityDO
             {
                 Id = Guid.NewGuid(),
+                CrateStorage = emptyCrateStorage,
                 ActivityTemplateId = activityTemplate.Id,
                 ActivityTemplate = atdo,
                 Label = "main 1.2",
@@ -48,6 +53,7 @@ namespace terminalTest.Actions
                     new ActivityDO
                     {
                         Id = Guid.NewGuid(),
+                        CrateStorage = emptyCrateStorage,
                         ActivityTemplateId = activityTemplate.Id,
                         ActivityTemplate = atdo,
                         Label = "main 1.2.1",
@@ -56,6 +62,7 @@ namespace terminalTest.Actions
                     new ActivityDO
                     {
                         Id = Guid.NewGuid(),
+                        CrateStorage = emptyCrateStorage,
                         ActivityTemplateId = activityTemplate.Id,
                         ActivityTemplate = atdo,
                         Label = "main 1.2.2",
@@ -67,6 +74,7 @@ namespace terminalTest.Actions
             CurrentActivity.ChildNodes.Add(new ActivityDO
             {
                 Id = Guid.NewGuid(),
+                CrateStorage = emptyCrateStorage,
                 ActivityTemplateId = activityTemplate.Id,
                 ActivityTemplate = atdo,
                 Label = "main 1.3",
