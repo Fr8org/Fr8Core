@@ -219,6 +219,7 @@ namespace UtilitiesTesting.Fixtures
 			return result;
 		}
 
+        /*
         public static ContainerDO TestContainerWithCurrentActivityAndNextActivity()
         {
             var container = new ContainerDO();
@@ -278,6 +279,7 @@ namespace UtilitiesTesting.Fixtures
             container.NextRouteNode = null;
             return container;
         }
+        */
 
         public static ContainerDO TestContainerExecute()
         {

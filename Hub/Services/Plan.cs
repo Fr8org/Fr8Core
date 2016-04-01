@@ -435,8 +435,9 @@ namespace Hub.Services
                 if (curPayload.Length > 0)
                 {
                     crateStorage.AddRange(curPayload);
+                    crateStorage.Remove<OperationalStateCM>();
                 }
-
+                
                 var operationalState = new OperationalStateCM();
                 
                 operationalState.CallStack.Push(new OperationalStateCM.StackFrame

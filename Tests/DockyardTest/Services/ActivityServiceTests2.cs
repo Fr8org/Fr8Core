@@ -490,7 +490,7 @@ namespace DockyardTest.Services
         //            Assert.AreEqual(ActionState.Active, activityDO.ActionState);
         //        }
 
-        [Test]
+       /* [Test]
         public void Process_ActivityUnstarted_ShouldBeCompleted()
         {
             //Arrange
@@ -522,7 +522,7 @@ namespace DockyardTest.Services
                 //Assert
                 Assert.That(response.Status, Is.EqualTo(TaskStatus.RanToCompletion));
             }
-        }
+        }*/
 
         [Test]
         public void AddCrate_AddCratesDTO_UpdatesActivityCratesStorage()
@@ -580,6 +580,8 @@ namespace DockyardTest.Services
         //            }
         //        }
 
+
+            /*
         [Test]
         public async Task PrepareToExecute_WithMockedExecute_WithoutPayload()
         {
@@ -613,8 +615,9 @@ namespace DockyardTest.Services
             Assert.IsNull(containerDO.CrateStorage);
             Assert.IsTrue(_eventReceived);
            // Assert.AreEqual(actionDo.ActionState, ActionState.Active);
-        }
+        }*/
 
+            /*
         [Test]
         public async Task PrepareToExecute_WithMockedExecute_WithPayload()
         {
@@ -655,8 +658,10 @@ namespace DockyardTest.Services
             Assert.IsNotNull(containerDO.CrateStorage);
             Assert.IsTrue(_eventReceived);
            // Assert.AreEqual(actionDo.ActionState, ActionState.Active);
-        }
+        }*/
 
+
+            /*
         [Test]
         public async Task ActivityStarted_EventRaisedSuccessfully()
         {
@@ -688,6 +693,7 @@ namespace DockyardTest.Services
             Assert.IsTrue(_eventReceived);
         //            Assert.AreEqual(actionDo.ActionState, ActionState.Active);
         }
+        */
 
         private void EventManager_EventActivityStarted(ActivityDO activity)
         {

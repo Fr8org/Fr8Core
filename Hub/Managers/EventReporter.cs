@@ -1058,6 +1058,7 @@ namespace Hub.Managers
 
         private void LogEventActivityStarted(ActivityDO curActivity)
         {
+            /*
             ContainerDO containerInExecution;
             FactDO fact;
 
@@ -1079,6 +1080,7 @@ namespace Hub.Managers
             }
 
             SaveAndLogFact(fact);
+            */
         }
 
         // Commented by Vladimir. DO-1214. If one action can have only one Process?

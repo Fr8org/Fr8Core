@@ -305,22 +305,6 @@ namespace Hub.Services
                             crateStorage.DiscardChanges();
                         }
                     }
-
-                    // Detach containers from action, where CurrentPlanNodeId == id.
-                    var containersWithCurrentPlanNode = uow.ContainerRepository
-                        .GetQuery()
-                        .Where(x => x.CurrentPlanNodeId == downStreamActivity.Id)
-                        .ToList();
-
-                    containersWithCurrentPlanNode.ForEach(x => x.CurrentPlanNodeId = null);
-
-                    // Detach containers from action, where NextRouteNodeId == id.
-                    var containersWithNextPlanNode = uow.ContainerRepository
-                        .GetQuery()
-                        .Where(x => x.NextRouteNodeId == downStreamActivity.Id)
-                        .ToList();
-
-                    containersWithNextPlanNode.ForEach(x => x.NextRouteNodeId = null);
                 }
 
                 uow.SaveChanges();
@@ -341,26 +325,7 @@ namespace Hub.Services
                 {
                     throw new InvalidOperationException("Unknown PlanNode with id: " + id);
                 }
-
-                // Detach containers from action, where CurrentPlanNodeId == id.
-                var containersWithCurrentPlanNode = uow.ContainerRepository
-                    .GetQuery()
-                    .Where(x => x.CurrentPlanNodeId == id)
-                    .ToList();
-
-                containersWithCurrentPlanNode.ForEach(x => x.CurrentPlanNodeId = null);
-
-                // Detach containers from action, where NextRouteNodeId == id.
-                var containersWithNextPlanNode = uow.ContainerRepository
-                    .GetQuery()
-                    .Where(x => x.NextRouteNodeId == id)
-                    .ToList();
-
-                containersWithNextPlanNode.ForEach(x => x.NextRouteNodeId = null);
-
-                uow.SaveChanges();
-
-
+                
                 var downStreamActivities = _planNode.GetDownstreamActivities(uow, curAction).OfType<ActivityDO>();
                 //we should clear values of configuration controls
 

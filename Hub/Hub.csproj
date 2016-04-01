@@ -325,6 +325,7 @@
     <Compile Include="Security\DockyardUserStore.cs" />
     <Compile Include="Security\Fr8HMACService.cs" />
     <Compile Include="Security\SecurityServices.cs" />
+    <Compile Include="Services\Container.ExecutionSession.cs" />
     <Compile Include="Services\Fact.cs" />
     <Compile Include="Services\Field.cs" />
     <Compile Include="Services\FindObjectsPlan.cs" />

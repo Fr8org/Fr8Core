@@ -225,7 +225,7 @@ namespace DockyardTest.Services
         //            _activity.Verify(p => p.Process(It.IsAny<int>(), It.IsAny<ProcessDO>()));
         //        }
         //
-        [Test]
+        /*[Test]
         [ExpectedException(typeof(ArgumentNullException))]
         public async Task Execute_SetCurrentActivityNull_ThrowsException()
         {
@@ -235,7 +235,7 @@ namespace DockyardTest.Services
             {
                 await _container.Run(uow, FixtureData.TestContainerCurrentActivityNULL());
             }
-        }
+        }*/
 
     }
 //

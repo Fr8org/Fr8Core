@@ -106,7 +106,7 @@ namespace DockyardTest.Services
 
             Assert.AreEqual(result.Status, "no activity");
         }
-
+        /*
         [Test]
         public void PlanService_Can_RunWithoutExceptions()
         {
@@ -150,6 +150,6 @@ namespace DockyardTest.Services
                 Assert.IsNotNull(container);
                 Assert.IsTrue(container.Id != Guid.Empty);
             }
-        }
+        }*/
     }
 }

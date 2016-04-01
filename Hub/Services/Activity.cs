@@ -406,31 +406,12 @@ namespace Hub.Services
             }
         }
 
-        /*
-        public async Task PrepareToExecute(ActivityDO curActivity, ActivityExecutionMode curActionExecutionMode, ContainerDO curContainerDO, IUnitOfWork uow)
-        {
-            EventManager.ActionStarted(curActivity);
-
-            var payload = await Run(uow, curActivity, curActionExecutionMode, curContainerDO);
-
-            if (payload != null)
-            {
-                using (var crateStorage = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
-                {
-                    crateStorage.Replace(_crate.FromDto(payload.CrateStorage));
-                }
-            }
-
-            uow.SaveChanges();
-        }
-        */
-
         // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
         public async Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActivityExecutionMode curActionExecutionMode, ContainerDO curContainerDO)
         {
             if (curActivityDO == null)
             {
-                throw new ArgumentNullException("curActivityDO");
+                throw new ArgumentNullException(nameof(curActivityDO));
             }
 
             //FR-2642 Logic to skip execution of activities with "SkipAtRunTime" Tag

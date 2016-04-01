@@ -176,7 +176,7 @@ namespace DockyardTest.Services
 //           
 //        }
 
-        [Test]
+      /*  [Test]
         public void Process_curActivityDOIsNull()
         {
             _activity = ObjectFactory.GetInstance<IPlanNode>();
@@ -207,7 +207,7 @@ namespace DockyardTest.Services
                 _activity = ObjectFactory.GetInstance<IPlanNode>();
                 _activity.Process(FixtureData.GetTestGuidById(1), It.IsAny<ActivityExecutionMode>(), containerDO);
             }
-        }
+        }*/
 
     // Commented out by Vladimir. There is no ActionLists now. What this test is going to check?
 //        [Test]

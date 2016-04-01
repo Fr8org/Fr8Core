@@ -283,40 +283,7 @@ namespace Hub.Services
             foreach (PlanNodeDO child in parent.ChildNodes)
                 TraverseActivity(child, visitAction);
         }
-        /*
-        public async Task Process(Guid curActivityId, ActivityExecutionMode curActionExecutionMode, ContainerDO containerDO)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                //why do we get container from db again???
-                var curContainerDO = uow.ContainerRepository.GetByKey(containerDO.Id);
-                var curActivityDO = uow.PlanRepository.GetById<PlanNodeDO>(curActivityId);
-
-                if (curActivityDO == null)
-                {
-                    throw new ArgumentException("Cannot find Activity with the supplied curActivityId");
-                }
-
-                if (curActivityDO is ActivityDO)
-                {
-                    // Explicitly extract authorization token to make AuthTokenDTO pass to activities.
-                    var currentActivity = (ActivityDO)curActivityDO;
-                    currentActivity.AuthorizationToken = uow.AuthorizationTokenRepository
-                        .FindTokenById(currentActivity.AuthorizationTokenId);
-
-                    IActivity _activity = ObjectFactory.GetInstance<IActivity>();
-
-                    //FR-2642 Logic to skip execution of activities with "SkipAtRunTime" Tag
-                    var template = _activityTemplate.GetByKey(currentActivity.ActivityTemplateId);
-                    if (!(template.Tags != null && template.Tags.Contains("SkipAtRunTime", StringComparison.InvariantCultureIgnoreCase)))
-                        await _activity.PrepareToExecute(currentActivity, curActionExecutionMode, curContainerDO, uow);
-                    //TODO inspect this
-                    //why do we get container from db again???
-                    containerDO.CrateStorage = curContainerDO.CrateStorage;
-                }
-            }
-        }*/
-
+       
         public IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, IFr8AccountDO curAccount)
         {
             IEnumerable<ActivityTemplateDTO> curActivityTemplates;

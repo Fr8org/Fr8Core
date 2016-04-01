@@ -45,18 +45,19 @@ namespace DockyardTest.Services
                 await _container.Run(uow, null);
             }
         }
-        
-        [Test]
-        [ExpectedException(typeof(ArgumentNullException))]
-        public async Task Execute_ContainerDoCurrentActivityIsNull_ThrowsArgumentNullException()
-        {
-            //Get ProcessDO entity from static partial class FixtureData for already prepared data
-            //The CurrentActivity value is already set to null and pass it immediately to service
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                await _container.Run(uow, FixtureData.TestContainerCurrentActivityNULL());
-            }
-        }
+
+        /*  [Test]
+          [ExpectedException(typeof(ArgumentNullException))]
+          public async Task Execute_ContainerDoCurrentActivityIsNull_ThrowsArgumentNullException()
+          {
+              //Get ProcessDO entity from static partial class FixtureData for already prepared data
+              //The CurrentActivity value is already set to null and pass it immediately to service
+              using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+              {
+                  await _container.Run(uow, FixtureData.TestContainerCurrentActivityNULL());
+              }
+          }
+          */
 
         // DO-1270
         //        [Test]
@@ -143,6 +144,7 @@ namespace DockyardTest.Services
         //                Assert.AreEqual("Action ID: 3 status is 4.", ex.Message);
         //            }
         //        }
+        /*
         [Test]
         public async Task Execute_OneActivity_ShouldBeOk()
         {
@@ -224,6 +226,7 @@ namespace DockyardTest.Services
                // Assert.IsNull(processDO.NextActivity);
             }
         }
+        */
 
 
 
