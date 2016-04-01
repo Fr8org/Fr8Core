@@ -134,18 +134,20 @@ namespace HubWeb
             SetServerUrl(HttpContext.Current);
 #endif
             NormalizeUrl();
+            RewriteAngularRequests();
+        }
+
+        private void RewriteAngularRequests()
+        {
+            if (Request.Url.LocalPath.StartsWith(AngularRootPath))
+                Context.RewritePath(AngularRootPath);
         }
 
         /// <summary>
         /// Make sure that User is accessing the website using correct and secure URL
         /// </summary>
         private void NormalizeUrl()
-        {
-
-            //first we need to rewrite angular related requests
-            if (Request.Url.LocalPath.StartsWith(AngularRootPath))
-                Context.RewritePath(AngularRootPath);
-
+        {  
             // Ignore requests to dev and API since API clients usually cannot process 301 redirects
             if (Request.Url.PathAndQuery.ToLower().StartsWith("/api") 
                 || Request.Url.PathAndQuery.ToLower().StartsWith("/authenticationcallback")

@@ -192,12 +192,12 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
 
     // Plan Builder framework
         .state('planBuilder', {
-            url: "/plans/{id}/builder?kioskMode",
+            url: "/plans/{id}/builder?viewMode&view",
             //templateUrl: "/AngularTemplate/PlanBuilder",
             views: {
                 '@': {
                     templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
-                        if ($stateParams['kioskMode']) {
+                        if ($stateParams['viewMode'] === 'kiosk') {
                             return "/AngularTemplate/PlanBuilder_KioskMode";
                         }
                         return "/AngularTemplate/PlanBuilder";
@@ -205,7 +205,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                 },
                 'header@': {
                     templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
-                        if ($stateParams['kioskMode']) {
+                        if ($stateParams['viewMode'] === 'kiosk') {
                             return "/AngularTemplate/Empty";
                         }
                         return "/AngularTemplate/Header";
