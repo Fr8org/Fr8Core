@@ -873,7 +873,7 @@ namespace TerminalBase.BaseClasses
             bool requestUpstream = false)
         {
             fieldsList.ToList().ForEach(field => 
-                AddTextSourceControl(storage, field.Value, field.Value, upstreamSourceLabel, filterByTag, addRequestConfigEvent, field.IsRequired, requestUpstream));
+                AddTextSourceControl(storage, field.Key, field.Key, upstreamSourceLabel, filterByTag, addRequestConfigEvent, field.IsRequired, requestUpstream));
         }
 
         /// <summary>

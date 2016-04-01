@@ -34,7 +34,7 @@ namespace terminalSalesforce.Infrastructure
         /// <summary>
         /// Gets fields of the given Salesforce object name
         /// </summary>
-        public async Task<IList<FieldDTO>> GetFields(string salesforceObjectName, ForceClient forceClient)
+        public async Task<IList<FieldDTO>> GetFields(string salesforceObjectName, ForceClient forceClient, bool onlyUpdatableFields = false)
         {
             //Get the fields of the salesforce object name by calling Describe API
             var fieldsQueryResponse = (JObject)await forceClient.DescribeAsync<object>(salesforceObjectName);
@@ -45,18 +45,26 @@ namespace terminalSalesforce.Infrastructure
             JToken fieldsFromApiResponse;
             if (fieldsQueryResponse.TryGetValue("fields", out fieldsFromApiResponse) && fieldsFromApiResponse is JArray)
             {
+
+                if(onlyUpdatableFields)
+                {
+                    fieldsFromApiResponse = new JArray(fieldsFromApiResponse.Where(a => (a.Value<bool>("updateable") == true)));
+                }
+
                 var fields = fieldsFromApiResponse.Select(a =>
-                    //Select Fields as FieldDTOs with
-                    //Key -> Field Lable
-                    //Value -> Field Name
-                    //AvailabilityType -> Run Time
-                    //FieldType -> Field Type
-                    //IsRequired -> When a field is Nillable AND Defaulted On Create AND Updatable
-                    new FieldDTO(a.Value<string>("label"), a.Value<string>("name"), Data.States.AvailabilityType.RunTime)
-                    {
-                        FieldType = a.Value<string>("type"),
-                        IsRequired = a.Value<bool>("nillable") == false && a.Value<bool>("defaultedOnCreate") == false && a.Value<bool>("updateable") == true
-                    }).OrderBy(field => field.Key);
+                                    //Select Fields as FieldDTOs with
+                                    //Key -> Field Lable
+                                    //Value -> Field Name
+                                    //AvailabilityType -> Run Time
+                                    //FieldType -> Field Type
+                                    //IsRequired -> When a field is Nillable AND Defaulted On Create AND Updatable
+                                    new FieldDTO(a.Value<string>("label"), a.Value<string>("name"), Data.States.AvailabilityType.RunTime)
+                                    {
+                                        FieldType = a.Value<string>("type"),
+                                        IsRequired = a.Value<bool>("nillable") == false &&
+                                                     a.Value<bool>("defaultedOnCreate") == false &&
+                                                     a.Value<bool>("updateable") == true
+                                    }).OrderBy(field => field.Key);
 
                 objectFields.AddRange(fields);
             }

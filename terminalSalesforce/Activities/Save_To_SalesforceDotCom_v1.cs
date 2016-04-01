@@ -61,7 +61,7 @@ namespace terminalSalesforce.Actions
                 return await Task.FromResult(curActivityDO);
             }
 
-            var selectedObjectFieldsList = await _salesforce.GetFields(curSelectedObject, authTokenDO);
+            var selectedObjectFieldsList = await _salesforce.GetFields(curSelectedObject, authTokenDO, true);
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {

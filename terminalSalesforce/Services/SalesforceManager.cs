@@ -64,7 +64,7 @@ namespace terminalSalesforce.Services
         /// <summary>
         /// Gets Fields of the given Salesforce Object Name
         /// </summary>
-        public async Task<IList<FieldDTO>> GetFields(string salesforceObjectName, AuthorizationTokenDO authTokenDO)
+        public async Task<IList<FieldDTO>> GetFields(string salesforceObjectName, AuthorizationTokenDO authTokenDO, bool onlyUpdatableFields = false)
         {
             _salesforceObject = GetSalesforceObject(salesforceObjectName);
             var forceClient = (ForceClient)CreateSalesforceClient(typeof(ForceClient), authTokenDO);
@@ -72,14 +72,14 @@ namespace terminalSalesforce.Services
             IList<FieldDTO> objectFields = null;
             try
             {
-                objectFields = await _salesforceObject.GetFields(salesforceObjectName, forceClient);
+                objectFields = await _salesforceObject.GetFields(salesforceObjectName, forceClient, onlyUpdatableFields);
             }
             catch (ForceException salesforceException)
             {
                 if (salesforceException.Message.Equals("Session expired or invalid"))
                 {
                     forceClient = (ForceClient)CreateSalesforceClient(typeof(ForceClient), authTokenDO, true);
-                    objectFields = await _salesforceObject.GetFields(salesforceObjectName, forceClient);
+                    objectFields = await _salesforceObject.GetFields(salesforceObjectName, forceClient, onlyUpdatableFields);
                 }
                 else
                 {
