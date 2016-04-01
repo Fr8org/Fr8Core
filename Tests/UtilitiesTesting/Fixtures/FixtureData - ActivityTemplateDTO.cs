@@ -80,25 +80,5 @@ namespace UtilitiesTesting.Fixtures
                 Version = "1"
             };
         }
-
-        public static ActivityTemplateDTO GetGoogleSheetDataActivityTemplate()
-        {
-            return new ActivityTemplateDTO()
-            {
-                Id = 1,
-                Name = "Get_Google_Sheet_Data",
-                Version = "1"
-            };
-        }
-
-        public static ActivityTemplateDTO BuildMessageActivityTemplate()
-        {
-            return new ActivityTemplateDTO()
-            {
-                Id = 1,
-                Name = "Build_Message",
-                Version = "1"
-            };
-        }
     }
 }

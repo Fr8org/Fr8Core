@@ -98,26 +98,7 @@ namespace terminalGoogle.Services
         public Task<string> CreateWorksheet(string spreadsheetUri, GoogleAuthDTO authDTO, string worksheetname)
         {
             return Task.Run(() => CreateWorksheetImpl(spreadsheetUri, authDTO, worksheetname));
-        }
 
-        public Task DeleteWorksheet(string spreadsheetUri, string worksheetUri, GoogleAuthDTO authDTO)
-        {
-            return Task.Run(() => DeleteWorksheetImpl(spreadsheetUri, worksheetUri, authDTO));
-        }
-
-        private void DeleteWorksheetImpl(string spreadsheetUri, string worksheetUri, GoogleAuthDTO authDTO)
-        {
-            var spreadsheet = FindSpreadsheet(spreadsheetUri, authDTO);
-            if (spreadsheet == null)
-            {
-                throw new ArgumentException("Cannot find a spreadsheet", nameof(spreadsheetUri));
-            }
-            var worksheet = spreadsheet.Worksheets.Entries.FindById(new AtomId(worksheetUri));
-            if (worksheet == null)
-            {
-                throw new ArgumentException("Cannot find a worksheet", nameof(worksheetUri));
-            }
-            worksheet.Delete();
         }
 
         private string CreateWorksheetImpl(string spreadsheetUri, GoogleAuthDTO authDTO, string worksheetname)
