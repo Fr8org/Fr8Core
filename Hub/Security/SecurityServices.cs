@@ -102,12 +102,13 @@ namespace Hub.Security
         /// For every new created object setup default security with privileges for Read Object, Edit Object, Delete Object 
         /// and Role OwnerOfCurrentObject
         /// </summary>
-        /// <param name="securedObjectId"></param>
-        public void SetupDefaultSecurity(Guid securedObjectId)
+        /// <param name="dataObjectId"></param>
+        /// <param name="dataObjectType"></param>
+        public void SetupDefaultSecurityForDataObject(Guid dataObjectId, string dataObjectType)
         {
             var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorage>();
             var sqlConnectionProvider = ObjectFactory.GetInstance<ISqlConnectionProvider>();
-            securityStorageProvider.SetupDefaultSecurityForDataObject(sqlConnectionProvider, securedObjectId);
+            securityStorageProvider.SetupDefaultSecurityForDataObject(sqlConnectionProvider, dataObjectId, dataObjectType);
         }
     }
 }

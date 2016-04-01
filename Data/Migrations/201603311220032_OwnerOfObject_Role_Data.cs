@@ -17,10 +17,16 @@ namespace Data.Migrations
             Sql($"insert into dbo.AspNetUserRoles select Id,'{newRoleId}', SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET(), 'AspNetUserRolesDO' from AspNetUsers");
 
             //insert default role privileges for role OwnerOfCurrentObject
+            var readRolePrivilegeId = Guid.NewGuid();
             Sql($"insert into dbo.RolePrivileges(Id, PrivilegeName, RoleId, LastUpdated, CreateDate) values ('{Guid.NewGuid()}','{Privileges.ReadObject}','{newRoleId}', SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET())");
+            
             Sql($"insert into dbo.RolePrivileges(Id, PrivilegeName, RoleId, LastUpdated, CreateDate) values ('{Guid.NewGuid()}','{Privileges.EditObject}','{newRoleId}', SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET())");
             Sql($"insert into dbo.RolePrivileges(Id, PrivilegeName, RoleId, LastUpdated, CreateDate) values ('{Guid.NewGuid()}','{Privileges.DeleteObject}','{newRoleId}', SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET())");
+
+            //create default 
+
         }
+
 
         public override void Down()
         {
