@@ -385,7 +385,8 @@ module dockyard.services {
 
                         this.crateHelper.mergeControlListCrate(
                             currentState.activities.configurationControls,
-                            currentState.activities.crateStorage
+                            currentState.activities.crateStorage,
+                            null
                         );
 
                         // If an Action is selected, save it
@@ -410,7 +411,8 @@ module dockyard.services {
             else if (currentState.activities) {
                 this.crateHelper.mergeControlListCrate(
                     currentState.activities.configurationControls,
-                    currentState.activities.crateStorage
+                    currentState.activities.crateStorage,
+                    null
                 );
 
                 var promise = this.ActionService.save(

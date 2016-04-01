@@ -277,9 +277,6 @@
     </Compile>
     <Compile Include="Startup.cs" />
     <Compile Include="TerminalTwilioMapBootstrapper.cs" />
-    <Compile Include="Tests\Activities\Send_Via_Twilio_v1Tests.cs" />
-    <Compile Include="Tests\BaseTest.cs" />
-    <Compile Include="Tests\Fixtures\FixtureData.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Global.asax" />

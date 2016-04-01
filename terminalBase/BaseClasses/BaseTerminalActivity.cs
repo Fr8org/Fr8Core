@@ -241,7 +241,12 @@ namespace TerminalBase.BaseClasses
 
             return payload;
         }
-        
+
+        protected async Task PushUserNotification(TerminalNotificationDTO notificationMessage)
+        {
+            await HubCommunicator.NotifyUser(notificationMessage, CurrentFr8UserId);
+        }
+
         public virtual async Task<PayloadDTO> ExecuteChildActivities(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             return Success(await GetPayload(curActivityDO, containerId));
