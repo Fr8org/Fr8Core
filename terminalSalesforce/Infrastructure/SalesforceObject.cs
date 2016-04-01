@@ -42,11 +42,23 @@ namespace terminalSalesforce.Infrastructure
             var objectFields = new List<FieldDTO>();
 
             //parse them into the list of FieldDTO
-            JToken leadFields;
-            if (fieldsQueryResponse.TryGetValue("fields", out leadFields) && leadFields is JArray)
+            JToken fieldsFromApiResponse;
+            if (fieldsQueryResponse.TryGetValue("fields", out fieldsFromApiResponse) && fieldsFromApiResponse is JArray)
             {
-                objectFields.AddRange(
-                    leadFields.Select(a => new FieldDTO(a.Value<string>("name"), a.Value<string>("label"), Data.States.AvailabilityType.RunTime)));
+                var fields = fieldsFromApiResponse.Select(a =>
+                    //Select Fields as FieldDTOs with
+                    //Key -> Field Lable
+                    //Value -> Field Name
+                    //AvailabilityType -> Run Time
+                    //FieldType -> Field Type
+                    //IsRequired -> When a field is Nillable AND Defaulted On Create AND Updatable
+                    new FieldDTO(a.Value<string>("label"), a.Value<string>("name"), Data.States.AvailabilityType.RunTime)
+                    {
+                        FieldType = a.Value<string>("type"),
+                        IsRequired = a.Value<bool>("nillable") == false && a.Value<bool>("defaultedOnCreate") == false && a.Value<bool>("updateable") == true
+                    }).OrderBy(field => field.Key);
+
+                objectFields.AddRange(fields);
             }
 
             return objectFields;

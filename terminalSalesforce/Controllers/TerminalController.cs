@@ -36,6 +36,18 @@ namespace terminalSalesforce.Controllers
 				Name = "Salesforce"
 	        };
 
+            var saveToSalesforce = new ActivityTemplateDTO()
+            {
+                Version = "1",
+                Name = "Save_To_SalesforceDotCom",
+                Label = "Save to Salesforce.Com",
+                Terminal = terminal,
+                NeedsAuthentication = true,
+                Category = ActivityCategory.Forwarders,
+                MinPaneWidth = 330,
+                WebService = webService
+            };
+
             var createLeadAction = new ActivityTemplateDTO()
             {
                 Version = "1",
@@ -98,7 +110,7 @@ namespace terminalSalesforce.Controllers
 
             var actionList = new List<ActivityTemplateDTO>()
             {
-                createLeadAction,createContactAction,createAccountAction, getDataAction, postToChatterAction
+                saveToSalesforce, createLeadAction,createContactAction,createAccountAction, getDataAction, postToChatterAction
             };
 
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()

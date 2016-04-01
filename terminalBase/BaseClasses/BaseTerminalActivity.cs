@@ -861,10 +861,10 @@ namespace TerminalBase.BaseClasses
         }
 
         /// <summary>
-        /// Adds Text Source for the DTO type. 
+        /// Adds Text Source controls for the given list of FieldDTOs
         /// </summary>
-        /// <remarks>The (T), DTO's Proerty Names will be used to name and label the new Text Source Controls</remarks>
-        protected void AddTextSourceControlForDTO<T>(
+        protected void AddTextSourceControlForListOfFields(
+            IEnumerable<FieldDTO> fieldsList,
             ICrateStorage storage,
             string upstreamSourceLabel,
             string filterByTag = "",
@@ -872,20 +872,8 @@ namespace TerminalBase.BaseClasses
             bool required = false,
             bool requestUpstream = false)
         {
-            typeof(T).GetProperties()
-                .Where(property => !property.Name.Equals("Id")).ToList().ForEach(property =>
-                {
-                    AddTextSourceControl(
-                        storage,
-                        property.Name,
-                        property.Name,
-                        upstreamSourceLabel,
-                        filterByTag,
-                        addRequestConfigEvent,
-                        required,
-                        requestUpstream
-                    );
-                });
+            fieldsList.ToList().ForEach(field => 
+                AddTextSourceControl(storage, field.Value, field.Value, upstreamSourceLabel, filterByTag, addRequestConfigEvent, field.IsRequired, requestUpstream));
         }
 
         /// <summary>

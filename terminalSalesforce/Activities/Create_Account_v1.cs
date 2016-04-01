@@ -51,16 +51,16 @@ namespace terminalSalesforce.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.Clear();
+            //using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            //{
+            //    crateStorage.Clear();
 
-                AddTextSourceControlForDTO<Infrastructure.AccountDTO>(
-                    crateStorage,
-                    "",
-                    requestUpstream: true
-                );
-            }
+            //    AddTextSourceControlForDTO<Infrastructure.AccountDTO>(
+            //        crateStorage,
+            //        "",
+            //        requestUpstream: true
+            //    );
+            //}
 
             return await Task.FromResult(curActivityDO);
         }
