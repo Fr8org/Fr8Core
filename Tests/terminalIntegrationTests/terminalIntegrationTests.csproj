@@ -283,12 +283,12 @@
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
   <PropertyGroup>
-    <PostBuildEvent>$(SolutionDir)\BuildUtils\xcopy.exe  $(SolutionDir)\terminalDocuSign\bin\terminalDocuSign.dll.config $(TargetDir) /C /Y 
-$(SolutionDir)\BuildUtils\xcopy.exe  $(SolutionDir)\terminalAzure\bin\terminalAzure.dll.config $(TargetDir) /C /Y
-$(SolutionDir)\BuildUtils\xcopy.exe  $(SolutionDir)\terminalFr8Core\bin\terminalFr8Core.dll.config $(TargetDir) /C /Y
-$(SolutionDir)\BuildUtils\xcopy.exe  $(SolutionDir)\terminalGoogle\bin\terminalGoogle.dll.config $(TargetDir) /C /Y
-$(SolutionDir)\BuildUtils\xcopy.exe  $(SolutionDir)\terminalExcel\bin\terminalExcel.dll.config $(TargetDir) /C /Y
-$(SolutionDir)\BuildUtils\xcopy.exe  $(SolutionDir)\Tests\terminalBaseTests\bin\terminalBaseTests.dll.config $(TargetDir) /C /Y 
+    <PostBuildEvent>$(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalDocuSign\bin\terminalDocuSign.dll.config $(TargetDir) /C /Y 
+$(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalAzure\bin\terminalAzure.dll.config $(TargetDir) /C /Y
+$(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalFr8Core\bin\terminalFr8Core.dll.config $(TargetDir) /C /Y
+$(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalGoogle\bin\terminalGoogle.dll.config $(TargetDir) /C /Y
+$(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalExcel\bin\terminalExcel.dll.config $(TargetDir) /C /Y
+$(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)Tests\terminalBaseTests\bin\terminalBaseTests.dll.config $(TargetDir) /C /Y 
 	</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
