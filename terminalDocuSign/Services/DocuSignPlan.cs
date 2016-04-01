@@ -84,8 +84,6 @@ namespace terminalDocuSign.Services
                     if (terminalUrl.Contains(prodUrl, StringComparison.InvariantCultureIgnoreCase))
                     connectName = ProdConnectName;
 
-                //otherwise docusign doesn't call the url
-                terminalUrl = terminalUrl.Contains(":53234") ? terminalUrl.Replace(":53234", "") : terminalUrl;
                 string publishUrl = terminalUrl + "/terminals/terminalDocuSign/events";
 
                 Console.WriteLine("Connect creation: publishUrl = {0}", publishUrl);
