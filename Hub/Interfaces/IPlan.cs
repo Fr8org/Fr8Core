@@ -33,5 +33,6 @@ namespace Hub.Interfaces
         Task<ContainerDO> Run(PlanDO curPlan, Crate curPayload);
         Task<ContainerDO> Run(IUnitOfWork uow, PlanDO curPlan, params Crate[] curPayload);
         Task<ContainerDO> Continue(Guid containerId);
+        Task<PlanDO> CloneById(Guid planId);
     }
 }    

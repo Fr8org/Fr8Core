@@ -363,6 +363,9 @@
     <Compile Include="App_Start\StartupMigration.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\Api\ActivitiesController.cs" />
+    <Compile Include="Controllers\Api\Fr8BaseApiController.cs" />
+    <Compile Include="Controllers\Api\PlanloadController.cs" />
+    <Compile Include="Controllers\Api\NotificationController.cs" />
     <Compile Include="Controllers\Api\AlarmsController.cs" />
     <Compile Include="Controllers\Api\AuthenticationController.cs" />
     <Compile Include="Controllers\Api\FactsController.cs" />
@@ -837,6 +840,7 @@
     <Content Include="Scripts\PlanBuilder\pb-interfaces.js" />
     <Content Include="Scripts\PlanBuilder\pb-resources.js" />
     <Content Include="Scripts\PlanBuilder\pb-widget.js" />
+    <Content Include="Scripts\templateCache.js" />
     <Content Include="Views\AngularTemplate\DatePicker.cshtml" />
     <Content Include="ApplicationInsights.config">
       <TransformOnBuild>true</TransformOnBuild>
@@ -873,7 +877,6 @@
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />
     <Content Include="_PowerShellScripts\HM-job-settings.job" />
     <Content Include="_PowerShellScripts\Deploy-HMAsWebJob.ps1" />
-    <Content Include="_PowerShellScripts\KillProcess.ps1" />
     <Content Include="_PowerShellScripts\SetCloudServiceSize.ps1" />
     <Content Include="_PowerShellScripts\CloneDatabase.ps1" />
     <Content Include="_PowerShellScripts\UpdateTerminalHostnameInDb.ps1" />
@@ -927,6 +930,7 @@
     <TypeScriptCompile Include="Scripts\app\interfaces\ISolutionDocumentationService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\SolutionDocumentationService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UpstreamExtractor.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\ActionPicker.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamFieldChooser.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />

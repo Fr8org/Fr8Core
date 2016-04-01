@@ -18,6 +18,7 @@ using TerminalBase.Infrastructure;
 using Data.Constants;
 using terminalDocuSign.Services.New_Api;
 using Utilities.Configuration.Azure;
+using Utilities;
 
 namespace terminalDocuSign.Services
 {
@@ -73,13 +74,14 @@ namespace terminalDocuSign.Services
             string connectName = "";
             string connectId = "";
 
+
             Console.WriteLine("Connect creation: terminalUrl = {0}", terminalUrl);
             if (!string.IsNullOrEmpty(terminalUrl))
             {
-                if (terminalUrl.Contains(devUrl))
+                if (terminalUrl.Contains(devUrl, StringComparison.InvariantCultureIgnoreCase))
                     connectName = DevConnectName;
                 else
-                    if (terminalUrl.Contains(prodUrl))
+                    if (terminalUrl.Contains(prodUrl, StringComparison.InvariantCultureIgnoreCase))
                     connectName = ProdConnectName;
 
                 //otherwise docusign doesn't call the url

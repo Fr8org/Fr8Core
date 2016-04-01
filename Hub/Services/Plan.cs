@@ -23,6 +23,7 @@ using Data.Constants;
 using Data.Crates;
 using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects.Helpers;
+using Data.Repositories.Plan;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 
 namespace Hub.Services
@@ -523,6 +524,74 @@ namespace Hub.Services
                 }
                 //continue from where we left
                 return await Run(uow, curContainerDO);
+            }
+        }
+
+        public async Task<PlanDO> CloneById(Guid planId)
+        {
+            
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var currentUser = _security.GetCurrentAccount(uow);
+
+                var targetPlan = (PlanDO) GetPlanByActivityId(uow, planId);
+                if (targetPlan == null)
+                {
+                    return null;
+                }
+
+                var cloneTag = "Cloned From " + planId;
+                //let's check if we have cloned this plan before
+                var existingPlan = await uow.PlanRepository.GetPlanQueryUncached()
+                    .Where(p => p.Fr8AccountId == currentUser.Id && p.Tag.Contains(cloneTag)).FirstOrDefaultAsync();
+
+
+                if (existingPlan != null)
+                {
+                    return existingPlan;
+                }
+
+                var clonedPlan = (PlanDO) PlanTreeHelper.CloneWithStructure(targetPlan);
+                clonedPlan.Name = clonedPlan.Name + " - " + "Customized for User " + currentUser.UserName;
+                clonedPlan.PlanState = PlanState.Inactive;
+                clonedPlan.Tag = cloneTag;
+
+                //uow.PlanRepository.Add(clonedPlan as PlanDO);
+
+                
+                //we should clone this plan for current user
+                var planTree = clonedPlan.GetDescendantsOrdered();
+                
+                Dictionary<Guid, PlanNodeDO> parentMap = new Dictionary<Guid, PlanNodeDO>();
+                foreach (var planNodeDO in planTree)
+                {
+                    var oldId = planNodeDO.Id;
+                    planNodeDO.Id = Guid.NewGuid();
+                    planNodeDO.Fr8Account = currentUser;
+                    parentMap.Add(oldId, planNodeDO);
+                    planNodeDO.ChildNodes = new List<PlanNodeDO>();
+                    if (planNodeDO.ParentPlanNodeId != null)
+                    {
+                        PlanNodeDO newParent;
+                        if (parentMap.TryGetValue(planNodeDO.ParentPlanNodeId.Value, out newParent))
+                        {
+                            planNodeDO.ParentPlanNodeId = newParent.Id;
+                            newParent.ChildNodes.Add(planNodeDO);
+                        }
+                        else
+                        {
+                            throw new Exception("Unable to clone plan");
+                        }
+                    }
+                    else
+                    {
+                        uow.PlanRepository.Add(planNodeDO as PlanDO);
+                    }
+                }
+                
+                uow.SaveChanges();
+
+                return clonedPlan;
             }
         }
     }
