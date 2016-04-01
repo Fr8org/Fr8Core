@@ -525,7 +525,8 @@ namespace TerminalBase.BaseClasses
                             if (control != null)
                             {
                                 control.Name = member.Name + "_" + control.Name;
-                                configurationControlsToAdd.Controls.Insert(insertIndex + index, control);
+                                configurationControlsToAdd.Controls.Insert(insertIndex, control);
+                                insertIndex++;
                             }
                         }
                     }
