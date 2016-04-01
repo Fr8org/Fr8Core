@@ -117,7 +117,7 @@
 
         // Since all configurationControl information is stored in Action.ConfigurationControls field,
         // we should merge it back to action's CrateStorage before sending that data to server.
-        public mergeControlListCrate(controlList: model.ControlsList, crateStorage: model.CrateStorage) {
+        public mergeControlListCrate(controlList: model.ControlsList, crateStorage: model.CrateStorage, viewLabel: string) {
             // Validate that ControlList is not empty.
             if (!controlList || !controlList.fields
                 || !crateStorage || !crateStorage.crates) {
@@ -142,9 +142,14 @@
                 }
             }
 
-            // Find single crate with manifestType == 'Standard UI Controls'.
-            var controlListCrate = this.findByManifestType(
-                crateStorage, 'Standard UI Controls');
+
+            var controlListCrate: model.Crate;
+            if (!viewLabel) {
+                // Find single crate with manifestType == 'Standard UI Controls'.
+                controlListCrate = this.findByManifestType(crateStorage, 'Standard UI Controls');
+            } else {
+                controlListCrate = this.findByManifestTypeAndLabel(crateStorage, 'Standard UI Controls', viewLabel);
+            }
 
             // Overwrite contents of that crate with actual data in controlList.fields.
             controlListCrate.contents = { Controls: fieldsToSyncWithCrate };
@@ -190,10 +195,22 @@
             }
         }
 
-        public createControlListFromCrateStorage(crateStorage: model.CrateStorage): model.ControlsList {
-            var crate = this.findByManifestType(
-                crateStorage, 'Standard UI Controls'
+        public createControlListFromCrateStorage(crateStorage: model.CrateStorage, label?: string): model.ControlsList {
+
+            var crate: model.Crate;
+            if (!label) {
+                crate = this.findByManifestType(
+                    crateStorage, 'Standard UI Controls'
                 );
+            } else {
+                crate = this.findByManifestTypeAndLabel(
+                    crateStorage, 'Standard UI Controls', label
+                );
+            }
+
+            if (crate === null) {
+                return null;
+            }
 
 
             var controlsList = new model.ControlsList();

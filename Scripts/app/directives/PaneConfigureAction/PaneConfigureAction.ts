@@ -113,6 +113,7 @@ module dockyard.directives.paneConfigureAction {
         collapsed: boolean;
         populateAllActivities: () => void;
         allActivities: Array<interfaces.IActivityDTO>;
+        view: string;
     }
     
     export class CancelledEventArgs extends CancelledEventArgsBase { }
@@ -318,7 +319,8 @@ module dockyard.directives.paneConfigureAction {
                 if (this.crateHelper.hasControlListCrate(this.$scope.currentAction.crateStorage)) {
                     this.crateHelper.mergeControlListCrate(
                         this.$scope.currentAction.configurationControls,
-                        this.$scope.currentAction.crateStorage
+                        this.$scope.currentAction.crateStorage,
+                        this.$scope.view
                     );
                 }
 
@@ -361,7 +363,8 @@ module dockyard.directives.paneConfigureAction {
                     if (this.crateHelper.hasControlListCrate(this.$scope.currentAction.crateStorage)) {
                         this.crateHelper.mergeControlListCrate(
                             this.$scope.currentAction.configurationControls,
-                            this.$scope.currentAction.crateStorage
+                            this.$scope.currentAction.crateStorage,
+                            this.$scope.view
                         );
                     }
 
@@ -379,7 +382,7 @@ module dockyard.directives.paneConfigureAction {
                     if (this.crateHelper.hasControlListCrate(scope.currentAction.crateStorage)) {
                         this.crateHelper.mergeControlListCrate(
                             scope.currentAction.configurationControls,
-                            scope.currentAction.crateStorage
+                            scope.currentAction.crateStorage, scope.view
                         );
                     }
 
@@ -564,8 +567,13 @@ module dockyard.directives.paneConfigureAction {
                     }
                 }
                 else {
-                    this.$scope.currentAction.configurationControls =
+                    if (this.$scope.view) {
+                        this.$scope.currentAction.configurationControls =
+                            this.crateHelper.createControlListFromCrateStorage(this.$scope.currentAction.crateStorage, this.$scope.view);
+                    } else {
+                        this.$scope.currentAction.configurationControls =
                         this.crateHelper.createControlListFromCrateStorage(this.$scope.currentAction.crateStorage);
+                    }
                 }
 
                 var hasConditionalBranching = _.any(this.$scope.currentAction.configurationControls.fields, (field: model.ControlDefinitionDTO) => {
@@ -626,7 +634,8 @@ module dockyard.directives.paneConfigureAction {
             scope: {
                 currentAction: '=',
                 mode: '=',
-                plan: '='
+                plan: '=',
+                view: '@'
             }
         };
     });
