@@ -150,6 +150,7 @@
     <Compile Include="Infrastructure\DefaultHubCommunicatorTests.cs" />
     <Compile Include="Infrastructure\TestBaseTerminalEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Tools\Activities\IntegrationTestTools_terminalFr8.cs" />
     <Compile Include="Tools\Activities\IntegrationTestTools_terminalDocuSign.cs" />
     <Compile Include="Tools\Activities\IntegrationTestTools_terminalGoogle.cs" />
     <Compile Include="Tools\Plans\IntegrationTestTools.cs" />
@@ -168,6 +169,14 @@
     <ProjectReference Include="..\..\terminalBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
       <Name>TerminalBase</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalFr8Core\terminalFr8Core.csproj">
+      <Project>{AD226A7F-0641-4589-93EB-06E5EE7E767B}</Project>
+      <Name>terminalFr8Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalGoogle\terminalGoogle.csproj">
+      <Project>{cddccfab-28b8-446c-8585-72d2bb78f2dc}</Project>
+      <Name>terminalGoogle</Name>
     </ProjectReference>
     <ProjectReference Include="..\HealthMonitorUtility\HealthMonitorUtility.csproj">
       <Project>{459FE39A-A5CC-41D8-B06E-8FAE3A1A623B}</Project>
@@ -204,6 +213,9 @@
     </PropertyGroup>
     <Error Condition="!Exists('$(SolutionDir)\.nuget\NuGet.targets')" Text="$([System.String]::Format('$(ErrorText)', '$(SolutionDir)\.nuget\NuGet.targets'))" />
   </Target>
+  <PropertyGroup>
+    <PostBuildEvent>$(SolutionDir)\BuildUtils\xcopy.exe  $(SolutionDir)\terminalGoogle\bin\terminalGoogle.dll.config $(TargetDir) /C /Y</PostBuildEvent>
+  </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
