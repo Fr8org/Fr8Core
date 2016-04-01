@@ -127,17 +127,15 @@ namespace terminaBaselTests.BaseClasses
         }
     }
 
-
-    class UiSyncActivityMock : EnhancedTerminalActivity<UiSyncActivityMock.ActivityUi>
+    class UiSyncDynamicActivityMock : EnhancedTerminalActivity<UiSyncDynamicActivityMock.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
-            public TextSource TextSource;
-            public UpstreamCrateChooser UpstreamUpstreamCrateChooser;
             public TextBox TextBox;
-            public DropDownList DropDownList;
-            public RadioButtonGroup Group;
-            public DropDownList NestedDropDown;
+            [DynamicControls]
+            public List<TextSource> DynamicTextSources = new List<TextSource>();
+
+            public UpstreamCrateChooser UpstreamUpstreamCrateChooser;
 
             public ActivityUi()
             {
@@ -146,7 +144,76 @@ namespace terminaBaselTests.BaseClasses
                     Name = "tb1",
                     Value = "tb1_v"
                 });
+                
 
+                Add(UpstreamUpstreamCrateChooser = new UpstreamCrateChooser
+                {
+                    Name = "crateChooser"
+                });
+            }
+        }
+
+        public Action<ActivityUi> OnConfigure;
+        public Action<ActivityUi> OnInitialize;
+
+        public UiSyncDynamicActivityMock()
+            : base(false)
+        {
+        }
+
+        protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        {
+            OnInitialize?.Invoke(ConfigurationControls);
+
+            ConfigurationControls.DynamicTextSources.Add(new TextSource("", "", "ts1"));
+            ConfigurationControls.DynamicTextSources.Add(new TextSource("", "", "ts2"));
+            ConfigurationControls.DynamicTextSources.Add(new TextSource("", "", "ts3"));
+
+            return Task.FromResult(0);
+        }
+
+        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
+        {
+            OnConfigure?.Invoke(ConfigurationControls);
+
+            Assert.AreEqual(3, ConfigurationControls.DynamicTextSources.Count, "Failed to sync dynamic controls list: invalid count");
+            Assert.IsTrue(ConfigurationControls.DynamicTextSources.Any(x => x.Name == "ts1"), "Failed to sync dynamic controls list: ts1 not found");
+            Assert.IsTrue(ConfigurationControls.DynamicTextSources.Any(x => x.Name == "ts2"), "Failed to sync dynamic controls list: ts2 not found");
+            Assert.IsTrue(ConfigurationControls.DynamicTextSources.Any(x => x.Name == "ts3"), "Failed to sync dynamic controls list: ts3 not found");
+
+            Assert.AreEqual("DynamicTextSources_ts1_value", ConfigurationControls.DynamicTextSources.First(x => x.Name == "ts1").Value, "Failed to sync dynamic controls list: invalid value");
+            Assert.AreEqual("DynamicTextSources_ts2_value", ConfigurationControls.DynamicTextSources.First(x => x.Name == "ts2").Value, "Failed to sync dynamic controls list: invalid value");
+            Assert.AreEqual("DynamicTextSources_ts3_value", ConfigurationControls.DynamicTextSources.First(x => x.Name == "ts3").Value, "Failed to sync dynamic controls list: invalid value");
+
+            return Task.FromResult(0);
+        }
+
+        protected override Task RunCurrentActivity()
+        {
+            return Task.FromResult(0);
+        }
+    }
+
+
+    class UiSyncActivityMock : EnhancedTerminalActivity<UiSyncActivityMock.ActivityUi>
+    {
+        public class ActivityUi : StandardConfigurationControlsCM
+        {
+            public TextSource TextSource;
+            public TextBox TextBox;
+            public DropDownList DropDownList;
+            public RadioButtonGroup Group;
+            public DropDownList NestedDropDown;
+            public UpstreamCrateChooser UpstreamUpstreamCrateChooser;
+
+            public ActivityUi()
+            {
+                Add(TextBox = new TextBox
+                {
+                    Name = "tb1",
+                    Value = "tb1_v"
+                });
+                
                 Add(new TextBox
                 {
                     Name = "textBox",
@@ -443,6 +510,39 @@ namespace terminaBaselTests.BaseClasses
         {
             var activity = new ActivityWithUiBuilder();
             await activity.Configure(CreateActivity(Crate.FromContent("crate", new StandardConfigurationControlsCM())), new AuthorizationTokenDO());
+        }
+
+        [Test]
+        public async Task CanStoreDynamicControls()
+        {
+            var activity = new UiSyncDynamicActivityMock();
+            var dto = await activity.Configure(CreateActivity(), new AuthorizationTokenDO());
+            var cc = _crateManager.GetStorage(dto).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+
+            Assert.AreEqual(5, cc.Controls.Count,  "Failed to sync dynamic controls list: invalid count");
+            Assert.AreEqual("DynamicTextSources_ts1", cc.Controls[1].Name, "Failed to sync dynamic controls list: ts1 not found at [1]");
+            Assert.AreEqual("DynamicTextSources_ts2", cc.Controls[2].Name, "Failed to sync dynamic controls list: ts2 not found at [2]");
+            Assert.AreEqual("DynamicTextSources_ts3", cc.Controls[3].Name, "Failed to sync dynamic controls list: ts3 not found at [3]");
+        }
+
+
+        [Test]
+        public async Task CanRestoreDynamicControls()
+        {
+            var activity = new UiSyncDynamicActivityMock();
+            var dto = await activity.Configure(CreateActivity(), new AuthorizationTokenDO());
+            var cc = _crateManager.GetStorage(dto).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+
+            foreach (var controlDefinitionDto in cc.Controls)
+            {
+                controlDefinitionDto.Value = controlDefinitionDto.Name + "_value";
+            }
+
+            await activity.Configure(CreateActivity(Crate.FromContent("cc", cc)), new AuthorizationTokenDO());
+            //cc = _crateManager.GetStorage(dto).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+
+            
+
         }
     }
 }
