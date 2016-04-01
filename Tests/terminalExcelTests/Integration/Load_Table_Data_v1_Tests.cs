@@ -55,7 +55,7 @@ namespace terminalExcelTests.Integration
                     var activityUi = new Load_Excel_File_v1.ActivityUi();
                     var controlsCrate = _crateManager.GetStorage(responseActivityDTO).FirstCrate<StandardConfigurationControlsCM>();
                     activityUi.SyncWith(controlsCrate.Content);
-                    activityUi.FilePicker.Value = HealthMonitor_FixtureData.GetFilePath();
+                    activityUi.FilePicker.Value = "https://yardstore1.blob.core.windows.net/default-container-dev/EmailList.xlsx";
                     storage.ReplaceByLabel(Data.Crates.Crate.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
                 }
             }

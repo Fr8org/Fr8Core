@@ -13,11 +13,6 @@ namespace terminalExcelTests.Fixtures
         //    };
         //}
 
-        public static string GetFilePath()
-        {
-            return "https://yardstore1.blob.core.windows.net/default-container-dev/EmailList.xlsx";
-        }
-
         public static ActivityTemplateDTO Load_Table_Data_v1_ActivityTemplate()
         {
             return new ActivityTemplateDTO()

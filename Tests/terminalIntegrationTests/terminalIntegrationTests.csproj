@@ -181,8 +181,6 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="EndToEnd\GoogleIntoGoogleTests.cs" />
-    <Compile Include="EndToEnd\Query_DocuSign_Into_Google_Sheet_Tests.cs" />
     <Compile Include="Fixtures\FixtureData - CoreSelfHostFactory.cs" />
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
     <Compile Include="TerminalIntegrationTests_SendDocuSignEnvelopeV1.cs" />
@@ -207,10 +205,6 @@
       <Project>{d019b112-55a8-4661-aff5-329f998d9e28}</Project>
       <Name>terminalAzure</Name>
     </ProjectReference>
-    <ProjectReference Include="..\terminalBaseTests\terminalBaseTests.csproj">
-      <Project>{40625AD3-D5D2-4CF0-8E3E-FD232A54A808}</Project>
-      <Name>terminalBaseTests</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\terminalBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
       <Name>TerminalBase</Name>
@@ -226,10 +220,6 @@
     <ProjectReference Include="..\..\terminalExcel\terminalExcel.csproj">
       <Project>{57373d06-6b82-4ec6-af62-ed25fe170c61}</Project>
       <Name>terminalExcel</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\terminalGoogle\terminalGoogle.csproj">
-      <Project>{CDDCCFAB-28B8-446C-8585-72D2BB78F2DC}</Project>
-      <Name>terminalGoogle</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\terminalUtilities\terminalUtilities.csproj">
       <Project>{e46b602a-287b-450f-b455-5eed20c93eb7}</Project>
@@ -286,10 +276,8 @@
     <PostBuildEvent>$(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalDocuSign\bin\terminalDocuSign.dll.config $(TargetDir) /C /Y 
 $(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalAzure\bin\terminalAzure.dll.config $(TargetDir) /C /Y
 $(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalFr8Core\bin\terminalFr8Core.dll.config $(TargetDir) /C /Y
-$(SolutionDir)BuildUtils\xcopy.exe $(SolutionDir)Tests\terminalBaseTests\bin\terminalBaseTests.dll.config $(TargetDir) /C /Y 
 $(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalGoogle\bin\terminalGoogle.dll.config $(TargetDir) /C /Y
 $(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalExcel\bin\terminalExcel.dll.config $(TargetDir) /C /Y
-
 	</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
