@@ -288,7 +288,7 @@ $(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalAzure\bin\terminalAzur
 $(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalFr8Core\bin\terminalFr8Core.dll.config $(TargetDir) /C /Y
 $(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalGoogle\bin\terminalGoogle.dll.config $(TargetDir) /C /Y
 $(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)terminalExcel\bin\terminalExcel.dll.config $(TargetDir) /C /Y
-$(SolutionDir)BuildUtils\xcopy.exe  $(SolutionDir)Tests\terminalBaseTests\bin\terminalBaseTests.dll.config $(TargetDir) /C /Y 
+$(SolutionDir)BuildUtils\xcopy.exe $(SolutionDir)terminalBaseTests\bin\$(ConfigurationName)\terminalBaseTests.dll.config $(TargetDir) /C /Y 
 	</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
