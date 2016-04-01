@@ -349,7 +349,6 @@ Please register first.");
         public async Task<ActionResult> ProcessGuestUserMode()
         {
             LoginStatus loginStatus = await _account.CreateAuthenticateGuestUser();
-
             return RedirectToAction("Index", "Welcome");
         }
     }
