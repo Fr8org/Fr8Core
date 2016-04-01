@@ -330,7 +330,23 @@ namespace Hub.Services
                         break;
 
                     case ActivityResponse.Call:
-                        PushFrame(ExtractGuidParam(activityResponse));
+                        id = ExtractGuidParam(activityResponse);
+
+                        targetNode = _uow.PlanRepository.GetById<PlanNodeDO>(id);
+
+                        if (targetNode == null)
+                        {
+                            throw new InvalidOperationException($"Unable to find node {id}");
+                        }
+
+                        currentNode = _uow.PlanRepository.GetById<PlanNodeDO>(topFrame.NodeId);
+
+                        if (currentNode.RootPlanNodeId != targetNode.RootPlanNodeId)
+                        {
+                            throw new InvalidOperationException("Can't call the activity from different plan.");
+                        }
+
+                        PushFrame(id);
                         break;
 
                     case ActivityResponse.Break:

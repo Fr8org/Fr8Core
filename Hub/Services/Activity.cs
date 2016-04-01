@@ -406,7 +406,6 @@ namespace Hub.Services
             }
         }
 
-        // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
         public async Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActivityExecutionMode curActionExecutionMode, ContainerDO curContainerDO)
         {
             if (curActivityDO == null)
