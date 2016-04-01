@@ -58,10 +58,10 @@ Function UpdateGitHubBuildStatus($message)
 	}	
 }
 
-$vso_username = ""
-$vso_password = ""
-$github_username = ""
-$github_password = ""
+$vso_username = "vkrytskyy@hotmail.com"
+$vso_password = "Jimmorrison1977"
+$github_username = "kryvol"
+$github_password = "Jimmorrison1971"
 
 $basicAuthVSO = ("{0}:{1}" -f $vso_username,$vso_password)
 $basicAuthVSO = [System.Text.Encoding]::UTF8.GetBytes($basicAuthVSO)
