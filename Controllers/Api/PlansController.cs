@@ -279,8 +279,10 @@ namespace HubWeb.Controllers
                 var activateDTO = await _plan.Activate(planId, planBuilderActivate);
 
                 //check if the response contains any error message and show it to the user 
-                if (activateDTO != null && activateDTO.ErrorMessage != string.Empty)
+                if (activateDTO != null && !string.IsNullOrEmpty(activateDTO.ErrorMessage))
+                {
                     _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, activateDTO.ErrorMessage);
+                }
 
                 EventManager.PlanActivated(planId);
 
