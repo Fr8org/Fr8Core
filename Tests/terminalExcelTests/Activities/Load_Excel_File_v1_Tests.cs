@@ -33,13 +33,13 @@ namespace terminalExcelTests.Activities
             ObjectFactory.Configure(x => x.For<IHubCommunicator>().Use(hubCommunicatorMock.Object));
         }
 
-        [Test, Ignore("See FR-2866")]
-        [ExpectedException(typeof(AggregateException))]
-        public void Configure_ThrowsExceptions_WhenActivityHasEmptyGuid()
-        {
-            var activity = new Load_Excel_File_v1();
-            activity.Configure(new ActivityDO(), new AuthorizationTokenDO()).Wait();
-        }
+        //[Test, Ignore("See FR-2866")]
+        //[ExpectedException(typeof(AggregateException))]
+        //public void Configure_ThrowsExceptions_WhenActivityHasEmptyGuid()
+        //{
+        //    var activity = new Load_Excel_File_v1();
+        //    activity.Configure(new ActivityDO(), new AuthorizationTokenDO()).Wait();
+        //}
 
         [Test]
         public void Configure_WhenConfigurationIsInitial_HasOnlyControlsCrateInsideActivityStorage()
