@@ -635,7 +635,8 @@ module dockyard.directives.paneConfigureAction {
                 currentAction: '=',
                 mode: '=',
                 plan: '=',
-                view: '@'
+                view: '@',
+                processing: '='
             }
         };
     });
