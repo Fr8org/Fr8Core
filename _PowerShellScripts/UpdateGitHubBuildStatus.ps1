@@ -1,7 +1,7 @@
 <#
     .SYNOPSIS
-    The script gets the latest dev branch, creates new branch from dev and merges feature branch into it.
-	This script is intended to avoid situation when new pull requests breaks dev branch after merge. 
+    The script updates the status of build on GitHub to disable Merge button if something wrong happened
+    This script is intended to avoid situation when new pull requests breaks dev branch after merge. 
 #>
 
 param(
@@ -21,7 +21,7 @@ $failure = @{
 $success = @{
 				state = "success"
 				target_url = $target_url
-				description = "The build succededfailed"
+				description = "The build succeeded!"
 				context = "feature-branch-ci/vso"
 			} | ConvertTo-Json
 

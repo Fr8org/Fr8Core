@@ -8,16 +8,23 @@ param(
     [string]$sourceBranchName = $env:BUILD_SOURCEBRANCHNAME
 )
 
+$github_username = "kryvol"
+$github_password = "Jimmorrison1971"
+
+$giturl = "https://{0}:{1}@github.com/alexed1/fr8company" -f $github_username, $github_password
+
 $buildBranchName = "dev+$sourceBranchName"
 
 Write-Host "Switching to dev branch..."
-Invoke-Expression "git fetch"
+Invoke-Expression "git fetch $giturl"
+
 if ($LastExitCode -ne 0)
 {
 	Write-Host "Failed to fetch branches."
-	exit 1;
+    exit 1;
 }
 
+Invoke-Expression "git checkout ."
 Invoke-Expression "git checkout dev"
 if ($LastExitCode -ne 0)
 {
@@ -33,11 +40,19 @@ if ($LastExitCode -ne 0)
 	exit 1;
 }
 
+$command = "git branch --list $buildBranchName | Out-String"
+$result = Invoke-Expression $command
+if (![System.String]::IsNullOrEmpty($result))
+{
+    $command = "git branch -D $buildBranchName"
+    Invoke-Expression $command    
+}
+
 Write-Host "Creating new branch $buildBranchName for build process..."
 Invoke-Expression "git checkout -b $buildBranchName"
 if ($LastExitCode -ne 0)
 {
-	Write-Host "Failed to checkout new branch for build process."
+    Write-Host "Failed to checkout new branch for build process."
 	exit 1;
 }
 
