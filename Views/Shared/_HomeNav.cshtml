@@ -80,7 +80,7 @@ else
     if (String.IsNullOrWhiteSpace((String)ViewBag.GuestUserEmail))
     {
         <ul class="nav navbar-nav navbar-right">
-            <li style="background-color: crimson;">@Html.ActionLink("Try It Now", "Index", "Welcome")</li>
+            <li style="background-color: crimson;">@Html.ActionLink("Try It Now", "ProcessGuestUserMode", "DockyardAccount")</li>
         </ul>
     }
 }
