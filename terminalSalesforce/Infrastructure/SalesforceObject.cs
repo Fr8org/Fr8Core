@@ -109,11 +109,11 @@ namespace terminalSalesforce.Infrastructure
                                 .Select(l => new PayloadObjectDTO
                                     {
                                         PayloadObject = l.Properties()
-                                                         .Where(p => p.Value.Type == JTokenType.String && !string.IsNullOrEmpty(p.Value.Value<string>()))
+                                                         .Where(p => !string.IsNullOrEmpty(p.Value.Value<object>().ToString()))
                                                          .Select(p => 
                                                             new FieldDTO {
                                                                 Key = p.Name,
-                                                                Value = p.Value.Value<string>(),
+                                                                Value = p.Value.Value<object>().ToString(),
                                                                 Availability = Data.States.AvailabilityType.RunTime
                                                             })
                                                             .ToList()

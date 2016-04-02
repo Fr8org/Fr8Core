@@ -13,6 +13,8 @@ using Data.Control;
 using Data.Crates;
 using Data.Interfaces.Manifests;
 using Data.States;
+using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json;
 
 namespace terminalSalesforce.Actions
 {
@@ -73,6 +75,73 @@ namespace terminalSalesforce.Actions
             }
 
             return await Task.FromResult(curActivityDO);
+        }
+
+        public override async Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        {
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                var requiredFieldsList = crateStorage
+                                            .CrateContentsOfType<FieldDescriptionsCM>(c => c.Label.Equals("Salesforce Object Fields"))
+                                            .SelectMany(f => f.Fields.Where(s => s.IsRequired));
+
+                var configControls = GetConfigurationControls(crateStorage);
+                var requiredFieldControlsList = configControls.Controls.OfType<TextSource>().Where(c => requiredFieldsList.Any(f => f.Value.Equals(c.Name)));
+                var curSelectedObject = configControls.Controls.OfType<DropDownList>().Single(c => c.Name.Equals("WhatKindOfData")).selectedKey;
+
+                requiredFieldControlsList.ToList().ForEach(c =>
+                {
+                    if (string.IsNullOrEmpty(c.ValueSource))
+                    {
+                        c.ErrorMessage = string.Format("{0} must be provided for creating {1}", c.Label, curSelectedObject);
+                    }
+                });
+            }
+            return await Task.FromResult(curActivityDO);
+        }
+
+        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        {
+            var payloadCrates = await GetPayload(curActivityDO, containerId);
+
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(payloadCrates);
+            }
+
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                var fieldsList = crateStorage.CrateContentsOfType<FieldDescriptionsCM>(c => c.Label.Equals("Salesforce Object Fields")).SelectMany(f => f.Fields);
+
+                var configControls = GetConfigurationControls(crateStorage);
+                var fieldControlsList = configControls.Controls.OfType<TextSource>();
+                var curSelectedObject = configControls.Controls.OfType<DropDownList>().Single(c => c.Name.Equals("WhatKindOfData")).selectedKey;
+
+                var jsonInputObject = new Dictionary<string, object>();
+
+                var payloadStorage = CrateManager.FromDto(payloadCrates.CrateStorage);
+                fieldsList.ToList().ForEach(field =>
+                {
+                    var jsonKey = field.Value;
+                    var jsonValue = fieldControlsList.Single(ts => ts.Name.Equals(jsonKey)).GetValue(payloadStorage);
+
+                    if (!string.IsNullOrEmpty(jsonValue))
+                    {
+                        jsonInputObject.Add(jsonKey, jsonValue);
+                    }
+                });
+
+                var result = await _salesforce.CreateObject<IDictionary<string, object>>(jsonInputObject, curSelectedObject, authTokenDO);
+
+                if (!string.IsNullOrEmpty(result))
+                {
+                    var contactIdFields = new List<FieldDTO> { new FieldDTO(curSelectedObject + "ID", result) };
+                    crateStorage.Add(Crate.FromContent("Newly Created Salesforce " + curSelectedObject, new StandardPayloadDataCM(contactIdFields)));
+                    return Success(payloadCrates);
+                }
+
+                return Error(payloadCrates, "Saving " + curSelectedObject + " to Salesforce.com is failed.");
+            }
         }
 
         /// <summary>

@@ -94,7 +94,7 @@ namespace terminalSalesforce.Actions
                 crateStorage.Add(
                     Crate.FromContent("Queryable Criteria", new StandardQueryFieldsCM(
                         objectFieldsList.OrderBy(field => field.Key)
-                                        .Select(field => new QueryFieldDTO(field.Key, field.Value, QueryFieldType.String, new TextBox { Name = field.Key })))));
+                                        .Select(field => new QueryFieldDTO(field.Value, field.Key, QueryFieldType.String, new TextBox { Name = field.Key })))));
 
                 //FR-2459 - The activity should create another design time fields crate of type FieldDescriptionsCM for downstream activities.
                 crateStorage.RemoveByLabel("Salesforce Object Fields");
