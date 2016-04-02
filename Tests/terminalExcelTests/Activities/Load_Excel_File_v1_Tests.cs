@@ -74,7 +74,7 @@ namespace terminalExcelTests.Activities
             Assert.IsTrue(operationState.CurrentActivityResponse.TryParseErrorDTO(out error));
         }
 
-        [Test]
+        [Test, Ignore]
         public void Run_WhenDataExists_HasTableDataInsidePayloadStorage()
         {
             var activity = new Load_Excel_File_v1();
