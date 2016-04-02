@@ -27,7 +27,7 @@ namespace terminalSalesforceTests.Intergration
             get { return "terminalSalesforce"; }
         }
 
-        [Test]
+        [Test, Ignore("Vas is working to fix this test.")]
         public async Task GetSalesforceData_Into_SendEmail_EndToEnd()
         {
             //Create the required plan
