@@ -48,42 +48,6 @@ namespace terminalSalesforce.Controllers
                 WebService = webService
             };
 
-            var createLeadAction = new ActivityTemplateDTO()
-            {
-                Version = "1",
-                Name = "Create_Lead",
-                Label = "Create Lead",
-                Terminal = terminal,
-                NeedsAuthentication = true,
-                Category = ActivityCategory.Forwarders,
-                MinPaneWidth = 330,
-                WebService = webService
-            };
-
-            var createContactAction = new ActivityTemplateDTO()
-            {
-                Version = "1",
-                Name = "Create_Contact",
-                Label = "Create Contact",
-                Terminal = terminal,
-                NeedsAuthentication = true,
-                Category = ActivityCategory.Forwarders,
-                MinPaneWidth = 330,
-                WebService = webService
-            };
-
-            var createAccountAction = new ActivityTemplateDTO()
-            {
-                Version = "1",
-                Name = "Create_Account",
-                Label = "Create Account",
-                Terminal = terminal,
-                NeedsAuthentication = true,
-                Category = ActivityCategory.Forwarders,
-                MinPaneWidth = 330,
-                WebService = webService
-            };
-
             var getDataAction = new ActivityTemplateDTO()
             {
                 Version = "1",
@@ -110,7 +74,7 @@ namespace terminalSalesforce.Controllers
 
             var actionList = new List<ActivityTemplateDTO>()
             {
-                saveToSalesforce, createLeadAction,createContactAction,createAccountAction, getDataAction, postToChatterAction
+                saveToSalesforce, getDataAction, postToChatterAction
             };
 
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()

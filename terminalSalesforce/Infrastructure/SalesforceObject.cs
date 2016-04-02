@@ -13,7 +13,7 @@ using StructureMap;
 
 namespace terminalSalesforce.Infrastructure
 {
-    public abstract class SalesforceObject
+    public class SalesforceObject
     {
         /// <summary>
         /// Creates a Salesforce object
@@ -22,11 +22,7 @@ namespace terminalSalesforce.Infrastructure
         {
             SuccessResponse successResponse = null;
 
-            //if the given object is valid, create. Validation is delegated to the derived classes.
-            if (ValidateObject(salesforceObject))
-            {
-                successResponse = await forceClient.CreateAsync(salesforceObjectName, salesforceObject);
-            }
+            successResponse = await forceClient.CreateAsync(salesforceObjectName, salesforceObject);
 
             return successResponse ?? new SuccessResponse(); 
         }
@@ -91,8 +87,6 @@ namespace terminalSalesforce.Infrastructure
             //parsing the query resonse is delegated to the derived classes.
             return ParseQueryResult(response);
         }
-
-        protected abstract bool ValidateObject(object salesforceObject);
 
         private IList<PayloadObjectDTO> ParseQueryResult(QueryResult<object> queryResult)
         {

@@ -22,8 +22,7 @@ namespace terminalSalesforce.Services
     public class SalesforceManager : ISalesforceManager
     {
         private Authentication _authentication = new Authentication();
-        private SalesforceObjectFactory salesforceObjectFactory = new SalesforceObjectFactory();
-        private SalesforceObject _salesforceObject;
+        private SalesforceObject _salesforceObject = new SalesforceObject();
         private ICrateManager _crateManager;
         
         public SalesforceManager()
@@ -36,7 +35,6 @@ namespace terminalSalesforce.Services
         /// </summary>
         public async Task<string> CreateObject<T>(T newObject, string salesforceObjectName, AuthorizationTokenDO authTokenDO)
         {
-            _salesforceObject = GetSalesforceObject(salesforceObjectName);
             SuccessResponse createCallResponse = null;
 
             var forceClient = (ForceClient)CreateSalesforceClient(typeof(ForceClient), authTokenDO);
@@ -66,7 +64,6 @@ namespace terminalSalesforce.Services
         /// </summary>
         public async Task<IList<FieldDTO>> GetFields(string salesforceObjectName, AuthorizationTokenDO authTokenDO, bool onlyUpdatableFields = false)
         {
-            _salesforceObject = GetSalesforceObject(salesforceObjectName);
             var forceClient = (ForceClient)CreateSalesforceClient(typeof(ForceClient), authTokenDO);
 
             IList<FieldDTO> objectFields = null;
@@ -96,7 +93,6 @@ namespace terminalSalesforce.Services
         public async Task<StandardPayloadDataCM> GetObjectByQuery(
             string salesforceObjectName, IEnumerable<string> fields, string conditionQuery, AuthorizationTokenDO authTokenDO)
         {
-            _salesforceObject = GetSalesforceObject(salesforceObjectName);
             var forceClient = (ForceClient)CreateSalesforceClient(typeof(ForceClient), authTokenDO);
 
             IList<PayloadObjectDTO> resultObjects = null;
@@ -180,55 +176,6 @@ namespace terminalSalesforce.Services
             }
         }
 
-        public T CreateSalesforceDTO<T>(ActivityDO curActivity, PayloadDTO curPayload)
-        {
-            var requiredType = typeof (T);
-            var requiredObject = (T)Activator.CreateInstance(requiredType);
-            var requiredProperties = requiredType.GetProperties().Where(p => !p.Name.Equals("Id"));
-
-            var designTimeCrateStorage = _crateManager.GetStorage(curActivity.CrateStorage);
-            var runTimeCrateStorage = _crateManager.FromDto(curPayload.CrateStorage);
-            var controls = designTimeCrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-
-            if (controls == null)
-            {
-                throw new InvalidOperationException("Failed to find configuration controls crate");
-            }
-
-            requiredProperties.ToList().ForEach(prop =>
-            {
-                try
-                {
-                    var textSourceControl = controls.Controls.SingleOrDefault(c => c.Name == prop.Name) as TextSource;
-
-                    if (textSourceControl == null)
-                    {
-                        throw new InvalidOperationException($"Unable to find TextSource control with name '{prop.Name}'");
-                    }
-
-                    var propValue = textSourceControl.GetValue(runTimeCrateStorage);
-                    prop.SetValue(requiredObject, propValue);
-                }
-                catch (ApplicationException applicationException)
-                {
-                    //If it can not extract the property, user did not enter any value for this property.
-                    //No problems. We can treat that value as empty and continue.
-                    if (applicationException.Message.Equals("Could not extract recipient, unknown recipient mode."))
-                    {
-                        prop.SetValue(requiredObject, string.Empty);
-                    }
-                    else if(applicationException.Message.StartsWith("No field found with specified key:"))
-                    {
-                        //FR-2502 - This else case handles, the user asked to pick up the value from the current payload.
-                        //But the payload does not contain the value of this property. In that case, set it as "Not Available"
-                        prop.SetValue(requiredObject, "Not Available");
-                    }
-                }
-            });
-
-            return requiredObject;
-        }
-
         private object CreateSalesforceClient(Type requiredClientType, AuthorizationTokenDO authTokenDO, bool isRefreshTokenRequired = false)
         {
             AuthorizationTokenDO authTokenResult = null;
@@ -258,14 +205,6 @@ namespace terminalSalesforce.Services
             }
 
             throw new NotSupportedException("Passed type is not supported. Supported Salesforce client objects are ForceClient and ChatterClient");
-        }
-
-        /// <summary>
-        /// Gets required type of SalesforceObject from the Factory for the given Salesforce Object Name
-        /// </summary>
-        private SalesforceObject GetSalesforceObject(string salesforceObjectName)
-        {
-            return salesforceObjectFactory.GetSalesforceObject(salesforceObjectName);
         }
 
         public void ParseAuthToken(string authonTokenAdditionalValues, out string instanceUrl, out string apiVersion)
