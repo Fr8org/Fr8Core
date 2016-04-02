@@ -33,7 +33,7 @@ namespace terminalExcelTests.Activities
             ObjectFactory.Configure(x => x.For<IHubCommunicator>().Use(hubCommunicatorMock.Object));
         }
 
-        [Test]
+        [Test, Ignore("See FR-2866")]
         [ExpectedException(typeof(AggregateException))]
         public void Configure_ThrowsExceptions_WhenActivityHasEmptyGuid()
         {
@@ -74,7 +74,7 @@ namespace terminalExcelTests.Activities
             Assert.IsTrue(operationState.CurrentActivityResponse.TryParseErrorDTO(out error));
         }
 
-        [Test, Ignore]
+        [Test, Ignore("See FR-2866")]
         public void Run_WhenDataExists_HasTableDataInsidePayloadStorage()
         {
             var activity = new Load_Excel_File_v1();
