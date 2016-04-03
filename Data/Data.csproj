@@ -661,6 +661,10 @@
     <Compile Include="Migrations\201603271818114_Organizations_Table_Check.Designer.cs">
       <DependentUpon>201603271818114_Organizations_Table_Check.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201604031057426_Salesforce_Activities_Clubbed.cs" />
+    <Compile Include="Migrations\201604031057426_Salesforce_Activities_Clubbed.Designer.cs">
+      <DependentUpon>201604031057426_Salesforce_Activities_Clubbed.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -1153,6 +1157,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201603271818114_Organizations_Table_Check.resx">
       <DependentUpon>201603271818114_Organizations_Table_Check.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604031057426_Salesforce_Activities_Clubbed.resx">
+      <DependentUpon>201604031057426_Salesforce_Activities_Clubbed.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
