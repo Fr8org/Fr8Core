@@ -17,7 +17,7 @@ module dockyard.tests.unit.directives.controls {
 
     //this simulates a type and blur effect on textbox
     var changeText = (scope, curElement, newText) => {
-        getTextInput(curElement).val('super-complex-test-value').trigger('input');
+        getTextInput(curElement).val(newText).trigger('input');
         getTextInput(curElement).blur();
         scope.$apply();
     };
@@ -46,8 +46,8 @@ module dockyard.tests.unit.directives.controls {
                 $timeout = _$timeout_;
 
                 scope = $rootScope.$new();
-                scope.currentAction = fx.ActivityDTO.noAuthActionVM;
-                scope.field = fx.FieldDTO.textField;
+                scope.currentAction = angular.copy(fx.ActivityDTO.noAuthActionVM);
+                scope.field = angular.copy(fx.FieldDTO.textField);
                 element = compileTemplate(scope, directive, $compile);
                 
             });
@@ -66,13 +66,13 @@ module dockyard.tests.unit.directives.controls {
         });
 
         it('Should update model value on value change when blurs', () => {
-            changeText(scope, element, 'super-complex-test-value'); 
+            changeText(scope, element, 'super-complex-test-value');
             expect(element.isolateScope().field.value).toBe('super-complex-test-value');
         });
 
-        it('Should call onchange method on blur', () => {
-            element.isolateScope().onChange = jasmine.createSpy("onChange function");
-            changeText(scope, element, 'super-complex-test-value'); 
+        it('Should call onchange method when value changes', () => {
+            spyOn(element.isolateScope(), 'onChange');
+            changeText(scope, element, 'super-complex-test-value');
             expect(element.isolateScope().onChange).toHaveBeenCalled();
         });
     });
@@ -122,8 +122,8 @@ module dockyard.tests.unit.directives.controls {
         });
 
         it('Should call only own change function', () => {
-            element1.isolateScope().onChange = jasmine.createSpy("onChange function");
-            element2.isolateScope().onChange = jasmine.createSpy("onChange function");
+            spyOn(element1.isolateScope(), 'onChange');
+            spyOn(element2.isolateScope(), 'onChange');
             changeText(scope, element1, 'super-complex-test-value');
             expect(element1.isolateScope().onChange).toHaveBeenCalled();
             expect(element2.isolateScope().onChange).not.toHaveBeenCalled();

@@ -50,8 +50,6 @@ namespace HubWeb.Controllers
         public ActionResult Index(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
-            if (this.UserIsAuthenticated())
-                return RedirectToAction("MyAccount", "User");
             return View();
         }
 
@@ -351,11 +349,6 @@ Please register first.");
         public async Task<ActionResult> ProcessGuestUserMode()
         {
             LoginStatus loginStatus = await _account.CreateAuthenticateGuestUser();
-
-            if (loginStatus == LoginStatus.Successful)
-            {
-                return RedirectToAction("Index", "Dashboard");
-            }
             return RedirectToAction("Index", "Welcome");
         }
     }
