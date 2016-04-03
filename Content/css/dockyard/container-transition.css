@@ -1,0 +1,11 @@
+﻿/* Container Transition */
+
+.container-transition {
+    font-size: 14px;
+}
+
+.container-transition .delete-btn {
+    color: red;
+    cursor: pointer;
+    float: right;
+}

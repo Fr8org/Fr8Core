@@ -483,6 +483,8 @@
   <ItemGroup>
     <Content Include="Api\EventResponse.aspx" />
     <Content Include="Api\GetEmailHTML.aspx" />
+    <Content Include="Content\css\dockyard\container-transition.css" />
+    <Content Include="Content\css\dockyard\query-builder.css" />
     <Content Include="Content\css\fonts\brankic.svg" />
     <Content Include="Content\css\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\css\frontcss\main_new.css" />
@@ -919,6 +921,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ContainerTransition.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DatePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Fr8Event.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\QueryBuilderCondition.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\SourceableCriteria.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\CrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TimePicker.ts" />
