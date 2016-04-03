@@ -41,8 +41,8 @@ namespace terminalSalesforce.Infrastructure
             JToken fieldsFromApiResponse;
             if (fieldsQueryResponse.TryGetValue("fields", out fieldsFromApiResponse) && fieldsFromApiResponse is JArray)
             {
-
-                if(onlyUpdatableFields)
+                //if asked to consider only updatable fields, filter the controls which are updateable
+                if (onlyUpdatableFields)
                 {
                     fieldsFromApiResponse = new JArray(fieldsFromApiResponse.Where(a => (a.Value<bool>("updateable") == true)));
                 }

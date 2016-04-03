@@ -18,6 +18,9 @@ using Newtonsoft.Json;
 
 namespace terminalSalesforce.Actions
 {
+    /// <summary>
+    /// A general activity which is used to save any Salesforce object dynamically.
+    /// </summary>
     public class Save_To_SalesforceDotCom_v1 : BaseTerminalActivity
     {
         ISalesforceManager _salesforce = new SalesforceManager();
@@ -34,6 +37,7 @@ namespace terminalSalesforce.Actions
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
+            //if storage is empty, return initial config
             if (CrateManager.IsStorageEmpty(curActivityDO))
             {
                 return ConfigurationRequestType.Initial;
@@ -46,6 +50,8 @@ namespace terminalSalesforce.Actions
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
+                //In initial config, just create a DDLB 
+                //to let the user select which object they want to save.
                 CreateWhatKindOfDataDDLBControl(crateStorage);
             }
 
@@ -54,8 +60,12 @@ namespace terminalSalesforce.Actions
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var configControlManifest = GetControlsManifest(curActivityDO);
-            var whatKindOfDataDDLBControl = (DropDownList)GetControl(configControlManifest, "WhatKindOfData", ControlTypes.DropDownList);
+            //In Follow Up config, Get Fields of the user selected object(ex., Lead) and populate Text Source controls
+            //to let the user to specify the values.
+
+            //if user did not select any object, retur the activity as it is
+            var curControls = GetControlsManifest(curActivityDO);
+            var whatKindOfDataDDLBControl = (DropDownList)GetControl(curControls, "WhatKindOfData", ControlTypes.DropDownList);
 
             string curSelectedObject = whatKindOfDataDDLBControl.selectedKey;
             if (string.IsNullOrEmpty(curSelectedObject))
@@ -67,9 +77,11 @@ namespace terminalSalesforce.Actions
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
+                //clear any existing TextSources. This is required when user changes the object in DDLB
                 GetConfigurationControls(crateStorage).Controls.RemoveAll(ctl => ctl is TextSource);
                 AddTextSourceControlForListOfFields(selectedObjectFieldsList, crateStorage, string.Empty, requestUpstream: true);
 
+                //create design time fields for the downstream activities.
                 crateStorage.RemoveByLabel("Salesforce Object Fields");
                 crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Salesforce Object Fields", selectedObjectFieldsList.ToList(), AvailabilityType.Configuration));
             }
@@ -81,14 +93,20 @@ namespace terminalSalesforce.Actions
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
+                //In Activate, we validate whether the user specified values for the Required controls
+
+                //get Fields which are reqired
                 var requiredFieldsList = crateStorage
                                             .CrateContentsOfType<FieldDescriptionsCM>(c => c.Label.Equals("Salesforce Object Fields"))
                                             .SelectMany(f => f.Fields.Where(s => s.IsRequired));
 
+                //get TextSources that represent the above required fields
                 var configControls = GetConfigurationControls(crateStorage);
                 var requiredFieldControlsList = configControls.Controls.OfType<TextSource>().Where(c => requiredFieldsList.Any(f => f.Value.Equals(c.Name)));
+
                 var curSelectedObject = configControls.Controls.OfType<DropDownList>().Single(c => c.Name.Equals("WhatKindOfData")).selectedKey;
 
+                //for each required field's control, check its value source
                 requiredFieldControlsList.ToList().ForEach(c =>
                 {
                     if (string.IsNullOrEmpty(c.ValueSource))
@@ -111,15 +129,19 @@ namespace terminalSalesforce.Actions
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
+                //get all fields
                 var fieldsList = crateStorage.CrateContentsOfType<FieldDescriptionsCM>(c => c.Label.Equals("Salesforce Object Fields")).SelectMany(f => f.Fields);
 
+                //get all text sources
                 var configControls = GetConfigurationControls(crateStorage);
                 var fieldControlsList = configControls.Controls.OfType<TextSource>();
+
                 var curSelectedObject = configControls.Controls.OfType<DropDownList>().Single(c => c.Name.Equals("WhatKindOfData")).selectedKey;
 
-                var jsonInputObject = new Dictionary<string, object>();
-
                 var payloadStorage = CrateManager.FromDto(payloadCrates.CrateStorage);
+
+                //get <Field> <Value> key value pair for the non empty field
+                var jsonInputObject = new Dictionary<string, object>();
                 fieldsList.ToList().ForEach(field =>
                 {
                     var jsonKey = field.Value;
