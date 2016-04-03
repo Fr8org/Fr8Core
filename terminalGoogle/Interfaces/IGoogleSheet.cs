@@ -23,5 +23,7 @@ namespace terminalGoogle.Interfaces
         Task WriteData(string spreadsheetUri, string worksheetUri, StandardTableDataCM data, GoogleAuthDTO authDTO);
 
         Task DeleteSpreadSheet(string spreadsheetname, GoogleAuthDTO authDTO);
+
+        Task DeleteWorksheet(string spreadsheetUri, string worksheetUri, GoogleAuthDTO authDTO);
     }
 }
