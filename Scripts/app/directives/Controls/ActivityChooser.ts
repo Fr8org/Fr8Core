@@ -7,7 +7,11 @@ module dockyard.directives {
     // --------------------------------------------------------------------------------
     const SelectActivityTemplate =
         '<div class="modal-header">\
-            <h4>Please, select activity from the list</h4>\
+            <h4 ng-if="!selectedWebService">Please, select web-service</h4>\
+            <h4 ng-if="selectedWebService" style="cursor: pointer;">\
+                <i class="fa fa-arrow-left" style="font-size: 16px; display: inline-block" ng-click="unselectWebService()"></i>\
+                <span style="display: inline-block;" ng-click="unselectWebService()">Activities</span>\
+            </h4>\
         </div>\
         <div class="modal-body">\
             <div style="overflow-y: auto; max-height: 500px">\
@@ -18,8 +22,9 @@ module dockyard.directives {
                     </div>\
                 </div>\
                 <div ng-if="selectedWebService">\
-                    <div ng-repeat="activity in selectedWebService.activities">\
-                        <span style="font-size: 1.3em;">{{activity.name}}</span>\
+                    <div ng-repeat="activity in selectedWebService.activities" ng-click="selectActivityTemplate(activity)" style="cursor: pointer;">\
+                        <i class="fa fa-cogs" style="font-size: 24px; display: inline-block; vertical-align: middle;"></i>\
+                        <span style="font-size: 1.3em; display: inline-block; margin: 20px 0 20px 0; vertical-align: middle;">{{activity.label}}</span>\
                     </div>\
                 </div>\
             </div>\
@@ -92,6 +97,16 @@ module dockyard.directives {
                 $scope.selectedWebService = webService;
             };
 
+            // Perform activity selection.
+            $scope.selectActivityTemplate = (activityTemplate: model.ActivityTemplate) => {
+                $scope.$close(activityTemplate);
+            };
+
+            // Perform web-service unselect.
+            $scope.unselectWebService = () => {
+                $scope.selectedWebService = null;
+            };
+
             // Force reload data.
             _reloadData();
         }
@@ -104,8 +119,13 @@ module dockyard.directives {
     interface IACSelectActivityControllerScope extends ng.IScope {
         webServiceActivities: Array<model.WebServiceActionSetDTO>;
         selectedWebService: model.WebServiceActionSetDTO;
+        selectedActivityTemplate: model.ActivityTemplate;
 
         selectWebService: (webService: model.WebServiceActionSetDTO) => void;
+        selectActivityTemplate: (activity: model.ActivityTemplate) => void;
+        unselectWebService: () => void;
+        
+        $close: (result: any) => void;
     }
 }
 
