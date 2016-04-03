@@ -3107,6 +3107,7 @@ Form Layouts
 /* Control Label */
 .control-label {
   margin-top: 1px;
+  margin-bottom: 1px;
 }
 .control-label .required {
   color: #e02222;

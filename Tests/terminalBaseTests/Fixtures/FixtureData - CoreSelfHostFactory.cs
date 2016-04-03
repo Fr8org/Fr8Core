@@ -27,6 +27,7 @@ namespace terminalBaseTests.Fixtures
             }
         }
 
+
         public class ActivitiesController_SelfHostStartup
         {
             public void Configuration(IAppBuilder app)
