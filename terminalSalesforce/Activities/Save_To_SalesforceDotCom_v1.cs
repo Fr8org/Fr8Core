@@ -135,9 +135,12 @@ namespace terminalSalesforce.Actions
 
                 if (!string.IsNullOrEmpty(result))
                 {
-                    var contactIdFields = new List<FieldDTO> { new FieldDTO(curSelectedObject + "ID", result) };
-                    crateStorage.Add(Crate.FromContent("Newly Created Salesforce " + curSelectedObject, new StandardPayloadDataCM(contactIdFields)));
-                    return Success(payloadCrates);
+                    using (var paylodCrateStroage = CrateManager.GetUpdatableStorage(payloadCrates))
+                    {
+                        var contactIdFields = new List<FieldDTO> { new FieldDTO(curSelectedObject + "ID", result) };
+                        paylodCrateStroage.Add(Crate.FromContent("Newly Created Salesforce " + curSelectedObject, new StandardPayloadDataCM(contactIdFields)));
+                        return Success(payloadCrates);
+                    }
                 }
 
                 return Error(payloadCrates, "Saving " + curSelectedObject + " to Salesforce.com is failed.");
