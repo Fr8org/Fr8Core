@@ -54,7 +54,7 @@ namespace terminalDocuSignTests.Integration
         }
         
 
-        [Test, Ignore]
+        [Test]
         [ExpectedException(typeof(AssertionException))]
         public async Task TestEmail_ShouldBeMissing()
         {
@@ -66,7 +66,7 @@ namespace terminalDocuSignTests.Integration
             EmailAssert.EmailReceived("dse_demo@docusign.net", "Test Message from Fr8");
         }
 
-        [Test, Ignore]
+        [Test]
         public async Task Mail_Merge_Into_DocuSign_EndToEnd()
         {
             await RevokeTokens();
