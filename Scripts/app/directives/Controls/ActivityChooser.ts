@@ -250,21 +250,8 @@ module dockyard.directives {
     export var ACConfigureActivityController = [
         '$scope',
         function ($scope: IACConfigureActivityControllerScope) {
-            var origClose = $scope.$close;
-            var origDismiss = $scope.$dismiss;
-
             $scope.save = () => {
                 $scope.$close();
-            };
-
-            $scope.$close = (result?: any) => {
-                debugger;
-                origClose(result);
-            };
-
-            $scope.$dismiss = (reason: string) => {
-                debugger;
-                origDismiss(reason);
             };
         }
     ];
