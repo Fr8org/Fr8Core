@@ -1,23 +1,15 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.UI;
-using AutoMapper;
 using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Data.States;
 using Hub.Managers;
-using TerminalBase;
-using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using Utilities;
 
 namespace terminalFr8Core.Actions
 {
@@ -37,7 +29,6 @@ namespace terminalFr8Core.Actions
         {
             var curPayloadDTO = await GetPayload(curActivityDO, containerId);
             
-
             //let's check current branch status
             using (var crateStorage = CrateManager.GetUpdatableStorage(curPayloadDTO))
             {
@@ -47,11 +38,10 @@ namespace terminalFr8Core.Actions
                     return Error(curPayloadDTO, "This Action can't run without OperationalStateCM crate", ActivityErrorCode.PAYLOAD_DATA_MISSING);
                 }
 
-                var currentBranch = GetCurrentBranch(operationsCrate, curActivityDO.GetLoopId());
+                var currentBranch = operationsCrate.GetLocalData<OperationalStateCM.BranchStatus>("Branch");
                 if (currentBranch == null)
                 {
-                    currentBranch = CreateBranch(curActivityDO.GetLoopId());
-                    operationsCrate.Branches.Add(currentBranch);
+                    currentBranch = CreateBranch();
                 }
 
                 currentBranch.Count += 1;
@@ -60,7 +50,8 @@ namespace terminalFr8Core.Actions
                 {
                     return Error(curPayloadDTO, "This container hit a maximum loop count and was stopped because we're afraid it might be an infinite loop");
                 }
-                else if (currentBranch.Count >= SmoothRunLimit)
+
+                if (currentBranch.Count >= SmoothRunLimit)
                 {
                     //it seems we need to slow down things
                     var diff = DateTime.UtcNow - currentBranch.LastBranchTime;
@@ -71,9 +62,10 @@ namespace terminalFr8Core.Actions
                 }
 
                 currentBranch.LastBranchTime = DateTime.UtcNow;
+                
+                operationsCrate.StoreLocalData("Branch", currentBranch);
             }
-
-
+            
             var payloadFields = GetAllPayloadFields(curPayloadDTO).Where(f => !string.IsNullOrEmpty(f.Key) && !string.IsNullOrEmpty(f.Value)).AsQueryable();
 
             var configControls = GetConfigurationControls(curActivityDO);
@@ -86,18 +78,18 @@ namespace terminalFr8Core.Actions
                     //let's return whatever this one says
                     switch (containerTransitionField.Transition)
                     {
-                            case ContainerTransitions.JumpToActivity:
+                        case ContainerTransitions.JumpToActivity:
                             //TODO check if targetNodeId is selected
                             return JumpToActivity(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
-                            case ContainerTransitions.JumpToPlan:
+                        case ContainerTransitions.JumpToPlan:
                             return LaunchPlan(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
-                            case ContainerTransitions.JumpToSubplan:
+                        case ContainerTransitions.JumpToSubplan:
                             return JumpToSubplan(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
-                            case ContainerTransitions.ProceedToNextActivity:
+                        case ContainerTransitions.ProceedToNextActivity:
                             return Success(curPayloadDTO);
-                            case ContainerTransitions.StopProcessing:
+                        case ContainerTransitions.StopProcessing:
                             return TerminateHubExecution(curPayloadDTO);
-                            case ContainerTransitions.SuspendProcessing:
+                        case ContainerTransitions.SuspendProcessing:
                             throw new NotImplementedException();
 
                         default:
@@ -110,17 +102,11 @@ namespace terminalFr8Core.Actions
             return Success(curPayloadDTO);
         }
 
-        private OperationalStateCM.BranchStatus GetCurrentBranch(OperationalStateCM operationalState, string currentActivityId)
-        {
-            return operationalState.Branches.FirstOrDefault(l => l.Id == currentActivityId);
-        }
-
-        private OperationalStateCM.BranchStatus CreateBranch(string currentActivityId)
+        private OperationalStateCM.BranchStatus CreateBranch()
         {
             return new OperationalStateCM.BranchStatus
             {
                 Count = 0,
-                Id = currentActivityId,
                 LastBranchTime = DateTime.UtcNow
             };
         }

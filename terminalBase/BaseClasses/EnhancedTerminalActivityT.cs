@@ -65,8 +65,7 @@ namespace TerminalBase.BaseClasses
         protected T ConfigurationControls { get; private set; }
         protected UpstreamQueryManager UpstreamQueryManager { get; private set; }
         protected UiBuilder UiBuilder { get; private set; }
-        protected int LoopIndex => GetLoopIndex(OperationalState, LoopId);
-        protected string LoopId => CurrentActivity.GetLoopId();
+        protected int LoopIndex => GetLoopIndex(OperationalState);
 
         /**********************************************************************************/
         // Functions
@@ -594,11 +593,13 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
         /// <summary>
-        /// Creates a reprocess child actions request
+        /// Call an activity or subplan  and return to the current activity
         /// </summary>
-        protected void RequestReprocessChildren()
+        /// <returns></returns>
+        protected void RequestCall(Guid targetNodeId)
         {
-            SetResponse(ActivityResponse.ReProcessChildren);
+            SetResponse(ActivityResponse.Call);
+            OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetNodeId });
         }
 
         /**********************************************************************************/

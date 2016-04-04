@@ -11,7 +11,6 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.DataTransferObjects.Helpers;
 using Data.Interfaces.Manifests;
-using Data.Migrations;
 using Data.States;
 using Hub.Exceptions;
 using Hub.Interfaces;
@@ -28,9 +27,14 @@ namespace Hub.Services
             /**********************************************************************************/
             // Declarations
             /**********************************************************************************/
+#if DEBUG
+            private const int MaxStackSize = 100;
+#else
+            private const int MaxStackSize = 250;
+#endif
 
             private readonly IUnitOfWork _uow;
-            private readonly Stack<OperationalStateCM.StackFrame> _callStack;
+            private readonly OperationalStateCM.ActivityCallStack _callStack;
             private readonly ContainerDO _container;
             private OperationalStateCM _operationalState;
             private readonly IActivity _activity;
@@ -40,7 +44,7 @@ namespace Hub.Services
             // Functions
             /**********************************************************************************/
 
-            public ExecutionSession(IUnitOfWork uow, Stack<OperationalStateCM.StackFrame> callStack, ContainerDO container, IActivity activity, ICrateManager crateManager)
+            public ExecutionSession(IUnitOfWork uow, OperationalStateCM.ActivityCallStack callStack, ContainerDO container, IActivity activity, ICrateManager crateManager)
             {
                 _uow = uow;
                 _callStack = callStack;
@@ -66,7 +70,7 @@ namespace Hub.Services
 
             /**********************************************************************************/
 
-            private OperationalStateCM.StackFrame PushFrame(Guid nodeId)
+            private void PushFrame(Guid nodeId)
             {
                 var node = _uow.PlanRepository.GetById<PlanNodeDO>(nodeId);
                 string nodeName = "undefined";
@@ -84,12 +88,12 @@ namespace Hub.Services
                 var frame = new OperationalStateCM.StackFrame
                 {
                     NodeId = nodeId,
-                    NodeName = nodeName
+                    NodeName = nodeName,
+                    LocalData = _operationalState.BypassData
                 };
 
                 _callStack.Push(frame);
-
-                return frame;
+                _operationalState.BypassData = null;
             }
 
             /**********************************************************************************/
@@ -98,6 +102,11 @@ namespace Hub.Services
             {
                 while (_callStack.Count > 0)
                 {
+                    if (_callStack.Count > MaxStackSize)
+                    {
+                        throw new Exception("Container execution stack overflow");
+                    }
+
                     var topFrame = _callStack.Peek();
                     var currentNode = _uow.PlanRepository.GetById<PlanNodeDO>(topFrame.NodeId);
 
@@ -109,6 +118,7 @@ namespace Hub.Services
                             {
                                 _operationalState = GetOperationalState(payloadStorage);
 
+                                _operationalState.CallStack = _callStack;
                                 // reset current activity response
                                 _operationalState.CurrentActivityResponse = null;
                                 // update container's payload
@@ -241,11 +251,16 @@ namespace Hub.Services
                         return false;
 
                     case ActivityResponse.RequestSuspend:
-                        _container.ContainerState = ContainerState.WaitingForTerminal;
-
+                        _container.ContainerState = ContainerState.Pending;
+                        
                         if (activityExecutionPhase == OperationalStateCM.ActivityExecutionPhase.ProcessingChildren)
                         {
                             _callStack.Push(topFrame);
+                        }
+                        else
+                        {
+                            // reset state of currently executed activity
+                            topFrame.CurrentActivityExecutionPhase = OperationalStateCM.ActivityExecutionPhase.WasNotExecuted;
                         }
 
                         return false;
@@ -313,6 +328,12 @@ namespace Hub.Services
                             _callStack.Pop();
                         }
 
+                        if (id == topFrame.NodeId)
+                        {
+                            // we want to pass current local data (from the topFrame) to the next activity we are calling.
+                            _operationalState.BypassData = topFrame.LocalData;
+                        }
+
                         // this is root node. Just push new frame
                         if (_callStack.Count == 0 || currentNode.ParentPlanNode == null)
                         {
@@ -321,7 +342,8 @@ namespace Hub.Services
                         else
                         {
                             var parentFrame = _callStack.Peek();
-                            // find activity that is preceeding to the one we are jumping to.
+                            // find activity that is preceeding the one we are jumping to.
+                            // so the next iteration of run cycle will exectute the activity we are jumping to
                             var prevToJump = currentNode.ParentPlanNode.ChildNodes.OrderByDescending(x => x.Ordering).FirstOrDefault(x => x.Ordering < targetNode.Ordering);
 
                             parentFrame.CurrentChildId = prevToJump?.Id;
@@ -417,8 +439,15 @@ namespace Hub.Services
 
                 _operationalState = GetOperationalState(containerStorage);
 
-                // just replace call stack with what we are using while running container. Activity can't change call stack and even if it happens we wan't to discard such action
+                // just replace call stack with what we are using while running container. Activity can't change call stack and even if it happens we want to discard such action
+                // the only exception is changes to LocalData related to the top activity in the stack. Activity can change this data and we want to sync it.
+                var localData = _operationalState.CallStack.Count > 0 ? _operationalState.CallStack.Peek().LocalData : null;
                 _operationalState.CallStack = _callStack;
+
+                if (_callStack.Count > 0)
+                {
+                    _callStack.Peek().LocalData = localData;
+                }
             }
 
             /**********************************************************************************/

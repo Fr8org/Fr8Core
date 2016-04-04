@@ -225,23 +225,7 @@ namespace TerminalBase.BaseClasses
         {
             return Error(payload, "No AuthToken provided.", ActivityErrorCode.NO_AUTH_TOKEN_PROVIDED);
         }
-
-        /// <summary>
-        /// Creates a reprocess child actions request
-        /// </summary>
-        /// <param name="payload"></param>
-        /// <returns></returns>
-        protected PayloadDTO ReProcessChildActivities(PayloadDTO payload)
-        {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
-            {
-                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.ReProcessChildren);
-            }
-
-            return payload;
-        }
-
+        
         protected async Task PushUserNotification(TerminalNotificationDTO notificationMessage)
         {
             await HubCommunicator.NotifyUser(notificationMessage, CurrentFr8UserId);
@@ -622,11 +606,7 @@ namespace TerminalBase.BaseClasses
 
             throw new ApplicationException(exceptionMessage);
         }
-
-
-
-
-
+        
         /*******************************************************************************************/
         // Working with upstream
         /*******************************************************************************************/
@@ -1255,17 +1235,17 @@ namespace TerminalBase.BaseClasses
         /// Is a helper method to decouple some of the GetCurrentElement Functionality
         /// </summary>
         /// <param name="operationalCrate">Crate of the OperationalStateCM</param>
-        /// <param name="loopId">Integer that is equal to the Action.Id</param>
         /// <returns>Index or pointer of the current IEnumerable Object</returns>
-        protected int GetLoopIndex(OperationalStateCM operationalCrate, string loopId)
+        protected int GetLoopIndex(OperationalStateCM operationalState)
         {
-            var curLoop = operationalCrate.Loops.FirstOrDefault(l => l.Id.Equals(loopId.ToString()));
-            if (curLoop == null)
+            var loopState = operationalState.CallStack.FirstOrDefault(x => x.LocalData?.Type == "Loop");
+
+            if (loopState != null) //this is a loop related data request
             {
-                throw new NullReferenceException("No Loop with the specified LoopId inside the provided OperationalStateCM crate");
+                return loopState.LocalData.ReadAs<OperationalStateCM.LoopStatus>().Index;
             }
-            var curIndex = curLoop.Index;
-            return curIndex;
+
+            throw new NullReferenceException("No Loop was found inside the provided OperationalStateCM crate");
         }
 
         // do not use after EnhancedTerminalActivity is introduced

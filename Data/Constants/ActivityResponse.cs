@@ -14,7 +14,6 @@ namespace Data.Constants
         RequestTerminate,
         RequestSuspend,
         SkipChildren,
-        ReProcessChildren,
         ExecuteClientActivity,
         ShowDocumentation,
         JumpToActivity,
@@ -26,8 +25,6 @@ namespace Data.Constants
         JumpFar,
         Call,
         Break,
-
-
     }
 
     public enum PlanType
