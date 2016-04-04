@@ -12,7 +12,7 @@ param(
 #Invoke-Expression "git config --global user.name 'Fr8 Admin'"
 #Invoke-Expression "git config --global -e"
 
-$tempFileName = "_tmp.txt"
+$tempFileName = "E:\_tmp.txt"
 
 $github_username = "fr8admin"
 $github_password = "ulysses3"
