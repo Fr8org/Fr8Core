@@ -25,28 +25,13 @@ namespace terminalDocuSign.Actions
     {
         protected override string ActivityUserFriendlyName => "Use DocuSign Template With New Document";
 
-        protected internal override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        protected override PayloadDTO SendAnEnvelope(DocuSignApiConfiguration loginInfo, PayloadDTO payloadCrates,
+            List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId)
         {
-            var payloadCrates = await GetPayload(curActivityDO, containerId);
-            var loginInfo = DocuSignManager.SetUp(authTokenDO);
-
-            var filehandler = CrateManager.GetByManifest<StandardFileDescriptionCM>(payloadCrates);
-
-            if (filehandler == null || string.IsNullOrEmpty(filehandler.TextRepresentation))
-                return Error(payloadCrates, "No file handle was found", ActivityErrorCode.PAYLOAD_DATA_MISSING);
-
-            return HandleTemplateData(curActivityDO, loginInfo, payloadCrates, filehandler);
-        }
-
-        private PayloadDTO HandleTemplateData(ActivityDO curActivityDO, DocuSignApiConfiguration loginInfo, PayloadDTO payloadCrates, StandardFileDescriptionCM filehandler)
-        {
-            var curTemplateId = ExtractTemplateId(curActivityDO);
-            var payloadCrateStorage = CrateManager.GetStorage(payloadCrates);
-            var fieldList = MapControlsToFields(CrateManager.GetStorage(curActivityDO), payloadCrateStorage);
-            var rolesList = MapRoleControlsToFields(CrateManager.GetStorage(curActivityDO), payloadCrateStorage);
             try
             {
-                DocuSignManager.SendAnEnvelopeFromTemplate(loginInfo, rolesList, fieldList, curTemplateId, filehandler);
+
+                DocuSignManager.SendAnEnvelopeFromTemplate(loginInfo, rolesList, fieldList, curTemplateId, null);
             }
             catch (Exception ex)
             {
@@ -72,9 +57,23 @@ namespace terminalDocuSign.Actions
                 Source = null
             };
 
+            var documentOverrideDDLB = new DropDownList
+            {
+                Label = "Use new document",
+                Name = "document_Override_DDLB",
+                Required = true,
+                Source = new FieldSourceDTO()
+                {
+                    ManifestType = CrateManifestTypes.StandardFileDescription,
+                    RequestUpstream = true,
+                    AvailabilityType = AvailabilityType.RunTime,
+                    Label = "File uploaded by Load Excel",
+                }
+            };
+
             var fieldsDTO = new List<ControlDefinitionDTO>
             {
-                infoBox, fieldSelectDocusignTemplateDTO
+                infoBox, fieldSelectDocusignTemplateDTO,documentOverrideDDLB
             };
 
             var controls = new StandardConfigurationControlsCM

@@ -62,6 +62,8 @@ namespace terminalExcel.Actions
             }
         }
 
+        private const string FileCrateLabel = "File uploaded by Load Excel";
+
         private const string RunTimeCrateLabel = "Table Generated From Load Excel File";
 
         private const string ConfigurationCrateLabel = "Selected File & Worksheet";
@@ -76,6 +78,7 @@ namespace terminalExcel.Actions
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
             runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            runtimeCrateManager.MarkAvailableAtRuntime<StandardFileDescriptionCM>(FileCrateLabel);
         }
 
         protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
@@ -121,7 +124,7 @@ namespace terminalExcel.Actions
                 Filename = Path.GetFileName(ConfigurationControls.FilePicker.Value)
             };
             CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, payload, AvailabilityType.RunTime));
-            CurrentPayloadStorage.Add(Crate.FromContent("Standard File Handler", fileDescription, AvailabilityType.RunTime));
+            CurrentPayloadStorage.Add(Crate.FromContent(FileCrateLabel, fileDescription, AvailabilityType.Always));
         }
 
         private FieldDTO SelectedFileDescription

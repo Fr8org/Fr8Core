@@ -39,8 +39,12 @@ namespace terminalDocuSign.Actions
         {
             var payloadCrates = await GetPayload(curActivityDO, containerId);
             var loginInfo = DocuSignManager.SetUp(authTokenDO);
+            var curTemplateId = ExtractTemplateId(curActivityDO);
+            var payloadCrateStorage = CrateManager.GetStorage(payloadCrates);
+            var fieldList = MapControlsToFields(CrateManager.GetStorage(curActivityDO), payloadCrateStorage);
+            var rolesList = MapRoleControlsToFields(CrateManager.GetStorage(curActivityDO), payloadCrateStorage);
 
-            return HandleTemplateData(curActivityDO, loginInfo, payloadCrates);
+            return SendAnEnvelope(loginInfo, payloadCrates, rolesList, fieldList, curTemplateId);
         }
 
         protected string ExtractTemplateId(ActivityDO curActivityDO)
@@ -58,12 +62,9 @@ namespace terminalDocuSign.Actions
             return result;
         }
 
-        private PayloadDTO HandleTemplateData(ActivityDO curActivityDO, DocuSignApiConfiguration loginInfo, PayloadDTO payloadCrates)
+        protected virtual PayloadDTO SendAnEnvelope(DocuSignApiConfiguration loginInfo, PayloadDTO payloadCrates,
+            List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId)
         {
-            var curTemplateId = ExtractTemplateId(curActivityDO);
-            var payloadCrateStorage = CrateManager.GetStorage(payloadCrates);
-            var fieldList = MapControlsToFields(CrateManager.GetStorage(curActivityDO), payloadCrateStorage);
-            var rolesList = MapRoleControlsToFields(CrateManager.GetStorage(curActivityDO), payloadCrateStorage);
             try
             {
                 DocuSignManager.SendAnEnvelopeFromTemplate(loginInfo, rolesList, fieldList, curTemplateId);
@@ -264,7 +265,7 @@ namespace terminalDocuSign.Actions
                   "DocuSignTemplateRolesFields",
                   AvailabilityType.Configuration,
                   roles.ToArray()
-                    
+
               );
 
                 crateStorage.RemoveByLabel("DocuSignTemplateRolesFields");
