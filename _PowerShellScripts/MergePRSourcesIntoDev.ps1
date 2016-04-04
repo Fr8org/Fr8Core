@@ -21,7 +21,7 @@ $buildBranchName = "dev+$sourceBranchName"
 
 Write-Host "Switching to dev branch..."
 
-Invoke-Expression "git fetch $giturl"
+Invoke-Expression "git fetch $giturl | Out-String"
 
 if ($LastExitCode -ne 0)
 {
@@ -38,7 +38,7 @@ if ($LastExitCode -ne 0)
 }
 
 Write-Host "Getting the latest dev branch from GitHub repo..."
-Invoke-Expression "git pull $giturl dev"
+Invoke-Expression "git pull $giturl dev | Out-String"
 if ($LastExitCode -ne 0)
 {
 	Write-Host "Failed to get the latest dev branch."
@@ -54,7 +54,7 @@ if (![System.String]::IsNullOrEmpty($result))
 }
 
 Write-Host "Creating new branch $buildBranchName for build process..."
-Invoke-Expression "git checkout -b $buildBranchName"
+Invoke-Expression "git checkout -b $buildBranchName  | Out-String"
 if ($LastExitCode -ne 0)
 {
     Write-Host "Failed to checkout new branch for build process."
