@@ -239,6 +239,16 @@ namespace Hub.Services
             return validationErrors.Count < 1;
         }
 
+        public Task<ActivityDO> GetFirstActivity(IUnitOfWork uow, Guid subPlanId)
+        {
+            var result = uow.PlanRepository.GetActivityQueryUncached()
+                .Where(x => x.ParentPlanNodeId == subPlanId)
+                .OrderBy(x => x.Ordering)
+                .FirstOrDefault();
+
+            return Task.FromResult(result);
+        }
+
         //TODO find a better response type for this function
         public async Task<bool> DeleteActivity(string userId, Guid actionId, bool confirmed)
         {

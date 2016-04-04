@@ -13,6 +13,7 @@ module dockyard.controllers {
     }
 
     export interface IPlanBuilderScope extends ng.IScope {
+        isPlanBuilderScope: boolean;
         planId: string;
         subPlans: Array<model.SubPlanDTO>;
         fields: Array<model.Field>;
@@ -100,6 +101,9 @@ module dockyard.controllers {
         ) {
 
             this.LayoutService.resetLayout();
+
+            this.$scope.isPlanBuilderScope = true;
+
             this.$scope.current = new model.PlanBuilderState();
             this.$scope.actionGroups = [];
 

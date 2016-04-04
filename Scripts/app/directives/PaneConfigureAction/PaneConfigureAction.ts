@@ -440,7 +440,6 @@ module dockyard.directives.paneConfigureAction {
                     .then((res: interfaces.IActionVM) => {
                         var childActionsDetected = false;
 
-
                         // Detect OperationalState crate with CurrentClientActionName = 'RunImmediately'.
                         if (this.crateHelper.hasCrateOfManifestType(res.crateStorage, 'Operational State')) {
                             var operationalStatus = this.crateHelper

@@ -27,6 +27,7 @@ namespace terminalFr8Core.Actions
             {
                 AddControl(crateStorage, new ActivityChooser()
                 {
+                    Name = "Address",
                     Label = "Address"
                 });
             }

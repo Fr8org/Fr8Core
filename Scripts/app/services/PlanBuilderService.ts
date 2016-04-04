@@ -19,6 +19,7 @@ module dockyard.services {
     export interface ISubPlanService extends ng.resource.IResourceClass<interfaces.ISubPlanVM> {
         create: (subPlan: model.SubPlanDTO) => interfaces.ISubPlanVM;
         update: (subPlan: model.SubPlanDTO) => interfaces.ISubPlanVM;
+        clear: (id: string) => interfaces.ISubPlanVM;
     }
 
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
@@ -234,6 +235,11 @@ module dockyard.services {
                     method: 'PUT',
                     isArray: false,
                     url: '/api/subplans'
+                },
+                'clear': {
+                    method: 'POST',
+                    isArray: false,
+                    url: '/api/subplans/clear'
                 }
             })
     ]);

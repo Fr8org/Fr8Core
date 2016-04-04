@@ -62,6 +62,9 @@ namespace Data.Control
         {
             Type = ControlTypes.ActivityChooser;
         }
+
+        [JsonProperty("subPlanId")]
+        public Guid? SubPlanId { get; set; }
     }
 
     public class CheckBox : ControlDefinitionDTO
