@@ -8,8 +8,8 @@ param(
     [string]$sourceBranchName = $env:BUILD_SOURCEBRANCHNAME
 )
 
-$github_username = "kryvol"
-$github_password = "Jimmorrison1971"
+$github_username = "fr8admin@fr8.co"
+$github_password = "ulysses3"
 
 $giturl = "https://{0}:{1}@github.com/alexed1/fr8company" -f $github_username, $github_password
 
