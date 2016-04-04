@@ -8,6 +8,10 @@ param(
     [string]$sourceBranchName = $env:BUILD_SOURCEBRANCHNAME
 )
 
+Invoke-Expression 'git config --global user.email "fr8admin@fr8.co"'
+Invoke-Expression 'git config --global user.name "Fr8 Admin"'
+Invoke-Expression 'git config --global -e'
+
 $github_username = "fr8admin"
 $github_password = "ulysses3"
 
