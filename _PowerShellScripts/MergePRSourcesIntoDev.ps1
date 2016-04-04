@@ -38,14 +38,14 @@ if ($LastExitCode -ne 0)
 }
 
 Write-Host "Getting the latest dev branch from GitHub repo..."
-Invoke-Expression "git pull $giturl dev | Out-String"
+Invoke-Expression "git pull $giturl dev | Out-Null"
 if ($LastExitCode -ne 0)
 {
 	Write-Host "Failed to get the latest dev branch."
 	exit 1;
 }
 
-$command = "git branch --list $buildBranchName | Out-String"
+$command = "git branch --list $buildBranchName | Out-Null"
 $result = Invoke-Expression $command
 if (![System.String]::IsNullOrEmpty($result))
 {
@@ -54,7 +54,7 @@ if (![System.String]::IsNullOrEmpty($result))
 }
 
 Write-Host "Creating new branch $buildBranchName for build process..."
-Invoke-Expression "git checkout -b $buildBranchName  | Out-String"
+Invoke-Expression "git checkout -b $buildBranchName  | Out-Null"
 if ($LastExitCode -ne 0)
 {
     Write-Host "Failed to checkout new branch for build process."
