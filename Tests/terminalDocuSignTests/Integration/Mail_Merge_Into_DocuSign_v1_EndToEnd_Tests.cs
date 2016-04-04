@@ -54,7 +54,7 @@ namespace terminalDocuSignTests.Integration
         }
         
 
-        [Test]
+        [Test, Ignore]
         [ExpectedException(typeof(AssertionException))]
         public async Task TestEmail_ShouldBeMissing()
         {
@@ -134,6 +134,10 @@ namespace terminalDocuSignTests.Integration
             this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?id=" + this.solution.Id, this.solution);
             crateStorage = Crate.FromDto(this.solution.CrateStorage);
             Assert.AreEqual(2, this.solution.ChildrenActivities.Count(), "Solution child actions failed to create.");
+
+
+
+
 
             // Assert Loop activity has CrateChooser with assigned manifest types.
             var loopActivity = this.solution.ChildrenActivities[1];
@@ -314,7 +318,6 @@ namespace terminalDocuSignTests.Integration
         [Test]
         public async Task Mail_Merge_Into_DocuSign_EndToEnd_Upstream_Values_From_Google_Check_Tabs()
         {
-            Debugger.Launch();
             //
             //Setup Test
             //
@@ -480,45 +483,43 @@ namespace terminalDocuSignTests.Integration
             //
             var container = await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
             Assert.AreEqual(container.ContainerState, ContainerState.Completed);
-
-
             //
             // Assert 
             //
 
             //get the envelope from DocuSign
             var configuration =  new DocuSignManager().SetUp(_terminalDocuSignTestTools.GetDocuSignAuthToken(tokenGuid));
-            //var settings = GetDocusignQuery(configurationControls);
+            //find the envelope on the docusign Account
             var folderItems = DocuSignFolders.GetFolderItems(configuration, new DocusignQuery()
             {       
                 Status = "sent",
                 SearchText = spreadsheetKeyWord
             });
 
-            var envelopeId = folderItems.FirstOrDefault().EnvelopeId;
-
+            var envelope = folderItems.FirstOrDefault();
+            Assert.IsNotNull(envelope, "Cannot find created Envelope in sent folder of DocuSign Account");
             var envelopeApi = new EnvelopesApi(configuration.Configuration);
             //get the recipient that receive this sent envelope
-            var envelopeSigner = envelopeApi.ListRecipients(configuration.AccountId, envelopeId).Signers.FirstOrDefault();
+            var envelopeSigner = envelopeApi.ListRecipients(configuration.AccountId, envelope.EnvelopeId).Signers.FirstOrDefault();
             Assert.IsNotNull(envelopeSigner, "Envelope does not contain signer as recipient. Send_DocuSign_Envelope activity failed to provide any signers");
             //get the tabs for the envelope that this recipient received
-            var tabs = envelopeApi.ListTabs(configuration.AccountId, envelopeId, envelopeSigner.RecipientId);
+            var tabs = envelopeApi.ListTabs(configuration.AccountId, envelope.EnvelopeId, envelopeSigner.RecipientId);
             Assert.IsNotNull(tabs, "Envelope does not contain any tabs. Check for problems in DocuSignManager and HandleTemplateData");
             
             //check all tabs and their values for received envelope, and compare them to those from the google sheet configured into Mail_Merge_Into_Docusign solution 
-            var titleRecipientTab = tabs.TextTabs.FirstOrDefault(x => x.TabLabel == "title");
+            var titleRecipientTab = tabs.TextTabs.FirstOrDefault(x => x.TabLabel == "Title");
             Assert.IsNotNull(titleRecipientTab, "Envelope does not contain Title tab. Check for problems in DocuSignManager and HandleTemplateData");
             Assert.AreEqual(tableFixtureData.Table[1].Row.FirstOrDefault(x=>x.Cell.Key == "title").Cell.Value, titleRecipientTab.Value, "Provided value for Title in document for recipient after finishing mail merge plan is incorrect");
 
-            var companyRecipientTab = tabs.TextTabs.FirstOrDefault(x => x.TabLabel == "company");
+            var companyRecipientTab = tabs.TextTabs.FirstOrDefault(x => x.TabLabel == "Company");
             Assert.IsNotNull(companyRecipientTab, "Envelope does not contain Company tab. Check for problems in DocuSignManager and HandleTemplateData");
             Assert.AreEqual(tableFixtureData.Table[1].Row.FirstOrDefault(x => x.Cell.Key == "company").Cell.Value, companyRecipientTab.Value, "Provided value for CompanyName in document for recipient after finishing mail merge plan is incorrect");
 
-            var phoneRecipientTab = tabs.TextTabs.FirstOrDefault(x => x.TabLabel == "phone");
+            var phoneRecipientTab = tabs.TextTabs.FirstOrDefault(x => x.TabLabel == "Phone");
             Assert.IsNotNull(phoneRecipientTab, "Envelope does not contain phone tab. Check for problems in DocuSignManager and HandleTemplateData");
             Assert.AreEqual(tableFixtureData.Table[1].Row.FirstOrDefault(x => x.Cell.Key == "phone").Cell.Value, phoneRecipientTab.Value, "Provided value for phone in document for recipient after finishing mail merge plan is incorrect");
 
-            var listRecipientTab = tabs.ListTabs.FirstOrDefault(x => x.TabLabel == "Size of Company(Lead)");
+            var listRecipientTab = tabs.ListTabs.FirstOrDefault(x => x.TabLabel == "Size of Company");
             Assert.IsNotNull(listRecipientTab, "Envelope does not contain List Tab for Size of Company tab. Check for problems in DocuSignManager and HandleTemplateData");
             Assert.AreEqual("Medium (51-250)", listRecipientTab.Value, "Provided value for Size of Company(Lead) in document for recipient after finishing mail merge plan is incorrect");
 
