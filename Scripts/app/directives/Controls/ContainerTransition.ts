@@ -37,7 +37,7 @@ module dockyard.directives.containerTransition {
             var operationList = [
                 new model.DropDownListItem('Jump To Activity', ContainerTransitions.JumpToActivity.toString()),
                 new model.DropDownListItem('Launch Plan', ContainerTransitions.JumpToPlan.toString()),
-                new model.DropDownListItem('Jump To Subplan', ContainerTransitions.JumpToSubplan.toString()),
+                new model.DropDownListItem('Launch Additional Plan', ContainerTransitions.LaunchAdditionalPlan.toString()),
                 new model.DropDownListItem('Stop Processing', ContainerTransitions.StopProcessing.toString()),
                 //new model.DropDownListItem('Suspend Processing', ContainerTransitions.SuspendProcessing.toString()),
                 //new model.DropDownListItem('Proceed To Next Activity', ContainerTransitions.ProceedToNextActivity.toString())
@@ -185,7 +185,7 @@ module dockyard.directives.containerTransition {
                     case ContainerTransitions.JumpToPlan:
                         (<any>transition)._dummySecondaryOperationDD = buildPlanDropdown();
                         break;
-                    case ContainerTransitions.JumpToSubplan:
+                    case ContainerTransitions.LaunchAdditionalPlan:
                         (<any>transition)._dummySecondaryOperationDD = buildSubplanDropdown();
                         break;
                     case ContainerTransitions.StopProcessing:

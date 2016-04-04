@@ -189,6 +189,15 @@ namespace Hub.Services
             return subplan?.ChildNodes.OrderBy(c => c.Ordering).FirstOrDefault()?.Id;
         }
 
+        private async Task LoadAndRunPlan(IUnitOfWork uow, ContainerDO curContainerDO, ActivityResponseDTO activityResponseDTO)
+        {
+            ResponseMessageDTO responseMessage;
+            activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
+            var addPlanId = Guid.Parse((string)responseMessage.Details);
+                
+            await LoadAndRunPlan(uow, curContainerDO, addPlanId);
+        }
+
         private async Task LoadAndRunPlan(IUnitOfWork uow, ContainerDO curContainerDO, Guid planId)
         {
             var plan = ObjectFactory.GetInstance<IPlan>();
@@ -201,7 +210,7 @@ namespace Hub.Services
             operationStateCrate.History.Add(new OperationalStateCM.HistoryElement { Description = "Launch Triggered by Container ID "+ curContainerDO.Id });
 
             var payloadCrates = crateStorage.AsEnumerable().ToArray();
-            await plan.Run(uow, planDO, payloadCrates);
+            plan.Enqueue(planDO.Id, payloadCrates);
         }
 
         public async Task Run(IUnitOfWork uow, ContainerDO curContainerDO)
@@ -253,7 +262,7 @@ namespace Hub.Services
                             return;
 
                         case ActivityResponse.Error:
-                            //TODO retry activity execution until 3 errors??
+                            //TODO retry activity execution until 3 errors??    
                             //so we are able to show the specific error that is embedded inside the container we are sending back that container to client
                             ErrorDTO error = activityResponseDTO.TryParseErrorDTO(out error) ? error : null;
                             throw new ErrorResponseException(Mapper.Map<ContainerDO, ContainerDTO>(curContainerDO), error?.Message);
@@ -270,18 +279,14 @@ namespace Hub.Services
                             curContainerDO.CurrentPlanNodeId = Guid.Parse((string)responseMessage.Details);
                             continue;
 
-                        case ActivityResponse.JumpToSubplan:
-                            actionState = ActivityState.InitialRun;
-                            activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
-                            var subplanId = Guid.Parse((string)responseMessage.Details);
-                            curContainerDO.CurrentPlanNodeId = GetFirstActivityOfSubplan(uow, curContainerDO, subplanId);
+                        case ActivityResponse.LaunchAdditionalPlan:
+                            //actionState = ActivityState.InitialRun;
+                            await LoadAndRunPlan(uow, curContainerDO, activityResponseDTO);
                             continue;
 
                         case ActivityResponse.RequestLaunch:
-                            activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
-                            var planId = Guid.Parse((string)responseMessage.Details);
                             //hmm what to do now
-                            await LoadAndRunPlan(uow, curContainerDO, planId);
+                            await LoadAndRunPlan(uow, curContainerDO, activityResponseDTO);
                             break;
 
                         default:

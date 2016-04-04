@@ -92,7 +92,7 @@ namespace terminalFr8Core.Actions
                             case ContainerTransitions.JumpToPlan:
                             return LaunchPlan(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
                             case ContainerTransitions.JumpToSubplan:
-                            return JumpToSubplan(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
+                            return LaunchAdditionalPlan(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
                             case ContainerTransitions.ProceedToNextActivity:
                             return Success(curPayloadDTO);
                             case ContainerTransitions.StopProcessing:
