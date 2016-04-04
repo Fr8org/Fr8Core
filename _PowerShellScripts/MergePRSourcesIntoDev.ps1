@@ -23,7 +23,7 @@ $buildBranchName = "dev+$sourceBranchName"
 
 Write-Host "Switching to dev branch..."
 
-Invoke-Expression "git fetch $giturl | Out-File $tempFileName -Append"
+Invoke-Expression "git fetch $giturl 2> | Out-File $tempFileName -Append"
 
 if ($LastExitCode -ne 0)
 {
@@ -40,14 +40,14 @@ if ($LastExitCode -ne 0)
 }
 
 Write-Host "Getting the latest dev branch from GitHub repo..."
-Invoke-Expression "git pull $giturl dev | Out-File $tempFileName -Append"
+Invoke-Expression "git pull $giturl dev 2> | Out-File $tempFileName -Append"
 if ($LastExitCode -ne 0)
 {
 	Write-Host "Failed to get the latest dev branch."
 	exit 1;
 }
 
-$command = "git branch --list $buildBranchName | Out-File $tempFileName -Append"
+$command = "git branch --list $buildBranchName"
 $result = Invoke-Expression $command
 if (![System.String]::IsNullOrEmpty($result))
 {
@@ -56,7 +56,7 @@ if (![System.String]::IsNullOrEmpty($result))
 }
 
 Write-Host "Creating new branch $buildBranchName for build process..."
-Invoke-Expression "git checkout -b $buildBranchName  | Out-File $tempFileName -Append"
+Invoke-Expression "git checkout -b $buildBranchName 2> | Out-File $tempFileName -Append"
 if ($LastExitCode -ne 0)
 {
     Write-Host "Failed to checkout new branch for build process."
