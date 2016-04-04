@@ -59,15 +59,17 @@ namespace terminaBaselTests.Tools.Activities
             return saveToGoogleSheetActivityDTO;
         }
 
-        public async Task<ActivityDTO> AddAndConfigureGetFromGoogleSheet(PlanDTO plan,
-                                                                         int ordering,
-                                                                         string spreadsheetName)
+        public async Task<ActivityDTO> AddAndConfigureGetFromGoogleSheet(PlanDTO plan,int ordering, string spreadsheetName, bool includeFixtureAuthToken)
         {
             var activityName = "Get_Google_Sheet_Data";
+
             var getFromGoogleSheetActivityDTO = await AddGoogleActivityToPlan(plan, ordering, ActivityCategory.Receivers, activityName);
-            //Select the given spreadsheet and worksheet
-            var googleSheetApi = new GoogleSheet(new GoogleIntegration());
-            var googleAuth = JsonConvert.DeserializeObject<GoogleAuthDTO>(FixtureData.GetGoogleAuthorizationToken().Token);
+
+            return await ConfigureGetFromGoogleSheetActivity(getFromGoogleSheetActivityDTO, spreadsheetName, includeFixtureAuthToken);
+        }
+
+        public async Task<ActivityDTO> ConfigureGetFromGoogleSheetActivity(ActivityDTO getFromGoogleSheetActivityDTO, string spreadsheetName, bool includeFixtureAuthToken, string worksheetName = null)
+        {
             using (var crateStorage = _baseHubITest.Crate.GetUpdatableStorage(getFromGoogleSheetActivityDTO))
             {
                 var controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
@@ -78,10 +80,37 @@ namespace terminaBaselTests.Tools.Activities
                 Assert.IsNotNullOrEmpty(spreadsheetUri, $"Default Google account doesn't contain spreadsheet '{spreadsheetName}'");
                 activityUi.SpreadsheetList.selectedKey = spreadsheetName;
                 activityUi.SpreadsheetList.Value = spreadsheetUri;
+
                 crateStorage.Add(Crate<StandardConfigurationControlsCM>.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
             }
+
+            if (!string.IsNullOrEmpty(worksheetName))
+            {
+                getFromGoogleSheetActivityDTO = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/save", getFromGoogleSheetActivityDTO);
+                getFromGoogleSheetActivityDTO = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/configure", getFromGoogleSheetActivityDTO);
+
+                using (var crateStorage = _baseHubITest.Crate.GetUpdatableStorage(getFromGoogleSheetActivityDTO))
+                {
+                    var controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
+                    var activityUi = new Get_Google_Sheet_Data_v1.ActivityUi();
+                    activityUi.SyncWith(controlsCrate.Content);
+                    crateStorage.Remove<StandardConfigurationControlsCM>();
+
+                    var worksheetUri = activityUi.WorksheetList.ListItems.Where(x => x.Key == worksheetName).Select(x => x.Value).FirstOrDefault();
+                    Assert.IsNotNullOrEmpty(worksheetUri, $"Default Google account doesn't contain worksheet '{worksheetName}' for the spreadsheet '{spreadsheetName}'");
+                    activityUi.WorksheetList.selectedKey = worksheetName;
+                    activityUi.WorksheetList.Value = worksheetUri;
+                    
+                    crateStorage.Add(Crate<StandardConfigurationControlsCM>.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
+                }
+            }
+
             getFromGoogleSheetActivityDTO = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/save", getFromGoogleSheetActivityDTO);
-            getFromGoogleSheetActivityDTO.AuthToken = FixtureData.GetGoogleAuthorizationToken();
+
+            if (includeFixtureAuthToken)
+            {
+                getFromGoogleSheetActivityDTO.AuthToken = FixtureData.GetGoogleAuthorizationToken();
+            }
             getFromGoogleSheetActivityDTO = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/configure", getFromGoogleSheetActivityDTO);
             return getFromGoogleSheetActivityDTO;
         }

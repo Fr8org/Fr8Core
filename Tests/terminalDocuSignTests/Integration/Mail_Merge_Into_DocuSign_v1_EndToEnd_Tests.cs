@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Text;
 using System.Net;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using Data.Constants;
 using Hub.Managers;
@@ -17,6 +18,11 @@ using Data.Crates;
 using Data.Control;
 using Data.States;
 using Data.Entities;
+using DocuSign.eSign.Api;
+using terminaBaselTests.Tools.Activities;
+using terminalDocuSign.Services;
+using terminalDocuSign.Services.New_Api;
+using UtilitiesTesting.Fixtures;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -29,16 +35,26 @@ namespace terminalDocuSignTests.Integration
     [Category("terminalDocuSignTests.Integration")]
     public class Mail_Merge_Into_DocuSign_v1_EndToEnd_Tests : BaseHubIntegrationTest
     {
+        #region Properties
+
+        private ActivityDTO solution;
+        private ICrateStorage crateStorage;
+        private terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalDocuSign _terminalDocuSignTestTools;
+
         public override string TerminalName
         {
             get { return "terminalDocuSign"; }
         }
 
+        #endregion
 
-        ActivityDTO solution;
-        ICrateStorage crateStorage;
+        public Mail_Merge_Into_DocuSign_v1_EndToEnd_Tests()
+        {
+            _terminalDocuSignTestTools = new terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalDocuSign(this);
+        }
+        
 
-        [Test, Ignore]
+        [Test]
         [ExpectedException(typeof(AssertionException))]
         public async Task TestEmail_ShouldBeMissing()
         {
@@ -50,7 +66,7 @@ namespace terminalDocuSignTests.Integration
             EmailAssert.EmailReceived("dse_demo@docusign.net", "Test Message from Fr8");
         }
 
-        [Test]
+        [Test, Ignore]
         public async Task Mail_Merge_Into_DocuSign_EndToEnd()
         {
             await RevokeTokens();
@@ -73,31 +89,10 @@ namespace terminalDocuSignTests.Integration
             var stAuthCrate = crateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
             bool defaultDocuSignAuthTokenExists = stAuthCrate == null;
 
-
             if (!defaultDocuSignAuthTokenExists)
             {
-                //
                 // Authenticate with DocuSign
-                //
-
-                var creds = GetDocuSignCredentials();
-                creds.TerminalId = solution.ActivityTemplate.TerminalId;
-
-                var token = await HttpPostAsync<CredentialsDTO, JObject>(_baseUrl + "authentication/token", creds);
-                Assert.AreNotEqual(token["error"].ToString(), "Unable to authenticate in DocuSign service, invalid login name or password.", "DocuSign auth error. Perhaps max number of tokens is exceeded.");
-                Assert.AreEqual(false, String.IsNullOrEmpty(token["authTokenId"].Value<string>()), "AuthTokenId is missing in API response.");
-                Guid tokenGuid = Guid.Parse(token["authTokenId"].Value<string>());
-
-                //
-                // Asociate token with action
-                //
-                var applyToken = new ManageAuthToken_Apply()
-                {
-                    ActivityId = solution.Id,
-                    AuthTokenId = tokenGuid,
-                    IsMain = true
-                };
-                await HttpPostAsync<ManageAuthToken_Apply[], string>(_baseUrl + "ManageAuthToken/apply", new ManageAuthToken_Apply[] { applyToken });
+                await _terminalDocuSignTestTools.AuthenticateDocuSignAndAccociateTokenWithAction(solution.Id, GetDocuSignCredentials(), solution.ActivityTemplate.TerminalId);
             }
 
             //
@@ -302,6 +297,216 @@ namespace terminalDocuSignTests.Integration
             var container = await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
             Assert.AreEqual(container.ContainerState, ContainerState.Completed);
 
+            //
+            // Deactivate plan
+            //
+            await HttpPostAsync<string, string>(_baseUrl + "plans/deactivate?planId=" + plan.Plan.Id, null);
+
+            // Verify that test email has been received
+            EmailAssert.EmailReceived("dse_demo@docusign.net", "Test Message from Fr8");
+
+            //
+            // Delete plan
+            //
+            await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
+        }
+
+        [Test]
+        public async Task Mail_Merge_Into_DocuSign_EndToEnd_Upstream_Values_From_Google_Check_Tabs()
+        {
+            //
+            //Setup Test
+            //
+            await RevokeTokens();
+
+            var terminalGoogleTestTools = new terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalGoogle(this);
+            var googleActivityTestTools = new terminaBaselTests.Tools.Activities.IntegrationTestTools_terminalGoogle(this);
+            var googleAuthTokenId = await terminalGoogleTestTools.ExtractGoogleDefaultToken();
+
+            string spreadsheetName = Guid.NewGuid().ToString();
+            string spreadsheetKeyWord = Guid.NewGuid().ToString();
+            string worksheetName = "TestSheet";
+
+            //check if excel exists with data
+            string spreadsheetId = await terminalGoogleTestTools.CreateNewSpreadsheet(googleAuthTokenId, spreadsheetName, worksheetName, FixtureData.TestStandardTableData(TestEmail, spreadsheetKeyWord));
+
+            var solutionCreateUrl = _baseUrl + "activities/create?solutionName=Mail_Merge_Into_DocuSign";
+
+            //
+            // Create solution
+            //
+            var plan = await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
+            var solution = plan.Plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault();
+
+            //
+            // Send configuration request without authentication token
+            //
+            this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?id=" + solution.Id, solution);
+            crateStorage = Crate.FromDto(this.solution.CrateStorage);
+            var stAuthCrate = crateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
+            bool defaultDocuSignAuthTokenExists = stAuthCrate == null;
+
+            Guid tokenGuid = Guid.Empty;
+            if (!defaultDocuSignAuthTokenExists)
+            {
+                // Authenticate with DocuSign
+                tokenGuid = await _terminalDocuSignTestTools.AuthenticateDocuSignAndAccociateTokenWithAction(solution.Id, GetDocuSignCredentials(), solution.ActivityTemplate.TerminalId);
+            }
+
+            //
+            // Send configuration request with authentication token
+            //
+            this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?id=" + solution.Id, solution);
+            crateStorage = Crate.FromDto(this.solution.CrateStorage);
+            Assert.True(crateStorage.CratesOfType<StandardConfigurationControlsCM>().Any(), "Crate StandardConfigurationControlsCM is missing in API response.");
+
+            var controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
+            var controls = controlsCrate.Content.Controls;
+            var dataSource = controls.OfType<DropDownList>().FirstOrDefault(c => c.Name == "DataSource");
+            dataSource.Value = "Get_Google_Sheet_Data";
+            dataSource.selectedKey = "Get Google Sheet Data";
+            var template = controls.OfType<DropDownList>().FirstOrDefault(c => c.Name == "DocuSignTemplate");
+            template.Value = "a439cedc-92a8-49ad-ab31-e2ee7964b468";
+            template.selectedKey = "Fr8 Fromentum Registration Form";
+            var button = controls.OfType<Button>().FirstOrDefault();
+            button.Clicked = true;
+
+            //
+            // Configure solution
+            //
+            using (var crateStorage = Crate.GetUpdatableStorage(this.solution))
+            {
+                crateStorage.Remove<StandardConfigurationControlsCM>();
+                crateStorage.Add(controlsCrate);
+            }
+            this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?id=" + this.solution.Id, this.solution);
+            crateStorage = Crate.FromDto(this.solution.CrateStorage);
+            Assert.AreEqual(2, this.solution.ChildrenActivities.Count(), "Solution child actions failed to create.");
+
+            //
+            // configure Get_Google_Sheet_Data activity
+            //
+            var googleSheetActivity = this.solution.ChildrenActivities.Single(a=>a.Label.Equals("get google sheet data", StringComparison.InvariantCultureIgnoreCase));
+            await googleActivityTestTools.ConfigureGetFromGoogleSheetActivity(googleSheetActivity, spreadsheetName, false, worksheetName);
+            
+            //
+            // configure Loop activity
+            //
+            var loopActivity = this.solution.ChildrenActivities.Single(a => a.Label.Equals("loop", StringComparison.InvariantCultureIgnoreCase));
+            var terminalFr8CoreTools = new IntegrationTestTools_terminalFr8(this);
+            loopActivity = await terminalFr8CoreTools.ConfigureLoopActivity(loopActivity, "Standard Table Data", "Table Generated From Google Sheet Data");
+
+            //
+            // Configure Send DocuSign Envelope action
+            //
+
+            // Initial Configuration
+            var sendEnvelopeAction = loopActivity.ChildrenActivities.Single(a => a.Label == "Send DocuSign Envelope");
+
+            crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
+            controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
+
+            var docuSignTemplate = controlsCrate.Content.Controls.OfType<DropDownList>().First();
+            docuSignTemplate.Value = "a439cedc-92a8-49ad-ab31-e2ee7964b468";
+            docuSignTemplate.selectedKey = "Fr8 Fromentum Registration Form";
+  
+            using (var updatableStorage = Crate.GetUpdatableStorage(sendEnvelopeAction))
+            {
+                updatableStorage.Remove<StandardConfigurationControlsCM>();
+                updatableStorage.Add(controlsCrate);
+            }
+
+            sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", sendEnvelopeAction);
+            sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", sendEnvelopeAction);
+
+            // Follow-up Configuration
+            crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
+            controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
+            var emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingLead role email");
+            emailField.ValueSource = "upstream";
+            emailField.Value = "emailaddress";
+            emailField.selectedKey= "emailaddress";
+
+            var emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingLead role name");
+            emailNameField.ValueSource = "upstream";
+            emailNameField.Value = "name";
+            emailNameField.selectedKey = "name";
+
+            var phoneField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "MappingPhone(Lead)");
+            phoneField.ValueSource = "upstream";
+            phoneField.Value = "phone";
+            phoneField.selectedKey = "phone";
+
+            var titleField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "MappingTitle(Lead)");
+            titleField.ValueSource = "upstream";
+            titleField.Value = "title";
+            titleField.selectedKey = "title";
+
+            var companyField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "MappingCompany(Lead)");
+            companyField.ValueSource = "upstream";
+            companyField.Value = "companyname";
+            companyField.selectedKey = "companyname";
+
+            var radioGroup = controlsCrate.Content.Controls.OfType<RadioButtonGroup>().First(f=>f.GroupName == "RadioGroupMappingRegistration Type(Lead)");
+            var radioButton = radioGroup.Radios.FirstOrDefault(x => x.Name == "Buy 2, Get 3rd Free");
+            radioButton.Selected = true;
+
+            var checkboxField = controlsCrate.Content.Controls.OfType<CheckBox>().First(f => f.Name == "CheckBoxMappingGovernmentEntity?(Lead)");
+            checkboxField.Selected = true;
+
+            var dropdownField = controlsCrate.Content.Controls.OfType<DropDownList>().First(f => f.Name == "DropDownMappingSize of Company(Lead)");
+            dropdownField.Value = "Medium (51-250)";
+            dropdownField.selectedKey = "Medium (51-250)";
+
+            using (var updatableStorage = Crate.GetUpdatableStorage(sendEnvelopeAction))
+            {
+                updatableStorage.Remove<StandardConfigurationControlsCM>();
+                updatableStorage.Add(controlsCrate);
+            }
+
+            sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", sendEnvelopeAction);
+
+            crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
+            controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
+
+            docuSignTemplate = controlsCrate.Content.Controls.OfType<DropDownList>().First();
+            Assert.AreEqual("a439cedc-92a8-49ad-ab31-e2ee7964b468", docuSignTemplate.Value, "Selected DocuSign Template did not save on Send DocuSign Envelope action.");
+            Assert.AreEqual("Fr8 Fromentum Registration Form", docuSignTemplate.selectedKey, "Selected DocuSign Template did not save on Send DocuSign Envelope action.");
+
+            emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingLead role email");
+            //Assert.AreEqual(TestEmail, emailField.Value, "Email did not save on Send DocuSign Envelope action.");
+            //Assert.AreEqual(TestEmail, emailField.TextValue, "Email did not save on Send DocuSign Envelope action.");
+
+            emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingLead role name");
+            //Assert.AreEqual(TestEmailName, emailNameField.Value, "Email Name did not save on Send DocuSign Envelope action.");
+            //Assert.AreEqual(TestEmailName, emailNameField.TextValue, "Email Name did not save on Send DocuSign Envelope action.");
+
+            //
+            // Activate and run plan
+            //
+            var container = await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
+            Assert.AreEqual(container.ContainerState, ContainerState.Completed);
+
+            //get the envelope from DocuSign
+            var configuration =  new DocuSignManager().SetUp(_terminalDocuSignTestTools.GetDocuSignAuthToken(tokenGuid));
+            //var settings = GetDocusignQuery(configurationControls);
+            var folderItems = DocuSignFolders.GetFolderItems(configuration, new DocusignQuery()
+            {       
+                Status = "sent",
+                SearchText = spreadsheetKeyWord
+            });
+
+            var envelopeId = folderItems.FirstOrDefault().EnvelopeId;
+
+            var envelopeApi = new EnvelopesApi(configuration.Configuration);
+            var recipientId = envelopeApi.ListRecipients(configuration.AccountId, envelopeId).Signers.FirstOrDefault().RecipientId;
+
+            var tabs = envelopeApi.ListTabs(configuration.AccountId, envelopeId, recipientId);
+            //
+
+            //delete spreadsheet
+            await terminalGoogleTestTools.DeleteSpreadSheet(googleAuthTokenId, spreadsheetId);
+            
             //
             // Deactivate plan
             //

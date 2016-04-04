@@ -63,5 +63,30 @@ namespace terminaBaselTests.Tools.Activities
 
             return buildMessageActivityDTO;
         }
+
+        public async Task<ActivityDTO> ConfigureLoopActivity(ActivityDTO activityDTO, string manifestType, string crateDescriptionLabel)
+        {
+            using (var loopCrateStorage = _baseHubITest.Crate.GetUpdatableStorage(activityDTO))
+            {
+
+                var loopControlsCrate = loopCrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
+                var loopControls = loopControlsCrate.Content.Controls;
+
+                var loopCrateChooser = loopControls.SingleOrDefault(x => x.Type == ControlTypes.CrateChooser && x.Name == "Available_Crates") as CrateChooser;
+                // Assert Loop activity has CrateChooser with assigned manifest types.
+                Assert.NotNull(loopCrateChooser);
+                Assert.AreEqual(1, loopCrateChooser.CrateDescriptions.Count);
+                Assert.AreEqual(manifestType, loopCrateChooser.CrateDescriptions[0].ManifestType);
+                Assert.AreEqual(crateDescriptionLabel, loopCrateChooser.CrateDescriptions[0].Label);
+
+                loopCrateChooser.CrateDescriptions.First(x => x.Label == crateDescriptionLabel && x.ManifestType == manifestType).Selected = true;
+            }
+
+            activityDTO = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/save", activityDTO);
+            activityDTO = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/configure", activityDTO);
+
+            return activityDTO;
+        }
+
     }
 }
