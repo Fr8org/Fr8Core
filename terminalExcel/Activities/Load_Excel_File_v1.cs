@@ -9,6 +9,8 @@ using Data.Interfaces.Manifests;
 using Data.States;
 using TerminalBase.BaseClasses;
 using terminalUtilities.Excel;
+using System;
+using System.IO;
 
 namespace terminalExcel.Actions
 {
@@ -25,24 +27,24 @@ namespace terminalExcel.Actions
             public ActivityUi()
             {
                 FilePicker = new FilePicker
-                             {
-                                 Label = "Select an Excel file",
-                                 Name = nameof(FilePicker),
-                                 Required = true,
-                                 Events = new List<ControlEvent> { ControlEvent.RequestConfig },
-                             };
+                {
+                    Label = "Select an Excel file",
+                    Name = nameof(FilePicker),
+                    Required = true,
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig },
+                };
                 Controls.Add(FilePicker);
                 UploadedFileDescription = new TextBlock
-                                          {
-                                              Name = nameof(UploadedFileDescription),
-                                              IsHidden = true
-                                          };
+                {
+                    Name = nameof(UploadedFileDescription),
+                    IsHidden = true
+                };
                 Controls.Add(UploadedFileDescription);
                 ActivityDescription = new TextBlock
-                                      {
-                                          Name = nameof(ActivityDescription),
-                                          Value = "This action will try to extract a table of rows from the first worksheet in the file. The rows should have a header row"
-                                      };
+                {
+                    Name = nameof(ActivityDescription),
+                    Value = "This action will try to extract a table of rows from the first worksheet in the file. The rows should have a header row"
+                };
                 Controls.Add(ActivityDescription);
             }
 
@@ -109,7 +111,17 @@ namespace terminalExcel.Actions
             {
                 throw new ActivityExecutionException("Excel file is not selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
-            CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, await Task.Run(() => ExcelUtils.GetExcelFile(ConfigurationControls.FilePicker.Value)), AvailabilityType.RunTime));
+
+            var byteArray = ExcelUtils.GetExcelFileAsByteArray(ConfigurationControls.FilePicker.Value);
+            var payload = ExcelUtils.GetExcelFile(byteArray, ConfigurationControls.FilePicker.Value);
+            var fileDescription = new StandardFileDescriptionCM
+            {
+                TextRepresentation = Convert.ToBase64String(byteArray),
+                Filetype = Path.GetExtension(ConfigurationControls.FilePicker.Value),
+                Filename = Path.GetFileName(ConfigurationControls.FilePicker.Value)
+            };
+            CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, payload, AvailabilityType.RunTime));
+            CurrentPayloadStorage.Add(Crate.FromContent("Standard File Handler", fileDescription, AvailabilityType.RunTime));
         }
 
         private FieldDTO SelectedFileDescription
