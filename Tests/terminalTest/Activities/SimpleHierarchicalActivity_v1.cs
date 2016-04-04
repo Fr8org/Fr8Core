@@ -10,17 +10,12 @@ using TerminalBase.BaseClasses;
 
 namespace terminalTest.Actions
 {
-    public class SimpleHierarchicalActivity_v1 : EnhancedTerminalActivity<SimpleActivity_v1.ActivityUi>
+    public class SimpleHierarchicalActivity_v1 : TestActivityBase<SimpleActivity_v1.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
         }
-
-        public SimpleHierarchicalActivity_v1() 
-            : base(false)
-        {
-        }
-
+        
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
             var templates = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId);
@@ -89,13 +84,13 @@ namespace terminalTest.Actions
 
         protected override Task RunCurrentActivity()
         {
-            File.AppendAllText(@"C:\Work\fr8_research\log.txt", $"{CurrentActivity.Label} started");
+            Log($"{CurrentActivity.Label} started");
             return Task.FromResult(0);
         }
 
         protected override Task RunChildActivities()
         {
-            File.AppendAllText(@"C:\Work\fr8_research\log.txt", $"{CurrentActivity.Label} ended");
+            Log($"{CurrentActivity.Label} ended");
 
             return Task.FromResult(0);
         }

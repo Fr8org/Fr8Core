@@ -183,15 +183,10 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         /// <param name="payload"></param>
         /// <returns></returns>
-        protected PayloadDTO SkipChildren(PayloadDTO payload)
+        protected void SkipChildren(IUpdatableCrateStorage crateStorage)
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
-            {
-                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.SkipChildren);
-            }
-
-            return payload;
+            var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+            operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.SkipChildren);
         }
 
         /// <summary>
@@ -214,6 +209,23 @@ namespace TerminalBase.BaseClasses
             }
 
             return payload;
+        }
+
+        /// <summary>
+        /// returns error to hub
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <param name="errorMessage"></param>
+        /// <param name="errorCode"></param>
+        /// <param name="currentActivity">Activity where the error occured</param>
+        /// <param name="currentTerminal">Terminal where the error occured</param>
+        /// <returns></returns>
+        protected void Error(IUpdatableCrateStorage crateStorage, string errorMessage = null, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
+        {
+            var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+            operationalState.CurrentActivityErrorCode = errorCode;
+            operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Error);
+            operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, ErrorType.Generic, errorCode.ToString(), null, currentActivity, currentTerminal));
         }
 
         /// <summary>

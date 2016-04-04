@@ -6,7 +6,7 @@ using TerminalBase.BaseClasses;
 
 namespace terminalTest.Actions
 {
-    public class SimpleActivity_v1 : EnhancedTerminalActivity<SimpleActivity_v1.ActivityUi>
+    public class SimpleActivity_v1 : TestActivityBase<SimpleActivity_v1.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -22,10 +22,7 @@ namespace terminalTest.Actions
                 AddChild.Events.Add(ControlEvent.RequestConfigOnClick);
             }
         }
-
-        public SimpleActivity_v1() : base(false)
-        {
-        }
+        
 
         protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
@@ -44,13 +41,13 @@ namespace terminalTest.Actions
 
         protected override Task RunCurrentActivity()
         {
-            File.AppendAllText(@"C:\Work\fr8_research\log.txt", $"{CurrentActivity.Label} [{CurrentActivity.Id}] started\n");
+            Log($"{CurrentActivity.Label} [{CurrentActivity.Id}] started");
             return Task.FromResult(0);
         }
 
         protected override Task RunChildActivities()
         {
-            File.AppendAllText(@"C:\Work\fr8_research\log.txt", $"{CurrentActivity.Label} [{CurrentActivity.Id}] ended\n");
+            Log($"{CurrentActivity.Label} [{CurrentActivity.Id}] ended");
 
             return Task.FromResult(0);
         }

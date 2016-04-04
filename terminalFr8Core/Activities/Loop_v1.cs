@@ -65,9 +65,9 @@ namespace terminalFr8Core.Actions
                     throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING);
                 }
 
-                if (dataListSize >= loopData.Index)
+                if (loopData.Index >= dataListSize.Value)
                 {
-                    SkipChildren(curPayloadDTO);
+                    SkipChildren(payloadStorage);
                     return curPayloadDTO;
                 }
             }
@@ -79,9 +79,7 @@ namespace terminalFr8Core.Actions
         {
             var curPayloadDTO = await GetPayload(curActivityDO, containerId);
 
-            JumpToActivity(curPayloadDTO, curActivityDO.Id);
-
-            return curPayloadDTO;
+            return JumpToActivity(curPayloadDTO, curActivityDO.Id);
         }
 
         protected override async Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)

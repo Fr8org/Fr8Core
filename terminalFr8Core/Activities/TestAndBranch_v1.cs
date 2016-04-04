@@ -35,7 +35,8 @@ namespace terminalFr8Core.Actions
                 var operationsCrate = crateStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
                 if (operationsCrate == null)
                 {
-                    return Error(curPayloadDTO, "This Action can't run without OperationalStateCM crate", ActivityErrorCode.PAYLOAD_DATA_MISSING);
+                    Error(crateStorage, "This Action can't run without OperationalStateCM crate", ActivityErrorCode.PAYLOAD_DATA_MISSING);
+                    return curPayloadDTO;
                 }
 
                 var currentBranch = operationsCrate.GetLocalData<OperationalStateCM.BranchStatus>("Branch");
@@ -48,7 +49,8 @@ namespace terminalFr8Core.Actions
                 
                 if (currentBranch.Count >= SlowRunLimit)
                 {
-                    return Error(curPayloadDTO, "This container hit a maximum loop count and was stopped because we're afraid it might be an infinite loop");
+                    Error(crateStorage, "This container hit a maximum loop count and was stopped because we're afraid it might be an infinite loop");
+                    return curPayloadDTO;
                 }
 
                 if (currentBranch.Count >= SmoothRunLimit)
