@@ -75,8 +75,6 @@ namespace terminalDocuSignTests.Integration
 
             var googleAuthTokenId = await ExtractGoogleDefaultToken();
 
-            var solutionCreateUrl = _baseUrl + "activities/create?solutionName=Mail_Merge_Into_DocuSign";
-
             //
             // Create solution
             //
@@ -397,6 +395,8 @@ namespace terminalDocuSignTests.Integration
                 SearchText = spreadsheetKeyWord
             });
 
+
+
             var envelope = folderItems.FirstOrDefault();
             Assert.IsNotNull(envelope, "Cannot find created Envelope in sent folder of DocuSign Account");
             var envelopeApi = new EnvelopesApi(configuration.Configuration);
@@ -414,7 +414,7 @@ namespace terminalDocuSignTests.Integration
 
             var companyRecipientTab = tabs.TextTabs.FirstOrDefault(x => x.TabLabel == "Company");
             Assert.IsNotNull(companyRecipientTab, "Envelope does not contain Company tab. Check for problems in DocuSignManager and HandleTemplateData");
-            Assert.AreEqual(tableFixtureData.Table[1].Row.FirstOrDefault(x => x.Cell.Key == "company").Cell.Value, companyRecipientTab.Value, "Provided value for CompanyName in document for recipient after finishing mail merge plan is incorrect");
+            Assert.AreEqual(tableFixtureData.Table[1].Row.FirstOrDefault(x => x.Cell.Key == "companyname").Cell.Value, companyRecipientTab.Value, "Provided value for CompanyName in document for recipient after finishing mail merge plan is incorrect");
 
             var phoneRecipientTab = tabs.TextTabs.FirstOrDefault(x => x.TabLabel == "Phone");
             Assert.IsNotNull(phoneRecipientTab, "Envelope does not contain phone tab. Check for problems in DocuSignManager and HandleTemplateData");
