@@ -393,6 +393,7 @@ module dockyard.controllers {
                 this.setAdvancedEditingMode();
             }
             this.renderPlan(<interfaces.IPlanVM>curPlan.plan);
+            this.$state.go('planBuilder', { id: curPlan.plan.id });
         }
 
         /*
