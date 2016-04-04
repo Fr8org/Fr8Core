@@ -437,6 +437,9 @@ module dockyard.controllers {
                 (event: ng.IAngularEvent, callConfigureResponseEventArgs: pca.CallConfigureResponseEventArgs) => this.PaneConfigureAction_ConfigureCallResponse(callConfigureResponseEventArgs));
         }
 
+
+        //This function filters activities by checking if they contain specified StandardConfigurationControls
+        //crate with given label
         private filterActivitiesByUICrate(activities: Array<model.ActivityDTO>, uiCrateLabel: string): Array<model.ActivityDTO> {
 
             var filteredList: Array<model.ActivityDTO>;

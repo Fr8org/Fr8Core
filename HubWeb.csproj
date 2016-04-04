@@ -364,7 +364,6 @@
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\Api\ActivitiesController.cs" />
     <Compile Include="Controllers\Api\Fr8BaseApiController.cs" />
-    <Compile Include="Controllers\Api\PlanloadController.cs" />
     <Compile Include="Controllers\Api\NotificationController.cs" />
     <Compile Include="Controllers\Api\AlarmsController.cs" />
     <Compile Include="Controllers\Api\AuthenticationController.cs" />
