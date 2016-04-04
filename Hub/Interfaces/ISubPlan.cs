@@ -14,7 +14,7 @@ namespace Hub.Interfaces
     {
         void Update(IUnitOfWork uow, SubPlanDO subPlan);
         void Create(IUnitOfWork uow, SubPlanDO subPlan);
-        void Delete(IUnitOfWork uow, Guid id);
+        Task Delete(IUnitOfWork uow, Guid id);
         Task<bool> DeleteAllChildNodes(Guid activityId);
         /// <summary>
         /// Backups current action and calls configure on downstream actions

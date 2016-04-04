@@ -136,7 +136,7 @@ namespace Hub.Services
         /// <summary>
         /// Remove SubPlan and children entities by id.
         /// </summary>
-        public void Delete(IUnitOfWork uow, Guid id)
+        public async Task Delete(IUnitOfWork uow, Guid id)
         {
             var subPlan = uow.PlanRepository.GetById<SubPlanDO>(id);
 
@@ -145,6 +145,7 @@ namespace Hub.Services
                 throw new Exception(string.Format("Unable to find SubPlan by id = {0}", id));
             }
 
+            await DeleteAllChildNodes(id);
             subPlan.RemoveFromParent();
 
             uow.SaveChanges();

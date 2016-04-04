@@ -65,6 +65,9 @@ namespace Data.Control
 
         [JsonProperty("subPlanId")]
         public Guid? SubPlanId { get; set; }
+
+        [JsonProperty("activityTemplateLabel")]
+        public string ActivityTemplateLabel { get; set; }
     }
 
     public class CheckBox : ControlDefinitionDTO

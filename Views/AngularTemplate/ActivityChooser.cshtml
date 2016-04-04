@@ -1,4 +1,6 @@
 ﻿<div>
     <span>{{field.label}}: </span>
-    <button class="btn btn-default" ng-click="selectActivity()">Select...</button>
+    <button class="btn btn-default" ng-click="selectActivity()" ng-if="!field.activityTemplateLabel">Select...</button>
+    <button class="btn btn-default" ng-click="selectActivity()" ng-if="field.activityTemplateLabel">Configure {{field.activityTemplateLabel}}</button>
+    <button class="btn btn-danger" ng-click="remove()" ng-if="field.activityTemplateLabel">Remove</button>
 </div>

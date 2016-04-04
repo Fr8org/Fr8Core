@@ -81,10 +81,9 @@ namespace HubWeb.Controllers
             }
         }
 
-        [ActionName("clear")]
         [ResponseType(typeof(SubPlanDTO))]
-        [HttpPost]
-        public IHttpActionResult Clear(Guid id)
+        [HttpDelete]
+        public async Task<IHttpActionResult> Delete(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -94,11 +93,11 @@ namespace HubWeb.Controllers
                     return BadRequest();
                 }
 
-                _subPlan.DeleteAllChildNodes(subPlan.Id);
+                await _subPlan.Delete(uow, id);
 
                 uow.SaveChanges();
 
-                return Ok(Mapper.Map<SubPlanDTO>(subPlan));
+                return Ok();
             }
         }
 

@@ -78,7 +78,7 @@ module dockyard.directives {
                         var pbScope = <ng.IScope>$scope;
                         while (pbScope.$parent && pbScope !== $rootScope) {
                             pbScope = pbScope.$parent;
-                            if ((<any>pbScope).isPlanBuilderScope) {
+                            if ((<controllers.IPlanBuilderScope>pbScope).isPlanBuilderScope) {
                                 break;
                             }
                         }
@@ -105,6 +105,8 @@ module dockyard.directives {
 
                         ActionService.save(activity).$promise
                             .then((activity: model.ActivityDTO) => {
+                                $scope.field.activityTemplateLabel = activityTemplate.label || activityTemplate.name;
+
                                 displayConfigureActivityModal($scope.plan, activity);
                             });
                     };
@@ -138,12 +140,6 @@ module dockyard.directives {
                             selectActivity();
                         }
                         else {
-                            // TODO: move "clear" scenario to separate popup.
-                            // $http.post('/api/subplans/clear?id=' + $scope.field.subPlanId, null)
-                            //     .then((subplan: model.SubPlanDTO) => {
-                            //         createActivity(activityTemplate);
-                            //     });
-
                             $http.post('/api/subplans/first_activity?id=' + $scope.field.subPlanId, null)
                                 .then((res: ng.IHttpPromiseCallbackArg<model.ActivityDTO>) => {
                                     var activity = res.data;
@@ -155,6 +151,18 @@ module dockyard.directives {
                                     }
                                 });
                         }
+                    };
+
+                    $scope.remove = () => {
+                        if (!$scope.field.subPlanId) {
+                            return;
+                        }
+
+                        SubPlanService.remove({ id: $scope.field.subPlanId }).$promise
+                            .then(() => {
+                                $scope.field.subPlanId = null;
+                                $scope.field.activityTemplateLabel = null;
+                            });
                     };
                 }
             ]
@@ -172,6 +180,7 @@ module dockyard.directives {
         field: model.ActivityChooser;
 
         selectActivity: () => void;
+        remove: () => void;
     }
 
 
