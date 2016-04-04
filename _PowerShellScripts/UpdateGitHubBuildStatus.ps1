@@ -60,7 +60,7 @@ Function UpdateGitHubBuildStatus($message)
 
 $vso_username = "fr8admin@fr8.co"
 $vso_password = "ulysses3"
-$github_username = "fr8admin@fr8.co"
+$github_username = "fr8admin"
 $github_password = "ulysses3"
 
 $basicAuthVSO = ("{0}:{1}" -f $vso_username,$vso_password)

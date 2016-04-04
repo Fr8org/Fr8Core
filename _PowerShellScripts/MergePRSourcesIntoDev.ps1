@@ -8,7 +8,7 @@ param(
     [string]$sourceBranchName = $env:BUILD_SOURCEBRANCHNAME
 )
 
-$github_username = "fr8admin@fr8.co"
+$github_username = "fr8admin"
 $github_password = "ulysses3"
 
 $giturl = "https://{0}:{1}@github.com/alexed1/fr8company" -f $github_username, $github_password
@@ -16,7 +16,6 @@ $giturl = "https://{0}:{1}@github.com/alexed1/fr8company" -f $github_username, $
 $buildBranchName = "dev+$sourceBranchName"
 
 Write-Host "Switching to dev branch..."
-Invoke-Expression "git config --global credential.helper cache"
 
 Invoke-Expression "git fetch $giturl"
 
@@ -35,7 +34,7 @@ if ($LastExitCode -ne 0)
 }
 
 Write-Host "Getting the latest dev branch from GitHub repo..."
-Invoke-Expression "git pull origin dev"
+Invoke-Expression "git $giturl origin dev"
 if ($LastExitCode -ne 0)
 {
 	Write-Host "Failed to get the latest dev branch."
