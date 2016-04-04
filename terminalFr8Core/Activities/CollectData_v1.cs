@@ -174,7 +174,7 @@ namespace terminalFr8Core.Actions
             byte[] file = null;
             switch (GetUriFileExtension(uploadFilePath))
             {
-                case "xlsx":
+                case ".xlsx":
                     file = ProcessExcelFile(pStorage, uploadFilePath);
                     break;
 

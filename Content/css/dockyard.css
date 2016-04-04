@@ -1083,3 +1083,16 @@ i.activity-stream-font{
 .configuration-control-form-group{
     margin-bottom: 5px;
 }
+
+.filepicker {
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    
+.btn-upload {
+    background-color: orange;
+    cursor: pointer;
+}
+.file-info {
+    display: block;
+}
