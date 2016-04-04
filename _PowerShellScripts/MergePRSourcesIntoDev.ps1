@@ -12,7 +12,7 @@ param(
 #Invoke-Expression "git config --global user.name 'Fr8 Admin'"
 #Invoke-Expression "git config --global -e"
 
-$tempFileName = "E:\_tmp.txt"
+$tempFileName = "_tmp.txt"
 
 $github_username = "fr8admin"
 $github_password = "ulysses3"
@@ -30,6 +30,9 @@ if ($LastExitCode -ne 0)
 	Write-Host "Failed to fetch branches."
     exit 1;
 }
+if (Test-Path $tempFileName) {
+  Remove-Item $tempFileName
+}
 
 Invoke-Expression "git checkout ."
 Invoke-Expression "git checkout dev"
@@ -45,6 +48,9 @@ if ($LastExitCode -ne 0)
 {
 	Write-Host "Failed to get the latest dev branch."
 	exit 1;
+}
+if (Test-Path $tempFileName) {
+  Remove-Item $tempFileName
 }
 
 $command = "git branch --list $buildBranchName"
@@ -63,6 +69,10 @@ if ($LastExitCode -ne 0)
 	exit 1;
 }
 
+if (Test-Path $tempFileName) {
+  Remove-Item $tempFileName
+}
+
 Write-Host "Merging $sourceBranchName into new branch: $buildBranchName"
 Invoke-Expression "git merge origin/$sourceBranchName"
 if ($LastExitCode -ne 0)
@@ -71,6 +81,3 @@ if ($LastExitCode -ne 0)
 	exit 1;
 }
 
-if (Test-Path $tempFileName) {
-  Remove-Item $tempFileName
-}
