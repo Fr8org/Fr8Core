@@ -34,7 +34,7 @@ if ($LastExitCode -ne 0)
 }
 
 Write-Host "Getting the latest dev branch from GitHub repo..."
-Invoke-Expression "git $giturl origin dev"
+Invoke-Expression "git pull $giturl dev"
 if ($LastExitCode -ne 0)
 {
 	Write-Host "Failed to get the latest dev branch."
