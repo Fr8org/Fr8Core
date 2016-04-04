@@ -46,7 +46,7 @@ namespace terminaBaselTests.Tools.Terminals
             return await Task.FromResult(new AuthorizationTokenDTO { Token = tokenGuid.ToString() });
         }
 
-        public async Task<Guid> AuthenticateDocuSignAndAccociateTokenWithAction(Guid activityId, CredentialsDTO credentials, int terminalId)
+        public async Task<Guid> AuthenticateDocuSignAndAssociateTokenWithAction(Guid activityId, CredentialsDTO credentials, int terminalId)
         {
             //
             // Authenticate with DocuSign Credentials

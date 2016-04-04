@@ -92,7 +92,7 @@ namespace terminalDocuSignTests.Integration
             if (!defaultDocuSignAuthTokenExists)
             {
                 // Authenticate with DocuSign
-                await _terminalDocuSignTestTools.AuthenticateDocuSignAndAccociateTokenWithAction(solution.Id, GetDocuSignCredentials(), solution.ActivityTemplate.TerminalId);
+                await _terminalDocuSignTestTools.AuthenticateDocuSignAndAssociateTokenWithAction(solution.Id, GetDocuSignCredentials(), solution.ActivityTemplate.TerminalId);
             }
 
             //
@@ -314,6 +314,7 @@ namespace terminalDocuSignTests.Integration
         [Test]
         public async Task Mail_Merge_Into_DocuSign_EndToEnd_Upstream_Values_From_Google_Check_Tabs()
         {
+            Debugger.Launch();
             //
             //Setup Test
             //
@@ -328,7 +329,8 @@ namespace terminalDocuSignTests.Integration
             string worksheetName = "TestSheet";
 
             //check if excel exists with data
-            string spreadsheetId = await terminalGoogleTestTools.CreateNewSpreadsheet(googleAuthTokenId, spreadsheetName, worksheetName, FixtureData.TestStandardTableData(TestEmail, spreadsheetKeyWord));
+            var tableFixtureData = FixtureData.TestStandardTableData(TestEmail, spreadsheetKeyWord);
+            string spreadsheetId = await terminalGoogleTestTools.CreateNewSpreadsheet(googleAuthTokenId, spreadsheetName, worksheetName, tableFixtureData);
 
             var solutionCreateUrl = _baseUrl + "activities/create?solutionName=Mail_Merge_Into_DocuSign";
 
@@ -350,7 +352,7 @@ namespace terminalDocuSignTests.Integration
             if (!defaultDocuSignAuthTokenExists)
             {
                 // Authenticate with DocuSign
-                tokenGuid = await _terminalDocuSignTestTools.AuthenticateDocuSignAndAccociateTokenWithAction(solution.Id, GetDocuSignCredentials(), solution.ActivityTemplate.TerminalId);
+                tokenGuid = await _terminalDocuSignTestTools.AuthenticateDocuSignAndAssociateTokenWithAction(solution.Id, GetDocuSignCredentials(), solution.ActivityTemplate.TerminalId);
             }
 
             //
@@ -473,19 +475,16 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual("a439cedc-92a8-49ad-ab31-e2ee7964b468", docuSignTemplate.Value, "Selected DocuSign Template did not save on Send DocuSign Envelope action.");
             Assert.AreEqual("Fr8 Fromentum Registration Form", docuSignTemplate.selectedKey, "Selected DocuSign Template did not save on Send DocuSign Envelope action.");
 
-            emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingLead role email");
-            //Assert.AreEqual(TestEmail, emailField.Value, "Email did not save on Send DocuSign Envelope action.");
-            //Assert.AreEqual(TestEmail, emailField.TextValue, "Email did not save on Send DocuSign Envelope action.");
-
-            emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingLead role name");
-            //Assert.AreEqual(TestEmailName, emailNameField.Value, "Email Name did not save on Send DocuSign Envelope action.");
-            //Assert.AreEqual(TestEmailName, emailNameField.TextValue, "Email Name did not save on Send DocuSign Envelope action.");
-
             //
             // Activate and run plan
             //
             var container = await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
             Assert.AreEqual(container.ContainerState, ContainerState.Completed);
+
+
+            //
+            // Assert 
+            //
 
             //get the envelope from DocuSign
             var configuration =  new DocuSignManager().SetUp(_terminalDocuSignTestTools.GetDocuSignAuthToken(tokenGuid));
@@ -499,9 +498,43 @@ namespace terminalDocuSignTests.Integration
             var envelopeId = folderItems.FirstOrDefault().EnvelopeId;
 
             var envelopeApi = new EnvelopesApi(configuration.Configuration);
-            var recipientId = envelopeApi.ListRecipients(configuration.AccountId, envelopeId).Signers.FirstOrDefault().RecipientId;
+            //get the recipient that receive this sent envelope
+            var envelopeSigner = envelopeApi.ListRecipients(configuration.AccountId, envelopeId).Signers.FirstOrDefault();
+            Assert.IsNotNull(envelopeSigner, "Envelope does not contain signer as recipient. Send_DocuSign_Envelope activity failed to provide any signers");
+            //get the tabs for the envelope that this recipient received
+            var tabs = envelopeApi.ListTabs(configuration.AccountId, envelopeId, envelopeSigner.RecipientId);
+            Assert.IsNotNull(tabs, "Envelope does not contain any tabs. Check for problems in DocuSignManager and HandleTemplateData");
+            
+            //check all tabs and their values for received envelope, and compare them to those from the google sheet configured into Mail_Merge_Into_Docusign solution 
+            var titleRecipientTab = tabs.TextTabs.FirstOrDefault(x => x.TabLabel == "title");
+            Assert.IsNotNull(titleRecipientTab, "Envelope does not contain Title tab. Check for problems in DocuSignManager and HandleTemplateData");
+            Assert.AreEqual(tableFixtureData.Table[1].Row.FirstOrDefault(x=>x.Cell.Key == "title").Cell.Value, titleRecipientTab.Value, "Provided value for Title in document for recipient after finishing mail merge plan is incorrect");
 
-            var tabs = envelopeApi.ListTabs(configuration.AccountId, envelopeId, recipientId);
+            var companyRecipientTab = tabs.TextTabs.FirstOrDefault(x => x.TabLabel == "company");
+            Assert.IsNotNull(companyRecipientTab, "Envelope does not contain Company tab. Check for problems in DocuSignManager and HandleTemplateData");
+            Assert.AreEqual(tableFixtureData.Table[1].Row.FirstOrDefault(x => x.Cell.Key == "company").Cell.Value, companyRecipientTab.Value, "Provided value for CompanyName in document for recipient after finishing mail merge plan is incorrect");
+
+            var phoneRecipientTab = tabs.TextTabs.FirstOrDefault(x => x.TabLabel == "phone");
+            Assert.IsNotNull(phoneRecipientTab, "Envelope does not contain phone tab. Check for problems in DocuSignManager and HandleTemplateData");
+            Assert.AreEqual(tableFixtureData.Table[1].Row.FirstOrDefault(x => x.Cell.Key == "phone").Cell.Value, phoneRecipientTab.Value, "Provided value for phone in document for recipient after finishing mail merge plan is incorrect");
+
+            var listRecipientTab = tabs.ListTabs.FirstOrDefault(x => x.TabLabel == "Size of Company(Lead)");
+            Assert.IsNotNull(listRecipientTab, "Envelope does not contain List Tab for Size of Company tab. Check for problems in DocuSignManager and HandleTemplateData");
+            Assert.AreEqual("Medium (51-250)", listRecipientTab.Value, "Provided value for Size of Company(Lead) in document for recipient after finishing mail merge plan is incorrect");
+
+            var checkboxRecipientTab = tabs.CheckboxTabs.FirstOrDefault(x => x.TabLabel == "GovernmentEntity?");
+            Assert.IsNotNull(checkboxRecipientTab, "Envelope does not contain Checkbox for Goverment Entity tab. Check for problems in DocuSignManager and HandleTemplateData");
+            Assert.AreEqual(true, checkboxRecipientTab.Selected, "Provided value for GovernmentEntity? in document for recipient after finishing mail merge plan is incorrect");
+            
+            var radioButtonGroupTab = tabs.RadioGroupTabs.FirstOrDefault(x => x.GroupName == "Registration Type");
+            Assert.IsNotNull(radioButtonGroupTab, "Envelope does not contain RadioGroup tab for registration. Check for problems in DocuSignManager and HandleTemplateData");
+            Assert.AreEqual("Buy 2, Get 3rd Free", radioButtonGroupTab.Radios.FirstOrDefault(x=>x.Selected == "true").Value, "Provided value for Registration Type in document for recipient after finishing mail merge plan is incorrect");
+
+            // Verify that test email has been received
+            EmailAssert.EmailReceived("dse_demo@docusign.net", "Test Message from Fr8");
+
+            //
+            // Cleanup
             //
 
             //delete spreadsheet
@@ -512,8 +545,6 @@ namespace terminalDocuSignTests.Integration
             //
             await HttpPostAsync<string, string>(_baseUrl + "plans/deactivate?planId=" + plan.Plan.Id, null);
 
-            // Verify that test email has been received
-            EmailAssert.EmailReceived("dse_demo@docusign.net", "Test Message from Fr8");
 
             //
             // Delete plan
