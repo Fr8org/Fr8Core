@@ -79,6 +79,12 @@
     <Compile Include="ExceptionExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SkipLocalAttribute.cs" />
+    <Compile Include="Tools\Activities\IntegrationTestTools_terminalDocuSign.cs" />
+    <Compile Include="Tools\Activities\IntegrationTestTools_terminalFr8.cs" />
+    <Compile Include="Tools\Activities\IntegrationTestTools_terminalGoogle.cs" />
+    <Compile Include="Tools\Plans\IntegrationTestTools.cs" />
+    <Compile Include="Tools\Terminals\IntegrationTestTools_terminalDocuSign.cs" />
+    <Compile Include="Tools\Terminals\IntegrationTestTools_terminalGoogle.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -95,6 +101,26 @@
     <ProjectReference Include="..\..\Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalBase\TerminalBase.csproj">
+      <Project>{D6A0A493-E926-439A-9CE2-E093E75132CD}</Project>
+      <Name>TerminalBase</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalDocuSign\terminalDocuSign.csproj">
+      <Project>{4e04feb2-b452-4739-8336-ea2cefb18d87}</Project>
+      <Name>terminalDocuSign</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalFr8Core\terminalFr8Core.csproj">
+      <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>
+      <Name>terminalFr8Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalGoogle\terminalGoogle.csproj">
+      <Project>{cddccfab-28b8-446c-8585-72d2bb78f2dc}</Project>
+      <Name>terminalGoogle</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UtilitiesTesting\UtilitiesTesting.csproj">
+      <Project>{6b855c3f-07a9-4787-9fde-29fa567c43e2}</Project>
+      <Name>UtilitiesTesting</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
