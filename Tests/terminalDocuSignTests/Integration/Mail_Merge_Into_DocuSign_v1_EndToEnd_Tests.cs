@@ -426,7 +426,7 @@ namespace terminalDocuSignTests.Integration
 
             var checkboxRecipientTab = tabs.CheckboxTabs.FirstOrDefault(x => x.TabLabel == "GovernmentEntity?");
             Assert.IsNotNull(checkboxRecipientTab, "Envelope does not contain Checkbox for Goverment Entity tab. Check for problems in DocuSignManager and HandleTemplateData");
-            Assert.AreEqual(true, checkboxRecipientTab.Selected, "Provided value for GovernmentEntity? in document for recipient after finishing mail merge plan is incorrect");
+            Assert.AreEqual("True", checkboxRecipientTab.Selected, "Provided value for GovernmentEntity? in document for recipient after finishing mail merge plan is incorrect");
             
             var radioButtonGroupTab = tabs.RadioGroupTabs.FirstOrDefault(x => x.GroupName == "Registration Type");
             Assert.IsNotNull(radioButtonGroupTab, "Envelope does not contain RadioGroup tab for registration. Check for problems in DocuSignManager and HandleTemplateData");
