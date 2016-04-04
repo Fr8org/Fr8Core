@@ -40,6 +40,7 @@ namespace terminalDocuSignTests.Integration
         private ActivityDTO solution;
         private ICrateStorage crateStorage;
         private terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalDocuSign _terminalDocuSignTestTools;
+        private IntegrationTestTools_terminalDocuSign _docuSignActivitiesTestTools;
 
         public override string TerminalName
         {
@@ -51,6 +52,7 @@ namespace terminalDocuSignTests.Integration
         public Mail_Merge_Into_DocuSign_v1_EndToEnd_Tests()
         {
             _terminalDocuSignTestTools = new terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalDocuSign(this);
+            _docuSignActivitiesTestTools = new IntegrationTestTools_terminalDocuSign(this);
         }
         
 
@@ -78,66 +80,9 @@ namespace terminalDocuSignTests.Integration
             //
             // Create solution
             //
-            var plan = await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
-            var solution = plan.Plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault();
-
-            //
-            // Send configuration request without authentication token
-            //
-            this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?id=" + solution.Id, solution);
-            crateStorage = Crate.FromDto(this.solution.CrateStorage);
-            var stAuthCrate = crateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
-            bool defaultDocuSignAuthTokenExists = stAuthCrate == null;
-
-            if (!defaultDocuSignAuthTokenExists)
-            {
-                // Authenticate with DocuSign
-                await _terminalDocuSignTestTools.AuthenticateDocuSignAndAssociateTokenWithAction(solution.Id, GetDocuSignCredentials(), solution.ActivityTemplate.TerminalId);
-            }
-
-            //
-            // Send configuration request with authentication token
-            //
-            this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?id=" + solution.Id, solution);
-            crateStorage = Crate.FromDto(this.solution.CrateStorage);
-            Assert.True(crateStorage.CratesOfType<StandardConfigurationControlsCM>().Any(), "Crate StandardConfigurationControlsCM is missing in API response.");
-
-            var controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
-            var controls = controlsCrate.Content.Controls;
-            var dataSource = controls.OfType<DropDownList>().FirstOrDefault(c => c.Name == "DataSource");
-            dataSource.Value = "Get_Google_Sheet_Data";
-            dataSource.selectedKey = "Get Google Sheet Data";
-            var template = controls.OfType<DropDownList>().FirstOrDefault(c => c.Name == "DocuSignTemplate");
-            template.Value = "9a4d2154-5b18-4316-9824-09432e62f458";
-            template.selectedKey = "Medical_Form_v1";
-            template.ListItems.Add(new ListItem() { Value = "9a4d2154-5b18-4316-9824-09432e62f458", Key = "Medical_Form_v1" });
-            var button = controls.OfType<Button>().FirstOrDefault();
-            button.Clicked = true;
-
-            //
-            //Rename route
-            //
-            var newName = plan.Plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " +
-                DateTime.UtcNow.ToShortTimeString();
-            await HttpPostAsync<object, PlanFullDTO>(_baseUrl + "plans?id=" + plan.Plan.Id,
-                new { id = plan.Plan.Id, name = newName });
-
-            //
-            // Configure solution
-            //
-            using (var crateStorage = Crate.GetUpdatableStorage(this.solution))
-            {
-
-                crateStorage.Remove<StandardConfigurationControlsCM>();
-                crateStorage.Add(controlsCrate);
-            }
-            this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?id=" + this.solution.Id, this.solution);
-            crateStorage = Crate.FromDto(this.solution.CrateStorage);
-            Assert.AreEqual(2, this.solution.ChildrenActivities.Count(), "Solution child actions failed to create.");
-
-
-
-
+            var parameters = await _docuSignActivitiesTestTools.CreateAndConfigure_MailMergeIntoDocuSign_Solution("Get_Google_Sheet_Data", "Get Google Sheet Data", "9a4d2154-5b18-4316-9824-09432e62f458", "Medical_Form_v1", true);
+            this.solution = parameters.Item1;
+            var plan = parameters.Item2;
 
             // Assert Loop activity has CrateChooser with assigned manifest types.
             var loopActivity = this.solution.ChildrenActivities[1];
@@ -184,7 +129,7 @@ namespace terminalDocuSignTests.Integration
             //Add rows to Add Payload Manually action
             apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", apmAction);
             crateStorage = Crate.FromDto(apmAction.CrateStorage);
-            controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
+            var controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
             var fieldList = controlsCrate.Content.Controls.OfType<FieldList>().First();
             fieldList.Value = @"[{""Key"":""Doctor"",""Value"":""Doctor1""},{""Key"":""Condition"",""Value"":""Condition1""}]";
 
@@ -335,59 +280,15 @@ namespace terminalDocuSignTests.Integration
             var tableFixtureData = FixtureData.TestStandardTableData(TestEmail, spreadsheetKeyWord);
             string spreadsheetId = await terminalGoogleTestTools.CreateNewSpreadsheet(googleAuthTokenId, spreadsheetName, worksheetName, tableFixtureData);
 
-            var solutionCreateUrl = _baseUrl + "activities/create?solutionName=Mail_Merge_Into_DocuSign";
-
             //
             // Create solution
             //
-            var plan = await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
-            var solution = plan.Plan.SubPlans.FirstOrDefault().Activities.FirstOrDefault();
-
-            //
-            // Send configuration request without authentication token
-            //
-            this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?id=" + solution.Id, solution);
-            crateStorage = Crate.FromDto(this.solution.CrateStorage);
-            var stAuthCrate = crateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
-            bool defaultDocuSignAuthTokenExists = stAuthCrate == null;
-
-            Guid tokenGuid = Guid.Empty;
-            if (!defaultDocuSignAuthTokenExists)
-            {
-                // Authenticate with DocuSign
-                tokenGuid = await _terminalDocuSignTestTools.AuthenticateDocuSignAndAssociateTokenWithAction(solution.Id, GetDocuSignCredentials(), solution.ActivityTemplate.TerminalId);
-            }
-
-            //
-            // Send configuration request with authentication token
-            //
-            this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?id=" + solution.Id, solution);
-            crateStorage = Crate.FromDto(this.solution.CrateStorage);
-            Assert.True(crateStorage.CratesOfType<StandardConfigurationControlsCM>().Any(), "Crate StandardConfigurationControlsCM is missing in API response.");
-
-            var controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
-            var controls = controlsCrate.Content.Controls;
-            var dataSource = controls.OfType<DropDownList>().FirstOrDefault(c => c.Name == "DataSource");
-            dataSource.Value = "Get_Google_Sheet_Data";
-            dataSource.selectedKey = "Get Google Sheet Data";
-            var template = controls.OfType<DropDownList>().FirstOrDefault(c => c.Name == "DocuSignTemplate");
-            template.Value = "a439cedc-92a8-49ad-ab31-e2ee7964b468";
-            template.selectedKey = "Fr8 Fromentum Registration Form";
-            var button = controls.OfType<Button>().FirstOrDefault();
-            button.Clicked = true;
-
-            //
-            // Configure solution
-            //
-            using (var crateStorage = Crate.GetUpdatableStorage(this.solution))
-            {
-                crateStorage.Remove<StandardConfigurationControlsCM>();
-                crateStorage.Add(controlsCrate);
-            }
-            this.solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure?id=" + this.solution.Id, this.solution);
-            crateStorage = Crate.FromDto(this.solution.CrateStorage);
-            Assert.AreEqual(2, this.solution.ChildrenActivities.Count(), "Solution child actions failed to create.");
-
+            var parameters = await _docuSignActivitiesTestTools.CreateAndConfigure_MailMergeIntoDocuSign_Solution("Get_Google_Sheet_Data",
+                    "Get Google Sheet Data", "a439cedc-92a8-49ad-ab31-e2ee7964b468", "Fr8 Fromentum Registration Form",false);
+            this.solution = parameters.Item1;
+            var plan = parameters.Item2;
+            var tokenGuid = parameters.Item3;
+            
             //
             // configure Get_Google_Sheet_Data activity
             //
@@ -409,7 +310,7 @@ namespace terminalDocuSignTests.Integration
             var sendEnvelopeAction = loopActivity.ChildrenActivities.Single(a => a.Label == "Send DocuSign Envelope");
 
             crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
-            controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
+            var controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
 
             var docuSignTemplate = controlsCrate.Content.Controls.OfType<DropDownList>().First();
             docuSignTemplate.Value = "a439cedc-92a8-49ad-ab31-e2ee7964b468";
