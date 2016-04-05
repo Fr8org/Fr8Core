@@ -10,7 +10,9 @@ using Hub.Managers;
 using UtilitiesTesting;
 using System.Threading.Tasks;
 using Data.Constants;
+using Data.Crates;
 using Data.Entities;
+using Data.Interfaces.Manifests;
 using Data.States;
 using DockyardTest.Services.Container;
 using Hub.Exceptions;
@@ -273,7 +275,7 @@ namespace DockyardTest.Services
                 });
 
                 plan.PlanState = PlanState.Active;
-                plan.StartingSubPlan = (SubPlanDO) plan.ChildNodes[0];
+                plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
 
                 uow.SaveChanges();
 
@@ -284,6 +286,148 @@ namespace DockyardTest.Services
                     new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(2)),
                     new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(3)),
                     new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(4)),
+                    new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(5)),
+                    new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(6)),
+                    new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(7)),
+                    new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(8)),
+                    new ActivityExecutionCall(ActivityExecutionMode.ReturnFromChildren, FixtureData.GetTestGuidById(6)),
+                    new ActivityExecutionCall(ActivityExecutionMode.ReturnFromChildren, FixtureData.GetTestGuidById(3)),
+                    new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(9)),
+                    new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(10)),
+                    new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(11)),
+                    new ActivityExecutionCall(ActivityExecutionMode.ReturnFromChildren, FixtureData.GetTestGuidById(9)),
+                    new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(12)),
+                }, ActivityService.ExecutedActivities);
+            }
+        }
+
+        [Test]
+        public async Task CanRecoverSequenceWithChildren()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                PlanDO plan;
+
+                uow.PlanRepository.Add(plan = new PlanDO
+                {
+                    Name = "TestPlan",
+                    Id = FixtureData.GetTestGuidById(0),
+                    ChildNodes =
+                    {
+                        new SubPlanDO(true)
+                        {
+                            Id = FixtureData.GetTestGuidById(1),
+                            ChildNodes =
+                            {
+                                new ActivityDO()
+                                {
+                                    ActivityTemplateId = 1,
+                                    Id = FixtureData.GetTestGuidById(2),
+                                    Ordering = 1
+                                },
+                                new ActivityDO()
+                                {
+                                    ActivityTemplateId = 1,
+                                    Id = FixtureData.GetTestGuidById(3),
+                                    Ordering = 2,
+                                    ChildNodes =
+                                    {
+                                        new ActivityDO()
+                                        {
+                                            ActivityTemplateId = 1,
+                                            Id = FixtureData.GetTestGuidById(4),
+                                            Ordering = 1
+                                        },
+                                        new ActivityDO()
+                                        {
+                                            ActivityTemplateId = 1,
+                                            Id = FixtureData.GetTestGuidById(5),
+                                            Ordering = 3
+                                        },
+                                        new ActivityDO()
+                                        {
+                                            ActivityTemplateId = 1,
+                                            Id = FixtureData.GetTestGuidById(6),
+                                            Ordering = 4,
+                                            ChildNodes =
+                                            {
+                                                new ActivityDO()
+                                                {
+                                                    ActivityTemplateId = 1,
+                                                    Id = FixtureData.GetTestGuidById(7),
+                                                    Ordering = 1
+                                                },
+                                                new ActivityDO()
+                                                {
+                                                    ActivityTemplateId = 1,
+                                                    Id = FixtureData.GetTestGuidById(8),
+                                                    Ordering = 2
+                                                },
+                                            }
+                                        }
+                                    }
+                                },
+                                new ActivityDO()
+                                {
+                                    ActivityTemplateId = 1,
+                                    Id = FixtureData.GetTestGuidById(9),
+                                    Ordering = 3,
+                                    ChildNodes =
+                                    {
+                                        new ActivityDO()
+                                        {
+                                            ActivityTemplateId = 1,
+                                            Id = FixtureData.GetTestGuidById(10),
+                                            Ordering = 1
+                                        },
+                                        new ActivityDO()
+                                        {
+                                            ActivityTemplateId = 1,
+                                            Id = FixtureData.GetTestGuidById(11),
+                                            Ordering = 2
+                                        },
+                                    }
+                                },
+                                new ActivityDO()
+                                {
+                                    ActivityTemplateId = 1,
+                                    Id = FixtureData.GetTestGuidById(12),
+                                    Ordering = 4
+                                }
+                            }
+                        }
+                    }
+                });
+
+                plan.PlanState = PlanState.Active;
+                plan.StartingSubPlan = (SubPlanDO) plan.ChildNodes[0];
+                ActivityService.CustomActivities[FixtureData.GetTestGuidById(4)] = new SuspenderActivityMock(_crateManager);
+
+                uow.SaveChanges();
+
+                await _plan.Run(uow, plan);
+
+                var container = uow.ContainerRepository.GetQuery().Single(x => x.PlanId == plan.Id);
+
+                using (var storage = _crateManager.UpdateStorage(() => container.CrateStorage))
+                {
+                    var opState = storage.CrateContentsOfType<OperationalStateCM>().First();
+
+                    container.CurrentPlanNodeId = opState.CallStack.Peek().NodeId;
+                    opState.CallStack = null;
+                }
+
+                uow.SaveChanges();
+
+                ActivityService.CustomActivities.Remove(FixtureData.GetTestGuidById(4)); // we are not interested in suspender logic testing here. Just allow activity to run by default.
+                await _plan.Continue(container.Id);
+                
+                AssertExecutionSequence(new[]
+                {
+                    new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(2)),
+                    new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(3)),
+                    new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(4)),
+                    new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(4)), // second call is because of we've resumed execution
                     new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(5)),
                     new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(6)),
                     new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(7)),

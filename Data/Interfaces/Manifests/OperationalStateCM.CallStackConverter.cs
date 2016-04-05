@@ -13,6 +13,12 @@ namespace Data.Interfaces.Manifests
             {
                 var callStack = (OperationalStateCM.ActivityCallStack)value;
 
+                if (callStack == null)
+                {
+                    writer.WriteNull();
+                    return;
+                }
+
                 writer.WriteStartArray();
 
                 foreach (var item in callStack.Reverse())
@@ -26,6 +32,12 @@ namespace Data.Interfaces.Manifests
             public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
             {
                 var array = serializer.Deserialize<OperationalStateCM.StackFrame[]>(reader);
+
+                if (array == null)
+                {
+                    return null;
+                }
+
                 var callStack = new OperationalStateCM.ActivityCallStack();
 
                 foreach (var stackFrame in array)
