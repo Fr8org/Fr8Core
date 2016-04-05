@@ -13,6 +13,7 @@ module dockyard.controllers {
     }
 
     export interface IPlanBuilderScope extends ng.IScope {
+        isPlanBuilderScope: boolean;
         planId: string;
         subPlans: Array<model.SubPlanDTO>;
         fields: Array<model.Field>;
@@ -29,6 +30,7 @@ module dockyard.controllers {
         addAction(group: model.ActionGroup): void;
         deleteAction: (action: model.ActivityDTO) => void;
         reConfigureAction: (action: model.ActivityDTO) => void;
+        isReConfiguring: boolean;
         chooseAuthToken: (action: model.ActivityDTO) => void;
         selectAction(action): void;
         isBusy: () => boolean;
@@ -100,6 +102,9 @@ module dockyard.controllers {
         ) {
 
             this.LayoutService.resetLayout();
+
+            this.$scope.isPlanBuilderScope = true;
+
             this.$scope.current = new model.PlanBuilderState();
             this.$scope.actionGroups = [];
 
@@ -393,6 +398,7 @@ module dockyard.controllers {
                 this.setAdvancedEditingMode();
             }
             this.renderPlan(<interfaces.IPlanVM>curPlan.plan);
+            this.$state.go('planBuilder', { id: curPlan.plan.id });
         }
 
         /*
@@ -437,6 +443,9 @@ module dockyard.controllers {
                 (event: ng.IAngularEvent, callConfigureResponseEventArgs: pca.CallConfigureResponseEventArgs) => this.PaneConfigureAction_ConfigureCallResponse(callConfigureResponseEventArgs));
         }
 
+
+        //This function filters activities by checking if they contain specified StandardConfigurationControls
+        //crate with given label
         private filterActivitiesByUICrate(activities: Array<model.ActivityDTO>, uiCrateLabel: string): Array<model.ActivityDTO> {
 
             var filteredList: Array<model.ActivityDTO>;
