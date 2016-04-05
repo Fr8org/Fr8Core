@@ -43,8 +43,7 @@ namespace DockyardTest.Services
             var eventService = new Event();
             var curCrateStandardEventReport = ObjectFactory.GetInstance<ICrateManager>().FromDto(FixtureData.CrateDTOForEvents(externalAccountId));
             await eventService.ProcessInboundEvents(curCrateStandardEventReport);
-
-            Assert.AreEqual(activity.Processed, 2);
+            Assert.AreEqual(2, activityMock.Processed);
         }
         //[Test]
         //[ExpectedException(ExpectedException = typeof(System.ArgumentNullException))]

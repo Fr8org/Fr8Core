@@ -271,9 +271,7 @@ namespace Hub.Services
                             _callStack.Pop();
                         }
                         break;
-
                  
-                    case ActivityResponse.JumpFar:
                     case ActivityResponse.JumpToSubplan:
                         id = ExtractGuidParam(activityResponse);
                         targetNode = _uow.PlanRepository.GetById<PlanNodeDO>(id);

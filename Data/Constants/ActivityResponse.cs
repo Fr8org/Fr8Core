@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Data.Constants
+﻿namespace Data.Constants
 {
     public enum ActivityResponse
     {
@@ -14,15 +8,16 @@ namespace Data.Constants
         RequestTerminate,
         RequestSuspend,
         SkipChildren,
+        ReProcessChildren,
         ExecuteClientActivity,
         ShowDocumentation,
         JumpToActivity,
         JumpToSubplan,
         RequestLaunch,
+        LaunchAdditionalPlan,
 
         //new op codes
         Jump,
-        JumpFar,
         Call,
         Break,
     }

@@ -67,7 +67,7 @@ namespace terminalFr8Core.Actions
                 
                 operationsCrate.StoreLocalData("Branch", currentBranch);
             }
-            
+
             var payloadFields = GetAllPayloadFields(curPayloadDTO).Where(f => !string.IsNullOrEmpty(f.Key) && !string.IsNullOrEmpty(f.Value)).AsQueryable();
 
             var configControls = GetConfigurationControls(curActivityDO);
@@ -80,18 +80,18 @@ namespace terminalFr8Core.Actions
                     //let's return whatever this one says
                     switch (containerTransitionField.Transition)
                     {
-                        case ContainerTransitions.JumpToActivity:
+                            case ContainerTransitions.JumpToActivity:
                             //TODO check if targetNodeId is selected
                             return JumpToActivity(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
-                        case ContainerTransitions.JumpToPlan:
+                            case ContainerTransitions.JumpToPlan:
                             return LaunchPlan(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
-                        case ContainerTransitions.JumpToSubplan:
-                            return JumpToSubplan(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
-                        case ContainerTransitions.ProceedToNextActivity:
+                            case ContainerTransitions.JumpToSubplan:
+                            return LaunchAdditionalPlan(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
+                            case ContainerTransitions.ProceedToNextActivity:
                             return Success(curPayloadDTO);
-                        case ContainerTransitions.StopProcessing:
+                            case ContainerTransitions.StopProcessing:
                             return TerminateHubExecution(curPayloadDTO);
-                        case ContainerTransitions.SuspendProcessing:
+                            case ContainerTransitions.SuspendProcessing:
                             throw new NotImplementedException();
 
                         default:
