@@ -83,6 +83,11 @@ namespace terminalSalesforce.Actions
                 return await Task.FromResult(curActivityDO);
             }
 
+            if (CrateManager.GetStorage(curActivityDO).CratesOfType<FieldDescriptionsCM>().Any(x => x.Label.EndsWith(" - " + curSelectedObject)))
+            {
+                return await Task.FromResult(curActivityDO);
+            }
+
             //get fields of selected salesforce object
             var objectFieldsList = await _salesforce.GetFields(curSelectedObject, authTokenDO);
             
@@ -97,8 +102,8 @@ namespace terminalSalesforce.Actions
                                         .Select(field => new QueryFieldDTO(field.Value, field.Key, QueryFieldType.String, new TextBox { Name = field.Value })))));
 
                 //FR-2459 - The activity should create another design time fields crate of type FieldDescriptionsCM for downstream activities.
-                crateStorage.RemoveByLabel("Salesforce Object Fields");
-                crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Salesforce Object Fields", objectFieldsList.ToList(), AvailabilityType.RunTime));
+                crateStorage.RemoveByLabelPrefix("Salesforce Object Fields");
+                crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Salesforce Object Fields - " + curSelectedObject, objectFieldsList.ToList(), AvailabilityType.RunTime));
             }
 
             return await Task.FromResult(curActivityDO);

@@ -70,6 +70,12 @@ namespace terminalSalesforce.Actions
                 return await Task.FromResult(curActivityDO);
             }
 
+            if(CrateManager.GetStorage(curActivityDO).CratesOfType<FieldDescriptionsCM>().Any(x => x.Label.EndsWith(" - " + chosenObject)))
+            {
+                return await Task.FromResult(curActivityDO);
+            }
+                
+
             var chosenObjectFieldsList = await _salesforce.GetFields(chosenObject, authTokenDO, true);
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
@@ -80,8 +86,9 @@ namespace terminalSalesforce.Actions
                     AddTextSourceControl(crateStorage, selectedObjectField.Value, selectedObjectField.Key, string.Empty, requestUpstream: true));
 
                 //create design time fields for the downstream activities.
-                crateStorage.RemoveByLabel("Salesforce Object Fields");
-                crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Salesforce Object Fields", chosenObjectFieldsList.ToList(), AvailabilityType.Configuration));
+                crateStorage.RemoveByLabelPrefix("Salesforce Object Fields - ");
+                crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Salesforce Object Fields - " + chosenObject, 
+                                                                                chosenObjectFieldsList.ToList(), AvailabilityType.Configuration));
             }
 
             return await Task.FromResult(curActivityDO);
@@ -93,15 +100,16 @@ namespace terminalSalesforce.Actions
             {
                 //In Activate, we validate whether the user specified values for the Required controls
 
+                var chosenObject = ExtractChosenSFObject(curActivityDO);
+
                 //get Fields which are reqired
-                var requiredFieldsList = GetRequiredFields(curActivityDO, "Salesforce Object Fields");
+                var requiredFieldsList = GetRequiredFields(curActivityDO, "Salesforce Object Fields - " + chosenObject);
 
                 //get TextSources that represent the above required fields
                 var requiredFieldControlsList = GetConfigurationControls(crateStorage)
                                                     .Controls.OfType<TextSource>()
                                                     .Where(c => requiredFieldsList.Any(f => f.Key.Equals(c.Name)));
-                var chosenObject = ExtractChosenSFObject(curActivityDO);
-
+                
                 //for each required field's control, check its value source
                 requiredFieldControlsList.ToList().ForEach(c =>
                 {
@@ -125,13 +133,15 @@ namespace terminalSalesforce.Actions
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
+                var chosenObject = ExtractChosenSFObject(curActivityDO);
+
                 //get all fields
-                var fieldsList = crateStorage.CrateContentsOfType<FieldDescriptionsCM>(c => c.Label.Equals("Salesforce Object Fields")).SelectMany(f => f.Fields);
+                var fieldsList = crateStorage.CrateContentsOfType<FieldDescriptionsCM>(c => c.Label.Equals("Salesforce Object Fields - " + chosenObject))
+                                             .SelectMany(f => f.Fields);
 
                 //get all text sources
                 var fieldControlsList = GetConfigurationControls(crateStorage).Controls.OfType<TextSource>();
-                var chosenObject = ExtractChosenSFObject(curActivityDO);
-
+                
                 var payloadStorage = CrateManager.FromDto(payloadCrates.CrateStorage);
 
                 //get <Field> <Value> key value pair for the non empty field

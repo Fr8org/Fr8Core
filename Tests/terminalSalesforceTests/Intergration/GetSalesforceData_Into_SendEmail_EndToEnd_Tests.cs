@@ -19,7 +19,7 @@ using System.Diagnostics;
 namespace terminalSalesforceTests.Intergration
 {
     [Explicit]
-    [Category("terminalDocuSignTests.Integration")]
+    [Category("terminalSalesforceTests.Integration")]
     public class GetSalesforceData_Into_SendEmail_EndToEnd_Tests : BaseHubIntegrationTest
     {
         public override string TerminalName
