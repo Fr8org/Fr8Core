@@ -465,12 +465,12 @@ div.action-header {
     margin-left: 80px;
 }
 
-    .action-slider--active:before {
-        height: 2px;
-        background: white;
-        width: 16px;
-        position: absolute;
-    }
+.action-slider--active:before {
+    height: 2px;
+    background: white;
+    width: 16px;
+    position: absolute;
+}
 
 .action-slider .slide {
     width: 240px;
@@ -481,14 +481,54 @@ div.action-header {
     height: 300px;
 }
 
-    .action-slider .slide .web-service-action, .action-slider .slide .action-action {
-        padding: 8px 5px;
-    }
+.activity-chooser-select-dialog {
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 500px;
+    height: 500px;
+}
 
-        .action-slider .slide .web-service-action:hover, .action-slider .slide .action-action:hover {
-            cursor: pointer;
-            background: rgba(0,0,0,0.05);
-        }
+.activity-chooser-select-dialog .show-hide-transition {
+    transition-property: left, opacity;
+    transition-timing-function: ease-out;
+    transition-duration: 0.2s;
+}
+
+.activity-chooser-select-dialog .web-service-list {
+    position: absolute;
+    left: 0px;
+    top: 0;
+    opacity: 1;
+    padding: 10px;
+}
+
+.activity-chooser-select-dialog .activity-list {
+    position: absolute;
+    left: 0px;
+    top: 0;
+    opacity: 1;
+    padding: 10px;
+}
+
+.activity-chooser-select-dialog .web-service-list.ng-hide {
+    left: -500px;
+    opacity: 0;
+}
+
+.activity-chooser-select-dialog .activity-list.ng-hide {
+    left: 500px;
+    opacity: 0;
+}
+
+.action-slider .slide .web-service-action, .action-slider .slide .action-action {
+    padding: 8px 5px;
+}
+
+.action-slider .slide .web-service-action:hover, .action-slider .slide .action-action:hover {
+    cursor: pointer;
+    background: rgba(0,0,0,0.05);
+}
 
 .action-slider .web-service-action img {
     max-height: 48px;
