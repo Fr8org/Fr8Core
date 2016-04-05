@@ -101,7 +101,7 @@ namespace HubWeb.Controllers
             var curCrateStandardEventReport = ObjectFactory.GetInstance<ICrateManager>().FromDto(raw);
             var eventTask = ObjectFactory.GetInstance<IEvent>().ProcessInboundEvents(curCrateStandardEventReport);
             Task.WaitAll(eventTask);
-        }
+        } 
 
         [HttpPost]
         [ActionName("processevents")]
@@ -132,7 +132,6 @@ namespace HubWeb.Controllers
             }
 
             BackgroundJob.Enqueue(() => ProcessEventsInternal(raw));
-
             return Ok();
         }
     }
