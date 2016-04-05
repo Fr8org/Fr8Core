@@ -110,7 +110,6 @@
     <Compile Include="Integration\Mail_Merge_Into_DocuSign_v1_Tests.cs" />
     <Compile Include="Integration\Monitor_DocuSign_v1_Tests.cs" />
     <Compile Include="Integration\Query_DocuSign_v1_Tests.cs" />
-    <Compile Include="Integration\Receive_DocuSign_Envelope_v1_Tests.cs" />
     <Compile Include="Integration\Track_DocuSign_Recipients_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Authentication_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Discover_v1Tests.cs" />
