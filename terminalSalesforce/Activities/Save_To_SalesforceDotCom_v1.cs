@@ -99,7 +99,7 @@ namespace terminalSalesforce.Actions
                 //get TextSources that represent the above required fields
                 var requiredFieldControlsList = GetConfigurationControls(crateStorage)
                                                     .Controls.OfType<TextSource>()
-                                                    .Where(c => requiredFieldsList.Any(f => f.Value.Equals(c.Name)));
+                                                    .Where(c => requiredFieldsList.Any(f => f.Key.Equals(c.Name)));
                 var chosenObject = ExtractChosenSFObject(curActivityDO);
 
                 //for each required field's control, check its value source

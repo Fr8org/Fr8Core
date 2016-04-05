@@ -38,7 +38,7 @@ namespace terminalSalesforce.Services
             SuccessResponse createCallResponse = null;
 
             var forceClient = (ForceClient)CreateSalesforceClient(typeof(ForceClient), authTokenDO);
-
+            
             try
             {
                 createCallResponse = await _salesforceObject.Create(newObject, salesforceObjectName, forceClient);
@@ -57,6 +57,28 @@ namespace terminalSalesforce.Services
             }
 
             return string.IsNullOrEmpty(createCallResponse.Id) ? string.Empty : createCallResponse.Id;
+        }
+
+        public async Task<bool> DeleteObject(string sfObjectName, string sfObjectId, AuthorizationTokenDO authTokenDO)
+        {
+            var forceClient = (ForceClient)CreateSalesforceClient(typeof(ForceClient), authTokenDO);
+
+            try
+            {
+                return await forceClient.DeleteAsync(sfObjectName, sfObjectId);
+            }
+            catch (ForceException salesforceException)
+            {
+                if (salesforceException.Message.Equals("Session expired or invalid"))
+                {
+                    forceClient = (ForceClient)CreateSalesforceClient(typeof(ForceClient), authTokenDO, true);
+                    return await forceClient.DeleteAsync(sfObjectName, sfObjectId);
+                }
+                else
+                {
+                    throw salesforceException;
+                }
+            }
         }
 
         /// <summary>
