@@ -25,13 +25,14 @@ namespace terminalDocuSign.Actions
     {
         protected override string ActivityUserFriendlyName => "Use DocuSign Template With New Document";
 
-        protected override PayloadDTO SendAnEnvelope(DocuSignApiConfiguration loginInfo, PayloadDTO payloadCrates,
+        protected override PayloadDTO SendAnEnvelope(ICrateStorage curStorage, DocuSignApiConfiguration loginInfo, PayloadDTO payloadCrates,
             List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId)
         {
             try
             {
-
-                DocuSignManager.SendAnEnvelopeFromTemplate(loginInfo, rolesList, fieldList, curTemplateId, null);
+                var fileCrateLabel = (FindControl(curStorage, "document_Override_DDLB") as DropDownList).selectedKey;
+                var file_crate = Crate.FromDto(payloadCrates.CrateStorage.Crates.Where(a => a.ManifestType == CrateManifestTypes.StandardFileDescription && a.Label == fileCrateLabel).Single()).Get<StandardFileDescriptionCM>();
+                DocuSignManager.SendAnEnvelopeFromTemplate(loginInfo, rolesList, fieldList, curTemplateId, file_crate);
             }
             catch (Exception ex)
             {
@@ -40,7 +41,7 @@ namespace terminalDocuSign.Actions
             return Success(payloadCrates);
         }
 
-        protected override Crate CreateDocusignTemplateConfigurationControls()
+        protected async override Task<Crate> CreateDocusignTemplateConfigurationControls(ActivityDO curActivity)
         {
             var infoBox = new TextBlock() { Value = @"This Activity overlays the tabs from an existing Template onto a new Document and sends out a DocuSign Envelope. 
                                                         When this Activity executes, it will look for and expect to be provided from upstream with one Excel or Word file." };
@@ -62,18 +63,12 @@ namespace terminalDocuSign.Actions
                 Label = "Use new document",
                 Name = "document_Override_DDLB",
                 Required = true,
-                Source = new FieldSourceDTO()
-                {
-                    ManifestType = CrateManifestTypes.StandardFileDescription,
-                    RequestUpstream = true,
-                    AvailabilityType = AvailabilityType.RunTime,
-                    Label = "File uploaded by Load Excel",
-                }
+                ListItems = await GetFilesCrates(curActivity)
             };
 
             var fieldsDTO = new List<ControlDefinitionDTO>
             {
-                infoBox, fieldSelectDocusignTemplateDTO,documentOverrideDDLB
+                infoBox, documentOverrideDDLB, fieldSelectDocusignTemplateDTO
             };
 
             var controls = new StandardConfigurationControlsCM
@@ -82,6 +77,33 @@ namespace terminalDocuSign.Actions
             };
 
             return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
+        }
+
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        {
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                curActivityDO = await HandleFollowUpConfiguration(curActivityDO, authTokenDO, crateStorage);
+                curActivityDO = await UpdateFilesDD(curActivityDO, crateStorage);
+            }
+
+            return await Task.FromResult(curActivityDO);
+        }
+
+        private async Task<ActivityDO> UpdateFilesDD(ActivityDO curActivityDO, IUpdatableCrateStorage crateStorage)
+        {
+            var ddlb = (DropDownList)FindControl(crateStorage, "document_Override_DDLB");
+            ddlb.ListItems = await GetFilesCrates(curActivityDO);
+            return curActivityDO;
+        }
+
+        private async Task<List<ListItem>> GetFilesCrates(ActivityDO curActivityDO)
+        {
+            var crates = await GetCratesByDirection(curActivityDO, CrateDirection.Upstream);
+            var file_crates = crates.Where(a => a.Label == "Runtime Available Crates").FirstOrDefault().Get<CrateDescriptionCM>().CrateDescriptions.Where(a => a.ManifestType == CrateManifestTypes.StandardFileDescription);
+            return new List<ListItem>(file_crates.Select(a => new ListItem() { Key = a.Label }));
         }
     }
 }

@@ -78,7 +78,6 @@ namespace terminalExcel.Actions
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
             runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardFileDescriptionCM>(FileCrateLabel);
         }
 
         protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
@@ -106,6 +105,7 @@ namespace terminalExcel.Actions
                 }
             }
             runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            CurrentActivityStorage.Add(Crate.FromContent(FileCrateLabel, new StandardFileDescriptionCM() { Filename = FileCrateLabel }));
         }
 
         protected override async Task RunCurrentActivity()
