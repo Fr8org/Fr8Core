@@ -22,7 +22,8 @@ var app = angular.module("app", [
     "mb-scrollbar",
     "ngMessages",
     "ivh.treeview",
-    "ngMaterial"
+    "ngMaterial",
+    "angularResizable"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */

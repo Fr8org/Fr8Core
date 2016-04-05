@@ -47,5 +47,5 @@ module dockyard.directives {
         resize: (events, ui) => void;
     }
 
-    app.directive('resizable', dockyard.directives.Resizable);
+    app.directive('activityResize', dockyard.directives.Resizable);
 }
