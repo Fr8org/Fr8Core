@@ -102,14 +102,6 @@
                                 </li>
                             </ul>
                         </li>
-                        <li class="dropdown-submenu">
-                            <a href="javascript:;" class="dropdown-toggle">Other</a>
-                            <ul class="dropdown-menu">
-                                <li ng-repeat="activity in (activityCategories | filter: { name: 'Solution', $: 'Fr8Core' })[0].activities | filter: { terminal: { name: 'terminalFr8Core' } }">
-                                    <a ui-sref="configureSolution({solutionName: activity.name})" ui-sref-opts="{reload: true}">{{activity.label}}</a>
-                                </li>
-                            </ul>
-                        </li>
 					</ul>
                 </li>
 								
