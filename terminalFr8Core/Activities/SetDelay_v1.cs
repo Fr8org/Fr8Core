@@ -34,7 +34,8 @@ namespace terminalFr8Core.Actions
                 //check for operations crate
                 if (operationsCrate == null)
                 {
-                    return Error(curPayloadDTO, "This Action can't run without OperationalStateCM crate", ActivityErrorCode.PAYLOAD_DATA_MISSING);
+                    Error(payloadStorage, "This Action can't run without OperationalStateCM crate", ActivityErrorCode.PAYLOAD_DATA_MISSING);
+                    return curPayloadDTO;
                 }
 
                 //find our action state in operations crate
@@ -44,7 +45,8 @@ namespace terminalFr8Core.Actions
                 if (delayState == "suspended")
                 {
                     //this is second time we are being called. this means alarm has triggered
-                    return Success(curPayloadDTO);
+                    Success(payloadStorage);
+                    return curPayloadDTO;
                 }
 
                 //get user selected design time duration

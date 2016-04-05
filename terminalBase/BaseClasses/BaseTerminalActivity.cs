@@ -165,7 +165,14 @@ namespace TerminalBase.BaseClasses
 
             return payload;
         }
-        
+
+        protected void Success(IUpdatableCrateStorage crateStorage, string message = "")
+        {
+            var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+            operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Success);
+            operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Message = message });
+        }
+
         protected PayloadDTO ExecuteClientActivity(PayloadDTO payload, string clientActionName)
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
