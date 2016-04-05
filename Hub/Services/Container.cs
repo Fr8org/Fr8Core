@@ -96,7 +96,7 @@ namespace Hub.Services
         {
             var state = ActivityState.InitialRun;
             var currentNode = uow.PlanRepository.GetById<PlanNodeDO>(curContainerDO.CurrentPlanNodeId);
-            
+
             // we need this to make tests wokring. If we leave currentplannode not null, MockDB will restore CurrentPlanNodeId. 
             // EF should just igone navigational porperty null value if corresponding foreign key is not null.
             curContainerDO.CurrentPlanNode = null;
@@ -112,7 +112,7 @@ namespace Hub.Services
                     state = ActivityState.ReturnFromChildren;
                 }
                 else
-                { 
+                {
                     if (nextSibling == null)
                     {
                         curContainerDO.CurrentPlanNodeId = currentNode.ParentPlanNode?.Id;
@@ -177,40 +177,39 @@ namespace Hub.Services
 
         private bool HasOperationalStateCrate(ContainerDO curContainerDO)
         {
-            
+
             var storage = _crate.GetStorage(curContainerDO.CrateStorage);
             var operationalState = storage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
             return operationalState != null;
         }
 
-        private Guid? GetFirstActivityOfSubplan(IUnitOfWork uow, ContainerDO curContainerDO, Guid subplanId)
-        {
-            var subplan = uow.PlanRepository.GetById<PlanDO>(curContainerDO.PlanId).SubPlans.FirstOrDefault(s => s.Id == subplanId);
-            return subplan?.ChildNodes.OrderBy(c => c.Ordering).FirstOrDefault()?.Id;
-        }
-
-        private async Task LoadAndRunPlan(IUnitOfWork uow, ContainerDO curContainerDO, ActivityResponseDTO activityResponseDTO)
+        private async Task LoadAndRunPlan(IUnitOfWork uow, ContainerDO curContainerDO, ActivityResponseDTO activityResponseDTO, bool isSubPlan)
         {
             ResponseMessageDTO responseMessage;
             activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
-            var addPlanId = Guid.Parse((string)responseMessage.Details);
-                
-            await LoadAndRunPlan(uow, curContainerDO, addPlanId);
-        }
+            var curId = Guid.Parse((string)responseMessage.Details); //either Plan or Subplan depending on isSubPlan
 
-        private async Task LoadAndRunPlan(IUnitOfWork uow, ContainerDO curContainerDO, Guid planId)
-        {
             var plan = ObjectFactory.GetInstance<IPlan>();
-            var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
+
+            var planDO = uow.PlanRepository.GetById<PlanDO>(isSubPlan ? curContainerDO.PlanId : curId);
             var freshContainer = uow.ContainerRepository.GetByKey(curContainerDO.Id);
 
             var crateStorage = _crate.GetStorage(freshContainer.CrateStorage);
             var operationStateCrate = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
             operationStateCrate.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Null);
-            operationStateCrate.History.Add(new OperationalStateCM.HistoryElement { Description = "Launch Triggered by Container ID "+ curContainerDO.Id });
+            operationStateCrate.History.Add(new OperationalStateCM.HistoryElement { Description = "Launch Triggered by Container ID " + curContainerDO.Id });
 
             var payloadCrates = crateStorage.AsEnumerable().ToArray();
-            plan.Enqueue(planDO.Id, payloadCrates);
+
+            if (isSubPlan)
+            {
+                plan.Enqueue(planDO.Id, curId, payloadCrates);
+            }
+            else
+            {
+                plan.Enqueue(planDO.Id, payloadCrates);
+            }
+
         }
 
         public async Task Run(IUnitOfWork uow, ContainerDO curContainerDO)
@@ -219,7 +218,7 @@ namespace Hub.Services
             {
                 throw new ArgumentNullException("ContainerDO is null");
             }
-            
+
             try
             {
                 //if payload already has operational state create we shouldn't create another
@@ -280,13 +279,12 @@ namespace Hub.Services
                             continue;
 
                         case ActivityResponse.LaunchAdditionalPlan:
-                            //actionState = ActivityState.InitialRun;
-                            await LoadAndRunPlan(uow, curContainerDO, activityResponseDTO);
-                            continue;
+                            await LoadAndRunPlan(uow, curContainerDO, activityResponseDTO, true);
+                            break;
 
                         case ActivityResponse.RequestLaunch:
                             //hmm what to do now
-                            await LoadAndRunPlan(uow, curContainerDO, activityResponseDTO);
+                            await LoadAndRunPlan(uow, curContainerDO, activityResponseDTO, false);
                             break;
 
                         default:
@@ -308,11 +306,11 @@ namespace Hub.Services
             {
                 var curActivityDTO = GetCurrentActivity(uow, curContainerDO);
                 throw new ActivityExecutionException(e.ContainerDTO, curActivityDTO, e.Message, e);
-            }            
-            catch(Exception e)
+            }
+            catch (Exception e)
             {
                 var curActivityDTO = GetCurrentActivity(uow, curContainerDO);
-                
+
                 if (curActivityDTO != null)
                 {
                     var curContainerDTO = Mapper.Map<ContainerDO, ContainerDTO>(curContainerDO);
@@ -321,7 +319,7 @@ namespace Hub.Services
                 else
                 {
                     throw;
-                }                
+                }
             }
         }
 
@@ -332,8 +330,8 @@ namespace Hub.Services
                 throw new ApplicationException("UserId must not be null");
 
             var containerRepository = unitOfWork.ContainerRepository.GetQuery();
-            
-      
+
+
             return (id == null
                ? containerRepository.Where(container => container.Plan.Fr8Account.Id == account.Id)
                : containerRepository.Where(container => container.Id == id && container.Plan.Fr8Account.Id == account.Id)).ToList();

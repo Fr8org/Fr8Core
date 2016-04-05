@@ -36,7 +36,7 @@ namespace terminalFr8Core.Actions
         public override async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var curPayloadDTO = await GetPayload(curActivityDO, containerId);
-            
+
 
             //let's check current branch status
             using (var crateStorage = CrateManager.GetUpdatableStorage(curPayloadDTO))
@@ -55,7 +55,7 @@ namespace terminalFr8Core.Actions
                 }
 
                 currentBranch.Count += 1;
-                
+
                 if (currentBranch.Count >= SlowRunLimit)
                 {
                     return Error(curPayloadDTO, "This container hit a maximum loop count and was stopped because we're afraid it might be an infinite loop");
@@ -86,18 +86,18 @@ namespace terminalFr8Core.Actions
                     //let's return whatever this one says
                     switch (containerTransitionField.Transition)
                     {
-                            case ContainerTransitions.JumpToActivity:
+                        case ContainerTransitions.JumpToActivity:
                             //TODO check if targetNodeId is selected
                             return JumpToActivity(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
-                            case ContainerTransitions.JumpToPlan:
+                        case ContainerTransitions.JumpToPlan:
                             return LaunchPlan(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
-                            case ContainerTransitions.JumpToSubplan:
+                        case ContainerTransitions.JumpToSubplan:
                             return LaunchAdditionalPlan(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
-                            case ContainerTransitions.ProceedToNextActivity:
+                        case ContainerTransitions.ProceedToNextActivity:
                             return Success(curPayloadDTO);
-                            case ContainerTransitions.StopProcessing:
+                        case ContainerTransitions.StopProcessing:
                             return TerminateHubExecution(curPayloadDTO);
-                            case ContainerTransitions.SuspendProcessing:
+                        case ContainerTransitions.SuspendProcessing:
                             throw new NotImplementedException();
 
                         default:
@@ -132,7 +132,7 @@ namespace terminalFr8Core.Actions
             return results.Any();
 
         }
-        
+
         protected override Crate CreateControlsCrate()
         {
             var transition = new ContainerTransition

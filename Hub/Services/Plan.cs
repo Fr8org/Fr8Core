@@ -499,7 +499,12 @@ namespace Hub.Services
             _dispatcher.Enqueue(() => LaunchProcess(curPlanId, curEventReport).Wait());
         }
 
-        public void Enqueue(List<PlanDO> curPlans,  params Crate[] curEventReport)
+        public void Enqueue(Guid curPlanId, Guid curSubPlanId, params Crate[] curEventReport)
+        {
+            _dispatcher.Enqueue(() => LaunchProcess(curPlanId, curSubPlanId, curEventReport).Wait());
+        }
+
+        public void Enqueue(List<PlanDO> curPlans, params Crate[] curEventReport)
         {
             foreach (var curPlan in curPlans)
             {
@@ -515,7 +520,22 @@ namespace Hub.Services
             await ObjectFactory.GetInstance<IPlan>().Run(curPlan, curPayload);
         }
 
+        public static async Task LaunchProcess(Guid curPlan, Guid curSubPlan, params Crate[] curPayload)
+        {
+            if (curPlan == default(Guid))
+                throw new ArgumentException(nameof(curPlan));
+            if (curSubPlan == default(Guid))
+                throw new ArgumentException(nameof(curSubPlan));
+
+            await ObjectFactory.GetInstance<IPlan>().Run(curPlan, curSubPlan, curPayload);
+        }
+
         public async Task<ContainerDO> Run(Guid planId, params Crate[] curPayload)
+        {
+            return await Run(planId, default(Guid), curPayload);
+        }
+
+        public async Task<ContainerDO> Run(Guid planId, Guid subPlanId, params Crate[] curPayload)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -525,6 +545,10 @@ namespace Hub.Services
                 try
                 {
                     var curContainerDO = Create(uow, curPlan, curPayload);
+                    if (subPlanId != default(Guid))
+                    {
+                        curContainerDO.CurrentPlanNodeId = GetFirstActivityOfSubplan(uow, curContainerDO, subPlanId);
+                    }
                     return await Run(uow, curContainerDO);
                 }
                 catch (Exception ex)
@@ -638,6 +662,12 @@ namespace Hub.Services
             if (curPlan == null)
                 throw new ArgumentNullException("planId");
             return Create(uow, curPlan, curPayload);
+        }
+
+        private Guid? GetFirstActivityOfSubplan(IUnitOfWork uow, ContainerDO curContainerDO, Guid subplanId)
+        {
+            var subplan = uow.PlanRepository.GetById<PlanDO>(curContainerDO.PlanId).SubPlans.FirstOrDefault(s => s.Id == subplanId);
+            return subplan?.ChildNodes.OrderBy(c => c.Ordering).FirstOrDefault()?.Id;
         }
     }
 }
