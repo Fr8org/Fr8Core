@@ -656,6 +656,18 @@ namespace TerminalBase.BaseClasses
             return mergedFields;
         }
 
+        public virtual IEnumerable<FieldDTO> GetRequiredFields(ActivityDO curActivityDO, string crateLabel)
+        {
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                var requiredFields = crateStorage
+                                        .CrateContentsOfType<FieldDescriptionsCM>(c => c.Label.Equals(crateLabel))
+                                        .SelectMany(f => f.Fields.Where(s => s.IsRequired));
+
+                return requiredFields;
+            }
+        }
+
         public virtual async Task<List<CrateManifestType>> BuildUpstreamManifestList(ActivityDO activityDO)
         {
             var upstreamCrates = await this.GetCratesByDirection<Data.Interfaces.Manifests.Manifest>(activityDO, CrateDirection.Upstream);
@@ -858,22 +870,6 @@ namespace TerminalBase.BaseClasses
             textSourceControl.Required = required;
 
             AddControl(storage, textSourceControl);
-        }
-
-        /// <summary>
-        /// Adds Text Source controls for the given list of FieldDTOs
-        /// </summary>
-        protected void AddTextSourceControlForListOfFields(
-            IEnumerable<FieldDTO> fieldsList,
-            ICrateStorage storage,
-            string upstreamSourceLabel,
-            string filterByTag = "",
-            bool addRequestConfigEvent = false,
-            bool required = false,
-            bool requestUpstream = false)
-        {
-            fieldsList.ToList().ForEach(field => 
-                AddTextSourceControl(storage, field.Key, field.Value, upstreamSourceLabel, filterByTag, addRequestConfigEvent, field.IsRequired, requestUpstream));
         }
 
         /// <summary>

@@ -28,7 +28,8 @@ namespace terminalSalesforce.Infrastructure
         }
 
         /// <summary>
-        /// Gets fields of the given Salesforce object name
+        /// Gets fields of the given Salesforce object name.
+        /// Please see https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_calls_describesobjects_describesobjectresult.htm#topic-title
         /// </summary>
         public async Task<IList<FieldDTO>> GetFields(string salesforceObjectName, ForceClient forceClient, bool onlyUpdatableFields = false)
         {
@@ -38,28 +39,38 @@ namespace terminalSalesforce.Infrastructure
             var objectFields = new List<FieldDTO>();
 
             //parse them into the list of FieldDTO
-            JToken fieldsFromApiResponse;
-            if (fieldsQueryResponse.TryGetValue("fields", out fieldsFromApiResponse) && fieldsFromApiResponse is JArray)
+            JToken fieldDescriptions;
+            if (fieldsQueryResponse.TryGetValue("fields", out fieldDescriptions) && fieldDescriptions is JArray)
             {
-                //if asked to consider only updatable fields, filter the controls which are updateable
+                //if asked to get only updatable fields, filter the fields which are updateable
                 if (onlyUpdatableFields)
                 {
-                    fieldsFromApiResponse = new JArray(fieldsFromApiResponse.Where(a => (a.Value<bool>("updateable") == true)));
+                    fieldDescriptions = new JArray(fieldDescriptions.Where(fieldDescription => (fieldDescription.Value<bool>("updateable") == true)));
                 }
 
-                var fields = fieldsFromApiResponse.Select(a =>
-                                    //Select Fields as FieldDTOs with
-                                    //Key -> Field Lable
-                                    //Value -> Field Name
-                                    //AvailabilityType -> Run Time
-                                    //FieldType -> Field Type
-                                    //IsRequired -> When a field is Nillable AND Defaulted On Create AND Updatable
-                                    new FieldDTO(a.Value<string>("label"), a.Value<string>("name"), Data.States.AvailabilityType.RunTime)
+                var fields = fieldDescriptions.Select(fieldDescription =>
+                                    /*
+                                    Select Fields as FieldDTOs with                                    
+
+                                    Key -> Field Name
+                                    Value -> Field Lable
+                                    AvailabilityType -> Run Time
+                                    FieldType -> Field Type
+
+                                    IsRequired -> The Field is required when ALL the below conditions are true.
+                                      nillable            = false, Meaning, the field must have a valid value. The field's value should not be NULL or NILL or Empty
+                                      defaultedOnCreate   = false, Meaning, Salesforce itself does not assign default value for this field when object is created (ex. ID)
+                                      updateable          = true,  Meaning, The filed's value must be updatable by the user. 
+                                                                            User must be able to set or modify the value of this field.
+                                    */
+                                    new FieldDTO(fieldDescription.Value<string>("name"), fieldDescription.Value<string>("label"), Data.States.AvailabilityType.RunTime)
                                     {
-                                        FieldType = a.Value<string>("type"),
-                                        IsRequired = a.Value<bool>("nillable") == false &&
-                                                     a.Value<bool>("defaultedOnCreate") == false &&
-                                                     a.Value<bool>("updateable") == true
+                                        FieldType = fieldDescription.Value<string>("type"),
+
+                                        IsRequired = fieldDescription.Value<bool>("nillable") == false &&
+                                                     fieldDescription.Value<bool>("defaultedOnCreate") == false &&
+                                                     fieldDescription.Value<bool>("updateable") == true
+
                                     }).OrderBy(field => field.Key);
 
                 objectFields.AddRange(fields);

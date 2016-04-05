@@ -60,7 +60,7 @@ namespace terminalSalesforce.Actions
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var configurationCrate = CreateControlsCrate();
-            ActivitiesHelper.FillSalesforceSupportedObjects(configurationCrate, "WhatKindOfData");
+            ActivitiesHelper.GetAvailableFields(configurationCrate, "WhatKindOfData");
 
             using (var crateStorage = CrateManager.UpdateStorage(() => curActivityDO.CrateStorage))
             {
@@ -94,7 +94,7 @@ namespace terminalSalesforce.Actions
                 crateStorage.Add(
                     Crate.FromContent("Queryable Criteria", new StandardQueryFieldsCM(
                         objectFieldsList.OrderBy(field => field.Key)
-                                        .Select(field => new QueryFieldDTO(field.Value, field.Key, QueryFieldType.String, new TextBox { Name = field.Key })))));
+                                        .Select(field => new QueryFieldDTO(field.Value, field.Key, QueryFieldType.String, new TextBox { Name = field.Value })))));
 
                 //FR-2459 - The activity should create another design time fields crate of type FieldDescriptionsCM for downstream activities.
                 crateStorage.RemoveByLabel("Salesforce Object Fields");
@@ -121,7 +121,7 @@ namespace terminalSalesforce.Actions
             var curSalesforceObjectFields = CrateManager.GetStorage( curActivityDO )
                                                          .CratesOfType<StandardQueryFieldsCM>()
                                                          .Single(c => c.Label.Equals("Queryable Criteria"))
-                                                         .Content.Fields.Select(f => f.Name);
+                                                         .Content.Fields.Select(f => f.Label);
 
             if (string.IsNullOrEmpty(curSelectedSalesForceObject))
             {
