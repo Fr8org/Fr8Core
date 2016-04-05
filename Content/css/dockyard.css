@@ -738,10 +738,6 @@ input[type=radio]:checked ~ div.nested-controls {
     display: block;
 }
 
-    .radio-button-group-content .query-builder-table .form-group {
-        margin: 0;
-    }
-
 .radio-button-option-label {
     display: inline;
 }
@@ -1068,7 +1064,7 @@ div.ap-resize div.dndDraggingSource {
     margin: 30px auto;
 }
 
-i.activity-stream-font{
+i.activity-stream-font {
     margin-right: 3px;
     font-size: 40px !important;
     float: left; 
@@ -1092,15 +1088,7 @@ i.activity-stream-font{
     min-width:70%;
 }
 
-.query-builder-value-row {
-    padding-left: 15px; 
-    overflow: auto;
-}
-.query-builder-operator-row {
-    float:left; 
-    width: 70px;
-}
-.configuration-control-form-group{
+.configuration-control-form-group {
     margin-bottom: 5px;
 }
 

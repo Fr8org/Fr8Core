@@ -1,42 +1,36 @@
-﻿/* Query Builder */
+﻿query-builder .add-condition span {
+    vertical-align: middle;
+}
 
-.query-builder-table {
-    margin-left: 27px;
+query-builder .add-condition .btn {
+    margin-left: 5px;
+}
+
+query-builder table {
+    table-layout: fixed;
+    width: 100%;
     margin-bottom: 5px;
-    width: calc(100% - 25px);
+    text-align: center;
 }
 
-    .query-builder-table td:first-of-type,
-    .query-builder-table th:first-of-type {
-        padding-left: 0;
-    }
-
-    .query-builder-table tbody,
-    .query-builder-table thead {
-        display: block;
-    }
-
-        .query-builder-table tbody tr.no-border td {
-            border-top: none;
-            padding: 0;
-        }
-
-    .query-builder-table input[type=text].invalid {
-        border: 1px solid red;
-    }
-
-    .query-builder-table div.invalid-hint {
-        font-size: 1em;
-        color: red;
-        text-align: right;
-    }
-
-.query-builder-table .form-control {
-    padding: 0;
-    height: 25px;
+query-builder th:nth-child(2) {
+    width: 70px;
+}
+    
+query-builder th:nth-child(4) {
+    width: 20px;
 }
 
-.query-builder-table date-picker .btn.btn-default {
-    padding: 1px 3px 2px 3px;
-    border: 1px solid #acacac;
+query-builder th {
+    font-weight: normal;
+}
+
+query-builder tr > td + td,
+query-builder tr > th + th {
+    border-left-width: 10px;
+}
+
+query-builder td,
+query-builder th {
+    border: 0 solid transparent;
 }

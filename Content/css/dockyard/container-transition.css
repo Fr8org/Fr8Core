@@ -1,11 +1,21 @@
-﻿/* Container Transition */
-
-.container-transition {
+﻿container-transition {
     font-size: 14px;
 }
 
-.container-transition .delete-btn {
+container-transition .delete-btn {
     color: red;
     cursor: pointer;
-    float: right;
+}
+
+container-transition .btn :not(.add-condition.btn-sm) {
+    font-size: 13px;
+    padding: 6px 10px;
+}
+
+container-transition .filter-pane{
+    padding-left:8px
+}
+
+container-transition .control-label,.drop-down-list-box-container{
+        padding-left:8px
 }
