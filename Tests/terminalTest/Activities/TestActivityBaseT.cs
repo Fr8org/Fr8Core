@@ -14,7 +14,8 @@ namespace terminalTest.Actions
 
         protected void Log(string message)
         {
-            File.AppendAllText(@"C:\Work\fr8_research\log.txt", message + "\n");
+            // use any logging logic you want
+            //File.AppendAllText(@"C:\Work\fr8_research\log.txt", message + "\n");
         }
     }
 }
