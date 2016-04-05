@@ -33,9 +33,9 @@ Function UpdateGitHubBuildStatus($message)
 
 	if ($LastExitCode -ne 0)
 	{
-		Write-Host "Failed to get latest commit hash."
-        Write-Host "StatusCode:" $_.Exception.Response.StatusCode.value__ 
-        Write-Host "StatusDescription:" $_.Exception.Response.StatusDescription
+		Write-Error "Failed to get latest commit hash."
+        Write-Error "StatusCode:" $_.Exception.Response.StatusCode.value__ 
+        Write-Error "StatusDescription:" $_.Exception.Response.StatusDescription
 		
         exit 1;
 	}
@@ -50,9 +50,9 @@ Function UpdateGitHubBuildStatus($message)
 		}
 		catch
 		{
-			Write-Host "Failed to update build status."
-            Write-Host "StatusCode:" $_.Exception.Response.StatusCode.value__ 
-            Write-Host "StatusDescription:" $_.Exception.Response.StatusDescription
+			Write-Error "Failed to update build status."
+            Write-Error "StatusCode:" $_.Exception.Response.StatusCode.value__ 
+            Write-Error "StatusDescription:" $_.Exception.Response.StatusDescription
 			exit 1;
 		}
 	}	
@@ -81,9 +81,9 @@ $vsoResponse = try
 }
 catch
 {
-	Write-Host "Failed to get current build status"
-    Write-Host "StatusCode:" $_.Exception.Response.StatusCode.value__ 
-    Write-Host "StatusDescription:" $_.Exception.Response.StatusDescription
+	Write-Error "Failed to get current build status"
+    Write-Error "StatusCode:" $_.Exception.Response.StatusCode.value__ 
+    Write-Error "StatusDescription:" $_.Exception.Response.StatusDescription
 	exit 1
 }
 
