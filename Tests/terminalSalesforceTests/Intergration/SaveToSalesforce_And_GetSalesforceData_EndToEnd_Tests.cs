@@ -28,7 +28,7 @@ namespace terminalSalesforceTests.Intergration
             get { return "terminalSalesforce"; }
         }
 
-        [Test]
+        [Test, Ignore("This test is ignored since the activity is not available in dev database.")]
         public async Task SaveToSalesforce_And_GetSalesforceData_EndToEnd()
         {
             AuthorizationTokenDO authTokenDO = null;
@@ -86,7 +86,7 @@ namespace terminalSalesforceTests.Intergration
                 Assert.AreEqual("Test", retrievedLeadCompanyName, "The retieved lead Company is not as expected.");
 
                 Debug.WriteLine("Deleting newly created lead with " + newLeadId);
-                var isDeleted = await new SalesforceManager().DeleteObject("Lead", newLeadId, authTokenDO);
+                var isDeleted = await SalesforceTestHelper.DeleteObject(authTokenDO, "Lead", newLeadId);
                 Assert.IsTrue(isDeleted, "The newly created Lead for integration test purpose is not deleted.");
                 newLeadId = string.Empty;
 
@@ -146,7 +146,7 @@ namespace terminalSalesforceTests.Intergration
         {
             if(!string.IsNullOrEmpty(newLeadId))
             {
-                var isDeleted = await new SalesforceManager().DeleteObject("Lead", newLeadId, authTokenDO);
+                var isDeleted = await SalesforceTestHelper.DeleteObject(authTokenDO, "Lead", newLeadId);
                 Assert.IsTrue(isDeleted, "The newly created Lead for integration test purpose is not deleted.");
             }
 

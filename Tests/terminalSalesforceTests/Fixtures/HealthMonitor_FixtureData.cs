@@ -2,6 +2,7 @@
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.States;
 using Salesforce.Common;
 using StructureMap;
 using System;
@@ -51,6 +52,30 @@ namespace terminalSalesforceTests.Fixtures
                 uow.SaveChanges();
 
                 return tokenDO;
+            }
+        }
+
+        public static ActivityTemplateDO CreateSaveToSalesforceActivity()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var terminal = uow.TerminalRepository.FindOne(t => t.Name.Equals("terminalSalesforce"));
+
+                var atSaveData = new ActivityTemplateDO()
+                {
+                    Version = "1",
+                    Name = "Save_To_SalesforceDotCom",
+                    Label = "Save to Salesforce.Com",
+                    Terminal = terminal,
+                    NeedsAuthentication = true,
+                    Category = ActivityCategory.Forwarders,
+                    MinPaneWidth = 330,
+                };
+
+                uow.ActivityTemplateRepository.Add(atSaveData);
+                uow.SaveChanges();
+
+                return atSaveData;
             }
         }
 
