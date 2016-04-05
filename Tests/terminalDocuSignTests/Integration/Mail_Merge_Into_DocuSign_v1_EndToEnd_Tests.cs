@@ -274,7 +274,8 @@ namespace terminalDocuSignTests.Integration
             string spreadsheetKeyWord = Guid.NewGuid().ToString();
             string worksheetName = "TestSheet";
 
-            //check if excel exists with data
+            //create new excel spreadsheet inside google and insert one row of data inside the spreadsheet
+            //spreadsheetKeyWord is an identifier that will help up later in the test to easily identify specific envelope
             var tableFixtureData = FixtureData.TestStandardTableData(TestEmail, spreadsheetKeyWord);
             string spreadsheetId = await terminalGoogleTestTools.CreateNewSpreadsheet(googleAuthTokenId, spreadsheetName, worksheetName, tableFixtureData);
 
@@ -304,7 +305,9 @@ namespace terminalDocuSignTests.Integration
             // Configure Send DocuSign Envelope action
             //
 
+            //
             // Initial Configuration
+            //
             var sendEnvelopeAction = loopActivity.ChildrenActivities.Single(a => a.Label == "Send DocuSign Envelope");
 
             crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
@@ -323,7 +326,10 @@ namespace terminalDocuSignTests.Integration
             sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", sendEnvelopeAction);
             sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", sendEnvelopeAction);
 
+            //
             // Follow-up Configuration
+            //
+            //chosen "Fr8 Fromentum Registration Form" contains 7 specific DocuSign tabs that will be configured with upstream values 
             crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
             controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
             var emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingLead role email");
@@ -382,21 +388,19 @@ namespace terminalDocuSignTests.Integration
             //
             var container = await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
             Assert.AreEqual(container.ContainerState, ContainerState.Completed);
+            
             //
             // Assert 
             //
 
-            //get the envelope from DocuSign
             var configuration =  new DocuSignManager().SetUp(_terminalDocuSignTestTools.GetDocuSignAuthToken(tokenGuid));
-            //find the envelope on the docusign Account
+            //find the envelope on the Docusign Account
             var folderItems = DocuSignFolders.GetFolderItems(configuration, new DocusignQuery()
             {       
                 Status = "sent",
                 SearchText = spreadsheetKeyWord
             });
-
-
-
+            
             var envelope = folderItems.FirstOrDefault();
             Assert.IsNotNull(envelope, "Cannot find created Envelope in sent folder of DocuSign Account");
             var envelopeApi = new EnvelopesApi(configuration.Configuration);
@@ -446,7 +450,6 @@ namespace terminalDocuSignTests.Integration
             // Deactivate plan
             //
             await HttpPostAsync<string, string>(_baseUrl + "plans/deactivate?planId=" + plan.Plan.Id, null);
-
 
             //
             // Delete plan

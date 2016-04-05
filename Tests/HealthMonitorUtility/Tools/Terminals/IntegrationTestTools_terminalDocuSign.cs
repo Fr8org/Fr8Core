@@ -24,6 +24,13 @@ namespace terminaBaselTests.Tools.Terminals
             _baseHubITest = baseHubIntegrationTest;
         }
 
+        /// <summary>
+        /// Generate new DocuSign authorization token from provided credentials
+        /// </summary>
+        /// <param name="username"></param>
+        /// <param name="password"></param>
+        /// <param name="terminalId"></param>
+        /// <returns></returns>
         public async Task<AuthorizationTokenDTO> GenerateAuthToken(string username, string password, int terminalId)
         {
             var creds = new CredentialsDTO()
@@ -46,18 +53,21 @@ namespace terminaBaselTests.Tools.Terminals
             return await Task.FromResult(new AuthorizationTokenDTO { Token = tokenGuid.ToString() });
         }
 
+        /// <summary>
+        /// Authenticate to DocuSign and accociate generated token with activity
+        /// </summary>
+        /// <param name="activityId"></param>
+        /// <param name="credentials"></param>
+        /// <param name="terminalId"></param>
+        /// <returns></returns>
         public async Task<Guid> AuthenticateDocuSignAndAssociateTokenWithAction(Guid activityId, CredentialsDTO credentials, int terminalId)
         {
             //
             // Authenticate with DocuSign Credentials
             //
-            credentials.TerminalId = terminalId;
-
-            var token = await _baseHubITest.HttpPostAsync<CredentialsDTO, JObject>(_baseHubITest.GetHubApiBaseUrl() + "authentication/token", credentials);
-            Assert.AreNotEqual(token["error"].ToString(), "Unable to authenticate in DocuSign service, invalid login name or password.", "DocuSign auth error. Perhaps max number of tokens is exceeded.");
-            Assert.AreEqual(false, String.IsNullOrEmpty(token["authTokenId"].Value<string>()), "AuthTokenId is missing in API response.");
-            var tokenGuid = Guid.Parse(token["authTokenId"].Value<string>());
-
+            var authTokenDTO = await GenerateAuthToken(credentials.Username, credentials.Password, terminalId);
+            var tokenGuid = Guid.Parse(authTokenDTO.Token);
+           
             //
             // Asociate token with action
             //
@@ -72,6 +82,12 @@ namespace terminaBaselTests.Tools.Terminals
             return tokenGuid;
         }
 
+        
+        /// <summary>
+        /// Get GoogleAuthToken from the TokenRepository based on authorizationTokenId 
+        /// </summary>
+        /// <param name="authorizationTokenId"></param>
+        /// <returns></returns>
         public AuthorizationTokenDO GetDocuSignAuthToken(Guid authorizationTokenId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

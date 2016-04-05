@@ -27,6 +27,21 @@ namespace terminaBaselTests.Tools.Activities
             _terminalDocuSignTestTools = new Terminals.IntegrationTestTools_terminalDocuSign(_baseHubITest);
         }
 
+        /// <summary>
+        /// Helper method for creating new Mail_Merge_Into_DocuSign solution and configure that solution with chosen data source and docuSign template.
+        /// After solution is created, check for authentication and authenticate if needed to DocuSign.
+        /// </summary>
+        /// <param name="dataSourceValue">Value property for DataSource dropDownList</param>
+        /// <param name="dataSourceSelectedKey">selectedKey property for DataSource dropdownList</param>
+        /// <param name="docuSignTemplateValue">Value property for DocuSignTemplate dropDownList</param>
+        /// <param name="docuSignTemplateSelectedKey">>selectedKey property for DocuSignTemplate dropdownList</param>
+        /// <param name="addNewDocuSignTemplate">add provided DocuSign Template values as new ListItem in DocuSignTemplate DropDownList</param>
+        /// <returns>
+        ///  Objects that are created from this solution and can be reused for different scenarios
+        ///   Item1 from Tuple: new created Mail_Merge_Into_DocuSign solution as ActivityDTO with all children activities inside.
+        ///   Item2 from Tuple: new created Plan associated with Mail_Merge_Into_DocuSign solution.
+        ///   Item3 from Tuple: authorizationTokenId returned from DocuSign authentication process 
+        /// </returns>
         public async Task<Tuple<ActivityDTO, PlanDTO, Guid>> CreateAndConfigure_MailMergeIntoDocuSign_Solution(string dataSourceValue,
             string dataSourceSelectedKey, string docuSignTemplateValue, string docuSignTemplateSelectedKey, bool addNewDocuSignTemplate)
         {
@@ -60,11 +75,20 @@ namespace terminaBaselTests.Tools.Activities
             crateStorage = _baseHubITest.Crate.FromDto(solution.CrateStorage);
             Assert.True(crateStorage.CratesOfType<StandardConfigurationControlsCM>().Any(), "Crate StandardConfigurationControlsCM is missing in API response.");
 
+            //
+            // Followup configuration 
+            //
             var controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
             var controls = controlsCrate.Content.Controls;
+            // 
+            // Set dataSource value and Key, Example "Get_Google_Sheet_Data", "Load_Excel_File"...
+            //
             var dataSource = controls.OfType<DropDownList>().FirstOrDefault(c => c.Name == "DataSource");
             dataSource.Value = dataSourceValue;
             dataSource.selectedKey = dataSourceSelectedKey; 
+            //
+            // Set DocuSign template value 
+            //
             var template = controls.OfType<DropDownList>().FirstOrDefault(c => c.Name == "DocuSignTemplate");
             template.Value = docuSignTemplateValue;
             template.selectedKey = docuSignTemplateSelectedKey;
@@ -77,7 +101,7 @@ namespace terminaBaselTests.Tools.Activities
             button.Clicked = true;
 
             //
-            //Rename route
+            //Rename plan to include a dateTimeStamp in the name
             //
             var newName = plan.Plan.Name + " | " + DateTime.UtcNow.ToShortDateString() + " " +
                 DateTime.UtcNow.ToShortTimeString();
@@ -93,7 +117,7 @@ namespace terminaBaselTests.Tools.Activities
                 crateStorageTemp.Add(controlsCrate);
             }
             solution = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/configure?id=" + solution.Id, solution);
-            crateStorage = _baseHubITest.Crate.FromDto(solution.CrateStorage);
+
             Assert.AreEqual(2, solution.ChildrenActivities.Count(), "Solution child actions failed to create.");
 
             return new Tuple<ActivityDTO, PlanDTO, Guid>(solution, plan, tokenGuid);

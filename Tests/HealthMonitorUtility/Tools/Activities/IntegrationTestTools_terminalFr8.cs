@@ -25,6 +25,14 @@ namespace terminaBaselTests.Tools.Activities
             _baseHubITest = baseHubIntegrationTest;
         }
 
+        /// <summary>
+        /// Add Build_Message activity to existing plan and configure the activity with message name and body template
+        /// </summary>
+        /// <param name="plan"></param>
+        /// <param name="ordering"></param>
+        /// <param name="messageName"></param>
+        /// <param name="messageBodyTemplate"></param>
+        /// <returns></returns>
         public async Task<ActivityDTO> AddAndConfigureBuildMessage(PlanDTO plan, int ordering, string messageName, string messageBodyTemplate)
         {
             var activityName = "Build_Message";
@@ -64,11 +72,18 @@ namespace terminaBaselTests.Tools.Activities
             return buildMessageActivityDTO;
         }
 
+        /// <summary>
+        /// Configure Loop_v1 activity. Configure UpstreamCrateChooser to except specific manifestType and crateDescription Label
+        /// Assert if upstream crate chooser is configured good based on provided parameters
+        /// </summary>
+        /// <param name="activityDTO"></param>
+        /// <param name="manifestType"></param>
+        /// <param name="crateDescriptionLabel"></param>
+        /// <returns></returns>
         public async Task<ActivityDTO> ConfigureLoopActivity(ActivityDTO activityDTO, string manifestType, string crateDescriptionLabel)
         {
             using (var loopCrateStorage = _baseHubITest.Crate.GetUpdatableStorage(activityDTO))
             {
-
                 var loopControlsCrate = loopCrateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
                 var loopControls = loopControlsCrate.Content.Controls;
 

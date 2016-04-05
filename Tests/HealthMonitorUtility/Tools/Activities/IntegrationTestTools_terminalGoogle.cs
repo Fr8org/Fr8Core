@@ -25,9 +25,18 @@ namespace terminaBaselTests.Tools.Activities
             _baseHubITest = baseHubIntegrationTest;
         }
 
+        /// <summary>
+        /// Add new Save_To_Google_Sheet activity to an existing plan and configure that activity with selected spreadsheet.
+        /// Add support for upstream cratechooser to expect provided manifestType and crateDescriptionLabel
+        /// </summary>
+        /// <param name="plan">Existing plan that will be associated with new Save_To_Google_Sheet activity</param>
+        /// <param name="ordering">Ordering of Save_To_Google_Sheet activity into plan </param>
+        /// <param name="manifestTypeToUse">ManifestType that will be used inside UpstreamCrateChooser control</param>
+        /// <param name="crateDescriptionLabelToUse">CrateDescriptionLabel that will be used inside UpstreamCrateChooser control</param>
+        /// <param name="newSpeadsheetName">name of the spreadsheet that need to be created on Run Save_To_Google_Sheet activity</param>
+        /// <returns></returns>
         public async Task<ActivityDTO> AddAndConfigureSaveToGoogleSheet(PlanDTO plan,
-                                                                        int ordering,
-                                                                        string manifestTypeToUse,
+                                                                        int ordering,string manifestTypeToUse,
                                                                         string crateDescriptionLabelToUse,
                                                                         string newSpeadsheetName)
         {
@@ -59,6 +68,14 @@ namespace terminaBaselTests.Tools.Activities
             return saveToGoogleSheetActivityDTO;
         }
 
+        /// <summary>
+        /// Add new Get_Google_Sheet_Data activity to an existing plan and configure that activity with selected spreadsheet
+        /// </summary>
+        /// <param name="plan">Existing plan that will be associated with new Get_Google_Sheet_Data activity</param>
+        /// <param name="ordering">Ordering of Get_Google_Sheet_Data activity into plan </param>
+        /// <param name="spreadsheetName">name of the spreadsheet use in configure procees</param>
+        /// <param name="includeFixtureAuthToken">Use fixture data as google auth token</param>
+        /// <returns>Configured ActivityDTO for Get_Google_Sheet_Data</returns>
         public async Task<ActivityDTO> AddAndConfigureGetFromGoogleSheet(PlanDTO plan,int ordering, string spreadsheetName, bool includeFixtureAuthToken)
         {
             var activityName = "Get_Google_Sheet_Data";
@@ -68,6 +85,14 @@ namespace terminaBaselTests.Tools.Activities
             return await ConfigureGetFromGoogleSheetActivity(getFromGoogleSheetActivityDTO, spreadsheetName, includeFixtureAuthToken);
         }
 
+        /// <summary>
+        /// Configuration for Get_Google_Sheet_Data activity. Select spreadsheet value based on spreadsheetName inside SpeadSheet DropDownLIst
+        /// </summary>
+        /// <param name="getFromGoogleSheetActivityDTO"></param>
+        /// <param name="spreadsheetName"></param>
+        /// <param name="includeFixtureAuthToken"></param>
+        /// <param name="worksheetName"></param>
+        /// <returns>Get_Google_Sheet_Data activityDTO</returns>
         public async Task<ActivityDTO> ConfigureGetFromGoogleSheetActivity(ActivityDTO getFromGoogleSheetActivityDTO, string spreadsheetName, bool includeFixtureAuthToken, string worksheetName = null)
         {
             using (var crateStorage = _baseHubITest.Crate.GetUpdatableStorage(getFromGoogleSheetActivityDTO))
@@ -78,6 +103,7 @@ namespace terminaBaselTests.Tools.Activities
                 crateStorage.Remove<StandardConfigurationControlsCM>();
                 var spreadsheetUri = activityUi.SpreadsheetList.ListItems.Where(x => x.Key == spreadsheetName).Select(x => x.Value).FirstOrDefault();
                 Assert.IsNotNullOrEmpty(spreadsheetUri, $"Default Google account doesn't contain spreadsheet '{spreadsheetName}'");
+                //set spreadsheet name as selected inside SpreadSheetList dropdown
                 activityUi.SpreadsheetList.selectedKey = spreadsheetName;
                 activityUi.SpreadsheetList.Value = spreadsheetUri;
 
@@ -86,6 +112,7 @@ namespace terminaBaselTests.Tools.Activities
 
             if (!string.IsNullOrEmpty(worksheetName))
             {
+                //in case we don't want to use default worksheet, provide a worksheetName to be set into the activity 
                 getFromGoogleSheetActivityDTO = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/save", getFromGoogleSheetActivityDTO);
                 getFromGoogleSheetActivityDTO = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/configure", getFromGoogleSheetActivityDTO);
 
@@ -107,6 +134,7 @@ namespace terminaBaselTests.Tools.Activities
 
             getFromGoogleSheetActivityDTO = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/save", getFromGoogleSheetActivityDTO);
 
+            //add a possibility to use FixtureData for newly created activitis, or to remain the usage of already associated default token from google 
             if (includeFixtureAuthToken)
             {
                 getFromGoogleSheetActivityDTO.AuthToken = FixtureData.GetGoogleAuthorizationToken();
@@ -115,6 +143,15 @@ namespace terminaBaselTests.Tools.Activities
             return getFromGoogleSheetActivityDTO;
         }
 
+        /// <summary>
+        /// Add new Google Activity to a existing plan. Create the activity based on a activity template, set activity ordering and call initial configuration
+        /// with associated Google Auth Token
+        /// </summary>
+        /// <param name="plan"></param>
+        /// <param name="ordering"></param>
+        /// <param name="activityCategory"></param>
+        /// <param name="activityName"></param>
+        /// <returns></returns>
         private async Task<ActivityDTO> AddGoogleActivityToPlan(PlanDTO plan, int ordering, ActivityCategory activityCategory, string activityName)
         {
             var googleActivityDTO = FixtureData.Get_Google_Sheet_Data_v1_InitialConfiguration();

@@ -18,7 +18,6 @@ namespace terminaBaselTests.Tools.Terminals
 {
     public class IntegrationTestTools_terminalGoogle
     {
-
         private readonly BaseHubIntegrationTest _baseHubITest;
 
         public IntegrationTestTools_terminalGoogle(BaseHubIntegrationTest baseHubIntegrationTest)
@@ -26,6 +25,12 @@ namespace terminaBaselTests.Tools.Terminals
             _baseHubITest = baseHubIntegrationTest;
         }
 
+        /// <summary>
+        /// For a given google account check for a spreasheet file existence amd return the content from that spreadsheet
+        /// </summary>
+        /// <param name="authorizationTokenId"></param>
+        /// <param name="spreadsheetName"></param>
+        /// <returns></returns>
         public async Task<StandardTableDataCM> GetSpreadsheetIfExist(Guid authorizationTokenId, string spreadsheetName)
         {
             var defaultGoogleAuthToken = GetGoogleAuthToken(authorizationTokenId);
@@ -52,15 +57,14 @@ namespace terminaBaselTests.Tools.Terminals
             return new StandardTableDataCM { Table = dataRows, FirstRowHeaders = hasHeaderRow };
         }
 
-        public async Task<string> GetSpreadsheetKeyByName(Guid authorizationTokenId, string spreadsheetName)
-        {
-            var googleSheetApi = new GoogleSheet(new GoogleIntegration());
-            var defaultGoogleAuthToken = GetGoogleAuthToken(authorizationTokenId);
-            var googleSheets = await googleSheetApi.GetSpreadsheets(defaultGoogleAuthToken);
-
-            return googleSheets.FirstOrDefault(x => x.Value == spreadsheetName).Key;
-        }
-
+        /// <summary>
+        /// Create new spreadsheet file for a given google account, and write data inside the speadsheet
+        /// </summary>
+        /// <param name="authorizationTokenId"></param>
+        /// <param name="spreadsheetName"></param>
+        /// <param name="worksheetName"></param>
+        /// <param name="tableData"></param>
+        /// <returns></returns>
         public async Task<string> CreateNewSpreadsheet(Guid authorizationTokenId, string spreadsheetName, string worksheetName, StandardTableDataCM tableData)
         {
             var googleSheetApi = new GoogleSheet(new GoogleIntegration());
@@ -83,6 +87,12 @@ namespace terminaBaselTests.Tools.Terminals
             return spreadsheetId;
         }
 
+        /// <summary>
+        /// Delete from existence spreadsheet file
+        /// </summary>
+        /// <param name="authorizationTokenId"></param>
+        /// <param name="spreadsheetId"></param>
+        /// <returns></returns>
         public async Task DeleteSpreadSheet(Guid authorizationTokenId, string spreadsheetId)
         {
             var googleSheetApi = new GoogleSheet(new GoogleIntegration());
@@ -90,6 +100,10 @@ namespace terminaBaselTests.Tools.Terminals
             await googleSheetApi.DeleteSpreadSheet(spreadsheetId, defaultGoogleAuthToken);
         }
 
+        /// <summary>
+        /// Extract default google auth token from repository for future usage.
+        /// </summary>
+        /// <returns></returns>
         public async Task<Guid> ExtractGoogleDefaultToken()
         {
             var tokens = await _baseHubITest.HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
@@ -107,6 +121,11 @@ namespace terminaBaselTests.Tools.Terminals
             return token.Id;
         }
 
+        /// <summary>
+        /// Based on authorizationTokenId returns GoogleAuthToken from the tokenRepository
+        /// </summary>
+        /// <param name="authorizationTokenId"></param>
+        /// <returns></returns>
         public GoogleAuthDTO GetGoogleAuthToken(Guid authorizationTokenId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
