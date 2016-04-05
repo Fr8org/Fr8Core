@@ -358,6 +358,11 @@ namespace terminalDocuSignTests.Integration
             companyField.selectedKey = "companyname";
 
             var radioGroup = controlsCrate.Content.Controls.OfType<RadioButtonGroup>().First(f=>f.GroupName == "RadioGroupMappingRegistration Type(Lead)");
+            foreach (var radios in radioGroup.Radios)
+            {
+                //reset all preselected radioButtons
+                radios.Selected = false;
+            }
             var radioButton = radioGroup.Radios.FirstOrDefault(x => x.Name == "Buy 2, Get 3rd Free");
             radioButton.Selected = true;
 
