@@ -55,16 +55,20 @@
             <!-- BEGIN PAGE CONTENT -->
             <div class="page-content">
                 <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-10" style="min-height:700px">
-                            <!-- BEGIN ACTUAL CONTENT -->
-                            <div ui-view>
+                    <div style="display:flex">
+                        <div class="flexable-content" resizable r-directions="['right']" >
+                            <div style="min-height:700px">
+                                <!-- BEGIN ACTUAL CONTENT -->
+                                <div ui-view>
+
+                                </div>
+                                <!-- END ACTUAL CONTENT -->
+                            </div>  
+                        </div>
+                        <div class="activity-stream-flex">
+                            <div data-ng-include="'/AngularTemplate/ActivityStream'" ng-controller="NotifierController" style="right:0px;position:absolute; width:100%; height:100%">
 
                             </div>
-                            <!-- END ACTUAL CONTENT -->
-                        </div>
-                        <div data-ng-include="'/AngularTemplate/ActivityStream'" class="col-md-2" ng-controller="NotifierController" style="right:0px; position:fixed;">
-                                    
                         </div>
                     </div>
                 </div>

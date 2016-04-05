@@ -914,7 +914,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TimePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamCrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Resizable.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\ActivityResize.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\SubplanHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Validators\ManifestDescriptionValidators.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\DateTimeFormatter.ts" />
