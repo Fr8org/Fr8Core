@@ -131,7 +131,7 @@ namespace Hub.Services
                                     topFrame.CurrentActivityExecutionPhase = OperationalStateCM.ActivityExecutionPhase.ProcessingChildren;
 
                                     // process op codes
-                                    if (!await ProcessOpCodes(_operationalState.CurrentActivityResponse, OperationalStateCM.ActivityExecutionPhase.WasNotExecuted, topFrame))
+                                    if (!ProcessOpCodes(_operationalState.CurrentActivityResponse, OperationalStateCM.ActivityExecutionPhase.WasNotExecuted, topFrame))
                                     {
                                         break;
                                     }
@@ -159,7 +159,7 @@ namespace Hub.Services
                                     _callStack.Pop();
 
                                     // process op codes
-                                    if (!await ProcessOpCodes(_operationalState.CurrentActivityResponse, OperationalStateCM.ActivityExecutionPhase.ProcessingChildren, topFrame))
+                                    if (!ProcessOpCodes(_operationalState.CurrentActivityResponse, OperationalStateCM.ActivityExecutionPhase.ProcessingChildren, topFrame))
                                     {
                                         break;
                                     }
@@ -211,7 +211,7 @@ namespace Hub.Services
 
             /**********************************************************************************/
 
-            private async Task<bool> ProcessOpCodes(ActivityResponseDTO activityResponse, OperationalStateCM.ActivityExecutionPhase activityExecutionPhase, OperationalStateCM.StackFrame topFrame)
+            private bool ProcessOpCodes(ActivityResponseDTO activityResponse, OperationalStateCM.ActivityExecutionPhase activityExecutionPhase, OperationalStateCM.StackFrame topFrame)
             {
                 ActivityResponse opCode;
 
@@ -241,8 +241,8 @@ namespace Hub.Services
                     case ActivityResponse.ShowDocumentation:
                         break;
 
-                    case ActivityResponse.RequestLaunch:
-                        await LoadAndRunPlan(ExtractGuidParam(activityResponse));
+                    case ActivityResponse.LaunchAdditionalPlan:
+                        LoadAndRunPlan(ExtractGuidParam(activityResponse));
                         break;
 
                     case ActivityResponse.RequestTerminate:
@@ -387,20 +387,32 @@ namespace Hub.Services
 
             /**********************************************************************************/
 
-            private async Task LoadAndRunPlan(Guid planId)
+            private void LoadAndRunPlan(Guid planId)
             {
                 var plan = ObjectFactory.GetInstance<IPlan>();
-                var planDO = _uow.PlanRepository.GetById<PlanDO>(planId);
-                var freshContainer = _uow.ContainerRepository.GetByKey(_container.Id);
 
-                var crateStorage = _crate.GetStorage(freshContainer.CrateStorage);
+                var planDO = _uow.PlanRepository.GetById<PlanDO>(planId);
+
+                if (planDO == null)
+                {
+                    throw  new InvalidOperationException($"Plan {planId} was not found");
+                }
+
+                var crateStorage = _crate.GetStorage(_container.CrateStorage);
                 var operationStateCrate = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+
                 operationStateCrate.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Null);
-                operationStateCrate.History.Add(new OperationalStateCM.HistoryElement {Description = "Launch Triggered by Container ID " + _container.Id});
+
+                operationStateCrate.History.Add(new OperationalStateCM.HistoryElement
+                {
+                    Description = "Launch Triggered by Container ID " + _container.Id
+                });
+                
+                crateStorage.Remove<OperationalStateCM>();
 
                 var payloadCrates = crateStorage.AsEnumerable().ToArray();
 
-                await plan.Run(_uow, planDO, payloadCrates);
+                plan.Enqueue(planDO.Id, payloadCrates);
             }
 
             /**********************************************************************************/

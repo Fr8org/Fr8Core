@@ -13,7 +13,6 @@
         ShowDocumentation,
         JumpToActivity,
         JumpToSubplan,
-        RequestLaunch,
         LaunchAdditionalPlan,
 
         //new op codes

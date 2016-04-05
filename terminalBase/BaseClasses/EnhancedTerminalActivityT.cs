@@ -620,8 +620,19 @@ namespace TerminalBase.BaseClasses
         /// <returns></returns>
         protected void RequestJumpToSubplan(Guid targetSubplanId)
         {
-            SetResponse(ActivityResponse.LaunchAdditionalPlan);
+            SetResponse(ActivityResponse.JumpToSubplan);
             OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetSubplanId });
+        }
+
+        /**********************************************************************************/
+        /// <summary>
+        /// Jumps to another plan
+        /// </summary>
+        /// <returns></returns>
+        protected void RequestLaunchAdditionalPlan(Guid targetPlanId)
+        {
+            SetResponse(ActivityResponse.LaunchAdditionalPlan);
+            OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetPlanId });
         }
 
         /**********************************************************************************/

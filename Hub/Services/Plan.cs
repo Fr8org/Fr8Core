@@ -368,7 +368,7 @@ namespace Hub.Services
 
             }
         }
-        
+
         public PlanDO GetPlanByActivityId(IUnitOfWork uow, Guid id)
         {
             return (PlanDO)uow.PlanRepository.GetById<PlanNodeDO>(id).GetTreeRoot();
@@ -508,11 +508,6 @@ namespace Hub.Services
             _dispatcher.Enqueue(() => LaunchProcess(curPlanId, curEventReport).Wait());
         }
 
-        public void Enqueue(Guid curPlanId, Guid curSubPlanId, params Crate[] curEventReport)
-        {
-            _dispatcher.Enqueue(() => LaunchProcess(curPlanId, curSubPlanId, curEventReport).Wait());
-        }
-
         public void Enqueue(List<PlanDO> curPlans, params Crate[] curEventReport)
         {
             foreach (var curPlan in curPlans)
@@ -529,22 +524,7 @@ namespace Hub.Services
             await ObjectFactory.GetInstance<IPlan>().Run(curPlan, curPayload);
         }
 
-        public static async Task LaunchProcess(Guid curPlan, Guid curSubPlan, params Crate[] curPayload)
-        {
-            if (curPlan == default(Guid))
-                throw new ArgumentException(nameof(curPlan));
-            if (curSubPlan == default(Guid))
-                throw new ArgumentException(nameof(curSubPlan));
-
-            await ObjectFactory.GetInstance<IPlan>().Run(curPlan, curSubPlan, curPayload);
-        }
-
         public async Task<ContainerDO> Run(Guid planId, params Crate[] curPayload)
-        {
-            return await Run(planId, default(Guid), curPayload);
-        }
-
-        public async Task<ContainerDO> Run(Guid planId, Guid subPlanId, params Crate[] curPayload)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -554,18 +534,14 @@ namespace Hub.Services
                 try
                 {
                     var curContainerDO = Create(uow, curPlan, curPayload);
-                    if (subPlanId != default(Guid))
-                    {
-                        curContainerDO.CurrentPlanNodeId = GetFirstActivityOfSubplan(uow, curContainerDO, subPlanId);
-                    }
-                return await Run(uow, curContainerDO);
-            }
+                    return await Run(uow, curContainerDO);
+                }
                 catch (Exception ex)
                 {
                     EventManager.ContainerFailed(curPlan, ex);
                     throw;
                 }
-        }
+            }
         }
 
         public async Task<ContainerDO> Run(PlanDO curPlan, params Crate[] curPayload)
@@ -589,7 +565,7 @@ namespace Hub.Services
 
         public async Task<PlanDO> Clone(Guid planId)
         {
-            
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var currentUser = _security.GetCurrentAccount(uow);
@@ -618,10 +594,10 @@ namespace Hub.Services
                 clonedPlan.Name = clonedPlan.Name + " - " + "Customized for User " + currentUser.UserName;
                 clonedPlan.PlanState = PlanState.Inactive;
                 clonedPlan.Tag = cloneTag;
-                
+
                 //linearlize tree structure
                 var planTree = clonedPlan.GetDescendantsOrdered();
-                
+
 
                 //let's replace old id's of cloned plan with new id's
                 //and update account information
@@ -656,7 +632,7 @@ namespace Hub.Services
                         uow.PlanRepository.Add(planNodeDO as PlanDO);
                     }
                 }
-                
+
 
                 //save new cloned plan
                 uow.SaveChanges();
@@ -671,12 +647,6 @@ namespace Hub.Services
             if (curPlan == null)
                 throw new ArgumentNullException("planId");
             return Create(uow, curPlan, curPayload);
-        }
-
-        private Guid? GetFirstActivityOfSubplan(IUnitOfWork uow, ContainerDO curContainerDO, Guid subplanId)
-        {
-            var subplan = uow.PlanRepository.GetById<PlanDO>(curContainerDO.PlanId).SubPlans.FirstOrDefault(s => s.Id == subplanId);
-            return subplan?.ChildNodes.OrderBy(c => c.Ordering).FirstOrDefault()?.Id;
         }
     }
 }

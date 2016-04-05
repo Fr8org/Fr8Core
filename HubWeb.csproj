@@ -914,7 +914,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TimePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamCrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Resizable.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\ActivityResize.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\SubplanHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Validators\ManifestDescriptionValidators.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\DateTimeFormatter.ts" />
@@ -1037,6 +1037,7 @@
     <Content Include="Views\Shared\_HomeNavNew.cshtml" />
     <Content Include="Views\Shared\_HomePageNew.cshtml" />
     <Content Include="Views\AngularTemplate\PlanBuilder_KioskMode.cshtml" />
+    <Content Include="Views\AngularTemplate\ActivityStream.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
