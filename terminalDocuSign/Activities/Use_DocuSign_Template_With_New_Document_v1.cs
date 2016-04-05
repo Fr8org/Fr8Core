@@ -109,7 +109,7 @@ namespace terminalDocuSign.Actions
             var upstream_available_crates = crates.Where(a => a.Label == "Runtime Available Crates").FirstOrDefault();
             if (upstream_available_crates != null)
             {
-                //cratesDescription.CrateDescriptions.AddRange(upstream_available_crates.Get<CrateDescriptionCM>().CrateDescriptions.Where(a => a.ManifestType == CrateManifestTypes.StandardFileDescription));
+                cratesDescription.CrateDescriptions.AddRange(upstream_available_crates.Get<CrateDescriptionCM>().CrateDescriptions.Where(a => a.ManifestType == CrateManifestTypes.StandardFileDescription));
             }
             return new List<ListItem>(cratesDescription.CrateDescriptions.Select(a => new ListItem() { Key = a.Label }));
         }
