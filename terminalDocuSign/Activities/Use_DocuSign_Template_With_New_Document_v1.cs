@@ -63,8 +63,7 @@ namespace terminalDocuSign.Actions
             {
                 Label = "Use new document",
                 Name = "document_Override_DDLB",
-                Required = true,
-                ListItems = await GetFilesCrates(curActivity)
+                Required = true
             };
 
             var fieldsDTO = new List<ControlDefinitionDTO>
@@ -112,6 +111,49 @@ namespace terminalDocuSign.Actions
                 cratesDescription.CrateDescriptions.AddRange(upstream_available_crates.Get<CrateDescriptionCM>().CrateDescriptions.Where(a => a.ManifestType == CrateManifestTypes.StandardFileDescription));
             }
             return new List<ListItem>(cratesDescription.CrateDescriptions.Select(a => new ListItem() { Key = a.Label }));
+        }
+
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        {
+            // Do we have any crate? If no, it means that it's Initial configuration
+            if (CrateManager.IsStorageEmpty(curActivityDO)) { return ConfigurationRequestType.Initial; }
+
+            // Try to find Configuration_Controls
+            var stdCfgControlMS = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            if (stdCfgControlMS == null) { return ConfigurationRequestType.Initial; }
+
+            // Try to get DropdownListField
+            var dropdownControlDTO = stdCfgControlMS.FindByName("target_docusign_template");
+            if (dropdownControlDTO == null) { return ConfigurationRequestType.Initial; }
+
+            var docusignTemplateId = dropdownControlDTO.Value;
+            if (string.IsNullOrEmpty(docusignTemplateId)) { return ConfigurationRequestType.Initial; }
+
+            var ddDocument = stdCfgControlMS.FindByName("document_Override_DDLB");
+            if (ddDocument == null) { return ConfigurationRequestType.Initial; }
+
+            if (string.IsNullOrEmpty((ddDocument as DropDownList).selectedKey)) { return ConfigurationRequestType.Initial; }
+
+            return ConfigurationRequestType.Followup;
+        }
+
+        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        {
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                if (crateStorage.All(c => c.ManifestType.Id != (int)MT.FieldDescription))
+                {
+                    var configurationCrate = await CreateDocusignTemplateConfigurationControls(curActivityDO);
+                    FillDocuSignTemplateSource(configurationCrate, "target_docusign_template", authTokenDO);
+                    crateStorage.Replace(new CrateStorage(configurationCrate));
+                }
+
+                await UpdateFilesDD(curActivityDO, crateStorage);
+
+                await UpdateUpstreamCrate(curActivityDO, crateStorage);
+            }
+
+            return curActivityDO;
         }
     }
 }

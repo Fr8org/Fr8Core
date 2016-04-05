@@ -176,30 +176,18 @@ namespace terminalDocuSign.Actions
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
             // Do we have any crate? If no, it means that it's Initial configuration
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
+            if (CrateManager.IsStorageEmpty(curActivityDO)) { return ConfigurationRequestType.Initial; }
 
             // Try to find Configuration_Controls
             var stdCfgControlMS = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-            if (stdCfgControlMS == null)
-            {
-                return ConfigurationRequestType.Initial;
-            }
+            if (stdCfgControlMS == null) { return ConfigurationRequestType.Initial; }
 
             // Try to get DropdownListField
             var dropdownControlDTO = stdCfgControlMS.FindByName("target_docusign_template");
-            if (dropdownControlDTO == null)
-            {
-                return ConfigurationRequestType.Initial;
-            }
+            if (dropdownControlDTO == null) { return ConfigurationRequestType.Initial; }
 
             var docusignTemplateId = dropdownControlDTO.Value;
-            if (string.IsNullOrEmpty(docusignTemplateId))
-            {
-                return ConfigurationRequestType.Initial;
-            }
+            if (string.IsNullOrEmpty(docusignTemplateId)) { return ConfigurationRequestType.Initial; }
 
             return ConfigurationRequestType.Followup;
         }
