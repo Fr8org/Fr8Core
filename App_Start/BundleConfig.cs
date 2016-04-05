@@ -133,8 +133,8 @@ namespace HubWeb.App_Start
                 .Include("~/Content/templates/metronic/assets/admin/layout3/css/custom.css", new CssRewriteUrlTransform())
                 .Include("~/bower_components/angular-ivh-treeview/dist/ivh-treeview.min.css", new CssRewriteUrlTransform())
                 .Include("~/bower_components/angular-ivh-treeview/dist/ivh-treeview-theme-basic.css", new CssRewriteUrlTransform())
+                .Include("~/bower_components/angular-resizable/angular-resizable.min.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/dockyard.css", new CssRewriteUrlTransform())
-                .Include("~/bower_components/angular-resizable/angular-resizable.min.css")
             );
 
             bundles.Add(new ScriptBundle("~/bundles/jsunittests")
