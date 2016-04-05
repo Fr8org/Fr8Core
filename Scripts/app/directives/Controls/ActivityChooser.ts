@@ -2,49 +2,7 @@
 module dockyard.directives {
     'use strict';
 
-    // --------------------------------------------------------------------------------
-    // Template for SelectActivity modal.
-    // --------------------------------------------------------------------------------
-    const SelectActivityTemplate =
-        '<div class="modal-header">\
-            <h4 ng-if="!selectedWebService">Please, select web-service</h4>\
-            <h4 ng-if="selectedWebService" style="cursor: pointer;">\
-                <i class="fa fa-arrow-left" style="font-size: 16px; display: inline-block" ng-click="unselectWebService()"></i>\
-                <span style="display: inline-block;" ng-click="unselectWebService()">Activities</span>\
-            </h4>\
-        </div>\
-        <div class="modal-body">\
-            <div style="overflow-y: auto; max-height: 500px">\
-                <div ng-if="!selectedWebService">\
-                    <div ng-repeat="webService in webServiceActivities" ng-click="selectWebService(webService)" style="margin: 0 0 5px 0; cursor: pointer;">\
-                        <img ng-src="{{webService.webServiceIconPath}}" style="width: 48px; height: 48px;" />\
-                        <span style="font-size: 1.3em">{{webService.webServiceName}}</span>\
-                    </div>\
-                </div>\
-                <div ng-if="selectedWebService">\
-                    <div ng-repeat="activity in selectedWebService.activities" ng-click="selectActivityTemplate(activity)" style="cursor: pointer;">\
-                        <i class="fa fa-cogs" style="font-size: 24px; display: inline-block; vertical-align: middle;"></i>\
-                        <span style="font-size: 1.3em; display: inline-block; margin: 20px 0 20px 0; vertical-align: middle;">{{activity.label}}</span>\
-                    </div>\
-                </div>\
-            </div>\
-        </div>';
-
-    // --------------------------------------------------------------------------------
-    // Template for ConfigureActivity modal.
-    // --------------------------------------------------------------------------------
-    const ConfigureActivityTemplate =
-        '<div class="modal-header">\
-            <h4>Please, configure activity {{activity.activityTemplate.label}}</h4>\
-        </div>\
-        <div class="modal-body">\
-            <div style="overflow-y: auto; max-height: 500px">\
-                <pane-configure-action plan="plan" current-action="activity"></pane-configure-action>\
-            </div>\
-        </div>\
-        <div class="modal-footer">\
-            <button class="btn btn-primary" ng-click="save()">Save</button>\
-        </div>';
+    import pwd = dockyard.directives.paneWorkflowDesigner;
 
     // --------------------------------------------------------------------------------
     // ActivityChooser directive.
@@ -89,7 +47,7 @@ module dockyard.directives {
                         scope.activity = activity;
 
                         var configureActivityModal = $modal.open({
-                            template: ConfigureActivityTemplate,
+                            templateUrl: '/AngularTemplate/ActivityChooserConfigureDialog',
                             controller: 'ACConfigureActivityController',
                             scope: scope
                         });
@@ -114,7 +72,7 @@ module dockyard.directives {
                     // Display dialog to select activity, and possibly create subplan and blank selected activity.
                     var selectActivity = () => {
                         var selectActivityModal = $modal.open({
-                            template: SelectActivityTemplate,
+                            templateUrl: '/AngularTemplate/ActivityChooserSelectDialog',
                             controller: 'ACSelectActivityController'
                         });
 
@@ -140,8 +98,18 @@ module dockyard.directives {
                             selectActivity();
                         }
                         else {
+                            $scope.$emit(
+                                pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_LongRunningOperation],
+                                new pwd.LongRunningOperationEventArgs(pwd.LongRunningOperationFlag.Started)
+                            );
+
                             $http.post('/api/subplans/first_activity?id=' + $scope.field.subPlanId, null)
                                 .then((res: ng.IHttpPromiseCallbackArg<model.ActivityDTO>) => {
+                                    $scope.$emit(
+                                        pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_LongRunningOperation],
+                                        new pwd.LongRunningOperationEventArgs(pwd.LongRunningOperationFlag.Stopped)
+                                    );
+
                                     var activity = res.data;
                                     if (!activity) {
                                         selectActivity();
@@ -160,6 +128,7 @@ module dockyard.directives {
 
                         SubPlanService.remove({ id: $scope.field.subPlanId }).$promise
                             .then(() => {
+
                                 $scope.field.subPlanId = null;
                                 $scope.field.activityTemplateLabel = null;
                             });

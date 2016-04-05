@@ -875,6 +875,8 @@
     <Content Include="Views\AngularTemplate\ControlList.cshtml" />
     <Content Include="Views\AngularTemplate\Empty.cshtml" />
     <Content Include="Views\AngularTemplate\ActivityChooser.cshtml" />
+    <Content Include="Views\AngularTemplate\ActivityChooserSelectDialog.cshtml" />
+    <Content Include="Views\AngularTemplate\ActivityChooserConfigureDialog.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />
