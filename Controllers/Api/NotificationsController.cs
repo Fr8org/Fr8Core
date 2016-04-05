@@ -17,13 +17,13 @@ using Utilities.Interfaces;
 
 namespace HubWeb.Controllers
 {
-    public class NotificationController : Fr8BaseApiController
+    public class NotificationsController : Fr8BaseApiController
     {
         private readonly IPusherNotifier _pusherNotifier;
 
         //TODO create an enum for different types of pusher events
         private const string PUSHER_EVENT_TERMINAL_NOTIFICATION = "fr8pusher_terminal_event";
-        public NotificationController()
+        public NotificationsController()
         {
             _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
         }

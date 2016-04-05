@@ -566,6 +566,9 @@ module dockyard.directives.paneConfigureAction {
                     }
                 }
                 else {
+                    //let's check if this PCA was opened with a view parameter
+                    //we normally render StandardConfigurationControls with "Configuration_Controls" label
+                    //but when PCA opens with view parameter we will render StandardConfigurationControls with given label
                     if (this.$scope.view) {
                         this.$scope.currentAction.configurationControls =
                             this.crateHelper.createControlListFromCrateStorage(this.$scope.currentAction.crateStorage, this.$scope.view);
@@ -634,7 +637,8 @@ module dockyard.directives.paneConfigureAction {
                 currentAction: '=',
                 mode: '=',
                 plan: '=',
-                view: '@'
+                view: '@',
+                processing: '='
             }
         };
     });

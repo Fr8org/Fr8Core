@@ -361,7 +361,7 @@ namespace TerminalBase.Infrastructure
         public async Task NotifyUser(TerminalNotificationDTO notificationMessage, string userId)
         {
             var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-               + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/notification";
+               + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/notifications";
 
             var uri = new Uri(hubUrl);
 

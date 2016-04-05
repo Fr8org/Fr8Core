@@ -52,39 +52,18 @@ namespace HubWeb.Controllers
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
         }
-        /*
-        //[Route("~/plans")]
-        [Fr8ApiAuthorize]
-        [Fr8HubWebHMACAuthenticate]
-        public IHttpActionResult Post(PlanEmptyDTO planDto, bool updateRegistrations = false)
+
+        [HttpGet]
+        public async Task<IHttpActionResult> Clone(Guid id)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                if (string.IsNullOrEmpty(planDto.Name))
-                {
-                    ModelState.AddModelError("Name", "Name cannot be null");
-                }
-
-                if (!ModelState.IsValid)
-                {
-                    return BadRequest("Some of the request data is invalid");
-                }
-
-                var curPlanDO = Mapper.Map<RouteEmptyDTO, RouteDO>(planDto, opts => opts.Items.Add("ptid", planDto.Id));
-                curPlanDO.Fr8Account = _security.GetCurrentAccount(uow);
-
-                //this will return 0 on create operation because of not saved changes
-                _plan.CreateOrUpdate(uow, curPlanDO, updateRegistrations);
-                uow.SaveChanges();
-                planDto.Id = curPlanDO.Id;
-                //what a mess lets try this
-                /*curPlanDO.StartingSubPlan.Plan = curPlanDO;
-                uow.SaveChanges();
-                processTemplateDto.Id = curPlanDO.Id;
-                return Ok(planDto);
-            }
+            //let's clone the plan and redirect user to that cloned plan url
+            var clonedPlan = await _plan.Clone(id);
+            var baseUri = Request.RequestUri.GetLeftPart(UriPartial.Authority);
+            var clonedPlanUrl = baseUri + "/dashboard/plans/" + clonedPlan.Id + "/builder?viewMode=kiosk&view=Collection";
+            return Redirect(clonedPlanUrl);
         }
-        */
+
+
         [Fr8HubWebHMACAuthenticate]
         [ResponseType(typeof(PlanDTO))]
         public IHttpActionResult Post(PlanEmptyDTO planDto, bool updateRegistrations = false)
