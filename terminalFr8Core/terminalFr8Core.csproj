@@ -199,6 +199,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Activities\ActivityChooserTest_v1.cs" />
     <Compile Include="Activities\CollectData_v1.cs" />
     <Compile Include="Activities\Monitor_Fr8_Events_v1.cs" />
     <Compile Include="Activities\QueryFr8Warehouse_v1.cs" />

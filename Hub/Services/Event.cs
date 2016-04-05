@@ -20,6 +20,7 @@ using System.Data.Entity;
 using Data.Exceptions;
 using Utilities;
 using Hub.Managers;
+using Hangfire;
 
 namespace Hub.Services
 {
@@ -84,7 +85,7 @@ namespace Hub.Services
                     try
                     {
                         Fr8AccountDO systemUser = uow.UserRepository.GetOrCreateUser(systemUserEmail);
-                        await FindAndExecuteAccountPlans(uow, eventReportMS, curCrateStandardEventReport, systemUser);
+                        FindAndExecuteAccountPlans(uow, eventReportMS, curCrateStandardEventReport, systemUser);
                     }
                     catch (Exception ex)
                     {
@@ -100,29 +101,20 @@ namespace Hub.Services
                     foreach (var authToken in authTokenList)
                     {
                         var curDockyardAccount = authToken.UserDO;
-                        var accountTask = FindAndExecuteAccountPlans(uow, eventReportMS, curCrateStandardEventReport, curDockyardAccount);
-                        tasks.Add(accountTask);
-                    }
-                    Task waitAllTask = null;
-                    try
-                    {
-                        waitAllTask = Task.WhenAll(tasks.ToArray());
-                        await waitAllTask;
-                    }
-                    catch
-                    {
-                        foreach (Exception ex in waitAllTask.Exception.InnerExceptions)
+                        try
+                        {
+                            FindAndExecuteAccountPlans(uow, eventReportMS, curCrateStandardEventReport, curDockyardAccount);
+                        }
+                        catch (Exception ex)
                         {
                             EventManager.UnexpectedError(ex);
                         }
-
                     }
                 }
-
             }
         }
 
-        private async Task FindAndExecuteAccountPlans(IUnitOfWork uow, EventReportCM eventReportMS,
+        private void FindAndExecuteAccountPlans(IUnitOfWork uow, EventReportCM eventReportMS,
                Crate curCrateStandardEventReport, Fr8AccountDO curDockyardAccount = null)
         {
             //find this Account's Plans
@@ -130,40 +122,22 @@ namespace Hub.Services
                 .Where(pt => pt.Fr8AccountId == curDockyardAccount.Id && pt.PlanState == PlanState.Active).ToList();
             var subscribingPlans = _plan.MatchEvents(initialPlansList, eventReportMS);
 
-            await LaunchProcesses(subscribingPlans, curCrateStandardEventReport);
+            //When there's a match, it means that it's time to launch a new Process based on this Plan, 
+            //so make the existing call to Plan#LaunchProcess.
+            _plan.Enqueue(
+                subscribingPlans.Where(p => p.PlanState != PlanState.Inactive).ToList(), 
+                curCrateStandardEventReport
+            );
         }
 
-        public Task LaunchProcesses(List<PlanDO> curPlans, Crate curEventReport)
+        public Task LaunchProcess(PlanDO curPlan, Crate curEventData = null)
         {
-            var processes = new List<Task>();
-
-            foreach (var curPlan in curPlans)
-            {
-                //4. When there's a match, it means that it's time to launch a new Process based on this Plan, 
-                //so make the existing call to Plan#LaunchProcess.
-                processes.Add(LaunchProcess(curPlan, curEventReport));
-            }
-
-            return Task.WhenAll(processes);
+            throw new NotImplementedException();
         }
 
-        public async Task LaunchProcess(PlanDO curPlan, Crate curEventData)
+        Task IEvent.LaunchProcesses(List<PlanDO> curPlans, Crate curEventReport)
         {
-            if (curPlan == null)
-                throw new EntityNotFoundException(curPlan);
-
-            if (curPlan.PlanState != PlanState.Inactive)
-            {
-                try
-                {
-                    await _plan.Run(curPlan, curEventData);
-                }
-                catch (Exception ex)
-                {
-                    EventManager.ContainerFailed(curPlan, ex);
-                }
-            }
+            throw new NotImplementedException();
         }
     }
 }
-
