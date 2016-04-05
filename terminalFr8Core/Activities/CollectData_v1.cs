@@ -67,7 +67,8 @@ namespace terminalFr8Core.Actions
                 TerminalVersion = "1",
                 Message = "This Plan can be launched with the following URL: " +
                                     CloudConfigurationManager.GetSetting("CoreWebServerUrl") +
-                                    "api/v1/plans/clone?id=" + curActivityDO.RootPlanNodeId,
+                                    "redirect/cloneplan?id=" + curActivityDO.RootPlanNodeId,
+                                    //"api/v1/plans/clone?id=" + curActivityDO.RootPlanNodeId,
                 Subject = "Plan URL"
             });
         }
