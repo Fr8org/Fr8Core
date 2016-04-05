@@ -36,8 +36,8 @@ if ($LastExitCode -ne 0)
     exit 1;
 }
 
-Invoke-Expression "git checkout ."
-Invoke-Expression "git checkout dev"
+Invoke-Expression "git checkout . 2> $tempFileName"
+Invoke-Expression "git checkout dev 2> $tempFileName"
 if ($LastExitCode -ne 0)
 {
 	Write-Host "Failed to checkout dev branch."
