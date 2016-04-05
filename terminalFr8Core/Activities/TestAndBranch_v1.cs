@@ -89,10 +89,10 @@ namespace terminalFr8Core.Actions
                         case ContainerTransitions.JumpToActivity:
                             //TODO check if targetNodeId is selected
                             return JumpToActivity(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
-                        case ContainerTransitions.JumpToPlan:
-                            return LaunchPlan(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
-                        case ContainerTransitions.JumpToSubplan:
+                        case ContainerTransitions.LaunchAdditionalPlan:
                             return LaunchAdditionalPlan(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
+                        case ContainerTransitions.JumpToSubplan:
+                            return JumpToSubplan(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
                         case ContainerTransitions.ProceedToNextActivity:
                             return Success(curPayloadDTO);
                         case ContainerTransitions.StopProcessing:
