@@ -5,14 +5,19 @@
 #>
 
 param(
-    [string]$sourceBranchName = $env:BUILD_SOURCEBRANCHNAME
+    [string]$sourceBranchName = $env:BUILD_SOURCEBRANCHNAME,
+    [string]$tempDirectory = $env:BUILD_STAGINGDIRECTORY
 )
 
 #Invoke-Expression "git config --global user.email 'fr8admin@fr8.co'"
 #Invoke-Expression "git config --global user.name 'Fr8 Admin'"
 #Invoke-Expression "git config --global -e"
 
-$tempFileName = "_tmp.txt"
+$tempFileName = $tempDirectory + "\gitCommandsOutput.txt"
+
+if (Test-Path $tempFileName) {
+  Remove-Item $tempFileName
+}
 
 $github_username = "fr8admin"
 $github_password = "ulysses3"
@@ -23,15 +28,12 @@ $buildBranchName = "dev+$sourceBranchName"
 
 Write-Host "Switching to dev branch..."
 
-Invoke-Expression "git fetch $giturl 2> $tempFileName -Append"
+Invoke-Expression "git fetch $giturl 2> $tempFileName"
 
 if ($LastExitCode -ne 0)
 {
 	Write-Host "Failed to fetch branches."
     exit 1;
-}
-if (Test-Path $tempFileName) {
-  Remove-Item $tempFileName
 }
 
 Invoke-Expression "git checkout ."
@@ -43,18 +45,16 @@ if ($LastExitCode -ne 0)
 }
 
 Write-Host "Getting the latest dev branch from GitHub repo..."
-Invoke-Expression "git pull $giturl dev 2> $tempFileName -Append"
+Invoke-Expression "git pull $giturl dev 2> $tempFileName"
 if ($LastExitCode -ne 0)
 {
 	Write-Host "Failed to get the latest dev branch."
 	exit 1;
 }
-if (Test-Path $tempFileName) {
-  Remove-Item $tempFileName
-}
 
 $command = "git branch --list $buildBranchName"
 $result = Invoke-Expression $command
+
 if (![System.String]::IsNullOrEmpty($result))
 {
     $command = "git branch -D $buildBranchName"
@@ -62,15 +62,11 @@ if (![System.String]::IsNullOrEmpty($result))
 }
 
 Write-Host "Creating new branch $buildBranchName for build process..."
-Invoke-Expression "git checkout -b $buildBranchName 2> $tempFileName -Append"
+Invoke-Expression "git checkout -b $buildBranchName 2> $tempFileName"
 if ($LastExitCode -ne 0)
 {
     Write-Host "Failed to checkout new branch for build process."
 	exit 1;
-}
-
-if (Test-Path $tempFileName) {
-  Remove-Item $tempFileName
 }
 
 Write-Host "Merging $sourceBranchName into new branch: $buildBranchName"
