@@ -182,6 +182,7 @@
     <Compile Include="Fixtures\FixtureData - File.cs" />
     <Compile Include="Fixtures\FixtureData - MultiTenantObjectInstance.cs" />
     <Compile Include="Fixtures\FixtureData - PayloadDTO.cs" />
+    <Compile Include="Fixtures\FixtureData - StandardTableData.cs" />
     <Compile Include="Fixtures\FixtureData - Terminal.cs" />
     <Compile Include="Fixtures\FixtureData - TerminalIntegration.cs" />
     <Compile Include="Fixtures\FixtureData - Container.cs" />
