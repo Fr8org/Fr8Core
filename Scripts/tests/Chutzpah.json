@@ -92,6 +92,9 @@
       "Path": "../../bower_components/angular-material/angular-material.min.js"
     },
     {
+      "Path": "../../bower_components/angular-resizable/angular-resizable.min.js"
+    },
+    {
       "Path": "../../bower_components/angular-resource/angular-resource.min.js"
     },
     {
