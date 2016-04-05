@@ -35,8 +35,9 @@ namespace terminalIntegrationTests.EndToEnd
         [Test, Category("Integration.terminalGoogle")]
         public async Task Query_DocuSign_Into_Google_Sheet_End_To_End()
         {
-            var googleAuthTokenId = await new terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalGoogle(this).ExtractGoogleDefaultToken();
-            var defaultGoogleAuthToken = GetGoogleAuthToken(googleAuthTokenId);
+            var terminalGoogleTools = new terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalGoogle(this);
+            var googleAuthTokenId = await terminalGoogleTools.ExtractGoogleDefaultToken();
+            var defaultGoogleAuthToken = terminalGoogleTools.GetGoogleAuthToken(googleAuthTokenId);
 
             //create a new plan
             var thePlan = await plansHelper.CreateNewPlan();
@@ -79,21 +80,5 @@ namespace terminalIntegrationTests.EndToEnd
                 await googleSheetApi.DeleteSpreadSheet(spreadsheetId, defaultGoogleAuthToken);
             }
         }
-
-        #region Helpers 
-
-        private GoogleAuthDTO GetGoogleAuthToken(Guid authorizationTokenId)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var validToken = uow.AuthorizationTokenRepository.FindTokenById(authorizationTokenId);
-
-                Assert.IsNotNull(validToken, "Reading default google token from AuthorizationTokenRepository failed. Please provide default account for authenticating terminalGoogle.");
-
-                return JsonConvert.DeserializeObject<GoogleAuthDTO>((validToken).Token);
-            }
-        }
-
-        #endregion
     }
 }
