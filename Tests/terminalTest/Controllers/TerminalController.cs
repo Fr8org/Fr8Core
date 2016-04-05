@@ -8,7 +8,7 @@ using Data.Interfaces.Manifests;
 
 namespace terminalTest.Controllers
 {
-
+    // This terminal contains activities that simplify core logic manual testing
     [RoutePrefix("terminals")]
     public class TerminalController : ApiController
     {
