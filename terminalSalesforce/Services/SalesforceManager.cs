@@ -16,6 +16,7 @@ using Salesforce.Chatter;
 using Newtonsoft.Json.Linq;
 using Salesforce.Chatter.Models;
 using StructureMap;
+using Data.States;
 
 namespace terminalSalesforce.Services
 {
@@ -25,7 +26,7 @@ namespace terminalSalesforce.Services
         private SalesforceObjectFactory salesforceObjectFactory = new SalesforceObjectFactory();
         private SalesforceObject _salesforceObject;
         private ICrateManager _crateManager;
-        
+
         public SalesforceManager()
         {
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
@@ -133,9 +134,9 @@ namespace terminalSalesforce.Services
             var chatterClient = (ChatterClient)CreateSalesforceClient(typeof(ChatterClient), authTokenDO);
 
             var chatterObjectSelectPredicate = new Dictionary<string, Func<JToken, FieldDTO>>();
-            chatterObjectSelectPredicate.Add("groups", 
+            chatterObjectSelectPredicate.Add("groups",
                 group => new FieldDTO(group.Value<string>("name"), group.Value<string>("id"), Data.States.AvailabilityType.Configuration));
-            chatterObjectSelectPredicate.Add("users", 
+            chatterObjectSelectPredicate.Add("users",
                 user => new FieldDTO(user.Value<string>("displayName"), user.Value<string>("id"), Data.States.AvailabilityType.Configuration));
 
             try
@@ -163,7 +164,7 @@ namespace terminalSalesforce.Services
 
             try
             {
-                return await PostFeedText(feedText, parentObjectId,  chatterClient);
+                return await PostFeedText(feedText, parentObjectId, chatterClient);
             }
             catch (ForceException salesforceException)
             {
@@ -182,7 +183,7 @@ namespace terminalSalesforce.Services
 
         public T CreateSalesforceDTO<T>(ActivityDO curActivity, PayloadDTO curPayload)
         {
-            var requiredType = typeof (T);
+            var requiredType = typeof(T);
             var requiredObject = (T)Activator.CreateInstance(requiredType);
             var requiredProperties = requiredType.GetProperties().Where(p => !p.Name.Equals("Id"));
 
@@ -217,7 +218,7 @@ namespace terminalSalesforce.Services
                     {
                         prop.SetValue(requiredObject, string.Empty);
                     }
-                    else if(applicationException.Message.StartsWith("No field found with specified key:"))
+                    else if (applicationException.Message.StartsWith("No field found with specified key:"))
                     {
                         //FR-2502 - This else case handles, the user asked to pick up the value from the current payload.
                         //But the payload does not contain the value of this property. In that case, set it as "Not Available"
@@ -285,8 +286,8 @@ namespace terminalSalesforce.Services
             var chatterNamesList = new List<FieldDTO>();
 
             //get chatter groups and persons
-            var chatterObjects = (JObject) await chatterClient.GetGroupsAsync<object>();
-            chatterObjects.Merge((JObject) await chatterClient.GetUsersAsync<object>());
+            var chatterObjects = (JObject)await chatterClient.GetGroupsAsync<object>();
+            chatterObjects.Merge((JObject)await chatterClient.GetUsersAsync<object>());
 
             JToken requiredChatterObjects;
             chatterObjectSelectPredicateCollection.ToList().ForEach(selectPredicate =>
@@ -327,6 +328,25 @@ namespace terminalSalesforce.Services
             var feedItem = await chatterClient.PostFeedItemAsync<FeedItem>(feedItemInput, currentChatterUser.id);
 
             return string.IsNullOrEmpty(feedItem.Id) ? string.Empty : feedItem.Id;
+        }
+
+        private IEnumerable<FieldDTO> objectDescriptions;
+
+        public IEnumerable<FieldDTO> GetObjectDescriptions()
+        {
+            return objectDescriptions ?? (objectDescriptions = new FieldDTO[]
+                                                {
+                                                    new FieldDTO("Account") { Availability = AvailabilityType.Configuration},
+                                                    new FieldDTO("Case") { Availability = AvailabilityType.Configuration},
+                                                    new FieldDTO("Contact") { Availability = AvailabilityType.Configuration},
+                                                    new FieldDTO("Contract") { Availability = AvailabilityType.Configuration},
+                                                    new FieldDTO("Document") { Availability = AvailabilityType.Configuration},
+                                                    new FieldDTO("Lead") { Availability = AvailabilityType.Configuration},
+                                                    new FieldDTO("Opportunity") { Availability = AvailabilityType.Configuration},
+                                                    new FieldDTO("Order") { Availability = AvailabilityType.Configuration},
+                                                    new FieldDTO("Product2") { Availability = AvailabilityType.Configuration},
+                                                    new FieldDTO("Solution") { Availability = AvailabilityType.Configuration},
+                                                });
         }
     }
 }

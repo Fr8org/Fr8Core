@@ -23,5 +23,7 @@ namespace terminalSalesforce.Infrastructure
         Task<IList<FieldDTO>> GetChatters(AuthorizationTokenDO authTokenDO);
 
         Task<string> PostFeedTextToChatterObject(string feedText, string parentObjectId, AuthorizationTokenDO authTokenDO);
+
+        IEnumerable<FieldDTO> GetObjectDescriptions();
     }
 }

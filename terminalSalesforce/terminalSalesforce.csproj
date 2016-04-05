@@ -240,6 +240,7 @@
     <Compile Include="Activities\Create_Account_v1.cs" />
     <Compile Include="Activities\Create_Contact_v1.cs" />
     <Compile Include="Activities\Create_Lead_v1.cs" />
+    <Compile Include="Activities\Mail_Merge_From_Salesforce_v1.cs" />
     <Compile Include="Activities\Post_To_Chatter_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
     <Compile Include="Activities\Get_Data_v1.cs" />
