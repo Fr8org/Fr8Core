@@ -10,31 +10,29 @@
 <!-- BEGIN MAIN CONTENT -->
 
 <div ng-controller="PlanListController" class="margin-top-10" id="nav-tables">
-	<div class="row" ng-init="isFr = true;">
-		<div class="col-md-2 col-sm-2 remove-padding">
-			<div class="left-pills">
-				<ul>
-					<li class="active" ng-click="isFr = true;"><a data-toggle="pill">My Plans</a></li>
-					<li ng-click="isFr = false;"><a data-toggle="pill">Settings</a></li>
-				</ul>
-			</div>
-		</div>
+    <div class="row" style="margin:10px">
+        <md-content>
+            <md-tabs md-dynamic-height md-border-bottom>
+                <md-tab label="My Plans">
+                    <md-content class="md-padding">
+                        <div id="Myfr8lines">
+                            <h3>My Plans <a ui-sref="planForm" class="btn green route-list-header-button">Add Plan</a></h3>
 
-		<div class="col-md-10 col-sm-10 remove-left-padding">
-			<div class="tab-content" id="inner-tab-content">
-				<div id="Myfr8lines" ng-show="isFr">
-					<h3>My Plans <a ui-sref="planForm" class="btn green route-list-header-button">Add Plan</a></h3>
+                            @Html.Partial("_PlanList")
 
-					@Html.Partial("_PlanList")
-
-				</div>
-				<div id="Setting" ng-show="!isFr">
-					<h3>Settings</h3>
-					<p>Account ID : @User.Identity.Name</p>
-				</div>
-			</div>
-		</div>
-	</div>
+                        </div>
+                    </md-content>
+                </md-tab>
+                <md-tab label="Settings">
+                    <md-content class="md-padding">
+                        <div id="Myfr8lines">
+                            <p>Account ID : @User.Identity.Name</p>
+                        </div>
+                    </md-content>
+                </md-tab>
+            </md-tabs>
+        </md-content>
+    </div>
 </div>
 <div class="etc-space"></div>
 <!-- END MAIN CONTENT -->

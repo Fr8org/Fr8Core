@@ -1034,6 +1034,7 @@
     <Content Include="Views\Shared\_HomeNavNew.cshtml" />
     <Content Include="Views\Shared\_HomePageNew.cshtml" />
     <Content Include="Views\AngularTemplate\PlanBuilder_KioskMode.cshtml" />
+    <Content Include="Views\AngularTemplate\ActivityStream.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
