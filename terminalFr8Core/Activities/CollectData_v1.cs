@@ -81,7 +81,9 @@ namespace terminalFr8Core.Actions
                 {
                     updateButton.Clicked = false;
                     curStorage.RemoveByLabel(CollectionControlsLabel);
-                    curStorage.Add(CreateCollectionControlsCrate(curStorage));
+                    var controls = CreateCollectionControlsCrate(curStorage);
+                    AddFileDescriptionToStorage(curStorage, controls.Get<StandardConfigurationControlsCM>().Controls.Where(a => a.Type == ControlTypes.FilePicker).ToList());
+                    curStorage.Add(controls);
                     await PushLaunchURLNotification(curActivityDO);
                 }
             }
@@ -117,7 +119,7 @@ namespace terminalFr8Core.Actions
                     }
                     //TODO think of a better way to flag activity
                     var flagCrate = CrateManager.CreateDesignTimeFieldsCrate(RunFromSubmitButtonLabel, AvailabilityType.RunTime);
-                    var payload = new List<CrateDTO>(){ CrateManager.ToDto(flagCrate) };
+                    var payload = new List<CrateDTO>() { CrateManager.ToDto(flagCrate) };
                     //we need to start the process - run current plan - that we belong to
                     await HubCommunicator.RunPlan(curActivityDO.RootPlanNodeId.Value, payload, CurrentFr8UserId);
                     //after running the plan - let's reset button state
@@ -157,49 +159,59 @@ namespace terminalFr8Core.Actions
             return byteArray;
         }
 
-        private void AddFileDescriptionToPayload(IUpdatableCrateStorage pStorage, byte[] file, string filePath)
+        private void AddFileDescriptionToStorage(ICrateStorage storage, List<ControlDefinitionDTO> file_pickers)
         {
-            //add StandardFileDescriptionCM to payload
-            var fileDescription = new StandardFileDescriptionCM
-            {
-                TextRepresentation = Convert.ToBase64String(file),
-                Filetype = Path.GetExtension(filePath)
-            };
-            pStorage.Add(Crate.FromContent("File Handler", fileDescription, AvailabilityType.RunTime));
-        }
+            int labelless_filepickers = 0;
+            storage.RemoveByManifestId((int)MT.StandardFileHandle);
 
-        private void ProcessFilePicker(IUpdatableCrateStorage pStorage, FilePicker filePicker)
-        {
-            var uploadFilePath = filePicker.Value;
-            byte[] file = null;
-            switch (GetUriFileExtension(uploadFilePath))
+            foreach (var filepicker in file_pickers)
             {
-                case ".xlsx":
-                    file = ProcessExcelFile(pStorage, uploadFilePath);
-                    break;
-
-            }
-
-            if (file != null)
-            {
-                AddFileDescriptionToPayload(pStorage, file, uploadFilePath);
+                string crate_label = GetFileDescriptionLabel(filepicker, labelless_filepickers);
+                storage.Add(Crate.FromContent(crate_label, new StandardFileDescriptionCM(), AvailabilityType.RunTime));
             }
         }
+
+        private string GetFileDescriptionLabel(ControlDefinitionDTO filepicker, int labeless_filepickers)
+        { return filepicker.Label ?? ("File from Collect Data #" + ++labeless_filepickers); }
 
         private void ProcessTextBox(IUpdatableCrateStorage pStorage, TextBox textBox)
         {
             //TODO add StandardPayloadCM here when needed
         }
 
+        private void ProcessFilePickers(IUpdatableCrateStorage pStorage, IEnumerable<ControlDefinitionDTO> filepickers)
+        {
+            int labeless_pickers = 0;
+            foreach (FilePicker filepicker in filepickers)
+            {
+                var uploadFilePath = filepicker.Value;
+                byte[] file = null;
+                switch (GetUriFileExtension(uploadFilePath))
+                {
+                    case ".xlsx":
+                        file = ProcessExcelFile(pStorage, uploadFilePath);
+                        break;
+                }
+
+                if (file == null) continue;
+
+                string crate_label = GetFileDescriptionLabel(filepicker, labeless_pickers);
+                var fileDescription = new StandardFileDescriptionCM
+                {
+                    Filename = Path.GetFileName(uploadFilePath),
+                    TextRepresentation = Convert.ToBase64String(file),
+                    Filetype = Path.GetExtension(uploadFilePath)
+                };
+
+                pStorage.Add(Crate.FromContent(crate_label, fileDescription, AvailabilityType.RunTime));
+            }
+        }
+
         private void ProcessCollectionControl(IUpdatableCrateStorage pStorage, ControlDefinitionDTO controlDefinitionDTO)
         {
-            if (controlDefinitionDTO is FilePicker)
+            if (controlDefinitionDTO is TextBox)
             {
-                ProcessFilePicker(pStorage, (FilePicker) controlDefinitionDTO);
-            }
-            else if (controlDefinitionDTO is TextBox)
-            {
-                ProcessTextBox(pStorage, (TextBox) controlDefinitionDTO);
+                ProcessTextBox(pStorage, (TextBox)controlDefinitionDTO);
             }
         }
 
@@ -211,8 +223,12 @@ namespace terminalFr8Core.Actions
                 {
                     ProcessCollectionControl(pStorage, controlDefinitionDTO);
                 }
+
+                ProcessFilePickers(pStorage, collectionControls.Controls.Where(a => a.Type == ControlTypes.FilePicker));
             }
         }
+
+
 
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
@@ -231,7 +247,7 @@ namespace terminalFr8Core.Actions
                 //no controls were created yet
                 return TerminateHubExecution(curPayloadDTO);
             }
-            
+
             //did we run from run button upon PlanBuilder or from submit button inside activity?
             if (!WasActivityRunFromSubmitButton(payloadStorage))
             {

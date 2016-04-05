@@ -23,6 +23,7 @@ namespace terminalDocuSign.Actions
 {
     public class Use_DocuSign_Template_With_New_Document_v1 : Send_DocuSign_Envelope_v1
     {
+
         protected override string ActivityUserFriendlyName => "Use DocuSign Template With New Document";
 
         protected override PayloadDTO SendAnEnvelope(ICrateStorage curStorage, DocuSignApiConfiguration loginInfo, PayloadDTO payloadCrates,
@@ -85,7 +86,6 @@ namespace terminalDocuSign.Actions
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                curActivityDO = await HandleFollowUpConfiguration(curActivityDO, authTokenDO, crateStorage);
                 curActivityDO = await UpdateFilesDD(curActivityDO, crateStorage);
             }
 
@@ -101,9 +101,17 @@ namespace terminalDocuSign.Actions
 
         private async Task<List<ListItem>> GetFilesCrates(ActivityDO curActivityDO)
         {
+            CrateDescriptionCM cratesDescription = new CrateDescriptionCM();
             var crates = await GetCratesByDirection(curActivityDO, CrateDirection.Upstream);
-            var file_crates = crates.Where(a => a.Label == "Runtime Available Crates").FirstOrDefault().Get<CrateDescriptionCM>().CrateDescriptions.Where(a => a.ManifestType == CrateManifestTypes.StandardFileDescription);
-            return new List<ListItem>(file_crates.Select(a => new ListItem() { Key = a.Label }));
+            var file_crates = crates.Where(a => a.ManifestType.Id == (int)MT.StandardFileHandle);
+            if (file_crates.Count() != 0)
+                cratesDescription.CrateDescriptions.AddRange(file_crates.Select(a => new CrateDescriptionDTO() { Label = a.Label }));
+            var upstream_available_crates = crates.Where(a => a.Label == "Runtime Available Crates").FirstOrDefault();
+            if (upstream_available_crates != null)
+            {
+                //cratesDescription.CrateDescriptions.AddRange(upstream_available_crates.Get<CrateDescriptionCM>().CrateDescriptions.Where(a => a.ManifestType == CrateManifestTypes.StandardFileDescription));
+            }
+            return new List<ListItem>(cratesDescription.CrateDescriptions.Select(a => new ListItem() { Key = a.Label }));
         }
     }
 }
