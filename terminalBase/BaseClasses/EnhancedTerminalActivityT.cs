@@ -624,6 +624,17 @@ namespace TerminalBase.BaseClasses
         }
 
         /**********************************************************************************/
+        /// <summary>
+        /// Jumps to another plan
+        /// </summary>
+        /// <returns></returns>
+        protected void RequestLaunchAdditionalPlan(Guid targetPlanId)
+        {
+            SetResponse(ActivityResponse.LaunchAdditionalPlan);
+            OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetPlanId });
+        }
+
+        /**********************************************************************************/
 
         protected void SetResponse(ActivityResponse response, string message = null)
         {

@@ -205,6 +205,10 @@
         <control-list field="field" current-action="currentAction" change="onChange" plan="plan"></control-list>
     </div>
 
+    <div ng-if='field.type == "ActivityChooser"'>
+        <activity-chooser field="field" current-action="currentAction" plan="plan"></activity-chooser>
+    </div>
+
 
 <!-- Add more configuration field templates below -->
 </div>

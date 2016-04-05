@@ -86,6 +86,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/PaneSelectAction/PaneSelectAction.js',
         'Scripts/app/directives/DesignerHeader/DesignerHeader.js',
         'Scripts/app/directives/SubplanHeader.js',
+        'Scripts/app/directives/Controls/ActivityChooser.js',
         'Scripts/app/directives/Controls/FilePicker.js',
         'Scripts/app/directives/Controls/RadioButtonGroup.js',
         'Scripts/app/directives/Controls/DropDownListBox.js',

@@ -53,7 +53,7 @@ namespace terminalIntegrationTests.EndToEnd
                 await googleSheetApi.WriteData(sourceSpreadsheetUri, sourceWorksheetUri, GetTestSpreadsheetContent(), defaultGoogleAuthToken);
                 var thePlan = await _plansHelper.CreateNewPlan();
                 //Configure Get_Google_Sheet_Data activity to read data from this test spreadsheet
-                await _googleActivityConfigurator.AddAndConfigureGetFromGoogleSheet(thePlan, 1, sourceSpreadsheetName);
+                await _googleActivityConfigurator.AddAndConfigureGetFromGoogleSheet(thePlan, 1, sourceSpreadsheetName, true);
                 //Configure Build_Message activity to build message based on the data from this spreadsheet
                 await _fr8ActivityConfigurator.AddAndConfigureBuildMessage(thePlan, 2, "message", "Email - [email], subject - [subject], body - [body]");
                 //Configure Save_To_Google activity to save this message into new test spreadsheet
