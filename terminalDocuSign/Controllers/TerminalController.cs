@@ -190,19 +190,6 @@ namespace terminalDocuSign.Controllers
                 Tags = "internal"
             };
 
-            var archiveDocusignTemplate = new ActivityTemplateDTO
-            {
-                Name = "Archive_DocuSign_Template",
-                Label = "Archive DocuSign Template",
-                Version = "1",
-                NeedsAuthentication = true,
-                Category = ActivityCategory.Solution,
-                WebService = webService,
-                Terminal = terminal,
-                Tags = "internal"
-            };
-
-
             var actionList = new List<ActivityTemplateDTO>()
             {
                 waitForDocusignEventActionTemplate,
@@ -216,7 +203,6 @@ namespace terminalDocuSign.Controllers
                 queryDocusign,
                 generateDocusignReport,
                 searchDocusignHistory,
-                archiveDocusignTemplate,
                 getDocuSignTemplateActionTemplate
             };
 
