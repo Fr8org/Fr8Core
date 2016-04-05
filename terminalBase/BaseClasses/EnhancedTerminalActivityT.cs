@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Threading.Tasks;
 using Data.Constants;
 using Data.Crates;
 using Data.Entities;
+using Data.Helpers;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.DataTransferObjects.Helpers;
 using Data.Interfaces.Manifests;
@@ -69,27 +72,34 @@ namespace TerminalBase.BaseClasses
         // Functions
         /**********************************************************************************/
 
+
         protected EnhancedTerminalActivity(bool isAuthenticationRequired)
         {
             IsAuthenticationRequired = isAuthenticationRequired;
             UiBuilder = new UiBuilder();
-        }
+            ActivityName = GetType().Name;
+        } 
 
         /**********************************************************************************/
 
-        private void AuthorizeIfNecessary(AuthorizationTokenDO authTokenDO)
+        private bool AuthorizeIfNecessary(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
         {
             if (IsAuthenticationRequired)
             {
-                CheckAuthentication(authTokenDO);
+                return CheckAuthentication(activityDO, authTokenDO);
             }
+
+            return false;
         }
 
         /**********************************************************************************/
 
         public sealed override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            AuthorizeIfNecessary(authTokenDO);            
+            if (AuthorizeIfNecessary(curActivityDO, authTokenDO))
+            {
+                return curActivityDO;
+            }
 
             AuthorizationToken = authTokenDO;
             CurrentActivity = curActivityDO;
@@ -101,15 +111,16 @@ namespace TerminalBase.BaseClasses
                 CurrentActivityStorage = storage;
 
                 var configurationType = GetConfigurationRequestType();
+                var runtimeCrateManager = new RuntimeCrateManager(CurrentActivityStorage, CurrentActivity.Label);
 
                 switch (configurationType)
                 {
                     case ConfigurationRequestType.Initial:
-                        await InitialConfiguration();
+                        await InitialConfiguration(runtimeCrateManager);
                         break;
 
                     case ConfigurationRequestType.Followup:
-                        await FollowupConfiguration();
+                        await FollowupConfiguration(runtimeCrateManager);
                         break;
 
                     default:
@@ -132,27 +143,27 @@ namespace TerminalBase.BaseClasses
         
         /**********************************************************************************/
 
-        private async Task InitialConfiguration()
+        private async Task InitialConfiguration(RuntimeCrateManager runtimeCrateManager)
         {
             ConfigurationControls = CrateConfigurationControls();
             CurrentActivityStorage.Clear();
 
             CurrentActivityStorage.Add(Crate.FromContent(ConfigurationControlsLabel, ConfigurationControls, AvailabilityType.Configuration));
 
-            await Initialize();
+            await Initialize(runtimeCrateManager);
 
             SyncConfControlsBack();
         }
 
         /**********************************************************************************/
 
-        private async Task FollowupConfiguration()
+        private async Task FollowupConfiguration(RuntimeCrateManager runtimeCrateManager)
         {
             SyncConfControls();
 
             if (await Validate())
             {
-                await Configure();
+                await Configure(runtimeCrateManager);
             }
 
             SyncConfControlsBack();
@@ -162,7 +173,10 @@ namespace TerminalBase.BaseClasses
 
         public sealed override async Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            AuthorizeIfNecessary(authTokenDO);
+            if (AuthorizeIfNecessary(curActivityDO, authTokenDO))
+            {
+                return curActivityDO;
+            }
 
             AuthorizationToken = authTokenDO;
             CurrentActivity = curActivityDO;
@@ -257,11 +271,16 @@ namespace TerminalBase.BaseClasses
                         return processPayload;
                     }
 
+                    OperationalState.CurrentActivityResponse = null;
+
                     await runMode();
 
-                    Success();
+                    if (OperationalState.CurrentActivityResponse == null)
+                    {
+                        Success();
+                    }
                 }
-                catch (ActionExecutionException ex)
+                catch (ActivityExecutionException ex)
                 {
                     Error(ex.Message, ex.ErrorCode);
                 }
@@ -326,8 +345,8 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        protected abstract Task Initialize();
-        protected abstract Task Configure();
+        protected abstract Task Initialize(RuntimeCrateManager runtimeCrateManager);
+        protected abstract Task Configure(RuntimeCrateManager runtimeCrateManager);
 
         /**********************************************************************************/
 
@@ -378,6 +397,101 @@ namespace TerminalBase.BaseClasses
 
             ConfigurationControls = CrateConfigurationControls();
             ConfigurationControls.SyncWith(ui);
+            
+            if (ui.Controls != null)
+            {
+                var dynamicControlsCollection = GetMembers(ConfigurationControls.GetType()).Where(x => x.CanRead && x.GetCustomAttribute<DynamicControlsAttribute>() != null && CheckIfMemberIsControlsCollection(x)).ToDictionary(x => x.Name, x => x);
+
+                if (dynamicControlsCollection.Count > 0)
+                {
+                    foreach (var control in ui.Controls)
+                    {
+                        if (string.IsNullOrWhiteSpace(control.Name))
+                        {
+                            continue;
+                        }
+
+                        var delim = control.Name.IndexOf('_');
+
+                        if (delim <= 0)
+                        {
+                            continue;
+                        }
+
+                        var prefix = control.Name.Substring(0, delim);
+                        IMemberAccessor member;
+
+                        if (!dynamicControlsCollection.TryGetValue(prefix, out member))
+                        {
+                            continue;
+                        }
+
+                        var controlsCollection = (IList)member.GetValue(ConfigurationControls);
+
+                        if (controlsCollection == null && (!member.CanWrite || member.MemberType.IsAbstract || member.MemberType.IsInterface))
+                        {
+                            continue;
+                        }
+
+                        if (controlsCollection == null)
+                        {
+                            controlsCollection = (IList)Activator.CreateInstance(member.MemberType);
+                            member.SetValue(ConfigurationControls, controlsCollection);
+                        }
+
+                        control.Name = control.Name.Substring(delim + 1);
+                        controlsCollection.Add(control);
+                    }
+                }
+            }
+        }
+
+        /**********************************************************************************/
+
+        private static bool CheckIfMemberIsControlsCollection(IMemberAccessor member)
+        {
+            if (member.MemberType.IsInterface && CheckIfTypeIsControlsCollection(member.MemberType))
+            {
+                return true;
+            }
+
+            foreach (var @interface in member.MemberType.GetInterfaces())
+            {
+                if (CheckIfTypeIsControlsCollection(@interface))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        /**********************************************************************************/
+
+        private static bool CheckIfTypeIsControlsCollection(Type type)
+        {
+            if (type.IsGenericType)
+            {
+                var genericTypeDef = type.GetGenericTypeDefinition();
+
+                if (typeof(IList<>) == genericTypeDef)
+                {
+                    if (typeof(IControlDefinition).IsAssignableFrom(type.GetGenericArguments()[0]))
+                    {
+                        return true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        /**********************************************************************************/
+
+        private static IEnumerable<IMemberAccessor> GetMembers(Type type)
+        {
+            return type.GetProperties(BindingFlags.Instance | BindingFlags.Public).Select(x => (IMemberAccessor)new PropertyMemberAccessor(x))
+                .Concat(type.GetFields(BindingFlags.Instance | BindingFlags.Public).Select(x => (IMemberAccessor)new FieldMemberAccessor(x)));
         }
 
         /**********************************************************************************/
@@ -390,7 +504,47 @@ namespace TerminalBase.BaseClasses
             CurrentActivityStorage.Remove<StandardConfigurationControlsCM>();
             // we create new StandardConfigurationControlsCM with controls from ActivityUi.
             // We do this because ActivityUi can has properties to access specific controls. We don't want those propeties exist in serialized crate.
-            CurrentActivityStorage.Add(Crate.FromContent(ConfigurationControlsLabel, new StandardConfigurationControlsCM(ConfigurationControls.Controls), AvailabilityType.Configuration));
+
+            var configurationControlsToAdd = new StandardConfigurationControlsCM(ConfigurationControls.Controls);
+            CurrentActivityStorage.Add(Crate.FromContent(ConfigurationControlsLabel, configurationControlsToAdd, AvailabilityType.Configuration));
+
+            int insertIndex = 0;
+
+            foreach (var member in GetMembers(ConfigurationControls.GetType()).Where(x => x.CanRead))
+            {
+                if (member.GetCustomAttribute<DynamicControlsAttribute>() != null && CheckIfMemberIsControlsCollection(member))
+                {
+                    var collection = member.GetValue(ConfigurationControls) as IList;
+
+                    if (collection != null)
+                    {
+                        for (int index = 0; index < collection.Count; index++)
+                        {
+                            var control = collection[index] as ControlDefinitionDTO;
+
+                            if (control != null)
+                            {
+                                control.Name = member.Name + "_" + control.Name;
+                                configurationControlsToAdd.Controls.Insert(insertIndex, control);
+                                insertIndex++;
+                            }
+                        }
+                    }
+                }
+
+                var controlDef = member.GetValue(ConfigurationControls) as IControlDefinition;
+                if (!string.IsNullOrWhiteSpace(controlDef?.Name))
+                {
+                    for (int i = 0; i < configurationControlsToAdd.Controls.Count; i++)
+                    {
+                        if (configurationControlsToAdd.Controls[i].Name == controlDef.Name)
+                        {
+                            insertIndex = i + 1;
+                            break;
+                        }
+                    }
+                }
+            }
         }
 
         /**********************************************************************************/

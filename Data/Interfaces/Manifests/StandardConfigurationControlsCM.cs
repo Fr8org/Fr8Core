@@ -5,6 +5,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Constants;
 using System.Linq;
 using System.Reflection;
+using System.Web.UI;
 using Data.Crates;
 using Data.Helpers;
 
@@ -189,59 +190,81 @@ namespace Data.Interfaces.Manifests
         
         public void SyncWith(StandardConfigurationControlsCM configurationControls)
         {
-            var namedControls = EnumerateControlsDefinitions();
-
-            foreach (var namedControl in namedControls)
+            var targetNamedControls = EnumerateControlsDefinitions();
+            foreach (var targetControl in targetNamedControls)
             {
-                var source = configurationControls.FindByNameNested(namedControl.Name);
+                var source = configurationControls.FindByNameNested(targetControl.Name);
 
                 if (source == null)
                 {
                     continue;
                 }
 
-                ClonePrimitiveProperties(namedControl, source);
+                ClonePrimitiveProperties(targetControl, source);
             }
         }
-        
         // Sync controls properties from configuration controls crate with the current instance of StandardConfigurationControlsCM
         public void ClonePropertiesFrom(StandardConfigurationControlsCM configurationControls)
         {
-            var type = GetType();
-
-            foreach (var member in GetMembers(type))
-            {
-                if (MembersToIgnore.Contains(member.Name) || !member.CanRead)
-                {
-                    continue;
-                }
-
-                var target = member.GetValue(this);
-
-                if (target == null)
-                {
-                    member.SetValue(this, target = Activator.CreateInstance(member.MemberType));
-                }
-
-                ClonePropertiesForObject(target, member.Name, configurationControls);
-            }
+            SyncWith(configurationControls);
         }
 
-        // Clone properties from control with name 'name' into object 'target'
-        private static void ClonePropertiesForObject(object target, string objectName, StandardConfigurationControlsCM configurationControls)
+        private static bool CheckIfTypeIsControlsCollection(Type type)
         {
-            // Find the control
-            var control = configurationControls.FindByNameNested<object>(objectName);
-
-            if (control != null)
+            if (type.IsGenericType)
             {
-                ClonePrimitiveProperties(target, control);
+                var genericTypeDef = type.GetGenericTypeDefinition();
+
+                if (typeof(IList<>) == genericTypeDef)
+                {
+                    if (typeof(IControlDefinition).IsAssignableFrom(type.GetGenericArguments()[0]))
+                    {
+                        return true;
+                    }
+                }
             }
+
+            return false;
         }
+
 
         private static bool CanSyncMember(IMemberAccessor propertyInfo)
         {
-            return propertyInfo.MemberType.IsValueType || propertyInfo.MemberType == typeof (string) || propertyInfo.GetCustomAttribute<ForcePropertySyncAttribute>() != null;
+            if (propertyInfo.Name == "Controls")
+            {
+                int wtf = 0;
+            }
+
+            if (propertyInfo.GetCustomAttribute<IgnorePropertySyncAttribute>() != null)
+            {
+                return false;
+            }
+
+            if (propertyInfo.GetCustomAttribute<ForcePropertySyncAttribute>() != null)
+            {
+                return true;
+            }
+
+            // if we have property of the type derived from IControlDefinition it 
+            if (typeof (IControlDefinition).IsAssignableFrom(propertyInfo.MemberType))
+            {
+                return false;
+            }
+
+            if (propertyInfo.MemberType.IsInterface && CheckIfTypeIsControlsCollection(propertyInfo.MemberType))
+            {
+                return false;
+            }
+
+            foreach (var @interface in propertyInfo.MemberType.GetInterfaces())
+            {
+                if (CheckIfTypeIsControlsCollection(@interface))
+                {
+                    return false;
+                }
+            }
+            
+            return true;
         }
 
         private static IEnumerable<IMemberAccessor> GetMembers(Type type)

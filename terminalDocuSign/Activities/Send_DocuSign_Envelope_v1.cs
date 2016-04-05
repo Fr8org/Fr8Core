@@ -25,7 +25,10 @@ namespace terminalDocuSign.Actions
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
+            if (CheckAuthentication(curActivityDO, authTokenDO))
+            {
+                return curActivityDO;
+            }
 
             return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
@@ -40,7 +43,7 @@ namespace terminalDocuSign.Actions
             return HandleTemplateData(curActivityDO, loginInfo, payloadCrates);
         }
 
-        private string ExtractTemplateId(ActivityDO curActivityDO)
+        protected string ExtractTemplateId(ActivityDO curActivityDO)
         {
             var controls = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls;
 
@@ -72,7 +75,7 @@ namespace terminalDocuSign.Actions
             return Success(payloadCrates);
         }
 
-        private List<FieldDTO> MapControlsToFields(ICrateStorage activityCrateStorage, ICrateStorage payloadCrateStorage)
+        protected List<FieldDTO> MapControlsToFields(ICrateStorage activityCrateStorage, ICrateStorage payloadCrateStorage)
         {
             //todo: refactor the method
             var resultCollection = new List<FieldDTO>();
@@ -142,7 +145,7 @@ namespace terminalDocuSign.Actions
             return resultCollection;
         }
 
-        private List<FieldDTO> MapRoleControlsToFields(ICrateStorage activityCrateStorage, ICrateStorage payloadCrateStorage)
+        protected List<FieldDTO> MapRoleControlsToFields(ICrateStorage activityCrateStorage, ICrateStorage payloadCrateStorage)
         {
             var resultCollection = new List<FieldDTO>();
 
@@ -365,7 +368,7 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        private Crate CreateDocusignTemplateConfigurationControls()
+        protected virtual Crate CreateDocusignTemplateConfigurationControls()
         {
             var fieldSelectDocusignTemplateDTO = new DropDownList
             {

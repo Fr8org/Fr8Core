@@ -113,6 +113,7 @@ module dockyard.directives.paneConfigureAction {
         collapsed: boolean;
         populateAllActivities: () => void;
         allActivities: Array<interfaces.IActivityDTO>;
+        view: string;
     }
     
     export class CancelledEventArgs extends CancelledEventArgsBase { }
@@ -192,10 +193,16 @@ module dockyard.directives.paneConfigureAction {
             $scope.$on(MessageType[MessageType.PaneConfigureAction_AuthCompleted], (event: ng.IAngularEvent, authCompletedEventArgs: AuthenticationCompletedEventArgs) => {
                 if (authCompletedEventArgs.action.id === $scope.currentAction.id) {
                     this.loadConfiguration().then(() => {
-                        $scope.$emit(MessageType[MessageType.PaneConfigureAction_DownStreamReconfiguration], new DownStreamReConfigureEventArgs($scope.currentAction));
+                        var authCrate = this.crateHelper.findByManifestType(
+                            this.$scope.currentAction.crateStorage,
+                            'Standard Authentication'
+                        );
+
+                        if (!authCrate || !authCrate.contents || !(<any>authCrate.contents).Revocation) {
+                            $scope.$emit(MessageType[MessageType.PaneConfigureAction_DownStreamReconfiguration], new DownStreamReConfigureEventArgs($scope.currentAction));
+                        }
                     });
                 }
-
             });
 
             $scope.$on(MessageType[MessageType.PaneConfigureAction_ReloadAction], (event: ng.IAngularEvent, reloadActionEventArgs: ReloadActionEventArgs) => {
@@ -223,7 +230,7 @@ module dockyard.directives.paneConfigureAction {
                     onClickEvent.handler = 'requestConfig';
 
                     var button = new model.Button('Authentication unsuccessful, try again');
-                    button.name = 'AuthUnsuccessfulLabel';
+                    button.name = 'AuthUnsuccessfulButton';
                     button.events = [onClickEvent];
 
                     $scope.currentAction.configurationControls = new model.ControlsList();
@@ -309,10 +316,14 @@ module dockyard.directives.paneConfigureAction {
                     }
                 }
 
-                this.crateHelper.mergeControlListCrate(
-                    this.$scope.currentAction.configurationControls,
-                    this.$scope.currentAction.crateStorage
-                );
+                if (this.crateHelper.hasControlListCrate(this.$scope.currentAction.crateStorage)) {
+                    this.crateHelper.mergeControlListCrate(
+                        this.$scope.currentAction.configurationControls,
+                        this.$scope.currentAction.crateStorage,
+                        this.$scope.view
+                    );
+                }
+
                 this.$scope.currentAction.crateStorage.crateDTO = this.$scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
 
                 this.ActionService.save({ id: this.$scope.currentAction.id }, this.$scope.currentAction, null, null)
@@ -349,10 +360,14 @@ module dockyard.directives.paneConfigureAction {
 
             private onControlChange(event: ng.IAngularEvent, eventArgs: ChangeEventArgs) {
                 if (this.hasRequestConfigHandler(eventArgs.field)) {
-                    this.crateHelper.mergeControlListCrate(
-                        this.$scope.currentAction.configurationControls,
-                        this.$scope.currentAction.crateStorage
-                    );
+                    if (this.crateHelper.hasControlListCrate(this.$scope.currentAction.crateStorage)) {
+                        this.crateHelper.mergeControlListCrate(
+                            this.$scope.currentAction.configurationControls,
+                            this.$scope.currentAction.crateStorage,
+                            this.$scope.view
+                        );
+                    }
+
                     this.$scope.currentAction.crateStorage.crateDTO = this.$scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
 
                     this.$scope.loadConfiguration();
@@ -364,10 +379,13 @@ module dockyard.directives.paneConfigureAction {
 
                 // Find the onClick event object
                 if (this.getControlEventHandler(eventArgs.field, 'onClick')) {
-                    this.crateHelper.mergeControlListCrate(
-                        scope.currentAction.configurationControls,
-                        scope.currentAction.crateStorage
-                    );
+                    if (this.crateHelper.hasControlListCrate(scope.currentAction.crateStorage)) {
+                        this.crateHelper.mergeControlListCrate(
+                            scope.currentAction.configurationControls,
+                            scope.currentAction.crateStorage, scope.view
+                        );
+                    }
+
                     scope.currentAction.crateStorage.crateDTO = scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
 
                     this.loadConfiguration();
@@ -519,13 +537,48 @@ module dockyard.directives.paneConfigureAction {
                     var authCrate = this.crateHelper
                         .findByManifestType(this.$scope.currentAction.crateStorage, 'Standard Authentication');
 
+                    this.$scope.currentAction.configurationControls = new model.ControlsList();
                     // startAuthentication($scope.currentAction.id);
-                    this.AuthService.enqueue(this.$scope.currentAction.id);
+                    if (!(<any>authCrate.contents).Revocation) {
+                        this.AuthService.enqueue(this.$scope.currentAction.id);
+
+                        var errorText = 'Please provide credentials to access your desired account.';
+                        var control = new model.TextBlock(errorText, '');
+                        control.name = 'AuthUnsuccessfulLabel';
+
+                        this.$scope.currentAction.configurationControls.fields = [control];
+                    }
+                    else {
+                        var errorText = 'Authentication has expired, please try again.';
+                        var label = new model.TextBlock(errorText, '');
+                        label.name = 'AuthUnsuccessfulLabel';
+                        label.class = 'TextBlockClass';
+
+                        var onClickEvent = new model.ControlEvent();
+                        onClickEvent.name = 'onClick';
+                        onClickEvent.handler = 'requestConfig';
+
+                        var button = new model.Button('Try authenticate again');
+                        button.name = 'AuthUnsuccessfulButton';
+                        button.events = [ onClickEvent ];
+
+                        this.$scope.currentAction.configurationControls.fields = [label, button];
+                        this.ignoreConfigurationChange = true;
+                    }
+                }
+                else {
+                    //let's check if this PCA was opened with a view parameter
+                    //we normally render StandardConfigurationControls with "Configuration_Controls" label
+                    //but when PCA opens with view parameter we will render StandardConfigurationControls with given label
+                    if (this.$scope.view) {
+                        this.$scope.currentAction.configurationControls =
+                            this.crateHelper.createControlListFromCrateStorage(this.$scope.currentAction.crateStorage, this.$scope.view);
+                    } else {
+                        this.$scope.currentAction.configurationControls =
+                        this.crateHelper.createControlListFromCrateStorage(this.$scope.currentAction.crateStorage);
+                    }
                 }
 
-
-                this.$scope.currentAction.configurationControls =
-                this.crateHelper.createControlListFromCrateStorage(this.$scope.currentAction.crateStorage);
                 var hasConditionalBranching = _.any(this.$scope.currentAction.configurationControls.fields, (field: model.ControlDefinitionDTO) => {
                     return field.type === 'ContainerTransition';
                 });
@@ -548,26 +601,28 @@ module dockyard.directives.paneConfigureAction {
                 }, 1000);
             }
 
-            private startAuthentication(actionId: string) {
-                var modalScope = <any>this.$scope.$new(true);
-                modalScope.actionIds = [actionId];
-
-                this.$modal.open({
-                        animation: true,
-                        templateUrl: '/AngularTemplate/AuthenticationDialog',
-                        controller: 'AuthenticationDialogController',
-                        scope: modalScope
-                    })
-                    .result
-                    .then(() => this.loadConfiguration())
-                    .catch((result) => {
-                        var errorText = 'Authentication unsuccessful. Click to try again.';
-                        var control = new model.TextBlock(errorText, 'well well-lg alert-danger');
-                        control.name = 'AuthUnsuccessfulLabel';
-                        this.$scope.currentAction.configurationControls = new model.ControlsList();
-                        this.$scope.currentAction.configurationControls.fields = [control];
-                    });
-            }
+            // TODO: FR-2703, remove.
+            // private startAuthentication(actionId: string) {
+            //     var modalScope = <any>this.$scope.$new(true);
+            //     modalScope.actionIds = [actionId];
+            // 
+            //     this.$modal.open({
+            //             animation: true,
+            //             templateUrl: '/AngularTemplate/AuthenticationDialog',
+            //             controller: 'AuthenticationDialogController',
+            //             scope: modalScope
+            //         })
+            //         .result
+            //         .then(() => this.loadConfiguration())
+            //         .catch((result) => {
+            //             var errorText = 'Authentication unsuccessful. Click to try again.';
+            //             var control = new model.TextBlock(errorText, 'well well-lg alert-danger');
+            //             control.name = 'AuthUnsuccessfulLabel';
+            // 
+            //             this.$scope.currentAction.configurationControls = new model.ControlsList();
+            //             this.$scope.currentAction.configurationControls.fields = [control];
+            //         });
+            // }
 
             private setSolutionMode() {
                 this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_SetSolutionMode]);
@@ -582,7 +637,9 @@ module dockyard.directives.paneConfigureAction {
             scope: {
                 currentAction: '=',
                 mode: '=',
-                plan: '='
+                plan: '=',
+                view: '@',
+                processing: '='
             }
         };
     });

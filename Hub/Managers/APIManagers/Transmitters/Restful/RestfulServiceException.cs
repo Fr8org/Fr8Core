@@ -18,7 +18,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
         public RestfulServiceException(int statusCode, string message)
             : base(message)
         {
-            StatusCode = statusCode;
+            StatusCode = statusCode;            
         }
 
         public RestfulServiceException(int statusCode, string message, Exception innerException)

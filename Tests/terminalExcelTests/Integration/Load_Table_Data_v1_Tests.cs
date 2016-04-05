@@ -2,10 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Control;
 using Data.Crates;
+using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.States;
 using HealthMonitor.Utility;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
@@ -13,7 +16,11 @@ using Hub.StructureMap;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
+using terminalExcel.Actions;
 using terminalExcelTests.Fixtures;
+using TerminalBase.BaseClasses;
+using Utilities.Configuration;
+using Utilities.Configuration.Azure;
 
 namespace terminalExcelTests.Integration
 {
@@ -34,59 +41,26 @@ namespace terminalExcelTests.Integration
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 
-        public override string TerminalName
-        {
-            get { return "terminalExcel"; }
-        }
+        public override string TerminalName => "terminalExcel";
 
-        private void AssertCrateTypes(ICrateStorage crateStorage)
-        {
-            Assert.AreEqual(crateStorage.Count, 2);
-            Assert.AreEqual(crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(), 1);
-            Assert.AreEqual(crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Select Excel File"), 1);
-        }
-
-        private void AssertControls(StandardConfigurationControlsCM controls)
-        {
-            Assert.AreEqual(controls.Controls.Count, 2);
-
-            // Assert that first control is a FilePicker 
-            Assert.IsTrue(controls.Controls[0] is FilePicker);
-            Assert.AreEqual("select_file", controls.Controls[0].Name);
-            Assert.AreEqual("Select an Excel file", controls.Controls[0].Label);
-            Assert.AreEqual(controls.Controls[0].Events.Count, 1);
-            Assert.AreEqual("onChange", controls.Controls[0].Events[0].Name);
-            Assert.AreEqual("requestConfig", controls.Controls[0].Events[0].Handler);
-
-            // Assert that second control is a TextBlock
-            Assert.IsTrue(controls.Controls[1] is TextBlock);
-            Assert.AreEqual(controls.Controls[1].Name, null);
-        }
-
-        private async Task<ActivityDTO> ConfigureFollowUp()
+        private async Task<ActivityDTO> ConfigureFollowUp(bool setFileName = false)
         {
             var configureUrl = GetTerminalConfigureUrl();
-
             var dataDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_Fr8DataDTO(Guid.NewGuid());
-
-            var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
-
-            var storage = _crateManager.GetStorage(responseActionDTO);
-
-            using (var crateStorage = _crateManager.GetUpdatableStorage(dataDTO.ActivityDTO))
+            var responseActivityDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
+            if (setFileName)
             {
-                crateStorage.Replace(storage);
+                using (var storage = _crateManager.GetUpdatableStorage(responseActivityDTO))
+                {
+                    var activityUi = new Load_Excel_File_v1.ActivityUi();
+                    var controlsCrate = _crateManager.GetStorage(responseActivityDTO).FirstCrate<StandardConfigurationControlsCM>();
+                    activityUi.SyncWith(controlsCrate.Content);
+                    activityUi.FilePicker.Value = HealthMonitor_FixtureData.GetFilePath();
+                    storage.ReplaceByLabel(Data.Crates.Crate.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
+                }
             }
-
+            dataDTO.ActivityDTO = responseActivityDTO;
             return await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
-        }
-
-        private void AssertFollowUpCrateTypes(ICrateStorage crateStorage)
-        {
-            Assert.AreEqual(crateStorage.Count, 2);
-
-            Assert.AreEqual(crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(x => x.Label == "Configuration_Controls"), 1);
-            Assert.AreEqual(crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Select Excel File"), 1);
         }
 
         [Test]
@@ -100,70 +74,79 @@ namespace terminalExcelTests.Integration
             var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, requestActionDTO);
 
             // Assert
-            Assert.NotNull(responseActionDTO);
-            Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
+            Assert.NotNull(responseActionDTO, "Response from initial configuration request is null");
+            Assert.NotNull(responseActionDTO.CrateStorage, "Response from initial configuration request doesn't contain crate storage");
+            Assert.NotNull(responseActionDTO.CrateStorage.Crates, "Response from initial configuration request doesn't contain crates in storage");
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            AssertCrateTypes(crateStorage);
-            AssertControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
+            Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(), "Activity storage doesn't contain configuration controls");
+            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count(), "Activity storage doesn't contain description of runtime available crates");
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
-        )]
-        public async Task Load_Table_Data_v1_Initial_Configuration_GuidEmpty()
+        public async Task Load_Table_Data_v1_FollowUp_Configuration_WithFileSelected_CheckCrateStructure()
         {
-            // Arrange
-            var configureUrl = GetTerminalConfigureUrl();
-            var requestActionDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_Fr8DataDTO(Guid.Empty);
-
             // Act
-            await HttpPostAsync<Fr8DataDTO, JToken>(configureUrl, requestActionDTO);
+            var responseFollowUpActionDTO = await ConfigureFollowUp(true);
+
+            // Assert
+            Assert.NotNull(responseFollowUpActionDTO, "Response from followup configuration request is null");
+            Assert.NotNull(responseFollowUpActionDTO.CrateStorage, "Response from followup configuration request doesn't contain crate storage");
+            Assert.NotNull(responseFollowUpActionDTO.CrateStorage.Crates, "Response from followup configuration request doesn't contain crates in storage");
+
+            var crateStorage = _crateManager.GetStorage(responseFollowUpActionDTO);
+            Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(), "Activity storage doesn't contain configuration controls");
+            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count(), "Activity storage doesn't contain description of runtime available crates");
+            Assert.AreEqual(1,
+                            crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Availability == AvailabilityType.Always),
+                            "Activity storage doesn't contain crate with column headers that is avaialbe both at design time and runtime");
         }
 
-        /// <summary>
-        /// Validate correct crate-storage structure in follow-up configuration response.
-        /// </summary>
         [Test]
-        public async Task Load_Table_Data_v1_FollowUp_Configuration_Check_Crate_Structure()
+        public async Task Load_Table_Data_v1_FollowUp_Configuration_WithoutFileSet_CheckCrateStructure()
         {
             // Act
             var responseFollowUpActionDTO = await ConfigureFollowUp();
 
             // Assert
-            Assert.NotNull(responseFollowUpActionDTO);
-            Assert.NotNull(responseFollowUpActionDTO.CrateStorage);
-            Assert.NotNull(responseFollowUpActionDTO.CrateStorage.Crates);
+            Assert.NotNull(responseFollowUpActionDTO, "Response from followup configuration request is null");
+            Assert.NotNull(responseFollowUpActionDTO.CrateStorage, "Response from followup configuration request doesn't contain crate storage");
+            Assert.NotNull(responseFollowUpActionDTO.CrateStorage.Crates, "Response from followup configuration request doesn't contain crates in storage");
 
-            var crateStorage = Crate.FromDto(responseFollowUpActionDTO.CrateStorage);
-            AssertFollowUpCrateTypes(crateStorage);
-            AssertControls(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single());
+            var crateStorage = _crateManager.GetStorage(responseFollowUpActionDTO);
+            Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(), "Activity storage doesn't contain configuration controls");
+            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count(), "Activity storage doesn't contain description of runtime available crates");
+            Assert.AreEqual(0,
+                            crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Availability == AvailabilityType.Always),
+                            "Activity storage shoudn't contain crate with column headers when file is not selected");
         }
 
         [Test]
-        public async Task Load_Table_Data_v1_Run_()
+        public async Task Load_Table_Data_v1_Run_WhenFileIsNotSelected_ResponseContainsErrorMessage()
         {
-            // Arrange
+            var activityDTO = await ConfigureFollowUp();
             var runUrl = GetTerminalRunUrl();
-
-            var dataDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_Fr8DataDTO(Guid.NewGuid());
-            AddPayloadCrate(
-                dataDTO,
-                new StandardTableDataCM()
-                {
-                    FirstRowHeaders = true,
-                    Table = new List<TableRowDTO>() { new TableRowDTO { Row = new List<TableCellDTO>() {TableCellDTO.Create("key", "value") } } }
-                }
-            );
-
-            // Act
+            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
+            dataDTO.ActivityDTO = activityDTO;
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            
             var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
-            // Assert
-            var crateStorage = Crate.GetStorage(responsePayloadDTO);
-            Assert.AreEqual(crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "Excel Data").Count(), 1);
+            var operationalState = Crate.GetStorage(responsePayloadDTO).FirstCrate<OperationalStateCM>().Content;
+            Assert.AreEqual(ActivityErrorCode.DESIGN_TIME_DATA_MISSING, operationalState.CurrentActivityErrorCode, "Operational state should contain error response when file is not selected");
+        }
+
+        [Test]
+        public async Task Load_Table_Data_v1_Run_WhenFileIsSelected_ResponseContainsTableData()
+        {
+            var activityDTO = await ConfigureFollowUp(true);
+            var runUrl = GetTerminalRunUrl();
+            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+
+            var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
+
+            Assert.AreEqual(1, _crateManager.GetStorage(responsePayloadDTO).CratesOfType<StandardTableDataCM>().Count(), "Reponse payload doesn't contain table data from file");
         }
 
         [Test]
@@ -174,13 +157,17 @@ namespace terminalExcelTests.Integration
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
             var requestActionDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_Fr8DataDTO(Guid.NewGuid());
+            using (var storage = _crateManager.GetUpdatableStorage(requestActionDTO.ActivityDTO))
+            {
+                storage.Add(Data.Crates.Crate.FromContent("Control", new StandardConfigurationControlsCM(new Load_Excel_File_v1.ActivityUi().Controls.ToArray()), AvailabilityType.Configuration));
+            }
 
-            //Act
-            var responseActionDTO =
-                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
-                    configureUrl,
-                    requestActionDTO
-                );
+                //Act
+                var responseActionDTO =
+                    await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
+                        configureUrl,
+                        requestActionDTO
+                    );
 
             //Assert
             Assert.IsNotNull(responseActionDTO);
@@ -195,6 +182,10 @@ namespace terminalExcelTests.Integration
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
             var requestActionDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_Fr8DataDTO(Guid.NewGuid());
+            using (var storage = _crateManager.GetUpdatableStorage(requestActionDTO.ActivityDTO))
+            {
+                storage.Add(Data.Crates.Crate.FromContent("Control", new StandardConfigurationControlsCM(new Load_Excel_File_v1.ActivityUi().Controls.ToArray()), AvailabilityType.Configuration));
+            }
 
             //Act
             var responseActionDTO =

@@ -62,7 +62,6 @@ module dockyard.tests.unit.directives.controls {
         });
 
         it('Should have a span inside', () => {
-            debugger;
             expect(element.find('span').length).toBe(1);
         });
     });

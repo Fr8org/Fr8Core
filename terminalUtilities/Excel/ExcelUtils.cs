@@ -149,13 +149,23 @@ namespace terminalUtilities.Excel
             return excelRows;
         }
 
-        public static StandardTableDataCM GetTableData(string selectedFilePath, bool isFirstRowAsColumnNames = true)
+        public static byte[] GetExcelFileAsByteArray(string selectedFilePath)
+        {
+            var fileAsByteArray = RetrieveFile(selectedFilePath);
+            return fileAsByteArray;
+        }
+
+        public static StandardTableDataCM GetExcelFile(string selectedFilePath, bool isFirstRowAsColumnNames = true)
+        {
+            var fileAsByteArray = GetExcelFileAsByteArray(selectedFilePath);
+            return GetExcelFile(fileAsByteArray, selectedFilePath, isFirstRowAsColumnNames);
+        }
+
+        public static StandardTableDataCM GetExcelFile(byte[] fileAsByteArray, string selectedFilePath, bool isFirstRowAsColumnNames = true)
         {
             var ext = Path.GetExtension(selectedFilePath);
             var crateManager = ObjectFactory.GetInstance<ICrateManager>();
             // Read file from repository
-            var fileAsByteArray = RetrieveFile(selectedFilePath);
-
             // Fetch column headers in Excel file
             var headersArray = GetColumnHeaders(fileAsByteArray, ext);
 
@@ -166,10 +176,10 @@ namespace terminalUtilities.Excel
 
             if (rowsDictionary != null && rowsDictionary.Count > 0)
             {
-                var rows = CreateTableCellPayloadObjects(rowsDictionary, headersArray);
+                var rows = CreateTableCellPayloadObjects(rowsDictionary, headersArray, isFirstRowAsColumnNames);
                 if (rows != null && rows.Count > 0)
                 {
-                    curExcelPayloadRowsCrateDTO = crateManager.CreateStandardTableDataCrate("Excel Payload Rows", false, rows.ToArray());
+                    curExcelPayloadRowsCrateDTO = crateManager.CreateStandardTableDataCrate("Excel Payload Rows", isFirstRowAsColumnNames, rows.ToArray());
                 }
             }
 
@@ -192,9 +202,13 @@ namespace terminalUtilities.Excel
             return file.Retrieve(curFileDO);
         }
 
-        public static List<TableRowDTO> CreateTableCellPayloadObjects(Dictionary<string, List<Tuple<string, string>>> rowsDictionary, string[] headersArray = null)
+        public static List<TableRowDTO> CreateTableCellPayloadObjects(Dictionary<string, List<Tuple<string, string>>> rowsDictionary, string[] headersArray = null, bool includeHeadersAsFirstRow = false)
         {
             var listOfRows = new List<TableRowDTO>();
+            if (includeHeadersAsFirstRow)
+            {
+                listOfRows.Add(new TableRowDTO { Row = headersArray.Select(x => new TableCellDTO { Cell = new FieldDTO(x, x) }).ToList() });
+            }
             // Process each item in the dictionary and add it as an item in List<TableRowDTO>
             foreach (var row in rowsDictionary)
             {

@@ -1,4 +1,4 @@
-﻿<div class='form-group'>
+﻿<div class='configuration-control-form-group'>
 
     <!--
     This fine contains a map of snippets which are rendered by Angular depending on field type
@@ -25,7 +25,7 @@
     <div ng-if='field.type == "TextBox"'>
         <label class='control-label' ng-if="field.label">{{::field.label}}</label>
         <input type='text' ng-model='field.value' ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }"
-               ng-blur="onChange($event)" ng-required='field.required' data-field-name='{{::field.name}}' id='pca__txt__{{::field.name | validId}}'
+               ng-change="onChange(field)" ng-required='field.required' data-field-name='{{::field.name}}' id='pca__txt__{{::field.name | validId}}'
                class='form-control form-control-focus' name='pca__txt__{{::field.name | validId}}' stop-click-propagation>
     </div>
 
@@ -196,8 +196,8 @@
 
 
     <!-- ControlContainer -->
-    <div ng-if='field.type == "ControlContainer"'>
-        <control-container field="field" current-action="currentAction" change="onChange" plan="plan"></control-container>
+    <div ng-if='field.type == "MetaControlContainer"'>
+        <meta-control-container field="field" current-action="currentAction" change="onChange" plan="plan"></meta-control-container>
     </div>
 
     <!-- ControlList -->

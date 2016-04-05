@@ -60,5 +60,45 @@ namespace UtilitiesTesting.Fixtures
                 Version = "1"
             };
         }
+
+        public static ActivityTemplateDTO QueryDocuSignActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = 1,
+                Name = "Query_DocuSign",
+                Version = "1",
+            };
+        }
+
+        public static ActivityTemplateDTO SaveToGoogleSheetActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = 1,
+                Name = "Save_To_Google_Sheet",
+                Version = "1"
+            };
+        }
+
+        public static ActivityTemplateDTO GetGoogleSheetDataActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = 1,
+                Name = "Get_Google_Sheet_Data",
+                Version = "1"
+            };
+        }
+
+        public static ActivityTemplateDTO BuildMessageActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = 1,
+                Name = "Build_Message",
+                Version = "1"
+            };
+        }
     }
 }

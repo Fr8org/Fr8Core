@@ -38,7 +38,7 @@
     @Styles.Render("~/bundles/css/home")
 
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css?family=Dosis:300,400,500,600,700|Open+Sans:300,400,400italic,600,700,800|Francois+One|Didact+Gothic|Droid+Sans|CabinFjalla+One|Cantarell|Ubuntu|Hind|Roboto|Nunito&subset=latin,cyrillic"
+    <link href="https://fonts.googleapis.com/css?family=Dosis:300,400,500,600,700|Open+Sans:300,400,400italic,600,700,800|Francois+One|Didact+Gothic|Droid+Sans|CabinFjalla+One|Cantarell|Ubuntu|Hind|Roboto|Roboto+Condensed:700|Nunito&subset=latin,cyrillic"
         rel="stylesheet" type="text/css">
 
     <!-- IE 9 Fallback-->
@@ -72,7 +72,14 @@
             </div>
             <div class="hero-buttons">
                 <a href="#about" id="btn-about" class="btn btn-outline btn-lg"><i class="fa fa-arrow-circle-o-down"></i> READ MORE</a>
-                <a href="/Welcome" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT NOW</a>
+                @if (Request.IsAuthenticated)
+                {
+                    <a href="/Welcome" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT NOW</a>
+                }
+                else
+                {
+                    <a href="/DockyardAccount/ProcessGuestUserMode" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT NOW</a>
+                }
             </div>
         </div>
         <div class="hero-bg-pattern"></div>
@@ -93,6 +100,7 @@
                     <div class="col-sm-8 col-sm-offset-2">
                         <div class="section-content">
                             <p>Fr8 ties your existing cloud applications together, letting you move information easily and enabling you to create powerful web applications, processes and workflows with a few clicks of your mouse.</p>
+                            <p><a href="http://fr8-documentation.azurewebsites.net">Learn More</a></p>
                         </div>
                     </div>
                 </div>
@@ -136,7 +144,14 @@
         <div id="social-network" class="section full-width-parallax parallax">
             <div class="container">
                 <h2 class="section-heading">Automate Your Work. Connect Your Cloud Services.</h2>
-                <a href="/Welcome" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT FREE</a>
+                @if (Request.IsAuthenticated)
+                {
+                    <a href="/Welcome" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT FREE</a>
+                }
+                else
+                {
+                    <a href="/DockyardAccount/ProcessGuestUserMode" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT FREE</a>
+                }
                 <p style="color:#F2F4F5;padding-top:10px;">Try Fr8 now.</p>
             </div>
         </div>
@@ -167,7 +182,7 @@
                                 <span class="salesforce"></span>
                                 <div class="service-text">
                                     <h3>Salesforce</h3>
-                                    <p>Coming Soon!</p>
+                                    <p>Coming Soon! Automatically update your Salesforce objects and chatter feeds from Slack. Mail Merge using DocuSign or Email.</p>
                                     <a href="#" class="read-more"><span>Read more ...</span> <i class="i fa fa-arrow-circle-right"></i></a>
                                 </div>
                             </div>
@@ -179,7 +194,7 @@
                                 <span class="google"></span>
                                 <div class="service-text">
                                     <h3>Google Apps</h3>
-                                    <p>Coming Soon!</p>
+                                    <p>Coming Soon! Use Google Sheets to drive Mail Merges and automate your business processes.</p>
                                     <a href="#" class="read-more"><span>Read more ...</span> <i class="i fa fa-arrow-circle-right"></i></a>
                                 </div>
                             </div>

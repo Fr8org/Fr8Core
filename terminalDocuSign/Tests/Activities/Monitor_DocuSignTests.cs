@@ -34,7 +34,6 @@ namespace terminalDocuSign.Tests.Actions
 
             TerminalDocuSignMapBootstrapper.ConfigureDependencies(Hub.StructureMap.StructureMapBootStrapper.DependencyType.TEST);
             TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
-            CloudConfigurationManager.RegisterApplicationSettings(new AppSettingsFixture());
 
             _monitor_DocuSign = new Monitor_DocuSign_Envelope_Activity_v1();
         }

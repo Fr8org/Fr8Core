@@ -10,6 +10,8 @@ namespace Data.Interfaces.Manifests
         }
 
         public AuthenticationMode Mode { get; set; }
+
+        public bool Revocation { get; set; }
     }
 
     public enum AuthenticationMode

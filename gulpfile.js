@@ -111,7 +111,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/UpstreamCrateChooser.js',
         'Scripts/app/directives/Controls/CrateChooser.js',
         'Scripts/app/directives/Controls/ContainerTransition.js',
-        'Scripts/app/directives/Controls/ControlContainer.js',
+        'Scripts/app/directives/Controls/MetaControlContainer.js',
         'Scripts/app/directives/Controls/ControlList.js',
         'Scripts/app/directives/LongAjaxCursor.js',
         'Scripts/app/directives/Validators/ManifestDescriptionValidators.js',
@@ -152,7 +152,8 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/ManifestRegistryListController.js',
         'Scripts/app/controllers/ManifestRegistryFormController.js',
         'Scripts/app/controllers/SolutionDocumentationController.js',
-        'Scripts/app/controllers/ManageUserController.js'
+        'Scripts/app/controllers/ManageUserController.js',
+        'Scripts/app/directives/Controls/Fr8Event.js'
     ])
         .pipe(sourcemaps.init())
         .pipe(concat('_compiled.js'))
@@ -211,6 +212,11 @@ gulp.task('cdnizer-css', ['bower'], function () {
                 file: '~/bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css',
                 package: 'jquery-ui',
                 cdn: '//cdnjs.cloudflare.com/ajax/libs/jqueryui/${ version }/jquery-ui.min.css'
+            },
+            {
+                file: '~/bower_components/angular-material/angular-material.min.css',
+                package: 'angular-material',
+                cdn: '//ajax.googleapis.com/ajax/libs/angular_material/${ version }/angular-material.min.css'
             }
         ]))
         .pipe(gulp.dest('./Views/Shared/CDN'));
@@ -354,6 +360,16 @@ gulp.task('cdnizer-js', ['bower'], function () {
             {
                 file: '~/Scripts/lib/jquery.blockui.min.js',
                 cdn: '//cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js'
+            },
+            {
+                file: '~/bower_components/angular-aria/angular-aria.min.js',
+                package: 'angular-aria',
+                cdn: '//ajax.googleapis.com/ajax/libs/angularjs/${ version }/angular-aria.min.js'
+            },
+            {
+                file: '~/bower_components/angular-material/angular-material.js',
+                package: 'angular-material',
+                cdn: '//ajax.googleapis.com/ajax/libs/angular_material/${ version }/angular-material.min.js'
             }
         ]))
         .pipe(gulp.dest('./Views/Shared/CDN'));

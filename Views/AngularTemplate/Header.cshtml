@@ -1,17 +1,17 @@
-<div class="page-header-top"> <!-- BEGIN HEADER TOP -->
+<div data-ng-controller="HeaderController" class="page-header">
+    <div class="page-header-top">
+        <!-- BEGIN HEADER TOP -->
 	<div class="container">
 		<!-- BEGIN LOGO -->
 		<div class="page-logo">
             <a href="http://www.fr8.company"><img src="/Content/img/dockyard_logo.png" alt="logo" class="logo-default"></a>
             <!--BEGIN STICKER-->
             <div class="page-sticker">
-                <p>alpha</p>
 		</div>
             <!--END STICKER-->
         </div>
 
 		<!-- END LOGO -->
-
 		<!-- BEGIN RESPONSIVE MENU TOGGLER -->
 		<a href="javascript:;" class="menu-toggler"></a>
 		<!-- END RESPONSIVE MENU TOGGLER -->
@@ -19,15 +19,17 @@
 		<div class="top-menu">
 			<ul class="nav navbar-nav pull-right">
 				<!-- BEGIN USER LOGIN DROPDOWN -->
-                @using Microsoft.AspNet.Identity
+                @using Data.States                @using HubWeb.Infrastructure                @using Microsoft.AspNet.Identity
                 @if (Request.IsAuthenticated)
                 {
 				            <li class="dropdown dropdown-user dropdown-dark">
 					        <a href="javascript:;" class="dropdown-toggle" dropdown-menu-hover data-toggle="dropdown" data-close-others="true">
                                 @*<img alt="" class="img-circle" src="/Content/templates/metronic/assets/admin/layout3/img/avatar1.jpg" />*@
 
-					        <span class="username username-hide-mobile">Hello 
-                                @if(User.IsInRole("Guest")){
+                                <span class="username username-hide-mobile">
+                                    Hello
+                                    @if (User.IsInRole("Guest"))
+                                    {
                                     <text>Guest User</text>
                                 }
                                 else
@@ -38,15 +40,16 @@
                                 </span>
 					        </a>
 
-                            @if(!User.IsInRole("Guest")){
+                            @if (!User.IsInRole("Guest"))
+                            {
 					            <ul class="dropdown-menu dropdown-menu-default">
 						            <li>
-                                        <a href="/Dashboard#/myaccount">
+                                        <a ui-sref="myaccount">
                                             <i class="icon-user"></i> My Profile
                                         </a>
 						            </li>
                                     <li>
-                                        <a href="#/changePassword">
+                                        <a ui-sref="changePassword">
                                             <i class="icon-key"></i> Change Password
                                         </a>
                                     </li>
@@ -85,7 +88,7 @@
 			<ul class="nav navbar-nav">
 
 				<li class="active">
-					<a href="#/myaccount">Home</a>
+					<a ui-sref="myaccount">Home</a>
 				</li>
 
                 <li class="menu-dropdown classic-menu-dropdown">
@@ -114,9 +117,9 @@
                     <a data-toggle="dropdown" href="#" class="dropdown-toggle">Plans <i class="fa fa-angle-down"></i></a>
                     <ul class="dropdown-menu">
 
-                        <li><a href="#/plans">Show All</a></li>
-                        <li><a href="#/plans/add">Add</a></li>
-                        <li><a href="#/findObjects/create">Find Objects</a></li>
+                        <li><a ui-sref="planList">Show All</a></li>
+                        <li><a ui-sref="planForm">Add</a></li>
+                        <li><a ui-sref="findObjects">Find Objects</a></li>
 
                     </ul>
 						</li>
@@ -125,7 +128,7 @@
                     <a data-toggle="dropdown" href="#" class="dropdown-toggle">Containers <i class="fa fa-angle-down"></i></a>
                     <ul class="dropdown-menu">
 
-                        <li><a href="#/containers">Show All</a></li>
+                        <li><a ui-sref="containers">Show All</a></li>
 
 					</ul>
 				</li>
@@ -134,9 +137,9 @@
                     <a data-toggle="dropdown" href="#" class="dropdown-toggle">Tools <i class="fa fa-angle-down"></i></a>
                     <ul class="dropdown-menu">
 
-                        <li><a href="#/managefiles">Manage Files</a></li>
-                        <li><a href="#/manageAuthTokens">Manage Auth Tokens</a></li>
-                        <li><a href="/dashboard#/solution/SearchFr8Warehouse">Search Fr8 Warehouse</a></li>
+                        <li><a ui-sref="managefiles">Manage Files</a></li>
+                        <li><a ui-sref="manageAuthTokens">Manage Auth Tokens</a></li>
+                        <li><a ui-sref="configureSolution({solutionName: 'SearchFr8Warehouse'})">Search Fr8 Warehouse</a></li>
 
                     </ul>
                 </li>
@@ -158,11 +161,11 @@
                         <ul class="dropdown-menu">
 
                             <li><a href="#/form-tools">Create Accounts</a></li>
-                            <li><a href="#/accounts">Manage Fr8 Accounts</a></li>
-                            <li><a href="#/manifestregistry">Manage ManifestRegistry</a></li>
-                            <li><a href="#/webservices">Show Web Services</a></li>                            
-                            <li><a href="#/showFacts">Show Facts</a></li>
-                            <li><a href="#/showIncidents">Show Incidents</a></li>
+                            <li><a ui-sref="accounts">Manage Fr8 Accounts</a></li>
+                            <li><a ui-sref="manifestregistry">Manage ManifestRegistry</a></li>
+                            <li><a ui-sref="webservices">Show Web Services</a></li>                            
+                            <li><a ui-sref="showFacts">Show Facts</a></li>
+                            <li><a ui-sref="showIncidents">Show Incidents</a></li>
                         </ul>
                     </li>
                 }
@@ -189,3 +192,4 @@
 	</div>
 </div>
 <!-- END HEADER MENU -->
+</div>

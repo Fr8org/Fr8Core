@@ -1,23 +1,27 @@
-﻿<tr>
-    <td width="125">
+﻿<div class="row" style="margin-top:10px;">
+    <div class="col-md-5">
         <select class="form-control" ng-options="f as f.name for f in fields" ng-model="condition.field" ng-change="fieldSelected(condition)">
             <option value="">Select a Field</option>
         </select>
-    </td>
-    <td width="60">
-        <select class="form-control" ng-options="op.value as op.text for op in operators" ng-model="condition.operator" ng-disabled="!condition.field"></select>
-    </td>
-    <td>
-        <div class="condition-control">
+    </div>
+
+    <div class="col-md-5">
+        <div class="query-builder-operator-row">
+            <select class="form-control" ng-options="op.value as op.text for op in operators" ng-model="condition.operator" ng-disabled="!condition.field"></select>
         </div>
-        <div ng-if="!hasConfigurationControl" style="padding: 3px; border: 1px solid #acacac;">
-            Select a field
+        <div class="query-builder-value-row">
+            <div class="condition-control">
+            </div>
+            <div ng-if="!hasConfigurationControl" style="padding: 3px; border: 1px solid #acacac;">
+                Select a field
+            </div>
+
         </div>
-    </td>
-    <td>
+    </div>
+    <div class="col-md-2">
         <img src="/Content/img/PlanBuilder/delete-icon.png" width="15" height="15"
                 ng-show="!isSingle"
                 ng-click="onRemoveCondition()"
                 class="query-builder-delete-button" />
-    </td>
-</tr>
+    </div>
+</div>

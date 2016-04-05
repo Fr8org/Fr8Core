@@ -29,6 +29,7 @@ namespace Data.Interfaces
         UserAgentInfoRepository UserAgentInfoRepository { get; }
         UserRepository UserRepository { get; }
         AspNetUserRolesRepository AspNetUserRolesRepository { get; }
+        IAspNetUserClaimsRepository AspNetUserClaimsRepository { get; }
         AspNetRolesRepository AspNetRolesRepository { get; }
         IncidentRepository IncidentRepository { get; }
         //NegotiationsRepository NegotiationsRepository { get; }
@@ -67,6 +68,7 @@ namespace Data.Interfaces
         ITagRepository TagRepository { get; }
         IFileTagsRepository FileTagsRepository { get; }
         
+        IOrganizationRepository OrganizationRepository { get; }
 
 	    /// <summary>
         /// Call this to commit the unit of work

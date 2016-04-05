@@ -23,6 +23,8 @@ using Data.Constants;
 using Data.Crates;
 using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects.Helpers;
+using Data.Repositories.Plan;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 
 namespace Hub.Services
 {
@@ -471,10 +473,10 @@ namespace Hub.Services
                 await _container.Run(uow, curContainerDO);
                 return curContainerDO;
             }
-            catch(Exception e)
+            catch (Exception)
             {
                 curContainerDO.ContainerState = ContainerState.Failed;
-                throw e;
+                throw;
             }
             finally
             {
@@ -513,6 +515,84 @@ namespace Hub.Services
                 }
                 //continue from where we left
                 return await Run(uow, curContainerDO);
+            }
+        }
+
+        public async Task<PlanDO> Clone(Guid planId)
+        {
+            
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var currentUser = _security.GetCurrentAccount(uow);
+
+                var targetPlan = (PlanDO) GetPlanByActivityId(uow, planId);
+                if (targetPlan == null)
+                {
+                    return null;
+                }
+
+                var cloneTag = "Cloned From " + planId;
+                //let's check if we have cloned this plan before
+                var existingPlan = await uow.PlanRepository.GetPlanQueryUncached()
+                    .Where(p => p.Fr8AccountId == currentUser.Id && p.Tag.Contains(cloneTag)).FirstOrDefaultAsync();
+
+
+                if (existingPlan != null)
+                {
+                    //we already have cloned this plan before
+                    return existingPlan;
+                }
+
+                //we should clone this plan for current user
+                //let's clone the plan entirely
+                var clonedPlan = (PlanDO) PlanTreeHelper.CloneWithStructure(targetPlan);
+                clonedPlan.Name = clonedPlan.Name + " - " + "Customized for User " + currentUser.UserName;
+                clonedPlan.PlanState = PlanState.Inactive;
+                clonedPlan.Tag = cloneTag;
+                
+                //linearlize tree structure
+                var planTree = clonedPlan.GetDescendantsOrdered();
+                
+
+                //let's replace old id's of cloned plan with new id's
+                //and update account information
+                //TODO maybe we should do something about authorization tokens too?
+                Dictionary<Guid, PlanNodeDO> parentMap = new Dictionary<Guid, PlanNodeDO>();
+                foreach (var planNodeDO in planTree)
+                {
+                    var oldId = planNodeDO.Id;
+                    planNodeDO.Id = Guid.NewGuid();
+                    planNodeDO.Fr8Account = currentUser;
+                    parentMap.Add(oldId, planNodeDO);
+                    planNodeDO.ChildNodes = new List<PlanNodeDO>();
+                    if (planNodeDO.ParentPlanNodeId != null)
+                    {
+                        PlanNodeDO newParent;
+                        //find parent from old parent id map
+                        if (parentMap.TryGetValue(planNodeDO.ParentPlanNodeId.Value, out newParent))
+                        {
+                            //replace parent id with parent's new id
+                            planNodeDO.ParentPlanNodeId = newParent.Id;
+                            newParent.ChildNodes.Add(planNodeDO);
+                        }
+                        else
+                        {
+                            //this should never happen
+                            throw new Exception("Unable to clone plan");
+                        }
+                    }
+                    else
+                    {
+                        //this should be a plan because it has null ParentId
+                        uow.PlanRepository.Add(planNodeDO as PlanDO);
+                    }
+                }
+                
+
+                //save new cloned plan
+                uow.SaveChanges();
+
+                return clonedPlan;
             }
         }
     }

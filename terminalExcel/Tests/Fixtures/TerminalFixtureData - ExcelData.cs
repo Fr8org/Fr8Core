@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using DocuSign.Integrations.Client;
+
 using StructureMap;
 using Data.Infrastructure;
 using Data.Interfaces;

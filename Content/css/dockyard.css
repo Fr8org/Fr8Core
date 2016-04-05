@@ -257,19 +257,16 @@
     margin-bottom: 5px;
     vertical-align: top;
     white-space: initial;
-    /*min-width: 330px;*/
 }
 
     .action .pane-configure-action {
         min-height: 250px;
-        min-width: 330px;
         padding: 2%;
     }
 
     .action .ap-resize {
         min-height: 380px;
         overflow: hidden;
-        min-width: 380px;
         overflow: auto;
     }
 
@@ -279,6 +276,25 @@ div.action {
 
 .action-name {
     text-align: center;
+}
+
+@keyframes updatingFadeIn { 
+  from   { opacity:0.1; }
+  to { opacity:0.8; }
+}
+
+.action-reconfigure-status {
+    font-size: small;
+    font-weight: 500;
+    right: 5px;
+    position: absolute;
+    top: 5px;
+    opacity: 0.8;
+    color: white;
+    -moz-animation: updatingFadeIn 1s ;
+    -o-animation: updatingFadeIn 1s ;
+    -webkit-animation: updatingFadeIn 1s ;
+    animation: updatingFadeIn 1s;
 }
 
 .action-menu {
@@ -317,10 +333,10 @@ div.action-header {
 }
 
 .action-header-icon {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 6px;
+    margin-right: 10px;
+}
+#activity-header {
+   fill: rgba(255,255,255,0.87);
 }
 
     .action-header-icon:before {
@@ -331,7 +347,7 @@ div.action-header {
     }
 
     .action-header-icon img {
-        border-radius: 8px !important;
+        /*border-radius: 8px !important;*/
         /*width: 48px;*/
         max-width: 72px;
         height: 48px;
@@ -1061,4 +1077,41 @@ div.activity-list::after {
 div.ap-resize div.dndDraggingSource {
     opacity: 0.3;
     display: block !important;
+}
+
+.register-container {
+    width: 600px;
+    margin: 30px auto;
+}
+
+i.activity-stream-font{
+    margin-right: 3px;
+    font-size: 40px !important;
+    float: left; 
+    padding-top: 5px;
+}
+
+.query-builder-value-row {
+    padding-left: 15px; 
+    overflow: auto;
+}
+.query-builder-operator-row {
+    float:left; 
+    width: 70px;
+}
+.configuration-control-form-group{
+    margin-bottom: 5px;
+}
+
+.filepicker {
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    
+.btn-upload {
+    background-color: orange;
+    cursor: pointer;
+}
+.file-info {
+    display: block;
 }
