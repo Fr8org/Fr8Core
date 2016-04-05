@@ -37,6 +37,7 @@ using Utilities;
 using Utilities.Interfaces;
 using System.Net.Http;
 using Microsoft.ApplicationInsights;
+using System.Linq.Expressions;
 
 namespace Hub.StructureMap
 {
@@ -137,6 +138,7 @@ namespace Hub.StructureMap
                 For<IHMACService>().Use<Fr8HMACService>();
 
                 For<TelemetryClient>().Use<TelemetryClient>();
+                For<IJobDispatcher>().Use<HangfireJobDispatcher>();
                // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
             }
         }
@@ -217,7 +219,16 @@ namespace Hub.StructureMap
                 For<IHMACService>().Use(fr8HMACService.Object);
                 For<TelemetryClient>().Use<TelemetryClient>();
                 For<ITerminal>().Use(new TerminalServiceForTests()).Singleton();
-               // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
+                For<IJobDispatcher>().Use<MockJobDispatcher>();
+                // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
+            }
+        }
+
+        public class MockJobDispatcher : IJobDispatcher
+        {
+            public void Enqueue(Expression<Action> job)
+            {
+                job.Compile().Invoke();
             }
         }
 
