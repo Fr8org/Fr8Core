@@ -28,7 +28,7 @@ $success = @{
 
 Function UpdateGitHubBuildStatus($message)
 {
-	$sourceVersion = Invoke-Expression "git rev-parse $branchName" | Out-String
+	$sourceVersion = Invoke-Expression "git rev-parse origin/$branchName" | Out-String
 	$sourceVersion = $sourceVersion.Trim()
 
 	if ($LastExitCode -ne 0)
@@ -73,11 +73,11 @@ $basicAuthGitHub = [System.Text.Encoding]::UTF8.GetBytes($basicAuthGitHub)
 $basicAuthGitHub = [System.Convert]::ToBase64String($basicAuthGitHub)
 $headersGitHub = @{Authorization=("Basic {0}" -f $basicAuthGitHub)}
 
-[uri]$vsoRequestUri = "https://fr8.visualstudio.com/defaultcollection/fr8/_apis/build/builds/" + $buildId + "?api-version=2.0"
+[uri]$vsoTimelineUri = "https://fr8.visualstudio.com/defaultcollection/fr8/_apis/build/builds/" + $buildId + "/timeline?api-version=2.0"
 
 $vsoResponse = try
 {
-	Invoke-RestMethod -Uri $vsoRequestUri -headers $headersVSO -Method Get -ContentType 'application/json'
+	Invoke-RestMethod -Uri $vsoTimelineUri -headers $headersVSO -Method Get -ContentType 'application/json'
 }
 catch
 {
@@ -87,11 +87,15 @@ catch
 	exit 1
 }
 
-if ($vsoResponse.result -ne "succeeded")
+$tasks = $vsoResponse.records | where {$_.type -eq "Task"}
+$succeededBuildSteps = $tasks | where {$_.name -notlike "Update GitHub status*" -and $_.state -eq "completed" -and $_.result -eq "succeeded"}
+
+if ($succeededBuildSteps.Count -eq $tasks.Count - 1)
 {
-	UpdateGitHubBuildStatus -message $failure
+    UpdateGitHubBuildStatus -message $success
 }
 else
 {
-	UpdateGitHubBuildStatus -message $success
+    UpdateGitHubBuildStatus -message $failure
 }
+
