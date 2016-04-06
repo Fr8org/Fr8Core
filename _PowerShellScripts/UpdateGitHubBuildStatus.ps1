@@ -112,7 +112,7 @@ else
     UpdateGitHubBuildStatus -message $failure
 }
 
-Invoke-Expression "git checkout origin/$branchName 2> $tempFileName"
+Invoke-Expression "git checkout origin/$branchName"
 if ($LastExitCode -ne 0)
 {
 	Write-Host "Failed checkout to $branchName branch."
