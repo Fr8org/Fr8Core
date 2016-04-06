@@ -657,10 +657,6 @@
     <Compile Include="Migrations\201603191417514_Renamed_ReceiveGoogleForm_To_MonitorFormResponses.Designer.cs">
       <DependentUpon>201603191417514_Renamed_ReceiveGoogleForm_To_MonitorFormResponses.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201603200920060_RenameContainerFields.cs" />
-    <Compile Include="Migrations\201603200920060_RenameContainerFields.Designer.cs">
-      <DependentUpon>201603200920060_RenameContainerFields.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201603271818114_Organizations_Table_Check.cs" />
     <Compile Include="Migrations\201603271818114_Organizations_Table_Check.Designer.cs">
       <DependentUpon>201603271818114_Organizations_Table_Check.cs</DependentUpon>
@@ -1154,9 +1150,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201603191417514_Renamed_ReceiveGoogleForm_To_MonitorFormResponses.resx">
       <DependentUpon>201603191417514_Renamed_ReceiveGoogleForm_To_MonitorFormResponses.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201603200920060_RenameContainerFields.resx">
-      <DependentUpon>201603200920060_RenameContainerFields.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201603271818114_Organizations_Table_Check.resx">
       <DependentUpon>201603271818114_Organizations_Table_Check.cs</DependentUpon>
