@@ -23,6 +23,7 @@ using Data.Constants;
 using Data.Crates;
 using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects.Helpers;
+using Data.Repositories.Plan;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 
 namespace Hub.Services
@@ -36,9 +37,10 @@ namespace Hub.Services
         private readonly ICrateManager _crate;
         private readonly ISecurityServices _security;
         private readonly IProcessNode _processNode;
+        private readonly IJobDispatcher _dispatcher;
 
         public Plan(InternalInterface.IContainer container, Fr8Account dockyardAccount, IActivity activity,
-            ICrateManager crate, ISecurityServices security, IProcessNode processNode)
+            ICrateManager crate, ISecurityServices security, IProcessNode processNode, IJobDispatcher dispatcher)
         {
             _container = container;
             _dockyardAccount = dockyardAccount;
@@ -46,6 +48,7 @@ namespace Hub.Services
             _crate = crate;
             _security = security;
             _processNode = processNode;
+            _dispatcher = dispatcher;
         }
 
         public IList<PlanDO> GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false,
@@ -71,12 +74,13 @@ namespace Hub.Services
 
         public IList<PlanDO> GetByName(IUnitOfWork uow, Fr8AccountDO account, string name, PlanVisibility visibility)
         {
-            if (name != null) { 
-            return
-                uow.PlanRepository.GetPlanQueryUncached()
-                    .Where(r => r.Fr8Account.Id == account.Id && r.Name == name)
+            if (name != null)
+            {
+                return
+                    uow.PlanRepository.GetPlanQueryUncached()
+                        .Where(r => r.Fr8Account.Id == account.Id && r.Name == name)
                         .Where(p => p.PlanState != PlanState.Deleted && p.Visibility == visibility)
-                    .ToList();
+                        .ToList();
             }
 
             return
@@ -236,7 +240,7 @@ namespace Hub.Services
                 var control = controlGroup.Controls.FirstOrDefault(x => !string.IsNullOrEmpty(x.ErrorMessage));
                 if (control != null)
                 {
-                    var containerDO = new ContainerDO() {CrateStorage = string.Empty, Name = string.Empty};
+                    var containerDO = new ContainerDO() { CrateStorage = string.Empty, Name = string.Empty };
 
                     using (var tempCrateStorage = _crate.UpdateStorage(() => containerDO.CrateStorage))
                     {
@@ -415,16 +419,12 @@ namespace Hub.Services
         /// <param name="planId"></param>
         /// <param name="envelopeId"></param>
         /// <returns></returns>
-        public ContainerDO Create(IUnitOfWork uow, Guid planId, params Crate[] curPayload)
+        public ContainerDO Create(IUnitOfWork uow, PlanDO curPlan, params Crate[] curPayload)
         {
             //let's exclude null payload crates
             curPayload = curPayload.Where(c => c != null).ToArray();
 
             var containerDO = new ContainerDO { Id = Guid.NewGuid() };
-
-            var curPlan = uow.PlanRepository.GetById<PlanDO>(planId);
-            if (curPlan == null)
-                throw new ArgumentNullException("planId");
 
             containerDO.PlanId = curPlan.Id;
             containerDO.Name = curPlan.Name;
@@ -490,17 +490,54 @@ namespace Hub.Services
 
         public async Task<ContainerDO> Run(IUnitOfWork uow, PlanDO curPlan, params Crate[] curPayload)
         {
-            var curContainerDO = Create(uow, curPlan.Id, curPayload);
+            var curContainerDO = Create(uow, curPlan, curPayload);
             return await Run(uow, curContainerDO);
         }
 
-        public async Task<ContainerDO> Run(PlanDO curPlan, Crate curPayload)
+        public void Enqueue(Guid curPlanId, params Crate[] curEventReport)
+        {
+            _dispatcher.Enqueue(() => LaunchProcess(curPlanId, curEventReport).Wait());
+        }
+
+        public void Enqueue(List<PlanDO> curPlans, params Crate[] curEventReport)
+        {
+            foreach (var curPlan in curPlans)
+            {
+                Enqueue(curPlan.Id, curEventReport);
+            }
+        }
+
+        public static async Task LaunchProcess(Guid curPlan, params Crate[] curPayload)
+        {
+            if (curPlan == default(Guid))
+                throw new ArgumentException(nameof(curPlan));
+
+            await ObjectFactory.GetInstance<IPlan>().Run(curPlan, curPayload);
+        }
+
+        public async Task<ContainerDO> Run(Guid planId, params Crate[] curPayload)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curContainerDO = Create(uow, curPlan.Id, curPayload);
+                var curPlan = uow.PlanRepository.GetById<PlanDO>(planId);
+                if (curPlan == null)
+                    throw new ArgumentNullException("planId");
+                try
+                {
+                    var curContainerDO = Create(uow, curPlan, curPayload);
                 return await Run(uow, curContainerDO);
             }
+                catch (Exception ex)
+                {
+                    EventManager.ContainerFailed(curPlan, ex);
+                    throw;
+                }
+            }
+        }
+
+        public async Task<ContainerDO> Run(PlanDO curPlan, params Crate[] curPayload)
+        {
+            return await Run(curPlan.Id, curPayload);
         }
 
         public async Task<ContainerDO> Continue(Guid containerId)
@@ -515,6 +552,92 @@ namespace Hub.Services
                 //continue from where we left
                 return await Run(uow, curContainerDO);
             }
+        }
+
+        public async Task<PlanDO> Clone(Guid planId)
+        {
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var currentUser = _security.GetCurrentAccount(uow);
+
+                var targetPlan = (PlanDO)GetPlanByActivityId(uow, planId);
+                if (targetPlan == null)
+                {
+                    return null;
+                }
+
+                var cloneTag = "Cloned From " + planId;
+                //let's check if we have cloned this plan before
+                var existingPlan = await uow.PlanRepository.GetPlanQueryUncached()
+                    .Where(p => p.Fr8AccountId == currentUser.Id && p.Tag.Contains(cloneTag)).FirstOrDefaultAsync();
+
+
+                if (existingPlan != null)
+                {
+                    //we already have cloned this plan before
+                    return existingPlan;
+                }
+
+                //we should clone this plan for current user
+                //let's clone the plan entirely
+                var clonedPlan = (PlanDO)PlanTreeHelper.CloneWithStructure(targetPlan);
+                clonedPlan.Name = clonedPlan.Name + " - " + "Customized for User " + currentUser.UserName;
+                clonedPlan.PlanState = PlanState.Inactive;
+                clonedPlan.Tag = cloneTag;
+
+                //linearlize tree structure
+                var planTree = clonedPlan.GetDescendantsOrdered();
+
+
+                //let's replace old id's of cloned plan with new id's
+                //and update account information
+                //TODO maybe we should do something about authorization tokens too?
+                Dictionary<Guid, PlanNodeDO> parentMap = new Dictionary<Guid, PlanNodeDO>();
+                foreach (var planNodeDO in planTree)
+                {
+                    var oldId = planNodeDO.Id;
+                    planNodeDO.Id = Guid.NewGuid();
+                    planNodeDO.Fr8Account = currentUser;
+                    parentMap.Add(oldId, planNodeDO);
+                    planNodeDO.ChildNodes = new List<PlanNodeDO>();
+                    if (planNodeDO.ParentPlanNodeId != null)
+                    {
+                        PlanNodeDO newParent;
+                        //find parent from old parent id map
+                        if (parentMap.TryGetValue(planNodeDO.ParentPlanNodeId.Value, out newParent))
+                        {
+                            //replace parent id with parent's new id
+                            planNodeDO.ParentPlanNodeId = newParent.Id;
+                            newParent.ChildNodes.Add(planNodeDO);
+                        }
+                        else
+                        {
+                            //this should never happen
+                            throw new Exception("Unable to clone plan");
+                        }
+                    }
+                    else
+                    {
+                        //this should be a plan because it has null ParentId
+                        uow.PlanRepository.Add(planNodeDO as PlanDO);
+                    }
+                }
+
+
+                //save new cloned plan
+                uow.SaveChanges();
+
+                return clonedPlan;
+            }
+        }
+
+        public ContainerDO Create(IUnitOfWork uow, Guid planId, params Crate[] curPayload)
+        {
+            var curPlan = uow.PlanRepository.GetById<PlanDO>(planId);
+            if (curPlan == null)
+                throw new ArgumentNullException("planId");
+            return Create(uow, curPlan, curPayload);
         }
     }
 }

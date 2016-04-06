@@ -56,7 +56,7 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 Version = "1",
-                MinPaneWidth = 550,
+                MinPaneWidth = 420,
                 WebService = webService
             });
 
@@ -286,7 +286,8 @@ namespace terminalFr8Core.Controllers
                 NeedsAuthentication = false,
                 Terminal = terminal,
                 WebService = webService,
-                MinPaneWidth = 350
+                MinPaneWidth = 350,
+                Tags = "AggressiveReload"
             });
 
             result.Add(new ActivityTemplateDTO
@@ -302,20 +303,8 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
-                Name = "CreateLauncher",
-                Label = "Create Launcher",
-                Version = "1",
-                Category = ActivityCategory.Processors,
-                NeedsAuthentication = false,
-                Terminal = terminal,
-                WebService = webService
-            });
-
-
-            result.Add(new ActivityTemplateDTO
-            {
-                Name = "LaunchAPlan",
-                Label = "Launch A Plan",
+                Name = "CollectData",
+                Label = "Collect Data",
                 Version = "1",
                 Category = ActivityCategory.Processors,
                 NeedsAuthentication = false,

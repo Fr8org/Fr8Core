@@ -244,6 +244,7 @@
     <Compile Include="Activities\Prepare_DocuSign_Events_For_Storage_v1.cs" />
     <Compile Include="Activities\Track_DocuSign_Recipients_v1.cs" />
     <Compile Include="Activities\Send_DocuSign_Envelope_v1.cs" />
+    <Compile Include="Activities\Use_DocuSign_Template_With_New_Document_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\EventController.cs" />

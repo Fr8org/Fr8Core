@@ -51,8 +51,23 @@ namespace Data.Control
         public const string DatePicker = "DatePicker";
         public const string CrateChooser = "CrateChooser";
         public const string ContainerTransition = "ContainerTransition";
-        public const string ControlContainer = "ControlContainer";
+        public const string MetaControlContainer = "MetaControlContainer";
         public const string ControlList = "ControlList";
+        public const string ActivityChooser = "ActivityChooser";
+    }
+
+    public class ActivityChooser : ControlDefinitionDTO
+    {
+        public ActivityChooser()
+        {
+            Type = ControlTypes.ActivityChooser;
+        }
+
+        [JsonProperty("subPlanId")]
+        public Guid? SubPlanId { get; set; }
+
+        [JsonProperty("activityTemplateLabel")]
+        public string ActivityTemplateLabel { get; set; }
     }
 
     public class CheckBox : ControlDefinitionDTO
@@ -74,7 +89,6 @@ namespace Data.Control
     public class DropDownList : ControlDefinitionDTO
     {
         [JsonProperty("listItems")]
-        [ForcePropertySync]
         public List<ListItem> ListItems { get; set; }
 
         [JsonProperty("selectedKey")]
@@ -150,7 +164,7 @@ namespace Data.Control
     public class ContainerTransition : ControlDefinitionDTO
     {
         [JsonProperty("transitions")]
-        public List<ContainerTransitionField> Transitions { get; set; } 
+        public List<ContainerTransitionField> Transitions { get; set; }
         public ContainerTransition()
         {
             Type = ControlTypes.ContainerTransition;
@@ -162,7 +176,7 @@ namespace Data.Control
     {
         public TextBoxMetaDescriptionDTO() : base("TextBoxMetaDescriptionDTO", "TextBox")
         {
-           // this.Controls.Add(new TextBox { });
+            // this.Controls.Add(new TextBox { });
         }
 
         public override ControlDefinitionDTO CreateControl()
@@ -178,7 +192,7 @@ namespace Data.Control
     {
         public TextBlockMetaDescriptionDTO() : base("TextBlockMetaDescriptionDTO", "TextBlock")
         {
-           // this.Controls.Add(new TextArea());
+            // this.Controls.Add(new TextArea());
         }
 
         public override ControlDefinitionDTO CreateControl()
@@ -192,7 +206,7 @@ namespace Data.Control
 
     public class FilePickerMetaDescriptionDTO : ControlMetaDescriptionDTO
     {
-        public static string[] FileExtensions = {"xlsx"};
+        public static string[] FileExtensions = { "xlsx" };
         public FilePickerMetaDescriptionDTO() : base("FilePickerMetaDescriptionDTO", "File Picker")
         {
             /*
@@ -211,7 +225,7 @@ namespace Data.Control
     }
 
     [JsonConverter(typeof(ControlMetaDescriptionDTOConverter))]
-    public class ControlMetaDescriptionDTO 
+    public class ControlMetaDescriptionDTO
     {
         [JsonProperty("controls")]
         public List<ControlDefinitionDTO> Controls { get; set; }
@@ -235,12 +249,13 @@ namespace Data.Control
         }
     }
 
-    public class ControlContainer : ControlDefinitionDTO
+    public class MetaControlContainer : ControlDefinitionDTO
     {
         [JsonProperty("metaDescriptions")]
+        [ForcePropertySync]
         public List<ControlMetaDescriptionDTO> MetaDescriptions { get; set; }
 
-        public ControlContainer() : base(ControlTypes.ControlContainer)
+        public MetaControlContainer() : base(ControlTypes.MetaControlContainer)
         {
             MetaDescriptions = new List<ControlMetaDescriptionDTO>();
         }
@@ -451,6 +466,18 @@ namespace Data.Control
                 //hmmm this is a regular data request
                 //lets search in complete crate
                 searchArea = crate;
+
+                //if we have a StandardTableDataCM and we are not in the loop and crate has Headers - we should search next row
+                if (crate.IsOfType<StandardTableDataCM>())
+                {
+                    var table_crate = crate.Get<StandardTableDataCM>();
+                    if (table_crate.FirstRowHeaders && table_crate.Table.Count > 1)
+                    {
+                        TableRowDTO row = GetDataListItem(crate, 0) as TableRowDTO;
+                        if (row != null)
+                            return row.Row.Where(a => a.Cell.Key == this.selectedKey).FirstOrDefault().Cell;
+                    }
+                }
             }
 
             //we should find first related field and return
@@ -588,6 +615,7 @@ namespace Data.Control
     public class ControlList : ControlDefinitionDTO
     {
         [JsonProperty("controlGroups")]
+        [ForcePropertySync]
         public IList<IList<ControlDefinitionDTO>> ControlGroups { get; }
 
         [JsonProperty("templateContainer")]
@@ -656,7 +684,7 @@ namespace Data.Control
     public enum ContainerTransitions
     {
         JumpToActivity = 0,
-        JumpToPlan,
+        LaunchAdditionalPlan,
         JumpToSubplan,
         StopProcessing,
         SuspendProcessing,
@@ -730,7 +758,6 @@ namespace Data.Control
         }
 
         [JsonProperty("selectedCrates")]
-        [ForcePropertySync]
         public List<CrateDetails> SelectedCrates { get; set; } = new List<CrateDetails>();
 
         [JsonProperty("multiSelection")]
@@ -746,7 +773,6 @@ namespace Data.Control
         }
 
         [JsonProperty("crateDescriptions")]
-        [ForcePropertySync]
         public List<CrateDescriptionDTO> CrateDescriptions { get; set; }
 
         [JsonProperty("singleManifestOnly")]

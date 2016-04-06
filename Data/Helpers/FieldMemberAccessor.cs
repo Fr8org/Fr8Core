@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace Data.Helpers
 {
-    class FieldMemberAccessor : IMemberAccessor
+    public class FieldMemberAccessor : IMemberAccessor
     {
         private readonly FieldInfo _fieldInfo;
 

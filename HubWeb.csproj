@@ -363,6 +363,8 @@
     <Compile Include="App_Start\StartupMigration.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\Api\ActivitiesController.cs" />
+    <Compile Include="Controllers\Api\Fr8BaseApiController.cs" />
+    <Compile Include="Controllers\Api\NotificationsController.cs" />
     <Compile Include="Controllers\Api\AlarmsController.cs" />
     <Compile Include="Controllers\Api\AuthenticationController.cs" />
     <Compile Include="Controllers\Api\FactsController.cs" />
@@ -487,6 +489,8 @@
     <Content Include="Content\css\shared\navbar.css" />
     <Content Include="Content\img\background-7.png" />
     <Content Include="Content\img\background-cta-3.png" />
+    <Content Include="Content\img\dockyard_logo_lower.png" />
+    <Content Include="Content\img\dockyard_logo_white.png" />
     <Content Include="Content\img\docusign-logo.png" />
     <Content Include="Content\img\docusign.png" />
     <Content Include="Content\img\fr8-service.png" />
@@ -498,8 +502,11 @@
     <Content Include="Content\img\gray-crate.png" />
     <Content Include="Content\img\green-crate.png" />
     <Content Include="Content\img\backgrounds\solution-bg.png" />
+    <Content Include="Content\img\icons\more_vert.svg" />
     <Content Include="Content\img\logo-fr8.svg" />
+    <Content Include="Content\img\Management\Alexei_Avrutin.png" />
     <Content Include="Content\img\Management\Alex_Edelstein_Round.png" />
+    <Content Include="Content\img\Management\Bahadir_Bozdag.png" />
     <Content Include="Content\img\Management\Benjamin_Black.png" />
     <Content Include="Content\css\additionalcss\bootstrap23\css\bootstrap2.3.css" />
     <Content Include="Content\css\additionalcss\bootstrap23\img\glyphicons-halflings-white.png" />
@@ -583,6 +590,7 @@
     <Content Include="Content\img\icons\vimeo.png" />
     <Content Include="Content\img\icons\youtube.png" />
     <Content Include="Content\img\Management\Alex_Edelstein.png" />
+    <Content Include="Content\img\Management\placeholder_headshot.png" />
     <Content Include="Content\img\MicrosoftExchangelogo.png" />
     <Content Include="Content\img\minus.png" />
     <Content Include="Content\img\plus.png" />
@@ -836,6 +844,7 @@
     <Content Include="Scripts\PlanBuilder\pb-interfaces.js" />
     <Content Include="Scripts\PlanBuilder\pb-resources.js" />
     <Content Include="Scripts\PlanBuilder\pb-widget.js" />
+    <Content Include="Scripts\templateCache.js" />
     <Content Include="Views\AngularTemplate\DatePicker.cshtml" />
     <Content Include="ApplicationInsights.config">
       <TransformOnBuild>true</TransformOnBuild>
@@ -863,17 +872,18 @@
     <Content Include="Content\videos\motion.webm" />
     <Content Include="Views\AngularTemplate\ContainerTransition.cshtml" />
     <Content Include="Views\AngularTemplate\SubplanHeader.cshtml" />
-    <Content Include="Views\AngularTemplate\ControlContainer.cshtml" />
+    <Content Include="Views\AngularTemplate\MetaControlContainer.cshtml" />
     <Content Include="Views\AngularTemplate\Fr8Event.cshtml" />
     <Content Include="Views\AngularTemplate\ControlList.cshtml" />
     <Content Include="Views\AngularTemplate\Empty.cshtml" />
+    <Content Include="Views\AngularTemplate\ActivityChooser.cshtml" />
+    <Content Include="Views\AngularTemplate\ActivityChooserSelectDialog.cshtml" />
+    <Content Include="Views\AngularTemplate\ActivityChooserConfigureDialog.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
-    <Content Include="Scripts\templateCache.js" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />
     <Content Include="_PowerShellScripts\HM-job-settings.job" />
     <Content Include="_PowerShellScripts\Deploy-HMAsWebJob.ps1" />
-    <Content Include="_PowerShellScripts\KillProcess.ps1" />
     <Content Include="_PowerShellScripts\SetCloudServiceSize.ps1" />
     <Content Include="_PowerShellScripts\CloneDatabase.ps1" />
     <Content Include="_PowerShellScripts\UpdateTerminalHostnameInDb.ps1" />
@@ -895,8 +905,9 @@
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\ActivityChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ControlList.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\ControlContainer.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\MetaControlContainer.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ContainerTransition.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DatePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Fr8Event.ts" />
@@ -905,7 +916,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TimePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamCrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Resizable.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\ActivityResize.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\SubplanHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Validators\ManifestDescriptionValidators.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\DateTimeFormatter.ts" />
@@ -927,6 +938,7 @@
     <TypeScriptCompile Include="Scripts\app\interfaces\ISolutionDocumentationService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\SolutionDocumentationService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UpstreamExtractor.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\ActionPicker.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamFieldChooser.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />
@@ -971,7 +983,6 @@
     <Content Include="Views\AngularTemplate\PlanDetails.cshtml" />
     <Content Include="Views\AngularTemplate\PlanForm.cshtml" />
     <Content Include="Views\AngularTemplate\PlanList.cshtml" />
-    <Content Include="Views\AngularTemplate\RoutingControl.cshtml" />
     <Content Include="Views\AngularTemplate\ShowFacts.cshtml" />
     <Content Include="Views\AngularTemplate\ShowIncidents.cshtml" />
     <Content Include="Views\AngularTemplate\TextArea.cshtml" />
@@ -1028,6 +1039,7 @@
     <Content Include="Views\Shared\_HomeNavNew.cshtml" />
     <Content Include="Views\Shared\_HomePageNew.cshtml" />
     <Content Include="Views\AngularTemplate\PlanBuilder_KioskMode.cshtml" />
+    <Content Include="Views\AngularTemplate\ActivityStream.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -1060,7 +1072,6 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FieldList.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\MappingPane.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\RoutingControl.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextArea.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextBlock.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\AccountDetailsController.ts" />

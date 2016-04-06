@@ -22,106 +22,90 @@
     @Styles.Render("~/Content/css/bower-no-cdn")
 
     <link id="ng_load_plugins_before" />
-    <link rel='shortcut icon' type='image/x-icon' href='/Content/img/favicon.ico' />
+    <link rel='shortcut icon' type='image/x-icon' href='/Content/img/favicon.ico'/>
+    <base href="/dashboard/">
 </head>
 <!-- END HEAD -->
 <!-- BEGIN BODY -->
 <!-- DOC: Apply "page-header-menu-fixed" class to set the mega menu fixed  -->
 <!-- DOC: Apply "page-header-top-fixed" class to set the top menu fixed  -->
 <body ng-controller="AppController" class="page-on-load">
-    <div ng-controller="NotifierController">
-        <toast></toast>
-    </div>
 
-    <div ng-controller="NotifierController" layout="column" style="height:500px;" ng-cloak>
-        <section layout="row" flex>
-            <md-content flex layout-padding>
-    <!-- BEGIN PAGE SPINNER -->
-    <div class="main-wrapper">
-                    <div>
+    <!-- BEGIN HEADER -->
+    <div ui-view="header" style="position:fixed;z-index: 500;top: 0px;right:0;left:0">
+        <div data-ng-include="'/AngularTemplate/Header'" data-ng-controller="HeaderController" class="page-header">
+        </div>
+    </div>
+    <!-- END HEADER -->
+
+    <div class="main-wrapper" style="padding-top: 115px;">
+        
+         <!-- BEGIN PAGE SPINNER -->
         <div ng-spinner-bar class="page-spinner-bar">
             <div class="bounce1"></div>
             <div class="bounce2"></div>
             <div class="bounce3"></div>
-        </div>
+        </div>  
         <!-- END PAGE SPINNER -->
-        <!-- BEGIN HEADER -->
-    <div ui-view="header">
-        <div data-ng-include="'/AngularTemplate/Header'" data-ng-controller="HeaderController" class="page-header">
-        </div>
-    </div>
 
-        <!-- END HEADER -->
-
-        <div class="clearfix">
-        </div>
+        <div class="clearfix"> </div>
 
         <!-- BEGIN CONTAINER -->
         <div class="page-container" long-ajax-cursor>
-
             <!-- BEGIN PAGE CONTENT -->
             <div class="page-content">
                 <div class="container-fluid">
-                    <!-- BEGIN ACTUAL CONTENT -->
-                    <div ui-view>
+                    <div style="display:flex">
+                        <div class="flexable-content" resizable r-directions="['right']" >
+                            <div style="min-height:700px">
+                                <!-- BEGIN ACTUAL CONTENT -->
+                                <div ui-view>
+
+                                </div>
+                                <!-- END ACTUAL CONTENT -->
+                            </div>  
+                        </div>
+                        <div class="activity-stream-flex">
+                            <div data-ng-include="'/AngularTemplate/ActivityStream'" ng-controller="NotifierController" style="right:0px;position:absolute; width:100%; height:100%">
+
+                            </div>
+                        </div>
                     </div>
-                    <!-- END ACTUAL CONTENT -->
                 </div>
             </div>
             <!-- END PAGE CONTENT -->
-
         </div>
     </div>
-                </div>
+
     <!-- END CONTAINER -->
-    <div ui-view="footer">
-    <div data-ng-include="'/AngularTemplate/Footer'" sticky-footer=".main-wrapper" data-ng-controller="FooterController">
+    <!-- BEGIN FOOTER -->
+    <div ui-view="footer" style="position:relative">
+        <div data-ng-include="'/AngularTemplate/Footer'" sticky-footer=".main-wrapper" data-ng-controller="FooterController"></div>
     </div>
-    </div>
-<!-- BEGIN FOOTER -->
-    
     <!-- END FOOTER -->
-            </md-content>
-            <md-sidenav class="md-sidenav-right md-whiteframe-4dp" md-component-id="right" md-is-locked-open="true" md-disable-backdrop>
-                <md-toolbar style="background-color:rgb(38, 166, 154)" class="md-theme-light">
-                    <h1 class="md-toolbar-tools">Activity</h1>
-                </md-toolbar>
-                <md-content layout-padding>
-                    <md-list flex>
-                        <md-list-item class="secondary-button-padding" ng-repeat="event in eventList">
-                            <fr8-event style="margin-top:10px;margin-bottom:10px;" event="event.data" type="{{event.type}}"></fr8-event>
-                            <md-divider></md-divider>
-                        </md-list-item>
-                    </md-list>
-                </md-content>
-            </md-sidenav>
             
-        </section>
-    </div>
-
-
-
-    
-
     <!-- BEGIN JAVASCRIPTS(Load javascripts at bottom, this will reduce page load time) -->
     <!-- BEGIN CORE JQUERY PLUGINS -->
     <!--[if lt IE 9]>
     <script src="/Content/templates/metronic/assets/global/plugins/respond.min.js"></script>
     <script src="/Content/templates/metronic/assets/global/plugins/excanvas.min.js"></script>
     <![endif]-->
-@(Html.IsDebug() ? Html.Partial("_AngularAppScripts") : Html.Partial("CDN/_AngularAppScripts"))
+    @(Html.IsDebug() ? Html.Partial("_AngularAppScripts") : Html.Partial("CDN/_AngularAppScripts"))
 
-<script type="text/javascript">
+    <script type="text/javascript">
         /* Init Metronic's core jquery plugins and layout scripts */
         $(document).ready(function () {
             Metronic.init(); // Run metronic theme
             Metronic.setAssetsPath('/Content/templates/metronic/assets/'); // Set the assets folder path
         });
+
+       
     </script>
     <script type="text/javascript">
         window.analytics = window.analytics || [], window.analytics.methods = ["identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off", "trackLink", "trackForm", "trackClick", "trackSubmit"], window.analytics.factory = function (t) { return function () { var a = Array.prototype.slice.call(arguments); return a.unshift(t), window.analytics.push(a), window.analytics } }; for (var i = 0; i < window.analytics.methods.length; i++) { var key = window.analytics.methods[i]; window.analytics[key] = window.analytics.factory(key) } window.analytics.load = function (t) { if (!document.getElementById("analytics-js")) { var a = document.createElement("script"); a.type = "text/javascript", a.id = "analytics-js", a.async = !0, a.src = ("https:" === document.location.protocol ? "https://" : "http://") + "cdn.segment.io/analytics.js/v1/" + t + "/analytics.min.js"; var n = document.getElementsByTagName("script")[0]; n.parentNode.insertBefore(a, n) } }, window.analytics.SNIPPET_VERSION = "2.0.9",
         window.analytics.load("@(new ConfigRepository().Get("SegmentWriteKey"))");
         window.analytics.page('Admin');
+
     </script>
     <!-- END JAVASCRIPTS -->
 </body>

@@ -18,6 +18,7 @@ using TerminalBase.Infrastructure;
 using Data.Constants;
 using terminalDocuSign.Services.New_Api;
 using Utilities.Configuration.Azure;
+using Utilities;
 
 namespace terminalDocuSign.Services
 {
@@ -34,6 +35,7 @@ namespace terminalDocuSign.Services
 
         private readonly string DevConnectName = "(dev) Fr8 Company DocuSign integration";
         private readonly string ProdConnectName = "Fr8 Company DocuSign integration";
+        private readonly string TemporaryConnectName = "int-tests-Fr8";
 
         public DocuSignPlan()
         {
@@ -68,13 +70,43 @@ namespace terminalDocuSign.Services
             string terminalUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint");
             string prodUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultProductionUrl");
             string devUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultDevUrl");
-            string publishUrl = "http://" + terminalUrl + "/terminals/terminalDocuSign/events";
 
-            if (terminalUrl.Contains(devUrl))
-                _docuSignConnect.CreateOrActivateConnect(config, DevConnectName, publishUrl);
-            else
-                if (terminalUrl.Contains(prodUrl))
-                _docuSignConnect.CreateOrActivateConnect(config, ProdConnectName, publishUrl);
+            string connectName = "";
+            string connectId = "";
+
+
+            Console.WriteLine("Connect creation: terminalUrl = {0}", terminalUrl);
+            if (!string.IsNullOrEmpty(terminalUrl))
+            {
+                if (terminalUrl.Contains(devUrl, StringComparison.InvariantCultureIgnoreCase))
+                    connectName = DevConnectName;
+                else
+                    if (terminalUrl.Contains(prodUrl, StringComparison.InvariantCultureIgnoreCase))
+                    connectName = ProdConnectName;
+
+                string publishUrl = terminalUrl + "/terminals/terminalDocuSign/events";
+
+                Console.WriteLine("Connect creation: publishUrl = {0}", publishUrl);
+
+                if (!string.IsNullOrEmpty(connectName))
+                {
+                    connectId = _docuSignConnect.CreateOrActivateConnect(config, connectName, publishUrl);
+                    Console.WriteLine("Created connect named {0} pointing to {1} with id {2}", connectName, publishUrl, connectId);
+                }
+                else
+                {
+                    // terminal has a temporary url
+                    var connectsInfo = _docuSignConnect.ListConnects(config);
+                    var connects = connectsInfo.Where(a => a.name == TemporaryConnectName).ToList();
+                    foreach (var connect in connects)
+                    {
+                        _docuSignConnect.DeleteConnect(config, connect.connectId);
+                    }
+
+                    connectId = _docuSignConnect.CreateConnect(config, TemporaryConnectName, publishUrl);
+                    Console.WriteLine("Created connect named {0} pointing to {1} with id {2}", TemporaryConnectName, publishUrl, connectId);
+                }
+            }
         }
 
         private async Task<bool> FindAndActivateExistingPlan(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)

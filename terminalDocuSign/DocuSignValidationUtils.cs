@@ -16,6 +16,8 @@ namespace terminalDocuSign
 
         public const string RecipientIsNotValidErrorMessage = "Specified value is not a valid email address";
 
+        public const string DocumentIsNotValidErrorMessage = "New document is not selected";
+
         public static bool AtLeastOneItemExists(DropDownList items)
         {
             return items != null && items.ListItems.Count > 0;

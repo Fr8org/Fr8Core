@@ -64,6 +64,19 @@ namespace terminalDocuSign.Controllers
                 MinPaneWidth = 330
             };
 
+            var useDocuSignTemplateWithNewDocument = new ActivityTemplateDTO()
+            {
+                Version = "1",
+                Name = "Use_DocuSign_Template_With_New_Document",
+                Label = "Use DocuSign Template With New Document",
+                Category = ActivityCategory.Forwarders,
+                Tags = "AggressiveReload",
+                Terminal = terminal,
+                NeedsAuthentication = true,
+                WebService = webService,
+                MinPaneWidth = 380
+            };
+
             var extractDataFromEnvelopeActionTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
@@ -160,7 +173,7 @@ namespace terminalDocuSign.Controllers
                 NeedsAuthentication = true,
                 Terminal = terminal,
                 WebService = webService,
-                MinPaneWidth = 500,
+                MinPaneWidth = 420,
                 Tags = "HideChildren"
             };
 
@@ -177,24 +190,12 @@ namespace terminalDocuSign.Controllers
                 Tags = "internal"
             };
 
-            var archiveDocusignTemplate = new ActivityTemplateDTO
-            {
-                Name = "Archive_DocuSign_Template",
-                Label = "Archive DocuSign Template",
-                Version = "1",
-                NeedsAuthentication = true,
-                Category = ActivityCategory.Solution,
-                WebService = webService,
-                Terminal = terminal,
-                Tags = "internal"
-            };
-
-
             var actionList = new List<ActivityTemplateDTO>()
             {
                 waitForDocusignEventActionTemplate,
                 extractDataFromEnvelopeActionTemplate,
                 sendDocuSignEnvelopeActionTemplate,
+                useDocuSignTemplateWithNewDocument,
                 recordDocuSignEvents,
                 mailMergeActionTemplate,
                 collectFormDataSolution,
@@ -202,7 +203,6 @@ namespace terminalDocuSign.Controllers
                 queryDocusign,
                 generateDocusignReport,
                 searchDocusignHistory,
-                archiveDocusignTemplate,
                 getDocuSignTemplateActionTemplate
             };
 

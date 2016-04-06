@@ -36,7 +36,7 @@ app.directive('blockIf', function () {
             var expr = attrs['blockIf'];
             _scope.$watch(expr, function (value) {
                 if (attrs['class'] === "plan-loading-message" && _scope.$eval(expr) == null) {
-                    Metronic.blockUI({ target: _element, textOnly: true });
+                    Metronic.blockUI({ target: _element, animate: true });
                 }
                 else if (_scope.$eval(expr) === true) {
                     Metronic.blockUI({ target: _element, animate: true });
