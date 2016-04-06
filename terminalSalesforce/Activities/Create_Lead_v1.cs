@@ -55,7 +55,7 @@ namespace terminalSalesforce.Actions
             {
                 crateStorage.Clear();
 
-                AddTextSourceControlForDTO<LeadDTO>(
+                AddTextSourceControlForDTO<Lead>(
                     crateStorage,
                     "",
                     addRequestConfigEvent: true,
@@ -111,8 +111,8 @@ namespace terminalSalesforce.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var lead = _salesforce.CreateSalesforceDTO<LeadDTO>(curActivityDO, payloadCrates);
-            var result = await _salesforce.CreateObject(lead, "Lead", authTokenDO);
+            var lead = _salesforce.CreateSalesforceDTO<Lead>(curActivityDO, payloadCrates);
+            var result = await _salesforce.CreateObject(lead, authTokenDO);
 
             if (!string.IsNullOrEmpty(result))
             {

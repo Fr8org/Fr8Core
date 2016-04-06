@@ -1,25 +1,34 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Newtonsoft.Json.Linq;
-using Salesforce.Common.Models;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace terminalSalesforce.Infrastructure
+﻿namespace terminalSalesforce.Infrastructure
 {
-    public class Contact : SalesforceObject
+    public class Contact : ISalesforceObject
     {
-        protected override bool ValidateObject(object salesforceObject)
+        public string FirstName { get; set; }
+
+        public string LastName { get; set; }
+
+        public string MobilePhone { get; set; }
+
+        public string Email { get; set; }
+        public string AccountId { get; set; }
+        public string Title { get; set; }
+        public string Department { get; set; }
+        public string HomePhone { get; set; }
+        public string OtherPhone { get; set; }
+        public string Fax { get; set; }
+        public string MailingStreet { get; set; }
+        public string MailingCity { get; set; }
+        public string MailingState { get; set; }
+        public string MailingPostalCode { get; set; }
+        public string MailingCountry { get; set; }
+        public string OtherStreet { get; set; }
+        public string OtherCity { get; set; }
+        public string OtherState { get; set; }
+        public string OtherPostalCode { get; set; }
+        public string OtherCountry { get; set; }
+        string ISalesforceObject.SalesforceObjectType => "Contact";
+        bool ISalesforceObject.Validate()
         {
-            //Contact object related validation
-            var contactObject = (ContactDTO) salesforceObject;
-
-            if (contactObject == null || string.IsNullOrEmpty(contactObject.LastName))
-            {
-                return false;
-            }
-
-            return true;
+            return !string.IsNullOrEmpty(LastName);
         }
     }
 }

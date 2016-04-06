@@ -1,24 +1,29 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Newtonsoft.Json.Linq;
-using Salesforce.Common.Models;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace terminalSalesforce.Infrastructure
+﻿namespace terminalSalesforce.Infrastructure
 {
-    public class Account : SalesforceObject
+    public class Account : ISalesforceObject
     {
-        protected override bool ValidateObject(object salesforceObject)
-        {
-            //Account object related validation
-            var accountObject = (AccountDTO) salesforceObject;
-            if (accountObject == null || string.IsNullOrEmpty(accountObject.Name))
-            {
-                return false;
-            }
+        public string Name { get; set; }
+        public string AccountNumber { get; set; }
+        public string Phone { get; set; }
+        public string Site { get; set; }
+        public string Fax { get; set; }
+        public string Website { get; set; }
+        public string BillingStreet { get; set; }
+        public string BillingCity { get; set; }
+        public string BillingState { get; set; }
+        public string BillingPostalCode { get; set; }
+        public string BillingCountry { get; set; }
+        public string ShippingStreet { get; set; }
+        public string ShippingCity { get; set; }
+        public string ShippingState { get; set; }
+        public string ShippingPostalCode { get; set; }
+        public string ShippingCountry { get; set; }
 
-            return true;
+        string ISalesforceObject.SalesforceObjectType => "Account";
+
+        bool ISalesforceObject.Validate()
+        {
+            return !string.IsNullOrEmpty(Name);
         }
     }
 }

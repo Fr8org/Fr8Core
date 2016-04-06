@@ -55,7 +55,7 @@ namespace terminalSalesforce.Actions
             {
                 crateStorage.Clear();
 
-                AddTextSourceControlForDTO<ContactDTO>(
+                AddTextSourceControlForDTO<Contact>(
                     crateStorage,
                     "",
                     requestUpstream: true
@@ -101,8 +101,8 @@ namespace terminalSalesforce.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var contact = _salesforce.CreateSalesforceDTO<ContactDTO>(curActivityDO, payloadCrates);
-            var result = await _salesforce.CreateObject(contact, "Contact", authTokenDO);
+            var contact = _salesforce.CreateSalesforceDTO<Contact>(curActivityDO, payloadCrates);
+            var result = await _salesforce.CreateObject(contact, authTokenDO);
 
             if (!string.IsNullOrEmpty(result))
             {

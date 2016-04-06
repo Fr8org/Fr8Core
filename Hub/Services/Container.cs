@@ -253,9 +253,9 @@ namespace Hub.Services
                         case ActivityResponse.Success:
                         case ActivityResponse.ReProcessChildren:
                         case ActivityResponse.Null://let's assume this is success for now
-
-
+                        case ActivityResponse.SkipChildren:
                             break;
+
                         case ActivityResponse.RequestSuspend:
                             curContainerDO.ContainerState = ContainerState.Pending;
                             return;
@@ -265,11 +265,11 @@ namespace Hub.Services
                             //so we are able to show the specific error that is embedded inside the container we are sending back that container to client
                             ErrorDTO error = activityResponseDTO.TryParseErrorDTO(out error) ? error : null;
                             throw new ErrorResponseException(Mapper.Map<ContainerDO, ContainerDTO>(curContainerDO), error?.Message);
+
                         case ActivityResponse.RequestTerminate:
                             //FR-2163 - If action response requests for termination, we make the container as Completed to avoid unwanted errors.
                             curContainerDO.ContainerState = ContainerState.Completed;
                             EventManager.ProcessingTerminatedPerActivityResponse(curContainerDO, ActivityResponse.RequestTerminate);
-
                             return;
 
                         case ActivityResponse.JumpToActivity:

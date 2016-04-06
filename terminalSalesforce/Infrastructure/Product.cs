@@ -1,26 +1,33 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Newtonsoft.Json.Linq;
-using Salesforce.Common.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace terminalSalesforce.Infrastructure
+﻿namespace terminalSalesforce.Infrastructure
 {
-    public class Product : SalesforceObject
+    public class Product : ISalesforceObject
     {
-        protected override bool ValidateObject(object salesforceObject)
-        {
-            //Account object related validation
-            var productObject = (ProductDTO)salesforceObject;
-            if (productObject == null || string.IsNullOrEmpty(productObject.Name))
-            {
-                return false;
-            }
+        public bool CanUseQuantitySchedule { get; set; }
+        public bool CanUseRevenueSchedule { get; set; }
+        public string ConnectionReceivedId { get; set; }
+        public string ConnectionSentId { get; set; }
+        public string CurrencyIsoCode { get; set; }
+        public string DefaultPrice { get; set; }
+        public string Description { get; set; }
+        public string Family { get; set; }
+        public bool IsActive { get; set; }
+        public bool IsDeleted { get; set; }
+        public string LastReferencedDate { get; set; }
+        public string LastViewedDate { get; set; }
+        public string Name { get; set; }
+        public int NumberOfQuantityInstallments { get; set; }
+        public int NumberOfRevenueInstallments { get; set; }
+        public string ProductCode { get; set; }
+        public string QuantityInstallmentPeriod { get; set; }
+        public string QuantityScheduleType { get; set; }
+        public bool RecalculateTotalPrice { get; set; }
+        public string RevenueInstallmentPeriod { get; set; }
+        public string RevenueScheduleType { get; set; }
+        string ISalesforceObject.SalesforceObjectType => "Product2";
 
-            return true;
+        bool ISalesforceObject.Validate()
+        {
+            return !string.IsNullOrEmpty(Name);
         }
     }
 }

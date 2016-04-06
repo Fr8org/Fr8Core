@@ -1,26 +1,27 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Newtonsoft.Json.Linq;
-using Salesforce.Common.Models;
-using System.Collections.Generic;
-using System.Linq;
-
-namespace terminalSalesforce.Infrastructure
+﻿namespace terminalSalesforce.Infrastructure
 {
-    public class Lead : SalesforceObject
+    public class Lead : ISalesforceObject
     {
-        protected override bool ValidateObject(object salesforceObject)
+        public string Id { get; set; }
+        public string FirstName { get; set; }
+        public string LastName { get; set; }
+        public string Company { get; set; }
+        public string Title { get; set; }
+        public string Phone { get; set; }
+        public string MobilePhone { get; set; }
+        public string Fax { get; set; }
+        public string Email { get; set; }
+        public string Website { get; set; }
+        public string Street { get; set; }
+        public string City { get; set; }
+        public string State { get; set; }
+        public string PostalCode { get; set; }
+        public string Country { get; set; }
+        public string Description { get; set; }
+        string ISalesforceObject.SalesforceObjectType => "Lead";
+        bool ISalesforceObject.Validate()
         {
-            //Lead object related validation
-            var leadObject = (LeadDTO) salesforceObject;
-
-            if (leadObject == null || string.IsNullOrEmpty(leadObject.LastName) ||
-                string.IsNullOrEmpty(leadObject.Company))
-            {
-                return false;
-            }
-
-            return true;
+            return !string.IsNullOrEmpty(LastName) && !string.IsNullOrEmpty(Company);
         }
     }
 }

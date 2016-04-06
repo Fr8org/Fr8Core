@@ -206,12 +206,16 @@ namespace terminalSalesforce.Activities
 
         private async Task ConfigureSolutionActivityUi()
         {
-            //If Salesforce object is empty or is changed then we should clear filters as they are no longer applicable
             var selectedObject = ConfigurationControls.SalesforceObjectSelector.selectedKey;
-            if (string.IsNullOrEmpty(selectedObject) || selectedObject != this[nameof(ActivityUi.SalesforceObjectSelector)])
+            if (string.IsNullOrEmpty(selectedObject))
             {
                 CurrentActivityStorage.RemoveByLabel(QueryFilterCrateLabel);
-                this[nameof(ActivityUi.SalesforceObjectSelector)] = null;
+                this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
+                return;
+            }
+            //If the same object is selected we shouldn't do anything
+            if (selectedObject == this[nameof(ActivityUi.SalesforceObjectSelector)])
+            {
                 return;
             }
             //Prepare new query filters from selected object properties
@@ -219,7 +223,7 @@ namespace terminalSalesforce.Activities
             var queryFilterCrate = Crate<StandardQueryFieldsCM>.FromContent(
                 QueryFilterCrateLabel,
                 new StandardQueryFieldsCM(selectedObjectProperties.OrderBy(x => x.Key)
-                                                                .Select(x => new QueryFieldDTO(x.Key, x.Value, QueryFieldType.String, new TextBox { Name = x.Key }))),
+                                                                  .Select(x => new QueryFieldDTO(x.Key, x.Value, QueryFieldType.String, new TextBox { Name = x.Key }))),
                 AvailabilityType.Configuration);
             CurrentActivityStorage.ReplaceByLabel(queryFilterCrate);
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;

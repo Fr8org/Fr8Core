@@ -17,14 +17,14 @@ using Newtonsoft.Json.Linq;
 using Salesforce.Chatter.Models;
 using StructureMap;
 using Data.States;
+using System.Linq.Expressions;
 
 namespace terminalSalesforce.Services
 {
     public class SalesforceManager : ISalesforceManager
     {
         private Authentication _authentication = new Authentication();
-        private SalesforceObjectFactory salesforceObjectFactory = new SalesforceObjectFactory();
-        private SalesforceObject _salesforceObject;
+
         private ICrateManager _crateManager;
 
         public SalesforceManager()
@@ -35,94 +35,42 @@ namespace terminalSalesforce.Services
         /// <summary>
         /// Creates Salesforce object
         /// </summary>
-        public async Task<string> CreateObject<T>(T newObject, string salesforceObjectName, AuthorizationTokenDO authTokenDO)
+        public async Task<string> CreateObject<T>(T newObject, AuthorizationTokenDO authTokenDO) where T : ISalesforceObject
         {
-            _salesforceObject = GetSalesforceObject(salesforceObjectName);
-            SuccessResponse createCallResponse = null;
-
-            var forceClient = (ForceClient)CreateSalesforceClient(typeof(ForceClient), authTokenDO);
-
-            try
+            if (newObject == null)
             {
-                createCallResponse = await _salesforceObject.Create(newObject, salesforceObjectName, forceClient);
+                throw new ArgumentNullException(nameof(newObject));
             }
-            catch (ForceException salesforceException)
-            {
-                if (salesforceException.Message.Equals("Session expired or invalid"))
-                {
-                    forceClient = (ForceClient)CreateSalesforceClient(typeof(ForceClient), authTokenDO, true);
-                    createCallResponse = await _salesforceObject.Create(newObject, salesforceObjectName, forceClient);
-                }
-                else
-                {
-                    throw salesforceException;
-                }
-            }
-
-            return string.IsNullOrEmpty(createCallResponse.Id) ? string.Empty : createCallResponse.Id;
+            var result = await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.CreateAsync(newObject.SalesforceObjectType, newObject), authTokenDO);
+            return result?.Id ?? string.Empty;
         }
-
         /// <summary>
         /// Gets Fields of the given Salesforce Object Name
         /// </summary>
         public async Task<IList<FieldDTO>> GetFields(string salesforceObjectName, AuthorizationTokenDO authTokenDO)
         {
-            _salesforceObject = GetSalesforceObject(salesforceObjectName);
-            var forceClient = (ForceClient)CreateSalesforceClient(typeof(ForceClient), authTokenDO);
-
-            IList<FieldDTO> objectFields = null;
-            try
+            var responce = (JObject)await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.DescribeAsync<object>(salesforceObjectName), authTokenDO);
+            var objectFields = new List<FieldDTO>();
+            JToken resultFields;
+            if (responce.TryGetValue("fields", out resultFields) && resultFields is JArray)
             {
-                objectFields = await _salesforceObject.GetFields(salesforceObjectName, forceClient);
+                objectFields.AddRange(resultFields.Select(x => new FieldDTO(x.Value<string>("name"), x.Value<string>("label"), AvailabilityType.RunTime)));
             }
-            catch (ForceException salesforceException)
-            {
-                if (salesforceException.Message.Equals("Session expired or invalid"))
-                {
-                    forceClient = (ForceClient)CreateSalesforceClient(typeof(ForceClient), authTokenDO, true);
-                    objectFields = await _salesforceObject.GetFields(salesforceObjectName, forceClient);
-                }
-                else
-                {
-                    throw salesforceException;
-                }
-            }
-
             return objectFields;
         }
 
-        /// <summary>
-        /// Gets Salesforce objects by given query. The query will be executed agains the given Salesforce Object Name
-        /// </summary>
-        public async Task<StandardPayloadDataCM> GetObjectByQuery(
-            string salesforceObjectName, IEnumerable<string> fields, string conditionQuery, AuthorizationTokenDO authTokenDO)
+        public async Task<StandardTableDataCM> QueryObjects(string salesforceObjectName, IEnumerable<string> fields, string conditionQuery, AuthorizationTokenDO authTokenDO)
         {
-            _salesforceObject = GetSalesforceObject(salesforceObjectName);
-            var forceClient = (ForceClient)CreateSalesforceClient(typeof(ForceClient), authTokenDO);
-
-            IList<PayloadObjectDTO> resultObjects = null;
-            try
+            var selectQuery = string.Format("select {0} from {1}", string.Join(", ", fields), salesforceObjectName);
+            if (!string.IsNullOrEmpty(conditionQuery))
             {
-                resultObjects = await _salesforceObject.GetByQuery(salesforceObjectName, fields, conditionQuery, forceClient);
+                selectQuery += " where " + conditionQuery;
             }
-            catch (ForceException salesforceException)
-            {
-                if (salesforceException.Message.Equals("Session expired or invalid"))
-                {
-                    forceClient = (ForceClient)CreateSalesforceClient(typeof(ForceClient), authTokenDO, true);
-                    resultObjects = await _salesforceObject.GetByQuery(salesforceObjectName, fields, conditionQuery, forceClient);
-                }
-                else
-                {
-                    throw salesforceException;
-                }
-            }
-
-            return new StandardPayloadDataCM
-            {
-                ObjectType = string.Format("Salesforce {0}s", salesforceObjectName),
-                PayloadObjects = resultObjects.ToList()
-            };
+            var result = await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.QueryAsync<object>(selectQuery), authTokenDO);
+            var table = ParseQueryResult(result);
+            table.FirstRowHeaders = true;
+            table.Table.Insert(0, new TableRowDTO { Row = fields.Select(x => new FieldDTO { Key = x, Value = x }).Select(x => new TableCellDTO { Cell = x }).ToList() });
+            return table;
         }
 
         /// <summary>
@@ -131,57 +79,48 @@ namespace terminalSalesforce.Services
         /// </summary>
         public async Task<IList<FieldDTO>> GetChatters(AuthorizationTokenDO authTokenDO)
         {
-            var chatterClient = (ChatterClient)CreateSalesforceClient(typeof(ChatterClient), authTokenDO);
-
             var chatterObjectSelectPredicate = new Dictionary<string, Func<JToken, FieldDTO>>();
-            chatterObjectSelectPredicate.Add("groups",
-                group => new FieldDTO(group.Value<string>("name"), group.Value<string>("id"), Data.States.AvailabilityType.Configuration));
-            chatterObjectSelectPredicate.Add("users",
-                user => new FieldDTO(user.Value<string>("displayName"), user.Value<string>("id"), Data.States.AvailabilityType.Configuration));
-
-            try
+            chatterObjectSelectPredicate.Add("groups", x => new FieldDTO(x.Value<string>("name"), x.Value<string>("id"), AvailabilityType.Configuration));
+            chatterObjectSelectPredicate.Add("users", x => new FieldDTO(x.Value<string>("displayName"), x.Value<string>("id"), AvailabilityType.Configuration));
+            var chatterNamesList = new List<FieldDTO>();
+            //get chatter groups and persons
+            var chatterObjects = (JObject)await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.GetGroupsAsync<object>(), authTokenDO);
+            chatterObjects.Merge((JObject)await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.GetUsersAsync<object>(), authTokenDO));
+            foreach (var predicatePair in chatterObjectSelectPredicate)
             {
-                return await GetChattersAsFieldDTOsList(chatterClient, chatterObjectSelectPredicate);
-            }
-            catch (ForceException salesforceException)
-            {
-                if (salesforceException.Message.Equals("Session expired or invalid"))
+                JToken requiredChatterObjects;
+                if (chatterObjects.TryGetValue(predicatePair.Key, out requiredChatterObjects) && requiredChatterObjects is JArray)
                 {
-                    chatterClient = (ChatterClient)CreateSalesforceClient(typeof(ChatterClient), authTokenDO, true);
-
-                    return await GetChattersAsFieldDTOsList(chatterClient, chatterObjectSelectPredicate);
-                }
-                else
-                {
-                    throw salesforceException;
+                    chatterNamesList.AddRange(requiredChatterObjects.Select(a => predicatePair.Value(a)));
                 }
             }
+            return chatterNamesList;
         }
 
         public async Task<string> PostFeedTextToChatterObject(string feedText, string parentObjectId, AuthorizationTokenDO authTokenDO)
         {
-            var chatterClient = (ChatterClient)CreateSalesforceClient(typeof(ChatterClient), authTokenDO);
-
-            try
+            var currentChatterUser = await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.MeAsync<UserDetail>(), authTokenDO);
+            //set the message segment with the given feed text
+            var messageSegment = new MessageSegmentInput
             {
-                return await PostFeedText(feedText, parentObjectId, chatterClient);
-            }
-            catch (ForceException salesforceException)
+                Text = feedText,
+                Type = "Text"
+            };
+            //prepare the body
+            var body = new MessageBodyInput { MessageSegments = new List<MessageSegmentInput> { messageSegment } };
+            //prepare feed item input by setting the given parent object id
+            var feedItemInput = new FeedItemInput()
             {
-                if (salesforceException.Message.Equals("Session expired or invalid"))
-                {
-                    chatterClient = (ChatterClient)CreateSalesforceClient(typeof(ChatterClient), authTokenDO, true);
-
-                    return await PostFeedText(feedText, parentObjectId, chatterClient);
-                }
-                else
-                {
-                    throw salesforceException;
-                }
-            }
+                Attachment = null,
+                Body = body,
+                SubjectId = parentObjectId,
+                FeedElementType = "FeedItem"
+            };
+            var feedItem = await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.PostFeedItemAsync<FeedItem>(feedItemInput, currentChatterUser.id), authTokenDO);
+            return feedItem?.Id ?? string.Empty;
         }
 
-        public T CreateSalesforceDTO<T>(ActivityDO curActivity, PayloadDTO curPayload)
+        public T CreateSalesforceDTO<T>(ActivityDO curActivity, PayloadDTO curPayload) where T : new()
         {
             var requiredType = typeof(T);
             var requiredObject = (T)Activator.CreateInstance(requiredType);
@@ -230,108 +169,6 @@ namespace terminalSalesforce.Services
             return requiredObject;
         }
 
-        private object CreateSalesforceClient(Type requiredClientType, AuthorizationTokenDO authTokenDO, bool isRefreshTokenRequired = false)
-        {
-            AuthorizationTokenDO authTokenResult = null;
-
-            //refresh the token only when it is required for the user of this method
-            if (isRefreshTokenRequired)
-            {
-                authTokenResult = Task.Run(() => _authentication.RefreshAccessToken(authTokenDO)).Result;
-            }
-            else
-            {
-                //else consider the supplied authtoken itself
-                authTokenResult = authTokenDO;
-            }
-
-            string instanceUrl, apiVersion;
-            ParseAuthToken(authTokenResult.AdditionalAttributes, out instanceUrl, out apiVersion);
-
-            if (requiredClientType == typeof(ForceClient))
-            {
-                return new ForceClient(instanceUrl, authTokenResult.Token, apiVersion);
-            }
-
-            if (requiredClientType == typeof(ChatterClient))
-            {
-                return new ChatterClient(instanceUrl, authTokenResult.Token, apiVersion);
-            }
-
-            throw new NotSupportedException("Passed type is not supported. Supported Salesforce client objects are ForceClient and ChatterClient");
-        }
-
-        /// <summary>
-        /// Gets required type of SalesforceObject from the Factory for the given Salesforce Object Name
-        /// </summary>
-        private SalesforceObject GetSalesforceObject(string salesforceObjectName)
-        {
-            return salesforceObjectFactory.GetSalesforceObject(salesforceObjectName);
-        }
-
-        public void ParseAuthToken(string authonTokenAdditionalValues, out string instanceUrl, out string apiVersion)
-        {
-            int startIndexOfInstanceUrl = authonTokenAdditionalValues.IndexOf("instance_url");
-            int startIndexOfApiVersion = authonTokenAdditionalValues.IndexOf("api_version");
-            instanceUrl = authonTokenAdditionalValues.Substring(startIndexOfInstanceUrl, (startIndexOfApiVersion - 1 - startIndexOfInstanceUrl));
-            apiVersion = authonTokenAdditionalValues.Substring(startIndexOfApiVersion, authonTokenAdditionalValues.Length - startIndexOfApiVersion);
-            instanceUrl = instanceUrl.Replace("instance_url=", "");
-            apiVersion = apiVersion.Replace("api_version=", "");
-        }
-
-        private async Task<IList<FieldDTO>> GetChattersAsFieldDTOsList(
-                    ChatterClient chatterClient,
-                    IDictionary<string, Func<JToken, FieldDTO>> chatterObjectSelectPredicateCollection)
-        {
-            var chatterNamesList = new List<FieldDTO>();
-
-            //get chatter groups and persons
-            var chatterObjects = (JObject)await chatterClient.GetGroupsAsync<object>();
-            chatterObjects.Merge((JObject)await chatterClient.GetUsersAsync<object>());
-
-            JToken requiredChatterObjects;
-            chatterObjectSelectPredicateCollection.ToList().ForEach(selectPredicate =>
-            {
-                requiredChatterObjects = null;
-                if (chatterObjects.TryGetValue(selectPredicate.Key, out requiredChatterObjects) && requiredChatterObjects is JArray)
-                {
-                    chatterNamesList.AddRange(requiredChatterObjects.Select(a => selectPredicate.Value(a)));
-                }
-            });
-
-            return chatterNamesList;
-        }
-
-        private async Task<string> PostFeedText(string feedText, string parentObjectId, ChatterClient chatterClient)
-        {
-            var currentChatterUser = await chatterClient.MeAsync<UserDetail>();
-
-            //set the message segment with the given feed text
-            var messageSegment = new MessageSegmentInput
-            {
-                Text = feedText,
-                Type = "Text"
-            };
-
-            //prepare the body
-            var body = new MessageBodyInput { MessageSegments = new List<MessageSegmentInput> { messageSegment } };
-
-            //prepare feed item input by setting the given parent object id
-            var feedItemInput = new FeedItemInput()
-            {
-                Attachment = null,
-                Body = body,
-                SubjectId = parentObjectId,
-                FeedElementType = "FeedItem"
-            };
-
-            var feedItem = await chatterClient.PostFeedItemAsync<FeedItem>(feedItemInput, currentChatterUser.id);
-
-            return string.IsNullOrEmpty(feedItem.Id) ? string.Empty : feedItem.Id;
-        }
-
-        private IEnumerable<FieldDTO> objectDescriptions;
-
         public IEnumerable<FieldDTO> GetObjectDescriptions()
         {
             return objectDescriptions ?? (objectDescriptions = new FieldDTO[]
@@ -348,5 +185,97 @@ namespace terminalSalesforce.Services
                                                     new FieldDTO("Solution") { Availability = AvailabilityType.Configuration},
                                                 });
         }
+
+        public async Task<bool> DeleteObject(string salesforceObjectName, string objectId, AuthorizationTokenDO authTokenDO)
+        {
+            return await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.DeleteAsync(salesforceObjectName, objectId), authTokenDO);
+        }
+
+        #region Implemetation details
+        private StandardTableDataCM ParseQueryResult(QueryResult<object> queryResult)
+        {
+            var parsedObjects = new List<JObject>();
+            if (queryResult.Records.Count > 0)
+            {
+                parsedObjects = queryResult.Records.Select(record => ((JObject)record)).ToList();
+            }
+            return new StandardTableDataCM
+            {
+                Table = parsedObjects.Select(x => x.Properties()
+                                            .Where(y => y.Value.Type == JTokenType.String && !string.IsNullOrEmpty(y.Value.Value<string>()))
+                                            .Select(y => new FieldDTO
+                                            {
+                                                Key = y.Name,
+                                                Value = y.Value.Value<string>()
+                                            })
+                                            .Select(y => new TableCellDTO { Cell = y }))
+                                     .Select(x => new TableRowDTO { Row = x.ToList() })
+                                     .ToList()
+            };
+        }
+
+        private async Task<TResult> ExecuteClientOperationWithTokenRefresh<TClient, TResult>(Func<AuthorizationTokenDO, bool, Task<TClient>> clientProvider,
+                                                                                             Func<TClient, Task<TResult>> operation,
+                                                                                             AuthorizationTokenDO authTokenDO)
+        {
+            var client = await clientProvider(authTokenDO, false);
+            var retried = false;
+            Execution:
+            try
+            {
+                return await operation(client);
+            }
+            catch (ForceException ex)
+            {
+                if (ex.Message.Equals("Session expired or invalid") && !retried)
+                {
+                    retried = true;
+                    client = await clientProvider(authTokenDO, true);
+                    goto Execution;
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
+        private async Task<ForceClient> CreateForceClient(AuthorizationTokenDO authTokenDO, bool isRefreshTokenRequired = false)
+        {
+            authTokenDO = isRefreshTokenRequired ? await _authentication.RefreshAccessToken(authTokenDO) : authTokenDO;
+            var salesforceToken = ToSalesforceToken(authTokenDO);
+            return new ForceClient(salesforceToken.InstanceUrl, salesforceToken.Token, salesforceToken.ApiVersion);
+        }
+
+        private async Task<ChatterClient> CreateChatterClient(AuthorizationTokenDO authTokenDO, bool isRefreshTokenRequired = false)
+        {
+            authTokenDO = isRefreshTokenRequired ? await _authentication.RefreshAccessToken(authTokenDO) : authTokenDO;
+            var salesforceToken = ToSalesforceToken(authTokenDO);
+            return new ChatterClient(salesforceToken.InstanceUrl, salesforceToken.Token, salesforceToken.ApiVersion);
+        }
+
+        private IEnumerable<FieldDTO> objectDescriptions;
+
+        private SalesforceAuthToken ToSalesforceToken(AuthorizationTokenDO ourToken)
+        {
+            var startIndexOfInstanceUrl = ourToken.AdditionalAttributes.IndexOf("instance_url");
+            var startIndexOfApiVersion = ourToken.AdditionalAttributes.IndexOf("api_version");
+            var instanceUrl = ourToken.AdditionalAttributes.Substring(startIndexOfInstanceUrl, (startIndexOfApiVersion - 1 - startIndexOfInstanceUrl));
+            var apiVersion = ourToken.AdditionalAttributes.Substring(startIndexOfApiVersion, ourToken.AdditionalAttributes.Length - startIndexOfApiVersion);
+            instanceUrl = instanceUrl.Replace("instance_url=", "");
+            apiVersion = apiVersion.Replace("api_version=", "");
+            return new SalesforceAuthToken { ApiVersion = apiVersion, InstanceUrl = instanceUrl, Token = ourToken.Token };
+        }
+
+        private struct SalesforceAuthToken
+        {
+            public string Token { get; set; }
+
+            public string InstanceUrl { get; set; }
+
+            public string ApiVersion { get; set; }
+        }
+
+        #endregion
     }
 }

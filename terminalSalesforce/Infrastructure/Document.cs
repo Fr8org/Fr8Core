@@ -1,26 +1,29 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Newtonsoft.Json.Linq;
-using Salesforce.Common.Models;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-
-namespace terminalSalesforce.Infrastructure
+﻿namespace terminalSalesforce.Infrastructure
 {
-    public class Document : SalesforceObject
+    public class Document : ISalesforceObject
     {
-        protected override bool ValidateObject(object salesforceObject)
+        public string AuthorId { get; set; }
+        public string Body { get; set; }
+        public int BodyLength { get; set; }
+        public string ContentType { get; set; }
+        public string Description { get; set; }
+        public string DeveloperName { get; set; }
+        public string FolderId { get; set; }
+        public bool IsBodySearchable { get; set; }
+        public bool IsDeleted { get; set; }
+        public bool IsInternalUseOnly { get; set; }
+        public bool IsPublic { get; set; }
+        public string Keywords { get; set; }
+        public string LastReferencedDate { get; set; }
+        public string LastViewedDate { get; set; }
+        public string Name { get; set; }
+        public string NamespacePrefix { get; set; }
+        public string Type { get; set; }
+        public string Url { get; set; }
+        string ISalesforceObject.SalesforceObjectType => "Document";
+        bool ISalesforceObject.Validate()
         {
-            //Account object related validation
-            var documentObject = (DocumentDTO)salesforceObject;
-            if (documentObject == null || string.IsNullOrEmpty(documentObject.Name))
-            {
-                return false;
-            }
-
-            return true;
+            return !string.IsNullOrEmpty(Name);
         }
     }
 }

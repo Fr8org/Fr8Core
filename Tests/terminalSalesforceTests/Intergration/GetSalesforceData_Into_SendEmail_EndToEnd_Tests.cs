@@ -3,11 +3,7 @@ using HealthMonitor.Utility;
 using NUnit.Framework;
 using System.Threading.Tasks;
 using Data.Interfaces.DataTransferObjects;
-using System.Web.Http;
-using StructureMap;
-using Data.Interfaces;
 using System.Linq;
-using Data.Entities;
 using System.Collections.Generic;
 using Hub.Managers;
 using Data.Interfaces.Manifests;
@@ -15,11 +11,12 @@ using Data.Crates;
 using Data.Control;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using terminalSalesforce.Actions;
 
 namespace terminalSalesforceTests.Intergration
 {
     [Explicit]
-    [Category("terminalDocuSignTests.Integration")]
+    [Category("terminalSalesforceTests.Integration")]
     public class GetSalesforceData_Into_SendEmail_EndToEnd_Tests : BaseHubIntegrationTest
     {
         public override string TerminalName
@@ -43,17 +40,17 @@ namespace terminalSalesforceTests.Intergration
             {
                 //select Lead
                 var configControls = updatableStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
-                (configControls.Content.Controls.Single(c => c.Name.Equals("WhatKindOfData")) as DropDownList).selectedKey = "Lead";
+                (configControls.Content.Controls.Single(c => c.Name.Equals(nameof(Get_Data_v1.ActivityUi.SalesforceObjectSelector))) as DropDownList).selectedKey = "Lead";
 
                 //give condition
                 var conditionQuery = new List<FilterConditionDTO>() { new FilterConditionDTO { Field = "Name", Operator = "eq", Value = "Marty McSorely" } };
-                (configControls.Content.Controls.Single(c => c.Name.Equals("SelectedQuery")) as QueryBuilder).Value = JsonConvert.SerializeObject(conditionQuery);
+                (configControls.Content.Controls.Single(c => c.Name.Equals(nameof(Get_Data_v1.ActivityUi.SalesforceObjectFilter))) as QueryBuilder).Value = JsonConvert.SerializeObject(conditionQuery);
             }
 
             var authToken = (await HttpGetAsync<List<ManageAuthToken_Terminal>>(_baseUrl + "ManageAuthToken")).Single(a => a.Name.Equals("terminalSalesforce"));
             getData.AuthToken = new AuthorizationTokenDTO { Id = authToken.AuthTokens[0].Id.ToString() };
             getData = await ConfigureActivity(getData);
-            Assert.IsTrue(getData.CrateStorage.Crates.Any(c => c.Label.Equals("Salesforce Object Fields")), 
+            Assert.IsTrue(getData.CrateStorage.Crates.Any(c => c.Label.Equals(Get_Data_v1.SalesforceObjectFieldsCrateLabel)), 
                           "Follow up configuration is not getting any Salesforce Object Fields");
             Debug.WriteLine("Get Lead using condition is successful in the Follow Up Configure");
 

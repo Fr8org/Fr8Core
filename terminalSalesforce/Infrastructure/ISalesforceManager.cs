@@ -1,29 +1,27 @@
 ﻿using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using Data.Interfaces.Manifests;
-using Salesforce.Force;
 
 namespace terminalSalesforce.Infrastructure
 {
     public interface ISalesforceManager
     {
-        Task<string> CreateObject<T>(T salesforceObject, string salesforceObjectType, AuthorizationTokenDO authTokenDO);
+        Task<string> CreateObject<T>(T salesforceObject, AuthorizationTokenDO authTokenDO) where T : ISalesforceObject;
 
         Task<IList<FieldDTO>> GetFields(string salesforceObjectName, AuthorizationTokenDO authTokenDO);
 
-        Task<StandardPayloadDataCM> GetObjectByQuery(string salesforceObjectName, IEnumerable<string> fields, string conditionQuery, AuthorizationTokenDO authTokenDO);
+        Task<StandardTableDataCM> QueryObjects(string salesforceObjectName, IEnumerable<string> fields, string conditionQuery, AuthorizationTokenDO authTokenDO);
 
-        T CreateSalesforceDTO<T>(ActivityDO curActivity, PayloadDTO curPayload);
+        T CreateSalesforceDTO<T>(ActivityDO curActivity, PayloadDTO curPayload) where T : new();
 
         Task<IList<FieldDTO>> GetChatters(AuthorizationTokenDO authTokenDO);
 
         Task<string> PostFeedTextToChatterObject(string feedText, string parentObjectId, AuthorizationTokenDO authTokenDO);
 
         IEnumerable<FieldDTO> GetObjectDescriptions();
+
+        Task<bool> DeleteObject(string salesforceObjectName, string objectId, AuthorizationTokenDO authTokenDO);
     }
 }
