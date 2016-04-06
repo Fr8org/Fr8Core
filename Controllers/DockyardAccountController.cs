@@ -94,10 +94,11 @@ namespace HubWeb.Controllers
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
                         OrganizationDO organizationDO = null;
+                        bool isNewOrganization = false;
                         //check for organizations 
                         if (submittedRegData.HasOrganization && !string.IsNullOrEmpty(submittedRegData.OrganizationName))
                         {
-                            organizationDO = _organization.GetOrCreateOrganization(uow, submittedRegData.OrganizationName);
+                            organizationDO = _organization.GetOrCreateOrganization(uow, submittedRegData.OrganizationName, out isNewOrganization);
                         }
                         
                         if (!String.IsNullOrWhiteSpace(submittedRegData.GuestUserTempEmail))
@@ -108,9 +109,7 @@ namespace HubWeb.Controllers
                         }
                         else
                         {
-                            curRegStatus = _account.ProcessRegistrationRequest(uow,
-                                submittedRegData.Email.Trim(), submittedRegData.Password.Trim(),
-                                organizationDO);
+                            curRegStatus = _account.ProcessRegistrationRequest(uow, submittedRegData.Email.Trim(), submittedRegData.Password.Trim(), organizationDO, isNewOrganization);
                         }
 
                         uow.SaveChanges();

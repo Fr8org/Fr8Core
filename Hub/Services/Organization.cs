@@ -1,7 +1,10 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Repositories.Security;
 using Hub.Interfaces;
+using StructureMap;
 
 namespace Hub.Services
 {
@@ -10,28 +13,49 @@ namespace Hub.Services
         /// <summary>
         /// Check if already exists some organization with the same name and create new if not
         /// </summary>
-        /// <param name="uow"></param>
         /// <param name="organizationName"></param>
+        /// <param name="isNewOrganization"></param>
         /// <returns></returns>
-        public OrganizationDO GetOrCreateOrganization(IUnitOfWork uow, string organizationName)
+        public OrganizationDO GetOrCreateOrganization(string organizationName, out bool isNewOrganization)
         {
-            OrganizationDO organization = null;
-            //check the organization if already exist
-            if (!string.IsNullOrEmpty(organizationName))
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                OrganizationDO organization = null;
+                isNewOrganization = false;
+                //check if organization already exist
                 organization = uow.OrganizationRepository.GetQuery().FirstOrDefault(x => x.Name == organizationName);
-                if (organization == null)
-                {
-                    //create new organization
-                    organization = new OrganizationDO()
-                    {
-                        Name = organizationName
-                    };
-                    uow.OrganizationRepository.Add(organization);
-                }
-            }
 
-            return organization;
+                if (organization != null) return organization;
+                
+                //create new organization
+                organization = new OrganizationDO()
+                {
+                    Name = organizationName
+                };
+                uow.OrganizationRepository.Add(organization);
+
+                //create roles for new organization
+                uow.AspNetRolesRepository.Add(new AspNetRolesDO()
+                {
+                    Name = $"MemberOfOrganization_{organizationName}"
+                });
+
+                var adminRole = new AspNetRolesDO()
+                {
+                    Name = $"AdminOfOrganization_{organizationName}"
+                };
+                uow.AspNetRolesRepository.Add(adminRole);
+
+                isNewOrganization = true;
+                
+                uow.SaveChanges();
+
+                //link adminRole with user Privilege
+                var securityObjectStorage = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
+                securityObjectStorage
+
+                return organization;
+            }
         }
     }
 }

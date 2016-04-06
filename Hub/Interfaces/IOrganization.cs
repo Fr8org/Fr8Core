@@ -9,7 +9,8 @@ namespace Hub.Interfaces
         /// Check if already exists some organization with the same name and create new if not
         /// </summary>
         /// <param name="organizationName"></param>
+        /// <param name="isNewOrganization"></param>
         /// <returns></returns>
-        OrganizationDO GetOrCreateOrganization(IUnitOfWork uow, string organizationName);
+        OrganizationDO GetOrCreateOrganization(string organizationName, out bool isNewOrganization);
     }
 }

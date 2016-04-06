@@ -213,8 +213,9 @@ namespace Hub.Services
         /// <param name="email"></param>
         /// <param name="password"></param>
         /// <param name="organizationDO">organization where the user belongs</param>
+        /// <param name="isNewOrganization">In case of new created organization, make user admin of that organization</param>
         /// <returns></returns>
-        public RegistrationStatus ProcessRegistrationRequest(IUnitOfWork uow, string email, string password, OrganizationDO organizationDO)
+        public RegistrationStatus ProcessRegistrationRequest(IUnitOfWork uow, string email, string password, OrganizationDO organizationDO, bool isNewOrganization)
         {
             RegistrationStatus curRegStatus;
             Fr8AccountDO newDockyardAccountDO = null;
@@ -254,6 +255,16 @@ namespace Hub.Services
                 curRegStatus = RegistrationStatus.Successful;
             }
 
+            // make user admin of new organization
+            if (isNewOrganization)
+            {
+                var adminRole = uow.AspNetRolesRepository.GetQuery().FirstOrDefault(x=>x.Name == $"AdminOfOrganization_{organizationDO.Name}");
+                if (adminRole != null && newDockyardAccountDO != null)
+                {
+                    uow.AspNetUserRolesRepository.AssignRoleToUser(adminRole.Id, newDockyardAccountDO.Id);
+                }
+            }
+            
             uow.SaveChanges();
 
             if (newDockyardAccountDO != null)
