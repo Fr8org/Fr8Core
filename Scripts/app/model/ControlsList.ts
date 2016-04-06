@@ -234,6 +234,7 @@
         initialLabel: string;
         valueSource: string;
         textValue: string;
+        isCollapsed: boolean;
     }
 
     export class TextBlockField extends ControlDefinitionDTO {
