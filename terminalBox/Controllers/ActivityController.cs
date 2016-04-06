@@ -19,5 +19,7 @@ namespace terminalBox.Controllers
         {
             return HandleFr8Request(curTerminal, actionType, curDataDTO);
         }
+
+
     }
 }

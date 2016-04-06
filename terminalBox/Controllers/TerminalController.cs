@@ -29,15 +29,36 @@ namespace terminalBox.Controllers
             var webService = new WebServiceDTO
             {
                 Name = "Box",
-                IconPath = "/Content/icons/web_services/dropbox-icon-64x64.png"
+                IconPath = "/Content/icons/web_services/Box-logo_64x64.png"
+            };
+
+            var dummyActivity = new ActivityTemplateDTO
+            {
+                Name = "dummyActivity",
+                Label = "dummyActivity",
+                Version = "1",
+                Description = "dummyActivity",
+                Category = ActivityCategory.Forwarders,
+                Terminal = terminal,
+                NeedsAuthentication = true,
+                MinPaneWidth = 300,
+                WebService = webService
             };
 
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
-                Definition = terminal
+                Definition = terminal,
+                Activities = new List<ActivityTemplateDTO>
+                {
+                   dummyActivity
+                }
             };
 
             return Json(curStandardFr8TerminalCM);
         }
+
+
+
+
     }
 }
