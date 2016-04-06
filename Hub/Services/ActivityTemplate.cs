@@ -135,6 +135,47 @@ namespace Hub.Services
             return newTemplate;
         }
 
+        public void RemoveInactiveActivities(List<ActivityTemplateDO> activityTemplates)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //let's first get webservice of those activities
+                var webService = activityTemplates.FirstOrDefault(a => a.WebService != null)?.WebService;
+                if (webService == null)
+                {
+                    //try to load webservice from db
+                    var dummyActivity = activityTemplates.First();
+                    webService = uow.ActivityTemplateRepository.GetQuery()
+                            .FirstOrDefault(t => t.Name == dummyActivity.Name)?
+                            .WebService;
+                }
+                else
+                {
+                    webService = uow.WebServiceRepository.GetQuery().FirstOrDefault(t => t.Name == webService.Name);
+                }
+
+                //we can't operate without a common webservice for those activities
+                if (webService == null)
+                {
+                    //wow we can't do anything about this
+                    return;
+                }
+
+                var currentActivityNames = activityTemplates.Select(x => x.Name);
+                //get activities which we didn't receive as parameter
+                var inactiveActivities = uow.ActivityTemplateRepository.GetQuery().Where(t => !currentActivityNames.Contains(t.Name) && t.WebServiceId == webService.Id).ToList();
+
+                //we need to remove those inactiveActivities both from db and cache
+                foreach (var activityTemplateDO in inactiveActivities)
+                {
+                    activityTemplateDO.ActivityTemplateState = ActivityTemplateState.Inactive;
+                    _activityTemplates.Remove(activityTemplateDO.Id);
+                }
+                uow.SaveChanges();
+            }
+          
+        }
+
         public void RegisterOrUpdate(ActivityTemplateDO activityTemplateDo)
         {
             if (activityTemplateDo == null)
