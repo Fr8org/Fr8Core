@@ -88,7 +88,7 @@ module dockyard.directives {
                         if (newValue && newValue.crateStorage) {
                             var crate = crateHelper.findByManifestTypeAndLabel(
                                 newValue.crateStorage,
-                                'Standard Query Fields',
+                                'Typed Fields',
                                 'Queryable Criteria'
                             );
                     
