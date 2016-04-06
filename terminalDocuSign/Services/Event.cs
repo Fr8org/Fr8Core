@@ -61,27 +61,70 @@ namespace terminalDocuSign.Services
                 return null;
             }
 
-            //parse the external event xml payload
-            List<DocuSignEventDTO> curExternalEvents;
-            string curEnvelopeId;
-            Parse(curExternalEventPayload, out curExternalEvents, out curEnvelopeId);
 
-            //prepare the content from the external event payload
+            // Connect events come only for a single envelope
             var curDocuSignEnvelopeInfo = DocuSignConnectParser.GetEnvelopeInformation(curExternalEventPayload);
 
-            var eventReportContent = new EventReportCM
+            // transform XML structure into DocuSignEnvelopeCM_v2
+            var curDocuSingEnvelopCM = ParseXMLintoCM(curDocuSignEnvelopeInfo);
+
+
+
+
+            //Parse(curExternalEventPayload, out curExternalEvents, out curEnvelopeId);
+
+            ////prepare the content from the external event payload
+
+
+            //var eventReportContent = new EventReportCM
+            //{
+            //    EventNames = GetEventNames(curDocuSignEnvelopeInfo),
+            //    ContainerDoId = "",
+            //    EventPayload = ExtractEventPayload(curExternalEvents),
+            //    Manufacturer = "DocuSign",
+            //    ExternalAccountId = curDocuSignEnvelopeInfo.EnvelopeStatus.ExternalAccountId
+            //};
+
+
+
+
+
+
+
+
+
+
+
+            ////prepare the event report
+            //var curEventReport = Crate.FromContent("Standard Event Report", eventReportContent);
+
+            //return curEventReport;
+
+            return null;
+        }
+
+        private DocuSignEnvelopeCM_v2 ParseXMLintoCM(DocuSignEnvelopeInformation curDocuSignEnvelopeInfo)
+        {
+            var result = new DocuSignEnvelopeCM_v2();
+            result.EnvelopeId = curDocuSignEnvelopeInfo.EnvelopeStatus.EnvelopeId;
+            result.Status = curDocuSignEnvelopeInfo.EnvelopeStatus.Status;
+            result.StatusChangedDateTime = DateTime.UtcNow;
+
+            foreach (var recipient in curDocuSignEnvelopeInfo.EnvelopeStatus.RecipientStatuses.Statuses)
             {
-                EventNames = GetEventNames(curDocuSignEnvelopeInfo),
-                ContainerDoId = "",
-                EventPayload = ExtractEventPayload(curExternalEvents),
-                Manufacturer = "DocuSign",
-                ExternalAccountId = curDocuSignEnvelopeInfo.EnvelopeStatus.ExternalAccountId
-            };
+                var docusignRecipient = new DocuSignRecipientStatus()
+                {
+                     Email = recipient.Email,
+                      Name = recipient.UserName,
+                       RecipientId = recipient.Id,
+// RoleName = recipient
+ RoutingOrderId = recipient.rou
+                }
+            }
 
-            //prepare the event report
-            var curEventReport = Crate.FromContent("Standard Event Report", eventReportContent);
 
-            return curEventReport;
+
+            return result;
         }
 
         private string GetEventNames(DocuSignEnvelopeInformation curDocuSignEnvelopeInfo)
@@ -102,39 +145,39 @@ namespace terminalDocuSign.Services
             return string.Join(",", result);
         }
 
-        private void Parse(string xmlPayload, out List<DocuSignEventDTO> curEvents, out string curEnvelopeId)
-        {
-            curEvents = new List<DocuSignEventDTO>();
-            try
-            {
-                var docuSignEnvelopeInformation = DocuSignConnectParser.GetEnvelopeInformation(xmlPayload);
-                curEnvelopeId = docuSignEnvelopeInformation.EnvelopeStatus.EnvelopeId;
-                curEvents.Add(new DocuSignEventDTO
-                {
-                    ExternalEventType = DocuSignEventNames.MapEnvelopeExternalEventType(docuSignEnvelopeInformation.EnvelopeStatus.Status),
-                    EnvelopeId = docuSignEnvelopeInformation.EnvelopeStatus.EnvelopeId,
-                    DocumentName = docuSignEnvelopeInformation.EnvelopeStatus.DocumentStatuses.Statuses[0].Name,
-                    TemplateName = docuSignEnvelopeInformation.EnvelopeStatus.DocumentStatuses.Statuses[0].TemplateName,
-                    RecipientId = docuSignEnvelopeInformation.EnvelopeStatus.RecipientStatuses.Statuses[0].Id,
-                    RecipientEmail = docuSignEnvelopeInformation.EnvelopeStatus.RecipientStatuses.Statuses[0].Email,
-                    RecipientUserName = docuSignEnvelopeInformation.EnvelopeStatus.RecipientStatuses.Statuses[0].UserName,
-                    Status = docuSignEnvelopeInformation.EnvelopeStatus.Status,
-                    CreateDate = docuSignEnvelopeInformation.EnvelopeStatus.CreatedDate,
-                    SentDate = docuSignEnvelopeInformation.EnvelopeStatus.SentDate,
-                    DeliveredDate = docuSignEnvelopeInformation.EnvelopeStatus.DeliveredDate,
-                    CompletedDate = docuSignEnvelopeInformation.EnvelopeStatus.CompletedDate,
-                    HolderEmail = docuSignEnvelopeInformation.EnvelopeStatus.ExternalAccountId,
-                    EventId = DocuSignEventNames.MapEnvelopeExternalEventType(docuSignEnvelopeInformation.EnvelopeStatus.Status).ToString(),
-                    Subject = docuSignEnvelopeInformation.EnvelopeStatus.Subject
-                });
-            }
-            catch (ArgumentException)
-            {
-                _alertReporter.ImproperDocusignNotificationReceived(
-                    "Cannot extract envelopeId from DocuSign notification: UserId {0}, XML Payload\r\n{1}");
-                throw new ArgumentException();
-            }
-        }
+        //private void Parse(string xmlPayload, out curEvents, out string curEnvelopeId)
+        //{
+        //    curEvents = new List<DocuSignEventDTO>();
+        //    try
+        //    {
+        //        var docuSignEnvelopeInformation = DocuSignConnectParser.GetEnvelopeInformation(xmlPayload);
+        //        curEnvelopeId = docuSignEnvelopeInformation.EnvelopeStatus.EnvelopeId;
+        //        curEvents.Add(new DocuSignEventDTO
+        //        {
+        //            ExternalEventType = DocuSignEventNames.MapEnvelopeExternalEventType(docuSignEnvelopeInformation.EnvelopeStatus.Status),
+        //            EnvelopeId = docuSignEnvelopeInformation.EnvelopeStatus.EnvelopeId,
+        //            DocumentName = docuSignEnvelopeInformation.EnvelopeStatus.DocumentStatuses.Statuses[0].Name,
+        //            TemplateName = docuSignEnvelopeInformation.EnvelopeStatus.DocumentStatuses.Statuses[0].TemplateName,
+        //            RecipientId = docuSignEnvelopeInformation.EnvelopeStatus.RecipientStatuses.Statuses[0].Id,
+        //            RecipientEmail = docuSignEnvelopeInformation.EnvelopeStatus.RecipientStatuses.Statuses[0].Email,
+        //            RecipientUserName = docuSignEnvelopeInformation.EnvelopeStatus.RecipientStatuses.Statuses[0].UserName,
+        //            Status = docuSignEnvelopeInformation.EnvelopeStatus.Status,
+        //            CreateDate = docuSignEnvelopeInformation.EnvelopeStatus.CreatedDate,
+        //            SentDate = docuSignEnvelopeInformation.EnvelopeStatus.SentDate,
+        //            DeliveredDate = docuSignEnvelopeInformation.EnvelopeStatus.DeliveredDate,
+        //            CompletedDate = docuSignEnvelopeInformation.EnvelopeStatus.CompletedDate,
+        //            HolderEmail = docuSignEnvelopeInformation.EnvelopeStatus.ExternalAccountId,
+        //            EventId = DocuSignEventNames.MapEnvelopeExternalEventType(docuSignEnvelopeInformation.EnvelopeStatus.Status).ToString(),
+        //            Subject = docuSignEnvelopeInformation.EnvelopeStatus.Subject
+        //        });
+        //    }
+        //    catch (ArgumentException)
+        //    {
+        //        _alertReporter.ImproperDocusignNotificationReceived(
+        //            "Cannot extract envelopeId from DocuSign notification: UserId {0}, XML Payload\r\n{1}");
+        //        throw new ArgumentException();
+        //    }
+        //}
 
         private ICrateStorage ExtractEventPayload(IEnumerable<DocuSignEventDTO> curEvents)
         {
