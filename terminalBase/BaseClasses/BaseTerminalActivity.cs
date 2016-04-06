@@ -108,8 +108,20 @@ namespace TerminalBase.BaseClasses
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestLaunch);
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.LaunchAdditionalPlan);
                 operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Details = targetPlanId });
+            }
+
+            return payload;
+        }
+
+        protected PayloadDTO JumpToSubplan(PayloadDTO payload, Guid targetSubplanId)
+        {
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
+            {
+                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.JumpToSubplan);
+                operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Details = targetSubplanId });
             }
 
             return payload;

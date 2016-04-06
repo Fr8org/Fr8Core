@@ -367,8 +367,7 @@ module dockyard.controllers {
                 this.$scope.planId = $state.params.id;
             }
 
-
-            this.loadPlan();
+            this.loadPlan($state.params.viewMode);
         }
 
         
@@ -398,7 +397,7 @@ module dockyard.controllers {
                 this.setAdvancedEditingMode();
             }
             this.renderPlan(<interfaces.IPlanVM>curPlan.plan);
-            this.$state.go('planBuilder', { id: curPlan.plan.id });
+            this.$state.go('planBuilder', { id: curPlan.plan.id,  viewMode: mode });
         }
 
         /*

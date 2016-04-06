@@ -672,7 +672,7 @@ namespace Data.Control
     public enum ContainerTransitions
     {
         JumpToActivity = 0,
-        JumpToPlan,
+        LaunchAdditionalPlan,
         JumpToSubplan,
         StopProcessing,
         SuspendProcessing,

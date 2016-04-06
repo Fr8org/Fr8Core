@@ -22,7 +22,7 @@
                     <div dnd-list="group.envelopes" dnd-external-sources="true" dnd-drop="onActionDrop(group, item, index)" style="display: inline-block;">
                         <div ng-repeat="envelope in group.envelopes track by $index">
                             <div class="action" ng-class="{'solution-action': envelope.activity.activityTemplate.category==='Solution'  && mode !== 'solution'}" layout-action>
-                                <div resizable minwidth = "{{envelope.activity.activityTemplate.minPaneWidth}}" class="ap-resize">
+                                <div activity-resize minwidth = "{{envelope.activity.activityTemplate.minPaneWidth}}" class="ap-resize">
                                     <md-toolbar dnd-draggable="envelope.activity.id" class="action-header solution-action-header handle" dropdown transfer-click-configure-pane>
                                         <div class="md-toolbar-tools">
                                             <div class="action-header-icon" style="display:flex">

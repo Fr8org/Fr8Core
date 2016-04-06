@@ -183,15 +183,15 @@ namespace Hub.Services
             return operationalState != null;
         }
 
-        private async Task LoadAndRunPlan(IUnitOfWork uow, ContainerDO curContainerDO, ActivityResponseDTO activityResponseDTO, bool isSubPlan)
+        private async Task LoadAndRunPlan(IUnitOfWork uow, ContainerDO curContainerDO, ActivityResponseDTO activityResponseDTO)
         {
             ResponseMessageDTO responseMessage;
             activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
-            var curId = Guid.Parse((string)responseMessage.Details); //either Plan or Subplan depending on isSubPlan
+            var curPlanId = Guid.Parse((string)responseMessage.Details);
 
             var plan = ObjectFactory.GetInstance<IPlan>();
 
-            var planDO = uow.PlanRepository.GetById<PlanDO>(isSubPlan ? curContainerDO.PlanId : curId);
+            var planDO = uow.PlanRepository.GetById<PlanDO>(curPlanId);
             var freshContainer = uow.ContainerRepository.GetByKey(curContainerDO.Id);
 
             var crateStorage = _crate.GetStorage(freshContainer.CrateStorage);
@@ -201,15 +201,7 @@ namespace Hub.Services
 
             var payloadCrates = crateStorage.AsEnumerable().ToArray();
 
-            if (isSubPlan)
-            {
-                plan.Enqueue(planDO.Id, curId, payloadCrates);
-            }
-            else
-            {
-                plan.Enqueue(planDO.Id, payloadCrates);
-            }
-
+            plan.Enqueue(planDO.Id, payloadCrates);
         }
 
         [AuthorizeActivity(Privilege = "Edit Object", ObjectIdArgumentIndex = 1)]
@@ -279,13 +271,15 @@ namespace Hub.Services
                             curContainerDO.CurrentPlanNodeId = Guid.Parse((string)responseMessage.Details);
                             continue;
 
-                        case ActivityResponse.LaunchAdditionalPlan:
-                            await LoadAndRunPlan(uow, curContainerDO, activityResponseDTO, true);
-                            break;
+                        case ActivityResponse.JumpToSubplan:
+                            actionState = ActivityState.InitialRun;
+                            activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
+                            var subplanId = Guid.Parse((string)responseMessage.Details);
+                            curContainerDO.CurrentPlanNodeId = GetFirstActivityOfSubplan(uow, curContainerDO, subplanId);
+                            continue;
 
-                        case ActivityResponse.RequestLaunch:
-                            //hmm what to do now
-                            await LoadAndRunPlan(uow, curContainerDO, activityResponseDTO, false);
+                        case ActivityResponse.LaunchAdditionalPlan:
+                            await LoadAndRunPlan(uow, curContainerDO, activityResponseDTO);
                             break;
 
                         default:
@@ -322,6 +316,12 @@ namespace Hub.Services
                     throw;
                 }
             }
+        }
+
+        private Guid? GetFirstActivityOfSubplan(IUnitOfWork uow, ContainerDO curContainerDO, Guid subplanId)
+        {
+            var subplan = uow.PlanRepository.GetById<PlanDO>(curContainerDO.PlanId).SubPlans.FirstOrDefault(s => s.Id == subplanId);
+            return subplan?.ChildNodes.OrderBy(c => c.Ordering).FirstOrDefault()?.Id;
         }
 
         // Return the Containers of current Account

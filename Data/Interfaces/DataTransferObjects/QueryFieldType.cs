@@ -1,6 +1,6 @@
 ﻿namespace Data.Interfaces.DataTransferObjects
 {
-    public enum QueryFieldType
+    public enum FieldType
     {
         String = 1,
         Date = 2

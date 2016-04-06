@@ -487,6 +487,8 @@
     <Content Include="Content\css\shared\navbar.css" />
     <Content Include="Content\img\background-7.png" />
     <Content Include="Content\img\background-cta-3.png" />
+    <Content Include="Content\img\dockyard_logo_lower.png" />
+    <Content Include="Content\img\dockyard_logo_white.png" />
     <Content Include="Content\img\docusign-logo.png" />
     <Content Include="Content\img\docusign.png" />
     <Content Include="Content\img\fr8-service.png" />
@@ -905,7 +907,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TimePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamCrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Resizable.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\ActivityResize.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\SubplanHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Validators\ManifestDescriptionValidators.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\DateTimeFormatter.ts" />
@@ -1027,6 +1029,7 @@
     <Content Include="Views\Shared\_HomeNavNew.cshtml" />
     <Content Include="Views\Shared\_HomePageNew.cshtml" />
     <Content Include="Views\AngularTemplate\PlanBuilder_KioskMode.cshtml" />
+    <Content Include="Views\AngularTemplate\ActivityStream.cshtml" />
     <Content Include="Views\Shared\UnauthorizedAccess.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
