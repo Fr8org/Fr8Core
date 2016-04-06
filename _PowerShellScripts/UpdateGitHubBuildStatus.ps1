@@ -10,7 +10,6 @@ param(
 	[string]$tempDirectory = $env:BUILD_STAGINGDIRECTORY
 )
 
-
 $tempFileName = $tempDirectory + "\gitCommandsOutput.txt"
 $target_url = "https://fr8.visualstudio.com/DefaultCollection/fr8/_build?_a=summary&buildId=" + $buildId
 
