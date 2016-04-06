@@ -16,7 +16,7 @@ namespace Data.Interfaces.Manifests
 
         public static string StandardQueryFields
         {
-            get { return ManifestDiscovery.Default.GetManifestType<StandardQueryFieldsCM>().Type; }
+            get { return ManifestDiscovery.Default.GetManifestType<TypedFieldsCM>().Type; }
         }
 
         public static string StandardTableData

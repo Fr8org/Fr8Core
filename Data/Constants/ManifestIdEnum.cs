@@ -99,11 +99,11 @@ namespace Data.Constants
         [Display(Name = "Manifest Description")]
         ManifestDescription = 30,
 
-        [Display(Name = "Standard Query Fields")]
-        StandardQueryFields = 31,
-
         [Display(Name = "Crate Description")]
-        CrateDescription = 32
+        CrateDescription = 32,
+
+        [Display(Name = "Typed Fields")]
+        TypedFields = 33
     }
 }
 
