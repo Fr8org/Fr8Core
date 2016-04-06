@@ -9,6 +9,19 @@ param(
     [string]$tempDirectory = $env:BUILD_STAGINGDIRECTORY
 )
 
+Function DeleteBranchIfExists($buildBranchName)
+{
+	$command = "git branch --list $buildBranchName"
+	$result = Invoke-Expression $command
+
+	if (![System.String]::IsNullOrEmpty($result))
+	{
+		$command = "git branch -D $buildBranchName"
+		Invoke-Expression $command    
+	}
+
+}
+
 $tempFileName = $tempDirectory + "\gitCommandsOutput.txt"
 
 if (Test-Path $tempFileName) {
@@ -46,14 +59,7 @@ if ($LastExitCode -ne 0)
 	exit 1;
 }
 
-$command = "git branch --list $buildBranchName"
-$result = Invoke-Expression $command
-
-if (![System.String]::IsNullOrEmpty($result))
-{
-    $command = "git branch -D $buildBranchName"
-    Invoke-Expression $command    
-}
+DeleteBranchIfExists $buildBranchName
 
 Write-Host "Creating new branch $buildBranchName for build process..."
 Invoke-Expression "git checkout -b $buildBranchName 2> $tempFileName"

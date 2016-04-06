@@ -4,9 +4,11 @@
     This script is intended to avoid situation when new pull requests breaks dev branch after merge. 
 #>
 
+. "MergePRSourcesIntoDev.ps1"
+
 param(
     [string]$buildId = $env:BUILD_BUILDID,
-	[string]$branchName = $env:BUILD_SOURCEBRANCH
+	[string]$branchName = $env:BUILD_SOURCEBRANCHNAME
 )
 
 $target_url = "https://fr8.visualstudio.com/DefaultCollection/fr8/_build?_a=summary&buildId=" + $buildId
@@ -99,3 +101,5 @@ else
     UpdateGitHubBuildStatus -message $failure
 }
 
+$buildBranchName = "dev+" + $branchName
+DeleteBranchIfExists $buildBranchName
