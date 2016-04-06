@@ -4,8 +4,6 @@
     This script is intended to avoid situation when new pull requests breaks dev branch after merge. 
 #>
 
-. "MergePRSourcesIntoDev.ps1"
-
 param(
     [string]$buildId = $env:BUILD_BUILDID,
 	[string]$branchName = $env:BUILD_SOURCEBRANCHNAME
