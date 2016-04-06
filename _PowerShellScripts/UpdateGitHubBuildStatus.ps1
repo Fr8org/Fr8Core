@@ -39,7 +39,7 @@ Function DeleteBranchIfExists($buildBranchName)
 
 Function UpdateGitHubBuildStatus($message)
 {
-	$sourceVersion = Invoke-Expression "git rev-parse $branchName" | Out-String
+	$sourceVersion = Invoke-Expression "git rev-parse origin/$branchName" | Out-String
 	$sourceVersion = $sourceVersion.Trim()
 
 	if ($LastExitCode -ne 0)
