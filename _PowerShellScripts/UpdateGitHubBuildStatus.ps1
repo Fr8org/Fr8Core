@@ -5,11 +5,11 @@
 #>
 
 param(
-    [string]$buildNumber = $env:BUILD_BUILDNUMBER,
+    [string]$buildId = $env:BUILD_BUILDID,
 	[string]$branchName = $env:BUILD_SOURCEBRANCH
 )
 
-$target_url = "https://fr8.visualstudio.com/DefaultCollection/fr8/_build?_a=summary&buildId=" + $buildNumber
+$target_url = "https://fr8.visualstudio.com/DefaultCollection/fr8/_build?_a=summary&buildId=" + $buildId
 
 $failure = @{
 				state = "failure"
@@ -73,7 +73,7 @@ $basicAuthGitHub = [System.Text.Encoding]::UTF8.GetBytes($basicAuthGitHub)
 $basicAuthGitHub = [System.Convert]::ToBase64String($basicAuthGitHub)
 $headersGitHub = @{Authorization=("Basic {0}" -f $basicAuthGitHub)}
 
-[uri]$vsoRequestUri = "https://fr8.visualstudio.com/defaultcollection/fr8/_apis/build/builds/" + $buildNumber + "?api-version=2.0"
+[uri]$vsoRequestUri = "https://fr8.visualstudio.com/defaultcollection/fr8/_apis/build/builds/" + $buildId + "?api-version=2.0"
 
 $vsoResponse = try
 {
