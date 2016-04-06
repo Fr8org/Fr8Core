@@ -6,9 +6,12 @@
 
 param(
     [string]$buildId = $env:BUILD_BUILDID,
-	[string]$branchName = $env:BUILD_SOURCEBRANCHNAME
+	[string]$branchName = $env:BUILD_SOURCEBRANCHNAME,
+	[string]$tempDirectory = $env:BUILD_STAGINGDIRECTORY
 )
 
+
+$tempFileName = $tempDirectory + "\gitCommandsOutput.txt"
 $target_url = "https://fr8.visualstudio.com/DefaultCollection/fr8/_build?_a=summary&buildId=" + $buildId
 
 $failure = @{
@@ -110,6 +113,16 @@ else
     UpdateGitHubBuildStatus -message $failure
 }
 
-$buildBranchName = "dev+" + $branchName
-DeleteBranchIfExists $buildBranchName
+Invoke-Expression "git checkout $branchName 2> $tempFileName"
+if ($LastExitCode -ne 0)
+{
+	Write-Host "Failed checkout to $branchName branch."
+}
+else
+{
+	$buildBranchName = "dev+" + $branchName
+	DeleteBranchIfExists $buildBranchName
+}
+
+
 
