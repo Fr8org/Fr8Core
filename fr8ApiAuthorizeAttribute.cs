@@ -8,7 +8,7 @@ namespace HubWeb
 {
     public class Fr8ApiAuthorizeAttribute : AuthorizeAttribute
     {
-        public Fr8ApiAuthorizeAttribute(params string[] roles)
+        public Fr8ApiAuthorizeAttribute(params string[] roles)error
         {
             Roles = string.Join(",", roles);
         }
