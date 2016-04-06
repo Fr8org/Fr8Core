@@ -55,30 +55,6 @@ namespace terminalSalesforceTests.Fixtures
             }
         }
 
-        public static ActivityTemplateDO CreateSaveToSalesforceActivity()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var terminal = uow.TerminalRepository.FindOne(t => t.Name.Equals("terminalSalesforce"));
-
-                var atSaveData = new ActivityTemplateDO()
-                {
-                    Version = "1",
-                    Name = "Save_To_SalesforceDotCom",
-                    Label = "Save to Salesforce.Com",
-                    Terminal = terminal,
-                    NeedsAuthentication = true,
-                    Category = ActivityCategory.Forwarders,
-                    MinPaneWidth = 330,
-                };
-
-                uow.ActivityTemplateRepository.Add(atSaveData);
-                uow.SaveChanges();
-
-                return atSaveData;
-            }
-        }
-
         public static ActivityTemplateDTO Create_Account_v1_ActivityTemplate()
         {
             return new ActivityTemplateDTO()
