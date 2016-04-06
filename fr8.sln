@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubWeb", "HubWeb.csproj", "{F7BD7117-4F1D-4215-B338-61EBDD0D0BFE}"
 EndProject
@@ -129,6 +129,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HealthMonitor.HubLauncher", "Tests\HealthMonitor.HubLauncher\HealthMonitor.HubLauncher.csproj", "{47CA975F-1F5B-4C90-9DA1-A88C53E0760A}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalUtilities", "terminalUtilities\terminalUtilities.csproj", "{E46B602A-287B-450F-B455-5EED20C93EB7}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalBox", "terminalBox\terminalBox.csproj", "{84800565-B464-471D-8F02-1A93311C3388}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -745,6 +747,22 @@ Global
 		{E46B602A-287B-450F-B455-5EED20C93EB7}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E46B602A-287B-450F-B455-5EED20C93EB7}.Release|x86.ActiveCfg = Release|Any CPU
 		{E46B602A-287B-450F-B455-5EED20C93EB7}.Release|x86.Build.0 = Release|Any CPU
+		{84800565-B464-471D-8F02-1A93311C3388}.alexlocal|Any CPU.ActiveCfg = Release|Any CPU
+		{84800565-B464-471D-8F02-1A93311C3388}.alexlocal|Any CPU.Build.0 = Release|Any CPU
+		{84800565-B464-471D-8F02-1A93311C3388}.alexlocal|x86.ActiveCfg = Release|Any CPU
+		{84800565-B464-471D-8F02-1A93311C3388}.alexlocal|x86.Build.0 = Release|Any CPU
+		{84800565-B464-471D-8F02-1A93311C3388}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{84800565-B464-471D-8F02-1A93311C3388}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{84800565-B464-471D-8F02-1A93311C3388}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{84800565-B464-471D-8F02-1A93311C3388}.Debug|x86.Build.0 = Debug|Any CPU
+		{84800565-B464-471D-8F02-1A93311C3388}.Dev|Any CPU.ActiveCfg = Debug|Any CPU
+		{84800565-B464-471D-8F02-1A93311C3388}.Dev|Any CPU.Build.0 = Debug|Any CPU
+		{84800565-B464-471D-8F02-1A93311C3388}.Dev|x86.ActiveCfg = Debug|Any CPU
+		{84800565-B464-471D-8F02-1A93311C3388}.Dev|x86.Build.0 = Debug|Any CPU
+		{84800565-B464-471D-8F02-1A93311C3388}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{84800565-B464-471D-8F02-1A93311C3388}.Release|Any CPU.Build.0 = Release|Any CPU
+		{84800565-B464-471D-8F02-1A93311C3388}.Release|x86.ActiveCfg = Release|Any CPU
+		{84800565-B464-471D-8F02-1A93311C3388}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -789,5 +807,6 @@ Global
 		{D2638CB3-33D6-443F-BC87-E20260D3C9EF} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
 		{47CA975F-1F5B-4C90-9DA1-A88C53E0760A} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
 		{E46B602A-287B-450F-B455-5EED20C93EB7} = {9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}
+		{84800565-B464-471D-8F02-1A93311C3388} = {9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}
 	EndGlobalSection
 EndGlobal
