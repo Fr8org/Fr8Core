@@ -94,7 +94,7 @@ namespace terminalSalesforceTests.Actions
             var storage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(activityDO);
             Assert.AreEqual(5, storage.Count, "Number of configuration crates not populated correctly");
 
-            Assert.IsNotNull(storage.FirstCrateOrDefault<StandardQueryFieldsCM>(x => x.Label == Get_Data_v1.QueryFilterCrateLabel), 
+            Assert.IsNotNull(storage.FirstCrateOrDefault<TypedFieldsCM>(x => x.Label == Get_Data_v1.QueryFilterCrateLabel), 
                              "There is not crate with query fields descriptions and expected label in activity storage");
             Assert.IsNotNull(storage.FirstCrateOrDefault<StandardConfigurationControlsCM>(), "There is not crate with controls in activity storage");
             Assert.IsNotNull(storage.FirstCrateOrDefault<CrateDescriptionCM>(), "There is no crate with runtime crates descriptions in activity storage");

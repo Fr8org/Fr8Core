@@ -53,15 +53,15 @@ namespace HubWeb.Controllers
             _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
         }
 
-        [HttpGet]
-        public async Task<IHttpActionResult> Clone(Guid id)
-        {
-            //let's clone the plan and redirect user to that cloned plan url
-            var clonedPlan = await _plan.Clone(id);
-            var baseUri = Request.RequestUri.GetLeftPart(UriPartial.Authority);
-            var clonedPlanUrl = baseUri + "/dashboard/plans/" + clonedPlan.Id + "/builder?viewMode=kiosk&view=Collection";
-            return Redirect(clonedPlanUrl);
-        }
+        //[HttpGet]
+        //public async Task<IHttpActionResult> Clone(Guid id)
+        //{
+        //    //let's clone the plan and redirect user to that cloned plan url
+        //    var clonedPlan = await _plan.Clone(id);
+        //    var baseUri = Request.RequestUri.GetLeftPart(UriPartial.Authority);
+        //    var clonedPlanUrl = baseUri + "/dashboard/plans/" + clonedPlan.Id + "/builder?viewMode=kiosk&view=Collection";
+        //    return Redirect(clonedPlanUrl);
+        //}
 
 
         [Fr8HubWebHMACAuthenticate]

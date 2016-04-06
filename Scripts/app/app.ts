@@ -22,7 +22,8 @@ var app = angular.module("app", [
     "mb-scrollbar",
     "ngMessages",
     "ivh.treeview",
-    "ngMaterial"
+    "ngMaterial",
+    "angularResizable"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */
@@ -36,7 +37,7 @@ app.config(['$ocLazyLoadProvider', ($ocLazyLoadProvider) => {
 }]);
 
 /* Setup global settings */
-app.factory('settings', ['$rootScope', function ($rootScope) {
+app.factory('settings', ['$rootScope', ($rootScope) => {
     // supported languages
     var settings = {
         layout: {
@@ -91,8 +92,8 @@ initialization can be disabled and Layout.init() should be called on page load c
 ***/
 
 /* Setup Layout Part - Header */
-app.controller('HeaderController', ['$scope', function ($scope) {
-    $scope.$on('$includeContentLoaded', function () {
+app.controller('HeaderController', ['$scope', ($scope) => {
+    $scope.$on('$includeContentLoaded', () => {
         Layout.initHeader(); // init header
     });
 }]);

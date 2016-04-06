@@ -1,4 +1,5 @@
-<div data-ng-controller="HeaderController" class="page-header">
+<div style="padding-bottom: 115px;"></div>
+<div data-ng-controller="HeaderController" class="page-header" style="position:fixed;z-index: 500;top: 0px;right:0;left:0">
     <div class="page-header-top">
         <!-- BEGIN HEADER TOP -->
 	<div class="container">
@@ -7,7 +8,8 @@
             <a href="http://www.fr8.company"><img src="/Content/img/dockyard_logo.png" alt="logo" class="logo-default"></a>
             <!--BEGIN STICKER-->
             <div class="page-sticker">
-		</div>
+                <p>beta</p>
+		    </div>
             <!--END STICKER-->
         </div>
 
@@ -102,14 +104,6 @@
                                 </li>
                             </ul>
                         </li>
-                        <li class="dropdown-submenu">
-                            <a href="javascript:;" class="dropdown-toggle">Other</a>
-                            <ul class="dropdown-menu">
-                                <li ng-repeat="activity in (activityCategories | filter: { name: 'Solution', $: 'Fr8Core' })[0].activities | filter: { terminal: { name: 'terminalFr8Core' } }">
-                                    <a ui-sref="configureSolution({solutionName: activity.name})" ui-sref-opts="{reload: true}">{{activity.label}}</a>
-                                </li>
-                            </ul>
-                        </li>
 					</ul>
                 </li>
 								
@@ -166,6 +160,8 @@
                             <li><a ui-sref="webservices">Show Web Services</a></li>                            
                             <li><a ui-sref="showFacts">Show Facts</a></li>
                             <li><a ui-sref="showIncidents">Show Incidents</a></li>
+                            <li><a onclick="window.parent.document.body.style.zoom = 0.6;">Ipad Mode</a></li>
+                            <li><a onclick="window.parent.document.body.style.zoom = 1;">Normal Mode</a></li>
                         </ul>
                     </li>
                 }

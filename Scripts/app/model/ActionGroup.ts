@@ -42,8 +42,8 @@
 
     export class ContainerTransitions {
         public static get JumpToActivity(): number { return 0; };
-        public static get JumpToPlan(): number { return 1; };
-        public static get LaunchAdditionalPlan(): number { return 2; };
+        public static get LaunchAdditionalPlan(): number { return 1; };
+        public static get JumpToSubplan(): number { return 2; };
         public static get StopProcessing(): number { return 3; };
         public static get SuspendProcessing(): number { return 4; };
         public static get ProceedToNextActivity(): number { return 5; };

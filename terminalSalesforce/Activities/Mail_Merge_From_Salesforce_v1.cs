@@ -220,10 +220,10 @@ namespace terminalSalesforce.Activities
             }
             //Prepare new query filters from selected object properties
             var selectedObjectProperties = await _salesforceManager.GetFields(selectedObject, AuthorizationToken);
-            var queryFilterCrate = Crate<StandardQueryFieldsCM>.FromContent(
+            var queryFilterCrate = Crate<TypedFieldsCM>.FromContent(
                 QueryFilterCrateLabel,
-                new StandardQueryFieldsCM(selectedObjectProperties.OrderBy(x => x.Key)
-                                                                  .Select(x => new QueryFieldDTO(x.Key, x.Value, QueryFieldType.String, new TextBox { Name = x.Key }))),
+                new TypedFieldsCM(selectedObjectProperties.OrderBy(x => x.Key)
+                                                                  .Select(x => new TypedFieldDTO(x.Key, x.Value, FieldType.String, new TextBox { Name = x.Key }))),
                 AvailabilityType.Configuration);
             CurrentActivityStorage.ReplaceByLabel(queryFilterCrate);
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;

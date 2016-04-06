@@ -86,10 +86,10 @@ namespace terminalSalesforce.Actions
             }
             //Prepare new query filters from selected object properties
             var selectedObjectProperties = await _salesforceManager.GetFields(selectedObject, AuthorizationToken);
-            var queryFilterCrate = Crate<StandardQueryFieldsCM>.FromContent(
+            var queryFilterCrate = Crate<TypedFieldsCM>.FromContent(
                 QueryFilterCrateLabel,
-                new StandardQueryFieldsCM(selectedObjectProperties.OrderBy(x => x.Key)
-                                                                  .Select(x => new QueryFieldDTO(x.Key, x.Value, QueryFieldType.String, new TextBox { Name = x.Key }))),
+                new TypedFieldsCM(selectedObjectProperties.OrderBy(x => x.Key)
+                                                                  .Select(x => new TypedFieldDTO(x.Key, x.Value, FieldType.String, new TextBox { Name = x.Key }))),
                 AvailabilityType.Configuration);
             CurrentActivityStorage.ReplaceByLabel(queryFilterCrate);
 
@@ -111,7 +111,7 @@ namespace terminalSalesforce.Actions
                 throw new ActivityExecutionException("No Salesforce object is selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
             var salesforceObjectFields = CurrentActivityStorage
-                                            .FirstCrate<StandardQueryFieldsCM>(x => x.Label == QueryFilterCrateLabel)
+                                            .FirstCrate<TypedFieldsCM>(x => x.Label == QueryFilterCrateLabel)
                                             .Content
                                             .Fields
                                             .Select(x => x.Name);

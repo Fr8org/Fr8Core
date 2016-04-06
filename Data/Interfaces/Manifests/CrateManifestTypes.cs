@@ -16,12 +16,17 @@ namespace Data.Interfaces.Manifests
 
         public static string StandardQueryFields
         {
-            get { return ManifestDiscovery.Default.GetManifestType<StandardQueryFieldsCM>().Type; }
+            get { return ManifestDiscovery.Default.GetManifestType<TypedFieldsCM>().Type; }
         }
 
         public static string StandardTableData
         {
             get { return ManifestDiscovery.Default.GetManifestType<StandardTableDataCM>().Type; }
+        }
+
+        public static string StandardFileDescription
+        {
+            get { return ManifestDiscovery.Default.GetManifestType<StandardFileDescriptionCM>().Type; }
         }
     }
 }
