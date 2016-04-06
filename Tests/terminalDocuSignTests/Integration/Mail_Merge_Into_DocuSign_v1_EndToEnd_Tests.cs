@@ -392,7 +392,7 @@ namespace terminalDocuSignTests.Integration
             // Activate and run plan
             //
             var container = await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
-            Assert.AreEqual(container.ContainerState, ContainerState.Completed);
+            Assert.AreEqual(container.State, State.Completed);
             
             //
             // Assert 
