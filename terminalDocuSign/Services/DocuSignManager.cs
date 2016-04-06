@@ -175,7 +175,9 @@ namespace terminalDocuSign.Services.New_Api
                 }
 
                 //updating tabs
-                var tabs = envelopesApi.ListTabs(loginInfo.AccountId, envelopeSummary.EnvelopeId, recepient.RecipientId);
+                Tabs tabs;
+                tabs = override_document ? templatesApi.ListTabs(loginInfo.AccountId, curTemplateId, corresponding_template_recipient.RecipientId, new Tabs()) : envelopesApi.ListTabs(loginInfo.AccountId, envelopeSummary.EnvelopeId, recepient.RecipientId);
+
                 JObject jobj = DocuSignTab.ApplyValuesToTabs(fieldList, corresponding_template_recipient, tabs);
                 recepient.Tabs = jobj.ToObject<Tabs>();
             }
