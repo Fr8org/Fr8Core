@@ -106,9 +106,8 @@ namespace Hub.Security
         /// <param name="dataObjectType"></param>
         public void SetupDefaultSecurityForDataObject(Guid dataObjectId, string dataObjectType)
         {
-            var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorage>();
-            var sqlConnectionProvider = ObjectFactory.GetInstance<ISqlConnectionProvider>();
-            securityStorageProvider.SetupDefaultSecurityForDataObject(sqlConnectionProvider, dataObjectId, dataObjectType);
+            var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
+            securityStorageProvider.SetupDefaultSecurityForDataObject(dataObjectId, dataObjectType);
         }
 
         public bool AuthorizeActivity(string privilegeName, Guid curObjectId)
@@ -117,9 +116,8 @@ namespace Hub.Security
             var roles = GetRoleNames().ToList();
 
             //get all role privileges for object
-            var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorage>();
-            var sqlConnectionProvider = ObjectFactory.GetInstance<ISqlConnectionProvider>();
-            var rolePrivileges = securityStorageProvider.GetRolePrivilegesForSecuredObject(sqlConnectionProvider, curObjectId);
+            var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
+            var rolePrivileges = securityStorageProvider.GetRolePrivilegesForSecuredObject(curObjectId);
 
             var authorizedRoles = rolePrivileges.Where(x => roles.Contains(x.RoleName));
 

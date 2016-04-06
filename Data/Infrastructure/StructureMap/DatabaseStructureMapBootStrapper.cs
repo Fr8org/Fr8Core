@@ -10,6 +10,7 @@ using Data.Repositories.MultiTenant.Sql;
 using Data.Repositories.MultiTenant.SqlBased;
 using Data.Repositories.Plan;
 using Data.Repositories.Security;
+using Data.Repositories.Security.StorageImpl.Cache;
 using Data.Repositories.Security.StorageImpl.SqlBased;
 using Microsoft.Data.Edm.Library.Values;
 using StructureMap.Configuration.DSL;
@@ -48,6 +49,7 @@ namespace Data.Infrastructure.StructureMap
                 For<IPlanCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(planCacheExpiration)).Singleton();
                 For<IPlanCache>().Use<PlanCache>().Singleton();
                 For<PlanStorage>().Use<PlanStorage>();
+                For<ISecurityObjectsCache>().Use<SecurityObjectsCache>().Singleton();
                 // For<IMT_Field>().Use<MT_FieldService>();
             }
         }
@@ -87,7 +89,7 @@ namespace Data.Infrastructure.StructureMap
                 For<IMtObjectsStorage>().Use<SqlMtObjectsStorage>().Singleton();
                 For<IMtTypeStorageProvider>().Use<SqlMtTypeStorageProvider>();
                 For<ISqlConnectionProvider>().Use<SqlConnectionProvider>();
-                For<ISecurityObjectsStorage>().Use<SqlSecurityObjectsStorage>().Singleton();
+                For<ISecurityObjectsStorageProvider>().Use<SqlSecurityObjectsStorageProvider>().DecorateWith(x=> new SecurityObjectsStorage());
                 DataAutoMapperBootStrapper.ConfigureAutoMapper();
             }
         }

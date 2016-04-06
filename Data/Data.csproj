@@ -741,10 +741,14 @@
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\Plan\SlidingExpirationStrategy.cs" />
     <Compile Include="Repositories\Security\Entities\RolePrivilegePOCO.cs" />
-    <Compile Include="Repositories\Security\ISecurityObjectsStorage.cs" />
+    <Compile Include="Repositories\Security\ISecurityObjectsRepository.cs" />
+    <Compile Include="Repositories\Security\ISecurityObjectsStorageProvider.cs" />
     <Compile Include="Repositories\Security\ISqlConnectionProvider.cs" />
+    <Compile Include="Repositories\Security\StorageImpl\Cache\ISecurityObjectsCache.cs" />
+    <Compile Include="Repositories\Security\StorageImpl\Cache\SecurityObjectsCache.cs" />
+    <Compile Include="Repositories\Security\StorageImpl\Cache\SecurityObjectsStorage.cs" />
     <Compile Include="Repositories\Security\StorageImpl\SqlBased\SqlConnectionProvider.cs" />
-    <Compile Include="Repositories\Security\StorageImpl\SqlBased\SqlSecurityObjectsStorage.cs" />
+    <Compile Include="Repositories\Security\StorageImpl\SqlBased\SqlSecurityObjectsStorageProvider.cs" />
     <Compile Include="Repositories\TagRepository.cs" />
     <Compile Include="Repositories\TerminalRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />

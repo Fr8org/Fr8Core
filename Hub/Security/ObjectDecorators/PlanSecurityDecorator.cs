@@ -137,18 +137,6 @@ namespace Hub.Security.ObjectDecorators
             }
         }
 
-        public void Enqueue(Guid curPlanId, Guid subPlanId, params Crate[] curEventReport)
-        {
-            if (_securityServices.AuthorizeActivity(Privileges.EditObject, curPlanId))
-            {
-                _target.Enqueue(curPlanId, subPlanId , curEventReport);
-            }
-            else
-            {
-                throw new HttpException(401, "You are not authorized to perform this activity!");
-            }
-        }
-
         public IList<PlanDO> GetByName(IUnitOfWork uow, Fr8AccountDO account, string name, PlanVisibility visibility)
         {
             return _target.GetByName(uow, account, name, visibility);
@@ -210,18 +198,6 @@ namespace Hub.Security.ObjectDecorators
             if (_securityServices.AuthorizeActivity(Privileges.EditObject, curPlan.Id))
             {
                 return _target.Run(uow, curPlan, curPayload);
-            }
-            else
-            {
-                throw new HttpException(401, "You are not authorized to perform this activity!");
-            }
-        }
-
-        public Task<ContainerDO> Run(Guid planId, Guid subPlanId, params Crate[] curPayload)
-        {
-            if (_securityServices.AuthorizeActivity(Privileges.EditObject, planId))
-            {
-                return _target.Run(planId, subPlanId, curPayload);
             }
             else
             {

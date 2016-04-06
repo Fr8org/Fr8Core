@@ -6,11 +6,18 @@ using Data.States;
 
 namespace Data.Repositories.Security.StorageImpl.SqlBased
 {
-    public class SqlSecurityObjectsStorage : ISecurityObjectsStorage
+    public class SqlSecurityObjectsStorageProvider : ISecurityObjectsStorageProvider
     {
         private readonly string _connectionString;
+        private readonly ISqlConnectionProvider _sqlConnectionProvider;
         private const string InsertRolePrivilegeCommand = "insert into dbo.RolePrivileges(id, privilegeName, roleId, createDate, lastUpdated) values (@id, @privilegeName, @roleId, @createDate, @lastUpdated)";
         private const string InsertObjectRolePrivilegeCommand = "insert into dbo.ObjectRolePrivileges(objectId, rolePrivilegeId, type, createDate, lastUpdated) values (@objectId, @rolePrivilegeId, @type, @createDate, @lastUpdated)";
+
+
+        public SqlSecurityObjectsStorageProvider(ISqlConnectionProvider sqlConnectionProvider)
+        {
+            _sqlConnectionProvider = sqlConnectionProvider;
+        }
 
         private SqlConnection OpenConnection(ISqlConnectionProvider connectionProvider)
         {
@@ -20,9 +27,9 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             return connection;
         }
 
-        public int InsertRolePrivilege(ISqlConnectionProvider connectionProvider, RolePrivilege rolePrivilege)
+        public int InsertRolePrivilege(RolePrivilege rolePrivilege)
         {
-            var affectedRows = Upsert(connectionProvider, rolePrivilege, false, true);
+            var affectedRows = Upsert(_sqlConnectionProvider, rolePrivilege, false, true);
 
             if (affectedRows == 0)
             {
@@ -32,14 +39,14 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             return affectedRows;
         }
 
-        public int UpdateRolePrivilege(ISqlConnectionProvider connectionProvider, RolePrivilege rolePrivilege)
+        public int UpdateRolePrivilege(RolePrivilege rolePrivilege)
         {
-            return Upsert(connectionProvider, rolePrivilege, true, false);
+            return Upsert(_sqlConnectionProvider, rolePrivilege, true, false);
         }
 
-        private int Upsert(ISqlConnectionProvider connectionProvider, RolePrivilege rolePrivilege, bool allowUpdate, bool allowInsert)
+        private int Upsert(ISqlConnectionProvider sqlConnectionProvider, RolePrivilege rolePrivilege, bool allowUpdate, bool allowInsert)
         {
-            using (var connection = OpenConnection(connectionProvider))
+            using (var connection = OpenConnection(sqlConnectionProvider))
             {
                 using (var command = new SqlCommand())
                 {
@@ -75,9 +82,9 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
-        public IEnumerable<RolePrivilege> GetRolePrivilegesForSecuredObject(ISqlConnectionProvider connectionProvider, Guid securedObjectId)
+        public IEnumerable<RolePrivilege> GetRolePrivilegesForSecuredObject(Guid dataObjectId)
         {
-            using (var connection = OpenConnection(connectionProvider))
+            using (var connection = OpenConnection(_sqlConnectionProvider))
             {
                 using (var command = new SqlCommand())
                 {
@@ -89,7 +96,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                                  "inner join dbo.AspNetRoles anr on rp.RoleId = anr.Id                                                  " +
                                  "where orp.ObjectId = @objectId";
 
-                    command.Parameters.AddWithValue("@objectId", securedObjectId);
+                    command.Parameters.AddWithValue("@objectId", dataObjectId);
                     command.CommandText = cmd;
 
                     var result = new List<RolePrivilege>();
@@ -107,9 +114,9 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
-        public IEnumerable<RolePrivilege> GetRolePrivilegesForFr8Account(ISqlConnectionProvider connectionProvider, Guid fr8AccountId)
+        public IEnumerable<RolePrivilege> GetRolePrivilegesForFr8Account(Guid fr8AccountId)
         {
-            using (var connection = OpenConnection(connectionProvider))
+            using (var connection = OpenConnection(_sqlConnectionProvider))
             {
                 using (var command = new SqlCommand())
                 {
@@ -139,9 +146,9 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
-        public void SetupDefaultSecurityForDataObject(ISqlConnectionProvider connectionProvider, Guid dataObjectId, string dataObjectType)
+        public void SetupDefaultSecurityForDataObject(Guid dataObjectId, string dataObjectType)
         {
-            using (var connection = OpenConnection(connectionProvider))
+            using (var connection = OpenConnection(_sqlConnectionProvider))
             {
                 using (var transaction = connection.BeginTransaction())
                 {
@@ -196,15 +203,15 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
-        public int InsertObjectRolePrivilege(ISqlConnectionProvider connectionProvider, Guid objectId, Guid rolePrivilegeId, string dataObjectType)
+        public int InsertObjectRolePrivilege(Guid dataObjectId, Guid rolePrivilegeId, string dataObjectType)
         {
-            using (var connection = OpenConnection(connectionProvider))
+            using (var connection = OpenConnection(_sqlConnectionProvider))
             {
                 using (var command = new SqlCommand())
                 {
                     command.Connection = connection;
 
-                    command.Parameters.AddWithValue("@objectId", objectId);
+                    command.Parameters.AddWithValue("@objectId", dataObjectId);
                     command.Parameters.AddWithValue("@rolePrivilegeId", rolePrivilegeId);
                     command.Parameters.AddWithValue("@type", dataObjectType);
                     command.Parameters.AddWithValue("@createDate", DateTimeOffset.UtcNow);
@@ -225,7 +232,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
-        public int RemoveObjectRolePrivilege(ISqlConnectionProvider connectionProvider, Guid objectId, Guid rolePrivilegeId)
+        public int RemoveObjectRolePrivilege(Guid dataObjectId, Guid rolePrivilegeId)
         {
             throw new NotImplementedException();
         }
