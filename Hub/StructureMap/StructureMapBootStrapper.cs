@@ -183,7 +183,7 @@ namespace Hub.StructureMap
 					 For<IPlanNode>().Use<PlanNode>();
 
                 For<IProcessNode>().Use<ProcessNode>();
-                //For<IPlan>().Use<Hub.Services.Plan>().DecorateWith((context, service) => new PlanSecurityDecorator(service, ObjectFactory.GetInstance<ISecurityServices>()));
+                For<IPlan>().Use<Hub.Services.Plan>();
 
                 For<ISubPlan>().Use<SubPlan>();
                 For<IField>().Use<Field>();
