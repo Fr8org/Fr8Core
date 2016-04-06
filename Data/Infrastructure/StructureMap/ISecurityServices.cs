@@ -20,5 +20,6 @@ namespace Data.Infrastructure.StructureMap
         void Logout();
         ClaimsIdentity GetIdentity(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO);
         void SetupDefaultSecurityForDataObject(Guid dataObjectId, string dataObjectType);
+        bool AuthorizeActivity(string privilegeName, Guid curObjectId);
     }
 }

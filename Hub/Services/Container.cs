@@ -1,29 +1,28 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Constants;
 using Data.Crates;
-using Data.Interfaces.Manifests;
-using Hub.Exceptions;
-using Newtonsoft.Json;
-using StructureMap;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.States;
-using Hub.Interfaces;
-using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects.Helpers;
+using Data.Interfaces.Manifests;
+using Data.States;
+using Hub.Exceptions;
+using Hub.Interfaces;
 using Hub.Managers;
+using Hub.Security;
+using StructureMap;
+using IContainer = Hub.Interfaces.IContainer;
 
 namespace Hub.Services
 {
-    public class Container : Hub.Interfaces.IContainer
+    public class Container : IContainer
     {
-
         // Declarations
 
         private readonly IPlanNode _activity;
@@ -72,6 +71,7 @@ namespace Hub.Services
             uow.SaveChanges();
         }
 
+        [AuthorizeActivity(Privilege = "Read Object", ObjectIdArgumentIndex = 1)]
         public List<ContainerDO> LoadContainers(IUnitOfWork uow, PlanDO plan)
         {
             return uow.ContainerRepository.GetQuery().Where(x => x.PlanId == plan.Id).ToList();
@@ -212,6 +212,7 @@ namespace Hub.Services
 
         }
 
+        [AuthorizeActivity(Privilege = "Edit Object", ObjectIdArgumentIndex = 1)]
         public async Task Run(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             if (curContainerDO == null)

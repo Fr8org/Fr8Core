@@ -110,5 +110,20 @@ namespace Hub.Security
             var sqlConnectionProvider = ObjectFactory.GetInstance<ISqlConnectionProvider>();
             securityStorageProvider.SetupDefaultSecurityForDataObject(sqlConnectionProvider, dataObjectId, dataObjectType);
         }
+
+        public bool AuthorizeActivity(string privilegeName, Guid curObjectId)
+        {
+            //get all current roles for current user
+            var roles = GetRoleNames().ToList();
+
+            //get all role privileges for object
+            var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorage>();
+            var sqlConnectionProvider = ObjectFactory.GetInstance<ISqlConnectionProvider>();
+            var rolePrivileges = securityStorageProvider.GetRolePrivilegesForSecuredObject(sqlConnectionProvider, curObjectId);
+
+            var authorizedRoles = rolePrivileges.Where(x => roles.Contains(x.RoleName));
+
+            return authorizedRoles.Any();
+        }
     }
 }

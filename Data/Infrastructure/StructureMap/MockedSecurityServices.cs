@@ -76,5 +76,10 @@ namespace Data.Infrastructure.StructureMap
         {
             throw new NotImplementedException();
         }
+
+        public bool AuthorizeActivity(string privilegeName, Guid curObjectId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

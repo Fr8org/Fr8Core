@@ -18,13 +18,32 @@ namespace Data.Migrations
 
             //insert default role privileges for role OwnerOfCurrentObject
             var readRolePrivilegeId = Guid.NewGuid();
-            Sql($"insert into dbo.RolePrivileges(Id, PrivilegeName, RoleId, LastUpdated, CreateDate) values ('{Guid.NewGuid()}','{Privileges.ReadObject}','{newRoleId}', SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET())");
-            
-            Sql($"insert into dbo.RolePrivileges(Id, PrivilegeName, RoleId, LastUpdated, CreateDate) values ('{Guid.NewGuid()}','{Privileges.EditObject}','{newRoleId}', SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET())");
-            Sql($"insert into dbo.RolePrivileges(Id, PrivilegeName, RoleId, LastUpdated, CreateDate) values ('{Guid.NewGuid()}','{Privileges.DeleteObject}','{newRoleId}', SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET())");
+            Sql($"insert into dbo.RolePrivileges(Id, PrivilegeName, RoleId, LastUpdated, CreateDate) values ('{readRolePrivilegeId}','{Privileges.ReadObject}','{newRoleId}', SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET())");
+            var editRolePrivilegeId = Guid.NewGuid();
+            Sql($"insert into dbo.RolePrivileges(Id, PrivilegeName, RoleId, LastUpdated, CreateDate) values ('{editRolePrivilegeId}','{Privileges.EditObject}','{newRoleId}', SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET())");
+            var deleteRolePrivilegeId = Guid.NewGuid();
+            Sql($"insert into dbo.RolePrivileges(Id, PrivilegeName, RoleId, LastUpdated, CreateDate) values ('{deleteRolePrivilegeId}','{Privileges.DeleteObject}','{newRoleId}', SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET())");
 
-            //create default 
 
+            //
+            //create default security for all existing PlanDO, ActivityDO and ContainerDO in the database
+            //every existing object need to be associated with 3 default rolePrivileges for 
+            //
+             
+            //default security for plans
+            Sql($"insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, '{readRolePrivilegeId}', 'PlanDO', '{DateTimeOffset.UtcNow}', '{DateTimeOffset.UtcNow}' from dbo.Plans");
+            Sql($"insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, '{editRolePrivilegeId}', 'PlanDO', '{DateTimeOffset.UtcNow}', '{DateTimeOffset.UtcNow}' from dbo.Plans");
+            Sql($"insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, '{deleteRolePrivilegeId}', 'PlanDO', '{DateTimeOffset.UtcNow}', '{DateTimeOffset.UtcNow}' from dbo.Plans");
+
+            //default security for containers
+            Sql($"insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, '{readRolePrivilegeId}', 'ContainerDO', CreateDate, LastUpdated from dbo.Containers");
+            Sql($"insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, '{editRolePrivilegeId}', 'ContainerDO', CreateDate, LastUpdated from dbo.Containers");
+            Sql($"insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, '{deleteRolePrivilegeId}', 'ContainerDO', CreateDate, LastUpdated from dbo.Containers");
+
+            //default security for activites
+            Sql($"insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, '{readRolePrivilegeId}', 'ActivityDO', '{DateTimeOffset.UtcNow}', '{DateTimeOffset.UtcNow}' from dbo.Actions");
+            Sql($"insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, '{editRolePrivilegeId}', 'ActivityDO', '{DateTimeOffset.UtcNow}', '{DateTimeOffset.UtcNow}' from dbo.Actions");
+            Sql($"insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, '{deleteRolePrivilegeId}', 'ActivityDO', '{DateTimeOffset.UtcNow}', '{DateTimeOffset.UtcNow}' from dbo.Actions");
         }
 
 
