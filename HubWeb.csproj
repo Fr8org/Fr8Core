@@ -489,6 +489,8 @@
     <Content Include="Content\css\shared\navbar.css" />
     <Content Include="Content\img\background-7.png" />
     <Content Include="Content\img\background-cta-3.png" />
+    <Content Include="Content\img\dockyard_logo_lower.png" />
+    <Content Include="Content\img\dockyard_logo_white.png" />
     <Content Include="Content\img\docusign-logo.png" />
     <Content Include="Content\img\docusign.png" />
     <Content Include="Content\img\fr8-service.png" />
