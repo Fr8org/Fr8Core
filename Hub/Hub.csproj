@@ -271,7 +271,6 @@
     <Compile Include="Managers\PlanManager.cs" />
     <Compile Include="Interfaces\IFact.cs" />
     <Compile Include="Interfaces\IOrganization.cs" />
-    <Compile Include="Security\AuthorizeActivityAttribute.cs" />
     <Compile Include="Security\AuthorizeActivityInterceptor.cs" />
     <Compile Include="Security\HMACAuthenticator.cs" />
     <Compile Include="Interfaces\IAuthorization.cs" />

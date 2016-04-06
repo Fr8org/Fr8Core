@@ -7,6 +7,7 @@ using Data.Constants;
 using Data.Crates;
 using Data.Entities;
 using Data.Infrastructure;
+using Data.Infrastructure.Security;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.DataTransferObjects.Helpers;
@@ -71,7 +72,7 @@ namespace Hub.Services
             uow.SaveChanges();
         }
 
-        [AuthorizeActivity(Privilege = "Read Object", ObjectIdArgumentIndex = 1)]
+        [AuthorizeActivity(Privilege = Privilege.ReadObject, ObjectIdArgumentIndex = 1)]
         public List<ContainerDO> LoadContainers(IUnitOfWork uow, PlanDO plan)
         {
             return uow.ContainerRepository.GetQuery().Where(x => x.PlanId == plan.Id).ToList();
@@ -204,7 +205,7 @@ namespace Hub.Services
             plan.Enqueue(planDO.Id, payloadCrates);
         }
 
-        [AuthorizeActivity(Privilege = "Edit Object", ObjectIdArgumentIndex = 1)]
+        [AuthorizeActivity(Privilege = Privilege.EditObject, ObjectIdArgumentIndex = 1)]
         public async Task Run(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             if (curContainerDO == null)

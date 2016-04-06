@@ -277,6 +277,7 @@
     <Compile Include="Infrastructure\JsonNet\FieldConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\TerminalActivityTemplateConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\WebServiceConverter.cs" />
+    <Compile Include="Infrastructure\Security\AuthorizeActivityAttribute.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityDataPackageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivateActivitiesDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityResponseDTO.cs" />

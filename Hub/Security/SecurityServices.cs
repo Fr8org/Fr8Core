@@ -93,6 +93,12 @@ namespace Hub.Security
             {
                 var role = uow.AspNetRolesRepository.GetByKey(roleId);
                 identity.AddClaim(new Claim(ClaimTypes.Role, role.Name));
+
+                //add organization as claim for runtime usage
+                if (fr8AccountDO.Organization != null)
+                {
+                    identity.AddClaim(new Claim("Organization", fr8AccountDO.Organization.Name));
+                }
             }
 
             return identity;

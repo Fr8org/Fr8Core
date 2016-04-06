@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using Castle.Core.Interceptor;
+using Data.Infrastructure.Security;
 using Data.Infrastructure.StructureMap;
 using StructureMap;
 
@@ -28,7 +29,8 @@ namespace Hub.Security
 
             var authorizeAttribute = (invocation.Method.GetCustomAttributes(typeof(AuthorizeActivityAttribute), true).First()
                 as AuthorizeActivityAttribute ?? new AuthorizeActivityAttribute());
-            var privilegeName = authorizeAttribute.Privilege;
+            var privilegeName = authorizeAttribute.Privilege.ToString();
+
             var objectArgumentIndex = authorizeAttribute.ObjectIdArgumentIndex;
 
             var parameter = invocation.GetArgumentValue(objectArgumentIndex);
