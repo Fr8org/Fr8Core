@@ -27,6 +27,17 @@ $success = @{
 				context = "feature-branch-ci/vso"
 			} | ConvertTo-Json
 
+Function DeleteBranchIfExists($buildBranchName)
+{
+	$command = "git branch --list $buildBranchName"
+	$result = Invoke-Expression $command
+
+	if (![System.String]::IsNullOrEmpty($result))
+	{
+		$command = "git branch -D $buildBranchName"
+		Invoke-Expression $command    
+	}
+}
 
 Function UpdateGitHubBuildStatus($message)
 {
@@ -103,3 +114,4 @@ else
 
 $buildBranchName = "dev+" + $branchName
 DeleteBranchIfExists $buildBranchName
+
