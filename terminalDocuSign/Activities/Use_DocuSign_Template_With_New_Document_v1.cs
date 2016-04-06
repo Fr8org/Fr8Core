@@ -32,8 +32,14 @@ namespace terminalDocuSign.Actions
             try
             {
                 var fileCrateLabel = (FindControl(curStorage, "document_Override_DDLB") as DropDownList).selectedKey;
-                var file_crate = Crate.FromDto(payloadCrates.CrateStorage.Crates.Where(a => a.ManifestType == CrateManifestTypes.StandardFileDescription && a.Label == fileCrateLabel).Single()).Get<StandardFileDescriptionCM>();
-                DocuSignManager.SendAnEnvelopeFromTemplate(loginInfo, rolesList, fieldList, curTemplateId, file_crate);
+                var file_crate = payloadCrates.CrateStorage.Crates.Where(a => a.ManifestType == CrateManifestTypes.StandardFileDescription && a.Label == fileCrateLabel).FirstOrDefault();
+                if (file_crate == null)
+                {
+                    return Error(payloadCrates, $"New document file wasn't found");
+                }
+
+                var file_manifest = Crate.FromDto(file_crate).Get<StandardFileDescriptionCM>();
+                DocuSignManager.SendAnEnvelopeFromTemplate(loginInfo, rolesList, fieldList, curTemplateId, file_manifest);
             }
             catch (Exception ex)
             {
@@ -155,5 +161,33 @@ namespace terminalDocuSign.Actions
 
             return curActivityDO;
         }
+
+        protected internal override ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
+        {
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                var configControls = GetConfigurationControls(crateStorage);
+                if (configControls == null)
+                {
+                    return new ValidationResult(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
+                }
+                var templateList = configControls.Controls.OfType<DropDownList>().Where(a => a.Name == "target_docusign_template").FirstOrDefault();
+                var documentsList = configControls.Controls.OfType<DropDownList>().Where(a => a.Name == "document_Override_DDLB").FirstOrDefault();
+                if (!DocuSignValidationUtils.AtLeastOneItemExists(templateList))
+                {
+                    return new ValidationResult(DocuSignValidationUtils.NoTemplateExistsErrorMessage);
+                }
+                if (!DocuSignValidationUtils.ItemIsSelected(templateList))
+                {
+                    return new ValidationResult(DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage);
+                }
+                if (!DocuSignValidationUtils.ItemIsSelected(documentsList))
+                {
+                    return new ValidationResult(DocuSignValidationUtils.DocumentIsNotValidErrorMessage);
+                }
+                return ValidationResult.Success;
+            }
+        }
+
     }
 }
