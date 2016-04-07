@@ -117,6 +117,7 @@ Invoke-Expression "git checkout $branchName 2> $tempFileName"
 if ($LastExitCode -ne 0)
 {
 	Write-Host "Failed checkout to $branchName branch."
+	exit 1
 }
 else
 {
