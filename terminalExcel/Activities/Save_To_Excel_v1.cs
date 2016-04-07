@@ -45,16 +45,15 @@ namespace terminalExcel.Actions
 
             public DropDownList ExistingWorksheetsList { get; set; }
 
-            public ActivityUi()
+            public ActivityUi(UiBuilder builder)
             {
-                UpstreamCrateChooser = new CrateChooser
-                                       {
-                                           Label = "Crate to store",
-                                           Name = nameof(UpstreamCrateChooser),
-                                           Required = true,
-                                           RequestUpstream = true,
-                                           SingleManifestOnly = true,
-                                       };
+                UpstreamCrateChooser = builder.CreateCrateChooser(
+                        "Available_Crates",
+                        "This Loop will process the data inside of",
+                        true,
+                        requestConfig: true
+                    );
+
                 Controls.Add(UpstreamCrateChooser);
                 NewSpreadsheetName = new TextBox
                                      {
