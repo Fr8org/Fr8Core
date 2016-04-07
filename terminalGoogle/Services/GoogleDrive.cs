@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using Google.Apis.Script.v1;
@@ -179,8 +180,16 @@ namespace terminalGoogle.Services
                 using (MemoryStream memoryStream = new MemoryStream())
                 {
                     //load template file and replace specific formID
-                    string filename = System.Web.Hosting.HostingEnvironment.MapPath("~\\Template\\googleAppScriptFormResponse.json");
-                    string content = System.IO.File.ReadAllText(filename);
+                    var assembly = Assembly.GetExecutingAssembly();
+                    var resourceName = "terminalGoogle.Template.googleAppScriptFormResponse.json";
+                    string content;
+
+                    using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+                    using (StreamReader reader = new StreamReader(stream))
+                    {
+                        content = reader.ReadToEnd();
+                    }
+                    
                     content = content.Replace("@ID", formId);
                     content = content.Replace("@ENDPOINT", CloudConfigurationManager.GetSetting("GoogleFormEventWebServerUrl"));
                     byte[] contentAsBytes = Encoding.UTF8.GetBytes(content);
