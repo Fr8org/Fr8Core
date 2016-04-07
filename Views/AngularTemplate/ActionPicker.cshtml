@@ -14,7 +14,7 @@
                     <button type="button" class="close" ng-click="activeCategory=null;"><span aria-hidden="true">×</span></button>
                     <h4 class="modal-title">Services</h4>
                 </div>
-                <div style="height: 100%; overflow: hidden; max-height: 230px;" mb-scrollbar="">
+                <div style="height: 100%; overflow: auto; max-height: 230px;">
                     <div data-ng-repeat="webServiceAction in webServiceActionList | orderBy:'webServiceName' | orderBy:sortBuiltinServices"
                          data-ng-click="setActiveTerminal(webServiceAction)"
                          class="web-service-action">
@@ -35,7 +35,7 @@
                     <button type="button" class="close" ng-click="activeCategory=null;"><span aria-hidden="true">×</span></button>
                     <h4 class="modal-title"><i class="fa fa-arrow-left" style="cursor: pointer; font-size: 16px; padding-right: 15px;" ng-click="deactivateTerminal()"></i> Activities</h4>
                 </div>
-                <div style="height: 100%; overflow: hidden; max-height: 230px;" mb-scrollbar="">
+                <div style="height: 100%; overflow: auto; max-height: 230px;">
                     <div data-ng-repeat="action in activeTerminal.activities"
                          data-ng-click="setActiveAction(action, group)"
                          class="action-action">

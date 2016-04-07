@@ -32,20 +32,20 @@
 <body ng-controller="AppController" class="page-on-load">
 
     <!-- BEGIN HEADER -->
-    <div ui-view="header" style="position:fixed;z-index: 500;top: 0px;right:0;left:0">
+    <div ui-view="header">
         <div data-ng-include="'/AngularTemplate/Header'" data-ng-controller="HeaderController" class="page-header">
         </div>
     </div>
     <!-- END HEADER -->
 
-    <div class="main-wrapper" style="margin-top: 115px;">
+    <div class="main-wrapper">
         
          <!-- BEGIN PAGE SPINNER -->
         <div ng-spinner-bar class="page-spinner-bar">
             <div class="bounce1"></div>
             <div class="bounce2"></div>
             <div class="bounce3"></div>
-        </div>
+        </div>  
         <!-- END PAGE SPINNER -->
 
         <div class="clearfix"> </div>
