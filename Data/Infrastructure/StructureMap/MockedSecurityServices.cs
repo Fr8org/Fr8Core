@@ -18,7 +18,6 @@ namespace Data.Infrastructure.StructureMap
             lock (_locker)
                 _currentLoggedInDockyardAccount = dockyardAccountDO;
         }
-
         public Fr8AccountDO GetCurrentAccount(IUnitOfWork uow)
         {
             lock (_locker)

@@ -683,6 +683,8 @@
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryStub.cs" />
     <Compile Include="Repositories\Authorization\IAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\Authorization\KeyVaultAuthorizationTokenRepository.cs" />
+    <Compile Include="Repositories\Cache\ICacheExpirationStrategy.cs" />
+    <Compile Include="Repositories\Cache\IExpirationToken.cs" />
     <Compile Include="Repositories\FileTagsRepository.cs" />
     <Compile Include="Interfaces\IMultiTenantObjectRepository.cs" />
     <Compile Include="Repositories\MultiTenant\Ast\AstNode.cs" />
@@ -740,11 +742,12 @@
     <Compile Include="Repositories\Plan\PlanTreeHelper.cs" />
     <Compile Include="Repositories\Plan\Internal\PlanNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
-    <Compile Include="Repositories\Plan\SlidingExpirationStrategy.cs" />
+    <Compile Include="Repositories\Cache\SlidingExpirationStrategy.cs" />
     <Compile Include="Repositories\Security\Entities\RolePrivilegePOCO.cs" />
     <Compile Include="Repositories\Security\ISecurityObjectsRepository.cs" />
     <Compile Include="Repositories\Security\ISecurityObjectsStorageProvider.cs" />
     <Compile Include="Repositories\Security\ISqlConnectionProvider.cs" />
+    <Compile Include="Repositories\Security\StorageImpl\Cache\ISecurityCacheExpirationStrategy.cs" />
     <Compile Include="Repositories\Security\StorageImpl\Cache\ISecurityObjectsCache.cs" />
     <Compile Include="Repositories\Security\StorageImpl\Cache\SecurityObjectsCache.cs" />
     <Compile Include="Repositories\Security\StorageImpl\Cache\SecurityObjectsStorage.cs" />

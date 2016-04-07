@@ -3,10 +3,12 @@ using System.Data.Entity;
 using StructureMap.Configuration.DSL;
 using Data.Interfaces;
 using Data.Repositories;
+using Data.Repositories.Cache;
 using Data.Repositories.MultiTenant;
 using Data.Repositories.MultiTenant.InMemory;
 using Data.Repositories.MultiTenant.SqlBased;
 using Data.Repositories.Plan;
+using Data.Repositories.Security.StorageImpl.Cache;
 
 namespace Data.Infrastructure
 {
@@ -29,6 +31,7 @@ namespace Data.Infrastructure
 
             var planCacheExpiration = TimeSpan.FromMinutes(10);
             For<IPlanCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(planCacheExpiration)).Singleton();
+            For<ISecurityCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(planCacheExpiration)).Singleton();
 
             For<IPlanStorageProvider>().Use<PlanStorageProviderEf>();
             For<PlanStorage>().Use<PlanStorage>();

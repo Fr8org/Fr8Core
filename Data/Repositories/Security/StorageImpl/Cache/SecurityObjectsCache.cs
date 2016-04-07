@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Data.Repositories.Cache;
 using Data.Repositories.Plan;
 using Data.Repositories.Security.Entities;
 
@@ -10,7 +11,7 @@ namespace Data.Repositories.Security.StorageImpl.Cache
     {
         private readonly Dictionary<Guid, CachedObject> _cachedObjects = new Dictionary<Guid, CachedObject>();
         private readonly object _sync = new object();
-        private readonly IPlanCacheExpirationStrategy _expirationStrategy;
+        private readonly ISecurityCacheExpirationStrategy _expirationStrategy;
 
         private class CachedObject
         {
@@ -24,7 +25,7 @@ namespace Data.Repositories.Security.StorageImpl.Cache
             }
         }
 
-        public SecurityObjectsCache(IPlanCacheExpirationStrategy expirationStrategy)
+        public SecurityObjectsCache(ISecurityCacheExpirationStrategy expirationStrategy)
         {
             _expirationStrategy = expirationStrategy;
             expirationStrategy.SetExpirationCallback(RemoveExpiredPlans);

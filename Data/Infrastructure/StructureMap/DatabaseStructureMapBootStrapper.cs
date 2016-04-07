@@ -4,6 +4,7 @@ using Data.Entities;
 using Data.Infrastructure.AutoMapper;
 using Data.Interfaces;
 using Data.Repositories;
+using Data.Repositories.Cache;
 using Data.Repositories.MultiTenant;
 using Data.Repositories.MultiTenant.InMemory;
 using Data.Repositories.MultiTenant.Sql;
@@ -35,6 +36,7 @@ namespace Data.Infrastructure.StructureMap
                 {
                     planCacheExpiration = TimeSpan.FromMinutes(exp);
                 }
+                //todo: add setting key with expiration for security objects
 
                 For<IAttachmentDO>().Use<AttachmentDO>();
                 For<IEmailDO>().Use<EmailDO>();
@@ -46,10 +48,11 @@ namespace Data.Infrastructure.StructureMap
                 For<IMultiTenantObjectRepository>().Use<MultitenantRepository>();
                 For<IMtObjectConverter>().Use<MtObjectConverter>().Singleton();
                 For<IMtTypeStorage>().Use<MtTypeStorage>().Singleton();
-                For<IPlanCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(planCacheExpiration)).Singleton();
                 For<IPlanCache>().Use<PlanCache>().Singleton();
                 For<PlanStorage>().Use<PlanStorage>();
                 For<ISecurityObjectsCache>().Use<SecurityObjectsCache>().Singleton();
+                For<IPlanCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(planCacheExpiration)).Singleton();
+                For<ISecurityCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(planCacheExpiration)).Singleton();
                 // For<IMT_Field>().Use<MT_FieldService>();
             }
         }
