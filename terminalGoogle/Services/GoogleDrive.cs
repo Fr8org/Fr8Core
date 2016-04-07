@@ -3,63 +3,22 @@ using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.Drive.v2;
 using Google.Apis.Drive.v2.Data;
 using Google.Apis.Services;
-using Google.GData.Client;
-using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Mime;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using terminalGoogle.DataTransferObjects;
-using terminalGoogle.Interfaces;
 using Utilities.Configuration.Azure;
 
 namespace terminalGoogle.Services
 {
-    public class GoogleAppScript
-    {
-        private readonly IGoogleIntegration _googleIntegration;
-        GoogleAuthorizer _googleAuth;
-
-        /*public async Task<ScriptService> CreateScriptService(GoogleAuthDTO authDTO)
-        {
-            var flowData = _googleAuth.CreateFlowMetadata(authDTO, "", CloudConfigurationManager.GetSetting("GoogleRedirectUri"));
-            TokenResponse tokenResponse = new TokenResponse();
-            tokenResponse.AccessToken = authDTO.AccessToken;
-            tokenResponse.RefreshToken = authDTO.RefreshToken;
-            tokenResponse.Scope = CloudConfigurationManager.GetSetting("GoogleScope");
-
-            UserCredential userCredential;
-            try
-            {
-                userCredential = new UserCredential(flowData.Flow, authDTO.AccessToken, tokenResponse);
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.Message);
-            }
-
-            // Create Drive API service.
-            DriveService driveService = new DriveService(new BaseClientService.Initializer()
-            {
-                HttpClientInitializer = userCredential,
-                ApplicationName = "Fr8",
-            });
-
-            return driveService;
-        }*/
-    }
-
-
     public class GoogleDrive
     {
-        private readonly IGoogleIntegration _googleIntegration;
-        GoogleAuthorizer _googleAuth;
+        readonly GoogleAuthorizer _googleAuth;
+
         public GoogleDrive()
         {
             _googleAuth = new GoogleAuthorizer();

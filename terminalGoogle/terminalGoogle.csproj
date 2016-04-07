@@ -292,6 +292,7 @@
     <Compile Include="Services\Authorization\AuthorizationCodeFlow.cs" />
     <Compile Include="Services\Authorization\GoogleAuthorizer.cs" />
     <Compile Include="Services\Event.cs" />
+    <Compile Include="Services\GoogleAppScript.cs" />
     <Compile Include="Services\GoogleDrive.cs" />
     <Compile Include="Services\Authorization\GoogleIntegration.cs" />
     <Compile Include="Services\GoogleSheet.cs" />
