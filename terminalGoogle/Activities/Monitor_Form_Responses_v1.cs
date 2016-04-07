@@ -20,10 +20,13 @@ namespace terminalGoogle.Actions
 {
     public class Monitor_Form_Responses_v1 : BaseTerminalActivity
     {
-        GoogleDrive _googleDrive;
+        private readonly GoogleDrive _googleDrive;
+        private readonly GoogleAppScript _googleAppScript;
+
         public Monitor_Form_Responses_v1()
         {
             _googleDrive = new GoogleDrive();
+            _googleAppScript = new GoogleAppScript();
         }
 
         protected bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
@@ -60,7 +63,7 @@ namespace terminalGoogle.Actions
 
                 if (!string.IsNullOrWhiteSpace(control?.Value))
                 {
-                    var file = await _googleDrive.DownloadFile(control.Value, authDTO);
+                    var result = await _googleAppScript.RunScript("M_snhqvaPfe7gMc5XhGu52ZK7araUiK37", "getFoldersUnderRoot", authDTO/*, control.Value*/);
                     int wtf = 0;
                 }
             }
@@ -109,7 +112,7 @@ namespace terminalGoogle.Actions
                 Name = "Selected_Google_Form",
                 Required = true,
                 Source = null,
-                //Events = new List<ControlEvent>() {new ControlEvent("onChange", "requestConfig")}
+                Events = new List<ControlEvent>() {new ControlEvent("onChange", "requestConfig")}
             };
 
             var controls = PackControlsCrate(fieldSelectTemplate);
