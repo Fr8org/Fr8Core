@@ -103,9 +103,11 @@ namespace terminalDocuSign.Actions
 
             var summ = envelopesApi.CreateEnvelope(loginInfo.AccountId, envDef);
 
-            var recipientId = envelopesApi.ListRecipients(loginInfo.AccountId, summ.EnvelopeId).Signers[0].RecipientId;
+            var recipients = envelopesApi.ListRecipients(loginInfo.AccountId, summ.EnvelopeId);
+            var recipientId = recipients.Signers[0].RecipientId;
             var documentId = envelopesApi.ListDocuments(loginInfo.AccountId, summ.EnvelopeId).EnvelopeDocuments[0].DocumentId;
             var tabs = envelopesApi.ListTabs(loginInfo.AccountId, summ.EnvelopeId, recipientId);
+            var templateRecepients = templatesApi.ListRecipients(loginInfo.AccountId, curTemplateId);
 
 
 
@@ -113,6 +115,7 @@ namespace terminalDocuSign.Actions
             tabs.CheckboxTabs = new List<Checkbox>();
 
             int i = 0;
+
 
             foreach (var person in names)
             {
@@ -128,6 +131,17 @@ namespace terminalDocuSign.Actions
                 checkBox.TabId = "";
                 textTab2.TabId = "";
 
+                textTab1.Name = "Name " + i;
+                textTab1.TabLabel = textTab1.Name;
+                checkBox.Name = "Present " + i;
+                checkBox.TabLabel = checkBox.Name;
+                textTab2.Name = "Zombies " + i;
+                textTab2.TabLabel = textTab2.Name;
+
+                textTab1.RecipientId = recipientId;
+                checkBox.RecipientId = recipientId;
+                textTab2.RecipientId = recipientId;
+
                 tabs.TextTabs.Add(textTab1);
                 tabs.TextTabs.Add(textTab2);
                 tabs.CheckboxTabs.Add(checkBox);
@@ -135,7 +149,17 @@ namespace terminalDocuSign.Actions
                 i++;
             }
 
+            foreach (var recepient in recipients.Signers)
+            {
+                var corresponding_template_recipient = templateRecepients.Signers.Where(a => a.RoutingOrder == recepient.RoutingOrder).FirstOrDefault();
+                var related_fields = rolesList.Where(a => a.Tags.Contains("recipientId:" + corresponding_template_recipient.RecipientId));
+                string new_email = related_fields.Where(a => a.Key.Contains("role email")).FirstOrDefault().Value;
+                string new_name = related_fields.Where(a => a.Key.Contains("role name")).FirstOrDefault().Value;
+                recepient.Name = string.IsNullOrEmpty(new_name) ? recepient.Name : new_name;
+                recepient.Email = string.IsNullOrEmpty(new_email) ? recepient.Email : new_email;
+            }
 
+            envelopesApi.UpdateRecipients(loginInfo.AccountId, summ.EnvelopeId, recipients);
 
             envelopesApi.CreateTabs(loginInfo.AccountId, summ.EnvelopeId, recipientId, tabs);
             // sending an envelope
