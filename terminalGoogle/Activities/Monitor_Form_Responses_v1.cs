@@ -14,10 +14,24 @@ using Hub.Managers;
 using terminalGoogle.Services;
 using TerminalBase.Infrastructure;
 using Data.Control;
+using Data.States;
 using Hub.Exceptions;
+using Newtonsoft.Json.Linq;
 
 namespace terminalGoogle.Actions
 {
+
+    public class EnumerateFormFieldsResponseItem
+    {
+        [JsonProperty("type")]
+        public string Type { get; set; }
+        [JsonProperty("id")]
+        public object Id { get; set; }
+        [JsonProperty("title")]
+        public string Title { get; set; }
+    }
+
+
     public class Monitor_Form_Responses_v1 : BaseTerminalActivity
     {
         private readonly GoogleDrive _googleDrive;
@@ -56,15 +70,26 @@ namespace terminalGoogle.Actions
 
             using (var storage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-
-
                 var ccCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
                 var control = ccCrate.FindByNameNested<DropDownList>("Selected_Google_Form");
 
                 if (!string.IsNullOrWhiteSpace(control?.Value))
                 {
-                    var result = await _googleAppScript.RunScript("M_snhqvaPfe7gMc5XhGu52ZK7araUiK37", "getFoldersUnderRoot", authDTO/*, control.Value*/);
-                    int wtf = 0;
+                    var result = await _googleAppScript.RunScript("M_snhqvaPfe7gMc5XhGu52ZK7araUiK37", "getFoldersUnderRoot", authDTO, control.Value);
+                    object response;
+                    
+                    if (result.TryGetValue("result", out response))
+                    {
+                        var items = ((JToken) response).ToObject<EnumerateFormFieldsResponseItem[]>();
+
+                        storage.RemoveByLabel("Google Form Payload Data");
+                        storage.Add(CrateManager.CreateDesignTimeFieldsCrate("Google Form Payload Data", AvailabilityType.RunTime, items.Select(x => new FieldDTO(x.Title, x.Title)
+                        {
+                            Availability = AvailabilityType.RunTime,
+                            SourceCrateLabel = "Google Form Payload Data",
+                            SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
+                        }).ToArray()));
+                    }
                 }
             }
 
