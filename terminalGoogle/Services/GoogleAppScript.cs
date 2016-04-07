@@ -49,7 +49,7 @@ namespace terminalGoogle.Services
             return driveService;
         }
         
-        public async Task<object> RunScript(string scriptId, string functionName, GoogleAuthDTO authDto, params object[] parameters)
+        public async Task<IDictionary<string, object>> RunScript(string scriptId, string functionName, GoogleAuthDTO authDto, params object[] parameters)
         {
             var service = CreateScriptService(authDto);
 
