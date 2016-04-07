@@ -1,11 +1,18 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Data.Crates;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using Hub.Managers;
+using Newtonsoft.Json;
 using NUnit.Framework;
+using StructureMap;
+using terminalGoogle.DataTransferObjects;
+using terminalGoogle.Services;
 using terminalGoogleTests.Unit;
 
 namespace terminalGoogleTests.Integration

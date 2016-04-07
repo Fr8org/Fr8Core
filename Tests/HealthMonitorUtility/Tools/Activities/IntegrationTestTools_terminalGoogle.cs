@@ -36,7 +36,7 @@ namespace terminaBaselTests.Tools.Activities
         /// <param name="newSpeadsheetName">name of the spreadsheet that need to be created on Run Save_To_Google_Sheet activity</param>
         /// <returns></returns>
         public async Task<ActivityDTO> AddAndConfigureSaveToGoogleSheet(PlanDTO plan,
-                                                                        int ordering,string manifestTypeToUse,
+                                                                        int ordering, string manifestTypeToUse,
                                                                         string crateDescriptionLabelToUse,
                                                                         string newSpeadsheetName)
         {
@@ -76,7 +76,7 @@ namespace terminaBaselTests.Tools.Activities
         /// <param name="spreadsheetName">name of the spreadsheet use in configure procees</param>
         /// <param name="includeFixtureAuthToken">Use fixture data as google auth token</param>
         /// <returns>Configured ActivityDTO for Get_Google_Sheet_Data</returns>
-        public async Task<ActivityDTO> AddAndConfigureGetFromGoogleSheet(PlanDTO plan,int ordering, string spreadsheetName, bool includeFixtureAuthToken)
+        public async Task<ActivityDTO> AddAndConfigureGetFromGoogleSheet(PlanDTO plan, int ordering, string spreadsheetName, bool includeFixtureAuthToken)
         {
             var activityName = "Get_Google_Sheet_Data";
 
@@ -127,7 +127,7 @@ namespace terminaBaselTests.Tools.Activities
                     Assert.IsNotNullOrEmpty(worksheetUri, $"Default Google account doesn't contain worksheet '{worksheetName}' for the spreadsheet '{spreadsheetName}'");
                     activityUi.WorksheetList.selectedKey = worksheetName;
                     activityUi.WorksheetList.Value = worksheetUri;
-                    
+
                     crateStorage.Add(Crate<StandardConfigurationControlsCM>.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
                 }
             }
