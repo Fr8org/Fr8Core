@@ -15,6 +15,7 @@ using terminalGoogle.Services;
 using TerminalBase.Infrastructure;
 using Data.Control;
 using Hub.Exceptions;
+using Utilities.Configuration.Azure;
 
 namespace terminalGoogle.Actions
 {
@@ -49,7 +50,7 @@ namespace terminalGoogle.Actions
 
             return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
-        
+
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
@@ -63,7 +64,8 @@ namespace terminalGoogle.Actions
 
                 if (!string.IsNullOrWhiteSpace(control?.Value))
                 {
-                    var result = await _googleAppScript.RunScript("M_snhqvaPfe7gMc5XhGu52ZK7araUiK37", "getFoldersUnderRoot", authDTO/*, control.Value*/);
+
+                    //var result = await _googleAppScript.RunScript("M_snhqvaPfe7gMc5XhGu52ZK7araUiK37", "getFoldersUnderRoot", authDTO/*, control.Value*/);
                     int wtf = 0;
                 }
             }
@@ -149,16 +151,30 @@ namespace terminalGoogle.Actions
             if (string.IsNullOrEmpty(formId))
                 throw new ArgumentNullException("Google Form selected is empty. Please select google form to receive.");
 
-            var result = await _googleDrive.UploadAppScript(googleAuthDTO, formId);
+            var scriptUrl = await _googleDrive.CreateFr8TriggerForDocument(googleAuthDTO, formId);
+            await HubCommunicator.NotifyUser(new TerminalNotificationDTO
+            {
+                Type = "Success",
+                ActivityName = "Monitor_Form_Responses",
+                ActivityVersion = "1",
+                TerminalName = "terminalGoogle",
+                TerminalVersion = "1",
+                Message = "You need to create fr8 trigger on current form please go to this url and run Initialize function manually. Ignore this message if you completed this step before. " + scriptUrl,
+                Subject = "Trigger creation URL"
+            }, CurrentFr8UserId);
 
+            /*
             var fieldResult = new List<FieldDTO>() { new FieldDTO() { Key = result, Value = result } };
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActionDTO))
             {
                 crateStorage.Add(Data.Crates.Crate.FromContent("Google Form Payload Data", new StandardPayloadDataCM(fieldResult)));
             }
-
+            */
             return await Task.FromResult(curActionDTO);
         }
+
+
+      
 
         public override async Task<ActivityDO> Deactivate(ActivityDO curActionDTO)
         {
