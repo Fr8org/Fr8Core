@@ -5,6 +5,7 @@
 #>
 
 param(
+	[string]$mainBranchName = "dev",
     [string]$sourceBranchName = $env:BUILD_SOURCEBRANCHNAME,
     [string]$tempDirectory = $env:BUILD_STAGINGDIRECTORY
 )
@@ -33,7 +34,7 @@ $github_password = "ulysses3"
 
 $giturl = "https://{0}:{1}@github.com/alexed1/fr8company" -f $github_username, $github_password
 
-$buildBranchName = "dev+$sourceBranchName"
+$buildBranchName = "$mainBranchName+$sourceBranchName"
 
 Invoke-Expression "git fetch $giturl 2> $tempFileName"
 
@@ -43,19 +44,19 @@ if ($LastExitCode -ne 0)
     exit 1;
 }
 
-Write-Host "Switching to dev branch..."
-Invoke-Expression "git checkout dev 2> $tempFileName"
+Write-Host "Switching to $mainBranchName branch..."
+Invoke-Expression "git checkout $mainBranchName 2> $tempFileName"
 if ($LastExitCode -ne 0)
 {
-	Write-Host "Failed to checkout dev branch."
+	Write-Host "Failed to checkout $mainBranchName branch."
 	exit 1;
 }
 
-Write-Host "Getting the latest dev branch from GitHub repo..."
-Invoke-Expression "git pull $giturl dev 2> $tempFileName"
+Write-Host "Getting the latest $mainBranchName branch from GitHub repo..."
+Invoke-Expression "git pull $giturl $mainBranchName 2> $tempFileName"
 if ($LastExitCode -ne 0)
 {
-	Write-Host "Failed to get the latest dev branch."
+	Write-Host "Failed to get the latest $mainBranchName branch."
 	exit 1;
 }
 
@@ -73,7 +74,7 @@ Write-Host "Merging $sourceBranchName into new branch $buildBranchName"
 Invoke-Expression "git merge origin/$sourceBranchName"
 if ($LastExitCode -ne 0)
 {
-	Write-Host "Failed to merge new branch $buildBranchName into dev. Please, make sure that branch $sourceBranchName has the latest sources from the dev branch."
+	Write-Host "Failed to merge new branch $sourceBranchName into $mainBranchName. Please, make sure that branch $sourceBranchName has the latest sources from the $mainBranchName branch."
 	exit 1;
 }
 
