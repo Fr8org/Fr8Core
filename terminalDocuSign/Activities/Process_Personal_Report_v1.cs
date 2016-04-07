@@ -25,9 +25,9 @@ namespace terminalDocuSign.Actions
 {
     public class Process_Personal_Report_v1 : Send_DocuSign_Envelope_v1
     {
-        string Tab1 = "{      \"height\": 11,      \"validationPattern\": \"\",      \"validationMessage\": \"\",      \"shared\": \"false\",      \"requireInitialOnSharedChange\": \"false\",      \"requireAll\": \"false\",      \"name\": \"Text\",      \"value\": \"\",      \"originalValue\": \"\",      \"width\": 120,      \"required\": \"true\",      \"locked\": \"false\",      \"concealValueOnDocument\": \"false\",      \"disableAutoSize\": \"true\",      \"tabLabel\": \"Data Field 3\",      \"documentId\": \"1\",      \"recipientId\": \"1\",      \"pageNumber\": \"1\",      \"xPosition\": \"75\",      \"yPosition\": \"223\",      \"tabId\": \"051c659c-f109-4ed9-9bcc-8573323f3cd4\",      \"templateLocked\": \"false\",      \"templateRequired\": \"false\"    }";
+        string Tab1 = "{      \"height\": 11,      \"validationPattern\": \"\",      \"validationMessage\": \"\",      \"shared\": \"false\",      \"requireInitialOnSharedChange\": \"false\",      \"requireAll\": \"false\",      \"name\": \"Text\",      \"value\": \"\",      \"originalValue\": \"\",      \"width\": 120,      \"required\": \"false\",      \"locked\": \"false\",      \"concealValueOnDocument\": \"false\",      \"disableAutoSize\": \"true\",      \"tabLabel\": \"Data Field 3\",      \"documentId\": \"1\",      \"recipientId\": \"1\",      \"pageNumber\": \"1\",      \"xPosition\": \"75\",      \"yPosition\": \"223\",      \"tabId\": \"051c659c-f109-4ed9-9bcc-8573323f3cd4\",      \"templateLocked\": \"false\",      \"templateRequired\": \"false\"    }";
         string checkBox1 = "{      \"name\": \"Checkbox\",      \"tabLabel\": \"Check Box 5\",      \"selected\": \"false\",      \"shared\": \"false\",      \"requireInitialOnSharedChange\": \"false\",      \"required\": \"false\",      \"locked\": \"false\",      \"documentId\": \"1\",      \"recipientId\": \"1\",      \"pageNumber\": \"1\",      \"xPosition\": \"286\",      \"yPosition\": \"223\",      \"tabId\": \"c928c7d4-9ec9-4414-a0a0-9c1ad01eb2be\",      \"templateLocked\": \"false\",      \"templateRequired\": \"false\"    }";
-        string Tab2 = " {      \"height\": 11,      \"validationPattern\": \"\",      \"validationMessage\": \"\",      \"shared\": \"false\",      \"requireInitialOnSharedChange\": \"false\",      \"requireAll\": \"false\",      \"name\": \"Text\",      \"value\": \"\",      \"width\": 42,      \"required\": \"true\",      \"locked\": \"false\",      \"concealValueOnDocument\": \"false\",      \"disableAutoSize\": \"false\",      \"tabLabel\": \"Data Field 6\",      \"documentId\": \"1\",      \"recipientId\": \"1\",      \"pageNumber\": \"1\",      \"xPosition\": \"416\",      \"yPosition\": \"223\",      \"tabId\": \"ffcf95e1-dd25-46b8-95b4-567eb7d19ba9\",      \"templateLocked\": \"false\",      \"templateRequired\": \"false\"    }";
+        string Tab2 = " {      \"height\": 11,      \"validationPattern\": \"\",      \"validationMessage\": \"\",      \"shared\": \"false\",      \"requireInitialOnSharedChange\": \"false\",      \"requireAll\": \"false\",      \"name\": \"Text\",      \"value\": \"\",      \"width\": 42,      \"required\": \"false\",      \"locked\": \"false\",      \"concealValueOnDocument\": \"false\",      \"disableAutoSize\": \"false\",      \"tabLabel\": \"Data Field 6\",      \"documentId\": \"1\",      \"recipientId\": \"1\",      \"pageNumber\": \"1\",      \"xPosition\": \"416\",      \"yPosition\": \"223\",      \"tabId\": \"ffcf95e1-dd25-46b8-95b4-567eb7d19ba9\",      \"templateLocked\": \"false\",      \"templateRequired\": \"false\"    }";
 
 
         protected override string ActivityUserFriendlyName => "Process Personal Report";
@@ -109,6 +109,9 @@ namespace terminalDocuSign.Actions
             var tabs = envelopesApi.ListTabs(loginInfo.AccountId, summ.EnvelopeId, recipientId);
             var templateRecepients = templatesApi.ListRecipients(loginInfo.AccountId, curTemplateId);
 
+            tabs.SignHereTabs.FirstOrDefault().RecipientId = recipientId;
+            envelopesApi.UpdateTabs(loginInfo.AccountId, summ.EnvelopeId, recipientId, tabs);
+            tabs.SignHereTabs = null;
 
 
             tabs.TextTabs = new List<Text>();
