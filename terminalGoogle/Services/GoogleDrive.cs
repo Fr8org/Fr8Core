@@ -3,27 +3,22 @@ using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.Drive.v2;
 using Google.Apis.Drive.v2.Data;
 using Google.Apis.Services;
-using Google.GData.Client;
-using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
+using System.Net.Http;
 using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
-using System.Web;
 using terminalGoogle.DataTransferObjects;
-using terminalGoogle.Interfaces;
 using Utilities.Configuration.Azure;
 
 namespace terminalGoogle.Services
 {
     public class GoogleDrive
     {
-        private readonly IGoogleIntegration _googleIntegration;
-        GoogleAuthorizer _googleAuth;
+        readonly GoogleAuthorizer _googleAuth;
+
         public GoogleDrive()
         {
             _googleAuth = new GoogleAuthorizer();
@@ -55,6 +50,22 @@ namespace terminalGoogle.Services
             });
 
             return driveService;
+        }
+
+        public async Task<string> DownloadFile(string fileId, GoogleAuthDTO authDTO)
+        {
+            var driveService = await CreateDriveService(authDTO);
+            var getRequest = driveService.Files.Get(fileId);
+            var file = await getRequest.ExecuteAsync();
+            var downloadUlr = file.DownloadUrl;
+            string fileContent;
+
+            using (var httpClient = new HttpClient())
+            {
+                fileContent = await httpClient.GetStringAsync(downloadUlr);
+            }
+
+            return fileContent;
         }
 
         public async Task<Dictionary<string, string>> GetGoogleForms(GoogleAuthDTO authDTO)
