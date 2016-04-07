@@ -16,6 +16,7 @@ using TerminalBase.Infrastructure;
 using Data.Control;
 using Data.States;
 using Hub.Exceptions;
+using Utilities.Configuration.Azure;
 using Newtonsoft.Json.Linq;
 
 namespace terminalGoogle.Actions
@@ -75,7 +76,7 @@ namespace terminalGoogle.Actions
 
                 if (!string.IsNullOrWhiteSpace(control?.Value))
                 {
-                    var result = await _googleAppScript.RunScript("M_snhqvaPfe7gMc5XhGu52ZK7araUiK37", "getFoldersUnderRoot", authDTO, control.Value);
+                    /*var result = await _googleAppScript.RunScript("M_snhqvaPfe7gMc5XhGu52ZK7araUiK37", "getFoldersUnderRoot", authDTO, control.Value);
                     object response;
                     
                     if (result.TryGetValue("result", out response))
@@ -89,7 +90,37 @@ namespace terminalGoogle.Actions
                             SourceCrateLabel = "Google Form Payload Data",
                             SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
                         }).ToArray()));
-                    }
+                    }*/
+
+
+                    storage.RemoveByLabel("Google Form Payload Data");
+                    storage.Add(CrateManager.CreateDesignTimeFieldsCrate("Google Form Payload Data", AvailabilityType.RunTime, new[]
+                    {
+                        new FieldDTO("Full Name", "Full Name")
+                        {
+                            Availability = AvailabilityType.RunTime,
+                            SourceCrateLabel = "Google Form Payload Data",
+                            SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
+                        },
+                        new FieldDTO("TR ID", "TR ID")
+                        {
+                            Availability = AvailabilityType.RunTime,
+                            SourceCrateLabel = "Google Form Payload Data",
+                            SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
+                        },
+                        new FieldDTO("Email Address", "Email Address")
+                        {
+                            Availability = AvailabilityType.RunTime,
+                            SourceCrateLabel = "Google Form Payload Data",
+                            SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
+                        },
+                        new FieldDTO("Period of Availability", "Period of Availability")
+                        {
+                            Availability = AvailabilityType.RunTime,
+                            SourceCrateLabel = "Google Form Payload Data",
+                            SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
+                        }
+                    }));
                 }
             }
 
@@ -174,16 +205,30 @@ namespace terminalGoogle.Actions
             if (string.IsNullOrEmpty(formId))
                 throw new ArgumentNullException("Google Form selected is empty. Please select google form to receive.");
 
-            var result = await _googleDrive.UploadAppScript(googleAuthDTO, formId);
+            var scriptUrl = await _googleDrive.CreateFr8TriggerForDocument(googleAuthDTO, formId);
+            await HubCommunicator.NotifyUser(new TerminalNotificationDTO
+            {
+                Type = "Success",
+                ActivityName = "Monitor_Form_Responses",
+                ActivityVersion = "1",
+                TerminalName = "terminalGoogle",
+                TerminalVersion = "1",
+                Message = "You need to create fr8 trigger on current form please go to this url and run Initialize function manually. Ignore this message if you completed this step before. " + scriptUrl,
+                Subject = "Trigger creation URL"
+            }, CurrentFr8UserId);
 
+            /*
             var fieldResult = new List<FieldDTO>() { new FieldDTO() { Key = result, Value = result } };
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActionDTO))
             {
                 crateStorage.Add(Data.Crates.Crate.FromContent("Google Form Payload Data", new StandardPayloadDataCM(fieldResult)));
             }
-
+            */
             return await Task.FromResult(curActionDTO);
         }
+
+
+      
 
         public override async Task<ActivityDO> Deactivate(ActivityDO curActionDTO)
         {
@@ -206,7 +251,7 @@ namespace terminalGoogle.Actions
             // Just return Success as a quick fix to avoid "Plan Failed" message.
             if (payloadFields == null)
             {
-                return Success(payloadCrates);
+                return TerminateHubExecution(payloadCrates);
             }
 
             var formResponseFields = CreatePayloadFormResponseFields(payloadFields);
@@ -215,7 +260,7 @@ namespace terminalGoogle.Actions
             // Just return Success as a quick fix to avoid "Plan Failed" message.
             if (formResponseFields == null)
             {
-                return Success(payloadCrates);
+                return TerminateHubExecution(payloadCrates);
             }
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))

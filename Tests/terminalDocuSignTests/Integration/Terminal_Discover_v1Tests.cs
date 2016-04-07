@@ -12,7 +12,7 @@ namespace terminalDocuSignTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
-        private const int ActivityCount = 12;
+        private const int ActivityCount = 13;
         private const string Extract_Data_From_Envelopes_Name = "Extract_Data_From_Envelopes";
         private const string Use_DocuSign_Template_With_New_Document = "Use_DocuSign_Template_With_New_Document";
         private const string Mail_Merge_Into_DocuSign_Name = "Mail_Merge_Into_DocuSign";
@@ -25,6 +25,7 @@ namespace terminalDocuSignTests.Integration
         private const string Search_DocuSign_History_Name = "Search_DocuSign_History";
         private const string Get_DocuSign_Template_Name = "Get_DocuSign_Template";
         private const string Generate_DocuSign_Report = "Generate_DocuSign_Report";
+
 
 
         public override string TerminalName
