@@ -36,6 +36,8 @@ namespace terminalDocuSignTests.Integration
 
             var solutionCreateUrl = baseUrl + "activities/create?solutionName=Extract_Data_From_Envelopes";
 
+            Assert.IsTrue(false);
+
             //
             // Create solution
             //
