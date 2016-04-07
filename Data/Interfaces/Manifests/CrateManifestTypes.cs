@@ -23,5 +23,10 @@ namespace Data.Interfaces.Manifests
         {
             get { return ManifestDiscovery.Default.GetManifestType<StandardTableDataCM>().Type; }
         }
+
+        public static string StandardFileDescription
+        {
+            get { return ManifestDiscovery.Default.GetManifestType<StandardFileDescriptionCM>().Type; }
+        }
     }
 }

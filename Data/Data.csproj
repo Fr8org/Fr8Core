@@ -372,7 +372,7 @@
     <Compile Include="Interfaces\Manifests\StandardQueryCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardQueryFieldsCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardRoutingDirectiveCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardFileHandle.cs" />
+    <Compile Include="Interfaces\Manifests\StandardFileDescriptionCM.cs" />
     <Compile Include="Interfaces\Manifests\OperationalStateCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardSecurityCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardTableDataCM.cs" />
