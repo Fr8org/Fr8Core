@@ -5,6 +5,7 @@
 #>
 
 param(
+	[string]$mainBranchName = "dev",
     [string]$buildId = $env:BUILD_BUILDID,
 	[string]$branchName = $env:BUILD_SOURCEBRANCHNAME,
 	[string]$tempDirectory = $env:BUILD_STAGINGDIRECTORY
@@ -119,7 +120,7 @@ if ($LastExitCode -ne 0)
 }
 else
 {
-	$buildBranchName = "dev+" + $branchName
+	$buildBranchName = $mainBranchName + "+" + $branchName
 	DeleteBranchIfExists $buildBranchName
 }
 
