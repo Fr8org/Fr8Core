@@ -64,7 +64,7 @@ namespace terminalAtlassianTests.Fixtures
         {
             var containerDO = new ContainerDO();
             containerDO.Id = TestContainerGuid();
-            containerDO.ContainerState = 1;
+            containerDO.State = 1;
             return containerDO;
         }
 

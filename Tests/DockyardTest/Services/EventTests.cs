@@ -74,7 +74,6 @@ namespace DockyardTest.Services
         //}
     }
 
-
     public class PlanNodeMock : IPlanNode
     {
         public int Processed;

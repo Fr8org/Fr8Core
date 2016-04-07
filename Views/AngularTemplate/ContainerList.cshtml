@@ -34,7 +34,7 @@
                                     <th>Create Date</th>
                                     <th>Last Updated</th>
                                     <th>Name</th>
-                                    <th>Container State</th>
+                                    <th>State</th>
                                     <!--<th>Current Plan Node Id</th>-->
                                     <!--<th style="text-align:right">Actions</th>-->
                                 </tr>
@@ -47,7 +47,7 @@
                                     <td>{{ container.lastUpdated | datetime }}</td>
                                     <td>{{ container.name }}</td>
                                     <td>
-                                       <span>{{ container.containerState | ContainerState }}</span>
+                                       <span>{{ container.state | State }}</span>
                                     </td>
                                    <!-- <td>{{ container.currentPlanNodeId }}</td>-->
                                     <!--<td>
