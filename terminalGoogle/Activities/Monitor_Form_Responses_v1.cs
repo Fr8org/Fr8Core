@@ -76,7 +76,7 @@ namespace terminalGoogle.Actions
 
                 if (!string.IsNullOrWhiteSpace(control?.Value))
                 {
-                    var result = await _googleAppScript.RunScript("M_snhqvaPfe7gMc5XhGu52ZK7araUiK37", "getFoldersUnderRoot", authDTO, control.Value);
+                    /*var result = await _googleAppScript.RunScript("M_snhqvaPfe7gMc5XhGu52ZK7araUiK37", "getFoldersUnderRoot", authDTO, control.Value);
                     object response;
                     
                     if (result.TryGetValue("result", out response))
@@ -90,7 +90,37 @@ namespace terminalGoogle.Actions
                             SourceCrateLabel = "Google Form Payload Data",
                             SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
                         }).ToArray()));
-                    }
+                    }*/
+
+
+                    storage.RemoveByLabel("Google Form Payload Data");
+                    storage.Add(CrateManager.CreateDesignTimeFieldsCrate("Google Form Payload Data", AvailabilityType.RunTime, new[]
+                    {
+                        new FieldDTO("Full Name", "Full Name")
+                        {
+                            Availability = AvailabilityType.RunTime,
+                            SourceCrateLabel = "Google Form Payload Data",
+                            SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
+                        },
+                        new FieldDTO("TR ID", "TR ID")
+                        {
+                            Availability = AvailabilityType.RunTime,
+                            SourceCrateLabel = "Google Form Payload Data",
+                            SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
+                        },
+                        new FieldDTO("Email Address", "Email Address")
+                        {
+                            Availability = AvailabilityType.RunTime,
+                            SourceCrateLabel = "Google Form Payload Data",
+                            SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
+                        },
+                        new FieldDTO("Period of Availability", "Period of Availability")
+                        {
+                            Availability = AvailabilityType.RunTime,
+                            SourceCrateLabel = "Google Form Payload Data",
+                            SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
+                        }
+                    }));
                 }
             }
 
