@@ -16,6 +16,13 @@ namespace Data.Infrastructure
         public byte[] GetRemoteFile(string curBlobUrl)
         {
             var container = GetDefaultBlobContainer();
+
+            if (curBlobUrl.StartsWith(container.Uri.ToString()))
+            {
+                var lastSlashOffset = (!container.Uri.ToString().EndsWith("/") ? 1 : 0);
+                curBlobUrl = curBlobUrl.Substring(container.Uri.ToString().Length + lastSlashOffset);
+            }
+
             var curBlob = container.GetBlobReference(curBlobUrl);
             curBlob.FetchAttributes();
 

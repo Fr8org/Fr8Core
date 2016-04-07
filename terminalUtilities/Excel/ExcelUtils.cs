@@ -91,7 +91,7 @@ namespace terminalUtilities.Excel
 
         }
 
-        public static string[] GetColumnHeaders(byte[] fileBytes, string extension)
+        public static string[] GetColumnHeaders(byte[] fileBytes, string extension, string sheetName = null)
         {
             using (var fileStream = new MemoryStream(fileBytes))
             {
@@ -100,7 +100,31 @@ namespace terminalUtilities.Excel
                 {
                     excelReader.IsFirstRowAsColumnNames = true;
                     var dataSet = excelReader.AsDataSet();
-                    var table = dataSet.Tables[0];
+
+                    DataTable table;
+                    if (string.IsNullOrEmpty(sheetName))
+                    {
+                        table = dataSet.Tables[0];
+                    }
+                    else
+                    {
+                        table = null;
+
+                        for (var i = 0; i < dataSet.Tables.Count; ++i)
+                        {
+                            if (dataSet.Tables[i].TableName == sheetName)
+                            {
+                                table = dataSet.Tables[i];
+                                break;
+                            }
+                        }
+
+                        if (table == null)
+                        {
+                            throw new ApplicationException("Specified Sheet was not found.");
+                        }
+                    }
+
                     var columnHeaders = new string[table.Columns.Count];
                     for (int i = 0; i < table.Columns.Count; ++i)
                     {
@@ -117,7 +141,7 @@ namespace terminalUtilities.Excel
         /// <param name="fileBytes">Byte rray representing Excel data.</param>
         /// <param name="extension">Excel file extension.</param>
         /// <returns>Dictionary<string, List<Tuple<string, string>>> => Dictionary<"Row Number", List<Tuple<"Column Number", "Cell Value">>></returns>
-        public static Dictionary<string, List<Tuple<string, string>>> GetTabularData(byte[] fileBytes, string extension, bool isFirstRowAsColumnNames = true)
+        public static Dictionary<string, List<Tuple<string, string>>> GetTabularData(byte[] fileBytes, string extension, bool isFirstRowAsColumnNames = true, string sheetName = null)
         {
             Dictionary<string, List<Tuple<string, string>>> excelRows = new Dictionary<string, List<Tuple<string, string>>>();
             IExcelDataReader excelReader = null;
@@ -133,7 +157,29 @@ namespace terminalUtilities.Excel
                 {
                     excelReader.IsFirstRowAsColumnNames = isFirstRowAsColumnNames;
                     var dataSet = excelReader.AsDataSet();
-                    var table = dataSet.Tables[0];
+
+                    DataTable table;
+                    if (string.IsNullOrEmpty(sheetName))
+                    {
+                        table = dataSet.Tables[0];
+                    }
+                    else
+                    {
+                        table = null;
+                        for (var i = 0; i < dataSet.Tables.Count; ++i)
+                        {
+                            if (dataSet.Tables[i].TableName == sheetName)
+                            {
+                                table = dataSet.Tables[i];
+                                break;
+                            }
+                        }
+
+                        if (table == null)
+                        {
+                            throw new ApplicationException("Specified Sheet was not found.");
+                        }
+                    }
 
                     for (int i = 0; i < table.Rows.Count; i++)
                     {
@@ -190,16 +236,16 @@ namespace terminalUtilities.Excel
             }
         }
 
-        public static StandardTableDataCM GetExcelFile(byte[] fileAsByteArray, string selectedFilePath, bool isFirstRowAsColumnNames = true)
+        public static StandardTableDataCM GetExcelFile(byte[] fileAsByteArray, string selectedFilePath, bool isFirstRowAsColumnNames = true, string sheetName = null)
         {
             var ext = Path.GetExtension(selectedFilePath);
             var crateManager = ObjectFactory.GetInstance<ICrateManager>();
             // Read file from repository
             // Fetch column headers in Excel file
-            var headersArray = GetColumnHeaders(fileAsByteArray, ext);
+            var headersArray = GetColumnHeaders(fileAsByteArray, ext, sheetName);
 
             // Fetch rows in Excel file
-            var rowsDictionary = GetTabularData(fileAsByteArray, ext, isFirstRowAsColumnNames);
+            var rowsDictionary = GetTabularData(fileAsByteArray, ext, isFirstRowAsColumnNames, sheetName);
 
             Crate curExcelPayloadRowsCrateDTO = null;
 
@@ -259,6 +305,76 @@ namespace terminalUtilities.Excel
         {
             var columnHeaders = GetColumnHeaders(uploadFilePath);
             return new FieldDescriptionsCM(columnHeaders.Select(col => new FieldDTO { Key = col, Value = col, Availability = AvailabilityType.RunTime }));
+        }
+
+        private static DataTable ToDataTable(StandardTableDataCM tableCM)
+        {
+            if (tableCM == null || tableCM.Table == null || tableCM.Table.Count == 0)
+            {
+                throw new ApplicationException("Invalid StandardTableDataCM data.");
+            }
+
+            var dataTable = new DataTable();
+            var columnIndex = new Dictionary<string, int>();
+
+            for (var i = 0; i < tableCM.Table[0].Row.Count; ++i)
+            {
+                var cell = tableCM.Table[0].Row[i].Cell;
+                dataTable.Columns.Add(cell.Key, typeof(string));
+
+                columnIndex.Add(cell.Key, i);
+            }
+
+            foreach (var row in tableCM.Table.Skip(1))
+            {
+                var dataRow = new object[tableCM.Table[0].Row.Count];
+
+                foreach (var cell in row.Row)
+                {
+                    int columnNumber;
+                    if (columnIndex.TryGetValue(cell.Cell.Key, out columnNumber))
+                    {
+                        dataRow[columnNumber] = cell.Cell.Value;
+                    }
+                }
+
+                dataTable.Rows.Add(dataRow);
+            }
+
+            return dataTable;
+        }
+
+        public static byte[] CreateExcelFile(StandardTableDataCM tableCM, string sheetName)
+        {
+            var dataTable = ToDataTable(tableCM);
+            dataTable.TableName = sheetName;
+
+            var writer = new ExcelWriter();
+            using (var stream = new MemoryStream())
+            {
+                writer.WriteFile(stream, dataTable);
+                return stream.ToArray();
+            }
+        }
+
+        public static byte[] RewriteSheetForFile(
+            byte[] existingFile,
+            StandardTableDataCM tableCM,
+            string sheetName)
+        {
+            var dataTable = ToDataTable(tableCM);
+            dataTable.TableName = sheetName;
+
+            var writer = new ExcelWriter();
+
+            using (var stream = new MemoryStream())
+            {
+                stream.Write(existingFile, 0, existingFile.Length);
+                stream.Position = 0;
+
+                writer.RewriteSheetForFile(stream, dataTable);
+                return stream.ToArray();
+            }
         }
     }
 }

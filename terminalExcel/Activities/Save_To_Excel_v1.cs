@@ -228,41 +228,77 @@ namespace terminalExcel.Actions
             {
                 throw new ActivityExecutionException($"Failed to run {ActivityName} because specified upstream crate was not found in payload");
             }
-            var tableToSave = StandardTableDataCMTools.ExtractPayloadCrateDataToStandardTableData(crateToProcess);
-            //var spreadsheetUri = await GetOrCreateSpreadsheet();
-            //var worksheetUri = await GetOrCreateWorksheet(spreadsheetUri);
-            //await _googleSheet.WriteData(spreadsheetUri, worksheetUri, tableToSave, GetGoogleAuthToken());
+
+            var tableToSave = StandardTableDataCMTools
+                .ExtractPayloadCrateDataToStandardTableData(crateToProcess);
+            await AppendOrCreateSpreadsheet(tableToSave);
         }
 
-        //private async Task<string> GetOrCreateWorksheet(string spreadsheetUri)
-        //{
-            //if (ConfigurationControls.UseExistingSpreadsheetOption.Selected && ConfigurationControls.UseExistingWorksheetOption.Selected)
-            //{
-            //    return ConfigurationControls.ExistingWorksheetsList.Value;
-            //}
-            //var existingWorksheets = await _googleSheet.GetWorksheets(spreadsheetUri, authToken);
-            ////If this is a new spreadsheet and user specified to use existing then we just use the first one (as there is only one existing worksheet in new spreadsheet)
-            //if (ConfigurationControls.UseExistingWorksheetOption.Selected)
-            //{
-            //    return existingWorksheets.First().Key;
-            //}
-            //var existingWorksheet = existingWorksheets.Where(x => string.Equals(x.Value.Trim(), ConfigurationControls.NewWorksheetName.Value.Trim(), StringComparison.InvariantCultureIgnoreCase))
-            //                                          .Select(x => x.Key)
-            //                                          .FirstOrDefault();
-            ////If user entered exactly the name of existing worksheet we return it
-            //if (!string.IsNullOrEmpty(existingWorksheet))
-            //{
-            //    return existingWorksheet;
-            //}
-            ////Anyway create a new worksheet
-            //var result = await _googleSheet.CreateWorksheet(spreadsheetUri, authToken, ConfigurationControls.NewWorksheetName.Value);
-            ////If this is a new name and new worksheet we delete the default one (as there is no sense in keeping it)
-            //if (ConfigurationControls.UseNewSpreadsheetOption.Selected && ConfigurationControls.UseNewWorksheetOption.Selected)
-            //{
-            //    await _googleSheet.DeleteWorksheet(spreadsheetUri, existingWorksheets.First().Key, authToken);
-            //}
-            //return result;
-        //}
+        private async Task AppendOrCreateSpreadsheet(StandardTableDataCM tableToSave)
+        {
+            byte[] fileData;
+            string fileName;
+
+            if (ConfigurationControls.UseNewSpreadsheetOption.Selected)
+            {
+                fileData = ExcelUtils.CreateExcelFile(
+                    tableToSave,
+                    ConfigurationControls.NewWorksheetName.Value
+                );
+
+                fileName = ConfigurationControls.NewSpreadsheetName.Value;
+            }
+            else
+            {
+                var existingFileStream = await HubCommunicator.DownloadFile(
+                    Int32.Parse(ConfigurationControls.ExistingSpreadsheetsList.Value),
+                    CurrentFr8UserId
+                );
+
+                byte[] existingFileBytes;
+                using (var memStream = new MemoryStream())
+                {
+                    await existingFileStream.CopyToAsync(memStream);
+                    existingFileBytes = memStream.ToArray();
+                }
+
+                fileName = ConfigurationControls.ExistingSpreadsheetsList.selectedKey;
+
+                var worksheetName = ConfigurationControls.UseNewWorksheetOption.Selected
+                    ? ConfigurationControls.NewWorksheetName.Value
+                    : ConfigurationControls.ExistingWorksheetsList.selectedKey;
+
+                StandardTableDataCM dataToInsert;
+                if (ConfigurationControls.UseExistingWorksheetOption.Selected
+                    || ConfigurationControls.ExistingWorksheetsList.ListItems.Any(x => x.Key == ConfigurationControls.NewWorksheetName.Value))
+                {
+                    var existingData = ExcelUtils.GetExcelFile(existingFileBytes, fileName, true, worksheetName);
+
+                    StandardTableDataCMTools.AppendToStandardTableData(existingData, tableToSave);
+                    dataToInsert = existingData;
+                }
+                else
+                {
+                    dataToInsert = tableToSave;
+                }
+
+                fileData = ExcelUtils.RewriteSheetForFile(
+                    existingFileBytes,
+                    dataToInsert,
+                    worksheetName
+                );
+            }
+
+            using (var stream = new MemoryStream(fileData, false))
+            {
+                if (!fileName.ToUpper().EndsWith(".XLSX"))
+                {
+                    fileName += ".xlsx";
+                }
+
+                await HubCommunicator.SaveFile(fileName, stream, CurrentFr8UserId);
+            }
+        }
 
         private async Task<List<ListItem>> GetCurrentUsersFiles()
         {
@@ -270,24 +306,6 @@ namespace terminalExcel.Actions
             //TODO where tags == Docusign files
             return curAccountFileList.Select(c => new ListItem() { Key = c.OriginalFileName, Value = c.Id.ToString(CultureInfo.InvariantCulture) }).ToList();
         }
-
-        //private async Task<string> GetOrCreateSpreadsheet()
-        //{
-            //if (ConfigurationControls.UseExistingSpreadsheetOption.Selected)
-            //{
-            //    return ConfigurationControls.ExistingSpreadsheetsList.Value;
-            //}
-
-            //var existingSpreadsheets = await _googleSheet.GetSpreadsheets(authToken);
-            //var existingSpreadsheet = existingSpreadsheets.Where(x => string.Equals(x.Value.Trim(), ConfigurationControls.NewSpreadsheetName.Value.Trim(), StringComparison.InvariantCultureIgnoreCase))
-            //                                              .Select(x => x.Key)
-            //                                              .FirstOrDefault();
-            //if (!string.IsNullOrEmpty(existingSpreadsheet))
-            //{
-            //    return existingSpreadsheet;
-            //}
-            //return await _googleSheet.CreateSpreadsheet(ConfigurationControls.NewSpreadsheetName.Value, authToken);
-        //}
 
         private Crate FindCrateToProcess()
         {
