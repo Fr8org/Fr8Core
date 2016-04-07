@@ -15,7 +15,7 @@ namespace UtilitiesTesting.Fixtures
             var containerDO = new ContainerDO();
             containerDO.Id = TestContainer_Id_49();
             containerDO.PlanId = TestPlan2().Id;
-            containerDO.ContainerState = 1;
+            containerDO.State = 1;
             containerDO.ProcessNodes.Add(TestProcessNode1());
             return containerDO;
 		}
@@ -25,7 +25,7 @@ namespace UtilitiesTesting.Fixtures
             var containerDO = new ContainerDO();
             containerDO.Id = TestContainer_Id_49();
             containerDO.PlanId = TestPlan2().Id;
-            containerDO.ContainerState = ContainerState.Executing;
+            containerDO.State = State.Executing;
             containerDO.ProcessNodes.Add(TestProcessNode1());
             return containerDO;
         }
@@ -81,7 +81,7 @@ namespace UtilitiesTesting.Fixtures
 				Name = "Container 1",
                 PlanId = planId,
                 // Fr8AccountId = "testuser",
-				ContainerState = ContainerState.Executing
+				State = State.Executing
 			});
 
             containeList.Add(new ContainerDO()
@@ -90,7 +90,7 @@ namespace UtilitiesTesting.Fixtures
                 Name = "Container 2",
                 PlanId = planId,
                 // Fr8AccountId = "testuser",
-				ContainerState = ContainerState.Executing
+				State = State.Executing
 			});
 
             containeList.Add(new ContainerDO()
@@ -99,7 +99,7 @@ namespace UtilitiesTesting.Fixtures
                 Name = "Container 3",
                 PlanId = planId,
                // Fr8AccountId = "testuser",
-				ContainerState = ContainerState.Unstarted
+				State = State.Unstarted
 			});
 
             containeList.Add(new ContainerDO()
@@ -108,7 +108,7 @@ namespace UtilitiesTesting.Fixtures
                 Name = "Container 4",
                 PlanId = planId,
                 // Fr8AccountId = "anotheruser",
-				ContainerState = ContainerState.Unstarted
+				State = State.Unstarted
 			});
 
             return containeList;
@@ -121,7 +121,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = TestContainer_Id_1(),
                 Name = "Container",
                 PlanId = TestPlan4().Id,
-                ContainerState = ContainerState.Executing
+                State = State.Executing
             };
 
             return containerDO;
@@ -157,7 +157,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = TestContainer_Id_1(),
                 Name = "Container 1",
                 PlanId = planId,
-                ContainerState = ContainerState.Executing
+                State = State.Executing
             });
 
             containerList.Add(new ContainerDO()
@@ -165,7 +165,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = TestContainer_Id_2(),
                 Name = "Container 2",
                 PlanId = planId,
-                ContainerState = ContainerState.Executing
+                State = State.Executing
             });
 
             containerList.Add(new ContainerDO()
@@ -173,7 +173,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = TestContainer_Id_3(),
                 Name = "Container 3",
                 PlanId = planId,
-                ContainerState = ContainerState.Unstarted
+                State = State.Unstarted
             });
 
             containerList.Add(new ContainerDO()
@@ -181,7 +181,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = TestContainer_Id_4(),
                 Name = "Container 4",
                 PlanId = planId,
-                ContainerState = ContainerState.Unstarted
+                State = State.Unstarted
             });
 
             return containerList;
@@ -225,10 +225,10 @@ namespace UtilitiesTesting.Fixtures
             container.Id = TestContainer_Id_49();
 				container.Plan = TestPlan2();
             container.PlanId = TestPlan2().Id;
-            container.ContainerState = 1;
+            container.State = 1;
             container.ProcessNodes.Add(TestProcessNode1());
-            container.CurrentPlanNodeId = FixtureData.TestActivity7().Id;
-			container.NextRouteNodeId = FixtureData.TestActivity10().Id;
+            container.CurrentActivityId = FixtureData.TestActivity7().Id;
+			container.NextActivityId = FixtureData.TestActivity10().Id;
             return container;
         }
 
@@ -237,7 +237,7 @@ namespace UtilitiesTesting.Fixtures
             var container = new ContainerDO();
             container.Id = TestContainer_Id_49();
             container.PlanId = TestPlan2().Id;
-            container.ContainerState = 1;
+            container.State = 1;
             container.ProcessNodes.Add(TestProcessNode1());
             container.CurrentPlanNode = null;
             return container;
@@ -248,10 +248,10 @@ namespace UtilitiesTesting.Fixtures
             var container = new ContainerDO();
             container.Id = TestContainer_Id_49();
             container.PlanId = TestPlan2().Id;
-            container.ContainerState = 1;
+            container.State = 1;
             container.ProcessNodes.Add(TestProcessNode1());
-            container.CurrentPlanNodeId = FixtureData.TestActivity7().Id;
-            container.NextRouteNodeId = FixtureData.TestActivity7().Id;
+            container.CurrentActivityId = FixtureData.TestActivity7().Id;
+            container.NextActivityId = FixtureData.TestActivity7().Id;
             return container;
         }
 
@@ -260,9 +260,9 @@ namespace UtilitiesTesting.Fixtures
             var container = new ContainerDO();
             container.Id = TestContainer_Id_49();
             container.PlanId = TestPlan2().Id;
-            container.ContainerState = 1;
+            container.State = 1;
             container.ProcessNodes.Add(TestProcessNode1());
-            container.CurrentPlanNodeId = FixtureData.TestActivity7().Id;
+            container.CurrentActivityId = FixtureData.TestActivity7().Id;
             container.NextRouteNode = null;
             return container;
         }
@@ -272,9 +272,9 @@ namespace UtilitiesTesting.Fixtures
             var container = new ContainerDO();
             container.Id = TestContainer_Id_49();
             container.PlanId = TestPlan2().Id;
-            container.ContainerState = 1;
+            container.State = 1;
             container.ProcessNodes.Add(TestProcessNode1());
-            container.CurrentPlanNodeId = FixtureData.TestActivity8(null).Id;
+            container.CurrentActivityId = FixtureData.TestActivity8(null).Id;
             container.NextRouteNode = null;
             return container;
         }
@@ -285,7 +285,7 @@ namespace UtilitiesTesting.Fixtures
             containerDO.Id = TestContainer_Id_49();
             containerDO.Plan = FixtureData.TestPlan2();
             containerDO.PlanId = containerDO.Plan.Id;
-            containerDO.ContainerState = 1;
+            containerDO.State = 1;
             containerDO.ProcessNodes.Add(FixtureData.TestProcessNode1());
             return containerDO;
         }
