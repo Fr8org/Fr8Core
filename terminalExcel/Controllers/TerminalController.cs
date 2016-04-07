@@ -52,6 +52,18 @@ namespace terminalExcel.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
+                Name = "Save_To_Excel",
+                Label = "Save to Excel",
+                Version = "1",
+                Description = "",
+                Category = ActivityCategory.Forwarders,
+                Terminal = terminal,
+                MinPaneWidth = 300,
+                WebService = webService
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
                 Name = "SetExcelTemplate",
                 Label = "Set Excel Template",
                 Version = "1",
