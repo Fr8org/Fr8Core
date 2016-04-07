@@ -17,7 +17,7 @@ namespace Hub.Services
             return $"MemberOfOrganization_{organizationName}";
         }
 
-        public static string AdminfOrganizationRoleName(string organizationName)
+        public static string AdminOfOrganizationRoleName(string organizationName)
         {
             return $"AdminOfOrganization_{organizationName}";
         }
@@ -28,46 +28,43 @@ namespace Hub.Services
         /// <param name="organizationName"></param>
         /// <param name="isNewOrganization"></param>
         /// <returns></returns>
-        public OrganizationDO GetOrCreateOrganization(string organizationName, out bool isNewOrganization)
+        public OrganizationDO GetOrCreateOrganization(IUnitOfWork uow, string organizationName, out bool isNewOrganization)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            OrganizationDO organization = null;
+            isNewOrganization = false;
+            //check if organization already exist
+            organization = uow.OrganizationRepository.GetQuery().FirstOrDefault(x => x.Name == organizationName);
+
+            if (organization != null) return organization;
+                
+            //create new organization
+            organization = new OrganizationDO()
             {
-                OrganizationDO organization = null;
-                isNewOrganization = false;
-                //check if organization already exist
-                organization = uow.OrganizationRepository.GetQuery().FirstOrDefault(x => x.Name == organizationName);
+                Name = organizationName
+            };
+            uow.OrganizationRepository.Add(organization);
 
-                if (organization != null) return organization;
+            //create roles for new organization
+            uow.AspNetRolesRepository.Add(new AspNetRolesDO()
+            {
+                Name = MemberOfOrganizationRoleName(organizationName)
+            });
+
+            var adminRole = new AspNetRolesDO()
+            {
+                Name = AdminOfOrganizationRoleName(organizationName)
+            };
+            uow.AspNetRolesRepository.Add(adminRole);
+
+            isNewOrganization = true;
                 
-                //create new organization
-                organization = new OrganizationDO()
-                {
-                    Name = organizationName
-                };
-                uow.OrganizationRepository.Add(organization);
+            uow.SaveChanges();
 
-                //create roles for new organization
-                uow.AspNetRolesRepository.Add(new AspNetRolesDO()
-                {
-                    Name = MemberOfOrganizationRoleName(organizationName)
-                });
+            //link adminRole with ManageInternalUsers Privilege, used for  add/edit users that belong to this organization
+            var securityObjectStorage = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
+            securityObjectStorage.InsertRolePrivilege(new RolePrivilege() { RoleId = adminRole.Id, PrivilegeName = Privilege.ManageInternalUsers.ToString()});
 
-                var adminRole = new AspNetRolesDO()
-                {
-                    Name = AdminfOrganizationRoleName(organizationName)
-                };
-                uow.AspNetRolesRepository.Add(adminRole);
-
-                isNewOrganization = true;
-                
-                uow.SaveChanges();
-
-                //link adminRole with ManageInternalUsers Privilege, used for  add/edit users that belong to this organization
-                var securityObjectStorage = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
-                securityObjectStorage.InsertRolePrivilege(new RolePrivilege() { RoleId = adminRole.Id, PrivilegeName = Privilege.ManageInternalUsers.ToString()});
-
-                return organization;
-            }
+            return organization;
         }
     }
 }

@@ -113,7 +113,7 @@ namespace Hub.StructureMap
                 For<IRestfulServiceClient>().Singleton().Use<RestfulServiceClient>().SelectConstructor(() => new RestfulServiceClient());
                 For<ITerminalTransmitter>().Use<TerminalTransmitter>();
                 var dynamicProxy = new ProxyGenerator();
-                For<IPlan>().Use<Hub.Services.Plan>().DecorateWith(z => dynamicProxy.CreateInterfaceProxyWithTarget(z, new AuthorizeActivityInterceptor()));
+                For<IPlan>().Use<Hub.Services.Plan>().DecorateWith((context, service) => new PlanSecurityDecorator(service, ObjectFactory.GetInstance<ISecurityServices>()));
                 For<InternalInterfaces.IContainer>().Use<InternalClass.Container>().DecorateWith(z => dynamicProxy.CreateInterfaceProxyWithTarget(z, new AuthorizeActivityInterceptor()));
                 For<InternalInterfaces.IFact>().Use<InternalClass.Fact>();
                 For<ICriteria>().Use<Criteria>();

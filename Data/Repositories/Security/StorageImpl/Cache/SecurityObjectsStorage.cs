@@ -13,10 +13,10 @@ namespace Data.Repositories.Security.StorageImpl.Cache
         private readonly ISecurityObjectsCache _cache;
         private readonly ISecurityObjectsStorageProvider _securityObjectStorageProvider;
 
-        public SecurityObjectsStorage()
+        public SecurityObjectsStorage(ISecurityObjectsCache cache, ISecurityObjectsStorageProvider securityObjectStorageProvider)
         {
-            _cache = ObjectFactory.GetInstance<ISecurityObjectsCache>();
-            _securityObjectStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
+            _cache = cache;
+            _securityObjectStorageProvider = securityObjectStorageProvider;
         }
 
         public int InsertRolePrivilege(RolePrivilege rolePrivilege)

@@ -14,7 +14,7 @@ namespace Data.Infrastructure.Security
     ///          public PlanDO Copy(IUnitOfWork uow, PlanDO curPlanDO, string name) {
     /// so we can know to look for second parameter and to find inside of object his Id value
     /// </summary>
-    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property)]
+    [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property, AllowMultiple = true)]
     public class AuthorizeActivityAttribute : Attribute
     {
         public AuthorizeActivityAttribute()

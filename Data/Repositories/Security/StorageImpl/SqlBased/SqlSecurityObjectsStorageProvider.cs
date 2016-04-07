@@ -243,8 +243,8 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
 
             obj.Id = reader["Id"] != DBNull.Value ? (Guid)reader["Id"] : Guid.Empty;
             obj.PrivilegeName = reader["PrivilegeName"] != DBNull.Value ? (string)reader["PrivilegeName"] : string.Empty;
-            obj.RoleId = reader["RoleId"] != DBNull.Value ? (string)reader["RoleID"] : string.Empty;
-            obj.RoleName = reader["RoleId"] != DBNull.Value ? (string)reader["RoleID"] : string.Empty;
+            obj.RoleId = reader["roleId"] != DBNull.Value ? (string)reader["roleId"] : string.Empty;
+            obj.RoleName = reader["roleName"] != DBNull.Value ? (string)reader["roleName"] : string.Empty;
 
             return obj;
         }

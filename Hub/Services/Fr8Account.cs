@@ -305,7 +305,7 @@ namespace Hub.Services
             uow.AspNetUserRolesRepository.AssignRoleToUser(roleID, userDO.Id);
 
             //assign OwnerOfCurrentObject role to user
-            AssingRoleToUser(uow, Roles.OwnerOfCurrentObject, userDO.Id);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.OwnerOfCurrentObject, userDO.Id);
 
             return userDO;
         }
@@ -313,42 +313,15 @@ namespace Hub.Services
         private void AssingRolesToUserBasedOnOrganization(IUnitOfWork uow, string newFr8AccountId, string organizationName, bool isNewOrganization)
         {
             //New Fr8Account need to be linked with roles based on organization 
-            var organizationMemberRole = uow.AspNetRolesRepository.GetQuery().FirstOrDefault(x => x.Name == Organization.MemberOfOrganizationRoleName(organizationName));
-            if (organizationMemberRole == null)
-            {
-                //create this role if doesnt't exists
-                organizationMemberRole = new AspNetRolesDO()
-                {
-                    Name = Organization.MemberOfOrganizationRoleName(organizationName)
-                };
-                uow.AspNetRolesRepository.Add(organizationMemberRole);
-            }
-
+            var orgMemberRoleName = Organization.MemberOfOrganizationRoleName(organizationName);
             //every new user that registers inside some organization must have role that is member of that organization
-            uow.AspNetUserRolesRepository.AssignRoleToUser(organizationMemberRole.Id, newFr8AccountId);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(orgMemberRoleName, newFr8AccountId);
 
             //in case when the new user is the one that created this new organization, add to user role as admin of new organization
             if (isNewOrganization)
             {
-                var adminRole = uow.AspNetRolesRepository.GetQuery().FirstOrDefault(x => x.Name == Organization.AdminfOrganizationRoleName(organizationName));
-                if (adminRole == null)
-                {
-                    adminRole = new AspNetRolesDO()
-                    {
-                        Name = Organization.AdminfOrganizationRoleName(organizationName)
-                    };
-                    uow.AspNetRolesRepository.Add(adminRole);
-                }
-                uow.AspNetUserRolesRepository.AssignRoleToUser(adminRole.Id, newFr8AccountId);
-            }
-        }
-
-        private void AssingRoleToUser(IUnitOfWork uow, string roleName, string userId)
-        {
-            var role = uow.AspNetRolesRepository.GetQuery().FirstOrDefault(x => x.Name == roleName);
-            if (role != null)
-            {
-                uow.AspNetUserRolesRepository.AssignRoleToUser(role.Id, userId);
+                var orgAdminRoleName = Organization.AdminOfOrganizationRoleName(organizationName);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(orgAdminRoleName, newFr8AccountId);
             }
         }
 

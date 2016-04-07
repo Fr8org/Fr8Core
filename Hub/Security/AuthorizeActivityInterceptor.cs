@@ -18,7 +18,7 @@ namespace Hub.Security
 
         private void AuthorizeActivity(IInvocation invocation)
         {
-            if (!IsMethodMarkedForAuthorization(invocation.Method))
+            if (!IsMethodMarkedForAuthorization(invocation.MethodInvocationTarget))
             {
                 invocation.Proceed();
                 return;

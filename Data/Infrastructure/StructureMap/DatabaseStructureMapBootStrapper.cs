@@ -92,7 +92,8 @@ namespace Data.Infrastructure.StructureMap
                 For<IMtObjectsStorage>().Use<SqlMtObjectsStorage>().Singleton();
                 For<IMtTypeStorageProvider>().Use<SqlMtTypeStorageProvider>();
                 For<ISqlConnectionProvider>().Use<SqlConnectionProvider>();
-                For<ISecurityObjectsStorageProvider>().Use<SqlSecurityObjectsStorageProvider>().DecorateWith(x=> new SecurityObjectsStorage());
+                For<ISecurityObjectsStorageProvider>().Use<SqlSecurityObjectsStorageProvider>();
+                For<ISecurityObjectsStorageProvider>().DecorateAllWith<SecurityObjectsStorage>();
                 DataAutoMapperBootStrapper.ConfigureAutoMapper();
             }
         }
