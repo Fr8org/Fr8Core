@@ -300,6 +300,7 @@ namespace terminalExcel.Actions
                 CurrentPayloadStorage.Add(Crate.FromContent("StoredFile", new StandardFileDescriptionCM
                 {
                     Filename = file.Id.ToString(), // dirty hack
+                    TextRepresentation = file.OriginalFileName, // another hack
                     Filetype = ".xlsx"
                 }));
             }

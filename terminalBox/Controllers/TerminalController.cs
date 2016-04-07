@@ -45,12 +45,23 @@ namespace terminalBox.Controllers
                 WebService = webService
             };
 
+            var test = new ActivityTemplateDTO
+            {
+                Name = "GenerateTableActivity",
+                Label = "GenerateTableActivity",
+                Category = ActivityCategory.Receivers,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1"
+            };
+
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,
                 Activities = new List<ActivityTemplateDTO>
                 {
-                   dummyActivity
+                   dummyActivity,
+                   test
                 }
             };
 
