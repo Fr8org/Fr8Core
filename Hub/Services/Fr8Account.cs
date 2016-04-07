@@ -218,7 +218,7 @@ namespace Hub.Services
         public RegistrationStatus ProcessRegistrationRequest(IUnitOfWork uow, string email, string password, OrganizationDO organizationDO, bool isNewOrganization)
         {
             RegistrationStatus curRegStatus;
-            Fr8AccountDO newDockyardAccountDO = null;
+            Fr8AccountDO newFr8Account = null;
             //check if we know this email address
 
             EmailAddressDO existingEmailAddressDO =
@@ -245,32 +245,26 @@ namespace Hub.Services
                 }
                 else
                 {
-                    newDockyardAccountDO = Register(uow, email, email, email, password, Roles.Customer, organizationDO);
+                    newFr8Account = Register(uow, email, email, email, password, Roles.Customer, organizationDO);
                     curRegStatus = RegistrationStatus.Successful;
                 }
             }
             else
             {
-                newDockyardAccountDO = Register(uow, email, email, email, password, Roles.Customer, organizationDO);
+                newFr8Account = Register(uow, email, email, email, password, Roles.Customer, organizationDO);
                 curRegStatus = RegistrationStatus.Successful;
             }
 
-            // make user admin of new organization
-            if (isNewOrganization)
+            if (organizationDO != null && newFr8Account != null)
             {
-                var adminRole = uow.AspNetRolesRepository.GetQuery().FirstOrDefault(x=>x.Name == $"AdminOfOrganization_{organizationDO.Name}");
-                if (adminRole != null && newDockyardAccountDO != null)
-                {
-                    uow.AspNetUserRolesRepository.AssignRoleToUser(adminRole.Id, newDockyardAccountDO.Id);
-                }
+                AssingRolesToUserBasedOnOrganization(uow, newFr8Account.Id, organizationDO.Name, isNewOrganization);
             }
-            
+
             uow.SaveChanges();
 
-            if (newDockyardAccountDO != null)
+            if (newFr8Account != null)
             {
-                //AlertManager.CustomerCreated(newDockyardAccountDO);
-                EventManager.UserRegistration(newDockyardAccountDO);
+                EventManager.UserRegistration(newFr8Account);
             }
 
             return curRegStatus;
@@ -310,7 +304,52 @@ namespace Hub.Services
             uow.UserRepository.UpdateUserCredentials(userDO, userName, password);
             uow.AspNetUserRolesRepository.AssignRoleToUser(roleID, userDO.Id);
 
+            //assign OwnerOfCurrentObject role to user
+            AssingRoleToUser(uow, Roles.OwnerOfCurrentObject, userDO.Id);
+
             return userDO;
+        }
+
+        private void AssingRolesToUserBasedOnOrganization(IUnitOfWork uow, string newFr8AccountId, string organizationName, bool isNewOrganization)
+        {
+            //New Fr8Account need to be linked with roles based on organization 
+            var organizationMemberRole = uow.AspNetRolesRepository.GetQuery().FirstOrDefault(x => x.Name == Organization.MemberOfOrganizationRoleName(organizationName));
+            if (organizationMemberRole == null)
+            {
+                //create this role if doesnt't exists
+                organizationMemberRole = new AspNetRolesDO()
+                {
+                    Name = Organization.MemberOfOrganizationRoleName(organizationName)
+                };
+                uow.AspNetRolesRepository.Add(organizationMemberRole);
+            }
+
+            //every new user that registers inside some organization must have role that is member of that organization
+            uow.AspNetUserRolesRepository.AssignRoleToUser(organizationMemberRole.Id, newFr8AccountId);
+
+            //in case when the new user is the one that created this new organization, add to user role as admin of new organization
+            if (isNewOrganization)
+            {
+                var adminRole = uow.AspNetRolesRepository.GetQuery().FirstOrDefault(x => x.Name == Organization.AdminfOrganizationRoleName(organizationName));
+                if (adminRole == null)
+                {
+                    adminRole = new AspNetRolesDO()
+                    {
+                        Name = Organization.AdminfOrganizationRoleName(organizationName)
+                    };
+                    uow.AspNetRolesRepository.Add(adminRole);
+                }
+                uow.AspNetUserRolesRepository.AssignRoleToUser(adminRole.Id, newFr8AccountId);
+            }
+        }
+
+        private void AssingRoleToUser(IUnitOfWork uow, string roleName, string userId)
+        {
+            var role = uow.AspNetRolesRepository.GetQuery().FirstOrDefault(x => x.Name == roleName);
+            if (role != null)
+            {
+                uow.AspNetUserRolesRepository.AssignRoleToUser(role.Id, userId);
+            }
         }
 
         public LoginStatus Login(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO, string password,

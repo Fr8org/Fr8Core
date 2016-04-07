@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Data.Repositories.Security.Entities;
+using Data.States;
 
 namespace Data.Repositories.Security
 {

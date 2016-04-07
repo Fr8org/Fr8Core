@@ -116,7 +116,14 @@ namespace Hub.Security
             securityStorageProvider.SetupDefaultSecurityForDataObject(dataObjectId, dataObjectType);
         }
 
-        public bool AuthorizeActivity(string privilegeName, Guid curObjectId)
+        /// <summary>
+        /// Authorize current activity by a privilege name for some data object. Get role privileges for a compare them with all roles that current uses has.
+        /// When at least one role is found for this user, he is authorized to perform some activity.
+        /// </summary>
+        /// <param name="privilegeName"></param>
+        /// <param name="curObjectId"></param>
+        /// <returns></returns>
+        public bool AuthorizeActivity(Privilege privilegeName, Guid curObjectId)
         {
             //get all current roles for current user
             var roles = GetRoleNames().ToList();

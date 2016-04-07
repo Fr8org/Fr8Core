@@ -12,8 +12,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
         private readonly ISqlConnectionProvider _sqlConnectionProvider;
         private const string InsertRolePrivilegeCommand = "insert into dbo.RolePrivileges(id, privilegeName, roleId, createDate, lastUpdated) values (@id, @privilegeName, @roleId, @createDate, @lastUpdated)";
         private const string InsertObjectRolePrivilegeCommand = "insert into dbo.ObjectRolePrivileges(objectId, rolePrivilegeId, type, createDate, lastUpdated) values (@objectId, @rolePrivilegeId, @type, @createDate, @lastUpdated)";
-
-
+        
         public SqlSecurityObjectsStorageProvider(ISqlConnectionProvider sqlConnectionProvider)
         {
             _sqlConnectionProvider = sqlConnectionProvider;
@@ -24,6 +23,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             var connection = new SqlConnection((string)connectionProvider.ConnectionInfo);
 
             connection.Open();
+
             return connection;
         }
 

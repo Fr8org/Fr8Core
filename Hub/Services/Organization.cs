@@ -3,6 +3,8 @@ using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories.Security;
+using Data.Repositories.Security.Entities;
+using Data.States;
 using Hub.Interfaces;
 using StructureMap;
 
@@ -10,6 +12,16 @@ namespace Hub.Services
 {
     public class Organization : IOrganization
     {
+        public static string MemberOfOrganizationRoleName(string organizationName)
+        {
+            return $"MemberOfOrganization_{organizationName}";
+        }
+
+        public static string AdminfOrganizationRoleName(string organizationName)
+        {
+            return $"AdminOfOrganization_{organizationName}";
+        }
+
         /// <summary>
         /// Check if already exists some organization with the same name and create new if not
         /// </summary>
@@ -37,12 +49,12 @@ namespace Hub.Services
                 //create roles for new organization
                 uow.AspNetRolesRepository.Add(new AspNetRolesDO()
                 {
-                    Name = $"MemberOfOrganization_{organizationName}"
+                    Name = MemberOfOrganizationRoleName(organizationName)
                 });
 
                 var adminRole = new AspNetRolesDO()
                 {
-                    Name = $"AdminOfOrganization_{organizationName}"
+                    Name = AdminfOrganizationRoleName(organizationName)
                 };
                 uow.AspNetRolesRepository.Add(adminRole);
 
@@ -50,9 +62,9 @@ namespace Hub.Services
                 
                 uow.SaveChanges();
 
-                //link adminRole with user Privilege
+                //link adminRole with ManageInternalUsers Privilege, used for  add/edit users that belong to this organization
                 var securityObjectStorage = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
-                securityObjectStorage
+                securityObjectStorage.InsertRolePrivilege(new RolePrivilege() { RoleId = adminRole.Id, PrivilegeName = Privilege.ManageInternalUsers.ToString()});
 
                 return organization;
             }

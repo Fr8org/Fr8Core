@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 using Castle.Core.Interceptor;
 using Data.Infrastructure.Security;
@@ -29,7 +26,6 @@ namespace Hub.Security
 
             var authorizeAttribute = (invocation.Method.GetCustomAttributes(typeof(AuthorizeActivityAttribute), true).First()
                 as AuthorizeActivityAttribute ?? new AuthorizeActivityAttribute());
-            var privilegeName = authorizeAttribute.Privilege.ToString();
 
             var objectArgumentIndex = authorizeAttribute.ObjectIdArgumentIndex;
 
@@ -47,7 +43,7 @@ namespace Hub.Security
             }
 
             ISecurityServices securityServices = ObjectFactory.GetInstance<ISecurityServices>();
-            if (securityServices.AuthorizeActivity(privilegeName, objectId))
+            if (securityServices.AuthorizeActivity(authorizeAttribute.Privilege, objectId))
             {
                 invocation.Proceed();
             }

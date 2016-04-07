@@ -4,6 +4,7 @@ using System.Linq;
 using System.Security.Claims;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 using StructureMap;
 
 namespace Data.Infrastructure.StructureMap
@@ -77,7 +78,7 @@ namespace Data.Infrastructure.StructureMap
             //throw new NotImplementedException();
         }
 
-        public bool AuthorizeActivity(string privilegeName, Guid curObjectId)
+        public bool AuthorizeActivity(Privilege privilegeName, Guid curObjectId)
         {
             return true;
         }

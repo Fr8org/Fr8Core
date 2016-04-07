@@ -98,7 +98,7 @@ namespace HubWeb.Controllers
                         //check for organizations 
                         if (submittedRegData.HasOrganization && !string.IsNullOrEmpty(submittedRegData.OrganizationName))
                         {
-                            organizationDO = _organization.GetOrCreateOrganization(uow, submittedRegData.OrganizationName, out isNewOrganization);
+                            organizationDO = _organization.GetOrCreateOrganization(submittedRegData.OrganizationName, out isNewOrganization);
                         }
                         
                         if (!String.IsNullOrWhiteSpace(submittedRegData.GuestUserTempEmail))
