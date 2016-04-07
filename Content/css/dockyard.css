@@ -315,7 +315,8 @@ div.action {
     margin-top: 0px;
     padding-bottom: 10px;
     border-bottom: 1px;
-    margin-bottom: 10px;
+    /*FR-2739*/
+    /*margin-bottom: 10px;*/
     text-align: center;
     position: relative;
 }
