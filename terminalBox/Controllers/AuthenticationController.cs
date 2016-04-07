@@ -82,7 +82,7 @@ namespace terminalBox.Controllers
 
                 return new AuthorizationTokenDTO()
                 {
-                    Token = token.ToString(),
+                    Token = JsonConvert.SerializeObject(token),
                     ExternalStateToken = state,
                     ExternalAccountId = userId
                 };

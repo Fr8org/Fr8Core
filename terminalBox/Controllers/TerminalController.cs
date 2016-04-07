@@ -34,10 +34,10 @@ namespace terminalBox.Controllers
 
             var dummyActivity = new ActivityTemplateDTO
             {
-                Name = "dummyActivity",
-                Label = "dummyActivity",
+                Name = "SaveToFile",
+                Label = "SaveToFile",
                 Version = "1",
-                Description = "dummyActivity",
+                Description = "SaveToFile",
                 Category = ActivityCategory.Forwarders,
                 Terminal = terminal,
                 NeedsAuthentication = true,

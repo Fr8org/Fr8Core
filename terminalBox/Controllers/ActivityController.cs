@@ -10,7 +10,7 @@ namespace terminalBox.Controllers
     [RoutePrefix("activities")]
     public class ActivityController: BaseTerminalController
     {
-        private const string curTerminal = "terminalDropbox";
+        private const string curTerminal = "terminalBox";
 
         [HttpPost]
         [fr8TerminalHMACAuthenticate(curTerminal)]

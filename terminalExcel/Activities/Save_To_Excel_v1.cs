@@ -145,6 +145,7 @@ namespace terminalExcel.Actions
 
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
+            runtimeCrateManager.MarkAvailableAtRuntime<StandardFileDescriptionCM>("StoredFile");
             ConfigurationControls.ExistingSpreadsheetsList.ListItems = await GetCurrentUsersFiles();
         }
 
@@ -296,7 +297,12 @@ namespace terminalExcel.Actions
                     fileName += ".xlsx";
                 }
 
-                await HubCommunicator.SaveFile(fileName, stream, CurrentFr8UserId);
+                var file = await HubCommunicator.SaveFile(fileName, stream, CurrentFr8UserId);
+                CurrentPayloadStorage.Add(Crate.FromContent("StoredFile", new StandardFileDescriptionCM
+                {
+                    Filename = file.Id.ToString(), // dirty hack
+                    Filetype = ".xlsx"
+                }));
             }
         }
 
