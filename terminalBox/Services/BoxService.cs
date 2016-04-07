@@ -16,6 +16,7 @@ namespace terminalBox.Services
             Box.V2.Auth.OAuthSession session = new Box.V2.Auth.OAuthSession(authToken.AccessToken, authToken.RefreshToken, (authToken.Expires - DateTime.UtcNow).Seconds, "bearer");
             var client = new BoxClient(config, session);
             
+            //client.FoldersManager.
             var folders = await client.FoldersManager.GetFolderItemsAsync("0", 500);
 
             return folders.Entries.Select(folder => new KeyValuePair<string, string>(folder.SequenceId, folder.Name));
