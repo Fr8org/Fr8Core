@@ -161,6 +161,35 @@ namespace terminalUtilities.Excel
             return GetExcelFile(fileAsByteArray, selectedFilePath, isFirstRowAsColumnNames);
         }
 
+        public static List<KeyValuePair<int, string>> GetSpreadsheets(byte[] fileBytes, string extension)
+        {
+            List<KeyValuePair<int, string>> result = new List<KeyValuePair<int, string>>();
+
+            using (var fileStream = new MemoryStream(fileBytes))
+            {
+                var excelReader = extension == ".xls" ? ExcelReaderFactory.CreateBinaryReader(fileStream) : ExcelReaderFactory.CreateOpenXmlReader(fileStream);
+                using (excelReader)
+                {
+                    excelReader.IsFirstRowAsColumnNames = true;
+                    var dataSet = excelReader.AsDataSet();
+                    for (int i = 0; i < dataSet.Tables.Count; i++)
+                    {
+                        result.Add(new KeyValuePair<int, string>(i, dataSet.Tables[i].TableName));
+                    }
+                }
+            }
+            return result;
+        }
+
+        public static byte[] StreamToByteArray(Stream input)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                input.CopyTo(ms);
+                return ms.ToArray();
+            }
+        }
+
         public static StandardTableDataCM GetExcelFile(byte[] fileAsByteArray, string selectedFilePath, bool isFirstRowAsColumnNames = true)
         {
             var ext = Path.GetExtension(selectedFilePath);

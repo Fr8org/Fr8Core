@@ -15,15 +15,12 @@ namespace Data.Infrastructure
         /// <returns>Bytes of the Blob File</returns>
         public byte[] GetRemoteFile(string curBlobUrl)
         {
-            CloudBlobClient curCloudBlobClient = GetDefaultBlobContainer().ServiceClient;
-            var curBlob = new CloudBlockBlob(
-                new Uri(curBlobUrl),
-                curCloudBlobClient.Credentials
-            );
+            var container = GetDefaultBlobContainer();
+            var curBlob = container.GetBlobReference(curBlobUrl);
             curBlob.FetchAttributes();
 
             byte[] content = new byte[curBlob.Properties.Length];
-            curBlob.DownloadToByteArray(content, 0, options: curCloudBlobClient.DefaultRequestOptions);
+            curBlob.DownloadToByteArray(content, 0, options: container.ServiceClient.DefaultRequestOptions);
 
             return content;
         }
