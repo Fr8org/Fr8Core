@@ -87,7 +87,6 @@ $basicAuthGitHub = [System.Convert]::ToBase64String($basicAuthGitHub)
 $headersGitHub = @{Authorization=("Basic {0}" -f $basicAuthGitHub)}
 
 [uri]$vsoTimelineUri = "https://fr8.visualstudio.com/defaultcollection/fr8/_apis/build/builds/" + $buildId + "/timeline?api-version=2.0"
-
 $vsoResponse = try
 {
 	Invoke-RestMethod -Uri $vsoTimelineUri -headers $headersVSO -Method Get -ContentType 'application/json'
