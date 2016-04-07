@@ -159,8 +159,8 @@ namespace DockyardTest.Services
                 var nextAction = FixtureData.TestActivity5();
                 nextAction.CrateStorage = crateStorage;
                 
-                containerDO.CurrentPlanNodeId = currAction.Id;
-                containerDO.NextRouteNodeId = nextAction.Id;
+                containerDO.CurrentActivityId = currAction.Id;
+                containerDO.NextActivityId = nextAction.Id;
 
                 uow.UserRepository.Add(FixtureData.TestDeveloperAccount());
                 uow.ActivityTemplateRepository.Add(currAction.ActivityTemplate);
@@ -184,7 +184,7 @@ namespace DockyardTest.Services
                 var containerDO = uow.ContainerRepository.GetByKey(FixtureData.TestContainer_Id_49());
                 await _container.Run(uow, containerDO);
 
-                Assert.IsNull(containerDO.CurrentPlanNodeId);
+                Assert.IsNull(containerDO.CurrentActivityId);
                // Assert.IsNull(containerDO.NextActivity);
             }
         }
@@ -210,7 +210,7 @@ namespace DockyardTest.Services
                 uow.UserRepository.Add(FixtureData.TestDeveloperAccount());
                 uow.ActivityTemplateRepository.Add(currActivity.ActivityTemplate);
 
-                containerDO.CurrentPlanNodeId = currActivity.Id;
+                containerDO.CurrentActivityId = currActivity.Id;
                 uow.ContainerRepository.Add(containerDO);
                 
                 uow.SaveChanges();
@@ -220,7 +220,7 @@ namespace DockyardTest.Services
                 var containerDO = uow.ContainerRepository.GetByKey(FixtureData.TestContainer_Id_49());
                 await _container.Run(uow, containerDO);
 
-                Assert.IsNull(containerDO.CurrentPlanNodeId);
+                Assert.IsNull(containerDO.CurrentActivityId);
                // Assert.IsNull(processDO.NextActivity);
             }
         }
