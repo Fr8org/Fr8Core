@@ -10,7 +10,7 @@ namespace HubWeb
     {
         public Fr8ApiAuthorizeAttribute(params string[] roles)
         {
-            Roles = string.Join(",", roles);
+            Roles = string.Join(",", roles);error
         }
 
         protected override void HandleUnauthorizedRequest(HttpActionContext actionContext)
