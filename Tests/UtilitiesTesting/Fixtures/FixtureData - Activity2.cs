@@ -268,7 +268,7 @@ namespace UtilitiesTesting.Fixtures
             var containerDO = new ContainerDO()
             {
                 Id = TestContainer_Id_1(),
-                ContainerState = 1,
+                State = 1,
                 PlanId = planDo.Id,
                 Plan = planDo
             };
@@ -347,7 +347,7 @@ namespace UtilitiesTesting.Fixtures
             var containerDO = new ContainerDO()
             {
                 Id = TestContainer_Id_1(),
-                ContainerState = 1,
+                State = 1,
                 PlanId = planDo.Id,
                 Plan = planDo
             };

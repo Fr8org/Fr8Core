@@ -202,7 +202,7 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 return uow.ContainerRepository.GetQuery().Where
-                    (r => r.ContainerState == ContainerState.Executing
+                    (r => r.State == State.Executing
                           && r.Plan.Fr8Account.Id == userId).ToList();
             }
         }

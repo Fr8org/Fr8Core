@@ -248,7 +248,7 @@ namespace TerminalBase.BaseClasses
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.ReProcessChildren);
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.ReprocessChildren);
             }
 
             return payload;
