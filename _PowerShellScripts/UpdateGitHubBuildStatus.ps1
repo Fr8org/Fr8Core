@@ -110,7 +110,7 @@ else
 {
     UpdateGitHubBuildStatus -message $failure
 }
-
+Invoke-Expression "git checkout ."
 Invoke-Expression "git checkout $branchName"
 if ($LastExitCode -ne 0)
 {
