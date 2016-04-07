@@ -4,6 +4,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using System;
+using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -13,6 +14,7 @@ using Hub.Managers;
 using terminalGoogle.Services;
 using TerminalBase.Infrastructure;
 using Data.Control;
+using Hub.Exceptions;
 
 namespace terminalGoogle.Actions
 {
@@ -35,14 +37,35 @@ namespace terminalGoogle.Actions
                     !string.IsNullOrEmpty(token.RefreshToken));
         }
 
-        public override Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             if (CheckAuthentication(curActivityDO, authTokenDO))
             {
-                return Task.FromResult(curActivityDO);
+                return curActivityDO;
             }
 
-            return base.Configure(curActivityDO, authTokenDO);
+            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
+        }
+        
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        {
+            var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
+
+            using (var storage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+
+
+                var ccCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
+                var control = ccCrate.FindByNameNested<DropDownList>("Selected_Google_Form");
+
+                if (!string.IsNullOrWhiteSpace(control?.Value))
+                {
+                    var file = await _googleDrive.DownloadFile(control.Value, authDTO);
+                    int wtf = 0;
+                }
+            }
+
+            return curActivityDO;
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
@@ -85,7 +108,8 @@ namespace terminalGoogle.Actions
                 Label = "Select Google Form",
                 Name = "Selected_Google_Form",
                 Required = true,
-                Source = null
+                Source = null,
+                //Events = new List<ControlEvent>() {new ControlEvent("onChange", "requestConfig")}
             };
 
             var controls = PackControlsCrate(fieldSelectTemplate);
@@ -107,7 +131,7 @@ namespace terminalGoogle.Actions
                 );
         }
 
-        public async Task<ActivityDO> Activate(ActivityDO curActionDTO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActivityDO> Activate(ActivityDO curActionDTO, AuthorizationTokenDO authTokenDO)
         {
             var googleAuthDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
 
@@ -133,7 +157,7 @@ namespace terminalGoogle.Actions
             return await Task.FromResult(curActionDTO);
         }
 
-        public async Task<ActivityDO> Deactivate(ActivityDO curActionDTO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActivityDO> Deactivate(ActivityDO curActionDTO)
         {
             return await Task.FromResult(curActionDTO);
         }
@@ -149,11 +173,26 @@ namespace terminalGoogle.Actions
 
 
             var payloadFields = ExtractPayloadFields(payloadCrates);
+
+            // once we activate the plan we run it. When we run the plan manualy there is no payload with event data. 
+            // Just return Success as a quick fix to avoid "Plan Failed" message.
+            if (payloadFields == null)
+            {
+                return Success(payloadCrates);
+            }
+
             var formResponseFields = CreatePayloadFormResponseFields(payloadFields);
+
+            // once we activate the plan we run it. When we run the plan manualy there is no payload with event data. 
+            // Just return Success as a quick fix to avoid "Plan Failed" message.
+            if (formResponseFields == null)
+            {
+                return Success(payloadCrates);
+            }
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
-                crateStorage.Add(Data.Crates.Crate.FromContent("Google Form Payload Data", new StandardPayloadDataCM(formResponseFields)));
+                crateStorage.Add(Crate.FromContent("Google Form Payload Data", new StandardPayloadDataCM(formResponseFields)));
             }
 
             return Success(payloadCrates);
@@ -191,13 +230,13 @@ namespace terminalGoogle.Actions
             var eventReportMS = CrateManager.GetStorage(payloadCrates).CrateContentsOfType<EventReportCM>().SingleOrDefault();
             if (eventReportMS == null)
             {
-                throw new ApplicationException("EventReportCrate is empty.");
+                return null;
             }
 
             var eventFieldsCrate = eventReportMS.EventPayload.SingleOrDefault();
             if (eventFieldsCrate == null)
             {
-                throw new ApplicationException("EventReportMS.EventPayload is empty.");
+                return null;
             }
 
             return eventReportMS.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()).ToList();

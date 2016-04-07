@@ -25,7 +25,7 @@ namespace terminalGoogle.Controllers
 
         [HttpPost]
         [Route("events")]
-        public async void ProcessIncomingNotification()
+        public async Task ProcessIncomingNotification()
         {
             string eventPayLoadContent = await Request.Content.ReadAsStringAsync();
             await _baseTerminalEvent.Process(eventPayLoadContent, _event.Process);

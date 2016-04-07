@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Http;
 using System.Net.Mime;
 using System.Text;
 using System.Threading;
@@ -20,6 +21,41 @@ using Utilities.Configuration.Azure;
 
 namespace terminalGoogle.Services
 {
+    public class GoogleAppScript
+    {
+        private readonly IGoogleIntegration _googleIntegration;
+        GoogleAuthorizer _googleAuth;
+
+        /*public async Task<ScriptService> CreateScriptService(GoogleAuthDTO authDTO)
+        {
+            var flowData = _googleAuth.CreateFlowMetadata(authDTO, "", CloudConfigurationManager.GetSetting("GoogleRedirectUri"));
+            TokenResponse tokenResponse = new TokenResponse();
+            tokenResponse.AccessToken = authDTO.AccessToken;
+            tokenResponse.RefreshToken = authDTO.RefreshToken;
+            tokenResponse.Scope = CloudConfigurationManager.GetSetting("GoogleScope");
+
+            UserCredential userCredential;
+            try
+            {
+                userCredential = new UserCredential(flowData.Flow, authDTO.AccessToken, tokenResponse);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            // Create Drive API service.
+            DriveService driveService = new DriveService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = userCredential,
+                ApplicationName = "Fr8",
+            });
+
+            return driveService;
+        }*/
+    }
+
+
     public class GoogleDrive
     {
         private readonly IGoogleIntegration _googleIntegration;
@@ -55,6 +91,22 @@ namespace terminalGoogle.Services
             });
 
             return driveService;
+        }
+
+        public async Task<string> DownloadFile(string fileId, GoogleAuthDTO authDTO)
+        {
+            var driveService = await CreateDriveService(authDTO);
+            var getRequest = driveService.Files.Get(fileId);
+            var file = await getRequest.ExecuteAsync();
+            var downloadUlr = file.DownloadUrl;
+            string fileContent;
+
+            using (var httpClient = new HttpClient())
+            {
+                fileContent = await httpClient.GetStringAsync(downloadUlr);
+            }
+
+            return fileContent;
         }
 
         public async Task<Dictionary<string, string>> GetGoogleForms(GoogleAuthDTO authDTO)
