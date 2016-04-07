@@ -70,7 +70,7 @@ namespace terminalExcel.Actions
                                           {
                                               Selected = true,
                                               Name = nameof(UseNewSpreadsheetOption),
-                                              Value = "Store in a new Google Spreadsheet",
+                                              Value = "Store in a new Excel Spreadsheet",
                                               Controls = new List<ControlDefinitionDTO> { NewSpreadsheetName }
                                           };
                 UseExistingSpreadsheetOption = new RadioButtonOption()
