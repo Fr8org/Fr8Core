@@ -71,6 +71,7 @@ namespace terminalExcelTests.Activities
             var result = activity.Run(initialConfigResult, Guid.Empty, new AuthorizationTokenDO()).Result;
             var operationState = _crateManager.GetOperationalState(result);
             ErrorDTO error;
+            Assert.IsTrue(false);
             Assert.IsTrue(operationState.CurrentActivityResponse.TryParseErrorDTO(out error));
         }
 
