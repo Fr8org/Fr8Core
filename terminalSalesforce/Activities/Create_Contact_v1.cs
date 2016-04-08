@@ -21,7 +21,10 @@ namespace terminalSalesforce.Actions
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO,AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
+            if (CheckAuthentication(curActivityDO, authTokenDO))
+            {
+                return curActivityDO;
+            }
 
             return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
@@ -54,15 +57,14 @@ namespace terminalSalesforce.Actions
 
                 AddTextSourceControlForDTO<ContactDTO>(
                     crateStorage,
-                    "Upstream Terminal-Provided Fields",
+                    "",
                     requestUpstream: true
                 );
             }
 
             return await Task.FromResult(curActivityDO);
         }
-
-
+        
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
@@ -99,7 +101,7 @@ namespace terminalSalesforce.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var contact = _salesforce.CreateSalesforceDTO<ContactDTO>(curActivityDO, payloadCrates, ExtractSpecificOrUpstreamValue);
+            var contact = _salesforce.CreateSalesforceDTO<ContactDTO>(curActivityDO, payloadCrates);
             var result = await _salesforce.CreateObject(contact, "Contact", authTokenDO);
 
             if (!string.IsNullOrEmpty(result))

@@ -41,7 +41,6 @@ namespace DockyardTest.Services
             var eventService = new Event();
             var curCrateStandardEventReport = ObjectFactory.GetInstance<ICrateManager>().FromDto(FixtureData.CrateDTOForEvents(externalAccountId));
             await eventService.ProcessInboundEvents(curCrateStandardEventReport);
-
             Assert.AreEqual(2, activityMock.Processed);
         }
         //[Test]
@@ -75,7 +74,6 @@ namespace DockyardTest.Services
         //}
     }
 
-
     public class PlanNodeMock : IPlanNode
     {
         public int Processed;
@@ -95,7 +93,7 @@ namespace DockyardTest.Services
         }
 
         public List<T> GetCrateManifestsByDirection<T>(Guid activityId, CrateDirection direction,
-            AvailabilityType availability) where T : Manifest
+            AvailabilityType availability, bool includeCratesFromActivity = true) where T : Manifest
         {
             throw new NotImplementedException();
         }

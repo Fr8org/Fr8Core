@@ -100,13 +100,8 @@ namespace terminalDocuSignTests.Integration
 
             if (!defaultDocuSignAuthTokenExists)
             {
-                var creds = new CredentialsDTO()
-                {
-                    Username = "freight.testing@gmail.com",
-                    Password = "I6HmXEbCxN",
-                    IsDemoAccount = true,
-                    TerminalId = solution.ActivityTemplate.TerminalId
-                };
+                var creds = GetDocuSignCredentials();
+                creds.TerminalId = solution.ActivityTemplate.TerminalId;
 
                 var token = await HttpPostAsync<CredentialsDTO, JObject>(
                     _baseUrl + "authentication/token", creds
@@ -152,8 +147,8 @@ namespace terminalDocuSignTests.Integration
         private void ValidateCrateStructure(ICrateStorage crateStorage)
         {
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardQueryFieldsCM>().Count());
-            Assert.AreEqual("Queryable Criteria", crateStorage.CratesOfType<StandardQueryFieldsCM>().Single().Label);
+            Assert.AreEqual(1, crateStorage.CratesOfType<TypedFieldsCM>().Count());
+            Assert.AreEqual("Queryable Criteria", crateStorage.CratesOfType<TypedFieldsCM>().Single().Label);
         }
 
         private void ValidateConfigurationControls(ICrateStorage crateStorage)

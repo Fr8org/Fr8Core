@@ -1,11 +1,14 @@
-﻿namespace Data.States
+﻿using System;
+
+namespace Data.States
 {
+    [Flags]
     public enum AvailabilityType
     {
         NotSet = 0,
-        Configuration = 1,
-        RunTime = 2,
-        Always = 3
+        Configuration = 0x1,
+        RunTime = 0x2,
+        Always = Configuration | RunTime
     }
 
 }

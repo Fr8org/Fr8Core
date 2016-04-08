@@ -29,15 +29,36 @@
                                 <tr ng-repeat="plan in activePlans | filter: {planState:2}">
                                     <td ng-click="goToPlanDetailsPage(plan.id)">{{ plan.name }}</td>
                                     <td ng-click="goToPlanDetailsPage(plan.id)">{{ plan.description }}</td>
-                                    <td ng-click="goToPlanDetailsPage(plan.id)">{{ plan.lastUpdated }}</td>
+                                    <td ng-click="goToPlanDetailsPage(plan.id)"></td>
                                     <td ng-click="goToPlanDetailsPage(plan.id)">
                                         <span class="bold font-green-haze">{{plan.planState == 2 ? 'Active' : 'Inactive' }}</span>
                                     </td>
                                     <td>
                                         <div>
-                                            <button type="button" class="btn btn-sm red" ng-click="deactivatePlan(plan);">Deactivate</button>
-                                            <button type="button" class="btn btn-sm red" ng-click="deletePlan(plan.id,plan.planState);">Delete</button>
-                                            <button type="button" class="btn btn-sm green" ng-click="goToPlanPage(plan.id);">Edit</button>
+                                            <md-button class="md-icon-button" ng-click="goToPlanDetailsPage(plan.id);">
+                                                <md-icon md-font-icon="fa fa-ellipsis-h" class="fa fa-lg"></md-icon>
+                                                <md-tooltip md-direction="top">
+                                                    Settings
+                                                </md-tooltip>
+                                            </md-button>
+                                            <md-button class="md-icon-button" ng-click="deactivatePlan(plan);">
+                                                <md-icon md-font-icon="fa-bolt" class="fa fa-lg font-red-haze"></md-icon>
+                                                <md-tooltip md-direction="top">
+                                                    Deactivate
+                                                </md-tooltip>
+                                            </md-button>
+                                            <md-button class="md-icon-button" ng-click="deletePlan(plan.id,plan.planState);">
+                                                <md-icon md-font-icon="fa-trash" class="fa fa-lg"></md-icon>
+                                                <md-tooltip md-direction="top">
+                                                    Delete
+                                                </md-tooltip>
+                                            </md-button>
+                                            <md-button class="md-icon-button" ng-click="goToPlanPage(plan.id);">
+                                                <md-icon md-font-icon="fa-edit" class="fa fa-lg"></md-icon>
+                                                <md-tooltip md-direction="top">
+                                                    Edit
+                                                </md-tooltip>
+                                            </md-button>
                                         </div>
                                     </td>
                                 </tr>
@@ -77,14 +98,35 @@
                                     <tr ng-repeat="plan in inActivePlans | filter: {planState:1}">
                                         <td ng-click="goToPlanDetailsPage(plan.id)">{{ plan.name }}</td>
                                         <td ng-click="goToPlanDetailsPage(plan.id)">{{ plan.description }}</td>
-                                        <td ng-click="goToPlanDetailsPage(plan.id)">{{ plan.lastUpdated }}</td>
+                                        <td ng-click="goToPlanDetailsPage(plan.id)"></td>
                                         <td ng-click="goToPlanDetailsPage(plan.id)">
                                             <span class="bold font-green-haze">{{plan.planState == 2 ? 'Active' : 'Inactive' }}</span>
                                         <td>
                                             <div>
-                                                <button type="button" class="btn btn-sm red" ng-click="deletePlan(plan.id,plan.planState);">Delete</button>
-                                                <button type="button" class="btn btn-sm green" ng-click="goToPlanPage(plan.id);">Edit</button>
-                                                <button type="button" class="btn btn-sm btn-primary" ng-click="executePlan(plan,$event);">Run Now</button>
+                                                <md-button class="md-icon-button" ng-click="goToPlanDetailsPage(plan.id);">
+                                                    <md-icon md-font-icon="fa fa-ellipsis-h" class="fa fa-lg"></md-icon>
+                                                    <md-tooltip md-direction="top">
+                                                        Settings
+                                                    </md-tooltip>
+                                                </md-button>
+                                                <md-button class="md-icon-button" ng-click="executePlan(plan,$event);">
+                                                    <md-icon md-font-icon="fa-play" class="fa fa-lg font-green-haze"></md-icon>
+                                                    <md-tooltip md-direction="top">
+                                                        Run
+                                                    </md-tooltip>
+                                                </md-button>
+                                                <md-button class="md-icon-button" ng-click="deletePlan(plan.id,plan.planState);">
+                                                    <md-icon md-font-icon="fa-trash" class="fa fa-lg"></md-icon>
+                                                    <md-tooltip md-direction="top">
+                                                        Delete
+                                                    </md-tooltip>
+                                                </md-button>
+                                                <md-button class="md-icon-button" ng-click="goToPlanPage(plan.id);">
+                                                    <md-icon md-font-icon="fa-edit" class="fa fa-lg"></md-icon>
+                                                    <md-tooltip md-direction="top">
+                                                        Edit
+                                                    </md-tooltip>
+                                                </md-button>
                                             </div>
                                         </td>
                                     </tr>

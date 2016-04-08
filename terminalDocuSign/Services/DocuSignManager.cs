@@ -16,6 +16,7 @@ using Data.Validations;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services.NewApi;
 using Utilities.Configuration.Azure;
+using System.IO;
 
 namespace terminalDocuSign.Services.New_Api
 {
@@ -29,10 +30,21 @@ namespace terminalDocuSign.Services.New_Api
     {
         public DocuSignApiConfiguration SetUp(AuthorizationTokenDO authTokenDO)
         {
+            string baseUrl = string.Empty;
+            string integratorKey = string.Empty;
+
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             //create configuration for future api calls
-            string baseUrl = CloudConfigurationManager.GetSetting("environment") + "restapi/";
-            string integratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey");
+            if (docuSignAuthDTO.IsDemoAccount)
+            {
+                integratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey_DEMO");
+                baseUrl = CloudConfigurationManager.GetSetting("environment_DEMO") + "restapi/";
+            }
+            else
+            {
+                integratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey");
+                baseUrl = docuSignAuthDTO.Endpoint.Replace("v2/accounts/" + docuSignAuthDTO.AccountId.ToString(), "");
+            }
             ApiClient apiClient = new ApiClient(baseUrl);
             string authHeader = "bearer " + docuSignAuthDTO.ApiPassword;
             Configuration conf = new Configuration(apiClient);
@@ -51,13 +63,20 @@ namespace terminalDocuSign.Services.New_Api
 
         public List<FieldDTO> GetTemplatesList(DocuSignApiConfiguration conf)
         {
-            var tmpApi = new TemplatesApi(conf.Configuration);
-            var result = tmpApi.ListTemplates(conf.AccountId);
-            if (result.EnvelopeTemplates != null && result.EnvelopeTemplates.Count > 0)
-                return result.EnvelopeTemplates.Where(a => !string.IsNullOrEmpty(a.Name))
-                    .Select(a => new FieldDTO(a.Name, a.TemplateId) { Availability = AvailabilityType.Configuration }).ToList();
-            else
-                return new List<FieldDTO>();
+            try
+            {
+                var tmpApi = new TemplatesApi(conf.Configuration);
+                var result = tmpApi.ListTemplates(conf.AccountId);
+                if (result.EnvelopeTemplates != null && result.EnvelopeTemplates.Count > 0)
+                    return result.EnvelopeTemplates.Where(a => !string.IsNullOrEmpty(a.Name))
+                        .Select(a => new FieldDTO(a.Name, a.TemplateId) { Availability = AvailabilityType.Configuration }).ToList();
+                else
+                    return new List<FieldDTO>();
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         public JObject DownloadDocuSignTemplate(DocuSignApiConfiguration config, string selectedDocusignTemplateId)
@@ -105,97 +124,97 @@ namespace terminalDocuSign.Services.New_Api
             return new Tuple<IEnumerable<FieldDTO>, IEnumerable<DocuSignTabDTO>>(recipientsAndTabs, docuTabs);
         }
 
-        public void SendAnEnvelopeFromTemplate(DocuSignApiConfiguration loginInfo, List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId)
+        public void SendAnEnvelopeFromTemplate(DocuSignApiConfiguration loginInfo, List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId, StandardFileDescriptionCM fileHandler = null)
         {
+            EnvelopesApi envelopesApi = new EnvelopesApi(loginInfo.Configuration);
+            TemplatesApi templatesApi = new TemplatesApi(loginInfo.Configuration);
+            bool override_document = fileHandler != null;
+            Recipients recipients = null;
+            EnvelopeSummary envelopeSummary = null;
 
             //creatig an envelope definiton
             EnvelopeDefinition envDef = new EnvelopeDefinition();
             envDef.EmailSubject = "Test message from Fr8";
-            envDef.TemplateId = curTemplateId;
             envDef.Status = "created";
 
-            //creating an envelope
-            EnvelopesApi envelopesApi = new EnvelopesApi(loginInfo.Configuration);
-            EnvelopeSummary envelopeSummary = envelopesApi.CreateEnvelope(loginInfo.AccountId, envDef);
 
-
-            var templatesApi = new TemplatesApi(loginInfo.Configuration);
             var templateRecepients = templatesApi.ListRecipients(loginInfo.AccountId, curTemplateId);
 
-            var recepients = envelopesApi.ListRecipients(loginInfo.AccountId, envelopeSummary.EnvelopeId);
+            //adding file or applying template
+            if (override_document)
+            {
+                //if we override document - we don't create an envelope yet 
+                //we create it with recipients once we've processed recipient values and tabs
+                envDef.Documents = new List<Document>() { new Document()
+                { DocumentBase64 = fileHandler.TextRepresentation, FileExtension = fileHandler.Filetype,
+                    DocumentId = "1", Name = fileHandler.Filename ?? Path.GetFileName(fileHandler.DockyardStorageUrl) ?? "document" } };
+                recipients = templateRecepients;
+            }
+            else
+            {
+                //creating envelope
+                envDef.TemplateId = curTemplateId;
+                envelopeSummary = envelopesApi.CreateEnvelope(loginInfo.AccountId, envDef);
+                //requesting list of recipients since their Ids might be different from the one we got from tempates
+                recipients = envelopesApi.ListRecipients(loginInfo.AccountId, envelopeSummary.EnvelopeId);
+            }
 
             //updating recipients
-            foreach (var recepient in recepients.Signers)
+            foreach (var recepient in recipients.Signers)
             {
                 var corresponding_template_recipient = templateRecepients.Signers.Where(a => a.RoutingOrder == recepient.RoutingOrder).FirstOrDefault();
                 var related_fields = rolesList.Where(a => a.Tags.Contains("recipientId:" + corresponding_template_recipient.RecipientId));
-                recepient.Name = related_fields.Where(a => a.Key.Contains("role name")).FirstOrDefault().Value;
-                recepient.Email = related_fields.Where(a => a.Key.Contains("role email")).FirstOrDefault().Value;
+                string new_email = related_fields.Where(a => a.Key.Contains("role email")).FirstOrDefault().Value;
+                string new_name = related_fields.Where(a => a.Key.Contains("role name")).FirstOrDefault().Value;
+                recepient.Name = string.IsNullOrEmpty(new_name) ? recepient.Name : new_name;
+                recepient.Email = string.IsNullOrEmpty(new_email) ? recepient.Email : new_email;
+
                 if (!recepient.Email.IsValidEmailAddress())
                 {
                     throw new ApplicationException($"'{recepient.Email}' is not a valid email address");
                 }
 
                 //updating tabs
-                var tabs = envelopesApi.ListTabs(loginInfo.AccountId, envelopeSummary.EnvelopeId, recepient.RecipientId);
-                JObject jobj = JObject.Parse(tabs.ToJson());
-                foreach (var item in jobj.Properties())
-                {
-                    string tab_type = item.Name;
-                    var fields = fieldList.Where(a => a.Tags.Contains(tab_type) && a.Tags.Contains("recipientId:" + corresponding_template_recipient.RecipientId));
-                    foreach (JObject tab in item.Value)
-                    {
-                        FieldDTO corresponding_field = null;
-                        switch (tab_type)
-                        {
-                            case "radioGroupTabs":
-                                corresponding_field = fields.Where(a => a.Key.Contains(tab.Property("groupName").Value.ToString())).FirstOrDefault();
-                                if (corresponding_field == null)
-                                    break;
-                                tab["radios"].Where(a => a["value"].ToString() == corresponding_field.Value).FirstOrDefault()["selected"] = "true";
-                                foreach (var radioItem in tab["radios"].Where(a => a["value"].ToString() != corresponding_field.Value).ToList())
-                                {
-                                    radioItem["selected"] = "false";
-                                }
-                                break;
+                var tabs = override_document ? templatesApi.ListTabs(loginInfo.AccountId, curTemplateId, corresponding_template_recipient.RecipientId, new Tabs()) : envelopesApi.ListTabs(loginInfo.AccountId, envelopeSummary.EnvelopeId, recepient.RecipientId);
 
-                            case "listTabs":
-                                corresponding_field = fields.Where(a => a.Key.Contains(tab.Property("tabLabel").Value.ToString())).FirstOrDefault();
-                                if (corresponding_field == null)
-                                    break;
-                                tab["listItems"].Where(a => a["value"].ToString() == corresponding_field.Value.Trim()).FirstOrDefault()["selected"] = "true";
-                                foreach (var listItem in tab["listItems"].Where(a => a["value"].ToString() != corresponding_field.Value.Trim()))
-                                {
-                                    //set all other to false
-                                    listItem["selected"] = "false";
-                                }
-                                //["selected"] = "true";
-                                tab["value"] = corresponding_field.Value;
-                                break;
-                            case "checkboxTabs":
-                                corresponding_field = fields.Where(a => a.Key.Contains(tab.Property("tabLabel").Value.ToString())).FirstOrDefault();
-                                if (corresponding_field == null)
-                                    break;
-                                tab["selected"] = corresponding_field.Value;
-                                break;
-                            default:
-                                corresponding_field = fields.Where(a => a.Key.Contains(tab.Property("tabLabel").Value.ToString())).FirstOrDefault();
-                                if (corresponding_field == null)
-                                    break;
-                                tab["value"] = corresponding_field.Value;
-                                break;
-                        }
-                    }
-                }
-
-                tabs = jobj.ToObject<Tabs>();
-
-                envelopesApi.UpdateTabs(loginInfo.AccountId, envelopeSummary.EnvelopeId, recepient.RecipientId, tabs);
-                //end of tabs updating
+                JObject jobj = DocuSignTab.ApplyValuesToTabs(fieldList, corresponding_template_recipient, tabs);
+                recepient.Tabs = jobj.ToObject<Tabs>();
             }
 
-            envelopesApi.UpdateRecipients(loginInfo.AccountId, envelopeSummary.EnvelopeId, recepients);
+            if (override_document)
+            {
+                //deep copy to exclude tabs
+                var recps_deep_copy = JsonConvert.DeserializeObject<Recipients>(JsonConvert.SerializeObject(recipients));
+                recps_deep_copy.Signers.ForEach(a => a.Tabs = null);
+                envDef.Recipients = recps_deep_copy;
+                //creating envlope
+                envelopeSummary = envelopesApi.CreateEnvelope(loginInfo.AccountId, envDef);
+            }
+            else
+            {
+                envelopesApi.UpdateRecipients(loginInfo.AccountId, envelopeSummary.EnvelopeId, recipients);
+            }
 
+            foreach (var recepient in recipients.Signers)
+            {
+                if (override_document)
+                {
+                    JObject jobj = JObject.Parse(recepient.Tabs.ToJson());
+                    foreach (var item in jobj.Properties())
+                    {
+                        foreach (var tab in (JToken)item.Value)
+                        {
+                            tab["documentId"] = "1";
+                        }
+                    }
+                    var tabs = jobj.ToObject<Tabs>();
+                    envelopesApi.CreateTabs(loginInfo.AccountId, envelopeSummary.EnvelopeId, recepient.RecipientId, tabs);
+                }
+                else
+                    envelopesApi.UpdateTabs(loginInfo.AccountId, envelopeSummary.EnvelopeId, recepient.RecipientId, recepient.Tabs);
+            }
+
+            // sending an envelope
             envelopesApi.Update(loginInfo.AccountId, envelopeSummary.EnvelopeId, new Envelope() { Status = "sent" });
         }
 

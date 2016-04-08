@@ -1,4 +1,4 @@
-﻿<div class='form-group'>
+﻿<div class='configuration-control-form-group'>
 
     <!--
     This fine contains a map of snippets which are rendered by Angular depending on field type
@@ -25,8 +25,18 @@
     <div ng-if='field.type == "TextBox"'>
         <label class='control-label' ng-if="field.label">{{::field.label}}</label>
         <input type='text' ng-model='field.value' ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }"
-               ng-blur="onChange($event)" ng-required='field.required' data-field-name='{{::field.name}}' id='pca__txt__{{::field.name | validId}}'
+               ng-change="onChange(field)" ng-required='field.required' data-field-name='{{::field.name}}' id='pca__txt__{{::field.name | validId}}'
                class='form-control form-control-focus' name='pca__txt__{{::field.name | validId}}' stop-click-propagation>
+    </div>
+
+    <!--
+        Textarea template
+        -->
+    <div ng-if='field.type == "TextBoxBig"'>
+        <label class='control-label' ng-if="field.label">{{::field.label}}</label>
+        <textarea type='text' ng-model='field.value' ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }"
+                  ng-change="onChange(field)" ng-required='field.required' data-field-name='{{::field.name}}' id='pca__txt__{{::field.name | validId}}'
+                  class='form-control form-control-focus' name='pca__txt__{{::field.name | validId}}' stop-click-propagation></textarea>
     </div>
 
     <!--
@@ -34,7 +44,7 @@
         -->
     <div ng-if='field.type == "FilePicker"'>
         <label class='control-label'>{{::field.label}}</label>
-        <file-picker field='field'></file-picker>
+        <file-picker field='field' change="onChange"></file-picker>
     </div>
 
     <!--
@@ -193,6 +203,22 @@
     <div ng-if='field.type == "ContainerTransition"'>
         <container-transition field="field" current-action="currentAction" change="onChange" plan="plan"></container-transition>
     </div>
+
+
+    <!-- ControlContainer -->
+    <div ng-if='field.type == "MetaControlContainer"'>
+        <meta-control-container field="field" current-action="currentAction" change="onChange" plan="plan"></meta-control-container>
+    </div>
+
+    <!-- ControlList -->
+    <div ng-if='field.type == "ControlList"'>
+        <control-list field="field" current-action="currentAction" change="onChange" plan="plan"></control-list>
+    </div>
+
+    <div ng-if='field.type == "ActivityChooser"'>
+        <activity-chooser field="field" current-action="currentAction" plan="plan"></activity-chooser>
+    </div>
+
 
     <!-- Add more configuration field templates below -->
 </div>

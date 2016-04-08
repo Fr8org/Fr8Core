@@ -298,7 +298,7 @@ namespace terminalDocuSign.Actions
                     Conditions = conditions
                 });
 
-                var queryableCriteria = new StandardQueryFieldsCM(new QueryFieldDTO[] {new QueryFieldDTO("Status", "Status", QueryFieldType.String, new TextBox()
+                var queryableCriteria = new TypedFieldsCM(new TypedFieldDTO[] {new TypedFieldDTO("Status", "Status", FieldType.String, new TextBox()
                             {
                                 Name = "QueryField_Status"
                             })});
@@ -356,12 +356,12 @@ namespace terminalDocuSign.Actions
                 });
 
 
-                var queryCriteria = Data.Crates.Crate.FromContent("Queryable Criteria", new StandardQueryFieldsCM(GetFieldsByObjectId(selectedObject.Id)));
+                var queryCriteria = Data.Crates.Crate.FromContent("Queryable Criteria", new TypedFieldsCM(GetFieldsByObjectId(selectedObject.Id)));
                 crateStorage.Add(queryCriteria);
             }
         }
 
-        private IEnumerable<QueryFieldDTO> GetFieldsByObjectId(Guid typeId)
+        private IEnumerable<TypedFieldDTO> GetFieldsByObjectId(Guid typeId)
         {
             var fields = new List<FieldDTO>();
 
@@ -375,10 +375,10 @@ namespace terminalDocuSign.Actions
 
             return fields.OrderBy(x => x.Key)
                 .Select(x =>
-                    new QueryFieldDTO(
+                    new TypedFieldDTO(
                         x.Key,
                         x.Key,
-                        QueryFieldType.String,
+                        FieldType.String,
                         new TextBox()
                         {
                             Name = "QueryField_" + x.Key
@@ -498,17 +498,17 @@ namespace terminalDocuSign.Actions
             {
                 if (curDocumentation.Contains("TrackDocuSignRecipients"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution work with notifications"));
+                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution work with notifications"));
                 }
                 if (curDocumentation.Contains("ExplainService"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }
-                return Task.FromResult(GenerateErrorRepsonce("Unknown contentPath"));
+                return Task.FromResult(GenerateErrorRepsonse("Unknown contentPath"));
             }
             return
                 Task.FromResult(
-                    GenerateErrorRepsonce("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+                    GenerateErrorRepsonse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }

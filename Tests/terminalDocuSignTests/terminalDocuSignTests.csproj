@@ -41,9 +41,9 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DocuSign.Integration.Client, Version=1.6.1.0, Culture=neutral, PublicKeyToken=7fca6fcbbc219ede, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\DocuSign.Integration.Client.dll.1.6.1\lib\DocuSign.Integration.Client.dll</HintPath>
-      <Private>True</Private>
+    <Reference Include="DocuSign.eSign, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Utilities\DocuSign.eSign.dll</HintPath>
     </Reference>
     <Reference Include="Moq, Version=4.2.1507.118, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
@@ -114,12 +114,11 @@
     <Compile Include="Integration\Mail_Merge_Into_DocuSign_v1_Tests.cs" />
     <Compile Include="Integration\Monitor_DocuSign_v1_Tests.cs" />
     <Compile Include="Integration\Query_DocuSign_v1_Tests.cs" />
-    <Compile Include="Integration\Receive_DocuSign_Envelope_v1_Tests.cs" />
     <Compile Include="Integration\Track_DocuSign_Recipients_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Authentication_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Discover_v1Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Integration\Record_DocuSign_Events_v1_Tests.cs" />
+    <Compile Include="Integration\Prepare_DocuSign_Events_For_Storage_v1_Tests.cs" />
     <Compile Include="Integration\Send_DocuSign_Envelope_v1_Tests.cs" />
   </ItemGroup>
   <ItemGroup>

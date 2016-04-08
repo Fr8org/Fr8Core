@@ -24,7 +24,6 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Repositories;
-using DocuSign.Integrations.Client;
 using Hub.ExternalServices;
 using Hub.Security;
 using Moq;
@@ -38,6 +37,7 @@ using Utilities;
 using Utilities.Interfaces;
 using System.Net.Http;
 using Microsoft.ApplicationInsights;
+using System.Linq.Expressions;
 
 namespace Hub.StructureMap
 {
@@ -132,11 +132,13 @@ namespace Hub.StructureMap
 	            For<IPusherNotifier>().Use<PusherNotifier>();
                 For<IAuthorization>().Use<Authorization>();
                 For<ITag>().Use<Tag>();
-
+                For<IOrganization>().Use<Organization>();
+                
                 For<IHMACAuthenticator>().Use<HMACAuthenticator>();
                 For<IHMACService>().Use<Fr8HMACService>();
 
                 For<TelemetryClient>().Use<TelemetryClient>();
+                For<IJobDispatcher>().Use<HangfireJobDispatcher>();
                // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
             }
         }
@@ -204,6 +206,7 @@ namespace Hub.StructureMap
 	            For<IPusherNotifier>().Use(pusherNotifierMock.Object).Singleton();
 
                 For<ITag>().Use<Tag>();
+                For<IOrganization>().Use<Organization>();
 
                 var fr8HMACAuthenticator = new Mock<IHMACAuthenticator>();
                 fr8HMACAuthenticator.Setup(x => x.IsValidRequest(It.IsAny<HttpRequestMessage>(), It.IsAny<string>())).ReturnsAsync(true);
@@ -216,7 +219,16 @@ namespace Hub.StructureMap
                 For<IHMACService>().Use(fr8HMACService.Object);
                 For<TelemetryClient>().Use<TelemetryClient>();
                 For<ITerminal>().Use(new TerminalServiceForTests()).Singleton();
-               // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
+                For<IJobDispatcher>().Use<MockJobDispatcher>();
+                // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
+            }
+        }
+
+        public class MockJobDispatcher : IJobDispatcher
+        {
+            public void Enqueue(Expression<Action> job)
+            {
+                job.Compile().Invoke();
             }
         }
 

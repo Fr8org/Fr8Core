@@ -18,8 +18,8 @@ using Hub.Interfaces;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using terminalExcel.Infrastructure;
 using Data.States;
+using terminalUtilities.Excel;
 using Utilities;
 
 namespace terminalExcel.Actions
@@ -115,7 +115,7 @@ namespace terminalExcel.Actions
             StandardFileDescriptionCM fileHandleMS = upstreamFileHandleCrates.First().Get<StandardFileDescriptionCM>();
 
             // Use the url for file from StandardFileHandleMS and read from the file and transform the data into StandardTableData and assign it to Action's crate storage
-            StandardTableDataCM tableDataMS = ExcelUtils.GetTableData(fileHandleMS.DockyardStorageUrl);
+            StandardTableDataCM tableDataMS = ExcelUtils.GetExcelFile(fileHandleMS.DockyardStorageUrl);
 
             return tableDataMS;
         }

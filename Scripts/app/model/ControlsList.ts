@@ -16,6 +16,7 @@
         events: Array<ControlEvent>;
         value: string;
         isFocused: boolean;
+        isHidden: boolean;
     }
 
     export class ControlEvent {
@@ -38,7 +39,12 @@
     }
 
     export class TextBox extends ControlDefinitionDTO {
-        required: boolean;        
+        required: boolean;
+
+        constructor() {
+            super();
+            this.type = "TextBox";
+        }
     }
 
     export class File extends ControlDefinitionDTO {
@@ -79,6 +85,7 @@
     }
 
     export enum AvailabilityType {
+        NotSet = 0,
         Configuration = 1,
         RunTime = 2,
         Always = 3
@@ -100,18 +107,95 @@
         public label: string;
         public filterByTag: string;
         public requestUpstream: boolean;
+        public availabilityType: AvailabilityType;
     }
 
     export class DropDownList extends ControlDefinitionDTO {
         listItems: Array<DropDownListItem>;
         source: FieldSource;
         selectedKey: string;
+        
+
+        constructor() {
+            super();
+            this.type = "DropDownList";
+        }
     }
 
     export class FilterConditionDTO {
         field: string;
         operator: string;
         value: string;
+    }
+
+    export class ControlMetaDescriptionDTO {
+        public controls: Array<ControlDefinitionDTO> = [];
+        public type: string;
+        public description: string;
+        
+        constructor(type: string, description: string) {
+            this.type = type;
+            this.description = description;
+        }
+    }
+    
+    export class TextBoxMetaDescriptionDTO extends ControlMetaDescriptionDTO
+    {
+        constructor() {
+            super("TextBoxMetaDescriptionDTO", "TextBox");
+            var tb = new model.TextBox();
+            tb.label = "Label :";
+            this.controls.push(tb);
+        }
+    }
+    
+    export class TextBlockMetaDescriptionDTO extends ControlMetaDescriptionDTO
+    {
+        constructor() {
+            super("TextBlockMetaDescriptionDTO", "TextBlock");
+            var tb = new model.TextBox();
+            tb.label = "Text Content :";
+            this.controls.push(tb);
+        }
+    }
+    
+    export class FilePickerMetaDescriptionDTO extends ControlMetaDescriptionDTO
+    {
+
+        static fileExtensions: Array<DropDownListItem> = [new DropDownListItem("Excel Files", ".xlsx")];
+        constructor() {
+            super("FilePickerMetaDescriptionDTO", "File Uploader");
+            var tb = new model.TextBox();
+            tb.label = "Label :";
+            this.controls.push(tb);
+
+            var listItems: Array<DropDownListItem> = [];
+            for (var i = 0; i < FilePickerMetaDescriptionDTO.fileExtensions.length; i++) {
+                var extensionValue = FilePickerMetaDescriptionDTO.fileExtensions[i];
+                listItems.push(extensionValue);
+            }
+            var allowedExtensions = new model.DropDownList();
+            allowedExtensions.listItems = listItems;
+            allowedExtensions.label = "File Type:";
+            this.controls.push(allowedExtensions);
+        }
+
+    }
+
+    export class ListTemplate {
+        template: Array<ControlDefinitionDTO>;
+        name: string;
+    }
+
+    export class ControlList extends ControlDefinitionDTO {
+        controlGroups: Array<Array<ControlDefinitionDTO>>;
+        templateContainer: ListTemplate;
+        addControlGroupButtonText: string;
+        noDataMessage: string;
+    }
+
+    export class MetaControlContainer extends ControlDefinitionDTO {
+        metaDescriptions: Array<ControlMetaDescriptionDTO>;
     }
 
     export class ContainerTransitionField {
@@ -144,6 +228,7 @@
         crateDescriptions: Array<CrateDescriptionDTO>;
         singleManifestOnly: boolean;
         requestUpstream: boolean;
+        source: FieldSource;
     }
 
     export class TextSource extends DropDownList {
@@ -204,5 +289,10 @@
         comparatorList: Array<DropDownListItem>;
         valueSource: string;
         textValue: string;
+    }
+
+    export class ActivityChooser extends ControlDefinitionDTO {
+        subPlanId: string;
+        activityTemplateLabel: string;
     }
 }

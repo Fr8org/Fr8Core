@@ -22,7 +22,6 @@ using Utilities;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using terminalExcel.Actions;
-using terminalExcel.Infrastructure;
 using terminalExcel.Fixtures;
 using TerminalBase.Infrastructure;
 

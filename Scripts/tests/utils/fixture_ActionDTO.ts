@@ -23,7 +23,8 @@ module dockyard.tests.utils.fixtures {
                     "fieldLabel": "SQL Connection String",
                     "events": [],
                     "isFocused": false,
-                    "label": null
+                    "label": null,
+                    isHidden: false,
                 },
                 {
                     "type": "textField",

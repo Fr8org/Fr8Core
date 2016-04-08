@@ -64,7 +64,6 @@ namespace HealthMonitor
                         StartHub(app, connectionString);
                     }
                     else {
-                        // Run terminals
                         var terminal = terminals.FirstOrDefault(t => t.Name == app.Name && t.Version == CURRENT_TERMINAL_VERSION.ToString());
                         if (terminal != null)
                         {
@@ -156,7 +155,7 @@ namespace HealthMonitor
                 // HubLauncher is ready, can start tests
                 _waitHandle.Set();
             }
-            Console.WriteLine("HubLauncher:\\> " + e.Data);
+            Console.WriteLine("      HubLauncher:\\> " + e.Data);
         }
 
         private SelfHostedTerminalsCollection GetSelfHostedApps()

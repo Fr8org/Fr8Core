@@ -78,7 +78,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Activities\Load_Excel_File_v1_Tests.cs" />
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
     <Compile Include="Integration\Load_Table_Data_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Authentication_v1_Tests.cs" />
@@ -112,6 +111,10 @@
     <ProjectReference Include="..\..\terminalExcel\terminalExcel.csproj">
       <Project>{57373D06-6B82-4EC6-AF62-ED25FE170C61}</Project>
       <Name>terminalExcel</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utilities\Utilities.csproj">
+      <Project>{D6C86CFF-37C0-49BE-9F77-4F876CE6A793}</Project>
+      <Name>Utilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\HealthMonitorUtility\HealthMonitorUtility.csproj">
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>

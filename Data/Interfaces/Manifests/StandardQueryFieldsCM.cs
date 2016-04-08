@@ -7,20 +7,20 @@ using Data.Interfaces.DataTransferObjects;
 namespace Data.Interfaces.Manifests
 {
     [CrateManifestSerializer(typeof(StandardQueryFieldsSerializer))]
-    public class StandardQueryFieldsCM : Manifest
+    public class TypedFieldsCM : Manifest
     {
-        public StandardQueryFieldsCM()
-			  : base(Constants.MT.StandardQueryFields)
+        public TypedFieldsCM()
+			  : base(Constants.MT.TypedFields)
         {
-            Fields = new List<QueryFieldDTO>();
+            Fields = new List<TypedFieldDTO>();
         }
 
-        public StandardQueryFieldsCM(IEnumerable<QueryFieldDTO> fields) : this()
+        public TypedFieldsCM(IEnumerable<TypedFieldDTO> fields) : this()
         {
             Fields.AddRange(fields);
         }
 
-        public List<QueryFieldDTO> Fields { get; set; }
+        public List<TypedFieldDTO> Fields { get; set; }
     }
 
 
@@ -42,7 +42,7 @@ namespace Data.Interfaces.Manifests
                 }
             });
 
-            return crateContent.ToObject<StandardQueryFieldsCM>(serializer);
+            return crateContent.ToObject<TypedFieldsCM>(serializer);
         }
 
         public JToken Serialize(object content)

@@ -31,7 +31,7 @@ namespace TerminalBase.Infrastructure
 
         public bool IsConfigured
         {
-            get; set;            
+            get; set;
         }
 
         private void StripLabelPrefix(IEnumerable<Crate> crates, string prefix)
@@ -131,7 +131,7 @@ namespace TerminalBase.Infrastructure
                 Id = 0,
                 LastUpdated = DateTime.Now
             };
-            
+
             return Task.FromResult(fileDO);
         }
 
@@ -199,6 +199,11 @@ namespace TerminalBase.Infrastructure
             return mergedFields;
         }
 
+        public async Task ApplyNewToken(Guid activityId, Guid authTokenId, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<ActivityDTO> ConfigureActivity(ActivityDTO activityDTO, string userId)
         {
             throw new NotImplementedException();
@@ -219,12 +224,17 @@ namespace TerminalBase.Infrastructure
             throw new NotImplementedException();
         }
 
+        public Task RunPlan(Guid planId, List<CrateDTO> payload, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<PlanDO> ActivatePlan(PlanDO planDO, string userId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<IEnumerable<PlanDTO>> GetPlansByName(string name, string userId)
+        public Task<IEnumerable<PlanDTO>> GetPlansByName(string name, string userId, PlanVisibility visibility = PlanVisibility.Standard)
         {
             throw new NotImplementedException();
         }
@@ -235,6 +245,16 @@ namespace TerminalBase.Infrastructure
         }
 
         public Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task NotifyUser(TerminalNotificationDTO notificationMessage, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeletePlan(Guid planId, string userId)
         {
             throw new NotImplementedException();
         }

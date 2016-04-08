@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using DocuSign.Integrations.Client;
+
 using StructureMap;
 using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Interfaces.Manifests;
 using Data.Repositories;
 using Hub.Interfaces;
+using terminalUtilities.Excel;
 using Utilities;
-using terminalExcel.Infrastructure;
 
 namespace terminalExcel.Fixtures
 {
