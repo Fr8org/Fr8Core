@@ -115,6 +115,21 @@ namespace UtilitiesTesting.Fixtures
                 return guestUserFr8Account;
             }
         }
+        public static Fr8AccountDO TestDockyardAccount7()
+        {
+            string guestUserEmail = "admin@test.com";
+            string password = "oldpassword";
+            string firstName = "Admin";
+            string lastName = "Admin";
+
+            Fr8Account _dockyardAccount = ObjectFactory.GetInstance<Fr8Account>();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var gadminUserFr8Account = _dockyardAccount.Register(uow, guestUserEmail, firstName, lastName, password, Roles.Admin);
+                uow.SaveChanges();
+                return gadminUserFr8Account;
+            }
+        }
 
         /* public DockyardAccountDO TestDockyardAccount2()
          {
