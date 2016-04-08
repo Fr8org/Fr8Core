@@ -58,7 +58,7 @@ namespace HubWeb.Controllers
                 getCurrentUserIncidents = false;
             else
             {
-                return BadRequest();
+                throw new ArgumentException("Incorect user parameter. Only 'current' and 'all' are allowed");
             }
             try
             {

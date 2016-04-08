@@ -137,7 +137,8 @@ namespace UtilitiesTesting.Fixtures
                 };
                 uow.AspNetRolesRepository.Add(adminRoleDO);
                 var adminUserFr8Account = _dockyardAccount.Register(uow, adminUserEmail, firstName, lastName, password, adminRoleId);
-                var adminRole = new IdentityUserRole() { RoleId = adminRoleId, UserId = adminUserFr8Account.Id};
+                uow.AspNetUserRolesRepository.RevokeRoleFromUser(Roles.Admin, adminUserFr8Account.Id);
+                var adminRole = new IdentityUserRole() { RoleId = adminRoleId, UserId = adminUserFr8Account.Id };
                 adminUserFr8Account.Roles.Add(adminRole);
                 uow.SaveChanges();
                 return adminUserFr8Account;

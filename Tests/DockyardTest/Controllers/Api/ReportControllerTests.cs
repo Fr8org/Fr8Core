@@ -72,6 +72,56 @@ namespace DockyardTest.Controllers.Api
                 Assert.AreEqual(2, actionResult.Content.ToList().Count());
             }
         }
+        [Test]
+        public void ReportController_Returns_Ten_Incidents()
+        {
+            //Arrange
+            var reportController = CreateReportController();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                AddIncidents(uow);
+
+                //Act
+                var actionResult =
+                    reportController.GetTopIncidents(1, 10, "all") as OkNegotiatedContentResult<List<IncidentDTO>>;
+
+                //Assert
+                Assert.NotNull(actionResult);
+                Assert.AreEqual(10, actionResult.Content.ToList().Count());
+            }
+        }
+        [Test]
+        public void ReportController_Returns_SecondPage_CorrectIncidents()
+        {
+            //Arrange
+            var reportController = CreateReportController();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                AddIncidents(uow);
+
+                //Act
+                var actionResult =
+                    reportController.GetTopIncidents(3, 3, "all") as OkNegotiatedContentResult<List<IncidentDTO>>;
+
+                //Assert
+                Assert.NotNull(actionResult);
+                Assert.AreEqual(3, actionResult.Content.ToList().Count());
+                Assert.AreEqual("Incident 3", actionResult.Content.ToList()[0].PrimaryCategory);
+            }
+        }
+        [Test]
+        [ExpectedException(typeof(ArgumentException))]
+        public void ReportController_IncorrectUserValue_ThrowsException()
+        {
+            //Arrange
+            var reportController = CreateReportController();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                //Act
+                var actionResult =
+                    reportController.GetTopIncidents(1, 2, "IncorrectUserParameter") as OkNegotiatedContentResult<List<IncidentDTO>>;
+            }
+        }
 
         private void AddIncidents(IUnitOfWork uow)
         {
