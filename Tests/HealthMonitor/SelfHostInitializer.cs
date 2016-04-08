@@ -37,8 +37,10 @@ namespace HealthMonitor
                 expression.AddRegistry<DatabaseStructureMapBootStrapper.LiveMode>());
             Console.WriteLine("HealthMonitor.SelfHostInitializer after StructureMap bootstrapper");
             var selfHostedApps = GetSelfHostedApps();
+            Console.WriteLine("HealthMonitor.SelfHostInitializer after GetSelfHostedApps");
             using (var uow = _container.GetInstance<IUnitOfWork>())
             {
+                Console.WriteLine("HealthMonitor.SelfHostInitializer before get all terminals");
                 terminals = uow.TerminalRepository.GetAll();
             }
 
@@ -165,14 +167,15 @@ namespace HealthMonitor
 
         private SelfHostedTerminalsCollection GetSelfHostedApps()
         {
+            Console.WriteLine("HealthMonitor.SelfHostInitializer inside GetSelfHostedApps -- 1");
             var healthMonitorCS = (HealthMonitorConfigurationSection)
                 ConfigurationManager.GetSection("healthMonitor");
-
+            Console.WriteLine("HealthMonitor.SelfHostInitializer inside GetSelfHostedApps -- 2");
             if (healthMonitorCS == null || healthMonitorCS.SelfHostedApps == null)
             {
                 return null;
             }
-
+            Console.WriteLine("HealthMonitor.SelfHostInitializer inside GetSelfHostedApps -- 3");
             return healthMonitorCS.SelfHostedApps;
         }
 
