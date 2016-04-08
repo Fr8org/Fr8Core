@@ -28,14 +28,14 @@ $tempFileName = $tempDirectory + "\gitCommandsOutput+$branchName.txt"
 
 $failure = @{
 				state = "failure"
-				target_url = $target_url
+				target_url = "$target_url"
 				description = "The build failed"
 				context = "feature-branch-ci/vso"
 			} | ConvertTo-Json
 
 $success = @{
 				state = "success"
-				target_url = $target_url
+				target_url = "$target_url"
 				description = "The build succeeded!"
 				context = "feature-branch-ci/vso"
 			} | ConvertTo-Json
