@@ -333,8 +333,8 @@ namespace Hub.Services
             
       
             return (id == null
-               ? containerRepository.Where(container => container.Plan.Fr8Account.Id == account.Id)
-               : containerRepository.Where(container => container.Id == id && container.Plan.Fr8Account.Id == account.Id)).ToList();
+               ? containerRepository.Where(container => container.Plan.Fr8Account.Id == account.Id).Take(200)
+               : containerRepository.Where(container => container.Id == id && container.Plan.Fr8Account.Id == account.Id).Take(200)).ToList();
         }
 
         private ActivityDTO GetCurrentActivity(IUnitOfWork uow, ContainerDO curContainerDO)
