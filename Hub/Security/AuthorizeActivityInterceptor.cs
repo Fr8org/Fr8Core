@@ -24,7 +24,7 @@ namespace Hub.Security
                 return;
             }
 
-            var authorizeAttribute = (invocation.Method.GetCustomAttributes(typeof(AuthorizeActivityAttribute), true).First()
+            var authorizeAttribute = (invocation.MethodInvocationTarget.GetCustomAttributes(typeof(AuthorizeActivityAttribute), true).First()
                 as AuthorizeActivityAttribute ?? new AuthorizeActivityAttribute());
 
             var objectArgumentIndex = authorizeAttribute.ObjectIdArgumentIndex;
