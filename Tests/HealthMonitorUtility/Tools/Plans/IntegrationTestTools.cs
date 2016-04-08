@@ -37,7 +37,7 @@ namespace terminaBaselTests.Tools.Plans
             var executionContainer = await _baseHubITest.HttpPostAsync<string, ContainerDTO>(_baseHubITest.GetHubApiBaseUrl() + "plans/run?planId=" + planId, null);
 
             Assert.IsNotNull(executionContainer, "Execution of plan failed. ContainerDTO is missing as a response");
-            Assert.AreEqual(executionContainer.ContainerState, ContainerState.Completed, "Execution of plan failed. Container state is not completed");
+            Assert.AreEqual(executionContainer.State, State.Completed, "Execution of plan failed. Container state is not completed");
         }
     }
 }

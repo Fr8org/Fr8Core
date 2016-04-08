@@ -228,6 +228,7 @@
         crateDescriptions: Array<CrateDescriptionDTO>;
         singleManifestOnly: boolean;
         requestUpstream: boolean;
+        source: FieldSource;
     }
 
     export class TextSource extends DropDownList {
