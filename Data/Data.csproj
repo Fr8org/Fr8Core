@@ -61,8 +61,8 @@
       <HintPath>..\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Google.Apis.Core, Version=1.8.2.23761, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Google.Apis.Core.1.8.2\lib\portable-net4+sl4+wp71+win8\Google.Apis.Core.dll</HintPath>
+    <Reference Include="Google.Apis.Core, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>..\packages\Google.Apis.Core.1.11.1\lib\net45\Google.Apis.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Hyak.Common, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -74,7 +74,7 @@
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.ApplicationInsights, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.ApplicationInsights.2.0.0-rc1\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
+      <HintPath>..\packages\Microsoft.ApplicationInsights.2.0.0\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -280,6 +280,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ActivityDataPackageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivateActivitiesDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityResponseDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\TerminalNotificationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AlarmDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AuthenticateResponse.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CrateDescriptionDTO.cs" />
@@ -370,7 +371,7 @@
     <Compile Include="Interfaces\Manifests\StandardQueryCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardQueryFieldsCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardRoutingDirectiveCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardFileHandle.cs" />
+    <Compile Include="Interfaces\Manifests\StandardFileDescriptionCM.cs" />
     <Compile Include="Interfaces\Manifests\OperationalStateCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardSecurityCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardTableDataCM.cs" />
@@ -659,6 +660,10 @@
     <Compile Include="Migrations\201603271818114_Organizations_Table_Check.cs" />
     <Compile Include="Migrations\201603271818114_Organizations_Table_Check.Designer.cs">
       <DependentUpon>201603271818114_Organizations_Table_Check.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201604061440228_RenameContainerFields.cs" />
+    <Compile Include="Migrations\201604061440228_RenameContainerFields.Designer.cs">
+      <DependentUpon>201604061440228_RenameContainerFields.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1152,6 +1157,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201603271818114_Organizations_Table_Check.resx">
       <DependentUpon>201603271818114_Organizations_Table_Check.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604061440228_RenameContainerFields.resx">
+      <DependentUpon>201604061440228_RenameContainerFields.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

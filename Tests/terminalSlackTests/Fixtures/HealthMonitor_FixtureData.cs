@@ -11,7 +11,7 @@ namespace terminalSlackTests.Fixtures
         {
             var activityTemplate = Monitor_Channel_v1_ActivityTemplate();
 
-            var activityDTO = new ActivityDTO()
+            var activityDTO = new ActivityDTO
             {
                 Id = Guid.NewGuid(),
                 Label = "Monitor_Channel DocuSign",
@@ -24,7 +24,7 @@ namespace terminalSlackTests.Fixtures
 
         public static ActivityTemplateDTO Monitor_Channel_v1_ActivityTemplate()
         {
-            return new ActivityTemplateDTO()
+            return new ActivityTemplateDTO
             {
                 Id = 1,
                 Name = "Monitor_Channel_TEST",
@@ -34,9 +34,25 @@ namespace terminalSlackTests.Fixtures
             };
         }
 
+        public static ActivityTemplateDTO Publish_To_Slack_v1_ActivityTemplate()
+        {
+            return new ActivityTemplateDTO
+            {
+                Id = 1,
+                Name = "Publish_To_Slack_TEST",
+                Label = "Publish To Slack",
+                Category = ActivityCategory.Forwarders,
+                Version = "1",
+                Terminal = new TerminalDTO
+                {
+                    AuthenticationType = AuthenticationType.Internal
+                }
+            };
+        }
+
         public static AuthorizationTokenDTO Slack_AuthToken()
         {
-            return new AuthorizationTokenDTO()
+            return new AuthorizationTokenDTO
             {
                 Token = @"xoxp-9815816992-9816213634-14997343526-d99a1c9198"
             };
@@ -45,9 +61,9 @@ namespace terminalSlackTests.Fixtures
 
         internal static IEnumerable<FieldDTO> SlackEventFields()
         {
-            return new List<FieldDTO>()
-           {
-              new FieldDTO("token", "sU3N7wdnhXmml1zR2dVLf6PV"),
+            return new List<FieldDTO>
+            {
+               new FieldDTO("token", "sU3N7wdnhXmml1zR2dVLf6PV"),
                new FieldDTO("team_id", "T07F83QLE"),
                new FieldDTO("team_domain", "dockyardteam"),
                new FieldDTO("service_id", "16193135954"),
@@ -64,7 +80,7 @@ namespace terminalSlackTests.Fixtures
         {
             var activityTemplate = Monitor_Channel_v1_ActivityTemplate();
 
-            var activityDTO = new ActivityDTO()
+            var activityDTO = new ActivityDTO
             {
                 Id = Guid.NewGuid(),
                 Label = "Monitor_Channel",
@@ -76,9 +92,9 @@ namespace terminalSlackTests.Fixtures
 
         public static Fr8DataDTO Publish_To_Slack_v1_InitialConfiguration_Fr8DataDTO(bool isAuthToken = true)
         {
-            var activityTemplate = Monitor_Channel_v1_ActivityTemplate();
+            var activityTemplate = Publish_To_Slack_v1_ActivityTemplate();
 
-            var activityDTO = new ActivityDTO()
+            var activityDTO = new ActivityDTO
             {
                 Id = Guid.NewGuid(),
                 Label = "Selected_Slack_Channel",

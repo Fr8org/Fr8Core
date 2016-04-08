@@ -14,19 +14,23 @@ module dockyard.directives.button {
 
 
         var controller = ['$scope',  ($scope: IFr8EventScope) => {
-            if ($scope.type == 'fr8pusher_generic_success') {
+            if ($scope.type === 'fr8pusher_generic_success') {
                 $scope.color = 'green';
                 $scope.eventType = 'Success';
                 $scope.icon = 'fa fa-check';
             }
-            else if ($scope.type == 'fr8pusher_generic_failure') {
+            else if ($scope.type === 'fr8pusher_generic_failure') {
                 $scope.color = 'red';
                 $scope.eventType = 'Failure';
                 $scope.icon = 'fa fa-times';
             }
-            else if ($scope.type == 'fr8pusher_activity_execution_info') {
+            else if ($scope.type === 'fr8pusher_activity_execution_info') {
                 $scope.eventType = 'Execution';
-                $scope.icon = 'fa fa-spinner';
+                $scope.icon = 'fa fa-cogs';
+            }
+            else if ($scope.type === 'fr8pusher_terminal_event') {
+                $scope.eventType = $scope.event.TerminalName+ '-v' + $scope.event.TerminalVersion;
+                $scope.icon = 'fa fa-bolt';
             }
                 
         }];

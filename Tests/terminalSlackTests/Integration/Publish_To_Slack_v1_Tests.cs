@@ -6,9 +6,7 @@ using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
-using Hub.StructureMap;
 using NUnit.Framework;
-using StructureMap;
 using terminalSlackTests.Fixtures;
 
 namespace terminalSlackTests.Integration
@@ -22,10 +20,7 @@ namespace terminalSlackTests.Integration
     [Category("terminalSlack.Integration")]
     public class Publish_To_Slack_v1_Tests : BaseTerminalIntegrationTest
     {
-        public override string TerminalName
-        {
-            get { return "terminalSlack"; }
-        }
+        public override string TerminalName => "terminalSlack";
 
         [Test]
         public async Task Publish_To_Slack_v1_ProcessConfigurationRequest()
@@ -56,14 +51,13 @@ namespace terminalSlackTests.Integration
         }
 
         [Test]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
-        )]
         public async Task Publish_To_Slack_v1_Initial_Configuration_Check_Crate_Structure_NoAuth()
         {
             // Act
             var responseActionDTO = await ConfigureInitial(false);
+            var crateStorage = Crate.GetStorage(responseActionDTO);
+            Assert.AreEqual(1, crateStorage.Count, "Configuration response for not-autheticated call should contain only one crate");
+            Assert.AreEqual(1, crateStorage.CratesOfType<StandardAuthenticationCM>().Count(), "Configuration response for non-autheticated call doesn't contain Standard Authentication crate" );
         }
 
         [Test]
@@ -78,7 +72,9 @@ namespace terminalSlackTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            AssertCrateTypes(crateStorage);
+
+            Assert.AreEqual(1, crateStorage.Count, "Configuration response for autheticated call should contain only one crate");
+            Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(), "Configuration response for autheticated call doesn't contain Standard Configuration Controls crate");
         }
 
         private async Task<ActivityDTO> ConfigureInitial(bool isAuthToken = true)
@@ -89,16 +85,6 @@ namespace terminalSlackTests.Integration
             var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, requestActionDTO);
 
             return responseActionDTO;
-        }
-
-        private void AssertCrateTypes(ICrateStorage crateStorage)
-        {
-            Assert.AreEqual(4, crateStorage.Count);
-
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(x => x.Label == "Configuration_Controls"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Available Fields"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Available Channels"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<EventSubscriptionCM>().Count(x => x.Label == "Standard Event Subscriptions"));
         }
     }
 }

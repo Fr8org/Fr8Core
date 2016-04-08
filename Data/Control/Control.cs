@@ -29,6 +29,7 @@ namespace Data.Control
     public class ControlTypes
     {
         public const string TextBox = "TextBox";
+        public const string TextBoxBig = "TextBoxBig";
         public const string CheckBox = "CheckBox";
         public const string DropDownList = "DropDownList";
         public const string RadioButtonGroup = "RadioButtonGroup";
@@ -53,6 +54,21 @@ namespace Data.Control
         public const string ContainerTransition = "ContainerTransition";
         public const string MetaControlContainer = "MetaControlContainer";
         public const string ControlList = "ControlList";
+        public const string ActivityChooser = "ActivityChooser";
+    }
+
+    public class ActivityChooser : ControlDefinitionDTO
+    {
+        public ActivityChooser()
+        {
+            Type = ControlTypes.ActivityChooser;
+        }
+
+        [JsonProperty("subPlanId")]
+        public Guid? SubPlanId { get; set; }
+
+        [JsonProperty("activityTemplateLabel")]
+        public string ActivityTemplateLabel { get; set; }
     }
 
     public class CheckBox : ControlDefinitionDTO
@@ -149,7 +165,7 @@ namespace Data.Control
     public class ContainerTransition : ControlDefinitionDTO
     {
         [JsonProperty("transitions")]
-        public List<ContainerTransitionField> Transitions { get; set; } 
+        public List<ContainerTransitionField> Transitions { get; set; }
         public ContainerTransition()
         {
             Type = ControlTypes.ContainerTransition;
@@ -161,7 +177,7 @@ namespace Data.Control
     {
         public TextBoxMetaDescriptionDTO() : base("TextBoxMetaDescriptionDTO", "TextBox")
         {
-           // this.Controls.Add(new TextBox { });
+            // this.Controls.Add(new TextBox { });
         }
 
         public override ControlDefinitionDTO CreateControl()
@@ -177,7 +193,7 @@ namespace Data.Control
     {
         public TextBlockMetaDescriptionDTO() : base("TextBlockMetaDescriptionDTO", "TextBlock")
         {
-           // this.Controls.Add(new TextArea());
+            // this.Controls.Add(new TextArea());
         }
 
         public override ControlDefinitionDTO CreateControl()
@@ -191,7 +207,7 @@ namespace Data.Control
 
     public class FilePickerMetaDescriptionDTO : ControlMetaDescriptionDTO
     {
-        public static string[] FileExtensions = {"xlsx"};
+        public static string[] FileExtensions = { "xlsx" };
         public FilePickerMetaDescriptionDTO() : base("FilePickerMetaDescriptionDTO", "File Picker")
         {
             /*
@@ -210,7 +226,7 @@ namespace Data.Control
     }
 
     [JsonConverter(typeof(ControlMetaDescriptionDTOConverter))]
-    public class ControlMetaDescriptionDTO 
+    public class ControlMetaDescriptionDTO
     {
         [JsonProperty("controls")]
         public List<ControlDefinitionDTO> Controls { get; set; }
@@ -275,6 +291,14 @@ namespace Data.Control
         public Generic()
         {
             Type = ControlTypes.TextBox; // Yes, default to TextBox
+        }
+    }
+
+    public class TextBoxBig : ControlDefinitionDTO
+    {
+        public TextBoxBig()
+        {
+            Type = ControlTypes.TextBoxBig; // Text box with multilines
         }
     }
 
@@ -451,6 +475,18 @@ namespace Data.Control
                 //hmmm this is a regular data request
                 //lets search in complete crate
                 searchArea = crate;
+
+                //if we have a StandardTableDataCM and we are not in the loop and crate has Headers - we should search next row
+                if (crate.IsOfType<StandardTableDataCM>())
+                {
+                    var table_crate = crate.Get<StandardTableDataCM>();
+                    if (table_crate.FirstRowHeaders && table_crate.Table.Count > 1)
+                    {
+                        TableRowDTO row = GetDataListItem(crate, 0) as TableRowDTO;
+                        if (row != null)
+                            return row.Row.Where(a => a.Cell.Key == this.selectedKey).FirstOrDefault().Cell;
+                    }
+                }
             }
 
             //we should find first related field and return
@@ -657,7 +693,7 @@ namespace Data.Control
     public enum ContainerTransitions
     {
         JumpToActivity = 0,
-        JumpToPlan,
+        LaunchAdditionalPlan,
         JumpToSubplan,
         StopProcessing,
         SuspendProcessing,
