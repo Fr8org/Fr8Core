@@ -124,9 +124,9 @@ namespace terminalSalesforce.Actions
                 ((DropDownList)GetControl(curActivityDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
 
             var curSalesforceObjectFields = CrateManager.GetStorage( curActivityDO )
-                                                         .CratesOfType<TypedFieldsCM>()
-                                                         .Single(c => c.Label.Equals("Queryable Criteria"))
-                                                         .Content.Fields.Select(f => f.Label);
+                                                        .CratesOfType<FieldDescriptionsCM>()
+                                                        .Single(c => c.Label.Equals("Salesforce Object Fields - " + curSelectedSalesForceObject))
+                                                        .Content.Fields;
 
             if (string.IsNullOrEmpty(curSelectedSalesForceObject))
             {
@@ -136,6 +136,10 @@ namespace terminalSalesforce.Actions
             //get filters
             var filterValue = ExtractControlFieldValue(curActivityDO, "SelectedQuery");
             var filterDataDTO = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(filterValue);
+            filterDataDTO.ForEach(f => {
+                string newFieldValue = curSalesforceObjectFields.Single(field => field.Value.Equals(f.Field)).Key;
+                f.Field = newFieldValue;
+            });
 
             //if without filter, just get all selected objects
             //else prepare SOQL query to filter the objects based on the filter conditions
@@ -146,7 +150,10 @@ namespace terminalSalesforce.Actions
                 parsedCondition = ParseConditionToText(filterDataDTO);
             }
 
-            var resultObjects = await _salesforce.GetObjectByQuery(curSelectedSalesForceObject, curSalesforceObjectFields, parsedCondition, authTokenDO);
+            var resultObjects = await _salesforce.GetObjectByQuery(curSelectedSalesForceObject, 
+                                                                   curSalesforceObjectFields.Select(f => f.Key), 
+                                                                   parsedCondition, 
+                                                                   authTokenDO);
 
             //update the payload with result objects
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
