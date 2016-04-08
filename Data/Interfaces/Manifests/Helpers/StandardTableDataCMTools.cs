@@ -9,6 +9,42 @@ namespace Data.Interfaces.Manifests.Helpers
 {
     public class StandardTableDataCMTools
     {
+        public static void AppendToStandardTableData(StandardTableDataCM dest, StandardTableDataCM source)
+        {
+            if (dest == null || dest.Table == null || dest.Table.Count == 0)
+            {
+                return;
+            }
+
+            if (source == null || source.Table == null || source.Table.Count == 0)
+            {
+                return;
+            }
+
+            var columnSet = new HashSet<string>(dest.GetHeaderRow().Row.Select(x => x.Cell.Key));
+            
+            for (var i = 1; i < source.Table.Count; ++i)
+            {
+                var row = new TableRowDTO();
+
+                foreach (var cell in source.Table[i].Row)
+                {
+                    if (!columnSet.Contains(cell.Cell.Key))
+                    {
+                        continue;
+                    }
+
+                    row.Row.Add(
+                        new TableCellDTO()
+                        {
+                            Cell = cell.Cell.Clone()
+                        });
+                }
+
+                dest.Table.Add(row);
+            }
+        }
+
         public static StandardTableDataCM ExtractPayloadCrateDataToStandardTableData(Crate crate)
         {
             if (crate.ManifestType.Id == (int)MT.StandardTableData)
