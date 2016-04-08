@@ -14,32 +14,29 @@ namespace terminalDropbox.Services
 {
     public class DropboxService : IDropboxService
     {
+        private const string Path = "";
+
         public async Task<List<string>> GetFileList(AuthorizationTokenDO authorizationTokenDO)
         {
-            List<string> fileNames = new List<string>();
-            string path = "";
-
             var client = CreateDropboxClient(authorizationTokenDO.Token);
 
-            var result = await client.Files.ListFolderAsync(path);
-            foreach (var x in result.Entries)
-                fileNames.Add(x.Name);
+            var result = await client.Files.ListFolderAsync(Path);
 
-            return fileNames;
+            return result.Entries.Select(x => x.Name).ToList();
         }
 
-        private HttpClient CreateHttpClient()
+        private static HttpClient CreateHttpClient()
         {
             var httpClient = new HttpClient(new WebRequestHandler { ReadWriteTimeout = 10 * 1000 })
             {
-                // Specify request level timeout which decides maximum time taht can be spent on
+                // Specify request level timeout which decides maximum time that can be spent on
                 // download/upload files.
                 Timeout = TimeSpan.FromMinutes(20)
             };
             return httpClient;
         }
 
-        private DropboxClient CreateDropboxClient(string token)
+        private static DropboxClient CreateDropboxClient(string token)
         {
             return new DropboxClient(token, userAgent: "DockyardApp", httpClient: CreateHttpClient());
         }
