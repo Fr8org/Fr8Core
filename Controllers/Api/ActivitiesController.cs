@@ -191,20 +191,24 @@ namespace HubWeb.Controllers
             }
             return BadRequest();
         }
+        /// <summary>
+        /// We currently provide only one substring value, namely 'Terminal=','MainPage' and 'HelpMenu'
+        /// </summary>
+        /// <param name="docSupport"></param>
+        /// <returns></returns>
         private bool ValidateDocumentationSupport(string docSupport)
         {
-            var curStringArray = docSupport.Split(',');
-            var hasTerminalName = curStringArray.Any(x=>x.StartsWith("Terminal="));
+            var curStringArray = docSupport.Replace(" ", "").Split(',');
+            var containsOneSubstring = curStringArray.Count() == 1;
+            var hasTerminalName = curStringArray.Any(x => x.StartsWith("Terminal="));
             var hasMainPage = curStringArray.Contains("MainPage");
             var hasHelpMenu = curStringArray.Contains("HelpMenu");
-            if (hasTerminalName &&
-                (hasMainPage || hasHelpMenu))
-                throw new Exception("ActionDTO cannot have TerminalName and MainPage and/or HelpMenu in the Documentation Support field value");
-            if (hasMainPage && hasHelpMenu)
-                throw new Exception("ActionDTO cannot have both MainPage and HelpMenu in the Documentation Support field value");
-            if (hasMainPage || hasHelpMenu || hasTerminalName)
+            if ((containsOneSubstring && hasTerminalName) 
+                || (containsOneSubstring && hasMainPage) 
+                || (containsOneSubstring && hasHelpMenu))
                 return true;
-            return false;
+            else
+                throw new Exception("Incorrect documentation support values");
         }
     }
 }
