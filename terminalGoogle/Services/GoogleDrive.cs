@@ -8,8 +8,11 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Google.Apis.Script.v1;
+using Google.Apis.Script.v1.Data;
 using terminalGoogle.DataTransferObjects;
 using Utilities.Configuration.Azure;
 
@@ -82,9 +85,85 @@ namespace terminalGoogle.Services
             return await Task.FromResult(files.ToDictionary(a => a.Id, a => a.Title));
         }
 
-        public async Task<string> UploadAppScript(GoogleAuthDTO authDTO, string formId, string desription = "Script uploaded from Fr8 application")
+        public async Task<ScriptService> CreateScriptsService(GoogleAuthDTO authDTO)
         {
+            var flowData = _googleAuth.CreateFlowMetadata(authDTO, "", CloudConfigurationManager.GetSetting("GoogleRedirectUri"));
+            TokenResponse tokenResponse = new TokenResponse();
+            tokenResponse.AccessToken = authDTO.AccessToken;
+            tokenResponse.RefreshToken = authDTO.RefreshToken;
+            tokenResponse.Scope = CloudConfigurationManager.GetSetting("GoogleScope");
 
+            UserCredential userCredential;
+            try
+            {
+                userCredential = new UserCredential(flowData.Flow, authDTO.AccessToken, tokenResponse);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.Message);
+            }
+
+            var scriptsService = new ScriptService(new BaseClientService.Initializer()
+            {
+                HttpClientInitializer = userCredential,
+                ApplicationName = "Fr8",
+            });
+
+            return scriptsService;
+        }
+        /*
+        public async Task CreateFr8TriggerForDocument(GoogleAuthDTO authDTO, string formId)
+        {
+            var fr8TriggerScriptId = CloudConfigurationManager.GetSetting("Fr8TriggerScript");
+            var scriptsService = await CreateScriptsService(authDTO);
+
+            //let's run our initialize function from the script
+            ExecutionRequest executionRequest = new ExecutionRequest { Function = "CreateTrigger", Parameters = new List<object> { formId } };
+            ScriptsResource.RunRequest runReq = scriptsService.Scripts.Run(executionRequest, fr8TriggerScriptId);
+            try
+            {
+                // Make the API request.
+                Operation op = runReq.Execute();
+
+                if (op.Error != null)
+                {
+                    // The API executed, but the script returned an error.
+                    // Extract the first (and only) set of error details
+                    // as a IDictionary. The values of this dictionary are
+                    // the script's 'errorMessage' and 'errorType', and an
+                    // array of stack trace elements. Casting the array as
+                    // a JSON JArray allows the trace elements to be accessed
+                    // directly.
+                    IDictionary<string, object> error = op.Error.Details[0];
+                    Console.WriteLine("Script error message: {0}", error["errorMessage"]);
+                    if (error["scriptStackTraceElements"] != null)
+                    {
+                        // There may not be a stacktrace if the script didn't
+                        // start executing.
+                        Console.WriteLine("Script error stacktrace:");
+                        Newtonsoft.Json.Linq.JArray st =
+                            (Newtonsoft.Json.Linq.JArray)error["scriptStackTraceElements"];
+                        foreach (var trace in st)
+                        {
+                            Console.WriteLine(
+                                    "\t{0}: {1}",
+                                    trace["function"],
+                                    trace["lineNumber"]);
+                        }
+                    }
+                }
+            }
+            catch (Google.GoogleApiException e)
+            {
+                // The API encountered a problem before the script
+                // started executing.
+                Console.WriteLine("Error calling API:\n{0}", e);
+            }
+        }
+        */
+        
+        public async Task<string> CreateFr8TriggerForDocument(GoogleAuthDTO authDTO, string formId, string desription = "Script uploaded from Fr8 application")
+        {
             string response = "";
             try
             {
@@ -101,8 +180,16 @@ namespace terminalGoogle.Services
                 using (MemoryStream memoryStream = new MemoryStream())
                 {
                     //load template file and replace specific formID
-                    string filename = System.Web.Hosting.HostingEnvironment.MapPath("~\\Template\\googleAppScriptFormResponse.json");
-                    string content = System.IO.File.ReadAllText(filename);
+                    var assembly = Assembly.GetExecutingAssembly();
+                    var resourceName = "terminalGoogle.Template.googleAppScriptFormResponse.json";
+                    string content;
+
+                    using (Stream stream = assembly.GetManifestResourceStream(resourceName))
+                    using (StreamReader reader = new StreamReader(stream))
+                    {
+                        content = reader.ReadToEnd();
+                    }
+                    
                     content = content.Replace("@ID", formId);
                     content = content.Replace("@ENDPOINT", CloudConfigurationManager.GetSetting("GoogleFormEventWebServerUrl"));
                     byte[] contentAsBytes = Encoding.UTF8.GetBytes(content);
@@ -112,26 +199,29 @@ namespace terminalGoogle.Services
                     memoryStream.Seek(0, SeekOrigin.Begin);
 
                     //upload file to google drive
-                    string existingFileId = "";
-                    if (!FileExist(driveService, scriptFile.Title, out existingFileId))
+                    string existingFileLink = "";
+                    if (!FileExist(driveService, scriptFile.Title, out existingFileLink))
                     {
                         FilesResource.InsertMediaUpload request = driveService.Files.Insert(scriptFile, memoryStream, "application/vnd.google-apps.script+json");
                         request.Upload();
-                        response = request.ResponseBody.Id;
+                        response = request.ResponseBody.AlternateLink;
                     }
                     else
-                        response = existingFileId;
+                        response = existingFileLink;
+
+                    
                 }
             }
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
-
+            
             return await Task.FromResult(response);
         }
+        
 
-        public bool FileExist(DriveService driveService, string filename, out string fileId)
+        public bool FileExist(DriveService driveService, string filename, out string link)
         {
             bool exist = false;
 
@@ -146,12 +236,12 @@ namespace terminalGoogle.Services
             if (files.Count > 0)
             {
                 exist = true;
-                fileId = files[0].Id;
+                link = files[0].AlternateLink;
             }
             else
             {
                 exist = false;
-                fileId = "";
+                link = "";
             }
 
             return exist;

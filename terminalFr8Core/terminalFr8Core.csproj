@@ -202,6 +202,7 @@
     <Compile Include="Activities\ActivityChooserTest_v1.cs" />
     <Compile Include="Activities\CollectData_v1.cs" />
     <Compile Include="Activities\Monitor_Fr8_Events_v1.cs" />
+    <Compile Include="Activities\Process_Personnel_Report_v1.cs" />
     <Compile Include="Activities\QueryFr8Warehouse_v1.cs" />
     <Compile Include="Activities\AddPayloadManually_v1.cs" />
     <Compile Include="Activities\BuildQuery_v1.cs" />

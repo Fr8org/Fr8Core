@@ -115,13 +115,17 @@ namespace terminalDocuSign.Actions
             return control;
         }
 
-        public void AddOrUpdateUserDefinedFields(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, IUpdatableCrateStorage updater, string templateId, string envelopeId = null)
+        public void AddOrUpdateUserDefinedFields(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, IUpdatableCrateStorage updater, string templateId, string envelopeId = null, List<FieldDTO> allFields = null)
         {
             updater.RemoveByLabel("DocuSignTemplateUserDefinedFields");
             if (!String.IsNullOrEmpty(templateId))
             {
                 var conf = DocuSignManager.SetUp(authTokenDO);
                 var userDefinedFields = DocuSignManager.GetTemplateRecipientsAndTabs(conf, templateId);
+                if (allFields != null)
+                {
+                    allFields.AddRange(userDefinedFields);
+                }
                 updater.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", AvailabilityType.RunTime, userDefinedFields.ToArray()));
             }
         }
@@ -165,7 +169,7 @@ namespace terminalDocuSign.Actions
         {
             return ValidationResult.Success;
         }
-        
+
         public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(activityDO, containerId);
