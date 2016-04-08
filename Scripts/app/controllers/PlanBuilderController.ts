@@ -247,6 +247,7 @@ module dockyard.controllers {
                 var processedGroup = this.LayoutService.addEmptyProcessedGroup(createdSubPlan.subPlanId);
                 this.$scope.processedSubPlans.push({ subPlan: createdSubPlan, actionGroups: processedGroup });
                 //this.renderPlan(<interfaces.IPlanVM>currentPlan);
+                this.$scope.$broadcast('subPlanModification');
             });
         }
 

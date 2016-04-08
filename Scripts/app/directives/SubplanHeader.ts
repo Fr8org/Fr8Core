@@ -12,7 +12,7 @@ module dockyard.directives.SubplanHeader {
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     export function SubplanHeader(): ng.IDirective {
-        var controller = ['$scope', 'SubPlanService', ($scope: ISubplanHeaderScope, subPlanService: services.ISubPlanService) => {
+        var controller = ['$scope', 'SubPlanService', '$rootScope',($scope: ISubplanHeaderScope, subPlanService: services.ISubPlanService, $rootScope: interfaces.IAppRootScope) => {
 
             $scope.editTitle = () => {
                 $scope.editing = true;
@@ -21,6 +21,7 @@ module dockyard.directives.SubplanHeader {
             $scope.onTitleChange = () => {
                 $scope.editing = false;
                 subPlanService.update($scope.subplan);
+                $rootScope.$broadcast('subPlanModification');
             };
             
         }];

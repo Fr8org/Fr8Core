@@ -242,6 +242,14 @@ module dockyard.directives.containerTransition {
                 informJumpTargets();
             };
 
+            $scope.$on('subPlanModification', function () {
+                for (var i = 0; i < $scope.field.transitions.length; i++) {
+                    if ($scope.field.transitions[i].transition == ContainerTransitions.JumpToSubplan) {
+                        (<any>$scope.field.transitions[i])._dummySecondaryOperationDD = buildSubplanDropdown();
+                    };
+                };
+            });
+
             $scope.onTargetChange = (transition: model.ContainerTransitionField) => {
                 var dd = <model.DropDownList>(<any>transition)._dummySecondaryOperationDD;
                 transition.targetNodeId = dd.value;
