@@ -5,13 +5,26 @@
 #>
 
 param(
+	[Parameter(Mandatory = $true)]
+	[string]$vso_username,
+	
+	[Parameter(Mandatory = $true)]
+	[string]$vso_password,
+
+	[Parameter(Mandatory = $true)]
+	[string]$github_username,
+
+	[Parameter(Mandatory = $true)]
+	[string]$github_password,
+
 	[string]$mainBranchName = "dev",
     [string]$buildId = $env:BUILD_BUILDID,
 	[string]$branchName = $env:BUILD_SOURCEBRANCHNAME,
 	[string]$tempDirectory = $env:BUILD_STAGINGDIRECTORY
 )
 
-$tempFileName = $tempDirectory + "\gitCommandsOutput.txt"
+$tempFileName = $tempDirectory + "\gitCommandsOutput+$branchName.txt"
+
 $target_url = "https://fr8.visualstudio.com/DefaultCollection/fr8/_build?_a=summary&buildId=" + $buildId
 
 $failure = @{
@@ -72,11 +85,6 @@ Function UpdateGitHubBuildStatus($message)
 	}	
 }
 
-$vso_username = "fr8admin@fr8.co"
-$vso_password = "Ulysses3"
-$github_username = "fr8admin"
-$github_password = "ulysses3"
-
 $basicAuthVSO = ("{0}:{1}" -f $vso_username,$vso_password)
 $basicAuthVSO = [System.Text.Encoding]::UTF8.GetBytes($basicAuthVSO)
 $basicAuthVSO = [System.Convert]::ToBase64String($basicAuthVSO)
@@ -111,6 +119,7 @@ else
 {
     UpdateGitHubBuildStatus -message $failure
 }
+
 Invoke-Expression "git checkout . 2> $tempFileName"
 Invoke-Expression "git checkout $branchName 2> $tempFileName"
 if ($LastExitCode -ne 0)
@@ -124,5 +133,7 @@ else
 	DeleteBranchIfExists $buildBranchName
 }
 
-
+if (Test-Path $tempFileName) {
+  Remove-Item $tempFileName
+}
 
