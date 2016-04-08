@@ -140,38 +140,38 @@ namespace terminalIntegrationTests.EndToEnd
         /// on followup configuration to handle the issue when new spreadsheet was added after the
         /// initial configuration
         /// </summary>
-        [Test, Category("Integration.terminalGoogle")]
-        public async Task Get_Google_Sheet_Data_v1_FollowupConfiguration_UpdatesSpreadsheetList()
-        {
-            var googleAuthTokenId = await new terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalGoogle(this).ExtractGoogleDefaultToken();
-            var defaultGoogleAuthToken = GetGoogleAuthToken(googleAuthTokenId);
-            var googleSheetApi = new GoogleSheet(new GoogleIntegration());
-            var sourceSpreadsheetUri = string.Empty;
-            var destinationSpreadsheetUri = string.Empty;
-            var sourceSpreadsheetName = Guid.NewGuid().ToString();
-            var destinationSpreadsheetName = Guid.NewGuid().ToString();
-            try
-            {
-                //Configure the activity to analyse the list of 
-                var thePlan = await _plansHelper.CreateNewPlan();
-                //Configure Get_Google_Sheet_Data activity to see how the spreadsheets names are loaded to controls
-                var getFromGoogleSheet =  await _googleActivityConfigurator.AddAndConfigureGetFromGoogleSheet(thePlan, 1, sourceSpreadsheetName, true);
-                var standardConfigurationControlsCm = Crate.GetStorage(getFromGoogleSheet).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
-                if (standardConfigurationControlsCm != null)
-                {
-                    var controls = standardConfigurationControlsCm.Controls;
-                    controls.Single(c => c.Label == "Select a Google Spreadsheet");
-                    Assert.IsEmpty(controls);
-                }
-            }
-            finally
-            {
-                if (!string.IsNullOrEmpty(sourceSpreadsheetUri))
-                {
-                    await googleSheetApi.DeleteSpreadSheet(sourceSpreadsheetUri, defaultGoogleAuthToken);
-                }
-            }
-        }
+        //[Test, Category("Integration.terminalGoogle")]
+        //public async Task Get_Google_Sheet_Data_v1_FollowupConfiguration_UpdatesSpreadsheetList()
+        //{
+        //    var googleAuthTokenId = await new terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalGoogle(this).ExtractGoogleDefaultToken();
+        //    var defaultGoogleAuthToken = GetGoogleAuthToken(googleAuthTokenId);
+        //    var googleSheetApi = new GoogleSheet(new GoogleIntegration());
+        //    var sourceSpreadsheetUri = string.Empty;
+        //    var destinationSpreadsheetUri = string.Empty;
+        //    var sourceSpreadsheetName = Guid.NewGuid().ToString();
+        //    var destinationSpreadsheetName = Guid.NewGuid().ToString();
+        //    try
+        //    {
+        //        //Configure the activity to analyse the list of 
+        //        var thePlan = await _plansHelper.CreateNewPlan();
+        //        //Configure Get_Google_Sheet_Data activity to see how the spreadsheets names are loaded to controls
+        //        var getFromGoogleSheet =  await _googleActivityConfigurator.AddAndConfigureGetFromGoogleSheet(thePlan, 1, sourceSpreadsheetName, true);
+        //        var standardConfigurationControlsCm = Crate.GetStorage(getFromGoogleSheet).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+        //        if (standardConfigurationControlsCm != null)
+        //        {
+        //            var controls = standardConfigurationControlsCm.Controls;
+        //            controls.Single(c => c.Label == "Select a Google Spreadsheet");
+        //            Assert.IsEmpty(controls);
+        //        }
+        //    }
+        //    finally
+        //    {
+        //        if (!string.IsNullOrEmpty(sourceSpreadsheetUri))
+        //        {
+        //            await googleSheetApi.DeleteSpreadSheet(sourceSpreadsheetUri, defaultGoogleAuthToken);
+        //        }
+        //    }
+        //}
 
     }
 }

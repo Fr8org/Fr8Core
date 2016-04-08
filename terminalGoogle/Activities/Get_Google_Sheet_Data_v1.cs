@@ -123,13 +123,13 @@ namespace terminalGoogle.Actions
 
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
-            var spreadsheets = await _googleApi.GetSpreadsheets(GetGoogleAuthToken());
-            ConfigurationControls.SpreadsheetList.ListItems = spreadsheets.Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
+            await UpdateSpreadsheetList();
             runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
         protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
         {
+            await UpdateSpreadsheetList();
             CurrentActivityStorage.RemoveByLabel(ColumnHeadersCrateLabel);
             var googleAuth = GetGoogleAuthToken();
             //If spreadsheet selection is cleared we hide worksheet DDLB
@@ -191,5 +191,12 @@ namespace terminalGoogle.Actions
             }
             CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM { Table = data, FirstRowHeaders = hasHeaderRow }));
         }
+
+        private async Task UpdateSpreadsheetList()
+        {
+            var spreadsheets = await _googleApi.GetSpreadsheets(GetGoogleAuthToken());
+            ConfigurationControls.SpreadsheetList.ListItems = spreadsheets.Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
+        }
+
     }
 }
