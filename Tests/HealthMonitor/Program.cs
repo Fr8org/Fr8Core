@@ -13,6 +13,7 @@ namespace HealthMonitor
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("HealthMonitor.Program start point");
             var sendEmailReport = false;
             var appName = "Unspecified App";
             var ensureTerminalsStartup = false;
@@ -26,7 +27,7 @@ namespace HealthMonitor
             var csName = string.Empty;
             var skipLocal = false;
             var interactive = false;
-
+            Console.WriteLine("HealthMonitor.Program before args");
             if (args != null)
             {
                 for (var i = 0; i < args.Length; ++i)
@@ -78,7 +79,7 @@ namespace HealthMonitor
                         interactive = true;
                     }
                 }
-
+                Console.WriteLine("HealthMonitor.Program after args");
                 if (!string.IsNullOrEmpty(overrideDbName) && string.IsNullOrEmpty(connectionStringArg))
                 {
                     throw new ArgumentException("--overrideDbName can only be specified when --connectionString is specified.");
@@ -86,6 +87,7 @@ namespace HealthMonitor
 
                 if (selfHosting)
                 {
+                    Console.WriteLine("HealthMonitor.Program enter self hosting");
                     if (string.IsNullOrEmpty(connectionStringArg))
                     {
                         throw new ArgumentException("You should specify --connectionString \"{ConnectionStringName}={ConnectionString}\" argument when using self-hosted mode.");
@@ -109,7 +111,10 @@ namespace HealthMonitor
                         connectionString = builder.ToString();
                     }
 
+                    Console.WriteLine("HealthMonitor.Program enter after overrideDbName");
+
                     UpdateConnectionString(csName, connectionString);
+                    Console.WriteLine("HealthMonitor.Program enter after UpdateConnectionString");
                 }
 
             }
@@ -117,7 +122,9 @@ namespace HealthMonitor
             var selfHostInitializer = new SelfHostInitializer();
             if (selfHosting)
             {
+                Console.WriteLine("HealthMonitor.Program before self hosting initialize");
                 selfHostInitializer.Initialize(csName + "=" + connectionString);
+                Console.WriteLine("HealthMonitor.Program after self hosting initialize");
             }
 
             try

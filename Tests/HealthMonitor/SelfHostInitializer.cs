@@ -31,20 +31,25 @@ namespace HealthMonitor
         {
             IEnumerable<TerminalDO> terminals;
 
+            Console.WriteLine("HealthMonitor.SelfHostInitializer before StructureMap bootstrapper");
             var _container = new Container();
             _container.Configure(expression =>
                 expression.AddRegistry<DatabaseStructureMapBootStrapper.LiveMode>());
-
+            Console.WriteLine("HealthMonitor.SelfHostInitializer after StructureMap bootstrapper");
             var selfHostedApps = GetSelfHostedApps();
             using (var uow = _container.GetInstance<IUnitOfWork>())
             {
                 terminals = uow.TerminalRepository.GetAll();
             }
 
+            Console.WriteLine("HealthMonitor.SelfHostInitializer after get all terminals");
+
             try
             {
                 foreach (SelfHostedAppsElement app in selfHostedApps)
                 {
+
+                    Console.WriteLine("HealthMonitor.SelfHostInitializer inside self host apps foreachs");
                     Type calledType = Type.GetType(app.Type);
                     if (calledType == null)
                     {
@@ -80,7 +85,7 @@ namespace HealthMonitor
                     }
                 }
             }
-            catch (Exception)
+            catch (Exception ex)
             {
                 Dispose();
                 throw;
