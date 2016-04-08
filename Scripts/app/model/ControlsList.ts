@@ -290,4 +290,9 @@
         valueSource: string;
         textValue: string;
     }
+
+    export class ActivityChooser extends ControlDefinitionDTO {
+        subPlanId: string;
+        activityTemplateLabel: string;
+    }
 }

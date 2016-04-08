@@ -4,6 +4,7 @@ module dockyard.directives {
     'use strict';
 
     export function Resizable(): ng.IDirective {
+        const defaultWidth: number = 300;
         return {
             restrict: 'A',
             link: (scope: IResizableScope, elem, attrs) => {
@@ -14,21 +15,23 @@ module dockyard.directives {
                     .css({
                         'display': 'inline-block',
                         'overflow': 'hidden',
-                        'min-width': function () {
+                        'min-width': () => {
                             var minWidth = parseInt(attrs.minwidth);
-                            if (angular.isNumber(minWidth) && !isNaN(minWidth) && minWidth != 0) {
+                            if (angular.isNumber(minWidth) && !isNaN(minWidth) && minWidth !== 0) {
                                 return minWidth;
                             }
-                            return $(elem, this).width();
+                            var curWidth = $(elem, this).width();
+                            return curWidth > 0 ? curWidth : defaultWidth;
                         },
-                        'width': function () {
+                        'width': () => {
                             var minWidth = parseInt(attrs.minwidth);
-                            if (angular.isNumber(minWidth) && !isNaN(minWidth) && minWidth != 0) {
+                            if (angular.isNumber(minWidth) && !isNaN(minWidth) && minWidth !== 0) {
                                 return minWidth;
                             }
-                            return $(elem, this).width();
+                            var curWidth = $(elem, this).width();
+                            return curWidth > 0 ? curWidth : defaultWidth;
                         },
-                        'min-height': function () { return $(elem, this).height() + 20; },
+                        'min-height': () => { return $(elem, this).height() + 20; }
                     }).resizable()
                     .find(elem)
                     .css({
@@ -47,5 +50,5 @@ module dockyard.directives {
         resize: (events, ui) => void;
     }
 
-    app.directive('resizable', dockyard.directives.Resizable);
+    app.directive('activityResize', dockyard.directives.Resizable);
 }

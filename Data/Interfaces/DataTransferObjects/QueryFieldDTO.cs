@@ -3,16 +3,16 @@ using Newtonsoft.Json.Converters;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-    public class QueryFieldDTO
+    public class TypedFieldDTO
     {
-        public QueryFieldDTO()
+        public TypedFieldDTO()
         {
         }
 
-        public QueryFieldDTO(
+        public TypedFieldDTO(
             string name,
             string label,
-            QueryFieldType fieldType,
+            FieldType fieldType,
             ControlDefinitionDTO control)
         {
             Name = name;
@@ -26,7 +26,7 @@ namespace Data.Interfaces.DataTransferObjects
         public string Label { get; set; }
 
         [JsonConverter(typeof(StringEnumConverter))]
-        public QueryFieldType FieldType { get; set; }
+        public FieldType FieldType { get; set; }
 
         public ControlDefinitionDTO Control { get; set; }
     }

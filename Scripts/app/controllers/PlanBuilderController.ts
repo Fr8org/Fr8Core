@@ -13,6 +13,7 @@ module dockyard.controllers {
     }
 
     export interface IPlanBuilderScope extends ng.IScope {
+        isPlanBuilderScope: boolean;
         planId: string;
         subPlans: Array<model.SubPlanDTO>;
         fields: Array<model.Field>;
@@ -101,6 +102,9 @@ module dockyard.controllers {
         ) {
 
             this.LayoutService.resetLayout();
+
+            this.$scope.isPlanBuilderScope = true;
+
             this.$scope.current = new model.PlanBuilderState();
             this.$scope.actionGroups = [];
 
@@ -363,8 +367,7 @@ module dockyard.controllers {
                 this.$scope.planId = $state.params.id;
             }
 
-
-            this.loadPlan();
+            this.loadPlan($state.params.viewMode);
         }
 
         
@@ -394,7 +397,7 @@ module dockyard.controllers {
                 this.setAdvancedEditingMode();
             }
             this.renderPlan(<interfaces.IPlanVM>curPlan.plan);
-            this.$state.go('planBuilder', { id: curPlan.plan.id });
+            this.$state.go('planBuilder', { id: curPlan.plan.id,  viewMode: mode });
         }
 
         /*
