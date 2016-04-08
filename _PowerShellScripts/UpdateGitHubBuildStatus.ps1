@@ -20,12 +20,11 @@ param(
 	[string]$mainBranchName = "dev",
     [string]$buildId = $env:BUILD_BUILDID,
 	[string]$branchName = $env:BUILD_SOURCEBRANCHNAME,
-	[string]$tempDirectory = $env:BUILD_STAGINGDIRECTORY
+	[string]$tempDirectory = $env:BUILD_STAGINGDIRECTORY,
+	[string]$target_url = $env:BUILD_BUILDURI
 )
 
 $tempFileName = $tempDirectory + "\gitCommandsOutput+$branchName.txt"
-
-$target_url = "https://fr8.visualstudio.com/DefaultCollection/fr8/_build?_a=summary&buildId=" + $buildId
 
 $failure = @{
 				state = "failure"
