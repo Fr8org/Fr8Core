@@ -3,10 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.Http.Results;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
+using HubWeb.Controllers;
+using HubWeb.Controllers.Api;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
@@ -50,17 +54,36 @@ namespace DockyardTest.Controllers.Api
             }
         }
 
+        [Test]
+        public void FactsController_Will_Return_All_Facts_For_Given_ObjectId()
+        {
+            //Arrange
+            var reportController = CreateReportController();
+            AddIncidents();
+
+            //Act
+            var actionResult = reportController.GetTopIncidents(1,2,"all") as OkNegotiatedContentResult<IEnumerable<IncidentDTO>>;
+
+            ////Assert
+            Assert.NotNull(actionResult);
+            Assert.AreEqual(2, actionResult.Content.Count());
+        }
+
         private void AddIncidents()
         {
             //Arrange 
             using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                foreach (var fact in FixtureData.TestFactsForFactsControllerTest())
+                foreach (var incident in FixtureData.TestIncidentsForReportControllerTest())
                 {
-                    unitOfWork.FactRepository.Add(fact);
+                    unitOfWork.IncidentRepository.Add(incident);
                 }
                 unitOfWork.SaveChanges();
             }
+        }
+        private static ReportController CreateReportController()
+        {
+            return new ReportController();
         }
     }
 }
