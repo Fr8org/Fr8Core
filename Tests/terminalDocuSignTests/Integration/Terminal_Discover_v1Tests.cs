@@ -26,6 +26,7 @@ namespace terminalDocuSignTests.Integration
         private const string Get_DocuSign_Template_Name = "Get_DocuSign_Template";
 
 
+
         public override string TerminalName
         {
             get { return "terminalDocuSign"; }

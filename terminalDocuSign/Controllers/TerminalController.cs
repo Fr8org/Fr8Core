@@ -38,6 +38,19 @@ namespace terminalDocuSign.Controllers
                 IconPath = "/Content/icons/web_services/docusign-icon-64x64.png"
             };
 
+
+            var process_personal_report = new ActivityTemplateDTO()
+            {
+                Version = "1",
+                Name = "Process_Personal_Report",
+                Label = "Process Personal Report",
+                Category = ActivityCategory.Forwarders,
+                Terminal = terminal,
+                NeedsAuthentication = true,
+                MinPaneWidth = 380,
+                WebService = webService,
+            };
+
             var waitForDocusignEventActionTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
@@ -189,7 +202,8 @@ namespace terminalDocuSign.Controllers
                 trackDocuSignRecipientsSolution,
                 queryDocusign,
                 searchDocusignHistory,
-                getDocuSignTemplateActionTemplate
+                getDocuSignTemplateActionTemplate,
+                process_personal_report
             };
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()

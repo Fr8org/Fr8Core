@@ -57,13 +57,13 @@ namespace terminalDocuSign.Actions
         // This little class is storing information about how certian field displayed in Query Builder controls is query to the backed
         class FieldBackedRoutingInfo
         {
-            public readonly QueryFieldType FieldType;
+            public readonly FieldType FieldType;
             public readonly string DocusignQueryName;
             public readonly string MtDbPropertyName;
             public readonly Func<string, AuthorizationTokenDO, ControlDefinitionDTO> ControlFactory;
 
             public FieldBackedRoutingInfo(
-                QueryFieldType fieldType,
+                FieldType fieldType,
                 string docusignQueryName,
                 string mtDbPropertyName,
                 Func<string, AuthorizationTokenDO, ControlDefinitionDTO> controlFactory)
@@ -159,31 +159,31 @@ namespace terminalDocuSign.Actions
             {
                 {
                     "Envelope Text",
-                    new FieldBackedRoutingInfo(QueryFieldType.String, "SearchText", null, CreateTextBoxQueryControl)
+                    new FieldBackedRoutingInfo(FieldType.String, "SearchText", null, CreateTextBoxQueryControl)
                 },
                 {
                     "Folder",
-                    new FieldBackedRoutingInfo(QueryFieldType.String, "Folder", null, CreateFolderDropDownListControl)
+                    new FieldBackedRoutingInfo(FieldType.String, "Folder", null, CreateFolderDropDownListControl)
                 },
                 {
                     "Status",
-                    new FieldBackedRoutingInfo(QueryFieldType.String, "Status", "Status", CreateStatusDropDownListControl)
+                    new FieldBackedRoutingInfo(FieldType.String, "Status", "Status", CreateStatusDropDownListControl)
                 },
                 {
                     "CreateDate",
-                    new FieldBackedRoutingInfo(QueryFieldType.Date, "CreatedDateTime", "CreateDate", CreateDatePickerQueryControl)
+                    new FieldBackedRoutingInfo(FieldType.Date, "CreatedDateTime", "CreateDate", CreateDatePickerQueryControl)
                 },
                 {
                     "SentDate",
-                    new FieldBackedRoutingInfo(QueryFieldType.Date, "SentDateTime", "SentDate", CreateDatePickerQueryControl)
+                    new FieldBackedRoutingInfo(FieldType.Date, "SentDateTime", "SentDate", CreateDatePickerQueryControl)
                 },
                 {
                     "CompletedDate",
-                    new FieldBackedRoutingInfo(QueryFieldType.Date, "CompletedDateTime", "CompletedDate", CreateDatePickerQueryControl)
+                    new FieldBackedRoutingInfo(FieldType.Date, "CompletedDateTime", "CompletedDate", CreateDatePickerQueryControl)
                 },
                 {
                     "EnvelopeId",
-                    new FieldBackedRoutingInfo(QueryFieldType.String, "EnvelopeId", "EnvelopeId", CreateTextBoxQueryControl)
+                    new FieldBackedRoutingInfo(FieldType.String, "EnvelopeId", "EnvelopeId", CreateTextBoxQueryControl)
                 }
             };
         }
@@ -651,11 +651,11 @@ namespace terminalDocuSign.Actions
             return null;
         }
 
-        public QueryFieldDTO[] GetFieldListForQueryBuilder(AuthorizationTokenDO authToken)
+        public TypedFieldDTO[] GetFieldListForQueryBuilder(AuthorizationTokenDO authToken)
         {
             return _queryBuilderFields
                 .Select(x =>
-                    new QueryFieldDTO(
+                    new TypedFieldDTO(
                         x.Key,
                         x.Key,
                         x.Value.FieldType,
@@ -712,7 +712,7 @@ namespace terminalDocuSign.Actions
         {
             yield return Data.Crates.Crate.FromContent(
                 "Queryable Criteria",
-                new StandardQueryFieldsCM(GetFieldListForQueryBuilder(authToken))
+                new TypedFieldsCM(GetFieldListForQueryBuilder(authToken))
             );
 
             yield return Data.Crates.Crate.FromContent(

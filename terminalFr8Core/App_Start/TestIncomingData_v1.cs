@@ -337,12 +337,12 @@ namespace terminalFr8Core.Actions
             // var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
             var queryFieldsCrate = Crate.FromContent(
                 "Queryable Criteria",
-                new StandardQueryFieldsCM(
+                new TypedFieldsCM(
                     curUpstreamFields.Select(
-                        x => new QueryFieldDTO(
+                        x => new TypedFieldDTO(
                             x.Key,
                             x.Key,
-                            QueryFieldType.String,
+                            FieldType.String,
                             new TextBox()
                             {
                                 Name = "QueryField_" + x.Key
@@ -374,12 +374,12 @@ namespace terminalFr8Core.Actions
             // var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
             var queryFieldsCrate = Crate.FromContent(
                 "Queryable Criteria",
-                new StandardQueryFieldsCM(
+                new TypedFieldsCM(
                     curUpstreamFields.Select(
-                        x => new QueryFieldDTO(
+                        x => new TypedFieldDTO(
                             x.Key,
                             x.Key,
-                            QueryFieldType.String,
+                            FieldType.String,
                             new TextBox()
                             {
                                 Name = "QueryField_" + x.Key
@@ -407,7 +407,7 @@ namespace terminalFr8Core.Actions
 
             var hasControlsCrate = GetCratesByManifestType<StandardConfigurationControlsCM>(curActionDataPackageDO) != null;
 
-            var hasQueryFieldsCrate = GetCratesByManifestType<StandardQueryFieldsCM>(curActionDataPackageDO) != null;
+            var hasQueryFieldsCrate = GetCratesByManifestType<TypedFieldsCM>(curActionDataPackageDO) != null;
 
             if (hasControlsCrate && hasQueryFieldsCrate)
             {
@@ -461,7 +461,7 @@ namespace terminalFr8Core.Actions
         {
             string curLabel = string.Empty;
 
-            if (typeof(TManifest) == typeof(StandardQueryFieldsCM))
+            if (typeof(TManifest) == typeof(TypedFieldsCM))
             {
                 curLabel = "Queryable Criteria";
             } 

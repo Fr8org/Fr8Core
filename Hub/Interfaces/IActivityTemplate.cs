@@ -15,6 +15,7 @@ namespace Hub.Interfaces
         void RegisterOrUpdate(ActivityTemplateDO activityTemplateDo);
         ActivityTemplateDO GetByName(IUnitOfWork uow, string name);
         ActivityTemplateDO GetByNameAndVersion(string name, string version);
-       // string AssemblePluginRegistrationName(ActivityTemplateDO curActivityTemplateDO);
+        // string AssemblePluginRegistrationName(ActivityTemplateDO curActivityTemplateDO);
+        void RemoveInactiveActivities(List<ActivityTemplateDO> activityTemplateDO);
     }
 }
