@@ -1,5 +1,6 @@
 ﻿using Data.Control;
 using Data.Interfaces.DataTransferObjects;
+using DocuSign.eSign.Model;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
@@ -79,6 +80,60 @@ namespace terminalDocuSign.Services.NewApi
             return result;
         }
 
+        public static JObject ApplyValuesToTabs(List<FieldDTO> fieldList, Signer corresponding_template_recipient, Tabs tabs)
+        {
+            JObject jobj = JObject.Parse(tabs.ToJson());
+            foreach (var item in jobj.Properties())
+            {
+                string tab_type = item.Name;
+                var fields = fieldList.Where(a => a.Tags.Contains(tab_type) && a.Tags.Contains("recipientId:" + corresponding_template_recipient.RecipientId));
+                foreach (JObject tab in item.Value)
+                {
+                    FieldDTO corresponding_field = null;
+                    switch (tab_type)
+                    {
+                        case "radioGroupTabs":
+                            corresponding_field = fields.Where(a => a.Key.Contains(tab.Property("groupName").Value.ToString())).FirstOrDefault();
+                            if (corresponding_field == null)
+                                break;
+                            tab["radios"].Where(a => a["value"].ToString() == corresponding_field.Value).FirstOrDefault()["selected"] = "true";
+                            foreach (var radioItem in tab["radios"].Where(a => a["value"].ToString() != corresponding_field.Value).ToList())
+                            {
+                                radioItem["selected"] = "false";
+                            }
+                            break;
+
+                        case "listTabs":
+                            corresponding_field = fields.Where(a => a.Key.Contains(tab.Property("tabLabel").Value.ToString())).FirstOrDefault();
+                            if (corresponding_field == null)
+                                break;
+                            tab["listItems"].Where(a => a["value"].ToString() == corresponding_field.Value.Trim()).FirstOrDefault()["selected"] = "true";
+                            foreach (var listItem in tab["listItems"].Where(a => a["value"].ToString() != corresponding_field.Value.Trim()))
+                            {
+                                //set all other to false
+                                listItem["selected"] = "false";
+                            }
+                            //["selected"] = "true";
+                            tab["value"] = corresponding_field.Value;
+                            break;
+                        case "checkboxTabs":
+                            corresponding_field = fields.Where(a => a.Key.Contains(tab.Property("tabLabel").Value.ToString())).FirstOrDefault();
+                            if (corresponding_field == null)
+                                break;
+                            tab["selected"] = corresponding_field.Value;
+                            break;
+                        default:
+                            corresponding_field = fields.Where(a => a.Key.Contains(tab.Property("tabLabel").Value.ToString())).FirstOrDefault();
+                            if (corresponding_field == null)
+                                break;
+                            tab["value"] = corresponding_field.Value;
+                            break;
+                    }
+                }
+            }
+
+            return jobj;
+        }
 
         #region private methods
 

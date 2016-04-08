@@ -41,7 +41,7 @@ namespace HealthMonitor.Utility
         protected string TestEmail;
         protected string TestEmailName;
 
-        protected CredentialsDTO GetDocuSignCredentials()
+        public CredentialsDTO GetDocuSignCredentials()
         {
             //var creds = new CredentialsDTO()
             //{

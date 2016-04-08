@@ -14,7 +14,7 @@ namespace Hub.Interfaces
     {
         void Update(IUnitOfWork uow, SubPlanDO subPlan);
         void Create(IUnitOfWork uow, SubPlanDO subPlan);
-        void Delete(IUnitOfWork uow, Guid id);
+        Task Delete(IUnitOfWork uow, Guid id);
         Task<bool> DeleteAllChildNodes(Guid activityId);
         /// <summary>
         /// Backups current action and calls configure on downstream actions
@@ -25,5 +25,10 @@ namespace Hub.Interfaces
         /// <param name="confirmed">Forces deletion of current action even when there are validation errors</param>
         /// <returns>Deletion status of action</returns>
         Task<bool> DeleteActivity(string userId, Guid activityId, bool confirmed);
+
+        /// <summary>
+        /// Extract first activity from subplan by SubPlan.Id.
+        /// </summary>
+        Task<ActivityDO> GetFirstActivity(IUnitOfWork uow, Guid subPlanId);
     }
 }

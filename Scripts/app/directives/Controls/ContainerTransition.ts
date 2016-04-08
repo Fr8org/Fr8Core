@@ -36,7 +36,7 @@ module dockyard.directives.containerTransition {
 
             var operationList = [
                 new model.DropDownListItem('Jump To Activity', ContainerTransitions.JumpToActivity.toString()),
-                new model.DropDownListItem('Launch Plan', ContainerTransitions.JumpToPlan.toString()),
+                new model.DropDownListItem('Launch Additional Plan', ContainerTransitions.LaunchAdditionalPlan.toString()),
                 new model.DropDownListItem('Jump To Subplan', ContainerTransitions.JumpToSubplan.toString()),
                 new model.DropDownListItem('Stop Processing', ContainerTransitions.StopProcessing.toString()),
                 //new model.DropDownListItem('Suspend Processing', ContainerTransitions.SuspendProcessing.toString()),
@@ -182,7 +182,7 @@ module dockyard.directives.containerTransition {
                     case ContainerTransitions.JumpToActivity:
                         (<any>transition)._dummySecondaryOperationDD = buildActivityDropdown();
                         break;
-                    case ContainerTransitions.JumpToPlan:
+                    case ContainerTransitions.LaunchAdditionalPlan:
                         (<any>transition)._dummySecondaryOperationDD = buildPlanDropdown();
                         break;
                     case ContainerTransitions.JumpToSubplan:
@@ -193,7 +193,17 @@ module dockyard.directives.containerTransition {
                     case ContainerTransitions.ProceedToNextActivity:
                     default:
                         delete (<any>transition)._dummySecondaryOperationDD;
-                        break;
+                        return;
+                }
+
+                if (transition.targetNodeId != null) {
+                    var dd = <model.DropDownList>(<any>transition)._dummySecondaryOperationDD;
+                    for (var i = 0; i < dd.listItems.length; i++) {
+                        if (dd.listItems[i].value === transition.targetNodeId) {
+                            dd.value = dd.listItems[i].value;
+                            dd.selectedKey = dd.listItems[i].key;
+                        }
+                    }
                 }
             };
 
@@ -247,12 +257,33 @@ module dockyard.directives.containerTransition {
                 return angular.noop;
             };
 
+            var getTransitionKey = (transition: string) : string => {
+                for (var i = 0; i < operationList.length; i++) {
+                    if (transition === operationList[i].value) {
+                        return operationList[i].key;
+                    }
+                }
+                return null;
+            };
+
             $scope.getOperationField = (transition: model.ContainerTransitionField) => {
                 if (!(<any>transition)._dummyOperationDD) {
                     var dd = new model.DropDownList();
                     dd.listItems = operationList;
+
+                    if (transition.transition != null) {
+                        dd.value = transition.transition.toString();
+                        dd.selectedKey = getTransitionKey(transition.transition.toString());
+                    }
+
                     (<any>transition)._dummyOperationDD = dd;
                 }
+
+                $timeout(() => {
+                    processTransition(transition);
+                    informJumpTargets();
+                });
+                
 
                 return (<any>transition)._dummyOperationDD;
             };

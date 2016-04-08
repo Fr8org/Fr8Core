@@ -1,40 +1,19 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading;
+using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
-using Hub.Exceptions;
-using Hub.Infrastructure;
-using HubWeb.Controllers.Helpers;
-using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Entities;
-using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Data.States;
 using Hub.Interfaces;
-using System.Threading.Tasks;
-using HubWeb.ViewModels;
-using Newtonsoft.Json;
-using Hub.Managers;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects.Helpers;
-using Utilities.Interfaces;
-using HubWeb.Infrastructure;
-using Data.Interfaces.Manifests;
-using System.Text;
-using Data.Constants;
-using Data.Infrastructure;
 
 namespace HubWeb.Controllers
 {
     [Fr8ApiAuthorize]
     public class SubPlansController : ApiController
     {
-
         private readonly ISubPlan _subPlan;
 
         public SubPlansController()
@@ -99,6 +78,38 @@ namespace HubWeb.Controllers
                 _subPlan.Update(uow, curSubPlanDO);
                 uow.SaveChanges();
                 return Ok(Mapper.Map<SubPlanDO, SubPlanDTO>(curSubPlanDO));
+            }
+        }
+
+        [ResponseType(typeof(SubPlanDTO))]
+        [HttpDelete]
+        public async Task<IHttpActionResult> Delete(Guid id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var subPlan = uow.PlanRepository.GetById<SubPlanDO>(id);
+                if (subPlan == null)
+                {
+                    return BadRequest();
+                }
+
+                await _subPlan.Delete(uow, id);
+
+                uow.SaveChanges();
+
+                return Ok();
+            }
+        }
+
+        [ActionName("first_activity")]
+        [ResponseType(typeof(ActivityDTO))]
+        [HttpPost]
+        public async Task<IHttpActionResult> FirstActivity(Guid id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var activity = await _subPlan.GetFirstActivity(uow, id);
+                return Ok(Mapper.Map<ActivityDTO>(activity));
             }
         }
     }

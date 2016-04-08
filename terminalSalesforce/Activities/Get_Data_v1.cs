@@ -97,9 +97,9 @@ namespace terminalSalesforce.Actions
                 //Note: This design time fields are used to populate the Fileter Pane controls. It has to be labelled as Queryable Criteria
                 crateStorage.RemoveByLabel("Queryable Criteria");
                 crateStorage.Add(
-                    Crate.FromContent("Queryable Criteria", new StandardQueryFieldsCM(
+                    Crate.FromContent("Queryable Criteria", new TypedFieldsCM(
                         objectFieldsList.OrderBy(field => field.Key)
-                                        .Select(field => new QueryFieldDTO(field.Value, field.Key, QueryFieldType.String, new TextBox { Name = field.Value })))));
+                                        .Select(field => new TypedFieldDTO(field.Value, field.Key, FieldType.String, new TextBox { Name = field.Value })))));
 
                 //FR-2459 - The activity should create another design time fields crate of type FieldDescriptionsCM for downstream activities.
                 crateStorage.RemoveByLabelPrefix("Salesforce Object Fields");
@@ -124,7 +124,7 @@ namespace terminalSalesforce.Actions
                 ((DropDownList)GetControl(curActivityDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
 
             var curSalesforceObjectFields = CrateManager.GetStorage( curActivityDO )
-                                                         .CratesOfType<StandardQueryFieldsCM>()
+                                                         .CratesOfType<TypedFieldsCM>()
                                                          .Single(c => c.Label.Equals("Queryable Criteria"))
                                                          .Content.Fields.Select(f => f.Label);
 
@@ -195,5 +195,5 @@ namespace terminalSalesforce.Actions
 
             return PackControlsCrate(whatKindOfData, textArea, queryBuilderPane);
         }
-    }
+        }
 }

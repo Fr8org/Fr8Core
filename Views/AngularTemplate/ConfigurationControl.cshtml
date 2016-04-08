@@ -30,6 +30,16 @@
     </div>
 
     <!--
+        Textarea template
+        -->
+    <div ng-if='field.type == "TextBoxBig"'>
+        <label class='control-label' ng-if="field.label">{{::field.label}}</label>
+        <textarea type='text' ng-model='field.value' ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }"
+                  ng-change="onChange(field)" ng-required='field.required' data-field-name='{{::field.name}}' id='pca__txt__{{::field.name | validId}}'
+                  class='form-control form-control-focus' name='pca__txt__{{::field.name | validId}}' stop-click-propagation></textarea>
+    </div>
+
+    <!--
         Filepicker template
         -->
     <div ng-if='field.type == "FilePicker"'>
@@ -205,6 +215,10 @@
         <control-list field="field" current-action="currentAction" change="onChange" plan="plan"></control-list>
     </div>
 
+    <div ng-if='field.type == "ActivityChooser"'>
+        <activity-chooser field="field" current-action="currentAction" plan="plan"></activity-chooser>
+    </div>
 
-<!-- Add more configuration field templates below -->
+
+    <!-- Add more configuration field templates below -->
 </div>

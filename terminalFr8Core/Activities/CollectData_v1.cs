@@ -41,6 +41,11 @@ namespace terminalFr8Core.Actions
             return Task.FromResult(curActivityDO);
         }
 
+        /// <summary>
+        /// We don't want false clicked events from submit button
+        /// after we read it's state we reset it to unclicked state
+        /// </summary>
+        /// <param name="curActivityDO"></param>
         private void UnClickSubmitButton(ActivityDO curActivityDO)
         {
             using (var curStorage = CrateManager.GetUpdatableStorage(curActivityDO))
@@ -51,7 +56,7 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        private async Task PushLauncherNotification(ActivityDO curActivityDO)
+        private async Task PushLaunchURLNotification(ActivityDO curActivityDO)
         {
             await PushUserNotification(new TerminalNotificationDTO
             {
@@ -60,28 +65,27 @@ namespace terminalFr8Core.Actions
                 ActivityVersion = "1",
                 TerminalName = "terminalFr8Core",
                 TerminalVersion = "1",
-                Message = "Launcher can be launched with the following URL: " +
+                Message = "This Plan can be launched with the following URL: " +
                                     CloudConfigurationManager.GetSetting("CoreWebServerUrl") +
-                                    "api/v1/planload?id=" + curActivityDO.RootPlanNodeId,
-                Subject = "Launcher URL"
+                                    "redirect/cloneplan?id=" + curActivityDO.RootPlanNodeId,
+                                    //"api/v1/plans/clone?id=" + curActivityDO.RootPlanNodeId,
+                Subject = "Plan URL"
             });
         }
 
         private async Task UpdateMetaControls(ActivityDO curActivityDO)
         {
-            var configControls = GetConfigurationControls(curActivityDO);
-            var controlContainer = configControls.FindByName<MetaControlContainer>("control_container");
-            var storage = CrateManager.GetStorage(curActivityDO);
-
             using (var curStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                var updateButton = GetConfigurationControls(storage).FindByName<Button>("update_launcher");
+                var updateButton = GetConfigurationControls(curStorage).FindByName<Button>("update_launcher");
                 if (updateButton.Clicked)
                 {
                     updateButton.Clicked = false;
                     curStorage.RemoveByLabel(CollectionControlsLabel);
-                    curStorage.Add(CreateCollectionControlsCrate(controlContainer));
-                    await PushLauncherNotification(curActivityDO);
+                    var controls = CreateCollectionControlsCrate(curStorage);
+                    AddFileDescriptionToStorage(curStorage, controls.Get<StandardConfigurationControlsCM>().Controls.Where(a => a.Type == ControlTypes.FilePicker).ToList());
+                    curStorage.Add(controls);
+                    await PushLaunchURLNotification(curActivityDO);
                 }
             }
         }
@@ -116,9 +120,11 @@ namespace terminalFr8Core.Actions
                     }
                     //TODO think of a better way to flag activity
                     var flagCrate = CrateManager.CreateDesignTimeFieldsCrate(RunFromSubmitButtonLabel, AvailabilityType.RunTime);
-                    var payload = new List<CrateDTO>(){ CrateManager.ToDto(flagCrate) };
+                    var payload = new List<CrateDTO>() { CrateManager.ToDto(flagCrate) };
                     //we need to start the process - run current plan - that we belong to
                     await HubCommunicator.RunPlan(curActivityDO.RootPlanNodeId.Value, payload, CurrentFr8UserId);
+                    //after running the plan - let's reset button state
+                    //so next configure calls will be made with a fresh state
                     UnClickSubmitButton(curActivityDO);
                 }
                 else
@@ -139,6 +145,92 @@ namespace terminalFr8Core.Actions
             return payloadStorage.CratesOfType<FieldDescriptionsCM>(c => c.Label == RunFromSubmitButtonLabel).Any();
         }
 
+        private static string GetUriFileExtension(string uri)
+        {
+            Uri myUri1 = new Uri(uri);
+            string path1 = $"{myUri1.Scheme}{Uri.SchemeDelimiter}{myUri1.Authority}{myUri1.AbsolutePath}";
+            return Path.GetExtension(path1);
+        }
+
+        private byte[] ProcessExcelFile(IUpdatableCrateStorage pStorage, string filePath)
+        {
+            var byteArray = ExcelUtils.GetExcelFileAsByteArray(filePath);
+            var payloadCrate = Crate.FromContent(RuntimeCrateLabelPrefix, ExcelUtils.GetExcelFile(byteArray, filePath, false), AvailabilityType.RunTime);
+            pStorage.Add(payloadCrate);
+            return byteArray;
+        }
+
+        private void AddFileDescriptionToStorage(ICrateStorage storage, List<ControlDefinitionDTO> file_pickers)
+        {
+            int labelless_filepickers = 0;
+            storage.RemoveByManifestId((int)MT.StandardFileHandle);
+
+            foreach (var filepicker in file_pickers)
+            {
+                string crate_label = GetFileDescriptionLabel(filepicker, labelless_filepickers);
+                storage.Add(Crate.FromContent(crate_label, new StandardFileDescriptionCM(), AvailabilityType.RunTime));
+            }
+        }
+
+        private string GetFileDescriptionLabel(ControlDefinitionDTO filepicker, int labeless_filepickers)
+        { return filepicker.Label ?? ("File from Collect Data #" + ++labeless_filepickers); }
+
+        private void ProcessTextBox(IUpdatableCrateStorage pStorage, TextBox textBox)
+        {
+            //TODO add StandardPayloadCM here when needed
+        }
+
+        private void ProcessFilePickers(IUpdatableCrateStorage pStorage, IEnumerable<ControlDefinitionDTO> filepickers)
+        {
+            int labeless_pickers = 0;
+            foreach (FilePicker filepicker in filepickers)
+            {
+                var uploadFilePath = filepicker.Value;
+                byte[] file = null;
+                switch (GetUriFileExtension(uploadFilePath))
+                {
+                    case ".xlsx":
+                        file = ProcessExcelFile(pStorage, uploadFilePath);
+                        break;
+                }
+
+                if (file == null) continue;
+
+                string crate_label = GetFileDescriptionLabel(filepicker, labeless_pickers);
+                var fileDescription = new StandardFileDescriptionCM
+                {
+                    Filename = Path.GetFileName(uploadFilePath),
+                    TextRepresentation = Convert.ToBase64String(file),
+                    Filetype = Path.GetExtension(uploadFilePath)
+                };
+
+                pStorage.Add(Crate.FromContent(crate_label, fileDescription, AvailabilityType.RunTime));
+            }
+        }
+
+        private void ProcessCollectionControl(IUpdatableCrateStorage pStorage, ControlDefinitionDTO controlDefinitionDTO)
+        {
+            if (controlDefinitionDTO is TextBox)
+            {
+                ProcessTextBox(pStorage, (TextBox)controlDefinitionDTO);
+            }
+        }
+
+        private void ProcessCollectionControls(PayloadDTO payloadDTO, StandardConfigurationControlsCM collectionControls)
+        {
+            using (var pStorage = CrateManager.GetUpdatableStorage(payloadDTO))
+            {
+                foreach (var controlDefinitionDTO in collectionControls.Controls)
+                {
+                    ProcessCollectionControl(pStorage, controlDefinitionDTO);
+                }
+
+                ProcessFilePickers(pStorage, collectionControls.Controls.Where(a => a.Type == ControlTypes.FilePicker));
+            }
+        }
+
+
+
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var curPayloadDTO = await GetPayload(curActivityDO, containerId);
@@ -156,47 +248,27 @@ namespace terminalFr8Core.Actions
                 //no controls were created yet
                 return TerminateHubExecution(curPayloadDTO);
             }
-            
+
             //did we run from run button upon PlanBuilder or from submit button inside activity?
             if (!WasActivityRunFromSubmitButton(payloadStorage))
             {
                 //this was triggered by run button on screen
                 //not from submit button
                 //let's just activate and return
-                await PushLauncherNotification(curActivityDO);
+                await PushLaunchURLNotification(curActivityDO);
                 return TerminateHubExecution(curPayloadDTO);
             }
 
             //this means we were run by clicking the submit button
-
-            using (var pStorage = CrateManager.GetUpdatableStorage(curPayloadDTO))
-            {
-                foreach (var controlDefinitionDTO in collectionControls.Controls)
-                {
-                    if (controlDefinitionDTO is FilePicker)
-                    {
-                        var fp = (FilePicker)controlDefinitionDTO;
-                        var uploadFilePath = fp.Value;
-                        var byteArray = ExcelUtils.GetExcelFileAsByteArray(uploadFilePath);
-                        var payloadCrate = Crate.FromContent(RuntimeCrateLabelPrefix, ExcelUtils.GetExcelFile(byteArray, uploadFilePath, false), AvailabilityType.RunTime);
-                        pStorage.Add(payloadCrate);
-
-                        //add StandardFileDescriptionCM to payload
-                        var fileDescription = new StandardFileDescriptionCM
-                        {
-                            TextRepresentation = Convert.ToBase64String(byteArray),
-                            Filetype = Path.GetExtension(uploadFilePath)
-                        };
-                        pStorage.Add(Crate.FromContent("File Handler", fileDescription, AvailabilityType.RunTime));
-                    }
-                }
-            }
+            ProcessCollectionControls(curPayloadDTO, collectionControls);
 
             return Success(curPayloadDTO);
         }
 
-        protected Crate CreateCollectionControlsCrate(MetaControlContainer controlContainer)
+        protected Crate CreateCollectionControlsCrate(ICrateStorage crateStorage)
         {
+            var configControls = GetConfigurationControls(crateStorage);
+            var controlContainer = configControls.FindByName<MetaControlContainer>("control_container");
             var generatedConfigControls = controlContainer.CreateControls();
             //let's add a submit button here
             var submitButton = new Button
@@ -217,13 +289,13 @@ namespace terminalFr8Core.Actions
         {
             var infoText = new TextBlock()
             {
-                Value = "Construct a Launcher that gathers information from users and passes it to another Plan",
+                Value = "Create a form to collect data. Fr8 will generate a URL that you can distribute to users. The URL will launch this plan and collect data.",
                 Name = "info_text"
             };
 
             var cc = new MetaControlContainer()
             {
-                Label = "Please insert your desired controls below",
+                Label = "Show which form fields:",
                 Name = "control_container"
             };
 

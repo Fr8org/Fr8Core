@@ -41,7 +41,6 @@ namespace DockyardTest.Services
             var eventService = new Event();
             var curCrateStandardEventReport = ObjectFactory.GetInstance<ICrateManager>().FromDto(FixtureData.CrateDTOForEvents(externalAccountId));
             await eventService.ProcessInboundEvents(curCrateStandardEventReport);
-
             Assert.AreEqual(2, activityMock.Processed);
         }
         //[Test]
@@ -74,7 +73,6 @@ namespace DockyardTest.Services
         //    processTemplateMock.Verify(l => l.LaunchProcess(It.IsAny<IUnitOfWork>(), It.IsAny<RouteDO>(), null));
         //}
     }
-
 
     public class PlanNodeMock : IPlanNode
     {

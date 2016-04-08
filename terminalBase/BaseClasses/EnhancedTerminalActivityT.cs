@@ -598,7 +598,7 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         protected void RequestReprocessChildren()
         {
-            SetResponse(ActivityResponse.ReProcessChildren);
+            SetResponse(ActivityResponse.ReprocessChildren);
         }
 
         /**********************************************************************************/
@@ -621,6 +621,17 @@ namespace TerminalBase.BaseClasses
         {
             SetResponse(ActivityResponse.JumpToSubplan);
             OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetSubplanId });
+        }
+
+        /**********************************************************************************/
+        /// <summary>
+        /// Jumps to another plan
+        /// </summary>
+        /// <returns></returns>
+        protected void RequestLaunchAdditionalPlan(Guid targetPlanId)
+        {
+            SetResponse(ActivityResponse.LaunchAdditionalPlan);
+            OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetPlanId });
         }
 
         /**********************************************************************************/
