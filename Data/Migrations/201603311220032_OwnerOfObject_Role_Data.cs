@@ -10,43 +10,42 @@ namespace Data.Migrations
     {
         public override void Up()
         {
-            //var newRoleId = Guid.NewGuid();
-            //Sql($"insert into dbo.AspnetRoles(Id, Name, LastUpdated, CreateDate, Discriminator) values ('{newRoleId}','OwnerOfCurrentObject', '{DateTimeOffset.UtcNow}', '{DateTimeOffset.UtcNow}', 'AspNetRolesDO')");
 
-            ////connect all existing users with the new role
-            //Sql($"insert into dbo.AspNetUserRoles select Id,'{newRoleId}', SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET(), 'AspNetUserRolesDO' from AspNetUsers");
+            string sqlScript = @"
 
-            ////insert default role privileges for role OwnerOfCurrentObject
-            //var readRolePrivilegeId = Guid.NewGuid();
-            //Sql($"insert into dbo.RolePrivileges(Id, PrivilegeName, RoleId, LastUpdated, CreateDate) values ('{readRolePrivilegeId}','{Privilege.ReadObject.ToString()}','{newRoleId}', SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET())");
-            //var editRolePrivilegeId = Guid.NewGuid();
-            //Sql($"insert into dbo.RolePrivileges(Id, PrivilegeName, RoleId, LastUpdated, CreateDate) values ('{editRolePrivilegeId}','{Privilege.EditObject.ToString()}','{newRoleId}', SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET())");
-            //var deleteRolePrivilegeId = Guid.NewGuid();
-            //Sql($"insert into dbo.RolePrivileges(Id, PrivilegeName, RoleId, LastUpdated, CreateDate) values ('{deleteRolePrivilegeId}','{Privilege.DeleteObject.ToString()}','{newRoleId}', SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET())");
+            DECLARE @newRoleId uniqueidentifier
+            SET @newRoleId = NEWID()
+            
+            insert into dbo.AspnetRoles(Id, Name, LastUpdated, CreateDate, Discriminator) values (@newRoleId,'OwnerOfCurrentObject', '12-10-25 12:32:10 +01:00', '12-10-25 12:32:10 +01:00', 'AspNetRolesDO')
+            insert into dbo.AspNetUserRoles select Id, @newRoleId, '12-10-25 12:32:10 +01:00', '12-10-25 12:32:10 +01:00', 'AspNetUserRolesDO' from AspNetUsers
 
-            //var manageInternalUsersPrivilegeId = Guid.NewGuid();
-            //Sql($"insert into dbo.RolePrivileges(Id, PrivilegeName, RoleId, LastUpdated, CreateDate) values ('{manageInternalUsersPrivilegeId}','{Privilege.ManageInternalUsers.ToString()}','{newRoleId}', SYSDATETIMEOFFSET(), SYSDATETIMEOFFSET())");
+            DECLARE @readRolePrivilegeId uniqueidentifier
+            SET @readRolePrivilegeId = NEWID()
+            insert into dbo.RolePrivileges(Id, PrivilegeName, RoleId, LastUpdated, CreateDate) values (@readRolePrivilegeId,'ReadObject', @newRoleId, '12-10-25 12:32:10 +01:00', '12-10-25 12:32:10 +01:00')
 
+            DECLARE @editRolePrivilegeId uniqueidentifier
+            SET @editRolePrivilegeId = NEWID()
+            insert into dbo.RolePrivileges(Id, PrivilegeName, RoleId, LastUpdated, CreateDate) values (@editRolePrivilegeId,'EditObject', @newRoleId, '12-10-25 12:32:10 +01:00', '12-10-25 12:32:10 +01:00')
+    
+            DECLARE @deleteRolePrivilegeId uniqueidentifier
+            SET @deleteRolePrivilegeId = NEWID()
+            insert into dbo.RolePrivileges(Id, PrivilegeName, RoleId, LastUpdated, CreateDate) values (@deleteRolePrivilegeId,'DeleteObject', @newRoleId, '12-10-25 12:32:10 +01:00', '12-10-25 12:32:10 +01:00')
+            
+            insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, @readRolePrivilegeId, 'PlanDO', '12-10-25 12:32:10 +01:00', '12-10-25 12:32:10 +01:00' from dbo.Plans
+            insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, @editRolePrivilegeId, 'PlanDO', '12-10-25 12:32:10 +01:00', '12-10-25 12:32:10 +01:00' from dbo.Plans
+            insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, @deleteRolePrivilegeId, 'PlanDO', '12-10-25 12:32:10 +01:00', '12-10-25 12:32:10 +01:00' from dbo.Plans
 
-            ////
-            ////create default security for all existing PlanDO, ActivityDO and ContainerDO in the database
-            ////every existing object need to be associated with 3 default rolePrivileges for 
-            ////
+            insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, @readRolePrivilegeId,, 'ContainerDO', CreateDate, LastUpdated from dbo.Containers
+            insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, @editRolePrivilegeId, 'ContainerDO', CreateDate, LastUpdated from dbo.Containers
+            insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, @deleteRolePrivilegeId, 'ContainerDO', CreateDate, LastUpdated from dbo.Containers
 
-            ////default security for plans
-            //Sql($"insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, '{readRolePrivilegeId}', 'PlanDO', '{DateTimeOffset.UtcNow}', '{DateTimeOffset.UtcNow}' from dbo.Plans");
-            //Sql($"insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, '{editRolePrivilegeId}', 'PlanDO', '{DateTimeOffset.UtcNow}', '{DateTimeOffset.UtcNow}' from dbo.Plans");
-            //Sql($"insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, '{deleteRolePrivilegeId}', 'PlanDO', '{DateTimeOffset.UtcNow}', '{DateTimeOffset.UtcNow}' from dbo.Plans");
+            --insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, @readRolePrivilegeId,, 'ActivityDO', '12-10-25 12:32:10 +01:00', '12-10-25 12:32:10 +01:00' from dbo.Actions
+            --insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, @editRolePrivilegeId, 'ActivityDO', '12-10-25 12:32:10 +01:00', '12-10-25 12:32:10 +01:00' from dbo.Actions
+            --insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, @deleteRolePrivilegeId, 'ActivityDO', '12-10-25 12:32:10 +01:00', '12-10-25 12:32:10 +01:00' from dbo.Actions
+           
+            ";
 
-            ////default security for containers
-            //Sql($"insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, '{readRolePrivilegeId}', 'ContainerDO', CreateDate, LastUpdated from dbo.Containers");
-            //Sql($"insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, '{editRolePrivilegeId}', 'ContainerDO', CreateDate, LastUpdated from dbo.Containers");
-            //Sql($"insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, '{deleteRolePrivilegeId}', 'ContainerDO', CreateDate, LastUpdated from dbo.Containers");
-
-            ////default security for activites
-            //Sql($"insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, '{readRolePrivilegeId}', 'ActivityDO', '{DateTimeOffset.UtcNow}', '{DateTimeOffset.UtcNow}' from dbo.Actions");
-            //Sql($"insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, '{editRolePrivilegeId}', 'ActivityDO', '{DateTimeOffset.UtcNow}', '{DateTimeOffset.UtcNow}' from dbo.Actions");
-            //Sql($"insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, '{deleteRolePrivilegeId}', 'ActivityDO', '{DateTimeOffset.UtcNow}', '{DateTimeOffset.UtcNow}' from dbo.Actions");
+            Sql(sqlScript);
         }
 
 
