@@ -45,29 +45,12 @@ namespace HubWeb.Controllers
             return Ok(factDTOList);
         }
 
-        //[Route("api/report/getallincidents")]
-        public IHttpActionResult GetALLIncidents()
-        {
-            List<IncidentDO> incidentList = null;
-            try
-            {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    incidentList = _report.GetAllIncidents(uow);
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.GetLogger().Error("Error checking for activity template ", e);
-            }
-            return Ok(incidentList);
-        }
-        //[Route("api/report/getincidents?page={page}&pageSize={pageSize}&user={current/all}")]
-        public IHttpActionResult GetIncidents(int page, int pageSize, string user)
+        //[Route("api/report/GetTopIncidents?page={page}&pageSize={pageSize}&user={current/all}&numOfIncidetns={1000}")]
+        public IHttpActionResult GetTopIncidents(int page, int pageSize, string user, int numOfIncidents = 1000)
         {
             //this is a flag to return either all or user-specific incidents
             bool getCurrentUserIncidents;
-            var incidentList = new List<IncidentDO>();
+            var incidentDTOList = new List<IncidentDTO>();
             //based on the parameter in GET request decide the value of the flag
             if (string.Equals(user, "current"))
                 getCurrentUserIncidents = true;
@@ -80,13 +63,18 @@ namespace HubWeb.Controllers
             try
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                    incidentList = _report.GetIncidents(uow, page, pageSize, getCurrentUserIncidents);
+                {
+                    var incidentDOs = _report.GetTopIncidents(uow, page, pageSize, getCurrentUserIncidents,
+                        numOfIncidents);
+                    //We map DO->DTO to avoid lazy load entity references that may lead to crash
+                    incidentDTOList.AddRange(incidentDOs.Select(incidentDO => Mapper.Map<IncidentDTO>(incidentDO)));
+                }
             }
             catch (Exception e)
             {
                 Logger.GetLogger().Error("Error checking for activity template ", e);
             }
-            return Ok(incidentList);
+            return Ok(incidentDTOList);
         }
     }
 }
