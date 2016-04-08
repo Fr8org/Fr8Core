@@ -10,9 +10,6 @@
       "IsTestFrameworkFile": true
     },
     {
-      "Path": "../../bower_components/angular-resource/angular-resource.min.js"
-    },
-    {
       "Path": "../../bower_components/angular-sanitize/angular-sanitize.js"
     },
     {
@@ -83,6 +80,24 @@
       "Path": "../../bower_components/angular-ivh-treeview/dist/ivh-treeview.min.js"
     },
     {
+      "Path": "../../bower_components/angular-aria/angular-aria.min.js"
+    },
+    {
+      "Path": "../../bower_components/angular-animate/angular-animate.min.js"
+    },
+    {
+      "Path": "../../bower_components/angular-messages/angular-messages.min.js"
+    },
+    {
+      "Path": "../../bower_components/angular-material/angular-material.min.js"
+    },
+    {
+      "Path": "../../bower_components/angular-resizable/angular-resizable.min.js"
+    },
+    {
+      "Path": "../../bower_components/angular-resource/angular-resource.min.js"
+    },
+    {
       "Path": "../app/app.js"
     },
     {
@@ -125,7 +140,7 @@
       "Excludes": [ "*.ts" ]
     },
     {
-      "Path": "../app/RouteBuilder/",
+      "Path": "../app/PlanBuilder/",
       "Includes": [ "*.js" ],
       "Excludes": [ "*.ts" ]
     },
@@ -157,10 +172,7 @@
       "Includes": [ "*.js" ],
       "Excludes": [ "*.ts" ]
     },
-    { "Path": "../tests/templates/templateCache.js" },
-     {
-      "Path": "../../bower_components/angular-messages/angular-messages.min.js"
-    }
+    { "Path": "../tests/templates/templateCache.js" }
   ],
   "Tests": [{ "Include": "*.js" }],
   "RootReferencePathMode": "SettingsFileDirectory"

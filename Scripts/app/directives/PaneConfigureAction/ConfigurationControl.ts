@@ -35,7 +35,7 @@ module dockyard.directives.paneConfigureAction {
         public scope = {
             currentAction: '=',
             field: '=',
-            route: '='
+            plan: '='
         };
         public templateUrl = '/AngularTemplate/ConfigurationControl';
         public restrict = 'E';

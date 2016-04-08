@@ -5,7 +5,9 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Constants;
 using System.Linq;
 using System.Reflection;
+using System.Web.UI;
 using Data.Crates;
+using Data.Helpers;
 
 namespace Data.Interfaces.Manifests
 {
@@ -113,6 +115,11 @@ namespace Data.Interfaces.Manifests
         {
         }
 
+        public void Add(ControlDefinitionDTO control)
+        {
+            Controls.Add(control);
+        }
+
         // Find control by its name. Note, that this methods is no recursive
         public ControlDefinitionDTO FindByName(string name)
         {
@@ -139,61 +146,172 @@ namespace Data.Interfaces.Manifests
             return default(T);
         }
 
+        public object FindByNameNested(string name)
+        {
+            foreach (var controlDefinitionDto in Controls)
+            {
+                var result = FindByNameRecurisve(controlDefinitionDto, name);
+                if (result != null)
+                {
+                    return result;
+                }
+            }
+
+            return null;
+        }
+
+        public List<IControlDefinition> EnumerateControlsDefinitions()
+        {
+            var namedControls = new List<IControlDefinition>();
+
+            foreach (var controlDefinitionDto in Controls)
+            {
+                EnumerateNamedControls(controlDefinitionDto, namedControls);
+            }
+
+            return namedControls;
+        }
+
+        private void EnumerateNamedControls(object obj, List<IControlDefinition> controls)
+        {
+            if (obj is IControlDefinition)
+            {
+                controls.Add((IControlDefinition)obj);
+            }
+
+            if (obj is IContainerControl)
+            {
+                foreach (var child in ((IContainerControl)obj).EnumerateChildren())
+                {
+                    EnumerateNamedControls(child, controls);
+                }
+            }
+        }
+        
+        public void SyncWith(StandardConfigurationControlsCM configurationControls)
+        {
+            var targetNamedControls = EnumerateControlsDefinitions();
+            foreach (var targetControl in targetNamedControls)
+            {
+                var source = configurationControls.FindByNameNested(targetControl.Name);
+
+                if (source == null)
+                {
+                    continue;
+                }
+
+                ClonePrimitiveProperties(targetControl, source);
+            }
+        }
         // Sync controls properties from configuration controls crate with the current instance of StandardConfigurationControlsCM
         public void ClonePropertiesFrom(StandardConfigurationControlsCM configurationControls)
         {
-            var type = GetType();
-
-            // Clone fields
-            foreach (var prop in type.GetProperties(BindingFlags.Instance | BindingFlags.Public))
-            {
-                if (MembersToIgnore.Contains(prop.Name) || !prop.CanRead)
-                {
-                    continue;
-                }
-
-                ClonePropertiesForObject(prop.GetValue(this), prop.Name, configurationControls);
-            }
-
-            // Clone properties
-            foreach (var field in type.GetFields(BindingFlags.Instance | BindingFlags.Public))
-            {
-                if (MembersToIgnore.Contains(field.Name))
-                {
-                    continue;
-                }
-
-                ClonePropertiesForObject(field.GetValue(this), field.Name, configurationControls);
-            }
+            SyncWith(configurationControls);
         }
 
-        // Clone properties from control with name 'name' into object 'target'
-        private static void ClonePropertiesForObject(object target, string objectName, StandardConfigurationControlsCM configurationControls)
+        private static bool CheckIfTypeIsControlsCollection(Type type)
         {
-            // Find the control
-            var control = configurationControls.FindByNameNested<object>(objectName);
-
-            if (control != null)
+            if (type.IsGenericType)
             {
-                ClonePrimitiveProperties(target, control);
+                var genericTypeDef = type.GetGenericTypeDefinition();
+
+                if (typeof(IList<>) == genericTypeDef)
+                {
+                    if (typeof(IControlDefinition).IsAssignableFrom(type.GetGenericArguments()[0]))
+                    {
+                        return true;
+                    }
+                }
             }
+
+            return false;
+        }
+
+
+        private static bool CanSyncMember(IMemberAccessor propertyInfo)
+        {
+            if (propertyInfo.Name == "Controls")
+            {
+                int wtf = 0;
+            }
+
+            if (propertyInfo.GetCustomAttribute<IgnorePropertySyncAttribute>() != null)
+            {
+                return false;
+            }
+
+            if (propertyInfo.GetCustomAttribute<ForcePropertySyncAttribute>() != null)
+            {
+                return true;
+            }
+
+            // if we have property of the type derived from IControlDefinition it 
+            if (typeof (IControlDefinition).IsAssignableFrom(propertyInfo.MemberType))
+            {
+                return false;
+            }
+
+            if (propertyInfo.MemberType.IsInterface && CheckIfTypeIsControlsCollection(propertyInfo.MemberType))
+            {
+                return false;
+            }
+
+            foreach (var @interface in propertyInfo.MemberType.GetInterfaces())
+            {
+                if (CheckIfTypeIsControlsCollection(@interface))
+                {
+                    return false;
+                }
+            }
+            
+            return true;
+        }
+
+        private static IEnumerable<IMemberAccessor> GetMembers(Type type)
+        {
+            return type.GetProperties(BindingFlags.Instance | BindingFlags.Public).Select(x =>  (IMemberAccessor) new PropertyMemberAccessor(x))
+                .Concat(type.GetFields(BindingFlags.Instance | BindingFlags.Public).Select(x => (IMemberAccessor) new FieldMemberAccessor(x)));
         }
 
         // Clone properties from object 'source' to object 'target'
         private static void ClonePrimitiveProperties(object target, object source)
         {
-            var properties = target.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => (x.PropertyType.IsValueType || x.PropertyType == typeof (string)) && x.CanWrite);
-            var sourceTypeProp = source.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => (x.PropertyType.IsValueType || x.PropertyType == typeof (string)) && x.CanRead).ToDictionary(x => x.Name, x => x);
+            var members = GetMembers(target.GetType()).Where(CanSyncMember);
+            var sourceTypeProp = GetMembers(target.GetType()).Where(x=>CanSyncMember(x) && x.CanRead).ToDictionary(x => x.Name, x => x);
 
-            foreach (var prop in properties)
+            foreach (var member in members)
             {
-                PropertyInfo sourceProp;
+                IMemberAccessor sourceMember;
 
-                if (sourceTypeProp.TryGetValue(prop.Name, out sourceProp) && prop.PropertyType.IsAssignableFrom(sourceProp.PropertyType))
+                if (sourceTypeProp.TryGetValue(member.Name, out sourceMember) && member.MemberType.IsAssignableFrom(sourceMember.MemberType))
                 {
+                    if (typeof (IList).IsAssignableFrom(sourceMember.MemberType))
+                    {
+                        if (!member.CanWrite)
+                        {
+                            var targetList = (IList)member.GetValue(target);
+                            var sourceList = (IList)sourceMember.GetValue(source);
+
+                            if (targetList != null)
+                            {
+                                targetList.Clear();
+
+                                if (sourceList != null)
+                                {
+                                    foreach (var item in sourceList)
+                                    {
+                                        targetList.Add(item);
+                                    }
+                                }
+                            }
+
+                            return;
+                        }
+                    }
+
                     try
                     {
-                        prop.SetMethod.Invoke(target, new[] {sourceProp.GetMethod.Invoke(source, null)});
+                        member.SetValue(target, sourceMember.GetValue(source));
                     }
                     catch
                     {
@@ -205,44 +323,16 @@ namespace Data.Interfaces.Manifests
         // Check if the give instance of an object has apropriate name
         private bool CheckName(object control, string name)
         {
-            // if control is ControlDefinitionDTO then just check Name property.
-            var controlDef = control as ControlDefinitionDTO;
+            var namedControl = control as IControlDefinition;
 
-            if (controlDef != null && controlDef.Name == name)
+            if (namedControl != null)
             {
-                return true;
+                return namedControl.Name == name;
             }
 
-            // Not all our controls are derived from ControlDefinitionDTO. But these controls still has propery Name. Get it using the reflection.
-            //TODO: much better solution is to introduce comonnd base class for every control, or indroduce interface, thaw will have property Name. Reflection shoudn't be used if there is a way to avoid it.
-            var nameProp = control.GetType().GetProperty("Name", BindingFlags.Instance | BindingFlags.Public);
-
-            if (nameProp == null || !nameProp.CanRead)
-            {
-                return false;
-            }
-
-            try
-            {
-                return (string) nameProp.GetMethod.Invoke(control, null) == name;
-            }
-            catch
-            {
-                return false;
-            }
+            return false;
         }
-
-        // Check if the given type is an either instance of IList or generic IList<>.
-        private bool IsCompatibleCollectionType(Type type)
-        {
-            if (typeof (IList).IsAssignableFrom(type))
-            {
-                return true;
-            }
-
-            return type.IsGenericType && type.GetGenericTypeDefinition() == typeof (IList<>);
-        }
-
+        
         // Find configuration control by name recursively.
         private object FindByNameRecurisve(object cd, string name)
         {
@@ -252,30 +342,18 @@ namespace Data.Interfaces.Manifests
                 return cd;
             }
 
-            // if not, find all collection properties in the current control. Only properties of type IList or IList<> are supported. 
-            var collectionGetters = cd.GetType().GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.CanRead && IsCompatibleCollectionType(x.PropertyType)).ToArray();
+            var conatinerControl = cd as IContainerControl;
 
-            foreach (var collectionGetter in collectionGetters)
+            if (conatinerControl != null)
             {
-                try
+                foreach (var child in conatinerControl.EnumerateChildren())
                 {
-                    var children = (IEnumerable) collectionGetter.GetMethod.Invoke(cd, null);
-                    if (children == null)
-                    {
-                        continue;
-                    }
+                    var result = FindByNameRecurisve(child, name);
 
-                    foreach (var child in children)
+                    if (result != null)
                     {
-                        var result = FindByNameRecurisve(child, name);
-                        if (result != null)
-                        {
-                            return result;
-                        }
+                        return result;
                     }
-                }
-                catch
-                {
                 }
             }
 

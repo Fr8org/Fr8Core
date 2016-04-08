@@ -15,6 +15,10 @@ module dockyard.tests.unit.directives.controls {
         return angular.element(element.find('label'));
     };
 
+    var getSpanArea = (element) => {
+        return angular.element(element.find('span'));
+    };
+
     describe('Testing TextBlock control', () => {
         var $rootScope,
             $compile,
@@ -49,16 +53,16 @@ module dockyard.tests.unit.directives.controls {
             expect(element.isolateScope()).not.toBe(null);
         });
 
-        it('Should contain single label area', () => {
-            expect(getLabelArea(element).length).toBe(1);
+        it('Shouldn\'t contain label area', () => {
+            expect(getLabelArea(element).length).toBe(0);
         });
 
-        it('Should set value of label area correctly', () => {
-            expect(getLabelArea(element).html().trim()).toBe(scope.field.value);
+        it('Should set value of span correctly', () => {
+            expect(getSpanArea(element).html().trim()).toBe(scope.field.value);
         });
 
         it('Should have a span inside', () => {
-            expect(getLabelArea(element).find('span').length).toBe(1);
+            expect(element.find('span').length).toBe(1);
         });
     });
 
@@ -100,8 +104,8 @@ module dockyard.tests.unit.directives.controls {
         });
 
         it('Should be able display different values with it\'s sibling', () => {
-            expect(getLabelArea(element1).html().trim()).toBe(fx.FieldDTO.textBlock.value);
-            expect(getLabelArea(element2).html().trim()).toBe('different value');
+            expect(getSpanArea(element1).html().trim()).toBe(fx.FieldDTO.textBlock.value);
+            expect(getSpanArea(element2).html().trim()).toBe('different value');
         });
     });
 } 

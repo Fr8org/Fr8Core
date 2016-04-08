@@ -21,7 +21,10 @@ namespace terminalSalesforce.Actions
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
+            if (CheckAuthentication(curActivityDO, authTokenDO))
+            {
+                return curActivityDO;
+            }
 
             return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
@@ -54,7 +57,7 @@ namespace terminalSalesforce.Actions
 
                 AddTextSourceControlForDTO<Infrastructure.AccountDTO>(
                     crateStorage,
-                    "Upstream Terminal-Provided Fields",
+                    "",
                     requestUpstream: true
                 );
             }
@@ -99,7 +102,7 @@ namespace terminalSalesforce.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var account = _salesforce.CreateSalesforceDTO<Infrastructure.AccountDTO>(curActivityDO, payloadCrates, ExtractSpecificOrUpstreamValue);
+            var account = _salesforce.CreateSalesforceDTO<Infrastructure.AccountDTO>(curActivityDO, payloadCrates);
             var result = await _salesforce.CreateObject(account, "Account", authTokenDO);
 
             if (!string.IsNullOrEmpty(result))

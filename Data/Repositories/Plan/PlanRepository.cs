@@ -12,8 +12,8 @@ namespace Data.Repositories.Plan
         // Declarations
         /**********************************************************************************/
 
-        private readonly List<LoadedRoute>  _loadedRoutes = new List<LoadedRoute>();
-        private readonly Dictionary<Guid, LoadedRoute> _loadedNodes = new Dictionary<Guid, LoadedRoute>();
+        private readonly List<LoadedPlan>  _loadedPlans = new List<LoadedPlan>();
+        private readonly Dictionary<Guid, LoadedPlan> _loadedNodes = new Dictionary<Guid, LoadedPlan>();
         private readonly PlanStorage _planStorage;
 
         /**********************************************************************************/
@@ -27,14 +27,14 @@ namespace Data.Repositories.Plan
 
         /**********************************************************************************/
 
-        private RouteNodeDO GetNewNodeOrGetExising(Dictionary<Guid, RouteNodeDO> exisingNodes, RouteNodeDO newNode)
+        private PlanNodeDO GetNewNodeOrGetExising(Dictionary<Guid, PlanNodeDO> exisingNodes, PlanNodeDO newNode)
         {
             if (newNode == null)
             {
                 return null;
             }
 
-            RouteNodeDO existingNode;
+            PlanNodeDO existingNode;
 
             if (exisingNodes.TryGetValue(newNode.Id, out existingNode))
             {
@@ -47,126 +47,126 @@ namespace Data.Repositories.Plan
         /**********************************************************************************/
         // This method updates locally cached elements from global cache or DB
         // This method will overwrite all local changes
-        public TRouteNode Reload<TRouteNode>(Guid id)
-              where TRouteNode : RouteNodeDO
+        public TPlanNode Reload<TPlanNode>(Guid id)
+              where TPlanNode : PlanNodeDO
         {
-            var routeFromDb = GetRouteByMemberId(id);
+            var planFromDb = GetPlanByMemberId(id);
 
             lock (_loadedNodes)
             {
-                // have we already loaded this route?
-                var loadedRoute = _loadedRoutes.FirstOrDefault(x => x.Root.Id == routeFromDb.Id);
+                // have we already loaded this plan?
+                var loadedPlan = _loadedPlans.FirstOrDefault(x => x.Root.Id == planFromDb.Id);
 
-                if (loadedRoute == null)
+                if (loadedPlan == null)
                 {
-                    //if no, then just get this route by id
-                    return GetById<TRouteNode>(id);
+                    //if no, then just get this plan by id
+                    return GetById<TPlanNode>(id);
                 }
                 
                 // get list of currently loaded items
-                var currentNodes = RouteTreeHelper.Linearize(loadedRoute.Root).ToDictionary(x => x.Id, x => x);
-                var dbNodes = RouteTreeHelper.Linearize(routeFromDb).ToDictionary(x => x.Id, x => x);
+                var currentNodes = PlanTreeHelper.Linearize(loadedPlan.Root).ToDictionary(x => x.Id, x => x);
+                var dbNodes = PlanTreeHelper.Linearize(planFromDb).ToDictionary(x => x.Id, x => x);
 
-                foreach (var routeNodeDo in dbNodes)
+                foreach (var planNodeDo in dbNodes)
                 {
-                    RouteNodeDO currentNode;
+                    PlanNodeDO currentNode;
 
                     // sync structure
-                    var originalChildren = routeNodeDo.Value.ChildNodes;
-                    routeNodeDo.Value.ChildNodes = new List<RouteNodeDO>(originalChildren.Count);
+                    var originalChildren = planNodeDo.Value.ChildNodes;
+                    planNodeDo.Value.ChildNodes = new List<PlanNodeDO>(originalChildren.Count);
 
                     foreach (var childNode in originalChildren)
                     {
-                        routeNodeDo.Value.ChildNodes.Add(GetNewNodeOrGetExising(currentNodes, childNode));
+                        planNodeDo.Value.ChildNodes.Add(GetNewNodeOrGetExising(currentNodes, childNode));
                     }
 
-                    routeNodeDo.Value.ParentRouteNode = GetNewNodeOrGetExising(currentNodes, routeNodeDo.Value.ParentRouteNode);
-                    routeNodeDo.Value.RootRouteNode = GetNewNodeOrGetExising(currentNodes, routeNodeDo.Value.RootRouteNode);
+                    planNodeDo.Value.ParentPlanNode = GetNewNodeOrGetExising(currentNodes, planNodeDo.Value.ParentPlanNode);
+                    planNodeDo.Value.RootPlanNode = GetNewNodeOrGetExising(currentNodes, planNodeDo.Value.RootPlanNode);
 
-                    if (currentNodes.TryGetValue(routeNodeDo.Key, out currentNode))
+                    if (currentNodes.TryGetValue(planNodeDo.Key, out currentNode))
                     {
                         //sync local cached properties with db one
-                        currentNode.SyncPropertiesWith(routeNodeDo.Value);
-                        currentNode.ChildNodes = routeNodeDo.Value.ChildNodes;
-                        currentNode.ParentRouteNode = routeNodeDo.Value.ParentRouteNode;
-                        currentNode.RootRouteNode = routeNodeDo.Value.RootRouteNode;
+                        currentNode.SyncPropertiesWith(planNodeDo.Value);
+                        currentNode.ChildNodes = planNodeDo.Value.ChildNodes;
+                        currentNode.ParentPlanNode = planNodeDo.Value.ParentPlanNode;
+                        currentNode.RootPlanNode = planNodeDo.Value.RootPlanNode;
                     }
                     else // we don't have this node in our local cache.
                     {
-                        _loadedNodes[routeNodeDo.Key] = loadedRoute;
+                        _loadedNodes[planNodeDo.Key] = loadedPlan;
                     }
                 }
 
                 // remove nodes, that we deleted in the DB version
-                foreach (var routeNodeDo in currentNodes)
+                foreach (var planNodeDo in currentNodes)
                 {
-                    if (!dbNodes.ContainsKey(routeNodeDo.Key))
+                    if (!dbNodes.ContainsKey(planNodeDo.Key))
                     {
-                        _loadedNodes.Remove(routeNodeDo.Key);
+                        _loadedNodes.Remove(planNodeDo.Key);
                     }
                 }
 
-                loadedRoute.RebuildSnapshot();
-                return (TRouteNode)loadedRoute.Find(id);
+                loadedPlan.RebuildSnapshot();
+                return (TPlanNode)loadedPlan.Find(id);
             }
         }
 
         /**********************************************************************************/
 
-        public TRouteNode Reload<TRouteNode>(Guid? id)
-            where TRouteNode : RouteNodeDO
+        public TPlanNode Reload<TPlanNode>(Guid? id)
+            where TPlanNode : PlanNodeDO
         {
             if (id == null)
             {
                 return null;
             }
 
-            return Reload<TRouteNode>(id.Value);
+            return Reload<TPlanNode>(id.Value);
         }
 
         /**********************************************************************************/
 
-        public TRouteNode GetById<TRouteNode>(Guid id)
-            where TRouteNode : RouteNodeDO
+        public TPlanNode GetById<TPlanNode>(Guid id)
+            where TPlanNode : PlanNodeDO
         {
             lock (_loadedNodes)
             {
-                LoadedRoute loadedRoute;
+                LoadedPlan loadedPlan;
                 
                 // if we have loaded this node before?
-                if (!_loadedNodes.TryGetValue(id, out loadedRoute))
+                if (!_loadedNodes.TryGetValue(id, out loadedPlan))
                 {
-                    // try to load route for this node
-                    var route = GetRouteByMemberId(id);
+                    // try to load plan for this node
+                    var plan = GetPlanByMemberId(id);
 
                     // non existent node or new node that has not been saved yet
-                    if (route == null)
+                    if (plan == null)
                     {
                         return null;
                     }
                     
-                    loadedRoute = new LoadedRoute(route);
-                    _loadedRoutes.Add(loadedRoute);
+                    loadedPlan = new LoadedPlan(plan);
+                    _loadedPlans.Add(loadedPlan);
                     // add all noded to the loaded nodes list
-                    RouteTreeHelper.Visit(route, x => _loadedNodes.Add(x.Id, loadedRoute));
+                    PlanTreeHelper.Visit(plan, x => _loadedNodes.Add(x.Id, loadedPlan));
                 }
 
-                // search for the node in the corresponding routes
-                return (TRouteNode)loadedRoute.Find(id);
+                // search for the node in the corresponding plans
+                return (TPlanNode)loadedPlan.Find(id);
             }
         }
 
         /**********************************************************************************/
 
-        public TRouteNode GetById<TRouteNode>(Guid? id)
-          where TRouteNode : RouteNodeDO
+        public TPlanNode GetById<TPlanNode>(Guid? id)
+          where TPlanNode : PlanNodeDO
         {
             if (id == null)
             {
                 return null;
             }
 
-            return GetById<TRouteNode>(id.Value);
+            return GetById<TPlanNode>(id.Value);
         }
         
         /**********************************************************************************/
@@ -176,18 +176,18 @@ namespace Data.Repositories.Plan
         {
             lock (_loadedNodes)
             {
-                var loadedRoute = new LoadedRoute(plan, true);
+                var loadedPlan = new LoadedPlan(plan, true);
                
-                RouteTreeHelper.Visit(plan, x =>
+                PlanTreeHelper.Visit(plan, x =>
                 {
                     if (x.Id == Guid.Empty)
                     {
                         x.Id = Guid.NewGuid();
                     }
                     
-                    _loadedNodes.Add(x.Id, loadedRoute);
+                    _loadedNodes.Add(x.Id, loadedPlan);
                 });
-                _loadedRoutes.Add(loadedRoute);
+                _loadedPlans.Add(loadedPlan);
             }
         }
 
@@ -196,27 +196,27 @@ namespace Data.Repositories.Plan
         // We can only delete plans. If we want to edit plan, we need to get corresponding node and edit it's children
         public void Delete(PlanDO node)
         {
-            var route = GetById<RouteNodeDO>(node.Id);
-            if (route == null)
+            var plan = GetById<PlanNodeDO>(node.Id);
+            if (plan == null)
             {
                 return;
             }
 
             lock (_loadedNodes)
             {
-                LoadedRoute loadedRoute;
+                LoadedPlan loadedPlan;
 
                 // if we have loaded this node before?
-                if (_loadedNodes.TryGetValue(node.Id, out loadedRoute))
+                if (_loadedNodes.TryGetValue(node.Id, out loadedPlan))
                 {
-                    if (loadedRoute.IsNew)
+                    if (loadedPlan.IsNew)
                     {
                         _loadedNodes.Remove(node.Id);
-                        _loadedRoutes.Remove(loadedRoute);
+                        _loadedPlans.Remove(loadedPlan);
                     }
                     else
                     {
-                        loadedRoute.IsDeleted = true;
+                        loadedPlan.IsDeleted = true;
                     }
                 }
             }
@@ -240,7 +240,7 @@ namespace Data.Repositories.Plan
 
         /**********************************************************************************/
 
-        public IQueryable<RouteNodeDO> GetNodesQueryUncached()
+        public IQueryable<PlanNodeDO> GetNodesQueryUncached()
         {
             return _planStorage.GetNodesQuery();
         }
@@ -251,9 +251,9 @@ namespace Data.Repositories.Plan
         {
             lock (_loadedNodes)
             {
-                foreach (var loadedRoute in _loadedRoutes)
+                foreach (var loadedPlan in _loadedPlans)
                 {
-                     RouteTreeHelper.Visit(loadedRoute.Root, x =>
+                     PlanTreeHelper.Visit(loadedPlan.Root, x =>
                      {
                          var a = x as ActivityDO;
 
@@ -284,26 +284,27 @@ namespace Data.Repositories.Plan
         {
             lock (_loadedNodes)
             {
-                foreach (var loadedRoute in _loadedRoutes)
+                foreach (var loadedPlan in _loadedPlans)
                 {
-                    var route = loadedRoute;
-                    var parentPlan = loadedRoute.Root as PlanDO;
+                    var plan = loadedPlan;
+                    plan.Root.LastUpdated = DateTimeOffset.UtcNow;
+                    var parentPlan = loadedPlan.Root as PlanDO;
 
-                    RouteTreeHelper.Visit(loadedRoute.Root, (x, y) =>
+                    PlanTreeHelper.Visit(loadedPlan.Root, (x, y) =>
                     {
                         if (x.Id == Guid.Empty)
                         {
                             x.Id = Guid.NewGuid();
                         }
 
-                        x.ParentRouteNode = y;
-                        x.ParentRouteNodeId = y != null ? y.Id : (Guid?) null;
+                        x.ParentPlanNode = y;
+                        x.ParentPlanNodeId = y != null ? y.Id : (Guid?) null;
 
                         if (parentPlan != null)
                         {
                             x.Fr8AccountId = parentPlan.Fr8AccountId;
                             x.Fr8Account = parentPlan.Fr8Account;
-                            x.RootRouteNodeId = parentPlan.Id;
+                            x.RootPlanNodeId = parentPlan.Id;
 
                             UpdateForeignKeys(x);
                         }
@@ -312,20 +313,20 @@ namespace Data.Repositories.Plan
                             UpdateForeignKeys(x);
                         }
 
-                        _loadedNodes[x.Id] = route;
+                        _loadedNodes[x.Id] = plan;
                     });
 
-                    var previous = loadedRoute.RebuildSnapshot();
-                    var changes = loadedRoute.Snapshot.Compare(previous);
+                    var previous = loadedPlan.RebuildSnapshot();
+                    var changes = loadedPlan.Snapshot.Compare(previous);
 
-                    _planStorage.Update(loadedRoute.Root.Id, changes);
+                    _planStorage.Update(loadedPlan.Root.Id, changes);
                 }
             }
         }
 
         /**********************************************************************************/
         // update Ids of foreign keys.
-        private void UpdateForeignKeys(RouteNodeDO node)
+        private void UpdateForeignKeys(PlanNodeDO node)
         {
             if (node.Fr8Account != null)
             {
@@ -350,7 +351,7 @@ namespace Data.Repositories.Plan
 
         /**********************************************************************************/
 
-        private RouteNodeDO GetRouteByMemberId(Guid id)
+        private PlanNodeDO GetPlanByMemberId(Guid id)
         {
             return _planStorage.LoadPlan(id);
         }

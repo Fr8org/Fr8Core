@@ -164,7 +164,7 @@ module dockyard.directives.paneSelectAction {
 			this.$modal.open({
 				animation: true,
 				templateUrl: '/AngularTemplate/PaneSelectActionModal',
-				controller: 'RouteActionsDialogController'
+				controller: 'PlanActionsDialogController'
 			})
 			.result.then((selectedActivity: interfaces.IActivityTemplateVM) => {
 				//now we should emit an activity type selected event

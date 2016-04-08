@@ -21,7 +21,6 @@ using Moq;
 using Newtonsoft.Json;
 using Hub.Managers;
 
-
 namespace DockyardTest.Services
 {
     [TestFixture]
@@ -60,7 +59,7 @@ namespace DockyardTest.Services
             //Arrange 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = FixtureData.TestRoute5();
+                var plan = FixtureData.TestPlan5();
                 uow.UserRepository.Add(plan.Fr8Account);
                 uow.PlanRepository.Add(plan);
                 foreach (var container in FixtureData.GetContainers())
@@ -87,7 +86,7 @@ namespace DockyardTest.Services
             {
                 //Arrange
                 var envelope = FixtureData.TestEnvelope1();
-                var plan = FixtureData.TestRouteWithStartingSubroutes();
+                var plan = FixtureData.TestPlanWithStartingSubroutes();
 
                 uow.EnvelopeRepository.Add(envelope);
                 uow.RouteRepository.Add(plan);
@@ -109,7 +108,7 @@ namespace DockyardTest.Services
             {
                 //Arrange
                 var envelope = FixtureData.TestEnvelope1();
-                var plan = FixtureData.TestRoute1();
+                var plan = FixtureData.TestPlan1();
 
                 uow.EnvelopeRepository.Add(envelope);
                 uow.RouteRepository.Add(plan);
@@ -128,7 +127,7 @@ namespace DockyardTest.Services
 
         [Test]
         [ExpectedException(typeof(ArgumentNullException))]
-        public void ProcessService_CanNot_CreateProcessWithIncorrectRoute()
+        public void ProcessService_CanNot_CreateProcessWithIncorrectPlan()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -138,7 +137,7 @@ namespace DockyardTest.Services
 
                 uow.EnvelopeRepository.Add(envelope);
                 uow.SaveChanges();
-                _processService.Create(incorrectRouteId, FixtureData.GetEnvelopeIdCrate(envelope.DocusignEnvelopeId));
+                _processService.Create(incorrectPlanId, FixtureData.GetEnvelopeIdCrate(envelope.DocusignEnvelopeId));
             }
         }
 */
@@ -146,7 +145,7 @@ namespace DockyardTest.Services
         [Test]
         public async Task Execute_MoveToNextActivity_ProcessCurrentAndNextActivity()
         {
-            var _activity = new Mock<IRouteNode>();
+            var _activity = new Mock<IPlanNode>();
             _activity
                 .Setup(c => c.Process(It.IsAny<Guid>(), It.IsAny<ActivityState>(), It.IsAny<ContainerDO>()))
                 .Returns(Task.Delay(100))
@@ -155,7 +154,7 @@ namespace DockyardTest.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = FixtureData.TestRoute2();
+                var plan = FixtureData.TestPlan2();
 
                 plan.ChildNodes.AddRange(new[] {FixtureData.TestActivity10(), FixtureData.TestActivity7()});
                 uow.PlanRepository.Add(plan);
@@ -163,12 +162,12 @@ namespace DockyardTest.Services
                 uow.SaveChanges();
             }
 
-            var originalCurrentActivityId = containerDO.CurrentRouteNodeId;
+            var originalCurrentActivityId = containerDO.CurrentActivityId;
             _activity
-                .Setup(c => c.GetNextSibling(It.Is<RouteNodeDO>((r) => r.Id == originalCurrentActivityId)))
+                .Setup(c => c.GetNextSibling(It.Is<PlanNodeDO>((r) => r.Id == originalCurrentActivityId)))
                 .Returns(FixtureData.TestActivity10());
 
-            ObjectFactory.Configure(cfg => cfg.For<IRouteNode>().Use(_activity.Object));
+            ObjectFactory.Configure(cfg => cfg.For<IPlanNode>().Use(_activity.Object));
 
             _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
 
@@ -177,8 +176,8 @@ namespace DockyardTest.Services
                 await _container.Run(uow, containerDO);
             }
 
-            Assert.AreNotEqual(originalCurrentActivityId, containerDO.CurrentRouteNodeId);
-            Assert.IsNull(containerDO.CurrentRouteNodeId);
+            Assert.AreNotEqual(originalCurrentActivityId, containerDO.CurrentActivityId);
+            Assert.IsNull(containerDO.CurrentActivityId);
             _activity.Verify(p => p.Process(It.IsAny<Guid>(), It.IsAny<ActivityState>(), It.IsAny<ContainerDO>()));
         }
 

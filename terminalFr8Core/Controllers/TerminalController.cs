@@ -28,7 +28,7 @@ namespace terminalFr8Core.Controllers
 
             var terminal = new TerminalDTO
             {
-                Endpoint = CloudConfigurationManager.GetSetting("TerminalEndpoint"),
+                Endpoint = CloudConfigurationManager.GetSetting("terminalFr8Core.TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
                 Name = "terminalFr8Core",
                 Version = "1"
@@ -51,12 +51,22 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
+                Name = "Process_Personnel_Report",
+                Label = "Process Personnel Report",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1"
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
                 Name = "TestIncomingData",
                 Label = "Test Incoming Data",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 Version = "1",
-                MinPaneWidth = 550,
+                MinPaneWidth = 420,
                 WebService = webService
             });
 
@@ -152,7 +162,7 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
-                Name = "ManageRoute",
+                Name = "ManagePlan",
                 Label = "Manage Plan",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
@@ -286,7 +296,30 @@ namespace terminalFr8Core.Controllers
                 NeedsAuthentication = false,
                 Terminal = terminal,
                 WebService = webService,
-                MinPaneWidth = 350
+                MinPaneWidth = 350,
+                Tags = "AggressiveReload"
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "ExtractTableField",
+                Label = "Extract Table Field",
+                Version = "1",
+                Category = ActivityCategory.Processors,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                WebService = webService
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "CollectData",
+                Label = "Collect Data",
+                Version = "1",
+                Category = ActivityCategory.Processors,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                WebService = webService
             });
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()

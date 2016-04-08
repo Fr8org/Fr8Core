@@ -91,7 +91,7 @@ namespace terminalDocuSign.Actions
                 return curActivityDO;
             }
 
-            curActivityDO.ChildNodes = new List<RouteNodeDO>();
+            curActivityDO.ChildNodes = new List<PlanNodeDO>();
 
             // Always use default template for solution
             const string firstTemplateName = "Monitor_DocuSign_Envelope_Activity";
@@ -128,17 +128,17 @@ namespace terminalDocuSign.Actions
             {
                 if (curDocumentation.Contains("ExplainExtractData"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution work with DocuSign envelops"));
+                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution work with DocuSign envelops"));
                 }
                 if (curDocumentation.Contains("ExplainService"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonce(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }
-                return Task.FromResult(GenerateErrorRepsonce("Unknown contentPath"));
+                return Task.FromResult(GenerateErrorRepsonse("Unknown contentPath"));
             }
             return
                 Task.FromResult(
-                    GenerateErrorRepsonce("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+                    GenerateErrorRepsonse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
 
         #region Private Methods

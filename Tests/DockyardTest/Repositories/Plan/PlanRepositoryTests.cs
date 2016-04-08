@@ -18,27 +18,26 @@ namespace DockyardTest.Repositories.Plan
    
     class PlanStorageProviderMonitor : IPlanStorageProvider
     {
-        private RouteNodeDO _route;
-        public RouteSnapshot.Changes SubmittedChanges;
+        private PlanNodeDO _planNode;
+        public PlanSnapshot.Changes SubmittedChanges;
 
-        public PlanStorageProviderMonitor(RouteNodeDO route)
+        public PlanStorageProviderMonitor(PlanNodeDO planNode)
         {
-            RouteTreeHelper.Visit(route, (x, y) =>
+            PlanTreeHelper.Visit(planNode, (x, y) =>
             {
-                x.ParentRouteNodeId = y != null ? y.Id : (Guid?) null;
-                x.ParentRouteNode = y;
+                x.ParentPlanNodeId = y != null ? y.Id : (Guid?) null;
+                x.ParentPlanNode = y;
             });
 
-            _route = route;
+            _planNode = planNode;
         }
 
-        public RouteNodeDO LoadPlan(Guid planMemberId)
+        public PlanNodeDO LoadPlan(Guid planMemberId)
         {
-
-            return _route;
+            return _planNode;
         }
-
-        public void Update(RouteSnapshot.Changes changes)
+        
+        public void Update(PlanSnapshot.Changes changes)
         {
             SubmittedChanges = changes;
         }
@@ -53,7 +52,7 @@ namespace DockyardTest.Repositories.Plan
             throw new NotImplementedException();
         }
 
-        public IQueryable<RouteNodeDO> GetNodesQuery()
+        public IQueryable<PlanNodeDO> GetNodesQuery()
         {
             throw new NotImplementedException();
         }
@@ -96,7 +95,7 @@ namespace DockyardTest.Repositories.Plan
             return new Guid(id, (short)0, (short)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0);
         }
 
-        private RouteNodeDO GenerateRefTree()
+        private PlanNodeDO GenerateRefTree()
         {
             return new ActivityDO
             {
@@ -118,13 +117,13 @@ namespace DockyardTest.Repositories.Plan
             };
         }
 
-        private PlanDO GenerateTestRoute()
+        private PlanDO GenerateTestPlan()
         {
             return new PlanDO
             {
                 Id = NewGuid(13),
                 Name = "Plan",
-                RouteState = RouteState.Active,
+                PlanState = PlanState.Active,
                 Description = "PlanDesc",
                 Fr8Account = new Fr8AccountDO()
                 {
@@ -136,7 +135,7 @@ namespace DockyardTest.Repositories.Plan
                 {
                     new ActivityDO
                     {
-                        RootRouteNodeId = NewGuid(13),
+                        RootPlanNodeId = NewGuid(13),
                         Id = NewGuid(1),
                         ActivityTemplate = new ActivityTemplateDO
                         {
@@ -171,7 +170,7 @@ namespace DockyardTest.Repositories.Plan
                             Name = "New template",
                         },
                         ActivityTemplateId = 1,
-                                RootRouteNodeId = NewGuid(13),
+                                RootPlanNodeId = NewGuid(13),
                                 Id = NewGuid(2),
                                 Fr8Account = new Fr8AccountDO()
                                 {
@@ -189,7 +188,7 @@ namespace DockyardTest.Repositories.Plan
                             Name = "New template",
                         },
                         ActivityTemplateId = 1,
-                                RootRouteNodeId = NewGuid(13),
+                                RootPlanNodeId = NewGuid(13),
                                 Id = NewGuid(3),
                                 Fr8Account = new Fr8AccountDO()
                                 {
@@ -204,15 +203,15 @@ namespace DockyardTest.Repositories.Plan
             };
         }
 
-        private static bool AreEquals(RouteNodeDO a, RouteNodeDO b)
+        private static bool AreEquals(PlanNodeDO a, PlanNodeDO b)
         {
-            var snapShotA = new RouteSnapshot(a, false);
-            var snapShotB = new RouteSnapshot(b, false);
+            var snapShotA = new PlanSnapshot(a, false);
+            var snapShotB = new PlanSnapshot(b, false);
 
             return !snapShotB.Compare(snapShotA).HasChanges;
         }
 
-        private void ValidateChanges(List<Guid> expected, List<RouteNodeDO> actual)
+        private void ValidateChanges(List<Guid> expected, List<PlanNodeDO> actual)
         {
             Assert.AreEqual(expected.Count, actual.Count);
             foreach (var id in expected)
@@ -222,7 +221,7 @@ namespace DockyardTest.Repositories.Plan
             }
         }
 
-        private void ValidateChanges (ExpectedChanges expectedChanges, RouteSnapshot.Changes actualChanges)
+        private void ValidateChanges (ExpectedChanges expectedChanges, PlanSnapshot.Changes actualChanges)
         {
             ValidateChanges(expectedChanges.Inserted, actualChanges.Insert);
             ValidateChanges(expectedChanges.Deleted, actualChanges.Delete);
@@ -306,45 +305,45 @@ namespace DockyardTest.Repositories.Plan
         }
         
         [Test]
-        public void CanAddRoute()
+        public void CanAddPlan()
         {
             var provider = new PersistentPlanStorage(null);
             var cache = new PlanCache(new ExpirationStrategyMock());
             var repository = new PlanRepository(new PlanStorage(cache, provider));
 
-            repository.Add(GenerateTestRoute());
+            repository.Add(GenerateTestPlan());
 
             repository.SaveChanges();
 
             var loadedPlan = provider.LoadPlan(Guid.Empty);
 
-            Assert.IsTrue(AreEquals(GenerateTestRoute(), loadedPlan));
-            Assert.IsTrue(AreEquals(repository.GetById<PlanDO>(NewGuid(13)), GenerateTestRoute()));
+            Assert.IsTrue(AreEquals(GenerateTestPlan(), loadedPlan));
+            Assert.IsTrue(AreEquals(repository.GetById<PlanDO>(NewGuid(13)), GenerateTestPlan()));
         }
 
 
         [Test]
-        public void CanAddRouteWithEmptyDefaultIds()
+        public void CanAddPlanWithEmptyDefaultIds()
         {
             var provider = new PersistentPlanStorage(null);
             var cache = new PlanCache(new ExpirationStrategyMock());
             var repository = new PlanRepository(new PlanStorage(cache, provider));
 
-            var refRoute = GenerateTestRoute();
-            RouteTreeHelper.Visit(refRoute, x => x.Id = Guid.Empty);
+            var refPlan = GenerateTestPlan();
+            PlanTreeHelper.Visit(refPlan, x => x.Id = Guid.Empty);
 
-            repository.Add(refRoute);
+            repository.Add(refPlan);
             repository.SaveChanges();
 
-            RouteTreeHelper.Visit(refRoute, x => Assert.IsTrue(x.Id != Guid.Empty));
+            PlanTreeHelper.Visit(refPlan, x => Assert.IsTrue(x.Id != Guid.Empty));
 
             var loadedPlan = provider.LoadPlan(Guid.Empty);
 
-            Assert.IsTrue(AreEquals(refRoute, loadedPlan));
+            Assert.IsTrue(AreEquals(refPlan, loadedPlan));
         }
 
         [Test]
-        public void CanAddRouteInEF()
+        public void CanAddPlanInEF()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -384,7 +383,7 @@ namespace DockyardTest.Repositories.Plan
                     Id = 1,
                     TerminalStatus = 1
                 });
-                uow.PlanRepository.Add(GenerateTestRoute());
+                uow.PlanRepository.Add(GenerateTestPlan());
                 uow.SaveChanges();
             }
 
@@ -395,7 +394,7 @@ namespace DockyardTest.Repositories.Plan
             using (var uow = container.GetInstance<IUnitOfWork>())
             {
                 var loadedPlan = uow.PlanRepository.GetById<PlanDO>(NewGuid(13));
-                 Assert.IsTrue(AreEquals(GenerateTestRoute(), loadedPlan));
+                 Assert.IsTrue(AreEquals(GenerateTestPlan(), loadedPlan));
             }
         }
 

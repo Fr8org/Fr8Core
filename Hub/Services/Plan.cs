@@ -23,6 +23,8 @@ using Data.Constants;
 using Data.Crates;
 using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects.Helpers;
+using Data.Repositories.Plan;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 
 namespace Hub.Services
 {
@@ -35,9 +37,10 @@ namespace Hub.Services
         private readonly ICrateManager _crate;
         private readonly ISecurityServices _security;
         private readonly IProcessNode _processNode;
+        private readonly IJobDispatcher _dispatcher;
 
         public Plan(InternalInterface.IContainer container, Fr8Account dockyardAccount, IActivity activity,
-            ICrateManager crate, ISecurityServices security, IProcessNode processNode)
+            ICrateManager crate, ISecurityServices security, IProcessNode processNode, IJobDispatcher dispatcher)
         {
             _container = container;
             _dockyardAccount = dockyardAccount;
@@ -45,6 +48,7 @@ namespace Hub.Services
             _crate = crate;
             _security = security;
             _processNode = processNode;
+            _dispatcher = dispatcher;
         }
 
         public IList<PlanDO> GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false,
@@ -63,16 +67,26 @@ namespace Hub.Services
                 planQuery = planQuery.Where(c => string.IsNullOrEmpty(c.Category));
 
             return (status == null
-                ? planQuery.Where(pt => pt.RouteState != RouteState.Deleted)
-                : planQuery.Where(pt => pt.RouteState == status)).ToList();
+                ? planQuery.Where(pt => pt.PlanState != PlanState.Deleted)
+                : planQuery.Where(pt => pt.PlanState == status)).ToList();
 
         }
 
-        public IList<PlanDO> GetByName(IUnitOfWork uow, Fr8AccountDO account, string name)
+        public IList<PlanDO> GetByName(IUnitOfWork uow, Fr8AccountDO account, string name, PlanVisibility visibility)
         {
+            if (name != null)
+            {
+                return
+                    uow.PlanRepository.GetPlanQueryUncached()
+                        .Where(r => r.Fr8Account.Id == account.Id && r.Name == name)
+                        .Where(p => p.PlanState != PlanState.Deleted && p.Visibility == visibility)
+                        .ToList();
+            }
+
             return
                 uow.PlanRepository.GetPlanQueryUncached()
-                    .Where(r => r.Fr8Account.Id == account.Id && r.Name == name)
+                    .Where(r => r.Fr8Account.Id == account.Id)
+                    .Where(p => p.PlanState != PlanState.Deleted && p.Visibility == visibility)
                     .ToList();
         }
 
@@ -81,10 +95,10 @@ namespace Hub.Services
             if (submittedPlan.Id == Guid.Empty)
             {
                 submittedPlan.Id = Guid.NewGuid();
-                submittedPlan.RouteState = RouteState.Inactive;
+                submittedPlan.PlanState = PlanState.Inactive;
                 submittedPlan.Fr8Account = _security.GetCurrentAccount(uow);
 
-                submittedPlan.ChildNodes.Add(new SubrouteDO(true)
+                submittedPlan.ChildNodes.Add(new SubPlanDO(true)
                 {
                     Id = Guid.NewGuid(),
                     Name = "Starting Subplan"
@@ -114,7 +128,7 @@ namespace Hub.Services
                 Id = Guid.NewGuid(),
                 Name = name,
                 Fr8Account = _security.GetCurrentAccount(uow),
-                RouteState = RouteState.Inactive,
+                PlanState = PlanState.Inactive,
                 Category = category
             };
 
@@ -132,17 +146,17 @@ namespace Hub.Services
                 throw new EntityNotFoundException<PlanDO>(id);
             }
 
-            plan.RouteState = RouteState.Deleted;
+            plan.PlanState = PlanState.Deleted;
 
-            //Route deletion will only update its RouteState = Deleted
+            //Plan deletion will only update its PlanState = Deleted
             foreach (var container in _container.LoadContainers(uow, plan))
             {
-                container.ContainerState = ContainerState.Deleted;
+                container.State = State.Deleted;
             }
         }
 
 
-        public async Task<ActivateActivitiesDTO> Activate(Guid curPlanId, bool routeBuilderActivate)
+        public async Task<ActivateActivitiesDTO> Activate(Guid curPlanId, bool planBuilderActivate)
         {
             var result = new ActivateActivitiesDTO
             {
@@ -154,7 +168,7 @@ namespace Hub.Services
             {
                 var plan = uow.PlanRepository.GetById<PlanDO>(curPlanId);
 
-                if (plan.RouteState == RouteState.Deleted)
+                if (plan.PlanState == PlanState.Deleted)
                 {
                     EventManager.PlanActivationFailed(plan, "Cannot activate deleted plan");
                     throw new ApplicationException("Cannot activate deleted plan");
@@ -176,16 +190,16 @@ namespace Hub.Services
                             result.Container = errorContainerDTO;
                         }
 
-                        //if the activate call is comming from the Route Builder just render again the action group with the errors
-                        if (routeBuilderActivate)
+                        //if the activate call is comming from the Plan Builder just render again the action group with the errors
+                        if (planBuilderActivate)
                         {
                             result.ActivitiesCollections.Add(resultActivate);
                         }
                         else if (validationErrorChecker)
                         {
-                            //if the activate call is comming from the Routes List then show the first error message and redirect to plan builder 
+                            //if the activate call is comming from the Plans List then show the first error message and redirect to plan builder 
                             //so the user could fix the configuration
-                            result.RedirectToRouteBuilder = true;
+                            result.RedirectToPlanBuilder = true;
 
                             return result;
                         }
@@ -199,7 +213,7 @@ namespace Hub.Services
 
                 if (result.Status != "validation_error")
                 {
-                    plan.RouteState = RouteState.Active;
+                    plan.PlanState = PlanState.Active;
                     uow.SaveChanges();
                 }
             }
@@ -226,7 +240,7 @@ namespace Hub.Services
                 var control = controlGroup.Controls.FirstOrDefault(x => !string.IsNullOrEmpty(x.ErrorMessage));
                 if (control != null)
                 {
-                    var containerDO = new ContainerDO() {CrateStorage = string.Empty, Name = string.Empty};
+                    var containerDO = new ContainerDO() { CrateStorage = string.Empty, Name = string.Empty };
 
                     using (var tempCrateStorage = _crate.UpdateStorage(() => containerDO.CrateStorage))
                     {
@@ -269,7 +283,7 @@ namespace Hub.Services
                 }
 
 
-                plan.RouteState = RouteState.Inactive;
+                plan.PlanState = PlanState.Inactive;
                 uow.SaveChanges();
             }
 
@@ -279,13 +293,13 @@ namespace Hub.Services
 
         public IList<PlanDO> GetMatchingPlans(string userId, EventReportCM curEventReport)
         {
-            List<PlanDO> routeSubscribers = new List<PlanDO>();
+            List<PlanDO> planSubscribers = new List<PlanDO>();
             if (String.IsNullOrEmpty(userId))
                 throw new ArgumentNullException("Parameter UserId is null");
             if (curEventReport == null)
                 throw new ArgumentNullException("Parameter Standard Event Report is null");
 
-            //1. Query all RouteDO that are Active
+            //1. Query all PlanDO that are Active
             //2. are associated with the determined DockyardAccount
             //3. their first Activity has a Crate of  Class "Standard Event Subscriptions" which has inside of it an event name that matches the event name 
             //in the Crate of Class "Standard Event Reports" which was passed in.
@@ -299,7 +313,7 @@ namespace Hub.Services
 
         public List<PlanDO> MatchEvents(List<PlanDO> curPlans, EventReportCM curEventReport)
         {
-            List<PlanDO> subscribingRoutes = new List<PlanDO>();
+            List<PlanDO> subscribingPlans = new List<PlanDO>();
 
             foreach (var curPlan in curPlans)
             {
@@ -326,13 +340,13 @@ namespace Hub.Services
 
                         if (hasEvents)
                         {
-                            subscribingRoutes.Add(curPlan);
+                            subscribingPlans.Add(curPlan);
                         }
                     }
                 }
             }
 
-            return subscribingRoutes;
+            return subscribingPlans;
         }
 
         private ActivityDO GetFirstActivityWithEventSubscriptions(Guid id)
@@ -357,46 +371,46 @@ namespace Hub.Services
         
         public PlanDO GetPlanByActivityId(IUnitOfWork uow, Guid id)
         {
-            return (PlanDO)uow.PlanRepository.GetById<RouteNodeDO>(id).GetTreeRoot();
+            return (PlanDO)uow.PlanRepository.GetById<PlanNodeDO>(id).GetTreeRoot();
         }
 
         public PlanDO Copy(IUnitOfWork uow, PlanDO plan, string name)
         {
             throw new NotImplementedException();
 
-//            var root = (PlanDO)plan.Clone();
-//            root.Id = Guid.NewGuid();
-//            root.Name = name;
-//            uow.PlanRepository.Add(root);
-//
-//            var queue = new Queue<Tuple<RouteNodeDO, Guid>>();
-//            queue.Enqueue(new Tuple<RouteNodeDO, Guid>(root, plan.Id));
-//
-//            while (queue.Count > 0)
-//            {
-//                var routeTuple = queue.Dequeue();
-//                var routeNode = routeTuple.Item1;
-//                var sourceRouteNodeId = routeTuple.Item2;
-//
-//                var sourceChildren = uow.
-//                    .GetQuery()
-//                    .Where(x => x.ParentRouteNodeId == sourceRouteNodeId)
-//                    .ToList();
-//
-//                foreach (var sourceChild in sourceChildren)
-//                {
-//                    var childCopy = sourceChild.Clone();
-//                    childCopy.Id = Guid.NewGuid();
-//                    childCopy.ParentRouteNode = routeNode;
-//                    routeNode.ChildNodes.Add(childCopy);
-//
-//                    uow.RouteNodeRepository.Add(childCopy);
-//
-//                    queue.Enqueue(new Tuple<RouteNodeDO, Guid>(childCopy, sourceChild.Id));
-//                }
-//            }
-//
-//            return root;
+            //            var root = (PlanDO)plan.Clone();
+            //            root.Id = Guid.NewGuid();
+            //            root.Name = name;
+            //            uow.PlanRepository.Add(root);
+            //
+            //            var queue = new Queue<Tuple<PlanNodeDO, Guid>>();
+            //            queue.Enqueue(new Tuple<PlanNodeDO, Guid>(root, plan.Id));
+            //
+            //            while (queue.Count > 0)
+            //            {
+            //                var planTuple = queue.Dequeue();
+            //                var planNode = planTuple.Item1;
+            //                var sourcePlanNodeId = planTuple.Item2;
+            //
+            //                var sourceChildren = uow.
+            //                    .GetQuery()
+            //                    .Where(x => x.ParentPlanNodeId == sourcePlanNodeId)
+            //                    .ToList();
+            //
+            //                foreach (var sourceChild in sourceChildren)
+            //                {
+            //                    var childCopy = sourceChild.Clone();
+            //                    childCopy.Id = Guid.NewGuid();
+            //                    childCopy.ParentPlanNode = planNode;
+            //                    planNode.ChildNodes.Add(childCopy);
+            //
+            //                    uow.PlanNodeRepository.Add(childCopy);
+            //
+            //                    queue.Enqueue(new Tuple<PlanNodeDO, Guid>(childCopy, sourceChild.Id));
+            //                }
+            //            }
+            //
+            //            return root;
         }
 
         /// <summary>
@@ -405,20 +419,16 @@ namespace Hub.Services
         /// <param name="planId"></param>
         /// <param name="envelopeId"></param>
         /// <returns></returns>
-        public ContainerDO Create(IUnitOfWork uow, Guid planId, params Crate[] curPayload)
+        public ContainerDO Create(IUnitOfWork uow, PlanDO curPlan, params Crate[] curPayload)
         {
             //let's exclude null payload crates
             curPayload = curPayload.Where(c => c != null).ToArray();
 
             var containerDO = new ContainerDO { Id = Guid.NewGuid() };
 
-            var curPlan = uow.PlanRepository.GetById<PlanDO>(planId);
-            if (curPlan == null)
-                throw new ArgumentNullException("planId");
-
             containerDO.PlanId = curPlan.Id;
             containerDO.Name = curPlan.Name;
-            containerDO.ContainerState = ContainerState.Unstarted;
+            containerDO.State = State.Unstarted;
 
             if (curPayload.Length > 0)
             {
@@ -428,12 +438,12 @@ namespace Hub.Services
                 }
             }
 
-            containerDO.CurrentRouteNodeId = curPlan.StartingSubrouteId;
+            containerDO.CurrentActivityId = curPlan.StartingSubPlanId;
 
             uow.ContainerRepository.Add(containerDO);
 
             //then create process node
-            var curProcessNode = _processNode.Create(uow, containerDO.Id, curPlan.StartingSubrouteId, "process node");
+            var curProcessNode = _processNode.Create(uow, containerDO.Id, curPlan.StartingSubPlanId, "process node");
             containerDO.ProcessNodes.Add(curProcessNode);
 
             uow.SaveChanges();
@@ -446,13 +456,13 @@ namespace Hub.Services
         {
             var plan = uow.PlanRepository.GetById<PlanDO>(curContainerDO.PlanId);
 
-            if (plan.RouteState == RouteState.Deleted)
+            if (plan.PlanState == PlanState.Deleted)
             {
                 throw new ApplicationException("Cannot run plan that is in deleted state.");
             }
 
-            if (curContainerDO.ContainerState == ContainerState.Failed
-                || curContainerDO.ContainerState == ContainerState.Completed)
+            if (curContainerDO.State == State.Failed
+                || curContainerDO.State == State.Completed)
             {
                 throw new ApplicationException("Attempted to Launch a Process that was Failed or Completed");
             }
@@ -462,17 +472,17 @@ namespace Hub.Services
                 await _container.Run(uow, curContainerDO);
                 return curContainerDO;
             }
-            catch(Exception e)
+            catch (Exception)
             {
-                curContainerDO.ContainerState = ContainerState.Failed;
-                throw e;
+                curContainerDO.State = State.Failed;
+                throw;
             }
             finally
             {
                 //TODO is this necessary? let's leave it as it is
                 /*
-                curContainerDO.CurrentRouteNode = null;
-                curContainerDO.NextRouteNode = null;
+                curContainerDO.CurrentPlanNode = null;
+                curContainerDO.NextPlanNode = null;
                  * */
                 uow.SaveChanges();
             }
@@ -480,17 +490,54 @@ namespace Hub.Services
 
         public async Task<ContainerDO> Run(IUnitOfWork uow, PlanDO curPlan, params Crate[] curPayload)
         {
-            var curContainerDO = Create(uow, curPlan.Id, curPayload);
+            var curContainerDO = Create(uow, curPlan, curPayload);
             return await Run(uow, curContainerDO);
         }
 
-        public async Task<ContainerDO> Run(PlanDO curPlan, Crate curPayload)
+        public void Enqueue(Guid curPlanId, params Crate[] curEventReport)
+        {
+            _dispatcher.Enqueue(() => LaunchProcess(curPlanId, curEventReport).Wait());
+        }
+
+        public void Enqueue(List<PlanDO> curPlans, params Crate[] curEventReport)
+        {
+            foreach (var curPlan in curPlans)
+            {
+                Enqueue(curPlan.Id, curEventReport);
+            }
+        }
+
+        public static async Task LaunchProcess(Guid curPlan, params Crate[] curPayload)
+        {
+            if (curPlan == default(Guid))
+                throw new ArgumentException(nameof(curPlan));
+
+            await ObjectFactory.GetInstance<IPlan>().Run(curPlan, curPayload);
+        }
+
+        public async Task<ContainerDO> Run(Guid planId, params Crate[] curPayload)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curContainerDO = Create(uow, curPlan.Id, curPayload);
+                var curPlan = uow.PlanRepository.GetById<PlanDO>(planId);
+                if (curPlan == null)
+                    throw new ArgumentNullException("planId");
+                try
+                {
+                    var curContainerDO = Create(uow, curPlan, curPayload);
                 return await Run(uow, curContainerDO);
             }
+                catch (Exception ex)
+                {
+                    EventManager.ContainerFailed(curPlan, ex);
+                    throw;
+                }
+            }
+        }
+
+        public async Task<ContainerDO> Run(PlanDO curPlan, params Crate[] curPayload)
+        {
+            return await Run(curPlan.Id, curPayload);
         }
 
         public async Task<ContainerDO> Continue(Guid containerId)
@@ -498,13 +545,99 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curContainerDO = uow.ContainerRepository.GetByKey(containerId);
-                if (curContainerDO.ContainerState != ContainerState.Pending)
+                if (curContainerDO.State != State.Suspended)
                 {
                     throw new ApplicationException("Attempted to Continue a Process that wasn't pending");
                 }
                 //continue from where we left
                 return await Run(uow, curContainerDO);
             }
+        }
+
+        public async Task<PlanDO> Clone(Guid planId)
+        {
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var currentUser = _security.GetCurrentAccount(uow);
+
+                var targetPlan = (PlanDO)GetPlanByActivityId(uow, planId);
+                if (targetPlan == null)
+                {
+                    return null;
+                }
+
+                var cloneTag = "Cloned From " + planId;
+                //let's check if we have cloned this plan before
+                var existingPlan = await uow.PlanRepository.GetPlanQueryUncached()
+                    .Where(p => p.Fr8AccountId == currentUser.Id && p.Tag.Contains(cloneTag)).FirstOrDefaultAsync();
+
+
+                if (existingPlan != null)
+                {
+                    //we already have cloned this plan before
+                    return existingPlan;
+                }
+
+                //we should clone this plan for current user
+                //let's clone the plan entirely
+                var clonedPlan = (PlanDO)PlanTreeHelper.CloneWithStructure(targetPlan);
+                clonedPlan.Name = clonedPlan.Name + " - " + "Customized for User " + currentUser.UserName;
+                clonedPlan.PlanState = PlanState.Inactive;
+                clonedPlan.Tag = cloneTag;
+
+                //linearlize tree structure
+                var planTree = clonedPlan.GetDescendantsOrdered();
+
+
+                //let's replace old id's of cloned plan with new id's
+                //and update account information
+                //TODO maybe we should do something about authorization tokens too?
+                Dictionary<Guid, PlanNodeDO> parentMap = new Dictionary<Guid, PlanNodeDO>();
+                foreach (var planNodeDO in planTree)
+                {
+                    var oldId = planNodeDO.Id;
+                    planNodeDO.Id = Guid.NewGuid();
+                    planNodeDO.Fr8Account = currentUser;
+                    parentMap.Add(oldId, planNodeDO);
+                    planNodeDO.ChildNodes = new List<PlanNodeDO>();
+                    if (planNodeDO.ParentPlanNodeId != null)
+                    {
+                        PlanNodeDO newParent;
+                        //find parent from old parent id map
+                        if (parentMap.TryGetValue(planNodeDO.ParentPlanNodeId.Value, out newParent))
+                        {
+                            //replace parent id with parent's new id
+                            planNodeDO.ParentPlanNodeId = newParent.Id;
+                            newParent.ChildNodes.Add(planNodeDO);
+                        }
+                        else
+                        {
+                            //this should never happen
+                            throw new Exception("Unable to clone plan");
+                        }
+                    }
+                    else
+                    {
+                        //this should be a plan because it has null ParentId
+                        uow.PlanRepository.Add(planNodeDO as PlanDO);
+                    }
+                }
+
+
+                //save new cloned plan
+                uow.SaveChanges();
+
+                return clonedPlan;
+            }
+        }
+
+        public ContainerDO Create(IUnitOfWork uow, Guid planId, params Crate[] curPayload)
+        {
+            var curPlan = uow.PlanRepository.GetById<PlanDO>(planId);
+            if (curPlan == null)
+                throw new ArgumentNullException("planId");
+            return Create(uow, curPlan, curPayload);
         }
     }
 }

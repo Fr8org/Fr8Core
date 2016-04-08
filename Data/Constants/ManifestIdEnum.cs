@@ -63,8 +63,8 @@ namespace Data.Constants
         [Display(Name = "Standard Email Message")]
         StandardEmailMessage = 18,
 
-        [Display(Name = "Standard Fr8 Routes")]
-        StandardFr8Routes = 19,
+        [Display(Name = "Standard Fr8 Plans")]
+        StandardFr8Plans = 19,
 
         [Display(Name = "Standard Fr8 Hubs")]
         StandardFr8Hubs = 20,
@@ -99,11 +99,11 @@ namespace Data.Constants
         [Display(Name = "Manifest Description")]
         ManifestDescription = 30,
 
-        [Display(Name = "Standard Query Fields")]
-        StandardQueryFields = 31,
-
         [Display(Name = "Crate Description")]
-        CrateDescription = 32
+        CrateDescription = 32,
+
+        [Display(Name = "Typed Fields")]
+        TypedFields = 33
     }
 }
 

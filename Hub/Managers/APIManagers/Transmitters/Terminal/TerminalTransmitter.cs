@@ -66,7 +66,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
                 throw new Exception("Unknown terminal or terminal endpoint");
             }
             //let's calculate absolute url, since our hmac mechanism needs it
-            requestUri = new Uri(new Uri(terminal.Endpoint.StartsWith("http") ? terminal.Endpoint : "http://" + terminal.Endpoint), requestUri);
+            requestUri = new Uri(new Uri(terminal.Endpoint), requestUri);
             var hmacHeader =  await _hmacService.GenerateHMACHeader(requestUri, terminal.PublicIdentifier, terminal.Secret, dataDTO.ActivityDTO.AuthToken.UserId, dataDTO);
             return await PostAsync<Fr8DataDTO, TResponse>(requestUri, dataDTO, correlationId, hmacHeader);
         }

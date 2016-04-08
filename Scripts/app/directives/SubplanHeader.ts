@@ -3,7 +3,7 @@ module dockyard.directives.SubplanHeader {
     'use strict';
 
     export interface ISubplanHeaderScope extends ng.IScope {
-        subplan: model.SubrouteDTO;
+        subplan: model.SubPlanDTO;
         editing: boolean;
         editTitle(): void;
         onTitleChange(): void;

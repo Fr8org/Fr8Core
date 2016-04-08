@@ -201,7 +201,7 @@ namespace terminalFr8Core.Actions
             }
             return
                 Task.FromResult(
-                    GenerateErrorRepsonce("Unknown displayMechanism: we currently support MainPage cases"));
+                    GenerateErrorRepsonse("Unknown displayMechanism: we currently support MainPage cases"));
         }
 
         protected async Task<ActivityDO> GenerateSolutionActivities(ActivityDO activityDO, string fr8ObjectID)
@@ -269,7 +269,7 @@ namespace terminalFr8Core.Actions
                 {
                     crateStorage.Remove(criteria);
                 }
-                crateStorage.Add(Data.Crates.Crate.FromContent("Queryable Criteria", new StandardQueryFieldsCM(designTimeQueryFields)));
+                crateStorage.Add(Data.Crates.Crate.FromContent("Queryable Criteria", new TypedFieldsCM(designTimeQueryFields)));
             }
         }
 
@@ -390,9 +390,9 @@ namespace terminalFr8Core.Actions
         }
 
         // create the Query design time fields.
-        private List<QueryFieldDTO> GetFr8WarehouseFieldNames(string typeId)
+        private List<TypedFieldDTO> GetFr8WarehouseFieldNames(string typeId)
         {
-            List<QueryFieldDTO> designTimeQueryFields = new List<QueryFieldDTO>();
+            List<TypedFieldDTO> designTimeQueryFields = new List<TypedFieldDTO>();
 
             using (var unitWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -400,9 +400,9 @@ namespace terminalFr8Core.Actions
                 {
                     if (!designTimeQueryFields.Exists(d => d.Name == field.Name))
                     {
-                        designTimeQueryFields.Add(new QueryFieldDTO()
+                        designTimeQueryFields.Add(new TypedFieldDTO()
                         {
-                            FieldType = QueryFieldType.String,
+                            FieldType = FieldType.String,
                             Label = field.Name,
                             Name = field.Name,
                             Control = CreateTextBoxQueryControl(field.Name)

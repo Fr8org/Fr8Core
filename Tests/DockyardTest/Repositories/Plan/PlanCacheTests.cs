@@ -52,12 +52,12 @@ namespace DockyardTest.Repositories.Plan
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
         }
 
-        private RouteNodeDO LoadRoute(Guid arg, string postfix = "")
+        private PlanNodeDO LoadPlan(Guid arg, string postfix = "")
         {
             return new PlanDO
             {
                 Id = arg,
-                Name = "Route",
+                Name = "Plan",
                 ChildNodes =
                 {
                     new ActivityDO()
@@ -79,19 +79,19 @@ namespace DockyardTest.Repositories.Plan
         public void CanLoadOnCacheMiss()
         {
             var expiration = new ExpirationStrategyMock();
-            var routeId = new Guid(1, (short) 0, (short) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0);
+            var planId = new Guid(1, (short) 0, (short) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0, (byte) 0);
             int calledTimes = 0;
 
-            Func<Guid, RouteNodeDO> cacheMiss = x =>
+            Func<Guid, PlanNodeDO> cacheMiss = x =>
             {
                 calledTimes++;
-                Assert.AreEqual(routeId, x);
-                return LoadRoute(x);
+                Assert.AreEqual(planId, x);
+                return LoadPlan(x);
             };
 
             var cache = new PlanCache(expiration);
 
-            cache.Get(routeId, cacheMiss);
+            cache.Get(planId, cacheMiss);
 
             Assert.AreEqual(1, calledTimes);
         }
@@ -100,22 +100,22 @@ namespace DockyardTest.Repositories.Plan
         public void CanExpireItems()
         {
             var expiration = new ExpirationStrategyMock();
-            var routeId = new Guid(1, (short)0, (short)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0);
+            var planId = new Guid(1, (short)0, (short)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0);
             int calledTimes = 0;
 
-            Func<Guid, RouteNodeDO> cacheMiss = x =>
+            Func<Guid, PlanNodeDO> cacheMiss = x =>
             {
                 calledTimes++;
-                Assert.AreEqual(routeId, x);
-                return LoadRoute(x);
+                Assert.AreEqual(planId, x);
+                return LoadPlan(x);
             };
 
             var cache = new PlanCache(expiration);
 
 
-            cache.Get(routeId, cacheMiss);
+            cache.Get(planId, cacheMiss);
             expiration.InvokeExpirationCallback();
-            cache.Get(routeId, cacheMiss);
+            cache.Get(planId, cacheMiss);
 
             Assert.AreEqual(2, calledTimes);
         }
@@ -124,26 +124,26 @@ namespace DockyardTest.Repositories.Plan
         public void CanLoadFromCache()
         {
             var expiration = new ExpirationStrategyMock();
-            var routeId = new Guid(1, (short)0, (short)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0);
+            var planId = new Guid(1, (short)0, (short)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0);
             int calledTimes = 0;
 
-            var route = LoadRoute(routeId);
+            var plan = LoadPlan(planId);
 
-            Func<Guid, RouteNodeDO> cacheMiss = x =>
+            Func<Guid, PlanNodeDO> cacheMiss = x =>
             {
                 calledTimes++;
-                return route;
+                return plan;
             };
 
             var cache = new PlanCache(expiration);
 
-            var route1 = cache.Get(routeId, cacheMiss);
+            var plan1 = cache.Get(planId, cacheMiss);
 
-            Assert.IsTrue(AreEquals(route1, route));
+            Assert.IsTrue(AreEquals(plan1, plan));
             
-            foreach (var id in RouteTreeHelper.Linearize(route).Select(x=>x.Id))
+            foreach (var id in PlanTreeHelper.Linearize(plan).Select(x=>x.Id))
             {
-                Assert.IsTrue(AreEquals(route, cache.Get(id, cacheMiss)));
+                Assert.IsTrue(AreEquals(plan, cache.Get(id, cacheMiss)));
             }
 
             Assert.AreEqual(1, calledTimes);
@@ -153,26 +153,26 @@ namespace DockyardTest.Repositories.Plan
         public void CanLoadFromCacheUsingChildActivitiesId()
         {
             var expiration = new ExpirationStrategyMock();
-            var routeId = new Guid(1, (short)0, (short)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0);
+            var planId = new Guid(1, (short)0, (short)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0);
             int calledTimes = 0;
 
-            var route = LoadRoute(routeId);
+            var plan = LoadPlan(planId);
 
-            Func<Guid, RouteNodeDO> cacheMiss = x =>
+            Func<Guid, PlanNodeDO> cacheMiss = x =>
             {
                 calledTimes++;
-                return route;
+                return plan;
             };
 
             var cache = new PlanCache(expiration);
 
-            var route1 = cache.Get(new Guid(2, (short)0, (short)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0), cacheMiss);
+            var plan1 = cache.Get(new Guid(2, (short)0, (short)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0), cacheMiss);
 
-            Assert.IsTrue(AreEquals(route1, route));
+            Assert.IsTrue(AreEquals(plan1, plan));
 
-            foreach (var id in RouteTreeHelper.Linearize(route).Select(x => x.Id))
+            foreach (var id in PlanTreeHelper.Linearize(plan).Select(x => x.Id))
             {
-                Assert.IsTrue(AreEquals(route, cache.Get(id, cacheMiss)));
+                Assert.IsTrue(AreEquals(plan, cache.Get(id, cacheMiss)));
             }
 
             Assert.AreEqual(1, calledTimes);
@@ -183,39 +183,39 @@ namespace DockyardTest.Repositories.Plan
         public void CanUpdateCache()
         {
             var expiration = new ExpirationStrategyMock();
-            var routeId = new Guid(1, (short)0, (short)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0);
+            var planId = new Guid(1, (short)0, (short)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0, (byte)0);
             int calledTimes = 0;
 
-            var route = LoadRoute(routeId);
-            var referenceRoute = LoadRoute(routeId);
+            var plan = LoadPlan(planId);
+            var referenceRoute = LoadPlan(planId);
 
-            Func<Guid, RouteNodeDO> cacheMiss = x =>
+            Func<Guid, PlanNodeDO> cacheMiss = x =>
             {
                 calledTimes++;
-                Assert.AreEqual(routeId, x);
-                return route;
+                Assert.AreEqual(planId, x);
+                return plan;
             };
 
             var cache = new PlanCache(expiration);
 
-            var route1 = cache.Get(routeId, cacheMiss);
-            var updated = LoadRoute(routeId, "updated");
+            var plan1 = cache.Get(planId, cacheMiss);
+            var updated = LoadPlan(planId, "updated");
 
-            var o = new RouteSnapshot(route1, false);
-            var c = new RouteSnapshot(updated, false);
+            var o = new PlanSnapshot(plan1, false);
+            var c = new PlanSnapshot(updated, false);
 
             cache.Update(updated.Id, c.Compare(o));
-            var route2 = cache.Get(routeId, cacheMiss);
+            var plan2 = cache.Get(planId, cacheMiss);
 
             Assert.AreEqual(1, calledTimes);
-            Assert.IsTrue(AreEquals(route1, referenceRoute));
-            Assert.IsTrue(AreEquals(route2, updated));
+            Assert.IsTrue(AreEquals(plan1, referenceRoute));
+            Assert.IsTrue(AreEquals(plan2, updated));
         }
 
-        private static bool AreEquals(RouteNodeDO a, RouteNodeDO b)
+        private static bool AreEquals(PlanNodeDO a, PlanNodeDO b)
         {
-            var snapShotA = new RouteSnapshot(a, false);
-            var snapShotB = new RouteSnapshot(b, false);
+            var snapShotA = new PlanSnapshot(a, false);
+            var snapShotB = new PlanSnapshot(b, false);
 
             return !snapShotB.Compare(snapShotA).HasChanges;
         }

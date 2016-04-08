@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Data.Interfaces.DataTransferObjects;
+using Data.States;
 using NUnit.Framework;
 using HealthMonitor.Utility;
 using Newtonsoft.Json.Linq;
@@ -38,7 +39,11 @@ namespace terminalDocuSignTests.Fixtures
             {
                 Id = 1,
                 Name = "Monitor_DocuSign_Envelope_Activity_TEST",
-                Version = "1"
+                Version = "1",
+                Terminal = new TerminalDTO()
+                {
+                    AuthenticationType = AuthenticationType.Internal
+                }
             };
         }
 
@@ -117,7 +122,7 @@ namespace terminalDocuSignTests.Fixtures
             return ConvertToFr8Data(activityDTO);
         }
 
-        public static async Task<Fr8DataDTO> Record_Docusign_v1_InitialConfiguration_Fr8DataDTO(BaseIntegrationTest integrationTest)
+        public static async Task<Fr8DataDTO> Prepare_DocuSign_Events_For_Storage_v1_InitialConfiguration_Fr8DataDTO(BaseIntegrationTest integrationTest)
         {
             var activityTemplate = Record_DocuSign_Envelope_v1_ActivityTemplate();
 
@@ -136,8 +141,12 @@ namespace terminalDocuSignTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = 3,
-                Name = "Record_DocuSign_Events_TEST",
-                Version = "1"
+                Name = "Prepare_DocuSign_Events_For_Storage_TEST",
+                Version = "1",
+                Terminal = new TerminalDTO()
+                {
+                    AuthenticationType = AuthenticationType.Internal
+                }
             };
         }
 

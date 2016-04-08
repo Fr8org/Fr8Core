@@ -29,7 +29,10 @@ namespace terminalSalesforce.Actions
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
+            if (CheckAuthentication(curActivityDO, authTokenDO))
+            {
+                return curActivityDO;
+            }
 
             return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
@@ -89,9 +92,9 @@ namespace terminalSalesforce.Actions
                 //Note: This design time fields are used to populate the Fileter Pane controls. It has to be labelled as Queryable Criteria
                 crateStorage.RemoveByLabel("Queryable Criteria");
                 crateStorage.Add(
-                    Crate.FromContent("Queryable Criteria", new StandardQueryFieldsCM(
+                    Crate.FromContent("Queryable Criteria", new TypedFieldsCM(
                         objectFieldsList.OrderBy(field => field.Key)
-                                        .Select(field => new QueryFieldDTO(field.Key, field.Value, QueryFieldType.String, new TextBox { Name = field.Key })))));
+                                        .Select(field => new TypedFieldDTO(field.Key, field.Value, FieldType.String, new TextBox { Name = field.Key })))));
 
                 //FR-2459 - The activity should create another design time fields crate of type FieldDescriptionsCM for downstream activities.
                 crateStorage.RemoveByLabel("Salesforce Object Fields");
@@ -103,17 +106,20 @@ namespace terminalSalesforce.Actions
 
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            CheckAuthentication(authTokenDO);
-
             //get payload data
             var payloadCrates = await GetPayload(curActivityDO, containerId);
+
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(payloadCrates);
+            }
 
             //get currect selected Salesforce object
             string curSelectedSalesForceObject =
                 ((DropDownList)GetControl(curActivityDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
 
             var curSalesforceObjectFields = CrateManager.GetStorage( curActivityDO )
-                                                         .CratesOfType<StandardQueryFieldsCM>()
+                                                         .CratesOfType<TypedFieldsCM>()
                                                          .Single(c => c.Label.Equals("Queryable Criteria"))
                                                          .Content.Fields.Select(f => f.Name);
 

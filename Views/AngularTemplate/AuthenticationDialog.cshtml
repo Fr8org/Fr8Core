@@ -22,7 +22,7 @@
             <div ng-if="!terminal.authTokens.length" style="margin: 5px 0 5px 0;">
                 Please click on the <strong>Add Authorization</strong> button to enable &laquo;{{terminal.name}}&raquo; to access the external service.
             </div>
-            <div style="margin-top: 10px;margin-bottom:5px;">
+            <div ng-show="terminal.authTokens.length" style="margin-top: 10px;margin-bottom:5px;">
                 <label>
                     <input type="checkbox" ng-model="terminal.isMain" />
                     <span>Use for all Activities</span>

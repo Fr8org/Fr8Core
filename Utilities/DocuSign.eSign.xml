@@ -4684,11 +4684,7 @@
             <param name="accountId">The external account number (int) or account ID Guid.</param>
              <returns>4Task of ApiResponse (FoldersResponse)</returns>
         </member>
-        <member name="M:DocuSign.eSign.Api.IFoldersApi.ListItems(System.String,System.String)">
-            <param name="accountId">The external account number (int) or account ID Guid.</param><param name="folderId">The ID of the folder being accessed.</param>
-             <returns>1FolderItemsResponse</returns>
-        </member>
-        <member name="M:DocuSign.eSign.Api.IFoldersApi.ListItemsWithHttpInfo(System.String,System.String)">
+        <member name="M:DocuSign.eSign.Api.IFoldersApi.ListItems(System.String,System.String,DocuSign.eSign.Api.FoldersApi.SearchOptions)">
              <summary>
              Gets a list of the envelopes in the specified folder.
              </summary>
@@ -4696,9 +4692,21 @@
              Retrieves a list of the envelopes in the specified folder. You can narrow the query by specifying search criteria in the query string parameters.
              </remarks>
             <param name="accountId">The external account number (int) or account ID Guid.</param><param name="folderId">The ID of the folder being accessed.</param>
+            <param name="searchOptions">Optional search options to return filtered collection of envelopes.</param>
+            <returns>1FolderItemsResponse</returns>
+        </member>
+        <member name="M:DocuSign.eSign.Api.IFoldersApi.ListItemsWithHttpInfo(System.String,System.String,DocuSign.eSign.Api.FoldersApi.SearchOptions)">
+             <summary>
+             Gets a list of the envelopes in the specified folder.
+             </summary>
+             <remarks>
+             Retrieves a list of the envelopes in the specified folder. You can narrow the query by specifying search criteria in the query string parameters.
+             </remarks>
+            <param name="accountId">The external account number (int) or account ID Guid.</param><param name="folderId">The ID of the folder being accessed.</param>
+             <param name="searchOptions">Optional search options to return filtered collection of envelopes.</param>
              <returns>2ApiResponse of FolderItemsResponse</returns>
         </member>
-        <member name="M:DocuSign.eSign.Api.IFoldersApi.ListItemsAsync(System.String,System.String)">
+        <member name="M:DocuSign.eSign.Api.IFoldersApi.ListItemsAsync(System.String,System.String,DocuSign.eSign.Api.FoldersApi.SearchOptions)">
              <summary>
              Gets a list of the envelopes in the specified folder.
              </summary>
@@ -4706,9 +4714,10 @@
              Retrieves a list of the envelopes in the specified folder. You can narrow the query by specifying search criteria in the query string parameters.
              </remarks>
             <param name="accountId">The external account number (int) or account ID Guid.</param><param name="folderId">The ID of the folder being accessed.</param>
+             <param name="searchOptions">Optional search options to return filtered collection of envelopes.</param>
              <returns>3Task of FolderItemsResponse</returns>
         </member>
-        <member name="M:DocuSign.eSign.Api.IFoldersApi.ListItemsAsyncWithHttpInfo(System.String,System.String)">
+        <member name="M:DocuSign.eSign.Api.IFoldersApi.ListItemsAsyncWithHttpInfo(System.String,System.String,DocuSign.eSign.Api.FoldersApi.SearchOptions)">
              <summary>
              Gets a list of the envelopes in the specified folder.
              </summary>
@@ -4716,6 +4725,7 @@
              Retrieves a list of the envelopes in the specified folder. You can narrow the query by specifying search criteria in the query string parameters.
              </remarks>
             <param name="accountId">The external account number (int) or account ID Guid.</param><param name="folderId">The ID of the folder being accessed.</param>
+             <param name="searchOptions">Optional search options to return filtered collection of envelopes.</param>
              <returns>4Task of ApiResponse (FolderItemsResponse)</returns>
         </member>
         <member name="M:DocuSign.eSign.Api.IFoldersApi.MoveEnvelopes(System.String,System.String,DocuSign.eSign.Model.FoldersRequest)">
@@ -4859,33 +4869,37 @@
             <param name="accountId">The external account number (int) or account ID Guid.</param>
              <returns>8Task of ApiResponse (FoldersResponse)</returns>
         </member>
-        <member name="M:DocuSign.eSign.Api.FoldersApi.ListItems(System.String,System.String)">
+        <member name="M:DocuSign.eSign.Api.FoldersApi.ListItems(System.String,System.String,DocuSign.eSign.Api.FoldersApi.SearchOptions)">
              <summary>
              Gets a list of the envelopes in the specified folder. Retrieves a list of the envelopes in the specified folder. You can narrow the query by specifying search criteria in the query string parameters.
              </summary>
             <param name="accountId">The external account number (int) or account ID Guid.</param><param name="folderId">The ID of the folder being accessed.</param>
+             <param name="searchOptions">Optional search options to return filtered collection of envelopes.</param>
              <returns>5FolderItemsResponse</returns>
         </member>
-        <member name="M:DocuSign.eSign.Api.FoldersApi.ListItemsWithHttpInfo(System.String,System.String)">
+        <member name="M:DocuSign.eSign.Api.FoldersApi.ListItemsWithHttpInfo(System.String,System.String,DocuSign.eSign.Api.FoldersApi.SearchOptions)">
              <summary>
              Gets a list of the envelopes in the specified folder. Retrieves a list of the envelopes in the specified folder. You can narrow the query by specifying search criteria in the query string parameters.
              </summary>
             <param name="accountId">The external account number (int) or account ID Guid.</param><param name="folderId">The ID of the folder being accessed.</param>
+             <param name="searchOptions">Optional search options to return filtered collection of envelopes.</param>
              <returns>6ApiResponse of FolderItemsResponse</returns>
         </member>
-        <member name="M:DocuSign.eSign.Api.FoldersApi.ListItemsAsync(System.String,System.String)">
+        <member name="M:DocuSign.eSign.Api.FoldersApi.ListItemsAsync(System.String,System.String,DocuSign.eSign.Api.FoldersApi.SearchOptions)">
              <summary>
              Gets a list of the envelopes in the specified folder. Retrieves a list of the envelopes in the specified folder. You can narrow the query by specifying search criteria in the query string parameters.
              </summary>
             <param name="accountId">The external account number (int) or account ID Guid.</param><param name="folderId">The ID of the folder being accessed.</param>
+             <param name="searchOptions">Optional search options to return filtered collection of envelopes.</param>
              <returns>7Task of FolderItemsResponse</returns>
         </member>
-        <member name="M:DocuSign.eSign.Api.FoldersApi.ListItemsAsyncWithHttpInfo(System.String,System.String)">
+        <member name="M:DocuSign.eSign.Api.FoldersApi.ListItemsAsyncWithHttpInfo(System.String,System.String,DocuSign.eSign.Api.FoldersApi.SearchOptions)">
              <summary>
              Gets a list of the envelopes in the specified folder. Retrieves a list of the envelopes in the specified folder. You can narrow the query by specifying search criteria in the query string parameters.
              </summary>
             <param name="accountId">The external account number (int) or account ID Guid.</param><param name="folderId">The ID of the folder being accessed.</param>
-             <returns>8Task of ApiResponse (FolderItemsResponse)</returns>
+            <param name="searchOptions">Optional search options to return filtered collection of envelopes.</param>
+            <returns>8Task of ApiResponse (FolderItemsResponse)</returns>
         </member>
         <member name="M:DocuSign.eSign.Api.FoldersApi.MoveEnvelopes(System.String,System.String,DocuSign.eSign.Model.FoldersRequest)">
              <summary>
@@ -4977,6 +4991,12 @@
         </member>
         <member name="P:DocuSign.eSign.Api.FoldersApi.SearchOptions.orderBy">
             Specifies the property used to sort the list. Valid values are: `action_required`, `created`, `completed`, `sent`, `signer_list`, `status`, or `subject`. 
+        </member>
+        <member name="P:DocuSign.eSign.Api.FoldersApi.SearchOptions.searchText">
+            Specifies a search query used to return all envelopes that contains provided text.
+        </member>
+        <member name="P:DocuSign.eSign.Api.FoldersApi.SearchOptions.status">
+            Specifies the status of the envelopes used to filter the list.
         </member>
         <member name="T:DocuSign.eSign.Api.ITemplatesApi">
             <summary>

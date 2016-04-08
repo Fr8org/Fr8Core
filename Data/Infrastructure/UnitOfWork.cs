@@ -280,6 +280,16 @@ namespace Data.Infrastructure
             }
         }
 
+        private AspNetUserClaimsRepository _aspNetUserClaimsRepository;
+
+        public IAspNetUserClaimsRepository AspNetUserClaimsRepository
+        {
+            get
+            {
+                return _aspNetUserClaimsRepository ?? (_aspNetUserClaimsRepository = new AspNetUserClaimsRepository(this));
+            }
+        }
+
         private AspNetRolesRepository _aspNetRolesRepository;
 
         public AspNetRolesRepository AspNetRolesRepository
@@ -428,12 +438,12 @@ namespace Data.Infrastructure
             }
         }
 
-	  private RouteNodeRepository _routeNodeRepository;
-	  public RouteNodeRepository RouteNodeRepository
+	  private PlanNodeRepository _planNodeRepository;
+	  public PlanNodeRepository PlanNodeRepository
 	  {
 		  get
 		  {
-			  return _routeNodeRepository ?? (_routeNodeRepository = new RouteNodeRepository(this));
+			  return _planNodeRepository ?? (_planNodeRepository = new PlanNodeRepository(this));
 		  }
 	  }
 
@@ -447,13 +457,13 @@ namespace Data.Infrastructure
             }
         }
 
-        private SubrouteRepository _subrouteRepository;
+        private SubPlanRepository _subPlanRepository;
 
-        public ISubrouteRepository SubrouteRepository
+        public ISubPlanRepository SubPlanRepository
         {
             get
             {
-                return _subrouteRepository ?? (_subrouteRepository = new SubrouteRepository(this));
+                return _subPlanRepository ?? (_subPlanRepository = new SubPlanRepository(this));
             }
         }
 
@@ -550,6 +560,16 @@ namespace Data.Infrastructure
             get
             {
                 return _fileTagsRepository ?? (_fileTagsRepository = new FileTagsRepository(this));
+            }
+        }
+
+        private OrganizationRepository _organizationRepository;
+
+        public IOrganizationRepository OrganizationRepository
+        {
+            get
+            {
+                return _organizationRepository ?? (_organizationRepository = new OrganizationRepository(this));
             }
         }
 

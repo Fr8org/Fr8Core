@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Razor.Generator;
 using AutoMapper;
@@ -114,7 +115,94 @@ namespace terminalFr8Core.Actions
                 return results;
             }
         }
+        public static int Compare(object left, object right)
+        {
+            if (left == null && right == null)
+            {
+                return 0;
+            }
+            if (left is string && right is string)
+            {
+                decimal v1;
+                decimal v2;
+                if (decimal.TryParse((string)left, out v1) && decimal.TryParse((string)right, out v2))
+                {
+                    return v1.CompareTo(v2);
+                }
+                return string.Compare((string)left, (string)right, StringComparison.Ordinal);
+            }
+            return -2;
+        }
+        protected Expression ParseCriteriaExpression(IEnumerable<FilterConditionDTO> conditions, IQueryable<FieldDTO> queryableData)
+        {
+            var curType = typeof(FieldDTO);
+            Expression criteriaExpression = null;
+            var pe = Expression.Parameter(curType, "p");
+            foreach (var condition in conditions)
+            {
+                var namePropInfo = curType.GetProperty("Key");
+                var valuePropInfo = curType.GetProperty("Value");
+                var nameLeftExpr = Expression.Property(pe, namePropInfo);
+                var nameRightExpr = Expression.Constant(condition.Field);
+                var nameExpression = Expression.Equal(nameLeftExpr, nameRightExpr);
+                //var valueLeftExpr = Expression.Invoke(TryMakeDecimalExpression.Value, Expression.Property(pe, valuePropInfo));
+              //  var valueRightExpr = Expression.Invoke(TryMakeDecimalExpression.Value, Expression.Constant(condition.Value));
+               // var comparisionExpr = Expression.Call(valueLeftExpr, "CompareTo", null, valueRightExpr);
+                var comparisionExpr = Expression.Call(typeof(TestIncomingData_v1).GetMethod("Compare", BindingFlags.Public | BindingFlags.Static), new Expression[]
+                {
+                    Expression.Property(pe, valuePropInfo),
+                    Expression.Constant(condition.Value)
+                });
+                var zero = Expression.Constant(0);
+                var op = condition.Operator;
+                Expression criterionExpression;
+                switch (op)
+                {
+                    case "eq":
+                        criterionExpression = Expression.Equal(comparisionExpr, zero);
+                        break;
+                    case "neq":
+                        criterionExpression = Expression.NotEqual(comparisionExpr, zero);
+                        break;
+                    case "gt":
+                        criterionExpression = Expression.GreaterThan(comparisionExpr, zero);
+                        break;
+                    case "gte":
+                        criterionExpression = Expression.GreaterThanOrEqual(comparisionExpr, zero);
+                        break;
+                    case "lt":
+                        criterionExpression = Expression.LessThan(comparisionExpr, zero);
+                        break;
+                    case "lte":
+                        criterionExpression = Expression.LessThanOrEqual(comparisionExpr, zero);
+                        break;
+                    default:
+                        throw new NotSupportedException($"Not supported operator: {op}");
+                }
+                if (criteriaExpression == null)
+                {
+                    criteriaExpression = Expression.And(nameExpression, criterionExpression);
+                }
+                else
+                {
+                    criteriaExpression = Expression.AndAlso(criteriaExpression, Expression.And(nameExpression, criterionExpression));
+                }
+            }
+            if (criteriaExpression == null)
+            {
+                criteriaExpression = Expression.Constant(true);
+            }
+            var whereCallExpression = Expression.Call(
+                typeof(Queryable),
+                "Where",
+                new[] { curType },
+                queryableData.Expression,
+                Expression.Lambda<Func<FieldDTO, bool>>(criteriaExpression, new[] { pe })
+            );
+            return whereCallExpression;
+        }
 
+        /*
         protected Expression ParseCriteriaExpression(
             IEnumerable<FilterConditionDTO> conditions,
             IQueryable<FieldDTO> queryableData)
@@ -164,7 +252,7 @@ namespace terminalFr8Core.Actions
                     default:
                         throw new NotSupportedException(string.Format("Not supported operator: {0}", op));
                 }
-
+                
                 if (criteriaExpression == null)
                 {
                     criteriaExpression = Expression.And(nameExpression, criterionExpression);
@@ -189,7 +277,7 @@ namespace terminalFr8Core.Actions
             );
 
             return whereCallExpression;
-        }
+        }*/
 
         private static readonly Lazy<Expression<Func<string, IComparable>>> TryMakeDecimalExpression =
             new Lazy<Expression<Func<string, IComparable>>>(() =>
@@ -249,12 +337,12 @@ namespace terminalFr8Core.Actions
             // var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
             var queryFieldsCrate = Crate.FromContent(
                 "Queryable Criteria",
-                new StandardQueryFieldsCM(
+                new TypedFieldsCM(
                     curUpstreamFields.Select(
-                        x => new QueryFieldDTO(
+                        x => new TypedFieldDTO(
                             x.Key,
                             x.Key,
-                            QueryFieldType.String,
+                            FieldType.String,
                             new TextBox()
                             {
                                 Name = "QueryField_" + x.Key
@@ -286,12 +374,12 @@ namespace terminalFr8Core.Actions
             // var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
             var queryFieldsCrate = Crate.FromContent(
                 "Queryable Criteria",
-                new StandardQueryFieldsCM(
+                new TypedFieldsCM(
                     curUpstreamFields.Select(
-                        x => new QueryFieldDTO(
+                        x => new TypedFieldDTO(
                             x.Key,
                             x.Key,
-                            QueryFieldType.String,
+                            FieldType.String,
                             new TextBox()
                             {
                                 Name = "QueryField_" + x.Key
@@ -319,7 +407,7 @@ namespace terminalFr8Core.Actions
 
             var hasControlsCrate = GetCratesByManifestType<StandardConfigurationControlsCM>(curActionDataPackageDO) != null;
 
-            var hasQueryFieldsCrate = GetCratesByManifestType<StandardQueryFieldsCM>(curActionDataPackageDO) != null;
+            var hasQueryFieldsCrate = GetCratesByManifestType<TypedFieldsCM>(curActionDataPackageDO) != null;
 
             if (hasControlsCrate && hasQueryFieldsCrate)
             {
@@ -373,7 +461,7 @@ namespace terminalFr8Core.Actions
         {
             string curLabel = string.Empty;
 
-            if (typeof(TManifest) == typeof(StandardQueryFieldsCM))
+            if (typeof(TManifest) == typeof(TypedFieldsCM))
             {
                 curLabel = "Queryable Criteria";
             } 

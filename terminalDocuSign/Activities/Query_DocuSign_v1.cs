@@ -3,22 +3,30 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.States;
 using Hub.Managers;
 using Newtonsoft.Json;
 using StructureMap;
 using terminalDocuSign.DataTransferObjects;
+using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
 using TerminalBase.Infrastructure;
+using Utilities;
+using FolderItem = DocuSign.eSign.Model.FolderItem;
+using ListItem = Data.Control.ListItem;
 
 namespace terminalDocuSign.Actions
 {
     public class Query_DocuSign_v1 : BaseDocuSignActivity
     {
+        private const string RunTimeCrateLabel = "DocuSign Envelope Data";
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
@@ -63,7 +71,6 @@ namespace terminalDocuSign.Actions
             }
         }
 
-
         protected override string ActivityUserFriendlyName => "Query DocuSign";
 
         protected internal override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
@@ -75,37 +82,18 @@ namespace terminalDocuSign.Actions
             {
                 return Error(payload, "Action was not configured correctly");
             }
-
+            
+            var configuration = DocuSignManager.SetUp(authTokenDO);
 
             var settings = GetDocusignQuery(configurationControls);
-
-            var docuSignAuthDto = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-            var payloadCm = new StandardPayloadDataCM();
-
-            //commented out by FR-2400
-            //var envelopes = _docuSignManager.SearchDocusign(docuSignAuthDto, settings);
-
-            //foreach (var envelope in envelopes)
-            //{
-            //    var row = new PayloadObjectDTO();
-
-            //    row.PayloadObject.Add(new FieldDTO("Id", envelope.EnvelopeId));
-            //    row.PayloadObject.Add(new FieldDTO("Name", envelope.Name));
-            //    row.PayloadObject.Add(new FieldDTO("Subject", envelope.Subject));
-            //    row.PayloadObject.Add(new FieldDTO("Status", envelope.Status));
-            //    row.PayloadObject.Add(new FieldDTO("OwnerName", envelope.OwnerName));
-            //    row.PayloadObject.Add(new FieldDTO("SenderName", envelope.SenderName));
-            //    row.PayloadObject.Add(new FieldDTO("SenderEmail", envelope.SenderEmail));
-            //    row.PayloadObject.Add(new FieldDTO("Shared", envelope.Shared));
-            //    row.PayloadObject.Add(new FieldDTO("CompletedDate", envelope.CompletedDateTime.ToString(CultureInfo.InvariantCulture)));
-            //    row.PayloadObject.Add(new FieldDTO("CreatedDateTime", envelope.CreatedDateTime.ToString(CultureInfo.InvariantCulture)));
-
-            //    payloadCm.PayloadObjects.Add(row);
-            //}
+            var folderItems = DocuSignFolders.GetFolderItems(configuration, settings);
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                crateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", payloadCm));
+                foreach (var item in folderItems)
+                {
+                    crateStorage.Add(Data.Crates.Crate.FromContent(RunTimeCrateLabel, MapFolderItemToDocuSignEnvelopeCM(item)));
+                }
             }
 
             return Success(payload);
@@ -113,37 +101,23 @@ namespace terminalDocuSign.Actions
 
         protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(authTokenDO))
+            if (CheckAuthentication(curActivityDO, authTokenDO))
             {
-                throw new ApplicationException("No AuthToken provided.");
+                return Task.FromResult(curActivityDO);
             }
 
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
             var configurationCrate = PackControls(new ActivityUi());
-            //commented out by FR-2400
-            //_docuSignManager.FillFolderSource(configurationCrate, "Folder", docuSignAuthDTO);
-            //_docuSignManager.FillStatusSource(configurationCrate, "Status");
+
+            FillFolderSource(configurationCrate, "Folder", authTokenDO);
+            FillStatusSource(configurationCrate, "Status");
+
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                crateStorage.Add(configurationCrate);
+                crateStorage.Replace(AssembleCrateStorage(configurationCrate));
+                crateStorage.Add(GetAvailableRunTimeTableCrate(RunTimeCrateLabel));
             }
 
             return Task.FromResult(curActivityDO);
-        }
-
-        private static DocusignQuery GetDocusignQuery(StandardConfigurationControlsCM configurationControls)
-        {
-            var actionUi = new ActivityUi();
-
-            actionUi.ClonePropertiesFrom(configurationControls);
-
-            var settings = new DocusignQuery();
-
-            settings.Folder = actionUi.Folder.Value;
-            settings.Status = actionUi.Status.Value;
-            settings.SearchText = actionUi.SearchText.Value;
-
-            return settings;
         }
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
@@ -164,5 +138,81 @@ namespace terminalDocuSign.Actions
 
             return ConfigurationRequestType.Followup;
         }
+
+        #region Private Methods 
+
+        private Crate GetAvailableRunTimeTableCrate(string descriptionLabel)
+        {
+            var availableRunTimeCrates = Data.Crates.Crate.FromContent("Available Run Time Crates", new CrateDescriptionCM(
+                    new CrateDescriptionDTO
+                    {
+                        ManifestType = MT.DocuSignEnvelope.GetEnumDisplayName(),
+                        Label = descriptionLabel,
+                        ManifestId = (int)MT.DocuSignEnvelope,
+                        ProducedBy = "Query_DocuSign_v1"
+                    }), AvailabilityType.RunTime);
+            return availableRunTimeCrates;
+        }
+
+        private void FillFolderSource(Crate configurationCrate, string controlName, AuthorizationTokenDO authTokenDO)
+        {
+            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
+            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            if (control != null)
+            {
+                var conf = DocuSignManager.SetUp(authTokenDO);
+                control.ListItems = DocuSignFolders.GetFolders(conf)
+                    .Select(x => new ListItem() {Key = x.Key, Value = x.Value})
+                    .ToList();
+            }
+        }
+
+        private void FillStatusSource(Crate configurationCrate, string controlName)
+        {
+            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
+            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+            if (control != null)
+            {
+                control.ListItems = DocusignQuery.Statuses
+                    .Select(x => new ListItem() { Key = x.Key, Value = x.Value })
+                    .ToList();
+            }
+        }
+
+        private static DocusignQuery GetDocusignQuery(StandardConfigurationControlsCM configurationControls)
+        {
+            var actionUi = new ActivityUi();
+
+            actionUi.ClonePropertiesFrom(configurationControls);
+
+            var settings = new DocusignQuery();
+
+            settings.Folder = actionUi.Folder.Value;
+            settings.Status = actionUi.Status.Value;
+            settings.SearchText = actionUi.SearchText.Value;
+
+            return settings;
+        }
+
+        private DocuSignEnvelopeCM MapFolderItemToDocuSignEnvelopeCM(FolderItem folderItem)
+        {
+            return new DocuSignEnvelopeCM()
+            {
+                EnvelopeId = folderItem.EnvelopeId,
+
+                Name = folderItem.Name,
+                Subject = folderItem.Subject,
+                OwnerName = folderItem.OwnerName,
+                SenderName = folderItem.SenderName,
+                SenderEmail = folderItem.SenderEmail,
+                Shared = folderItem.Shared,
+                Status = folderItem.Status,
+                CompletedDate = DateTimeHelper.Parse(folderItem.CompletedDateTime),
+                CreateDate = DateTimeHelper.Parse(folderItem.CreatedDateTime),
+                SentDate = DateTimeHelper.Parse(folderItem.SentDateTime)
+            };
+        }
+
+        #endregion
     }
 }

@@ -36,7 +36,7 @@ namespace Hub.Services
         /// </summary>
         /// <returns>New ProcessNodeDO instance</returns>
         public ProcessNodeDO Create(IUnitOfWork uow, Guid parentContainerId,
-            Guid subrouteId, string name = "ProcessNode")
+            Guid subPlanId, string name = "ProcessNode")
         {
             var processNode = new ProcessNodeDO
             {
@@ -45,7 +45,7 @@ namespace Hub.Services
                 ParentContainerId = parentContainerId
             };
 
-            processNode.SubrouteId = subrouteId;
+            processNode.SubPlanId = subPlanId;
 
             uow.ProcessNodeRepository.Add(processNode);
             EventManager.ProcessNodeCreated(processNode);
@@ -63,7 +63,7 @@ namespace Hub.Services
         {
            
             var keys =
-                JsonConvert.DeserializeObject<List<ProcessNodeTransition>>(sourcePNode.Subroute.NodeTransitions);
+                JsonConvert.DeserializeObject<List<ProcessNodeTransition>>(sourcePNode.SubPlan.NodeTransitions);
 
             if (!this.IsCorrectKeysCountValid(keys))
                 throw new ArgumentException("There should only be one key with false.");
@@ -71,7 +71,7 @@ namespace Hub.Services
             var key = keys.First(k => k.TransitionKey.Equals("false", StringComparison.OrdinalIgnoreCase));
             key.ProcessNodeId = targetPNode.Id.ToString();
 
-            sourcePNode.Subroute.NodeTransitions = JsonConvert.SerializeObject(keys, Formatting.None);
+            sourcePNode.SubPlan.NodeTransitions = JsonConvert.SerializeObject(keys, Formatting.None);
         }
 
         
@@ -83,17 +83,17 @@ namespace Hub.Services
         //    var result = _criteria.Evaluate(curEventData, curProcessNode);
         //    if (result)
         //    {
-        //        var activityService = ObjectFactory.GetInstance<IRouteNode>();
+        //        var activityService = ObjectFactory.GetInstance<IPlanNode>();
 
         //        using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
         //        {
-        //            var curSubroute = uow.PlanRepository.GetById<SubrouteDO>(curProcessNode.SubrouteId);
-        //            RouteNodeDO currentAction = curSubroute;
+        //            var curSubroute = uow.PlanRepository.GetById<SubPlanDO>(curProcessNode.SubPlanId);
+        //            PlanNodeDO currentAction = curSubroute;
 
         //            do
         //            {
         //                activityService.Process(currentAction.Id, ActivityState.InitialRun, curProcessNode.ParentContainer);
-        //                currentAction = activityService.GetNextActivity(currentAction, curSubroute);
+        //                currentAction = activityService.GetNextActivity(currentAction, curSubPlan);
         //            } while (currentAction != null);
         //        }
 

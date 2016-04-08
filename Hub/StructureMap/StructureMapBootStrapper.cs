@@ -24,7 +24,6 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Repositories;
-using DocuSign.Integrations.Client;
 using Hub.ExternalServices;
 using Hub.Security;
 using Moq;
@@ -38,6 +37,7 @@ using Utilities;
 using Utilities.Interfaces;
 using System.Net.Http;
 using Microsoft.ApplicationInsights;
+using System.Linq.Expressions;
 
 namespace Hub.StructureMap
 {
@@ -114,10 +114,10 @@ namespace Hub.StructureMap
                 For<InternalInterfaces.IFact>().Use<InternalClass.Fact>();
                 For<ICriteria>().Use<Criteria>();
                 For<IActivity>().Use<Activity>().Singleton();
-				For<IRouteNode>().Use<RouteNode>();
+				For<IPlanNode>().Use<PlanNode>();
                 For<ISubscription>().Use<Subscription>();
                 For<IProcessNode>().Use<ProcessNode>();
-                For<ISubroute>().Use<Subroute>();
+                For<ISubPlan>().Use<SubPlan>();
                 For<IField>().Use<Field>();
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Hub.Services.Event>();
@@ -127,16 +127,18 @@ namespace Hub.StructureMap
                 For<ICrateManager>().Use<CrateManager>();
                 For<IReport>().Use<Report>();
                 For<IManifest>().Use<Manifest>();
-                For<IFindObjectsRoute>().Use<FindObjectsRoute>();
+                For<IFindObjectsPlan>().Use<FindObjectsPlan>();
 	            For<ITime>().Use<Time>();
 	            For<IPusherNotifier>().Use<PusherNotifier>();
                 For<IAuthorization>().Use<Authorization>();
                 For<ITag>().Use<Tag>();
-
+                For<IOrganization>().Use<Organization>();
+                
                 For<IHMACAuthenticator>().Use<HMACAuthenticator>();
                 For<IHMACService>().Use<Fr8HMACService>();
 
                 For<TelemetryClient>().Use<TelemetryClient>();
+                For<IJobDispatcher>().Use<HangfireJobDispatcher>();
                // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
             }
         }
@@ -174,11 +176,11 @@ namespace Hub.StructureMap
                 For<ICriteria>().Use<Criteria>();
                 For<ISubscription>().Use<Subscription>();
                 For<IActivity>().Use<Activity>().Singleton();
-				For<IRouteNode>().Use<RouteNode>();
+					 For<IPlanNode>().Use<PlanNode>();
 
                 For<IProcessNode>().Use<ProcessNode>();
                 For<IPlan>().Use<Hub.Services.Plan>();
-                For<ISubroute>().Use<Subroute>();
+                For<ISubPlan>().Use<SubPlan>();
                 For<IField>().Use<Field>();
                 //var mockProcess = new Mock<IProcessService>();
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));
@@ -194,7 +196,7 @@ namespace Hub.StructureMap
                 
                 For<ICrateManager>().Use<CrateManager>();
                 For<IManifest>().Use<Manifest>();
-                For<IFindObjectsRoute>().Use<FindObjectsRoute>();
+                For<IFindObjectsPlan>().Use<FindObjectsPlan>();
                 For<IAuthorization>().Use<Authorization>();
 
 				var timeMock = new Mock<ITime>();
@@ -204,6 +206,7 @@ namespace Hub.StructureMap
 	            For<IPusherNotifier>().Use(pusherNotifierMock.Object).Singleton();
 
                 For<ITag>().Use<Tag>();
+                For<IOrganization>().Use<Organization>();
 
                 var fr8HMACAuthenticator = new Mock<IHMACAuthenticator>();
                 fr8HMACAuthenticator.Setup(x => x.IsValidRequest(It.IsAny<HttpRequestMessage>(), It.IsAny<string>())).ReturnsAsync(true);
@@ -216,7 +219,16 @@ namespace Hub.StructureMap
                 For<IHMACService>().Use(fr8HMACService.Object);
                 For<TelemetryClient>().Use<TelemetryClient>();
                 For<ITerminal>().Use(new TerminalServiceForTests()).Singleton();
-               // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
+                For<IJobDispatcher>().Use<MockJobDispatcher>();
+                // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
+            }
+        }
+
+        public class MockJobDispatcher : IJobDispatcher
+        {
+            public void Enqueue(Expression<Action> job)
+            {
+                job.Compile().Invoke();
             }
         }
 

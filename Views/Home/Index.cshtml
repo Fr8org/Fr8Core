@@ -29,7 +29,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 
-    <!-- google material design -->
+    <!-- Google Material Design -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://code.getmdl.io/1.1.1/material.indigo-pink.min.css">
     <script defer src="https://code.getmdl.io/1.1.1/material.min.js"></script>
@@ -38,26 +38,8 @@
     @Styles.Render("~/bundles/css/home")
 
     <!-- Google Fonts -->
-    <link href='https://fonts.googleapis.com/css?family=Dosis:300,400,500,600,700' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Open+Sans:400italic,300,400,700' rel='stylesheet' type='text/css'>
-
-    <link href='https://fonts.googleapis.com/css?family=Francois+One' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Didact+Gothic' rel='stylesheet' type='text/css'>
-
-
-    <link href='https://fonts.googleapis.com/css?family=Droid+Sans' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Cabin' rel='stylesheet' type='text/css'>
-
-    <link href='https://fonts.googleapis.com/css?family=Fjalla+One' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Cantarell' rel='stylesheet' type='text/css'>
-
-
-    <link href='https://fonts.googleapis.com/css?family=Ubuntu' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Hind' rel='stylesheet' type='text/css'>
-
-
-    <link href='https://fonts.googleapis.com/css?family=Roboto' rel='stylesheet' type='text/css'>
-    <link href='https://fonts.googleapis.com/css?family=Nunito' rel='stylesheet' type='text/css'>
+    <link href="https://fonts.googleapis.com/css?family=Dosis:300,400,500,600,700|Open+Sans:300,400,400italic,600,700,800|Francois+One|Didact+Gothic|Droid+Sans|CabinFjalla+One|Cantarell|Ubuntu|Hind|Roboto|Roboto+Condensed:700|Nunito&subset=latin,cyrillic"
+        rel="stylesheet" type="text/css">
 
     <!-- IE 9 Fallback-->
     <!--[if IE 9]>
@@ -76,78 +58,28 @@
 
 </head>
 <body id="top">
+    
+    @Html.Partial("_HomeNavNew", new HubWeb.ViewModels.NavLinksHome())
 
-    <!-- NAVBAR -->
-    <div class="navbar navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-nav">
-                    <span class="sr-only">Menu</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a href="index.html" class="navbar-brand">
-                    <img src="/Content/img/logo-fr8.svg" alt="FR8" />
-                    <h1 class="hide">FR8 Company</h1>
-                </a>
-            </div>
-            <nav class="navbar-collapse collapse" id="main-nav" role="navigation">
-                <ul class="nav navbar-nav navbar-right nav-text-light">
-                    <li><a href="#about">How it Works</a></li>
-                    <li data-scroll="scrolling" class="dropdown">
-                        <a data-target="#" href="#services" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Services">Services <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="/Services/DocuSign">DocuSign</a></li>
-                            <li><a href="/Services/Salesforce">Salesforce.com</a></li>
-                            <li><a href="/Services/GoogleApps">Google Apps</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="http://fr8-documentation.azurewebsites.net">Developers</a></li>
-                    <li data-scroll="scrolling" class="dropdown">
-                        <a href="/Company/#team" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Company">Company <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li data-scroll="scrolling"><a href="/Company/#vision">Vision</a></li>
-                            <li data-scroll="scrolling"><a href="/Company/#team">Team</a></li>
-                            <li data-scroll="scrolling"><a href="/Company/#location">Location</a></li>
-                            <li data-scroll="scrolling"><a href="/Company/#company">Jobs</a></li>
-                            <li data-scroll="scrolling"><a href="/Company/#team">About Us</a></li>
-                            <li data-scroll="scrolling"><a href="/Support">Support</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="#contact">Contact</a></li>
-@if (!Request.IsAuthenticated)
-{
-    <li>
-        <button onclick="document.location = '#contact';" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect"><a class="try-now-btn" href="/Welcome">TRY IT NOW</a></button>
-    </li>
-    <li>
-        <button onclick="document.location = '/DockyardAccount';" class="mdl-button mdl-js-button mdl-button--login mdl-js-ripple-effect"><span class="try-now-btn">Login</span></button>
-    </li>
-}
-else
-{
-    <li>
-        <button onclick="document.location = '/dashboard#/myaccount';" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect"><span class="try-now-btn">My Account</span></button>
-    </li>
-}
-                </ul>
-            </nav>
-        </div>
-    </div>
-    <!-- END NAVBAR -->
     <!-- HERO UNIT -->
     <div id="hero-unit" class="hero-unit hero-light hero-video" data-vide-bg="mp4: Content/videos/motion.mp4, webm: Content/videos/motion.webm, ogv: Content/videos/motion.ogv, poster: Content/videos/motion.png" data-vide-options="loop: true, posterType: png">
         <div class="hero-content text-center">
             <div id="slidecaption" class="slide-caption">
                 <div class="hero-text">
                     <h2 class="hero-heading">Connect Your Cloud Services</h2>
-                    <p>Automate your work by building workflows from one cloud services to another</p>
+                    <p>Our workflows simplify your life.</p>
                 </div>
             </div>
             <div class="hero-buttons">
                 <a href="#about" id="btn-about" class="btn btn-outline btn-lg"><i class="fa fa-arrow-circle-o-down"></i> READ MORE</a>
-                <a href="#contact" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT NOW</a>
+                @if (Request.IsAuthenticated)
+                {
+                    <a href="/Welcome" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT NOW</a>
+                }
+                else
+                {
+                    <a href="/DockyardAccount/ProcessGuestUserMode" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT NOW</a>
+                }
             </div>
         </div>
         <div class="hero-bg-pattern"></div>
@@ -168,6 +100,7 @@ else
                     <div class="col-sm-8 col-sm-offset-2">
                         <div class="section-content">
                             <p>Fr8 ties your existing cloud applications together, letting you move information easily and enabling you to create powerful web applications, processes and workflows with a few clicks of your mouse.</p>
+                            <p><a href="http://fr8-documentation.azurewebsites.net">Learn More</a></p>
                         </div>
                     </div>
                 </div>
@@ -176,30 +109,30 @@ else
                     <div class="col-sm-4">
                         <div class="one-connect demo-card-square demo-card-square-connect mdl-card mdl-shadow--2dp">
                             <div class="mdl-card__title mdl-card--expand">
-                                <h2 class="mdl-card__title-text">CONNECT</h2>
+                                <h2 class="mdl-card__title-text">DESIGN</h2>
                             </div>
                             <div class="mdl-card__supporting-text">
-                                Connect your web services to move data out of one service and into another cloud service
+                                The Fr8 design environment allows drag and drop connections between your cloud services.
                             </div>
                         </div>
                     </div>
                     <div class="col-sm-4">
                         <div class="demo-card-square demo-card-square-workflows mdl-card mdl-shadow--2dp">
                             <div class="mdl-card__title mdl-card--expand">
-                                <h2 class="mdl-card__title-text">DESIGN</h2>
+                                <h2 class="mdl-card__title-text">RUN</h2>
                             </div>
                             <div class="mdl-card__supporting-text">
-                                Generate powerful workflows between enterprises cloud services to automate your daily workflows
+                                Use cloud data sources like Google Docs and Salesforce to drive cloud applications like DocuSign.
                             </div>
                         </div>
                     </div>
                     <div class="col-sm-4">
                         <div class="demo-card-square demo-card-square-run mdl-card mdl-shadow--2dp">
                             <div class="mdl-card__title mdl-card--expand">
-                                <h2 class="mdl-card__title-text">RUN</h2>
+                                <h2 class="mdl-card__title-text">AUTOMATE</h2>
                             </div>
                             <div class="mdl-card__supporting-text">
-                                Run your workflows whenever you want and get notifications at different stages of the work
+                                Build workflows that respond to alerts and changes in your personal cloud ecosystem
                             </div>
                         </div>
                     </div>
@@ -211,8 +144,15 @@ else
         <div id="social-network" class="section full-width-parallax parallax">
             <div class="container">
                 <h2 class="section-heading">Automate Your Work. Connect Your Cloud Services.</h2>
-                <a href="#contact" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT FREE</a>
-                <p style="color:#F2F4F5;padding-top:10px;">Try Fr8 free for 30 days no cc required</p>
+                @if (Request.IsAuthenticated)
+                {
+                    <a href="/Welcome" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT FREE</a>
+                }
+                else
+                {
+                    <a href="/DockyardAccount/ProcessGuestUserMode" id="btn-contact" class="btn btn-primary btn-lg"><i class="fa fa-arrow-circle-o-right"></i> TRY IT FREE</a>
+                }
+                <p style="color:#F2F4F5;padding-top:10px;">Try Fr8 now.</p>
             </div>
         </div>
         <!-- END FULL-WIDTH PARALLAX -->
@@ -220,8 +160,8 @@ else
         <div id="services" class="section darker services">
             <div class="container">
                 <div class="section-heading">
-                    <h2>Fr8 SERVICES</h2>
-                    <p>Use Fr8's pre-built services to automate the most common tasks.</p>
+                    <h2>Fr8 SOLUTION CENTERS</h2>
+                    <p>Use Fr8's pre-built solutions to automate the most common tasks.</p>
                     <hr />
                 </div>
                 <div class="section-content">
@@ -232,7 +172,7 @@ else
                                 <!-- <img src="assets/img/logo-fr8.svg" alt="Loop Logo" class="service-icon "/> -->
                                 <div class="service-text">
                                     <h3>Docusign</h3>
-                                    <p>Quickly actualize proactive niches rather than user friendly catalysts for change.</p>
+                                    <p>Accelerate your DocuSign work with Mail Merge, Data Extraction, Conditional Approval Flows, and more.</p>
                                     <a href="#" class="read-more"><span>Read more ...</span> <i class="i fa fa-arrow-circle-right"></i></a>
                                 </div>
                             </div>
@@ -242,17 +182,19 @@ else
                                 <span class="salesforce"></span>
                                 <div class="service-text">
                                     <h3>Salesforce</h3>
-                                    <p>Quickly actualize proactive niches rather than user friendly catalysts for change.</p>
+                                    <p>Coming Soon! Automatically update your Salesforce objects and chatter feeds from Slack. Mail Merge using DocuSign or Email.</p>
                                     <a href="#" class="read-more"><span>Read more ...</span> <i class="i fa fa-arrow-circle-right"></i></a>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                    <div class="row">
                         <div class="col-md-6">
                             <div class="service-item">
                                 <span class="google"></span>
                                 <div class="service-text">
                                     <h3>Google Apps</h3>
-                                    <p>Quickly actualize proactive niches rather than user friendly catalysts for change.</p>
+                                    <p>Coming Soon! Use Google Sheets to drive Mail Merges and automate your business processes.</p>
                                     <a href="#" class="read-more"><span>Read more ...</span> <i class="i fa fa-arrow-circle-right"></i></a>
                                 </div>
                             </div>
@@ -262,7 +204,7 @@ else
                                 <span class="fr8-service"></span>
                                 <div class="service-text">
                                     <h3>Custom</h3>
-                                    <p>Quickly actualize proactive niches rather than user friendly catalysts for change.</p>
+                                    <p>Build your own plans, both simple and complex, choosing from a growing assortment of activities</p>
                                     <a href="#" class="read-more"><span>Read more ...</span> <i class="i fa fa-arrow-circle-right"></i></a>
                                 </div>
                             </div>
@@ -321,7 +263,7 @@ else
         </div>
         <!-- END CONTACT -->
         <!-- TWITTER STREAM -->
-        <div id="twitter-stream" class="section twitter-stream">
+        @*<div id="twitter-stream" class="section twitter-stream">
             <div class="container">
                 <div class="row">
                     <div class="col-sm-4">
@@ -329,14 +271,14 @@ else
                     </div>
                     <div class="col-sm-4">
                         <h4>About</h4>
-                        <p>fr8 is the open standard for cloud workflow.</p>
+                        <p>Fr8 is the open standard for cloud workflow.</p>
                     </div>
                     <div class="col-sm-4">
                         <h4>Company Updates</h4>
                     </div>
                 </div>
             </div>
-        </div>
+        </div>*@
         <!-- TWITTER STREAM -->
 
     </div>
@@ -344,7 +286,7 @@ else
     <!-- FOOTER -->
     <footer id="footer" class="section">
         <div class="container">
-            <p class="copyright">@DateTime.Now.Year © Maginot Technologies, LLC. All Rights Reserved.</p>
+            <p class="copyright">@DateTime.Now.Year © The Fr8 Company. All Rights Reserved.</p>
         </div>
     </footer>
     <!-- END FOOTER -->

@@ -40,7 +40,7 @@ namespace DockyardTest.Integration
                 uow.SaveChanges();
 
                 //create a process template linked to that account
-             //   var healthRoute = CreateRoute_healthdemo(uow, registeredAccount);
+             //   var healthRoute = CreatePlan_healthdemo(uow, registeredAccount);
                 uow.SaveChanges();
 
                 string healthPayloadPath = "DockyardTest\\Content\\DocusignXmlPayload_healthdemo.xml";
@@ -61,33 +61,33 @@ namespace DockyardTest.Integration
 
         //commented out because it was breaking the build.
 
-        //public RouteDO CreateRoute_healthdemo(IUnitOfWork uow, DockyardAccountDO registeredAccount)
+        //public PlanDO CreatePlan_healthdemo(IUnitOfWork uow, DockyardAccountDO registeredAccount)
         //{
         //    var jsonSerializer = new global::Utilities.Serializers.Json.JsonSerializer();
 
-        //    var healthRoute = FixtureData.TestRouteHealthDemo();
-        //    healthRoute.DockyardAccount = registeredAccount;
-        //    uow.RouteRepository.Add(healthRoute);
+        //    var healthPlan = FixtureData.TestRouteHealthDemo();
+        //    healthPlan.DockyardAccount = registeredAccount;
+        //    uow.PlanRepository.Add(healthPlan);
         //    uow.SaveChanges();
-        //   healthSubrouteDO.StartingSubroute = true;
-        //  healthRoute.Subroutes.Add(healthSubrouteDO);
+        //   healthSubPlansDO.StartingSubPlan = true;
+        //    healthPlan.SubPlans.Add(healthSubrouteDO);
 
         //    //add processnode to process
-        //    var healthSubrouteDO = FixtureData.TestSubrouteHealthDemo();
-        //    healthSubrouteDO.ParentTemplateId = healthRoute.Id;
+        //    var healthSubPlanDO = FixtureData.TestSubrouteHealthDemo();
+        //    healthSubPlanDO.ParentTemplateId = healthRoute.Id;
         //    uow.SubrouteRepository.Add(healthSubrouteDO);
 
         //    //specify that this process node is the starting process node of the template
-        //    healthRoute.StartingSubrouteId = healthSubrouteDO.Id;
+        //    healthPlan.StartingSubPlanId = healthSubPlanDO.Id;
 
         //    //add criteria to processnode
         //    var healthCriteria = FixtureData.TestCriteriaHealthDemo();
-        //    healthCriteria.SubrouteId = healthSubrouteDO.Id;
+        //    healthCriteria.SubPlanId = healthSubPlanDO.Id;
         //    uow.CriteriaRepository.Add(healthCriteria);
 
         //    //add actionlist to processnode
         //    var healthActionList = FixtureData.TestActionListHealth1();
-        //    healthActionList.SubrouteID = healthSubrouteDO.Id;
+        //    healthActionList.SubPlanID = healthSubPlanDO.Id;
         //    uow.ActionListRepository.Add(healthActionList);
 
         //   // var healthAction = FixtureData.TestActionHealth1();
@@ -107,7 +107,7 @@ namespace DockyardTest.Integration
         //    healthWriteAction.CrateStorage = JsonConvert.SerializeObject(configuration_settings);
         //    uow.ActionRepository.Add(healthWriteAction);
 
-        //    return healthRoute;
+        //    return healthPlan;
         //}
     }
 }

@@ -12,7 +12,7 @@ namespace DockyardTest.Controllers
 {
     public class CriteriaControllerTest : ApiControllerTestBase
     {
-        private SubrouteDO _curSubroute;
+        private SubPlanDO _curSubPlan;
         private CriteriaDO _curCriteria;
 
         public override void SetUp()
@@ -28,13 +28,13 @@ namespace DockyardTest.Controllers
         }
 
         [Test]
-        public void CriteriaController_GetBySubrouteId()
+        public void CriteriaController_GetBySubPlanId()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var controller = CreateController<CriteriaController>();
 
-                var actionResult = controller.BySubrouteId(_curSubroute.Id);
+                var actionResult = controller.BySubPlanId(_curSubPlan.Id);
 
                 var okResult = actionResult as OkNegotiatedContentResult<CriteriaDTO>;
 
@@ -51,12 +51,12 @@ namespace DockyardTest.Controllers
 
 
                 //Add a template
-                var plan = FixtureData.TestRoute1();
+                var plan = FixtureData.TestPlan1();
                 uow.PlanRepository.Add(plan);
                 //Add a processnodetemplate to plan 
-                _curSubroute = FixtureData.TestSubrouteDO1();
-                _curSubroute.ParentRouteNodeId = plan.Id;
-                plan.ChildNodes.Add(_curSubroute);
+                _curSubPlan = FixtureData.TestSubPlanDO1();
+                _curSubPlan.ParentPlanNodeId = plan.Id;
+                plan.ChildNodes.Add(_curSubPlan);
                 
                 uow.SaveChanges();
 
@@ -65,7 +65,7 @@ namespace DockyardTest.Controllers
                 uow.SaveChanges();*/
 
                 _curCriteria = FixtureData.TestCriteria1();
-                _curCriteria.Subroute = _curSubroute;
+                _curCriteria.SubPlan = _curSubPlan;
 
                 uow.CriteriaRepository.Add(_curCriteria);
                 uow.SaveChanges();

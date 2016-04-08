@@ -60,12 +60,12 @@
       <HintPath>packages\AutoMapper.4.0.4\lib\net45\AutoMapper.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="BouncyCastle.Crypto, Version=1.7.4137.9688, Culture=neutral, PublicKeyToken=a4292a325f69b123, processorArchitecture=MSIL">
+      <HintPath>packages\BouncyCastle.1.7.0\lib\Net40-Client\BouncyCastle.Crypto.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="DayPilot.Web.Mvc">
       <HintPath>lib\DayPilot.Web.Mvc.dll</HintPath>
-    </Reference>
-    <Reference Include="DocuSign.Integration.Client, Version=1.6.1.0, Culture=neutral, PublicKeyToken=7fca6fcbbc219ede, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>Utilities\DocuSign.Integration.Client.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
@@ -91,28 +91,28 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>Utilities\Fr8.AI.DependencyCollector.dll</HintPath>
     </Reference>
-    <Reference Include="Google.Apis, Version=1.8.2.23762, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Apis.1.8.2\lib\net40\Google.Apis.dll</HintPath>
+    <Reference Include="Google.Apis, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>packages\Google.Apis.1.11.1\lib\net45\Google.Apis.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Google.Apis.Auth, Version=1.8.2.23763, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Apis.Auth.1.8.2\lib\net40\Google.Apis.Auth.dll</HintPath>
+    <Reference Include="Google.Apis.Auth, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>packages\Google.Apis.Auth.1.11.1\lib\net45\Google.Apis.Auth.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Google.Apis.Auth.Mvc4, Version=1.8.2.23775, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Apis.Auth.Mvc.1.8.2\lib\net40\Google.Apis.Auth.Mvc4.dll</HintPath>
+    <Reference Include="Google.Apis.Auth.Mvc4, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>packages\Google.Apis.Auth.Mvc.1.11.1\lib\net45\Google.Apis.Auth.Mvc4.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Google.Apis.Auth.PlatformServices, Version=1.8.2.23773, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Apis.Auth.1.8.2\lib\net40\Google.Apis.Auth.PlatformServices.dll</HintPath>
+    <Reference Include="Google.Apis.Auth.PlatformServices, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>packages\Google.Apis.Auth.1.11.1\lib\net45\Google.Apis.Auth.PlatformServices.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Google.Apis.Core, Version=1.8.2.23761, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Apis.Core.1.8.2\lib\portable-net4+sl4+wp71+win8\Google.Apis.Core.dll</HintPath>
+    <Reference Include="Google.Apis.Core, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>packages\Google.Apis.Core.1.11.1\lib\net45\Google.Apis.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Google.Apis.PlatformServices, Version=1.8.2.23765, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Google.Apis.1.8.2\lib\net40\Google.Apis.PlatformServices.dll</HintPath>
+    <Reference Include="Google.Apis.PlatformServices, Version=1.11.1.0, Culture=neutral, PublicKeyToken=4b01fa6e34db77ab, processorArchitecture=MSIL">
+      <HintPath>packages\Google.Apis.1.11.1\lib\net45\Google.Apis.PlatformServices.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Hangfire.Core, Version=1.5.3.0, Culture=neutral, processorArchitecture=MSIL">
@@ -139,24 +139,24 @@
       <HintPath>packages\Microsoft.ApplicationInsights.Agent.Intercept.1.2.1\lib\net45\Microsoft.AI.Agent.Intercept.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AI.PerfCounterCollector, Version=2.0.0.454, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.ApplicationInsights.PerfCounterCollector.2.0.0-rc1\lib\net45\Microsoft.AI.PerfCounterCollector.dll</HintPath>
+    <Reference Include="Microsoft.AI.PerfCounterCollector, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.PerfCounterCollector.2.0.0\lib\net45\Microsoft.AI.PerfCounterCollector.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.AI.ServerTelemetryChannel, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel.2.0.0-rc1\lib\net45\Microsoft.AI.ServerTelemetryChannel.dll</HintPath>
+      <HintPath>packages\Microsoft.ApplicationInsights.WindowsServer.TelemetryChannel.2.0.0\lib\net45\Microsoft.AI.ServerTelemetryChannel.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AI.Web, Version=2.0.0.454, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.ApplicationInsights.Web.2.0.0-rc1\lib\net45\Microsoft.AI.Web.dll</HintPath>
+    <Reference Include="Microsoft.AI.Web, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.Web.2.0.0\lib\net45\Microsoft.AI.Web.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Microsoft.AI.WindowsServer, Version=2.0.0.454, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.ApplicationInsights.WindowsServer.2.0.0-rc1\lib\net45\Microsoft.AI.WindowsServer.dll</HintPath>
+    <Reference Include="Microsoft.AI.WindowsServer, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.ApplicationInsights.WindowsServer.2.0.0\lib\net45\Microsoft.AI.WindowsServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.ApplicationInsights, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <HintPath>packages\Microsoft.ApplicationInsights.2.0.0-rc1\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
+      <HintPath>packages\Microsoft.ApplicationInsights.2.0.0\lib\net45\Microsoft.ApplicationInsights.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Microsoft.ApplicationInsights.Log4NetAppender, Version=1.2.6.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -353,8 +353,8 @@
       <HintPath>packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Zlib.Portable, Version=1.9.1.9000, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Zlib.Portable.1.9.2\lib\portable-net4+sl4+wp71+win8\Zlib.Portable.dll</HintPath>
+    <Reference Include="Zlib.Portable, Version=1.11.0.0, Culture=neutral, PublicKeyToken=431cba815f6a8b5b, processorArchitecture=MSIL">
+      <HintPath>packages\Zlib.Portable.Signed.1.11.0\lib\portable-net4+sl5+wp8+win8+wpa81+MonoTouch+MonoAndroid\Zlib.Portable.dll</HintPath>
       <Private>True</Private>
     </Reference>
   </ItemGroup>
@@ -367,6 +367,8 @@
     <Compile Include="App_Start\StartupMigration.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\Api\ActivitiesController.cs" />
+    <Compile Include="Controllers\Api\Fr8BaseApiController.cs" />
+    <Compile Include="Controllers\Api\NotificationsController.cs" />
     <Compile Include="Controllers\Api\AlarmsController.cs" />
     <Compile Include="Controllers\Api\AuthenticationController.cs" />
     <Compile Include="Controllers\Api\FactsController.cs" />
@@ -378,6 +380,7 @@
     <Compile Include="Controllers\Api\PlansController.cs" />
     <Compile Include="Controllers\Api\TerminalsController.cs" />
     <Compile Include="Controllers\CompanyController.cs" />
+    <Compile Include="Controllers\Helpers\PlanMappingHelper.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
     <Compile Include="Controllers\ServicesController.cs" />
     <Compile Include="Controllers\SupportController.cs" />
@@ -386,8 +389,7 @@
     <Compile Include="Controllers\Api\ActivityListController.cs" />
     <Compile Include="Controllers\Api\CriteriaController.cs" />
     <Compile Include="Controllers\DocuSignTemplateController.cs" />
-    <Compile Include="Controllers\Helpers\RouteMappingHelper.cs" />
-    <Compile Include="Controllers\Api\RouteNodesController.cs" />
+    <Compile Include="Controllers\Api\PlanNodesController.cs" />
     <Compile Include="Controllers\AuthenticationCallbackController.cs" />
     <Compile Include="Controllers\Api\FilesController.cs" />
     <Compile Include="Controllers\JsTestsController.cs" />
@@ -465,6 +467,8 @@
     <Compile Include="ViewModels\ExternalLoginConfirmationVM.cs" />
     <Compile Include="ViewModels\LoginVM.cs" />
     <Compile Include="ViewModels\ManageUserVM.cs" />
+    <Compile Include="ViewModels\NavLinksHome.cs" />
+    <Compile Include="ViewModels\NavLinksShared.cs" />
     <Compile Include="ViewModels\PayloadVM.cs" />
     <Compile Include="ViewModels\ProcessCreateEventVM.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
@@ -481,23 +485,32 @@
     <Content Include="Api\GetEmailHTML.aspx" />
     <Content Include="Content\css\fonts\brankic.svg" />
     <Content Include="Content\css\fonts\fontawesome-webfont.svg" />
+    <Content Include="Content\css\frontcss\main_new.css" />
     <Content Include="Content\css\homecss\bootstrap.css" />
     <Content Include="Content\css\homecss\font-awesome.min.css" />
     <Content Include="Content\css\homecss\ie.css" />
     <Content Include="Content\css\homecss\main.css" />
+    <Content Include="Content\css\shared\navbar.css" />
     <Content Include="Content\img\background-7.png" />
     <Content Include="Content\img\background-cta-3.png" />
+    <Content Include="Content\img\dockyard_logo_lower.png" />
+    <Content Include="Content\img\dockyard_logo_white.png" />
+    <Content Include="Content\img\docusign-logo.png" />
     <Content Include="Content\img\docusign.png" />
     <Content Include="Content\img\fr8-service.png" />
     <Content Include="Content\img\freight-connect.png" />
+    <Content Include="Content\img\freight-containers.jpg" />
     <Content Include="Content\img\freight-design.png" />
     <Content Include="Content\img\freight-train.png" />
     <Content Include="Content\img\google.png" />
     <Content Include="Content\img\gray-crate.png" />
     <Content Include="Content\img\green-crate.png" />
     <Content Include="Content\img\backgrounds\solution-bg.png" />
+    <Content Include="Content\img\icons\more_vert.svg" />
     <Content Include="Content\img\logo-fr8.svg" />
+    <Content Include="Content\img\Management\Alexei_Avrutin.png" />
     <Content Include="Content\img\Management\Alex_Edelstein_Round.png" />
+    <Content Include="Content\img\Management\Bahadir_Bozdag.png" />
     <Content Include="Content\img\Management\Benjamin_Black.png" />
     <Content Include="Content\css\additionalcss\bootstrap23\css\bootstrap2.3.css" />
     <Content Include="Content\css\additionalcss\bootstrap23\img\glyphicons-halflings-white.png" />
@@ -581,20 +594,21 @@
     <Content Include="Content\img\icons\vimeo.png" />
     <Content Include="Content\img\icons\youtube.png" />
     <Content Include="Content\img\Management\Alex_Edelstein.png" />
+    <Content Include="Content\img\Management\placeholder_headshot.png" />
     <Content Include="Content\img\MicrosoftExchangelogo.png" />
     <Content Include="Content\img\minus.png" />
     <Content Include="Content\img\plus.png" />
-    <Content Include="Content\img\RouteBuilder\action-add-small.png" />
-    <Content Include="Content\img\RouteBuilder\actions-node-bg.png" />
-    <Content Include="Content\img\RouteBuilder\actions-node-bottom.png" />
-    <Content Include="Content\img\RouteBuilder\actions-node-top.png" />
-    <Content Include="Content\img\RouteBuilder\add-criteria-node-bg.png" />
-    <Content Include="Content\img\RouteBuilder\circle-selected.png" />
-    <Content Include="Content\img\RouteBuilder\circle.png" />
-    <Content Include="Content\img\RouteBuilder\criteria-node-bg.png" />
-    <Content Include="Content\img\RouteBuilder\delete-icon.png" />
-    <Content Include="Content\img\RouteBuilder\right-arrow.png" />
-    <Content Include="Content\img\RouteBuilder\start-node-bg.png" />
+    <Content Include="Content\img\PlanBuilder\action-add-small.png" />
+    <Content Include="Content\img\PlanBuilder\actions-node-bg.png" />
+    <Content Include="Content\img\PlanBuilder\actions-node-bottom.png" />
+    <Content Include="Content\img\PlanBuilder\actions-node-top.png" />
+    <Content Include="Content\img\PlanBuilder\add-criteria-node-bg.png" />
+    <Content Include="Content\img\PlanBuilder\circle-selected.png" />
+    <Content Include="Content\img\PlanBuilder\circle.png" />
+    <Content Include="Content\img\PlanBuilder\criteria-node-bg.png" />
+    <Content Include="Content\img\PlanBuilder\delete-icon.png" />
+    <Content Include="Content\img\PlanBuilder\right-arrow.png" />
+    <Content Include="Content\img\PlanBuilder\start-node-bg.png" />
     <Content Include="Content\img\salesforce.png" />
     <Content Include="Content\img\select-info.png" />
     <Content Include="Content\img\site\alex-photo.png" />
@@ -827,21 +841,33 @@
     <Content Include="Scripts\homejs\plugins\vide\jquery.vide.min.js" />
     <Content Include="Scripts\homejs\plugins\waypoints\waypoints.min.js" />
     <Content Include="Scripts\homejs\plugins\wow\wow.js" />
+    <Content Include="Scripts\PlanBuilder\core.js" />
+    <Content Include="Scripts\PlanBuilder\pb-consts.js" />
+    <Content Include="Scripts\PlanBuilder\pb-fabricjs-img.js" />
+    <Content Include="Scripts\PlanBuilder\pb-fabricjs.js" />
+    <Content Include="Scripts\PlanBuilder\pb-interfaces.js" />
+    <Content Include="Scripts\PlanBuilder\pb-resources.js" />
+    <Content Include="Scripts\PlanBuilder\pb-widget.js" />
+    <Content Include="Scripts\templateCache.js" />
     <Content Include="Views\AngularTemplate\DatePicker.cshtml" />
     <Content Include="ApplicationInsights.config">
       <TransformOnBuild>true</TransformOnBuild>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <None Include="ApplicationInsights.Debug.config">
       <DependentUpon>ApplicationInsights.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="ApplicationInsights.Dev.config">
       <DependentUpon>ApplicationInsights.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="ApplicationInsights.Release.config">
       <DependentUpon>ApplicationInsights.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Content Include="Content\css\fonts\brankic.eot" />
     <Content Include="Content\css\fonts\brankic.ttf" />
@@ -854,18 +880,18 @@
     <Content Include="Content\videos\motion.webm" />
     <Content Include="Views\AngularTemplate\ContainerTransition.cshtml" />
     <Content Include="Views\AngularTemplate\SubplanHeader.cshtml" />
+    <Content Include="Views\AngularTemplate\MetaControlContainer.cshtml" />
+    <Content Include="Views\AngularTemplate\Fr8Event.cshtml" />
+    <Content Include="Views\AngularTemplate\ControlList.cshtml" />
+    <Content Include="Views\AngularTemplate\Empty.cshtml" />
+    <Content Include="Views\AngularTemplate\ActivityChooser.cshtml" />
+    <Content Include="Views\AngularTemplate\ActivityChooserSelectDialog.cshtml" />
+    <Content Include="Views\AngularTemplate\ActivityChooserConfigureDialog.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
-    <Content Include="Scripts\templateCache.js" />
-    <Content Include="_PowerShellScripts\RunIntegrationTests-DEV.ps1" />
-    <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-DEV.ps1" />
-    <Content Include="_PowerShellScripts\DEV-job-run.cmd" />
-    <Content Include="_PowerShellScripts\DEV-settings.job" />
-    <Content Include="_PowerShellScripts\RunIntegrationTests-MASTER.ps1" />
-    <Content Include="_PowerShellScripts\MASTER-job-run.cmd" />
-    <Content Include="_PowerShellScripts\MASTER-settings.job" />
-    <Content Include="_PowerShellScripts\DeployAzureWebJob-HealthMonitor-MASTER-Staging.ps1" />
-    <Content Include="_PowerShellScripts\KillProcess.ps1" />
+    <Content Include="_PowerShellScripts\HM-job-run.cmd" />
+    <Content Include="_PowerShellScripts\HM-job-settings.job" />
+    <Content Include="_PowerShellScripts\Deploy-HMAsWebJob.ps1" />
     <Content Include="_PowerShellScripts\SetCloudServiceSize.ps1" />
     <Content Include="_PowerShellScripts\CloneDatabase.ps1" />
     <Content Include="_PowerShellScripts\UpdateTerminalHostnameInDb.ps1" />
@@ -876,21 +902,29 @@
     <Content Include="_PowerShellScripts\Set-CloudServiceSettings.ps1" />
     <Content Include="_PowerShellScripts\Wait-Database.ps1" />
     <Content Include="_PowerShellScripts\Run-IntegrationTests.ps1" />
-    <Content Include="_PowerShellScripts\Set-HubApiBaseUrl.ps1" />
+    <Content Include="_PowerShellScripts\Set-HealthMonitorSettings.ps1" />
     <Content Include="_PowerShellScripts\Upload-File.ps1" />
+    <Content Include="_PowerShellScripts\Start-StagingWebsite.ps1" />
+    <Content Include="_PowerShellScripts\Stop-StagingWebsite.ps1" />
+    <Content Include="_PowerShellScripts\Start-Sleep.ps1" />
+    <Content Include="_PowerShellScripts\Update-TerminalHostnameInDb.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\ActivityChooser.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\ControlList.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\MetaControlContainer.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ContainerTransition.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DatePicker.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\Fr8Event.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\SourceableCriteria.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\CrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TimePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamCrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Resizable.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\ActivityResize.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\SubplanHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Validators\ManifestDescriptionValidators.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\DateTimeFormatter.ts" />
@@ -912,6 +946,7 @@
     <TypeScriptCompile Include="Scripts\app\interfaces\ISolutionDocumentationService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\SolutionDocumentationService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UpstreamExtractor.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\ActionPicker.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamFieldChooser.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />
@@ -923,14 +958,12 @@
     <TypeScriptCompile Include="Scripts\app\model\TerminalDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ManageAuthTokenService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\TerminalService.ts" />
-    <TypeScriptCompile Include="Scripts\tests\unit\RouteDetailsControllerTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\PlanDetailsControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamDataChooser.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamDataChooser.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\directives\controls\fixture_UpstreamDataChooser.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\jpattern.ts" />
-    <TypeScriptCompile Include="Scripts\tests\integration\ContainerControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\lib\jpattern.d.ts" />
-    <TypeScriptCompile Include="Scripts\tests\integration\ContainerControllerTests.ts" />
     <Content Include="Views\AngularTemplate\AccountDetails.cshtml" />
     <Content Include="Views\AngularTemplate\AccountList.cshtml" />
     <Content Include="Views\AngularTemplate\ConfigurationControl.cshtml" />
@@ -952,13 +985,12 @@
     <Content Include="Views\AngularTemplate\PageHead.cshtml" />
     <Content Include="Views\AngularTemplate\PaneConfigureAction.cshtml" />
     <Content Include="Views\AngularTemplate\PaneSelectActionModal.cshtml" />
-    <Content Include="Views\AngularTemplate\RouteBuilder.cshtml" />
+    <Content Include="Views\AngularTemplate\PlanBuilder.cshtml" />
     <Content Include="Views\AngularTemplate\QueryBuilderWidget.cshtml" />
     <Content Include="Views\AngularTemplate\RadioButtonOption.cshtml" />
-    <Content Include="Views\AngularTemplate\RouteDetails.cshtml" />
-    <Content Include="Views\AngularTemplate\RouteForm.cshtml" />
-    <Content Include="Views\AngularTemplate\RouteList.cshtml" />
-    <Content Include="Views\AngularTemplate\RoutingControl.cshtml" />
+    <Content Include="Views\AngularTemplate\PlanDetails.cshtml" />
+    <Content Include="Views\AngularTemplate\PlanForm.cshtml" />
+    <Content Include="Views\AngularTemplate\PlanList.cshtml" />
     <Content Include="Views\AngularTemplate\ShowFacts.cshtml" />
     <Content Include="Views\AngularTemplate\ShowIncidents.cshtml" />
     <Content Include="Views\AngularTemplate\TextArea.cshtml" />
@@ -980,7 +1012,7 @@
     <Content Include="_PowerShellScripts\CheckWebSettings.ps1" />
     <Content Include="Service References\Application Insights\ConnectedService.json" />
     <Content Include="Views\Welcome\Index.cshtml" />
-    <Content Include="Views\AngularTemplate\RunRouteButton.cshtml" />
+    <Content Include="Views\AngularTemplate\RunPlanButton.cshtml" />
     <Content Include="Views\AngularTemplate\ManageAuthTokens.cshtml" />
     <None Include="Properties\PublishProfiles\fr8dev - FTP.pubxml" />
     <None Include="Properties\PublishProfiles\fr8dev - Web Deploy.pubxml" />
@@ -1009,9 +1041,13 @@
     <Content Include="Views\AngularTemplate\QueryBuilderCondition.cshtml" />
     <Content Include="Views\AngularTemplate\SourceableCriteria.cshtml" />
     <Content Include="Views\AngularTemplate\CrateChooser.cshtml" />
-    <Content Include="Views\AngularTemplate\_RouteReportList.cshtml" />
-    <Content Include="Views\AngularTemplate\RouteReportList.cshtml" />
+    <Content Include="Views\AngularTemplate\_PlanReportList.cshtml" />
+    <Content Include="Views\AngularTemplate\PlanReportList.cshtml" />
     <Content Include="Views\AngularTemplate\TimePicker.cshtml" />
+    <Content Include="Views\Shared\_HomeNavNew.cshtml" />
+    <Content Include="Views\Shared\_HomePageNew.cshtml" />
+    <Content Include="Views\AngularTemplate\PlanBuilder_KioskMode.cshtml" />
+    <Content Include="Views\AngularTemplate\ActivityStream.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -1024,9 +1060,9 @@
     <TypeScriptCompile Include="Scripts\app\controllers\ContainerDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\NotifierController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\PayloadFormController.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\RouteActionsDialogController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\PlanActionsDialogController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SelectActionController.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\RouteDetailsController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\PlanDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ReportFactController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ReportIncidentController.ts" />
     <Content Include="Scripts\lib\jquery.blockui.min.js" />
@@ -1037,14 +1073,13 @@
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionListController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Counter.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Duration.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\RunRouteButton.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\ManageRoute.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\RunPlanButton.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\ManagePlan.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\QueryBuilder.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextSource.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FieldList.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\MappingPane.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\RoutingControl.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextArea.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextBlock.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\AccountDetailsController.ts" />
@@ -1058,7 +1093,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\PaneSelectAction\PaneSelectAction.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\ActionNameFormatter.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\ContainerState.ts" />
-    <TypeScriptCompile Include="Scripts\app\filters\RouteState.ts" />
+    <TypeScriptCompile Include="Scripts\app\filters\PlanState.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IContainer.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IManageFile.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IUser.ts" />
@@ -1071,17 +1106,13 @@
     <TypeScriptCompile Include="Scripts\app\model\FileDescriptionDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ControlsList.ts" />
     <Content Include="Scripts\modernizr-2.7.2.js" />
-    <Content Include="Scripts\RouteBuilder\core.js" />
-    <Content Include="Scripts\RouteBuilder\pb-fabricjs-img.js" />
-    <Content Include="Scripts\RouteBuilder\pb-resources.js" />
-    <Content Include="Scripts\RouteBuilder\pb-widget.js" />
     <TypeScriptCompile Include="Scripts\app\model\ActivityTemplate.ts" />
     <TypeScriptCompile Include="Scripts\app\model\FieldMappingSettings.ts" />
     <TypeScriptCompile Include="Scripts\app\model\IncidentDTO.ts" />
-    <TypeScriptCompile Include="Scripts\app\model\Subroute.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\SubPlan.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ContainerDTO.ts" />
-    <TypeScriptCompile Include="Scripts\app\model\Route.ts" />
-    <TypeScriptCompile Include="Scripts\app\model\RouteBuilderState.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\Plan.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\PlanBuilderState.ts" />
     <TypeScriptCompile Include="Scripts\app\model\User.ts" />
     <TypeScriptCompile Include="Scripts\app\model\WebServiceActionSetDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\WebServiceDTO.ts" />
@@ -1094,14 +1125,11 @@
     <TypeScriptCompile Include="Scripts\app\services\UIHelperService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UserService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\WebServiceService.ts" />
-    <TypeScriptCompile Include="Scripts\tests\integration\ActionControllerTests.ts" />
     <Content Include="Scripts\respond.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.js" />
     <Content Include="Scripts\respond.matchmedia.addListener.min.js" />
     <Content Include="Scripts\respond.min.js" />
-    <TypeScriptCompile Include="Scripts\tests\integration\DockyardAccountControllerTests\DockyardAccountControllerTests.ts" />
-    <TypeScriptCompile Include="Scripts\tests\integration\TerminalDocuSignTests.ts" />
-    <TypeScriptCompile Include="Scripts\tests\integration\RouteControllerTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\integration\PlanControllerTests.ts" />
     <Content Include="Scripts\tests\.gitignore" />
     <Content Include="Views\Shared\_AngularAppScripts.cshtml" />
     <TypeScriptCompile Include="Scripts\app\directives\indiClick.ts" />
@@ -1118,7 +1146,7 @@
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\DurationTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\TextAreaTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\PaneConfigurationActionTests.ts" />
-    <TypeScriptCompile Include="Scripts\tests\unit\RouteBuilderControllerTests.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\PlanBuilderControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\services\CrateHelperTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_FieldDTO.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionDTO.ts" />
@@ -1127,18 +1155,18 @@
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ActionTemplate.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\fixture_ContainerDTO.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\mocks.ts" />
-    <TypeScriptCompile Include="Scripts\tests\utils\fixture_RouteBuilder.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\fixture_PlanBuilder.ts" />
     <Content Include="Scripts\_legacy\about-page.js" />
     <TypeScriptCompile Include="Scripts\app\app.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\RouteBuilderController.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\RouteListController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\PlanBuilderController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\PlanListController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\EventArgsBase.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FilterPane.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\PaneConfigureAction.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\Messages.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\PaneWorkflowDesigner.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\QueryBuilderWidget.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\RouteFormController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\PlanFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\directives.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IAppRootScope.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\ICriteria.ts" />
@@ -1150,8 +1178,8 @@
     <TypeScriptCompile Include="Scripts\app\model\Field.ts" />
     <TypeScriptCompile Include="Scripts\app\services\LocalIdentityGenerator.ts" />
     <TypeScriptCompile Include="Scripts\app\services\StringService.ts" />
-    <TypeScriptCompile Include="Scripts\app\interfaces\IRouteBuilder.ts" />
-    <TypeScriptCompile Include="Scripts\app\services\RouteBuilderService.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IPlanBuilder.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\PlanBuilderService.ts" />
     <Content Include="Scripts\lib\jquery-ui.js" />
     <Content Include="Scripts\_legacy\custom.js" />
     <Content Include="Scripts\_legacy\main.js" />
@@ -3122,9 +3150,6 @@
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\skins\square\grey.css" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\skins\square\grey.png" />
     <Content Include="Content\templates\metronic\assets\global\plugins\icheck\skins\square\orange%402x.png" />
-    <Content Include="Scripts\RouteBuilder\pb-consts.js" />
-    <Content Include="Scripts\RouteBuilder\pb-fabricjs.js" />
-    <Content Include="Scripts\RouteBuilder\pb-interfaces.js" />
     <Content Include="Scripts\_references.js" />
     <Content Include="Views\Action\ShowAllActionLists.html" />
     <Content Include="Views\Action\ShowAllActions.html" />
@@ -4344,12 +4369,12 @@
     <Content Include="Views\User\LearnHowToUseKwasant.cshtml" />
     <Content Include="Views\Shared\403.cshtml" />
     <Content Include="Views\AngularTemplate\TextSource.cshtml" />
-    <Content Include="Views\AngularTemplate\_RouteList.cshtml" />
+    <Content Include="Views\AngularTemplate\_PlanList.cshtml" />
     <Content Include="Views\AngularTemplate\SolutionList.cshtml" />
     <Content Include="Views\AuthenticationCallback\Error.cshtml" />
     <Content Include="Views\AngularTemplate\WebServiceList.cshtml" />
     <Content Include="Views\AngularTemplate\QueryBuilder.cshtml" />
-    <Content Include="Views\AngularTemplate\ManageRoute.cshtml" />
+    <Content Include="Views\AngularTemplate\ManagePlan.cshtml" />
     <Content Include="Views\AngularTemplate\Duration.cshtml" />
     <Content Include="Views\AngularTemplate\Counter.cshtml" />
     <Content Include="Views\AngularTemplate\FindObjects.cshtml" />

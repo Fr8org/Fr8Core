@@ -7,6 +7,7 @@ module dockyard.services {
         setSiblingStatus(action: model.ActivityDTO, allowSiblings: boolean): void;
         setJumpTargets(action: model.ActivityDTO, targets: Array<model.ActivityJumpTarget>): void;
         resetLayout(): void;
+        addEmptyProcessedGroup(startingId): model.ActionGroup[];
     }
 
     export class LayoutService implements ILayoutService {
@@ -19,6 +20,13 @@ module dockyard.services {
         public subplans: Array<Array<model.ActionGroup>> = [];
 
         constructor(private CrateHelper: services.CrateHelper) {
+        }
+
+        addEmptyProcessedGroup(parentId: string) {
+            var processedGroups: model.ActionGroup[] = [];
+            processedGroups.push(new model.ActionGroup([], null, parentId));
+            this.subplans.push(processedGroups);
+            return processedGroups;
         }
 
         setJumpTargets(action: model.ActivityDTO, targets: Array<model.ActivityJumpTarget>) {
@@ -35,7 +43,7 @@ module dockyard.services {
             var processedGroups: model.ActionGroup[] = [];
 
             var actionGroups = _.toArray<model.ActivityDTO[]>(
-                _.groupBy<model.ActivityDTO>(actions, (action) => action.parentRouteNodeId)
+                _.groupBy<model.ActivityDTO>(actions, (action) => action.parentPlanNodeId)
             );
 
             if (actions.length) {
@@ -148,7 +156,7 @@ module dockyard.services {
 
         private findChildGroup(actionGroups: model.ActivityDTO[][], parentId: string): model.ActivityDTO[] {
             return _.find(actionGroups, (group: model.ActivityDTO[]) => {
-                return group[0].parentRouteNodeId === parentId;
+                return group[0].parentPlanNodeId === parentId;
             });
         }
 

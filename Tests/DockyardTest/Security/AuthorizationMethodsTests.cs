@@ -152,7 +152,7 @@ namespace DockyardTest.Security
                     Id = FixtureData.GetTestGuidById(23),
                     Description = "HealthDemo Integration Test",
                     Name = "StandardEventTesting",
-                    RouteState = RouteState.Active,
+                    PlanState = PlanState.Active,
                     Fr8Account = tokenDO.UserDO
                 };
                 uow.PlanRepository.Add(planDO);
@@ -160,8 +160,8 @@ namespace DockyardTest.Security
 
                 var activityDO = new ActivityDO()
                 {
-                    ParentRouteNode = planDO,
-                    ParentRouteNodeId = planDO.Id,
+                    ParentPlanNode = planDO,
+                    ParentPlanNodeId = planDO.Id,
                     Id = FixtureData.GetTestGuidById(1),
                     ActivityTemplateId = activityTemplateDO.Id,
                     ActivityTemplate = activityTemplateDO,
@@ -206,7 +206,7 @@ namespace DockyardTest.Security
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    RouteState = RouteState.Active,
+                    PlanState = PlanState.Active,
                     ChildNodes = { activityDO }
                 });
                 
@@ -236,7 +236,7 @@ namespace DockyardTest.Security
             //verify that the post call is made 
             restClientMock.Verify(
                 client => client.PostAsync<CredentialsDTO>(
-                new Uri("http://" + activityTemplateDO.Terminal.Endpoint + "/authentication/internal"),
+                new Uri(activityTemplateDO.Terminal.Endpoint + "/authentication/internal"),
                 It.Is < CredentialsDTO >(it=> it.Username ==  credentialsDTO.Username && 
                                               it.Password == credentialsDTO.Password &&
                                               it.Domain == credentialsDTO.Domain), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()), Times.Exactly(1));
@@ -270,7 +270,7 @@ namespace DockyardTest.Security
 
             //verify that the post call is made 
             restClientMock.Verify(
-                client => client.PostAsync<ExternalAuthenticationDTO>(new Uri("http://" + terminalDO.Endpoint + "/authentication/token"),
+                client => client.PostAsync<ExternalAuthenticationDTO>(new Uri(terminalDO.Endpoint + "/authentication/token"),
                 externalAuthenticationDTO, It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()), Times.Exactly(1));
 
             restClientMock.VerifyAll();
@@ -298,7 +298,7 @@ namespace DockyardTest.Security
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    RouteState = RouteState.Active,
+                    PlanState = PlanState.Active,
                     ChildNodes = { activityDO }
                 });
                 uow.SaveChanges();
@@ -312,7 +312,7 @@ namespace DockyardTest.Security
             //verify that the post call is made 
             restClientMock.Verify(
                 client => client.PostAsync(
-                    new Uri("http://" + tokenDO.Terminal.Endpoint + "/authentication/initial_url"), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()
+                    new Uri(tokenDO.Terminal.Endpoint + "/authentication/initial_url"), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()
                 ), 
                 Times.Exactly(1)
             );
@@ -348,7 +348,7 @@ namespace DockyardTest.Security
                    uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    RouteState = RouteState.Active,
+                    PlanState = PlanState.Active,
                     ChildNodes = { activityDO }
                 });
 
@@ -385,7 +385,7 @@ namespace DockyardTest.Security
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name="name",
-                    RouteState = RouteState.Active,
+                    PlanState = PlanState.Active,
                     ChildNodes = { activityDO }
                 });
 

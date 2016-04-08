@@ -50,7 +50,7 @@ jQuery( function($){
 // change this one to have it demo main nav bar above the fold - logo-f8.svg is the turq one
 	function setNavbarTransparent() {
 		$('.navbar').removeClass('navbar-light');
-		$('.navbar-brand img').attr('src', '/Content/img/dockyard_logo.png');
+		$('.navbar-brand img').attr('src', '/Content/img/dockyard_logo_white.png');
 	}
 
 	// hide collapsible menu
@@ -62,12 +62,14 @@ jQuery( function($){
 
 	$('#main-nav').localScroll({
 		duration: 1000,
-		easing: 'easeInOutExpo'
+		easing: 'easeInOutExpo',
+        offset: -96
 	});
 
 	$('.hero-buttons').localScroll({
 		duration: 1000,
-		easing: 'easeInOutExpo'
+		easing: 'easeInOutExpo',
+        offset: -96
 	});
 
 

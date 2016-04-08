@@ -124,23 +124,33 @@ namespace terminalFr8Core.Actions
             var myLoop = operationsCrate.Loops.FirstOrDefault(l => l.Id == loopId);
             var currentLoopIndex = myLoop.Index;
 
-            Object[] dataList = null;
             //find our list data that we will iterate
-            dataList = crateToProcess.IsKnownManifest ? Fr8ReflectionHelper.FindFirstArray(crateToProcess.Get()) : FindFirstArray(crateToProcess.GetRaw());
+            var dataListSize = GetDataListSize(crateToProcess);
 
-            if (dataList == null)
+            if (dataListSize == null)
             {
                 Error(curPayloadDTO, "Unable to find a list in specified crate with Manifest Type: \"" + crateToProcess.ManifestType.Type + "\" and Label: \"" + crateToProcess.Label + "\"", ActivityErrorCode.PAYLOAD_DATA_MISSING);
                 throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING);
             }
 
             //check if we need to end this loop
-            if (currentLoopIndex > dataList.Length - 1)
+            if (currentLoopIndex > dataListSize - 1)
             {
                 return true;
             }
 
             return false;
+        }
+
+        internal static int? GetDataListSize(Crate crateToProcess)
+        {
+            var tableData = crateToProcess.ManifestType.Id == (int)MT.StandardTableData ? crateToProcess.Get<StandardTableDataCM>() : null;
+            if (tableData != null)
+            {
+                return tableData.FirstRowHeaders ? Math.Max(0, tableData.Table.Count - 1) : tableData.Table.Count;
+            }
+            var array = crateToProcess.IsKnownManifest ? Fr8ReflectionHelper.FindFirstArray(crateToProcess.Get()) : FindFirstArray(crateToProcess.GetRaw());
+            return array?.Length;
         }
 
         private Crate FindCrateToProcess(ActivityDO curActivityDO, ICrateStorage payloadStorage)
@@ -243,7 +253,9 @@ namespace terminalFr8Core.Actions
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
-                crateStorage.Add(await GetUpstreamManifestTypes(curActivityDO));
+
+                // TODO: remove, FR-2691.
+                // crateStorage.Add(await GetUpstreamManifestTypes(curActivityDO));
             }
 
             return curActivityDO;
@@ -264,11 +276,13 @@ namespace terminalFr8Core.Actions
             var crateChooser = (CrateChooser)controlsMS.Controls.Single(x => x.Type == ControlTypes.CrateChooser && x.Name == "Available_Crates");
 
             //refresh upstream manifest types
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.RemoveByLabel("Available Manifests");
-                crateStorage.Add(await GetUpstreamManifestTypes(curActivityDO));
-            }
+
+            // TODO: remove, FR-2691.
+            // using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            // {
+            //     crateStorage.RemoveByLabel("Available Manifests");
+            //     crateStorage.Add(await GetUpstreamManifestTypes(curActivityDO));
+            // }
 
             
 

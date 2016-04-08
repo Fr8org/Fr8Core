@@ -12,7 +12,7 @@ gulp.task('concattemplates', function () {
     return gulp.src(['Views/AngularTemplate/**/*.cshtml',
         /*we are excluding those files - because they contain razor code*/
         '!Views/AngularTemplate/TerminalList.cshtml',
-        '!Views/AngularTemplate/RouteList.cshtml',
+        '!Views/AngularTemplate/PlanList.cshtml',
         '!Views/AngularTemplate/MyAccountPage.cshtml',
         '!Views/AngularTemplate/Header.cshtml',
         '!Views/AngularTemplate/ChangePassword.cshtml',
@@ -36,12 +36,12 @@ gulp.task('compile_js', function () {
         'Scripts/app/model/Condition.js',
         'Scripts/app/model/Criteria.js',
         'Scripts/app/model/Field.js',
-        'Scripts/app/model/Subroute.js',
+        'Scripts/app/model/SubPlan.js',
         'Scripts/app/model/ControlsList.js',
         'Scripts/app/model/CrateStorage.js',
         'Scripts/app/model/FieldMappingSettings.js',
-        'Scripts/app/model/Route.js',
-        'Scripts/app/model/RouteBuilderState.js',
+        'Scripts/app/model/Plan.js',
+        'Scripts/app/model/PlanBuilderState.js',
         'Scripts/app/model/User.js',
         'Scripts/app/model/ContainerDTO.js',
         'Scripts/app/model/ActionGroup.js',
@@ -55,7 +55,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/CrateHelper.js',
         'Scripts/app/services/AuthService.js',
         'Scripts/app/services/ConfigureTrackerService.js',
-        'Scripts/app/services/RouteBuilderService.js',
+        'Scripts/app/services/PlanBuilderService.js',
         'Scripts/app/services/StringService.js',
         'Scripts/app/services/LocalIdentityGenerator.js',
         'Scripts/app/services/ReportService.js',
@@ -72,7 +72,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/ManifestRegistryService.js',
         'Scripts/app/services/SolutionDocumentationService.js',
         'Scripts/app/services/UpstreamExtractor.js',
-        'Scripts/app/filters/RouteState.js',
+        'Scripts/app/filters/PlanState.js',
         'Scripts/app/filters/ContainerState.js',
         'Scripts/app/filters/FilterByTag.js',
         'Scripts/app/directives/EventArgsBase.js',
@@ -86,6 +86,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/PaneSelectAction/PaneSelectAction.js',
         'Scripts/app/directives/DesignerHeader/DesignerHeader.js',
         'Scripts/app/directives/SubplanHeader.js',
+        'Scripts/app/directives/Controls/ActivityChooser.js',
         'Scripts/app/directives/Controls/FilePicker.js',
         'Scripts/app/directives/Controls/RadioButtonGroup.js',
         'Scripts/app/directives/Controls/DropDownListBox.js',
@@ -95,8 +96,8 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/FilterPane.js',
         'Scripts/app/directives/QueryBuilderWidget.js',
         'Scripts/app/directives/Controls/MappingPane.js',
-        'Scripts/app/directives/Controls/ManageRoute.js',
-        'Scripts/app/directives/Controls/RunRouteButton.js',
+        'Scripts/app/directives/Controls/ManagePlan.js',
+        'Scripts/app/directives/Controls/RunPlanButton.js',
         'Scripts/app/directives/Controls/FieldList.js',
         'Scripts/app/directives/Controls/QueryBuilder.js',
         'Scripts/app/directives/Controls/TextSource.js',
@@ -111,19 +112,21 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/UpstreamCrateChooser.js',
         'Scripts/app/directives/Controls/CrateChooser.js',
         'Scripts/app/directives/Controls/ContainerTransition.js',
+        'Scripts/app/directives/Controls/MetaControlContainer.js',
+        'Scripts/app/directives/Controls/ControlList.js',
         'Scripts/app/directives/LongAjaxCursor.js',
         'Scripts/app/directives/Validators/ManifestDescriptionValidators.js',
         'Scripts/app/directives/ActionPicker.js',
-        'Scripts/app/directives/Resizable.js',
+        'Scripts/app/directives/ActivityResize.js',
         'Scripts/app/filters/ActionNameFormatter.js',
         'Scripts/app/filters/DateTimeFormatter.js',
-        'Scripts/app/controllers/RouteBuilderController.js',
+        'Scripts/app/controllers/PlanBuilderController.js',
         'Scripts/app/controllers/SandboxController.js',
-        'Scripts/app/controllers/RouteFormController.js',
-        'Scripts/app/controllers/RouteListController.js',
+        'Scripts/app/controllers/PlanFormController.js',
+        'Scripts/app/controllers/PlanListController.js',
         'Scripts/app/controllers/ReportFactController.js',
         'Scripts/app/controllers/ReportIncidentController.js',
-        'Scripts/app/controllers/RouteDetailsController.js',
+        'Scripts/app/controllers/PlanDetailsController.js',
         'Scripts/app/controllers/ManageFileListController.js',
         'Scripts/app/controllers/FileDetailsController.js',
         'Scripts/app/controllers/AccountListController.js',
@@ -139,7 +142,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/TerminalFormController.js',
         'Scripts/app/controllers/SolutionListController.js',
         'Scripts/app/controllers/NotifierController.js',
-        'Scripts/app/controllers/RouteActionsDialogController.js',
+        'Scripts/app/controllers/PlanActionsDialogController.js',
         'Scripts/app/controllers/FindObjectsController.js',
         'Scripts/app/controllers/FindObjectsResultsController.js',
         'Scripts/app/controllers/ManageAuthTokenController.js',
@@ -150,7 +153,8 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/ManifestRegistryListController.js',
         'Scripts/app/controllers/ManifestRegistryFormController.js',
         'Scripts/app/controllers/SolutionDocumentationController.js',
-        'Scripts/app/controllers/ManageUserController.js'
+        'Scripts/app/controllers/ManageUserController.js',
+        'Scripts/app/directives/Controls/Fr8Event.js'
     ])
         .pipe(sourcemaps.init())
         .pipe(concat('_compiled.js'))
@@ -209,6 +213,11 @@ gulp.task('cdnizer-css', ['bower'], function () {
                 file: '~/bower_components/jquery-ui/themes/smoothness/jquery-ui.min.css',
                 package: 'jquery-ui',
                 cdn: '//cdnjs.cloudflare.com/ajax/libs/jqueryui/${ version }/jquery-ui.min.css'
+            },
+            {
+                file: '~/bower_components/angular-material/angular-material.min.css',
+                package: 'angular-material',
+                cdn: '//ajax.googleapis.com/ajax/libs/angular_material/${ version }/angular-material.min.css'
             }
         ]))
         .pipe(gulp.dest('./Views/Shared/CDN'));
@@ -352,6 +361,16 @@ gulp.task('cdnizer-js', ['bower'], function () {
             {
                 file: '~/Scripts/lib/jquery.blockui.min.js',
                 cdn: '//cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js'
+            },
+            {
+                file: '~/bower_components/angular-aria/angular-aria.min.js',
+                package: 'angular-aria',
+                cdn: '//ajax.googleapis.com/ajax/libs/angularjs/${ version }/angular-aria.min.js'
+            },
+            {
+                file: '~/bower_components/angular-material/angular-material.js',
+                package: 'angular-material',
+                cdn: '//ajax.googleapis.com/ajax/libs/angular_material/${ version }/angular-material.min.js'
             }
         ]))
         .pipe(gulp.dest('./Views/Shared/CDN'));

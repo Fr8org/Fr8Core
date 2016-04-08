@@ -3107,6 +3107,7 @@ Form Layouts
 /* Control Label */
 .control-label {
   margin-top: 1px;
+  margin-bottom: 1px;
 }
 .control-label .required {
   color: #e02222;
@@ -13829,7 +13830,6 @@ Transparent Button
   background: #fbfbfb none repeat scroll 0 0;
   border: 1px solid #ddd;
   float: left;
-  margin-bottom: 30px;
   width: 100%;
 }
 #inner-tab-content table.dataTable.no-footer {

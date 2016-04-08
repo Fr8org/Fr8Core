@@ -16,6 +16,8 @@ namespace terminalDocuSign
 
         public const string RecipientIsNotValidErrorMessage = "Specified value is not a valid email address";
 
+        public const string DocumentIsNotValidErrorMessage = "New document is not selected";
+
         public static bool AtLeastOneItemExists(DropDownList items)
         {
             return items != null && items.ListItems.Count > 0;
@@ -29,20 +31,6 @@ namespace terminalDocuSign
         public static bool ValueIsSet(TextBox text)
         {
             return !string.IsNullOrWhiteSpace(text?.Value);
-        }
-
-        public static bool EmailIsValid(string email)
-        {
-            email = email ?? string.Empty;
-            try
-            {
-                var mailAddress = new MailAddress(email.Trim());
-                return true;
-            }
-            catch (Exception)
-            {
-                return false;
-            }
         }
     }
 }

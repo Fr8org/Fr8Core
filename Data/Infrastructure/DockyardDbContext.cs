@@ -18,6 +18,7 @@ using Utilities.Configuration.Azure;
 
 namespace Data.Infrastructure
 {
+    [DbConfigurationType(typeof(Fr8DbConfiguration))]
     public class DockyardDbContext : IdentityDbContext<IdentityUser>, IDBContext
     {
         public static string DefaultConnectionStringName
@@ -49,12 +50,15 @@ namespace Data.Infrastructure
         }
 
         public DockyardDbContext()
-            : base(GetConnectionString())
+            : base(GetEFConnectionDetails())
         {
             Database.SetInitializer(new MigrateDatabaseToLatestVersion<DockyardDbContext, Data.Migrations.MigrationConfiguration>());
         }
 
-        private static string GetConnectionString()
+        // IMPORTANT: In order to maintain compatibility with integration tests running on Production-Staging instance, 
+        // always use DockyardDbContext#GetEFConnectionDetails() to get connection details for EF 
+        // and not CloudConfigurationManager directly. 
+        public static string GetEFConnectionDetails()
         {
             //"Fr8.ConnectionString" is a configuration setting defined in terminalWebRole (Azure Cloud Service) 
             //and required to enable connection string management in order to run integration tests in Production/Staging 
@@ -62,7 +66,6 @@ namespace Data.Infrastructure
             string cs = CloudConfigurationManager.AppSettings.GetSetting("Fr8.ConnectionString");
             if (String.IsNullOrEmpty(cs))
             {
-                //Do not change this value! If you want to change the database you connect to, edit your web.config file
                 return "name=" + DefaultConnectionStringName;
             }
             else
@@ -254,6 +257,7 @@ namespace Data.Infrastructure
 
         protected override void OnModelCreating(DbModelBuilder modelBuilder)
         {
+
             modelBuilder.Entity<ContainerDO>().ToTable("Containers");
             modelBuilder.Entity<AttachmentDO>().ToTable("Attachments");
             modelBuilder.Entity<CommunicationConfigurationDO>().ToTable("CommunicationConfigurations");
@@ -282,10 +286,10 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ProfileNodeAncestorsCTE>().ToTable("ProfileNodeAncestorsCTEView");
             modelBuilder.Entity<ProfileNodeDescendantsCTE>().ToTable("ProfileNodeDescendantsCTEView");
             modelBuilder.Entity<ExpectedResponseDO>().ToTable("ExpectedResponses");
-            modelBuilder.Entity<PlanDO>().ToTable("Routes");
+            modelBuilder.Entity<PlanDO>().ToTable("Plans");
             modelBuilder.Entity<ActivityDO>().ToTable("Actions");
             modelBuilder.Entity<ProcessNodeDO>().ToTable("ProcessNodes");
-            modelBuilder.Entity<SubrouteDO>().ToTable("Subroutes");
+            modelBuilder.Entity<SubPlanDO>().ToTable("SubPlans");
             modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
             modelBuilder.Entity<ActivityTemplateDO>().ToTable("ActivityTemplate");
             modelBuilder.Entity<WebServiceDO>().ToTable("WebServices");
@@ -329,12 +333,12 @@ namespace Data.Infrastructure
             // modelBuilder.Entity<ActionDO>()
             //     .Property(p => p.Id).HasDatabaseGeneratedOption(DatabaseGeneratedOption.Identity);
 
-            modelBuilder.Entity<RouteNodeDO>().ToTable("RouteNodes");
+            modelBuilder.Entity<PlanNodeDO>().ToTable("PlanNodes");
 
-            modelBuilder.Entity<RouteNodeDO>()
-                .HasOptional(x => x.ParentRouteNode)
+            modelBuilder.Entity<PlanNodeDO>()
+                .HasOptional(x => x.ParentPlanNode)
                 .WithMany(x => x.ChildNodes)
-                .HasForeignKey(x => x.ParentRouteNodeId)
+                .HasForeignKey(x => x.ParentPlanNodeId)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<TrackingStatusDO>()
@@ -346,12 +350,8 @@ namespace Data.Infrastructure
 
             modelBuilder.Entity<CriteriaDO>().ToTable("Criteria");
             modelBuilder.Entity<FileDO>().ToTable("Files");
-
-            //            modelBuilder.Entity<SubrouteDO>()
-            //               .HasMany<CriteriaDO>(c => c.Criteria)
-            //               .WithOptional(x => x.Subroute)
-            //               .WillCascadeOnDelete(true);
-
+            
+            
             modelBuilder.Entity<AuthorizationTokenDO>()
              .HasRequired(x => x.Terminal)
              .WithMany()
@@ -371,6 +371,11 @@ namespace Data.Infrastructure
                 .HasForeignKey(x => x.WebServiceId)
                 .WillCascadeOnDelete(false);
 
+            modelBuilder.Entity<OrganizationDO>().ToTable("Organizations")
+                .HasMany(x=>x.Fr8Accounts)
+                .WithOptional(x=>x.Organization)
+                .HasForeignKey(x=>x.OrganizationId)
+                .WillCascadeOnDelete(false);
 
             base.OnModelCreating(modelBuilder);
         }

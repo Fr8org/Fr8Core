@@ -1,0 +1,13 @@
+﻿<div ng-controller="PlanDetailsController">
+    <h2>{{ptvm.plan.name}} 
+        <md-button class="md-icon-button" ui-sref="^.planBuilder({ id: id })">
+            <md-icon md-font-icon="fa-edit" class="fa fa-lg" style="margin-top:15px"></md-icon>
+            <md-tooltip md-direction="top">
+                Edit
+            </md-tooltip>
+        </md-button>
+    </h2>
+    
+    
+    <pre>{{ptvm | json}}</pre>
+</div>

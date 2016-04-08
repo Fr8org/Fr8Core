@@ -157,7 +157,7 @@ namespace terminalFr8Core.Actions
             return curActivityDO;
         }
 
-        private async Task<Crate<FieldDescriptionsCM>>
+        /*private async Task<Crate<FieldDescriptionsCM>>
             ExtractUpstreamQueryCrates(ActivityDO activityDO)
         {
             var upstreamCrates = await GetCratesByDirection<StandardQueryCM>(
@@ -172,7 +172,7 @@ namespace terminalFr8Core.Actions
             var crate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
 
             return crate;
-        }
+        }*/
 
         protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
@@ -197,7 +197,7 @@ namespace terminalFr8Core.Actions
                     crateStorage.Add(
                         Crate.FromContent(
                             "Queryable Criteria",
-                            new StandardQueryFieldsCM(GetFieldsByTypeId(selectedObjectId))
+                            new TypedFieldsCM(GetFieldsByTypeId(selectedObjectId))
                         )
                     );
                 }
@@ -405,7 +405,7 @@ namespace terminalFr8Core.Actions
             };
         }
 
-        private IEnumerable<QueryFieldDTO> GetFieldsByTypeId(Guid typeId)
+        private IEnumerable<TypedFieldDTO> GetFieldsByTypeId(Guid typeId)
         {
             var fields = new Dictionary<string, string>();
 
@@ -414,10 +414,10 @@ namespace terminalFr8Core.Actions
 
                 return uow.MultiTenantObjectRepository.ListTypePropertyReferences(typeId).OrderBy(x => x.Name)
                     .Select(x =>
-                        new QueryFieldDTO(
+                        new TypedFieldDTO(
                             x.Name,
                             x.Name,
-                            QueryFieldType.String,
+                            FieldType.String,
                             new TextBox()
                             {
                                 Name = "QueryField_" + x.Name

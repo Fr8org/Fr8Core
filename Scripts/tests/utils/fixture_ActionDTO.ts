@@ -5,10 +5,10 @@ module dockyard.tests.utils.fixtures {
 
     export class ActivityDTO {
 
-        public static newRoute = <interfaces.IRouteVM> {
+        public static newPlan = <interfaces.IPlanVM> {
             name: 'Test',
             description: 'Description',
-            routeState: 1
+            planState: 1
         };
 
         public static configurationControls = <models.ControlsList>{
@@ -23,7 +23,8 @@ module dockyard.tests.utils.fixtures {
                     "fieldLabel": "SQL Connection String",
                     "events": [],
                     "isFocused": false,
-                    "label": null
+                    "label": null,
+                    isHidden: false,
                 },
                 {
                     "type": "textField",

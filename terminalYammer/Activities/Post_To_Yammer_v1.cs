@@ -50,7 +50,16 @@ namespace terminalYammer.Actions
                }));
 
                 Controls.Add((Message = new TextSource("Select Message Field", "Available Fields", "Message")
-                ));
+                {
+                    Source = new FieldSourceDTO()
+                    {
+                        Label = "Available Fields",
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields,
+                        RequestUpstream = true
+                    }
+                }));
+
+                Message.Events.Add(new ControlEvent("onChange", "requestConfig"));
             }
         }
 
@@ -61,9 +70,9 @@ namespace terminalYammer.Actions
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            if (NeedsAuthentication(authTokenDO))
+            if (CheckAuthentication(curActivityDO, authTokenDO))
             {
-                throw new ApplicationException("No AuthToken provided.");
+                return curActivityDO;
             }
 
             return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
@@ -100,27 +109,25 @@ namespace terminalYammer.Actions
 
         public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-
-            CheckAuthentication(authTokenDO);
             var ui = CrateManager.GetStorage(activityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+            var processPayload = await GetPayload(activityDO, containerId);
+
+            if (NeedsAuthentication(authTokenDO))
+            {
+                return NeedsAuthenticationError(processPayload);
+            }
 
             if (ui == null)
             {
                 throw new ApplicationException("Action was not configured correctly");
             }
-            var groupMessageField = GetGroupMessageFields(ui);
+            var groupMessageField = GetGroupMessageFields(ui, CrateManager.GetStorage(processPayload));
 
             ValidateYammerActivity(groupMessageField.GroupID, "No selected group found in activity.");
             ValidateYammerActivity(groupMessageField.Message, "No selected field found in activity.");
 
-            var processPayload = await GetPayload(activityDO, containerId);
-
-            var payloadMessageField = CrateManager.GetFieldByKey<StandardPayloadDataCM>(processPayload.CrateStorage, groupMessageField.Message);
-
-            ValidateYammerActivity(payloadMessageField, "No specified field found in activity.");
-
             await _yammer.PostMessageToGroup(authTokenDO.Token,
-                groupMessageField.GroupID, payloadMessageField);
+                groupMessageField.GroupID, groupMessageField.Message);
 
             return processPayload;
         }
@@ -136,13 +143,17 @@ namespace terminalYammer.Actions
             return crate;
         }
 
-        private static GroupMessage GetGroupMessageFields(StandardConfigurationControlsCM ui)
+        private  GroupMessage GetGroupMessageFields(StandardConfigurationControlsCM ui, ICrateStorage payload)
         {
             var controls = new ActivityUi();
             controls.ClonePropertiesFrom(ui);
+
             var groupMessage = new GroupMessage();
             groupMessage.GroupID = controls.Groups.Value;
-            groupMessage.Message = controls.Message.Value;
+
+            //Quick fix FR-2719
+            var messageField = (TextSource)GetControl(ui, "Message", ControlTypes.TextSource);
+            groupMessage.Message = messageField.GetValue(payload);
 
             return groupMessage;
         }

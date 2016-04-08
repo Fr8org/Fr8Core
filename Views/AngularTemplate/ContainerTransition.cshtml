@@ -5,7 +5,7 @@
                 <label>If the following is true:</label>
             </div>
             <div ng-if="field.transitions.length > 1" class="col-md-2" style="float: right;">
-                <img src="/Content/img/RouteBuilder/delete-icon.png" width="15" height="15" ng-show="!isSingle" ng-click="removeTransition($index)" class="query-builder-delete-button">
+                <img src="/Content/img/PlanBuilder/delete-icon.png" width="15" height="15" ng-show="!isSingle" ng-click="removeTransition($index)" class="query-builder-delete-button">
             </div>
             
         </div>
@@ -24,8 +24,6 @@
             <label class='control-label'>{{transition._dummySecondaryOperationDD.label}}</label>
             <drop-down-list-box current-action="currentAction" field='transition._dummySecondaryOperationDD' change='onTargetChange(transition)'></drop-down-list-box>
         </div>
-
-        @*<button style="margin-top: 5px;" class="btn btn-danger query-builder-add-button" stop-click-propagation>Remove Transition</button>*@
         <hr class="transition-seperator"/>
     </div>
 

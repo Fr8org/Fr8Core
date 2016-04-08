@@ -5,12 +5,17 @@ namespace terminalExcelTests.Fixtures
 {
     public class HealthMonitor_FixtureData
     {
-        public static AuthorizationTokenDTO DocuSign_AuthToken()
+        //public static AuthorizationTokenDTO DocuSign_AuthToken()
+        //{
+        //    return new AuthorizationTokenDTO()
+        //    {
+        //        Token = @"{ ""Email"": ""freight.testing@gmail.com"", ""ApiPassword"": ""SnByDvZJ/fp9Oesd/a9Z84VucjU="" }"
+        //    };
+        //}
+
+        public static string GetFilePath()
         {
-            return new AuthorizationTokenDTO()
-            {
-                Token = @"{ ""Email"": ""freight.testing@gmail.com"", ""ApiPassword"": ""SnByDvZJ/fp9Oesd/a9Z84VucjU="" }"
-            };
+            return "https://yardstore1.blob.core.windows.net/default-container-dev/EmailList.xlsx";
         }
 
         public static ActivityTemplateDTO Load_Table_Data_v1_ActivityTemplate()
@@ -18,7 +23,7 @@ namespace terminalExcelTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = 1,
-                Name = "Load_Table_Data_TEST",
+                Name = "Load_Excel_File_TEST",
                 Version = "1"
             };
         }
@@ -31,8 +36,7 @@ namespace terminalExcelTests.Fixtures
             {
                 Id = guid,
                 Label = "Load Table Data",
-                AuthToken = DocuSign_AuthToken(),
-                ActivityTemplate = activityTemplate
+                ActivityTemplate = activityTemplate,
             };
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };

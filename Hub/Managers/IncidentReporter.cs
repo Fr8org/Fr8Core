@@ -56,6 +56,24 @@ namespace Hub.Managers
             EventManager.EventContainerFailed += ContainerFailed;
             EventManager.EventUnexpectedError += UnexpectedError;
             EventManager.PlanActivationFailedEvent += PlanActivationFailed;
+            EventManager.EventMultipleMonitorAllDocuSignEventsPlansPerAccountArePresent += EventManager_EventMultipleMonitorAllDocuSignEventsPlansPerAccountArePresent;
+        }
+
+        public void EventManager_EventMultipleMonitorAllDocuSignEventsPlansPerAccountArePresent(string external_email)
+        {
+            var incident = new IncidentDO
+            {
+                CustomerId = _sercurity.GetCurrentUser(),
+                Data = string.Join(
+                   "Multiple Monitor_All_DocuSign_Events plans were created for one DocuSign account: ", external_email
+               ),
+                PrimaryCategory = "Error",
+                SecondaryCategory = "Unexpected",
+                Component = "Terminal",
+                Activity = "Unexpected Error"
+            };
+
+            SaveAndLogIncident(incident);
         }
 
         private void UnexpectedError(Exception ex)
@@ -68,8 +86,8 @@ namespace Hub.Managers
                     ex.Message,
                     ex.StackTrace ?? ""
                 ),
-                PrimaryCategory = "Error",
-                SecondaryCategory = "Unexpected",
+                PrimaryCategory = "Terminal",
+                SecondaryCategory = "Authentication",
                 Component = "Hub",
                 Activity = "Unexpected Error"
             };
@@ -84,7 +102,7 @@ namespace Hub.Managers
                 CustomerId = "unknown",
                 Data = "Plan activation failed, plan.Id = " + plan.Id.ToString()
                     + ", plan.Name = " + plan.Name
-                    + ", plan.RouteState = " + plan.RouteState.ToString()
+                    + ", plan.PlanState = " + plan.PlanState.ToString()
                     + ", reason = " + reason,
                 PrimaryCategory = "Plan",
                 SecondaryCategory = "Activation",

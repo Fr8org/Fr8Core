@@ -26,12 +26,12 @@ namespace Hub.Services
 
         // Declarations
 
-        private readonly IRouteNode _activity;
+        private readonly IPlanNode _activity;
         private readonly ICrateManager _crate;
 
         public Container()
         {
-            _activity = ObjectFactory.GetInstance<IRouteNode>();
+            _activity = ObjectFactory.GetInstance<IPlanNode>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
 
@@ -59,7 +59,14 @@ namespace Hub.Services
             using (var crateStorage = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
             {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Null);
+
+                bool isRequestSuspend = operationalState.CurrentActivityResponse != null
+                    && operationalState.CurrentActivityResponse.Type == ActivityResponse.RequestSuspend.ToString();
+
+                if (!isRequestSuspend)
+                {
+                    operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Null);
+                }
             }
 
             uow.SaveChanges();
@@ -68,45 +75,6 @@ namespace Hub.Services
         public List<ContainerDO> LoadContainers(IUnitOfWork uow, PlanDO plan)
         {
             return uow.ContainerRepository.GetQuery().Where(x => x.PlanId == plan.Id).ToList();
-        }
-
-        private async Task ProcessCurrentActivityResponse(IUnitOfWork uow, ContainerDO curContainerDo, ActivityResponseDTO response)
-        {
-            //extract the type value from the activity response
-            ActivityResponse activityResponse = ActivityResponse.Null;
-            if (response != null) Enum.TryParse(response.Type, out activityResponse);
-
-            switch (activityResponse)
-            {
-                case ActivityResponse.ExecuteClientActivity:
-                case ActivityResponse.Success:
-                case ActivityResponse.ReProcessChildren:
-                case ActivityResponse.Null://let's assume this is success for now
-                case ActivityResponse.JumpToActivity:
-                case ActivityResponse.JumpToSubplan:
-
-                    break;
-                case ActivityResponse.RequestSuspend:
-                    curContainerDo.ContainerState = ContainerState.Pending;
-                    break;
-
-                case ActivityResponse.Error:
-                    //TODO retry activity execution until 3 errors??
-                    //so we are able to show the specific error that is embedded inside the container we are sending back that container to client
-                    ErrorDTO error = response.TryParseErrorDTO(out error) ? error : null;
-                    throw new ErrorResponseException(Mapper.Map<ContainerDO, ContainerDTO>(curContainerDo), error?.Message);
-                case ActivityResponse.RequestTerminate:
-                    //FR-2163 - If action response requests for termination, we make the container as Completed to avoid unwanted errors.
-                    curContainerDo.ContainerState = ContainerState.Completed;
-                    EventManager.ProcessingTerminatedPerActivityResponse(curContainerDo, ActivityResponse.RequestTerminate);
-
-                    break;
-
-                
-
-                default:
-                    throw new Exception("Unknown activity state on activity with id " + curContainerDo.CurrentRouteNodeId);
-            }
         }
 
 
@@ -119,37 +87,47 @@ namespace Hub.Services
         * We traverse this tree in this order a-b-d-E-b-c-f-g-c-a-NULL 
         */
         /// <summary>
-        /// Moves to next Route and returns action state of this new plan
+        /// Moves to next Plan and returns action state of this new plan
         /// </summary>
         /// <param name="uow"></param>
         /// <param name="curContainerDO"></param>
         /// <param name="skipChildren"></param>
-        private ActivityState MoveToNextRoute(IUnitOfWork uow, ContainerDO curContainerDO, bool skipChildren)
+        private ActivityState MoveToNextPlan(IUnitOfWork uow, ContainerDO curContainerDO, bool skipChildren)
         {
             var state = ActivityState.InitialRun;
-            var currentNode = uow.PlanRepository.GetById<RouteNodeDO>(curContainerDO.CurrentRouteNodeId);
+            var currentNode = uow.PlanRepository.GetById<PlanNodeDO>(curContainerDO.CurrentActivityId);
             
-            // we need this to make tests wokring. If we leave currentroutenode not null, MockDB will restore CurrentRouteNodeId. 
+            // we need this to make tests wokring. If we leave currentplannode not null, MockDB will restore CurrentPlanNodeId. 
             // EF should just igone navigational porperty null value if corresponding foreign key is not null.
-            curContainerDO.CurrentRouteNode = null;
+            curContainerDO.CurrentPlanNode = null;
 
             if (skipChildren || currentNode.ChildNodes.Count == 0)
             {
                 var nextSibling = _activity.GetNextSibling(currentNode);
-                if (nextSibling == null)
+                if (currentNode is SubPlanDO && nextSibling is SubPlanDO)
                 {
-                    curContainerDO.CurrentRouteNodeId = currentNode.ParentRouteNode != null ? currentNode.ParentRouteNode.Id : (Guid?)null;
+                    //we should never jump between subplans unless explicitly told
+                    //let's stop here
+                    curContainerDO.CurrentActivityId = null;
                     state = ActivityState.ReturnFromChildren;
                 }
                 else
-                {
-                    curContainerDO.CurrentRouteNodeId = nextSibling.Id;
+                { 
+                    if (nextSibling == null)
+                    {
+                        curContainerDO.CurrentActivityId = currentNode.ParentPlanNode?.Id;
+                        state = ActivityState.ReturnFromChildren;
+                    }
+                    else
+                    {
+                        curContainerDO.CurrentActivityId = nextSibling.Id;
+                    }
                 }
             }
             else
             {
                 var firstChild = _activity.GetFirstChild(currentNode);
-                curContainerDO.CurrentRouteNodeId = firstChild.Id;
+                curContainerDO.CurrentActivityId = firstChild.Id;
             }
 
             uow.SaveChanges();
@@ -166,7 +144,7 @@ namespace Hub.Services
         private async Task<ActivityResponseDTO> ProcessActivity(IUnitOfWork uow, ContainerDO curContainerDO, ActivityState state)
         {
             ResetActivityResponse(uow, curContainerDO);
-            await _activity.Process(curContainerDO.CurrentRouteNodeId.Value, state, curContainerDO);
+            await _activity.Process(curContainerDO.CurrentActivityId.Value, state, curContainerDO);
             return GetCurrentActivityResponse(curContainerDO);
         }
 
@@ -177,7 +155,7 @@ namespace Hub.Services
             {
                 return true;
             }
-            else if (response == ActivityResponse.ReProcessChildren)
+            else if (response == ActivityResponse.ReprocessChildren)
             {
                 return false;
             }
@@ -205,117 +183,144 @@ namespace Hub.Services
             return operationalState != null;
         }
 
-        private Guid? GetFirstActivityOfSubplan(IUnitOfWork uow, ContainerDO curContainerDO, Guid subplanId)
+        private async Task LoadAndRunPlan(IUnitOfWork uow, ContainerDO curContainerDO, ActivityResponseDTO activityResponseDTO)
         {
-            var subplan = uow.PlanRepository.GetById<PlanDO>(curContainerDO.PlanId).Subroutes.FirstOrDefault(s => s.Id == subplanId);
-            return subplan?.ChildNodes.OrderBy(c => c.Ordering).FirstOrDefault()?.Id;
-        }
+            ResponseMessageDTO responseMessage;
+            activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
+            var curPlanId = Guid.Parse((string)responseMessage.Details);
 
-        private async Task LoadAndRunPlan(IUnitOfWork uow, ContainerDO curContainerDO, Guid planId)
-        {
             var plan = ObjectFactory.GetInstance<IPlan>();
-            var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
+
+            var planDO = uow.PlanRepository.GetById<PlanDO>(curPlanId);
             var freshContainer = uow.ContainerRepository.GetByKey(curContainerDO.Id);
 
             var crateStorage = _crate.GetStorage(freshContainer.CrateStorage);
             var operationStateCrate = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
             operationStateCrate.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Null);
-            operationStateCrate.History.Add(new OperationalStateCM.HistoryElement { Description = "Launch Triggered by Container ID "+ curContainerDO.Id });
+            operationStateCrate.History.Add(new OperationalStateCM.HistoryElement { Description = "Launch Triggered by Container ID " + curContainerDO.Id });
 
             var payloadCrates = crateStorage.AsEnumerable().ToArray();
-            await plan.Run(uow, planDO, payloadCrates);
+
+            plan.Enqueue(planDO.Id, payloadCrates);
         }
 
         public async Task Run(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             if (curContainerDO == null)
+            {
                 throw new ArgumentNullException("ContainerDO is null");
-
-            //if payload already has operational state create we shouldn't create another
-            if (!HasOperationalStateCrate(curContainerDO))
-            {
-                AddOperationalStateCrate(uow, curContainerDO);
             }
-
-            curContainerDO.ContainerState = ContainerState.Executing;
-            uow.SaveChanges();
-
-            if (curContainerDO.CurrentRouteNodeId == null)
+            
+            try
             {
-                throw new ArgumentNullException("CurrentActivity is null. Cannot execute CurrentActivity");
-            }
-
-            var actionState = ActivityState.InitialRun;
-            while (curContainerDO.CurrentRouteNodeId != null)
-            {
-                var activityResponseDTO = await ProcessActivity(uow, curContainerDO, actionState);
-
-                //extract ActivityResponse type from result
-                ActivityResponse activityResponse = ActivityResponse.Null;
-                if (activityResponseDTO != null)
-                    Enum.TryParse(activityResponseDTO.Type, out activityResponse);
-
-                ResponseMessageDTO responseMessage;
-
-                switch (activityResponse)
+                //if payload already has operational state create we shouldn't create another
+                if (!HasOperationalStateCrate(curContainerDO))
                 {
-                    case ActivityResponse.ExecuteClientActivity:
-                    case ActivityResponse.Success:
-                    case ActivityResponse.ReProcessChildren:
-                    case ActivityResponse.Null://let's assume this is success for now
-
-                        
-
-                        break;
-                    case ActivityResponse.RequestSuspend:
-                        curContainerDO.ContainerState = ContainerState.Pending;
-                        return;
-
-                    case ActivityResponse.Error:
-                        //TODO retry activity execution until 3 errors??
-                        //so we are able to show the specific error that is embedded inside the container we are sending back that container to client
-                        ErrorDTO error = activityResponseDTO.TryParseErrorDTO(out error) ? error : null;
-                        throw new ErrorResponseException(Mapper.Map<ContainerDO, ContainerDTO>(curContainerDO), error?.Message);
-                    case ActivityResponse.RequestTerminate:
-                        //FR-2163 - If action response requests for termination, we make the container as Completed to avoid unwanted errors.
-                        curContainerDO.ContainerState = ContainerState.Completed;
-                        EventManager.ProcessingTerminatedPerActivityResponse(curContainerDO, ActivityResponse.RequestTerminate);
-
-                    return;
-
-                    case ActivityResponse.JumpToActivity:
-                        actionState = ActivityState.InitialRun;
-                        activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
-                        curContainerDO.CurrentRouteNodeId = Guid.Parse((string)responseMessage.Details);
-                        continue;
-
-                    case ActivityResponse.JumpToSubplan:
-                        actionState = ActivityState.InitialRun;
-                        activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
-                        var subplanId = Guid.Parse((string) responseMessage.Details);
-                        curContainerDO.CurrentRouteNodeId = GetFirstActivityOfSubplan(uow, curContainerDO ,subplanId);
-                        continue;
-
-                    case ActivityResponse.RequestLaunch:
-                        activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
-                        var planId = Guid.Parse((string)responseMessage.Details);
-                        //hmm what to do now
-                        await LoadAndRunPlan(uow, curContainerDO, planId);
-                        break;
-
-                    default:
-                        throw new Exception("Unknown activity state on activity with id " + curContainerDO.CurrentRouteNodeId);
+                    AddOperationalStateCrate(uow, curContainerDO);
                 }
 
-                var shouldSkipChildren = ShouldSkipChildren(curContainerDO, actionState, activityResponse);
-                actionState = MoveToNextRoute(uow, curContainerDO, shouldSkipChildren);
-            }
-
-            if(curContainerDO.ContainerState == ContainerState.Executing)
-            {
-                curContainerDO.ContainerState = ContainerState.Completed;
+            curContainerDO.State = State.Executing;
                 uow.SaveChanges();
+
+            if (curContainerDO.CurrentActivityId == null)
+                {
+                    throw new ArgumentNullException("CurrentActivity is null. Cannot execute CurrentActivity");
+                }
+
+                var actionState = ActivityState.InitialRun;
+            while (curContainerDO.CurrentActivityId != null)
+                {
+                    var activityResponseDTO = await ProcessActivity(uow, curContainerDO, actionState);
+
+                    //extract ActivityResponse type from result
+                    ActivityResponse activityResponse = ActivityResponse.Null;
+                    if (activityResponseDTO != null)
+                        Enum.TryParse(activityResponseDTO.Type, out activityResponse);
+
+                    ResponseMessageDTO responseMessage;
+
+                    switch (activityResponse)
+                    {
+                        case ActivityResponse.ExecuteClientActivity:
+                        case ActivityResponse.Success:
+                    case ActivityResponse.ReprocessChildren:
+                        case ActivityResponse.Null://let's assume this is success for now
+
+
+                            break;
+                        case ActivityResponse.RequestSuspend:
+                        curContainerDO.State = State.Suspended;
+                            return;
+
+                        case ActivityResponse.Error:
+                            //TODO retry activity execution until 3 errors??
+                            //so we are able to show the specific error that is embedded inside the container we are sending back that container to client
+                            ErrorDTO error = activityResponseDTO.TryParseErrorDTO(out error) ? error : null;
+                            throw new ErrorResponseException(Mapper.Map<ContainerDO, ContainerDTO>(curContainerDO), error?.Message);
+                        case ActivityResponse.RequestTerminate:
+                            //FR-2163 - If action response requests for termination, we make the container as Completed to avoid unwanted errors.
+                        curContainerDO.State = State.Completed;
+                            EventManager.ProcessingTerminatedPerActivityResponse(curContainerDO, ActivityResponse.RequestTerminate);
+
+                            return;
+
+                        case ActivityResponse.JumpToActivity:
+                            actionState = ActivityState.InitialRun;
+                            activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
+                        curContainerDO.CurrentActivityId = Guid.Parse((string)responseMessage.Details);
+                            continue;
+
+                        case ActivityResponse.JumpToSubplan:
+                            actionState = ActivityState.InitialRun;
+                            activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
+                            var subplanId = Guid.Parse((string)responseMessage.Details);
+                            curContainerDO.CurrentActivityId = GetFirstActivityOfSubplan(uow, curContainerDO, subplanId);
+                            continue;
+
+                        case ActivityResponse.LaunchAdditionalPlan:
+                            await LoadAndRunPlan(uow, curContainerDO, activityResponseDTO);
+                            break;
+
+                        default:
+                        throw new Exception("Unknown activity state on activity with id " + curContainerDO.CurrentActivityId);
+                    }
+
+                    var shouldSkipChildren = ShouldSkipChildren(curContainerDO, actionState, activityResponse);
+                    actionState = MoveToNextPlan(uow, curContainerDO, shouldSkipChildren);
+                }
+
+            if(curContainerDO.State == State.Executing)
+                {
+                curContainerDO.State = State.Completed;
+                    uow.SaveChanges();
+
+                }
             }
+            catch (ErrorResponseException e)
+            {
+                var curActivityDTO = GetCurrentActivity(uow, curContainerDO);
+                throw new ActivityExecutionException(e.ContainerDTO, curActivityDTO, e.Message, e);
+            }            
+            catch (Exception e)
+            {
+                var curActivityDTO = GetCurrentActivity(uow, curContainerDO);
+                
+                if (curActivityDTO != null)
+                {
+                    var curContainerDTO = Mapper.Map<ContainerDO, ContainerDTO>(curContainerDO);
+                    throw new ActivityExecutionException(curContainerDTO, curActivityDTO, string.Empty, e);
+                }
+                else
+                {
+                    throw;
+                }                
+            }
+        }
+
+        private Guid? GetFirstActivityOfSubplan(IUnitOfWork uow, ContainerDO curContainerDO, Guid subplanId)
+        {
+            var subplan = uow.PlanRepository.GetById<PlanDO>(curContainerDO.PlanId).SubPlans.FirstOrDefault(s => s.Id == subplanId);
+            return subplan?.ChildNodes.OrderBy(c => c.Ordering).FirstOrDefault()?.Id;
         }
 
         // Return the Containers of current Account
@@ -330,7 +335,27 @@ namespace Hub.Services
             return (id == null
                ? containerRepository.Where(container => container.Plan.Fr8Account.Id == account.Id)
                : containerRepository.Where(container => container.Id == id && container.Plan.Fr8Account.Id == account.Id)).ToList();
+        }
 
+        private ActivityDTO GetCurrentActivity(IUnitOfWork uow, ContainerDO curContainerDO)
+        {
+            if (curContainerDO == null || curContainerDO.CurrentActivityId == null)
+            {
+                return null;
+            }
+
+            var curActivityId = curContainerDO.CurrentActivityId.Value;
+            var curPlanNodeDO = uow.PlanRepository.GetById<PlanNodeDO>(curActivityId);
+            var curActivityDO = curPlanNodeDO as ActivityDO;
+
+            if (curActivityDO != null)
+            {
+                return Mapper.Map<ActivityDO, ActivityDTO>(curActivityDO);
+            }
+            else
+            {
+                return null;
+            }
         }
     }
 }

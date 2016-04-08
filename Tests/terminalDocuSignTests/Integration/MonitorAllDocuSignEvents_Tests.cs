@@ -9,6 +9,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.States;
 using HealthMonitor.Utility;
 using HealthMonitorUtility;
 using Hub.Services;
@@ -19,6 +20,8 @@ using terminalDocuSignTests.Fixtures;
 using Newtonsoft.Json;
 using terminalDocuSign.DataTransferObjects;
 using System.Diagnostics;
+using TerminalBase.Infrastructure;
+using Hub.Managers;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -36,6 +39,9 @@ namespace terminalDocuSignTests.Integration
         private const string ToEmail = "fr8.madse.testing@gmail.com"; // "freight.testing@gmail.com";
         private const string DocuSignEmail = "fr8.madse.testing@gmail.com"; // "freight.testing@gmail.com";
         private const string DocuSignApiPassword = "I6HmXEbCxN";
+
+        private string ConnectName = "madse-connect";
+        private string publishUrl;
 
 
         protected override string TestUserEmail
@@ -87,7 +93,14 @@ namespace terminalDocuSignTests.Integration
                     .AsQueryable<DocuSignEnvelopeCM>(testAccount.Id.ToString())
                     .Count();
 
-                await SendDocuSignTestEnvelope();
+                //Set up DS
+                var authToken = await Authenticate();
+                var authTokenDO = new AuthorizationTokenDO() { Token = authToken.Token };
+                var docuSignManager = new DocuSignManager();
+                var loginInfo = docuSignManager.SetUp(authTokenDO);
+
+                //send envelope
+                await SendDocuSignTestEnvelope(docuSignManager, loginInfo, authTokenDO);
 
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
@@ -107,7 +120,9 @@ namespace terminalDocuSignTests.Integration
                     }
                 }
 
-                Assert.IsTrue(mtDataCountBefore < mtDataCountAfter);
+
+                Assert.IsTrue(mtDataCountBefore < mtDataCountAfter,
+                    $"The number of MtData records for user {UserAccountName} remained unchanged within {MaxAwaitPeriod} miliseconds.");
             }
         }
 
@@ -159,20 +174,22 @@ namespace terminalDocuSignTests.Integration
         private void AssignAuthTokens(IUnitOfWork uow, Fr8AccountDO account, Guid tokenId)
         {
             var plan = uow.PlanRepository.GetPlanQueryUncached()
-                .SingleOrDefault(x => x.Fr8AccountId == account.Id && x.Name == "MonitorAllDocuSignEvents");
+                .SingleOrDefault(x => x.Fr8AccountId == account.Id
+                    && x.Name == "MonitorAllDocuSignEvents"
+                    && x.PlanState == PlanState.Active);
             if (plan == null)
             {
                 throw new ApplicationException("Could not find MonitorAllDocuSignEvents plan.");
             }
 
-            var queue = new Queue<RouteNodeDO>();
+            var queue = new Queue<PlanNodeDO>();
             queue.Enqueue(plan);
 
             while (queue.Count > 0)
             {
-                var routeNode = queue.Dequeue();
+                var planNode = queue.Dequeue();
 
-                var activity = routeNode as ActivityDO;
+                var activity = planNode as ActivityDO;
                 if (activity != null)
                 {
                     if (activity.ActivityTemplate.Terminal.Name == TerminalName
@@ -183,7 +200,7 @@ namespace terminalDocuSignTests.Integration
                 }
 
                 uow.PlanRepository.GetNodesQueryUncached()
-                    .Where(x => x.ParentRouteNodeId == routeNode.Id)
+                    .Where(x => x.ParentPlanNodeId == planNode.Id)
                     .ToList()
                     .ForEach(x => queue.Enqueue(x));
             }
@@ -203,20 +220,16 @@ namespace terminalDocuSignTests.Integration
             string endpoint = GetTerminalUrl() + "/authentication/internal";
             var jobject = await HttpPostAsync<CredentialsDTO, JObject>(endpoint, creds);
             var docuSignToken = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(jobject.ToString());
-            Assert.IsTrue(string.IsNullOrEmpty(docuSignToken.Error));
+            Assert.IsTrue(
+                string.IsNullOrEmpty(docuSignToken.Error),
+                $"terminalDocuSign call to /authentication/internal has failed with following error: {docuSignToken.Error}"
+            );
 
             return docuSignToken;
         }
 
-        private async Task SendDocuSignTestEnvelope()
+        private async Task SendDocuSignTestEnvelope(DocuSignManager docuSignManager, DocuSignApiConfiguration loginInfo, AuthorizationTokenDO authTokenDO)
         {
-            var authToken = await Authenticate();
-            var authTokenDO = new AuthorizationTokenDO() { Token = authToken.Token };
-            var docuSignManager = new DocuSignManager();
-
-            var loginInfo = docuSignManager.SetUp(authTokenDO);
-            var password = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token).ApiPassword;
-
             var rolesList = new List<FieldDTO>()
             {
                 new FieldDTO()

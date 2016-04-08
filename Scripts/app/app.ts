@@ -21,21 +21,23 @@ var app = angular.module("app", [
     "ngTable",
     "mb-scrollbar",
     "ngMessages",
-    "ivh.treeview"
+    "ivh.treeview",
+    "ngMaterial",
+    "angularResizable"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */
 app.constant('urlPrefix', '/api');
 
 /* Configure ocLazyLoader(refer: https://github.com/ocombe/ocLazyLoad) */
-app.config(['$ocLazyLoadProvider', function ($ocLazyLoadProvider) {
+app.config(['$ocLazyLoadProvider', ($ocLazyLoadProvider) => {
     $ocLazyLoadProvider.config({
         cssFilesInsertBefore: 'ng_load_plugins_before' // load the above css files before a LINK element with this ID. Dynamic CSS files must be loaded between core and theme css files
     });
 }]);
 
 /* Setup global settings */
-app.factory('settings', ['$rootScope', function ($rootScope) {
+app.factory('settings', ['$rootScope', ($rootScope) => {
     // supported languages
     var settings = {
         layout: {
@@ -52,10 +54,35 @@ app.factory('settings', ['$rootScope', function ($rootScope) {
 
 /* Setup App Main Controller */
 app.controller('AppController', ['$scope', '$rootScope', function ($scope, $rootScope) {
-    $scope.$on('$viewContentLoaded', function () {
+    $scope.$on('$viewContentLoaded', () => {
         Metronic.initComponents(); // init core components
         //Layout.init(); //  Init entire layout(header, footer, sidebar, etc) on page load if the partials included in server side instead of loading with ng-include directive 
     });
+}]);
+
+app.config(['$mdThemingProvider', ($mdThemingProvider) => {
+    $mdThemingProvider.definePalette('fr8Theme', {
+        '50': '26a69a',
+        '100': '26a69a',
+        '200': '26a69a',
+        '300': '26a69a',
+        '400': '26a69a',
+        '500': '26a69a',
+        '600': '26a69a',
+        '700': '26a69a',
+        '800': '26a69a',
+        '900': '26a69a',
+        'A100': '26a69a',
+        'A200': '26a69a',
+        'A400': '26a69a',
+        'A700': '26a69a',
+        'contrastDefaultColor': 'light',   
+        'contrastDarkColors': ['50', '100', 
+            '200', '300', '400', 'A100'],
+        'contrastLightColors': undefined    
+    });
+    $mdThemingProvider.theme('default')
+        .primaryPalette('fr8Theme');
 }]);
 
 /***
@@ -65,8 +92,8 @@ initialization can be disabled and Layout.init() should be called on page load c
 ***/
 
 /* Setup Layout Part - Header */
-app.controller('HeaderController', ['$scope', function ($scope) {
-    $scope.$on('$includeContentLoaded', function () {
+app.controller('HeaderController', ['$scope', ($scope) => {
+    $scope.$on('$includeContentLoaded', () => {
         Layout.initHeader(); // init header
     });
 }]);
@@ -103,15 +130,19 @@ app.config(['applicationInsightsServiceProvider', function (applicationInsightsS
     });
 }]);
 
-/* Setup Rounting For All Pages */
-app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider, $httpProvider: ng.IHttpProvider) {
+
+/* Setup Rounting For All Pages */ 
+app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationProvider', ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider, $httpProvider: ng.IHttpProvider, $locationProvider:ng.ILocationProvider) => {
+
+
+    $locationProvider.html5Mode(true);
 
     $httpProvider.interceptors.push('fr8VersionInterceptor');
 
     // Install a HTTP request interceptor that causes 'Processing...' message to display
     $httpProvider.interceptors.push(['$q','$window',($q: ng.IQService, $window: ng.IWindowService) => {
         return {
-            request: function (config: ng.IRequestConfig) {
+            request: (config: ng.IRequestConfig) => {
                 // Show page spinner If there is no request parameter suppressSpinner.
                 if (config && config.params && config.params['suppressSpinner']) {
                     // We don't want this parameter to be sent to backend so remove it if found.
@@ -146,31 +177,50 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             templateUrl: "/AngularTemplate/MyAccountPage",
             data: { pageTitle: 'My Account', pageSubTitle: '' }
         })
-    // Route list
-        .state('routeList', {
+    // Plan list
+        .state('planList', {
             url: "/plans",
-            templateUrl: "/AngularTemplate/RouteList",
-            data: { pageTitle: 'Routes', pageSubTitle: 'This page displays all Routes' }
+            templateUrl: "/AngularTemplate/PlanList",
+            data: { pageTitle: 'Plans', pageSubTitle: 'This page displays all Plans' }
         })
 
-    // Route form
-        .state('routeForm', {
-            url: "/plans/{id}",
-            templateUrl: "/AngularTemplate/RouteForm",
-            data: { pageTitle: 'Route', pageSubTitle: 'Add a new Route' },
+    // Plan form
+        .state('planForm', {
+            url: "/plans/add",
+            templateUrl: "/AngularTemplate/PlanForm",
+            data: { pageTitle: 'Plan', pageSubTitle: 'Add a new Plan' }
         })
 
-    // Process Builder framework
-        .state('routeBuilder', {
-            url: "/plans/{id}/builder",
-            templateUrl: "/AngularTemplate/RouteBuilder",
-            data: { pageTitle: '' },
+    // Plan Builder framework
+        .state('planBuilder', {
+            url: "/plans/{id}/builder?viewMode&view",
+            //templateUrl: "/AngularTemplate/PlanBuilder",
+            views: {
+                '@': {
+                    templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
+                        if ($stateParams['viewMode'] === 'kiosk') {
+                            return "/AngularTemplate/PlanBuilder_KioskMode";
+                        }
+                        return "/AngularTemplate/PlanBuilder";
+                    }
+                },
+                'header@': {
+                    templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
+                        if ($stateParams['viewMode'] === 'kiosk') {
+                            return "/AngularTemplate/Empty";
+                        }
+                        return "/AngularTemplate/Header";
+                    }
+                }
+            },
+            
+            data: { pageTitle: '' }
         })
 
         .state('showIncidents', {
             url: "/showIncidents",
             templateUrl: "/AngularTemplate/ShowIncidents",
-            data: { pageTitle: 'Incidents', pageSubTitle: 'This page displays all incidents' },
+            data: { pageTitle: 'Incidents', pageSubTitle: 'This page displays all incidents' }
         })
 
         .state('showFacts', {
@@ -179,10 +229,10 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
             data: { pageTitle: 'Facts', pageSubTitle: 'This page displays all facts' },
         })
 
-        .state('routeDetails', {
+        .state('planDetails', {
             url: "/plans/{id}/details",
-            templateUrl: "/AngularTemplate/RouteDetails",
-            data: { pageTitle: 'Route Details', pageSubTitle: '' }
+            templateUrl: "/AngularTemplate/PlanDetails",
+            data: { pageTitle: 'Plan Details', pageSubTitle: '' }
         })
 
     // Manage files
@@ -218,7 +268,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
 
         .state('configureSolution', {
             url: "/solution/{solutionName}",
-            templateUrl: "/AngularTemplate/RouteBuilder",
+            templateUrl: "/AngularTemplate/PlanBuilder",
             data: { pageTitle: 'Create a Solution', pageSubTitle: '' }
         })
 
@@ -237,7 +287,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
         .state('findObjects', {
             url: '/findObjects/create',
             templateUrl: '/AngularTemplate/FindObjects',
-            data: { pageTitle: 'Constructing Find Objects route', pageSubTitle: '' }
+            data: { pageTitle: 'Constructing Find Objects plan', pageSubTitle: '' }
         })
 
         .state('findObjectsResult', {
@@ -272,7 +322,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', function ($
 
         .state('reports', {
             url: "/reports",
-            templateUrl: "/AngularTemplate/RouteReportList",
+            templateUrl: "/AngularTemplate/PlanReportList",
             data: { pageTitle: 'Reports', pageSubTitle: 'This page displays all Reports' }
         });
 }]);

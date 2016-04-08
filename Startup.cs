@@ -40,7 +40,7 @@ namespace HubWeb
 
             ConfigureHangfire(app, "DockyardDB");
 
-                if (!selfHostMode)
+            if (!selfHostMode)
             {
                 await RegisterTerminalActions();
             }
@@ -133,7 +133,7 @@ namespace HubWeb
             {
                 try
                 {
-                    var activityTemplateList = await terminalService.GetAvailableActivities(url);
+                    var activityTemplateList = (await terminalService.GetAvailableActivities(url)).ToList();
 
                     foreach (var curItem in activityTemplateList)
                     {
@@ -145,11 +145,12 @@ namespace HubWeb
                         catch (Exception ex)
                         {
                             alertReporter.ActivityTemplateTerminalRegistrationError(
-                                string.Format("Failed to register {0} terminal. Error Message: {1}", curItem.Terminal.Name, ex.Message),
+                                $"Failed to register {curItem.Terminal.Name} terminal. Error Message: {ex.Message}",
                                 ex.GetType().Name);
                         }
-
                     }
+
+                    activityTemplate.RemoveInactiveActivities(activityTemplateList);
                 }
                 catch (Exception ex)
                 {
@@ -163,9 +164,9 @@ namespace HubWeb
 
             // At Startup Check If the Log Monitor Fr8 Event plan exist in the database then active it. otherwise create the new plan.
 
-            RouteManager manager = new RouteManager();
+            PlanManager manager = new PlanManager();
             string sytemUserEmail = ObjectFactory.GetInstance<IConfigRepository>().Get<string>("SystemUserEmail");
-            await manager.CreateRoute_LogFr8InternalEvents(sytemUserEmail).ConfigureAwait(true);
+            await manager.CreatePlan_LogFr8InternalEvents(sytemUserEmail).ConfigureAwait(true);
         }
 
         public static IDisposable CreateServer(string url)

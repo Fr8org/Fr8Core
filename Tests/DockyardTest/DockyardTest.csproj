@@ -54,10 +54,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\lib\DayPilot.Web.Mvc.dll</HintPath>
     </Reference>
-    <Reference Include="DocuSign.Integration.Client, Version=1.6.1.0, Culture=neutral, PublicKeyToken=7fca6fcbbc219ede, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Utilities\DocuSign.Integration.Client.dll</HintPath>
-    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
@@ -253,8 +249,8 @@
     <Compile Include="Controllers\CriteriaControllerTest.cs" />
     <Compile Include="Controllers\EventControllerTest.cs" />
     <Compile Include="Controllers\NotificationControllerTests.cs" />
-    <Compile Include="Controllers\RouteControllerTests.cs" />
-    <Compile Include="Controllers\RouteControllerTests_2.cs" />
+    <Compile Include="Controllers\PlanControllerTests.cs" />
+    <Compile Include="Controllers\PlanControllerTests_2.cs" />
     <Compile Include="Controllers\UserApiControlle.cs" />
     <Compile Include="Controllers\UserControllerTests.cs" />
     <Compile Include="CsvReaderTests.cs" />
@@ -273,7 +269,7 @@
     <Compile Include="Integration\RunTimeTests.cs" />
     <Compile Include="Integration\AccountITests.cs" />
     <Compile Include="Managers\OAuthAuthorizerTest.cs" />
-    <Compile Include="Managers\RouteManagerTests.cs" />
+    <Compile Include="Managers\PlanManagerTests.cs" />
     <Compile Include="MockedDB\MockedDBTests.cs" />
     <Compile Include="MockedDB\MoqDemoTests.cs" />
     <Compile Include="Repositories\AuthorizationTokenRepositoryTests.cs" />
@@ -281,7 +277,7 @@
     <Compile Include="Repositories\Plan\PersistentPlanStorage.cs" />
     <Compile Include="Repositories\Plan\PlanCacheTests.cs" />
     <Compile Include="Repositories\Plan\PlanRepositoryTests.cs" />
-    <Compile Include="Repositories\Plan\RouteSnapshotTests.cs" />
+    <Compile Include="Repositories\Plan\PlanSnapshotTests.cs" />
     <Compile Include="Security\AuthorizationMethodsTests.cs" />
     <Compile Include="Security\AuthorizationTokenTests.cs" />
     <Compile Include="Managers\CommunicationManagerTest.cs" />
@@ -299,9 +295,9 @@
     <Compile Include="Services\ITerminalClient.cs" />
     <Compile Include="Services\FileTests.cs" />
     <Compile Include="Services\ContainerServiceTests.cs" />
-    <Compile Include="Services\RouteNodeTests.cs" />
-    <Compile Include="Services\SubrouteTests.cs" />
-    <Compile Include="Services\RouteTests.cs" />
+    <Compile Include="Services\PlanNodeTests.cs" />
+    <Compile Include="Services\SubPlanTests.cs" />
+    <Compile Include="Services\PlanTests.cs" />
     <Compile Include="Services\SMSMessageTests.cs" />
     <Compile Include="Services\StartupTests.cs" />
     <Compile Include="Services\SubscriptionServiceTests.cs" />
@@ -310,6 +306,8 @@
     <Compile Include="Services\TerminalServiceTests.cs" />
     <Compile Include="Services\UserServiceTests.cs" />
     <Compile Include="Utilities\EncryptionTests.cs" />
+    <Compile Include="Utilities\MiscUtils.cs" />
+    <Compile Include="Utilities\StandardConfigurationControlsCMTests.cs" />
     <Compile Include="Utilities\TextSourceMappingBehaviorTests.cs" />
     <Compile Include="Validations\ValidationsTest.cs" />
     <Compile Include="Wrapper\DcousingAccountTest.cs" />
@@ -361,6 +359,10 @@
     <ProjectReference Include="..\..\HubWeb.csproj">
       <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>
       <Name>HubWeb</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalUtilities\terminalUtilities.csproj">
+      <Project>{e46b602a-287b-450f-b455-5eed20c93eb7}</Project>
+      <Name>terminalUtilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>

@@ -9,6 +9,7 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
 using Hub.Services;
+using HubWeb.Infrastructure;
 
 namespace HubWeb.Controllers.Api
 {
@@ -123,6 +124,7 @@ namespace HubWeb.Controllers.Api
             return Ok(result);
         }
 
+        [Fr8HubWebHMACAuthenticate]
         [HttpPost]
         public IHttpActionResult Apply(IEnumerable<ManageAuthToken_Apply> apply)
         {

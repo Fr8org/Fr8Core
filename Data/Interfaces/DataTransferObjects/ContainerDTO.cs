@@ -16,10 +16,10 @@ namespace Data.Interfaces.DataTransferObjects
         public Guid Id { get; set; }
         public string Name { get; set; }
         public Guid PlanId { get; set; }
-        public int ContainerState;
+        public int State;
 
-        public Guid? CurrentRouteNodeId { get; set; }
-        public Guid? NextRouteNodeId { get; set; }
+        public Guid? CurrentActivityId { get; set; }
+        public Guid? NextActivityId { get; set; }
 
         public DateTimeOffset LastUpdated { get; set; }
 

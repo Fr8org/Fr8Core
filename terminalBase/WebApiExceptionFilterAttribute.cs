@@ -10,6 +10,7 @@ using TerminalBase.Errors;
 using Utilities;
 using Microsoft.ApplicationInsights;
 using System.Collections.Generic;
+using Hub.Exceptions;
 
 namespace TerminalBase
 {
@@ -80,7 +81,6 @@ namespace TerminalBase
             }
             else
             {
-                //if terminal error is general exception, place exception message
                 var detailedMessage =
                     JsonConvert.SerializeObject(new { status = "terminal_error", message = curTerminalError.Message });
                 actionExecutedContext.Response.Content = new StringContent(detailedMessage, Encoding.UTF8, "application/json");

@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
-using System.Data.Entity.Core;
 using System.Data.Entity.Core.Objects;
-using System.Data.Entity.Core.Objects.DataClasses;
 using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
 
@@ -16,103 +12,168 @@ namespace Data.Repositories.Plan
     public class PlanStorageProviderEf : IPlanStorageProvider
     {
         protected readonly IUnitOfWork Uow;
-        protected readonly RouteNodeRepository RouteNodes;
+        // Note repository Names are not renamed .....
+        protected readonly PlanNodeRepository PlanNodes;
         protected readonly ActivityRepository ActivityRepository;
-        protected readonly SubrouteRepository Subroutes;
-        protected readonly RouteRepository Routes;
+        protected readonly SubPlanRepository SubPlans;
+        protected readonly PlansRepository Plans;
 
         public PlanStorageProviderEf(IUnitOfWork uow)
         {
             Uow = uow;
-            RouteNodes = new RouteNodeRepository(uow);
+            PlanNodes = new PlanNodeRepository(uow);
             ActivityRepository = new ActivityRepository(uow);
-            Subroutes = new SubrouteRepository(uow);
-            Routes = new RouteRepository(uow);
+            SubPlans = new SubPlanRepository(uow);
+            Plans = new PlansRepository(uow);
         }
 
-        public RouteNodeDO LoadPlan(Guid planMemberId)
+        private PlanNodeDO LoadPlanByPlanId(Guid planId)
         {
-            var seed = RouteNodes.GetQuery().FirstOrDefault(x => x.Id == planMemberId);
+            var lookup = new Dictionary<Guid, PlanNodeDO>();
 
-            if (seed == null)
+            var plans = Plans.GetQuery().Where(x => x.Id == planId).Include(x => x.Fr8Account).AsEnumerable().Select(x => x.Clone()).ToArray();
+
+            if (plans.Length == 0)
             {
                 return null;
-                throw new KeyNotFoundException("Unable to find route not with id = " + planMemberId);
+                //throw new KeyNotFoundException("Unable to find plan not with id = " + planId);
             }
 
-            var lookup = new Dictionary<Guid, RouteNodeDO>();
+            var actions = ActivityRepository.GetQuery().Where(x => x.RootPlanNodeId == planId).Include(x => x.Fr8Account).AsEnumerable().Select(x => x.Clone()).ToArray();
+            var subPlans = SubPlans.GetQuery().Where(x => x.RootPlanNodeId == planId).Include(x => x.Fr8Account).AsEnumerable().Select(x => x.Clone()).ToArray();
 
-            var routes = Routes.GetQuery().Where(x => x.Id == seed.RootRouteNodeId).Include(x=>x.Fr8Account).AsEnumerable().Select(x => x.Clone()).ToArray();
-            var actions = ActivityRepository.GetQuery().Where(x => x.RootRouteNodeId == seed.RootRouteNodeId).Include(x => x.Fr8Account).AsEnumerable().Select(x => x.Clone()).ToArray();
-            var subroutes = Subroutes.GetQuery().Where(x => x.RootRouteNodeId == seed.RootRouteNodeId).Include(x => x.Fr8Account).AsEnumerable().Select(x => x.Clone()).ToArray();
-
-            foreach (var routeNodeDo in routes)
+            if (actions.Length == 0 && subPlans.Length == 0)
             {
-                lookup[routeNodeDo.Id] = routeNodeDo;
-            }
+                var nodes = PlanNodes.GetQuery().Where(x => x.RootPlanNodeId == planId).Include(x => x.Fr8Account).AsEnumerable().Select(x => x.Clone()).ToArray();
 
-            foreach (var routeNodeDo in actions)
-            {
-                lookup[routeNodeDo.Id] = routeNodeDo;
-            }
-
-            foreach (var routeNodeDo in subroutes)
-            {
-                lookup[routeNodeDo.Id] = routeNodeDo;
-            }
-
-            RouteNodeDO root = null;
-
-            foreach (var routeNodeDo in lookup)
-            {
-                RouteNodeDO parent;
-
-                if (routeNodeDo.Value.ParentRouteNodeId == null || !lookup.TryGetValue(routeNodeDo.Value.ParentRouteNodeId.Value, out parent))
+                if (nodes.Length == 0)
                 {
-                    root = routeNodeDo.Value;
+                    throw new NotSupportedException($"Completely empty plans like {planId} are not supported");
+                }
+
+                foreach (var planNodeDo in nodes)
+                {
+                    lookup[planNodeDo.Id] = planNodeDo;
+                }
+            }
+            else
+            {
+                foreach (var planNodeDo in actions)
+                {
+                    lookup[planNodeDo.Id] = planNodeDo;
+                }
+
+                foreach (var planNodeDo in subPlans)
+                {
+                    lookup[planNodeDo.Id] = planNodeDo;
+                }
+            }
+
+            foreach (var planNodeDo in plans)
+            {
+                lookup[planNodeDo.Id] = planNodeDo;
+            }
+            
+            PlanNodeDO root = null;
+            var pendingNodes = new Stack<KeyValuePair<Guid, PlanNodeDO>>();
+
+            foreach (var planNodeDo in lookup)
+            {
+                pendingNodes.Push(planNodeDo);
+            }
+
+            while (pendingNodes.Count > 0)
+            {
+                var planNodeDo = pendingNodes.Pop();
+
+                PlanNodeDO parent;
+
+                if (planNodeDo.Value.ParentPlanNodeId == null)
+                {
+                    root = planNodeDo.Value;
                     continue;
                 }
 
-                routeNodeDo.Value.ParentRouteNode = parent;
-                parent.ChildNodes.Add(routeNodeDo.Value);
+                //We are... 
+                //We are...
+                //We are loading the broken plan
+                if (!lookup.TryGetValue(planNodeDo.Value.ParentPlanNodeId.Value, out parent))
+                {
+                    var node = PlanNodes.GetQuery().Include(x => x.Fr8Account).FirstOrDefault(x => x.Id == planNodeDo.Value.ParentPlanNodeId.Value);
+
+                    //This plan... 
+                    //This plan...
+                    //Was broken from the start
+                    if (node == null)
+                    {
+                        throw new Exception($"Plan {planId} is completely broken. It has node {planNodeDo.Key} that references non existing parent {planNodeDo.Value.ParentPlanNodeId.Value}");
+                    }
+
+                    node = node.Clone();
+
+                    lookup[node.Id] = node;
+                    parent = node;
+                    pendingNodes.Push(new KeyValuePair<Guid, PlanNodeDO>(node.Id, node));
+                }
+
+                planNodeDo.Value.ParentPlanNode = parent;
+                parent.ChildNodes.Add(planNodeDo.Value);
             }
 
             return root;
         }
 
-        public virtual void Update(RouteSnapshot.Changes changes)
+        public PlanNodeDO LoadPlan(Guid planMemberId)
+        {
+            var seed = PlanNodes.GetQuery().FirstOrDefault(x => x.Id == planMemberId);
+
+            if (seed == null)
+            {
+                return null;
+                //throw new KeyNotFoundException("Unable to find plan that has memeber with id = " + planMemberId);
+            }
+
+            if (seed.RootPlanNodeId == null)
+            {
+                throw new InvalidOperationException($"PlanNodes table is unconsistent. Node {planMemberId} doesn't have RootPlanNodeId set.");
+            }
+
+            return LoadPlanByPlanId(seed.RootPlanNodeId.Value);
+        }
+
+        public virtual void Update(PlanSnapshot.Changes changes)
         {
             var adapter = (IObjectContextAdapter)Uow.Db;
             var objectContext = adapter.ObjectContext;
 
             ObjectStateEntry entry;
 
-            foreach (var routeNodeDo in changes.Delete)
+            foreach (var planNodeDo in changes.Delete)
             {
-                var entryStub = routeNodeDo.Clone();
+                var entryStub = planNodeDo.Clone();
 
                 ClearNavigationProperties(entryStub);
 
-                var key = objectContext.CreateEntityKey("RouteNodeDOes", entryStub);
+                var key = objectContext.CreateEntityKey("PlanNodeDOes", entryStub);
 
                 if (!objectContext.ObjectStateManager.TryGetObjectStateEntry(key, out entry))
                 {
-                    RouteNodes.Attach(entryStub);
+                    PlanNodes.Attach(entryStub);
                     entry = objectContext.ObjectStateManager.GetObjectStateEntry(entryStub);
                     entry.Delete();
                 }
                 else
                 {
-                    RouteNodes.Remove(routeNodeDo);
+                    PlanNodes.Remove(planNodeDo);
                 }
             }
 
-            foreach (var routeNodeDo in changes.Insert)
+            foreach (var planNodeDo in changes.Insert)
             {
-                var entity = routeNodeDo.Clone();
+                var entity = planNodeDo.Clone();
 
                 ClearNavigationProperties(entity);
-                RouteNodes.Add(entity);
+                PlanNodes.Add(entity);
             }
             
             foreach (var changedObject in changes.Update)
@@ -121,10 +182,10 @@ namespace Data.Repositories.Plan
 
                 ClearNavigationProperties(entryStub);
 
-                var key = objectContext.CreateEntityKey("RouteNodeDOes", entryStub);
+                var key = objectContext.CreateEntityKey("PlanNodeDOes", entryStub);
                 if (!objectContext.ObjectStateManager.TryGetObjectStateEntry(key, out entry))
                 {
-                    RouteNodes.Attach(entryStub);
+                    PlanNodes.Attach(entryStub);
                     entry = objectContext.ObjectStateManager.GetObjectStateEntry(entryStub);
                     foreach (var changedProperty in changedObject.ChangedProperties)
                     {
@@ -142,10 +203,10 @@ namespace Data.Repositories.Plan
         }
         
         //we do this not to accidentatlly add duplicates
-        protected void ClearNavigationProperties(RouteNodeDO entity)
+        protected void ClearNavigationProperties(PlanNodeDO entity)
         {
             entity.Fr8Account = null;
-            entity.ParentRouteNode = null;
+            entity.ParentPlanNode = null;
 
             var activity = entity as ActivityDO;
             if (activity != null)
@@ -157,7 +218,7 @@ namespace Data.Repositories.Plan
 
         public IQueryable<PlanDO> GetPlanQuery()
         {
-            return Routes.GetQuery();
+            return Plans.GetQuery();
         }
 
         public IQueryable<ActivityDO> GetActivityQuery()
@@ -165,9 +226,9 @@ namespace Data.Repositories.Plan
             return ActivityRepository.GetQuery();
         }
 
-        public IQueryable<RouteNodeDO> GetNodesQuery()
+        public IQueryable<PlanNodeDO> GetNodesQuery()
         {
-            return RouteNodes.GetQuery();
+            return PlanNodes.GetQuery();
         }
     }
 }

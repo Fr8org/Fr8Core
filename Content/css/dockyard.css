@@ -66,7 +66,7 @@
 
 /* Added for Showing Steps in Activity Pane*/
 .processActionStep {
-    background-image: URL("/Content/img/RouteBuilder/circle.png");
+    background-image: URL("/Content/img/PlanBuilder/circle.png");
     display: inline-flex;
     width: 80px;
     height: 50px;
@@ -79,7 +79,7 @@
 }
 
 .processActionStepSelected {
-    background-image: URL("/Content/img/RouteBuilder/circle-selected.png");
+    background-image: URL("/Content/img/PlanBuilder/circle-selected.png");
     display: inline-flex;
     width: 75px;
     height: 50px;
@@ -257,19 +257,16 @@
     margin-bottom: 5px;
     vertical-align: top;
     white-space: initial;
-    min-width: 330px;
 }
 
     .action .pane-configure-action {
         min-height: 250px;
-        min-width: 330px;
         padding: 2%;
     }
 
     .action .ap-resize {
         min-height: 380px;
         overflow: hidden;
-        min-width: 380px;
         overflow: auto;
     }
 
@@ -279,6 +276,25 @@ div.action {
 
 .action-name {
     text-align: center;
+}
+
+@keyframes updatingFadeIn { 
+  from   { opacity:0.1; }
+  to { opacity:0.8; }
+}
+
+.action-reconfigure-status {
+    font-size: small;
+    font-weight: 500;
+    right: 5px;
+    position: absolute;
+    top: 5px;
+    opacity: 0.8;
+    color: white;
+    -moz-animation: updatingFadeIn 1s ;
+    -o-animation: updatingFadeIn 1s ;
+    -webkit-animation: updatingFadeIn 1s ;
+    animation: updatingFadeIn 1s;
 }
 
 .action-menu {
@@ -299,7 +315,8 @@ div.action {
     margin-top: 0px;
     padding-bottom: 10px;
     border-bottom: 1px;
-    margin-bottom: 10px;
+    /*FR-2739*/
+    /*margin-bottom: 10px;*/
     text-align: center;
     position: relative;
 }
@@ -317,10 +334,10 @@ div.action-header {
 }
 
 .action-header-icon {
-    position: absolute;
-    top: 0;
-    bottom: 0;
-    left: 6px;
+    margin-right: 10px;
+}
+#activity-header {
+   fill: rgba(255,255,255,0.87);
 }
 
     .action-header-icon:before {
@@ -331,7 +348,7 @@ div.action-header {
     }
 
     .action-header-icon img {
-        border-radius: 8px !important;
+        /*border-radius: 8px !important;*/
         /*width: 48px;*/
         max-width: 72px;
         height: 48px;
@@ -449,12 +466,12 @@ div.action-header {
     margin-left: 80px;
 }
 
-    .action-slider--active:before {
-        height: 2px;
-        background: white;
-        width: 16px;
-        position: absolute;
-    }
+.action-slider--active:before {
+    height: 2px;
+    background: white;
+    width: 16px;
+    position: absolute;
+}
 
 .action-slider .slide {
     width: 240px;
@@ -465,14 +482,54 @@ div.action-header {
     height: 300px;
 }
 
-    .action-slider .slide .web-service-action, .action-slider .slide .action-action {
-        padding: 8px 5px;
-    }
+.activity-chooser-select-dialog {
+    position: relative;
+    overflow-x: hidden;
+    overflow-y: auto;
+    max-height: 500px;
+    height: 500px;
+}
 
-        .action-slider .slide .web-service-action:hover, .action-slider .slide .action-action:hover {
-            cursor: pointer;
-            background: rgba(0,0,0,0.05);
-        }
+.activity-chooser-select-dialog .show-hide-transition {
+    transition-property: left, opacity;
+    transition-timing-function: ease-out;
+    transition-duration: 0.2s;
+}
+
+.activity-chooser-select-dialog .web-service-list {
+    position: absolute;
+    left: 0px;
+    top: 0;
+    opacity: 1;
+    padding: 10px;
+}
+
+.activity-chooser-select-dialog .activity-list {
+    position: absolute;
+    left: 0px;
+    top: 0;
+    opacity: 1;
+    padding: 10px;
+}
+
+.activity-chooser-select-dialog .web-service-list.ng-hide {
+    left: -500px;
+    opacity: 0;
+}
+
+.activity-chooser-select-dialog .activity-list.ng-hide {
+    left: 500px;
+    opacity: 0;
+}
+
+.action-slider .slide .web-service-action, .action-slider .slide .action-action {
+    padding: 8px 5px;
+}
+
+.action-slider .slide .web-service-action:hover, .action-slider .slide .action-action:hover {
+    cursor: pointer;
+    background: rgba(0,0,0,0.05);
+}
 
 .action-slider .web-service-action img {
     max-height: 48px;
@@ -1011,6 +1068,7 @@ div.activity-list::after {
     padding: 0 3px;
     border: 1px solid rgba(34, 36, 38, .15);
     cursor: pointer;
+    outline: none;
 }
 
     .bdp-input.disabled {
@@ -1042,4 +1100,76 @@ div.activity-list::after {
 .inactive {
     background-color: #428bca;
     border-color: #357ebd;
+}
+
+.mt30 {
+    margin-top: 30px;
+}
+
+.float-right {
+    float: right;
+}
+
+
+.dndDraggingSource + div {
+    opacity: 0.3;
+}
+
+div.ap-resize div.dndDraggingSource {
+    opacity: 0.3;
+    display: block !important;
+}
+
+.register-container {
+    width: 600px;
+    margin: 30px auto;
+}
+
+i.activity-stream-font{
+    margin-right: 3px;
+    font-size: 40px !important;
+    float: left; 
+    padding-top: 5px;
+}
+.activity-stream-flex{
+    flex:1;
+    margin-left:17px;
+    position:relative;
+    margin-bottom:15px;
+    min-width:10%;
+}
+.activity-stream-template {
+    width:100%;
+    height:100%;
+    min-height:700px;
+    margin-top:10px;
+}
+.flexable-content{
+    width:80%;
+    min-width:70%;
+}
+
+.query-builder-value-row {
+    padding-left: 15px; 
+    overflow: auto;
+}
+.query-builder-operator-row {
+    float:left; 
+    width: 70px;
+}
+.configuration-control-form-group{
+    margin-bottom: 5px;
+}
+
+.filepicker {
+        white-space: nowrap;
+        overflow: hidden;
+    }
+    
+.btn-upload {
+    background-color: orange;
+    cursor: pointer;
+}
+.file-info {
+    display: block;
 }

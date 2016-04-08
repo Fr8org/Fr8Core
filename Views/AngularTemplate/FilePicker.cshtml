@@ -1,9 +1,5 @@
-﻿<div> <!--File upload control main container-->
-    <div style="background-color: orange; cursor: pointer; margin-bottom: 15px; margin-top: 15px;" class='btn' ngf-select="OnFileSelect($file)" name='pca__chk__{{field.name}}' id='pca__chk__{{field.name}}'
-     accept='.xls,.xlsx' ngf-max-size='20MB' ngf-min-height='100'>Select File</div>
-    <!--
-    <button ng-click="ListExistingFiles()">List Existing Files</button>
-    <button ng-click="Save()">Save</button>    -->
-    <br />
-    <span>{{field.value == null ? 'No file selected' : field.value|formatInput}}</span>
+﻿<div class="filepicker"> <!--File upload control main container-->
+    <span class='btn btn-upload' ngf-select="OnFileSelect($file)" name='pca__chk__{{field.name}}' id='pca__chk__{{field.name}}'
+     accept='.xls,.xlsx' ngf-max-size='20MB' ngf-min-height='100'>Select File</span>
+    <span class="file-info">{{field.value == null ? 'No file selected' : field.value|formatInput}}</span>
 </div>
