@@ -1,6 +1,8 @@
     var gulp = require('gulp');
 var bower = require('gulp-bower');
 var concat = require('gulp-concat');
+var path = require('path');
+var child_process = require('child_process');
 var sourcemaps = require('gulp-sourcemaps');
 var templateCache = require('gulp-angular-templatecache');
 
@@ -376,4 +378,23 @@ gulp.task('cdnizer-js', ['bower'], function () {
         .pipe(gulp.dest('./Views/Shared/CDN'));
 });
 
-gulp.task('default', ['bower', 'concattemplates', 'cdnizer-js', 'cdnizer-css']);
+function getProtractorBinary(binaryName){
+    var winExt = /^win/.test(process.platform)? '.cmd' : '';
+    var pkgPath = require.resolve('protractor');
+    var protractorDir = path.resolve(path.join(path.dirname(pkgPath), '..', 'bin'));
+    return path.join(protractorDir, '/'+binaryName+winExt);
+}
+
+gulp.task('protractor-install', function(done){
+    child_process.spawn(getProtractorBinary('webdriver-manager'), ['update'], {
+        stdio: 'inherit'
+    }).once('close', done);
+});
+
+gulp.task('protractor-run', function (done) {
+    var argv = process.argv.slice(3); // forward args to protractor
+    child_process.spawn(getProtractorBinary('protractor'), argv, {
+        stdio: 'inherit'
+    }).once('close', done);
+});
+gulp.task('default', ['bower', 'concattemplates', 'cdnizer-js', 'cdnizer-css','protractor-install','protractor-run']);
