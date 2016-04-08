@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Hub.Interfaces
 {

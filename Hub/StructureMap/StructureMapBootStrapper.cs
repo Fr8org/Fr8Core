@@ -198,7 +198,7 @@ namespace Hub.StructureMap
                 For<IManifest>().Use<Manifest>();
                 For<IFindObjectsPlan>().Use<FindObjectsPlan>();
                 For<IAuthorization>().Use<Authorization>();
-
+                For<IReport>().Use<Report>();
 				var timeMock = new Mock<ITime>();
 	            For<ITime>().Use(timeMock.Object);
 

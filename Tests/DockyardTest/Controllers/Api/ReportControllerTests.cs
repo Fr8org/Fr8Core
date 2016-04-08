@@ -1,42 +1,42 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Http.Results;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Hub.Interfaces;
+using Data.Repositories;
+using Data.States;
 using HubWeb.Controllers;
-using HubWeb.Controllers.Api;
 using NUnit.Framework;
 using StructureMap;
-using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+
 
 namespace DockyardTest.Controllers.Api
 {
     [TestFixture]
     [Category("ReportControllerTests")]
-    public class ReportControllerTests : ApiControllerTestBase
+    class ReportControllerTests : ApiControllerTestBase
     {
         private Fr8AccountDO _testUserAccount;
-        private IReport _report;
+        private Hub.Interfaces.IReport _report;
+
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
 
             _testUserAccount = FixtureData.TestDockyardAccount7();
-            _report = ObjectFactory.GetInstance<IReport>();
+            _report = ObjectFactory.GetInstance<Hub.Interfaces.IReport>();
 
-            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                unitOfWork.UserRepository.Add(_testUserAccount);
-                unitOfWork.SaveChanges();
-                ObjectFactory.GetInstance<ISecurityServices>().Login(unitOfWork, _testUserAccount);
+                uow.UserRepository.Add(_testUserAccount);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, _testUserAccount.Id);
+                uow.SaveChanges();
+                ObjectFactory.GetInstance<ISecurityServices>().Login(uow, _testUserAccount);
             }
         }
         [TearDown]
@@ -55,30 +55,32 @@ namespace DockyardTest.Controllers.Api
         }
 
         [Test]
-        public void FactsController_Will_Return_All_Facts_For_Given_ObjectId()
+        public void ReportController_Returns_Two_Incidents()
         {
             //Arrange
             var reportController = CreateReportController();
-            AddIncidents();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                AddIncidents(uow);
 
-            //Act
-            var actionResult = reportController.GetTopIncidents(1,2,"all") as OkNegotiatedContentResult<IEnumerable<IncidentDTO>>;
+                //Act
+                var actionResult =
+                    reportController.GetTopIncidents(1, 2, "all") as OkNegotiatedContentResult<List<IncidentDTO>>;
 
-            ////Assert
-            Assert.NotNull(actionResult);
-            Assert.AreEqual(2, actionResult.Content.Count());
+                //Assert
+                Assert.NotNull(actionResult);
+                Assert.AreEqual(2, actionResult.Content.ToList().Count());
+            }
         }
 
-        private void AddIncidents()
+        private void AddIncidents(IUnitOfWork uow)
         {
             //Arrange 
-            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (uow)
             {
                 foreach (var incident in FixtureData.TestIncidentsForReportControllerTest())
-                {
-                    unitOfWork.IncidentRepository.Add(incident);
-                }
-                unitOfWork.SaveChanges();
+                    uow.IncidentRepository.Add(incident);
+                uow.SaveChanges();
             }
         }
         private static ReportController CreateReportController()

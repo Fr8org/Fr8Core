@@ -12,7 +12,7 @@ namespace UtilitiesTesting.Fixtures
         public static IList<IncidentDO> TestIncidentsForReportControllerTest()
         {
             IList<IncidentDO> incidents = new List<IncidentDO>();
-            for (int i = 0; i < 100; i++)
+            for (int i = 0; i < 10; i++)
             {
                 incidents.Add(new IncidentDO()
                 {

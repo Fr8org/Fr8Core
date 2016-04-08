@@ -13,18 +13,18 @@ using Data.Interfaces.DataTransferObjects;
 using System.Linq;
 using AutoMapper;
 using Microsoft.Ajax.Utilities;
+using InternalInterface = Hub.Interfaces;
 
 namespace HubWeb.Controllers
 {
     [Fr8ApiAuthorize]
     public class ReportController : ApiController
     {
-        private IReport _report;
+        private InternalInterface.IReport _report;
 
         public ReportController()
         {
-            _report = ObjectFactory.GetInstance<IReport>();
-
+            _report = ObjectFactory.GetInstance<InternalInterface.IReport>();
         }
 
         //[Route("api/report/getallfacts")]
