@@ -1,6 +1,6 @@
 ﻿<div>
     <!--TextBlock control main container-->
-    <label class="fr8-full-width">For the <strong>{{field.initialLabel}}</strong>, use:  <span style="margin-left: 15px;" class="fa fr8-float-right" ng-class="[{'fa-chevron-down':field.isCollapsed},{'fa-chevron-up':!field.isCollapsed}]" ng-click="field.isCollapsed=!field.isCollapsed"></span></label>
+    <label class="fr8-full-width" ng-click="field.isCollapsed=!field.isCollapsed">For the <strong>{{field.initialLabel}}</strong>, use:  <span style="margin-left: 15px;" class="fa fr8-float-right" ng-class="[{'fa-chevron-down':field.isCollapsed},{'fa-chevron-up':!field.isCollapsed}]" ></span></label>
     <!--Toggel wrapper -->
     <div class="expanded" ng-class="[{'collapsed': field.isCollapsed},{'':!field.isCollapsed}]">
         <div style="padding-left: 20px;" class="form-inline">

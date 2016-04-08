@@ -1119,10 +1119,10 @@ i.activity-stream-font{
 
 .expanded {
     max-height: 1000px;
-    -o-transition: all .3s ease;   
-    -webkit-transition: all .3s ease;
-	-moz-transition: all .3s ease;
-	transition: all .3s ease;
+    -o-transition: all .6s ease;   
+    -webkit-transition: all .6s ease;
+	-moz-transition: all .6s ease;
+	transition: all .6s ease;
 }
 
 .collapsed {
