@@ -72,7 +72,6 @@ namespace Hub.Services
             uow.SaveChanges();
         }
 
-        [AuthorizeActivity(Privilege = Privilege.ReadObject, ObjectIdArgumentIndex = 1)]
         public List<ContainerDO> LoadContainers(IUnitOfWork uow, PlanDO plan)
         {
             return uow.ContainerRepository.GetQuery().Where(x => x.PlanId == plan.Id).ToList();
