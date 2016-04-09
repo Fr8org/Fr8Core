@@ -1038,7 +1038,7 @@
     <Content Include="Views\Shared\_HomePageNew.cshtml" />
     <Content Include="Views\AngularTemplate\PlanBuilder_KioskMode.cshtml" />
     <Content Include="Views\AngularTemplate\ActivityStream.cshtml" />
-    <Content Include="Views\Shared\UnauthorizedAccess.cshtml" />
+    <Content Include="Views\Shared\401.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

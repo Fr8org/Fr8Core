@@ -141,7 +141,7 @@ namespace HubWeb.Controllers
 
         public ActionResult UnauthorizedAccess()
         {
-            return View("~/shared/UnauthorizedAccess.cshtml");
+            return View("~/shared/401.cshtml");
         }
 
         //Validate emailAddress and meetingInfo then call Generate() parameterized method in BookingRequest controller
