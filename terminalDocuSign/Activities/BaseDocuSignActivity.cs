@@ -115,6 +115,16 @@ namespace terminalDocuSign.Actions
             return control;
         }
 
+        public IEnumerable<FieldDTO> GetUserDefinedFields(AuthorizationTokenDO authTokenDO, string templateId, string envelopeId = null)
+        {
+            if (String.IsNullOrEmpty(templateId))
+            {
+                throw new ArgumentNullException(nameof(templateId));
+            }
+            var conf = DocuSignManager.SetUp(authTokenDO);
+            return DocuSignManager.GetTemplateRecipientsAndTabs(conf, templateId);
+        }
+
         public void AddOrUpdateUserDefinedFields(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, IUpdatableCrateStorage updater, string templateId, string envelopeId = null, List<FieldDTO> allFields = null)
         {
             updater.RemoveByLabel("DocuSignTemplateUserDefinedFields");

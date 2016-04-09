@@ -43,6 +43,7 @@ namespace terminalDocuSign.Actions
 
         private const string EnvelopeRecievedEventName = "EnvelopeReceived";
 
+        private const string AllFieldsCrateName = "DocuSign Envelope Fields";
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
@@ -199,10 +200,10 @@ namespace terminalDocuSign.Actions
                 {
                     case "template":
                         //filter the incoming envelope by template value selected by the user                  
-                        var incommingTemplate = GetValueForEventKey(payloadCrates, "TemplateName");
+                        var incomingTemplate = GetValueForEventKey(payloadCrates, "TemplateName");
 
                         //Dirty quick fix for FR-2858
-                        if (string.IsNullOrEmpty(incommingTemplate))
+                        if (string.IsNullOrEmpty(incomingTemplate))
                         {
                             var manager = new DocuSignManager();
                             var config = manager.SetUp(authTokenDO);
@@ -210,13 +211,10 @@ namespace terminalDocuSign.Actions
                             var templateslist = api.ListTemplates(config.AccountId);
                             if (templateslist.TotalSetSize == "0")
                                 break;
-                            incommingTemplate = string.Join(",", templateslist.EnvelopeTemplates.Select(a => a.Name).ToArray());
-
+                            incomingTemplate = string.Join(",", templateslist.EnvelopeTemplates.Select(a => a.Name).ToArray());
                         }
 
-
-
-                        if (incommingTemplate.Contains(curSelectedTemplate, StringComparison.InvariantCultureIgnoreCase))
+                        if (incomingTemplate.Contains(curSelectedTemplate, StringComparison.InvariantCultureIgnoreCase))
                         {
                             envelopeId = GetValueForEventKey(payloadCrates, "EnvelopeId");
                         }
@@ -279,17 +277,17 @@ namespace terminalDocuSign.Actions
                 List<FieldDTO> allFields = new List<FieldDTO>();
                 allFields.AddRange(fields);
 
-                crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
+                //crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
                 crateStorage.Add(Data.Crates.Crate.FromContent("Log Messages", logMessages));
                 if (curSelectedOption == "template")
                 {
                     var userDefinedFieldsPayload = CreateActivityPayload(curActivityDO, authTokenDO, envelopeId);
-                    crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
+                    //crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
                     allFields.AddRange(userDefinedFieldsPayload.PayloadObjects.FirstOrDefault().PayloadObject);
                 }
 
                 // Update all fields crate
-                crateStorage.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignAllFields", AvailabilityType.RunTime, allFields.ToArray()));
+                crateStorage.Add(Crate.CreateDesignTimeFieldsCrate(AllFieldsCrateName, AvailabilityType.RunTime, allFields.ToArray()));
             }
 
             return Success(payloadCrates);
@@ -300,12 +298,12 @@ namespace terminalDocuSign.Actions
 
             var controlsCrate = PackControls(CreateActivityUi());
             FillDocuSignTemplateSource(controlsCrate, "UpstreamCrate", authTokenDO);
-            var eventFields = CrateManager.CreateDesignTimeFieldsCrate("DocuSign Event Fields", AvailabilityType.RunTime, CreateDocuSignEventFields().ToArray());
+            //var eventFields = CrateManager.CreateDesignTimeFieldsCrate("DocuSign Event Fields", AvailabilityType.RunTime, CreateDocuSignEventFields().ToArray());
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Add(controlsCrate);
-                crateStorage.Add(eventFields);
+                //crateStorage.Add(eventFields);
 
                 // Remove previously added crate of "Standard Event Subscriptions" schema
                 crateStorage.Remove<EventSubscriptionCM>();
@@ -329,12 +327,12 @@ namespace terminalDocuSign.Actions
                 GetTemplateRecipientPickerValue(curActivityDO, out selectedOption, out selectedValue, out selectedTemplate);
                 if (selectedOption == "template")
                 {
-                    AddOrUpdateUserDefinedFields(curActivityDO, authTokenDO, crateStorage, selectedValue, null, allFields);
-                }
+                    allFields.AddRange(GetUserDefinedFields(authTokenDO, selectedValue, null));
+                }   
 
                 // Update all fields crate
-                crateStorage.RemoveByLabel("DocuSignAllFields");
-                crateStorage.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignAllFields", AvailabilityType.RunTime, allFields.ToArray()));
+                crateStorage.RemoveByLabel(AllFieldsCrateName);
+                crateStorage.Add(Crate.CreateDesignTimeFieldsCrate(AllFieldsCrateName, AvailabilityType.RunTime, allFields.ToArray()));
 
             }
             return Task.FromResult(curActivityDO);
@@ -346,7 +344,7 @@ namespace terminalDocuSign.Actions
                     new CrateDescriptionDTO
                     {
                         ManifestType = MT.FieldDescription.GetEnumDisplayName(),
-                        Label = "DocuSignAllFields",
+                        Label = AllFieldsCrateName,
                         ManifestId = (int)MT.FieldDescription,
                         ProducedBy = "Monitor_DocuSign_Envelope_Activity_v1"
                     }), AvailabilityType.RunTime);
