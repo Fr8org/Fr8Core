@@ -60,7 +60,7 @@ namespace terminalSalesforce.Actions
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var configurationCrate = CreateControlsCrate();
-            FillSalesforceObjectsSource(configurationCrate, "WhatKindOfData");
+            ActivitiesHelper.GetAvailableFields(configurationCrate, "WhatKindOfData");
 
             using (var crateStorage = CrateManager.UpdateStorage(() => curActivityDO.CrateStorage))
             {
@@ -83,6 +83,11 @@ namespace terminalSalesforce.Actions
                 return await Task.FromResult(curActivityDO);
             }
 
+            if (CrateManager.GetStorage(curActivityDO).CratesOfType<FieldDescriptionsCM>().Any(x => x.Label.EndsWith(" - " + curSelectedObject)))
+            {
+                return await Task.FromResult(curActivityDO);
+            }
+
             //get fields of selected salesforce object
             var objectFieldsList = await _salesforce.GetFields(curSelectedObject, authTokenDO);
             
@@ -94,11 +99,11 @@ namespace terminalSalesforce.Actions
                 crateStorage.Add(
                     Crate.FromContent("Queryable Criteria", new TypedFieldsCM(
                         objectFieldsList.OrderBy(field => field.Key)
-                                        .Select(field => new TypedFieldDTO(field.Key, field.Value, FieldType.String, new TextBox { Name = field.Key })))));
+                                        .Select(field => new TypedFieldDTO(field.Value, field.Key, FieldType.String, new TextBox { Name = field.Value })))));
 
                 //FR-2459 - The activity should create another design time fields crate of type FieldDescriptionsCM for downstream activities.
-                crateStorage.RemoveByLabel("Salesforce Object Fields");
-                crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Salesforce Object Fields", objectFieldsList.ToList(), AvailabilityType.RunTime));
+                crateStorage.RemoveByLabelPrefix("Salesforce Object Fields");
+                crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Salesforce Object Fields - " + curSelectedObject, objectFieldsList.ToList(), AvailabilityType.RunTime));
             }
 
             return await Task.FromResult(curActivityDO);
@@ -119,9 +124,9 @@ namespace terminalSalesforce.Actions
                 ((DropDownList)GetControl(curActivityDO, "WhatKindOfData", ControlTypes.DropDownList)).selectedKey;
 
             var curSalesforceObjectFields = CrateManager.GetStorage( curActivityDO )
-                                                         .CratesOfType<TypedFieldsCM>()
-                                                         .Single(c => c.Label.Equals("Queryable Criteria"))
-                                                         .Content.Fields.Select(f => f.Name);
+                                                        .CratesOfType<FieldDescriptionsCM>()
+                                                        .Single(c => c.Label.Equals("Salesforce Object Fields - " + curSelectedSalesForceObject))
+                                                        .Content.Fields;
 
             if (string.IsNullOrEmpty(curSelectedSalesForceObject))
             {
@@ -131,6 +136,10 @@ namespace terminalSalesforce.Actions
             //get filters
             var filterValue = ExtractControlFieldValue(curActivityDO, "SelectedQuery");
             var filterDataDTO = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(filterValue);
+            filterDataDTO.ForEach(f => {
+                string newFieldValue = curSalesforceObjectFields.Single(field => field.Value.Equals(f.Field)).Key;
+                f.Field = newFieldValue;
+            });
 
             //if without filter, just get all selected objects
             //else prepare SOQL query to filter the objects based on the filter conditions
@@ -141,7 +150,10 @@ namespace terminalSalesforce.Actions
                 parsedCondition = ParseConditionToText(filterDataDTO);
             }
 
-            var resultObjects = await _salesforce.GetObjectByQuery(curSelectedSalesForceObject, curSalesforceObjectFields, parsedCondition, authTokenDO);
+            var resultObjects = await _salesforce.GetObjectByQuery(curSelectedSalesForceObject, 
+                                                                   curSalesforceObjectFields.Select(f => f.Key), 
+                                                                   parsedCondition, 
+                                                                   authTokenDO);
 
             //update the payload with result objects
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
@@ -190,39 +202,5 @@ namespace terminalSalesforce.Actions
 
             return PackControlsCrate(whatKindOfData, textArea, queryBuilderPane);
         }
-
-        #region Fill Source
-        private void FillSalesforceObjectsSource(Crate configurationCrate, string controlName)
-        {
-            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
-            if (control != null)
-            {
-                control.ListItems = GetAvailableFields();
-            }
         }
-
-        private List<ListItem> GetAvailableFields()
-        {
-            var fields =
-            new FieldDTO[]
-                {
-                    new FieldDTO("Account") { Availability = AvailabilityType.Configuration},
-                    new FieldDTO("Contact") { Availability = AvailabilityType.Configuration},
-                    new FieldDTO("Lead") { Availability = AvailabilityType.Configuration},
-                    new FieldDTO("Opportunity") { Availability = AvailabilityType.Configuration},
-                    //new FieldDTO("Forecast") {Availability = AvailabilityType.Configuration},
-                    new FieldDTO("Contract") { Availability = AvailabilityType.Configuration},
-                    new FieldDTO("Order") { Availability = AvailabilityType.Configuration},
-                    new FieldDTO("Case") { Availability = AvailabilityType.Configuration},
-                    new FieldDTO("Solution") { Availability = AvailabilityType.Configuration},
-                    new FieldDTO("Product2") { Availability = AvailabilityType.Configuration},
-                    new FieldDTO("Document") { Availability = AvailabilityType.Configuration}
-                    //new FieldDTO("File") {Availability = AvailabilityType.Configuration}
-                };
-            return fields.Select(x => new ListItem() { Key = x.Key, Value = x.Key }).ToList();
-        }
-
-        #endregion
-    }
 }

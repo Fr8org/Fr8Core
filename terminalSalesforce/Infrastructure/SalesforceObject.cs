@@ -13,7 +13,7 @@ using StructureMap;
 
 namespace terminalSalesforce.Infrastructure
 {
-    public abstract class SalesforceObject
+    public class SalesforceObject
     {
         /// <summary>
         /// Creates a Salesforce object
@@ -22,19 +22,16 @@ namespace terminalSalesforce.Infrastructure
         {
             SuccessResponse successResponse = null;
 
-            //if the given object is valid, create. Validation is delegated to the derived classes.
-            if (ValidateObject(salesforceObject))
-            {
-                successResponse = await forceClient.CreateAsync(salesforceObjectName, salesforceObject);
-            }
+            successResponse = await forceClient.CreateAsync(salesforceObjectName, salesforceObject);
 
             return successResponse ?? new SuccessResponse(); 
         }
 
         /// <summary>
-        /// Gets fields of the given Salesforce object name
+        /// Gets fields of the given Salesforce object name.
+        /// Please see https://developer.salesforce.com/docs/atlas.en-us.api.meta/api/sforce_api_calls_describesobjects_describesobjectresult.htm#topic-title
         /// </summary>
-        public async Task<IList<FieldDTO>> GetFields(string salesforceObjectName, ForceClient forceClient)
+        public async Task<IList<FieldDTO>> GetFields(string salesforceObjectName, ForceClient forceClient, bool onlyUpdatableFields = false)
         {
             //Get the fields of the salesforce object name by calling Describe API
             var fieldsQueryResponse = (JObject)await forceClient.DescribeAsync<object>(salesforceObjectName);
@@ -42,11 +39,41 @@ namespace terminalSalesforce.Infrastructure
             var objectFields = new List<FieldDTO>();
 
             //parse them into the list of FieldDTO
-            JToken leadFields;
-            if (fieldsQueryResponse.TryGetValue("fields", out leadFields) && leadFields is JArray)
+            JToken fieldDescriptions;
+            if (fieldsQueryResponse.TryGetValue("fields", out fieldDescriptions) && fieldDescriptions is JArray)
             {
-                objectFields.AddRange(
-                    leadFields.Select(a => new FieldDTO(a.Value<string>("name"), a.Value<string>("label"), Data.States.AvailabilityType.RunTime)));
+                //if asked to get only updatable fields, filter the fields which are updateable
+                if (onlyUpdatableFields)
+                {
+                    fieldDescriptions = new JArray(fieldDescriptions.Where(fieldDescription => (fieldDescription.Value<bool>("updateable") == true)));
+                }
+
+                var fields = fieldDescriptions.Select(fieldDescription =>
+                                    /*
+                                    Select Fields as FieldDTOs with                                    
+
+                                    Key -> Field Name
+                                    Value -> Field Lable
+                                    AvailabilityType -> Run Time
+                                    FieldType -> Field Type
+
+                                    IsRequired -> The Field is required when ALL the below conditions are true.
+                                      nillable            = false, Meaning, the field must have a valid value. The field's value should not be NULL or NILL or Empty
+                                      defaultedOnCreate   = false, Meaning, Salesforce itself does not assign default value for this field when object is created (ex. ID)
+                                      updateable          = true,  Meaning, The filed's value must be updatable by the user. 
+                                                                            User must be able to set or modify the value of this field.
+                                    */
+                                    new FieldDTO(fieldDescription.Value<string>("name"), fieldDescription.Value<string>("label"), Data.States.AvailabilityType.RunTime)
+                                    {
+                                        FieldType = fieldDescription.Value<string>("type"),
+
+                                        IsRequired = fieldDescription.Value<bool>("nillable") == false &&
+                                                     fieldDescription.Value<bool>("defaultedOnCreate") == false &&
+                                                     fieldDescription.Value<bool>("updateable") == true
+
+                                    }).OrderBy(field => field.Key);
+
+                objectFields.AddRange(fields);
             }
 
             return objectFields;
@@ -72,8 +99,6 @@ namespace terminalSalesforce.Infrastructure
             return ParseQueryResult(response);
         }
 
-        protected abstract bool ValidateObject(object salesforceObject);
-
         private IList<PayloadObjectDTO> ParseQueryResult(QueryResult<object> queryResult)
         {
             var resultLeads = new List<JObject>();
@@ -89,11 +114,11 @@ namespace terminalSalesforce.Infrastructure
                                 .Select(l => new PayloadObjectDTO
                                     {
                                         PayloadObject = l.Properties()
-                                                         .Where(p => p.Value.Type == JTokenType.String && !string.IsNullOrEmpty(p.Value.Value<string>()))
+                                                         .Where(p => !string.IsNullOrEmpty(p.Value.Value<object>().ToString()))
                                                          .Select(p => 
                                                             new FieldDTO {
                                                                 Key = p.Name,
-                                                                Value = p.Value.Value<string>(),
+                                                                Value = p.Value.Value<object>().ToString(),
                                                                 Availability = Data.States.AvailabilityType.RunTime
                                                             })
                                                             .ToList()
