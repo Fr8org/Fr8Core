@@ -196,6 +196,9 @@
     <Compile Include="TestReportNotifier.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Config\log4net.tests.healthMonitor.config">
+      <Link>log4net.tests.healthMonitor.config</Link>
+    </None>
     <None Include="App.config">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
