@@ -166,6 +166,7 @@
     </Reference>
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -261,12 +262,7 @@
     <Compile Include="Infrastructure\DateTimeHelper.cs" />
     <Compile Include="Infrastructure\DocuSignConnectParser.cs" />
     <Compile Include="Infrastructure\DataContracts\DocusignFolderInfo.cs" />
-    <Compile Include="Infrastructure\DocuSignParserModels\DocumentStatus.cs" />
-    <Compile Include="Infrastructure\DocuSignParserModels\DocumentStatuses.cs" />
-    <Compile Include="Infrastructure\DocuSignParserModels\DocuSignEnvelopeInformation.cs" />
-    <Compile Include="Infrastructure\DocuSignParserModels\EnvelopeStatus.cs" />
-    <Compile Include="Infrastructure\DocuSignParserModels\RecipientStatus.cs" />
-    <Compile Include="Infrastructure\DocuSignParserModels\RecipientStatuses.cs" />
+    <Compile Include="Infrastructure\DocuSignParserModels\DocuSignConnectEventModel.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>

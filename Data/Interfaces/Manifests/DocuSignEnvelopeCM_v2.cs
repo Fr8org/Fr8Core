@@ -24,13 +24,11 @@ namespace Data.Interfaces.Manifests
 
     public class DocuSignRecipientStatus
     {
+        public string Type;
         public string Name;
         public string Email;
         public string RecipientId;
-        public string UserId;
-        public string Selected;
         public string RoutingOrderId;
-        public string RoleName;
         public string Status;
         public List<DocuSignTab> Tabs = new List<DocuSignTab>();
     }
@@ -38,12 +36,12 @@ namespace Data.Interfaces.Manifests
     public class DocuSignTab
     {
         public string TabType;
-        public string TabId;
         public string Name;
         public string DocumentId;
         public string Value;
         public string TabLabel;
-        List<DocuSignTab> Items = new List<DocuSignTab>();
+        public string Selected;
+        public List<DocuSignTab> Items = new List<DocuSignTab>();
     }
 
     public class DocuSignTemplate
@@ -51,6 +49,5 @@ namespace Data.Interfaces.Manifests
         public string TemplateId;
         public string Name;
         public string DocumentId;
-        public string Applied;
     }
 }
