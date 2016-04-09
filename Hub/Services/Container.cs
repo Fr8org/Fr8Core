@@ -204,7 +204,6 @@ namespace Hub.Services
             plan.Enqueue(planDO.Id, payloadCrates);
         }
 
-        //[AuthorizeActivity(Privilege = Privilege.EditObject, ObjectIdArgumentIndex = 1)]
         public async Task Run(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             if (curContainerDO == null)

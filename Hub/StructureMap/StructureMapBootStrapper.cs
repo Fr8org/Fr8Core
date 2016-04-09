@@ -112,12 +112,13 @@ namespace Hub.StructureMap
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
                 For<IRestfulServiceClient>().Singleton().Use<RestfulServiceClient>().SelectConstructor(() => new RestfulServiceClient());
                 For<ITerminalTransmitter>().Use<TerminalTransmitter>();
-                var dynamicProxy = new ProxyGenerator();
+
                 For<IPlan>().Use<Hub.Services.Plan>().DecorateWith((context, service) => new PlanSecurityDecorator(service, ObjectFactory.GetInstance<ISecurityServices>()));
-                For<InternalInterfaces.IContainer>().Use<InternalClass.Container>().DecorateWith(z => dynamicProxy.CreateInterfaceProxyWithTarget(z, new AuthorizeActivityInterceptor()));
+                For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
                 For<InternalInterfaces.IFact>().Use<InternalClass.Fact>();
                 For<ICriteria>().Use<Criteria>();
-                For<IActivity>().Use<Activity>().Singleton();
+                var dynamicProxy = new ProxyGenerator();
+                For<IActivity>().Use<Activity>().Singleton().DecorateWith(z => dynamicProxy.CreateInterfaceProxyWithTarget(z, new AuthorizeActivityInterceptor()));
 				For<IPlanNode>().Use<PlanNode>();
                 For<ISubscription>().Use<Subscription>();
                 For<IProcessNode>().Use<ProcessNode>();

@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
+using Data.Infrastructure.Security;
 using Data.Repositories.Plan;
 using Data.Infrastructure.StructureMap;
 using Data.States;
@@ -168,6 +169,7 @@ namespace Hub.Services
             }
         }
 
+        [AuthorizeActivity(Privilege = Privilege.ReadObject, ObjectIdArgumentIndex = 1)]
         public ActivityDO GetById(IUnitOfWork uow, Guid id)
         {
             return uow.PlanRepository.GetById<ActivityDO>(id);

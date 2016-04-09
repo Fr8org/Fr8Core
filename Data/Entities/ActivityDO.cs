@@ -74,14 +74,6 @@ namespace Data.Entities
             currentView = activity.currentView;
         }
 
-        public override void AfterCreate()
-        {
-            base.AfterCreate();
-
-            var securityService = ObjectFactory.GetInstance<ISecurityServices>();
-            securityService.SetupDefaultSecurityForDataObject(Id, GetType().Name);
-        }
-
         //        public CrateStorageDTO CrateStorageDTO()
         //        {
         //            return JsonConvert.DeserializeObject<CrateStorageDTO>(this.CrateStorage);
