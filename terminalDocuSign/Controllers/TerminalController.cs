@@ -177,19 +177,6 @@ namespace terminalDocuSign.Controllers
                 MinPaneWidth = 380
             };
 
-            var generateDocusignReport = new ActivityTemplateDTO
-            {
-                Name = "Generate_DocuSign_Report",
-                Label = "Generate a DocuSign Report",
-                Version = "1",
-                Category = ActivityCategory.Solution,
-                NeedsAuthentication = true,
-                Terminal = terminal,
-                WebService = webService,
-                MinPaneWidth = 420,
-                Tags = "HideChildren"
-            };
-
             var searchDocusignHistory = new ActivityTemplateDTO
             {
                 Name = "Search_DocuSign_History",
@@ -214,7 +201,6 @@ namespace terminalDocuSign.Controllers
                 collectFormDataSolution,
                 trackDocuSignRecipientsSolution,
                 queryDocusign,
-                generateDocusignReport,
                 searchDocusignHistory,
                 getDocuSignTemplateActionTemplate,
                 process_personal_report
