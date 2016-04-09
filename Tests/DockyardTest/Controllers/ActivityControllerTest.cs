@@ -513,9 +513,7 @@ namespace DockyardTest.Controllers
                 await ActivityController_IncorrectDocumentationSupport_ThrowsException(docSupport);
         }
 
-        [Test]
-        [ExpectedException(typeof(Exception))]
-        public async Task ActivityController_IncorrectDocumentationSupport_ThrowsException(string docSupport)
+        private async Task ActivityController_IncorrectDocumentationSupport_ThrowsException(string docSupport)
         {
             var controller = new ActivitiesController();
             var emptyActivity = new ActivityDTO { Documentation = docSupport };
