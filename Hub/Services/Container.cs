@@ -96,7 +96,7 @@ namespace Hub.Services
         {
             var state = ActivityState.InitialRun;
             var currentNode = uow.PlanRepository.GetById<PlanNodeDO>(curContainerDO.CurrentActivityId);
-            
+
             // we need this to make tests wokring. If we leave currentplannode not null, MockDB will restore CurrentPlanNodeId. 
             // EF should just igone navigational porperty null value if corresponding foreign key is not null.
             curContainerDO.CurrentPlanNode = null;
@@ -112,7 +112,7 @@ namespace Hub.Services
                     state = ActivityState.ReturnFromChildren;
                 }
                 else
-                { 
+                {
                     if (nextSibling == null)
                     {
                         curContainerDO.CurrentActivityId = currentNode.ParentPlanNode?.Id;
@@ -177,7 +177,7 @@ namespace Hub.Services
 
         private bool HasOperationalStateCrate(ContainerDO curContainerDO)
         {
-            
+
             var storage = _crate.GetStorage(curContainerDO.CrateStorage);
             var operationalState = storage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
             return operationalState != null;
@@ -210,7 +210,7 @@ namespace Hub.Services
             {
                 throw new ArgumentNullException("ContainerDO is null");
             }
-            
+
             try
             {
                 //if payload already has operational state create we shouldn't create another
@@ -219,16 +219,16 @@ namespace Hub.Services
                     AddOperationalStateCrate(uow, curContainerDO);
                 }
 
-            curContainerDO.State = State.Executing;
+                curContainerDO.State = State.Executing;
                 uow.SaveChanges();
 
-            if (curContainerDO.CurrentActivityId == null)
+                if (curContainerDO.CurrentActivityId == null)
                 {
                     throw new ArgumentNullException("CurrentActivity is null. Cannot execute CurrentActivity");
                 }
 
                 var actionState = ActivityState.InitialRun;
-            while (curContainerDO.CurrentActivityId != null)
+                while (curContainerDO.CurrentActivityId != null)
                 {
                     var activityResponseDTO = await ProcessActivity(uow, curContainerDO, actionState);
 
@@ -243,13 +243,13 @@ namespace Hub.Services
                     {
                         case ActivityResponse.ExecuteClientActivity:
                         case ActivityResponse.Success:
-                    case ActivityResponse.ReprocessChildren:
+                        case ActivityResponse.ReprocessChildren:
                         case ActivityResponse.Null://let's assume this is success for now
 
 
                             break;
                         case ActivityResponse.RequestSuspend:
-                        curContainerDO.State = State.Suspended;
+                            curContainerDO.State = State.Suspended;
                             return;
 
                         case ActivityResponse.Error:
@@ -259,7 +259,7 @@ namespace Hub.Services
                             throw new ErrorResponseException(Mapper.Map<ContainerDO, ContainerDTO>(curContainerDO), error?.Message);
                         case ActivityResponse.RequestTerminate:
                             //FR-2163 - If action response requests for termination, we make the container as Completed to avoid unwanted errors.
-                        curContainerDO.State = State.Completed;
+                            curContainerDO.State = State.Completed;
                             EventManager.ProcessingTerminatedPerActivityResponse(curContainerDO, ActivityResponse.RequestTerminate);
 
                             return;
@@ -267,7 +267,7 @@ namespace Hub.Services
                         case ActivityResponse.JumpToActivity:
                             actionState = ActivityState.InitialRun;
                             activityResponseDTO.TryParseResponseMessageDTO(out responseMessage);
-                        curContainerDO.CurrentActivityId = Guid.Parse((string)responseMessage.Details);
+                            curContainerDO.CurrentActivityId = Guid.Parse((string)responseMessage.Details);
                             continue;
 
                         case ActivityResponse.JumpToSubplan:
@@ -282,16 +282,16 @@ namespace Hub.Services
                             break;
 
                         default:
-                        throw new Exception("Unknown activity state on activity with id " + curContainerDO.CurrentActivityId);
+                            throw new Exception("Unknown activity state on activity with id " + curContainerDO.CurrentActivityId);
                     }
 
                     var shouldSkipChildren = ShouldSkipChildren(curContainerDO, actionState, activityResponse);
                     actionState = MoveToNextPlan(uow, curContainerDO, shouldSkipChildren);
                 }
 
-            if(curContainerDO.State == State.Executing)
+                if (curContainerDO.State == State.Executing)
                 {
-                curContainerDO.State = State.Completed;
+                    curContainerDO.State = State.Completed;
                     uow.SaveChanges();
 
                 }
@@ -300,11 +300,11 @@ namespace Hub.Services
             {
                 var curActivityDTO = GetCurrentActivity(uow, curContainerDO);
                 throw new ActivityExecutionException(e.ContainerDTO, curActivityDTO, e.Message, e);
-            }            
+            }
             catch (Exception e)
             {
                 var curActivityDTO = GetCurrentActivity(uow, curContainerDO);
-                
+
                 if (curActivityDTO != null)
                 {
                     var curContainerDTO = Mapper.Map<ContainerDO, ContainerDTO>(curContainerDO);
@@ -313,7 +313,7 @@ namespace Hub.Services
                 else
                 {
                     throw;
-                }                
+                }
             }
         }
 
@@ -330,11 +330,15 @@ namespace Hub.Services
                 throw new ApplicationException("UserId must not be null");
 
             var containerRepository = unitOfWork.ContainerRepository.GetQuery();
-            
-      
-            return (id == null
-               ? containerRepository.Where(container => container.Plan.Fr8Account.Id == account.Id).Take(200)
-               : containerRepository.Where(container => container.Id == id && container.Plan.Fr8Account.Id == account.Id).Take(200)).ToList();
+
+            if (id == null)
+                return containerRepository.Where(container => container.Plan.Fr8Account.Id == account.Id)
+                                          .OrderByDescending(i => i.CreateDate)
+                                          .Take(200).ToList();
+            else
+                return containerRepository.Where(container => container.Id == id && container.Plan.Fr8Account.Id == account.Id)
+                                          .OrderByDescending(i => i.CreateDate)
+                                          .Take(200).ToList();
         }
 
         private ActivityDTO GetCurrentActivity(IUnitOfWork uow, ContainerDO curContainerDO)
