@@ -109,14 +109,6 @@ namespace Data.Entities
             return node;
         }
 
-        public override void AfterCreate()
-        {
-            base.AfterCreate();
-
-            var securityService = ObjectFactory.GetInstance<ISecurityServices>();
-            securityService.SetupDefaultSecurityForDataObject(Id, GetType().Name);
-        }
-
         public List<PlanNodeDO> GetDescendantsOrdered()
         {
             return PlanTreeHelper.LinearizeOrdered(this);

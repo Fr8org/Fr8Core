@@ -35,6 +35,27 @@ app.config(['$ocLazyLoadProvider', ($ocLazyLoadProvider) => {
         cssFilesInsertBefore: 'ng_load_plugins_before' // load the above css files before a LINK element with this ID. Dynamic CSS files must be loaded between core and theme css files
     });
 }]);
+app.factory('responseHttpStatusCodeDetector', ['$location', '$q', ($location, $q) => {
+    var responseHttpStatusCodeDetector = {
+        responseError: function (response) {
+            if (response.status === 401) {
+                $location.path('/home/UnauthorizedAccess');
+                return $q.reject(response);
+            }
+            else {
+                return $q.reject(response);
+            }
+        }
+    };
+
+    return responseHttpStatusCodeDetector;
+}]);
+
+app.config(['$httpProvider', ($httpProvider) => {
+    $httpProvider.interceptors.push('responseHttpStatusCodeDetector');
+}]);
+
+
 
 /* Setup global settings */
 app.factory('settings', ['$rootScope', ($rootScope) => {

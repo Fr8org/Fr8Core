@@ -55,8 +55,16 @@ namespace HubWeb.ExceptionHandling
                 ex.GetFullExceptionMessage(),
                 ex.StackTrace));
 
-            context.Response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
-
+            if (ex.GetType() == typeof (HttpException))
+            {
+                var httpException = (HttpException) ex;
+                context.Response = new HttpResponseMessage((HttpStatusCode) httpException.GetHttpCode());
+            }
+            else
+            {
+                context.Response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+            }
+            
             if (ex is AuthenticationExeception)
             {
                 errorDto = ErrorDTO.AuthenticationError();

@@ -109,15 +109,6 @@ namespace HubWeb
         {
             var exception = Server.GetLastError();
 
-            if (exception.GetType() == typeof (HttpException))
-            {
-                var httpException = (HttpException)exception;
-                if (httpException.ErrorCode == (int) HttpStatusCode.Unauthorized)
-                {
-                    Server.Transfer("/home/UnauthorizedAccess");
-                }
-            }
-
             String errorMessage = "Critical internal error occured.";
             try
             {
