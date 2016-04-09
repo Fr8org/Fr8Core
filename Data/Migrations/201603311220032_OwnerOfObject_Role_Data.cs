@@ -32,11 +32,11 @@ namespace Data.Migrations
             insert into dbo.RolePrivileges(Id, PrivilegeName, RoleId, LastUpdated, CreateDate) values (@deleteRolePrivilegeId,'DeleteObject', @newRoleId, '12-10-25 12:32:10 +01:00', '12-10-25 12:32:10 +01:00')
             
             insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, @readRolePrivilegeId, 'PlanDO', '12-10-25 12:32:10 +01:00', '12-10-25 12:32:10 +01:00' from dbo.Plans
-            
-            ";
- //           insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, @editRolePrivilegeId, 'PlanDO', '12-10-25 12:32:10 +01:00', '12-10-25 12:32:10 +01:00' from dbo.Plans
- //insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, @deleteRolePrivilegeId, 'PlanDO', '12-10-25 12:32:10 +01:00', '12-10-25 12:32:10 +01:00' from dbo.Plans
+            insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, @editRolePrivilegeId, 'PlanDO', '12-10-25 12:32:10 +01:00', '12-10-25 12:32:10 +01:00' from dbo.Plans
+            insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, @deleteRolePrivilegeId, 'PlanDO', '12-10-25 12:32:10 +01:00', '12-10-25 12:32:10 +01:00' from dbo.Plans
 
+            ";
+ 
  //insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, @readRolePrivilegeId, 'ContainerDO', CreateDate, LastUpdated from dbo.Containers
  //insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, @editRolePrivilegeId, 'ContainerDO', CreateDate, LastUpdated from dbo.Containers
  //insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, @deleteRolePrivilegeId, 'ContainerDO', CreateDate, LastUpdated from dbo.Containers
