@@ -35,7 +35,7 @@ namespace Data.Migrations
             insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, @editRolePrivilegeId, 'PlanDO', '12-10-25 12:32:10 +01:00', '12-10-25 12:32:10 +01:00' from dbo.Plans
             insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, @deleteRolePrivilegeId, 'PlanDO', '12-10-25 12:32:10 +01:00', '12-10-25 12:32:10 +01:00' from dbo.Plans
 
-            insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, @readRolePrivilegeId,, 'ActivityDO', '12-10-25 12:32:10 +01:00', '12-10-25 12:32:10 +01:00' from dbo.Actions
+            insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, @readRolePrivilegeId, 'ActivityDO', '12-10-25 12:32:10 +01:00', '12-10-25 12:32:10 +01:00' from dbo.Actions
             insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, @editRolePrivilegeId, 'ActivityDO', '12-10-25 12:32:10 +01:00', '12-10-25 12:32:10 +01:00' from dbo.Actions
             insert into dbo.ObjectRolePrivileges(ObjectId, RolePrivilegeId, Type, CreateDate, LastUpdated)  select Id, @deleteRolePrivilegeId, 'ActivityDO', '12-10-25 12:32:10 +01:00', '12-10-25 12:32:10 +01:00' from dbo.Actions
             ";
