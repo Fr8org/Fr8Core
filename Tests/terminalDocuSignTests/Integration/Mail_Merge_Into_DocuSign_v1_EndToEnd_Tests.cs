@@ -464,17 +464,19 @@ namespace terminalDocuSignTests.Integration
 
         private async Task<Guid> ExtractGoogleDefaultToken()
         {
+            var errorMessage = $"Authorization token for Google is not found for the integration testing user {TestUserEmail}. Please go to the target instance of fr8 and log in with the integration testing user credentials. Then add a Google action to any plan and be sure to set the \"Use for all Activities\" checkbox on the Authorize Accounts dialog while authenticating. Reason: ";
+
             var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
                 _baseUrl + "manageauthtoken/"
             );
 
-            Assert.NotNull(tokens);
+            Assert.NotNull(tokens, errorMessage + "No auth-tokens found");
 
             var terminal = tokens.FirstOrDefault(x => x.Name == "terminalGoogle");
-            Assert.NotNull(terminal);
+            Assert.NotNull(terminal, errorMessage + "No auth-tokens found for terminalGoogle");
 
             var token = terminal.AuthTokens.FirstOrDefault(x => x.IsMain);
-            Assert.NotNull(token);
+            Assert.NotNull(token, errorMessage + "No Main auth-token found for terminalGoogle");
 
             return token.Id;
         }
