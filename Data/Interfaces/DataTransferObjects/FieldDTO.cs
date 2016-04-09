@@ -14,6 +14,12 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("value")]
         public string Value { get; set; }
 
+        [JsonProperty("fieldType")]
+        public string FieldType { get; set; }
+
+        [JsonProperty("isRequired")]
+        public bool IsRequired { get; set; }
+
         [JsonProperty("tags")]
         public string Tags { get; set; }
 

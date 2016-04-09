@@ -38,6 +38,17 @@ namespace terminalSalesforceTests.Fixtures
             };
         }
 
+        public static ActivityTemplateDO SaveToSalesforceActivityTemplateDO()
+        {
+            return new ActivityTemplateDO
+            {
+                Version = "1",
+                Name = "Save_To_SalesforceDotCom",
+                Label = "Save To Salesforce.Com",
+                NeedsAuthentication = true
+            };
+        }
+
         public static ActivityTemplateDO PostToChatterActivityTemplateDO()
         {
             return new ActivityTemplateDO
@@ -61,6 +72,22 @@ namespace terminalSalesforceTests.Fixtures
                 CrateStorage = "",
 
             };
+            return activityDO;
+        }
+
+        public static ActivityDO SaveToSalesforceTestActivityDO1()
+        {
+            var actionTemplate = SaveToSalesforceActivityTemplateDO();
+
+            var activityDO = new ActivityDO()
+            {
+                Id = new Guid("8339DC87-F011-4FB1-B47C-FEC406E4100A"),
+                ActivityTemplateId = actionTemplate.Id,
+                ActivityTemplate = actionTemplate,
+                CrateStorage = "",
+
+            };
+
             return activityDO;
         }
 
