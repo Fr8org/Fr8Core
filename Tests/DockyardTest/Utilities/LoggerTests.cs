@@ -7,14 +7,16 @@ using System.Threading.Tasks;
 using System.Xml;
 using NUnit.Framework;
 using Utilities.Logging;
+using UtilitiesTesting;
 
 namespace DockyardTest.Utilities
 {
     [TestFixture]
     [Category("Logger")]
-    class LoggerTests
+    class LoggerTests: BaseTest
     {
         [Test]
+        //[Category("IntegrationTests")]
         // actually test is fragile because depends on file name in HubWeb\Config\log4net.tests.config 
         // file name in FileAppender
         // and of course it is not unit test. 
