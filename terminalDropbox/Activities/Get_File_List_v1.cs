@@ -37,6 +37,7 @@ namespace terminalDropbox.Actions
         }
 
         private const string RunTimeCrateLabel = "Files from Dropbox";
+        private const string FileListCrateLabel = "Dropbox File list";
 
         private readonly IDropboxService _dropboxService;
         private readonly ICrateManager _crateManager;
@@ -47,37 +48,39 @@ namespace terminalDropbox.Actions
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 
+        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        {
+            var fileNames = await _dropboxService.GetFileList(GetDropboxAuthToken());
+            runtimeCrateManager.MarkAvailableAtRuntime<StandardFileListCM>(RunTimeCrateLabel);
+            CurrentActivityStorage.ReplaceByLabel(PackDropboxFileListCrate(fileNames.ToArray()));
+        }
+
+
+
         protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
         {
             var fileNames = await _dropboxService.GetFileList(GetDropboxAuthToken());
-            ConfigurationControls.FileList.ListItems = fileNames.Select(x => new ListItem { Key = x, Value = x }).ToList();
             runtimeCrateManager.MarkAvailableAtRuntime<StandardFileListCM>(RunTimeCrateLabel);
+            CurrentActivityStorage.ReplaceByLabel(PackDropboxFileListCrate(fileNames.ToArray()));
         }
 
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(curActivityDO, containerId);
 
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(payloadCrates);
-            }
+            //if (NeedsAuthentication(authTokenDO))
+            //{
+            //    return NeedsAuthenticationError(payloadCrates);
+            //}
 
-            var fileNames = await _dropboxService.GetFileList(authTokenDO);
+            //var fileNames = await _dropboxService.GetFileList(authTokenDO);
 
-            using (var crateStorage = _crateManager.GetUpdatableStorage(payloadCrates))
-            {
-                crateStorage.AddRange(PackCrate_DropboxFileList(fileNames));
-            }
+            //using (var crateStorage = _crateManager.GetUpdatableStorage(payloadCrates))
+            //{
+            //    crateStorage.AddRange(PackDropboxFileListCrate(fileNames.));
+            //}
 
             return Success(payloadCrates);
-        }
-
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
-        {
-            var fileNames = await _dropboxService.GetFileList(GetDropboxAuthToken());
-            ConfigurationControls.FileList.ListItems = fileNames.Select(x => new ListItem { Key = x, Value = x }).ToList();
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardFileListCM>(RunTimeCrateLabel);
         }
 
         private AuthorizationTokenDO GetDropboxAuthToken(AuthorizationTokenDO authTokenDO = null)
@@ -90,12 +93,20 @@ namespace terminalDropbox.Actions
             throw new NotImplementedException();
         }
 
-        private IEnumerable<Crate> PackCrate_DropboxFileList(List<string> fileNames)
+        private Crate<StandardFileListCM> PackDropboxFileListCrate(string[] fileNames)
         {
-            return fileNames.Select(fileName => Crate.FromContent("File", new StandardFileDescriptionCM()
+            ConfigurationControls.FileList.ListItems = fileNames.Select(x => new ListItem { Key = x, Value = x }).ToList();
+            List<StandardFileDescriptionCM> descriptionList = fileNames.Select(fileName => new StandardFileDescriptionCM()
             {
                 Filename = fileName
-            }));
+            }).ToList();
+
+            return Crate<StandardFileListCM>.FromContent(
+                RunTimeCrateLabel,
+                new StandardFileListCM()
+                {
+                    FileList = descriptionList
+                });
         }
 
         //public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
