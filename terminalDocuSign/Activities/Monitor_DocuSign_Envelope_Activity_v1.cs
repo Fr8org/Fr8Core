@@ -281,7 +281,7 @@ namespace terminalDocuSign.Actions
                 crateStorage.Add(Data.Crates.Crate.FromContent("Log Messages", logMessages));
                 if (curSelectedOption == "template")
                 {
-                    allFields.AddRange(GetUserDefinedFields(authTokenDO, envelopeId, null));
+                    allFields.AddRange(GetEnvelopeUserDefinedFields(authTokenDO, envelopeId, null));
                     //var userDefinedFieldsPayload = CreateActivityPayload(curActivityDO, authTokenDO, envelopeId);
                     //crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
                     //allFields.AddRange(userDefinedFieldsPayload.PayloadObjects.FirstOrDefault().PayloadObject);
@@ -328,7 +328,7 @@ namespace terminalDocuSign.Actions
                 GetTemplateRecipientPickerValue(curActivityDO, out selectedOption, out selectedValue, out selectedTemplate);
                 if (selectedOption == "template")
                 {
-                    allFields.AddRange(GetUserDefinedFields(authTokenDO, selectedValue, null));
+                    allFields.AddRange(GetTemplateUserDefinedFields(authTokenDO, selectedValue, null));
                 }   
 
                 // Update all fields crate
