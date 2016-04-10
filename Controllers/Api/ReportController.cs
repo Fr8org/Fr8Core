@@ -13,29 +13,28 @@ using Data.Interfaces.DataTransferObjects;
 using System.Linq;
 using AutoMapper;
 using Microsoft.Ajax.Utilities;
-using InternalInterface = Hub.Interfaces;
 
 namespace HubWeb.Controllers
 {
     [Fr8ApiAuthorize]
     public class ReportController : ApiController
     {
-        private InternalInterface.IReport _report;
+        private IReport _report;
 
         public ReportController()
         {
-            _report = ObjectFactory.GetInstance<InternalInterface.IReport>();
+            _report = ObjectFactory.GetInstance<IReport>();
         }
 
         //[Route("api/report/getallfacts")]
         public IHttpActionResult GetAllFacts()
         {
-            IEnumerable<FactDTO> factDTOList = null;
+            IEnumerable<HistoryItemDTO> factDTOList = null;
             try
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    factDTOList = _report.GetAllFacts(uow).Select(f => Mapper.Map<FactDTO>(f));
+                    factDTOList = _report.GetAllFacts(uow).Select(f => Mapper.Map<HistoryItemDTO>(f));
                 }
             }
             catch (Exception e)
@@ -49,32 +48,30 @@ namespace HubWeb.Controllers
         public IHttpActionResult GetTopIncidents(int page, int pageSize, string user, int numOfIncidents = 1000)
         {
             //this is a flag to return either all or user-specific incidents
-            bool getCurrentUserIncidents;
-            var incidentDTOList = new List<IncidentDTO>();
+            bool isCurrentUser;
+            var historyItems = new List<HistoryItemDTO>();
             //based on the parameter in GET request decide the value of the flag
             if (string.Equals(user, "current"))
-                getCurrentUserIncidents = true;
+                isCurrentUser = true;
             else if (string.Equals(user, "all"))
-                getCurrentUserIncidents = false;
+                isCurrentUser = false;
             else
-            {
                 throw new ArgumentException("Incorect user parameter. Only 'current' and 'all' are allowed");
-            }
             try
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var incidentDOs = _report.GetTopIncidents(uow, page, pageSize, getCurrentUserIncidents,
+                    var incidents = _report.GetTopIncidents(uow, page, pageSize, isCurrentUser,
                         numOfIncidents);
                     //We map DO->DTO to avoid lazy load entity references that may lead to crash
-                    incidentDTOList.AddRange(incidentDOs.Select(incidentDO => Mapper.Map<IncidentDTO>(incidentDO)));
+                    historyItems.AddRange(incidents.Select(incidentDO => Mapper.Map<HistoryItemDTO>(incidentDO)));
                 }
             }
             catch (Exception e)
             {
                 Logger.GetLogger().Error("Error checking for activity template ", e);
             }
-            return Ok(incidentDTOList);
+            return Ok(historyItems);
         }
     }
 }
