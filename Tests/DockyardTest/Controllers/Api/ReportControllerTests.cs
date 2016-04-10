@@ -65,7 +65,7 @@ namespace DockyardTest.Controllers.Api
 
                 //Act
                 var actionResult =
-                    reportController.GetTopIncidents(1, 2, "all") as OkNegotiatedContentResult<List<HistoryItemDTO>>;
+                    reportController.GetIncidents(1, 2, "all") as OkNegotiatedContentResult<List<HistoryItemDTO>>;
 
                 //Assert
                 Assert.NotNull(actionResult);
@@ -83,7 +83,7 @@ namespace DockyardTest.Controllers.Api
 
                 //Act
                 var actionResult =
-                    reportController.GetTopIncidents(1, 10, "all") as OkNegotiatedContentResult<List<HistoryItemDTO>>;
+                    reportController.GetIncidents(1, 10, "all") as OkNegotiatedContentResult<List<HistoryItemDTO>>;
 
                 //Assert
                 Assert.NotNull(actionResult);
@@ -101,7 +101,7 @@ namespace DockyardTest.Controllers.Api
 
                 //Act
                 var actionResult =
-                    reportController.GetTopIncidents(3, 3, "all") as OkNegotiatedContentResult<List<HistoryItemDTO>>;
+                    reportController.GetIncidents(3, 3, "all") as OkNegotiatedContentResult<List<HistoryItemDTO>>;
 
                 //Assert
                 Assert.NotNull(actionResult);
@@ -119,7 +119,7 @@ namespace DockyardTest.Controllers.Api
             {
                 //Act
                 var actionResult =
-                    reportController.GetTopIncidents(1, 2, "IncorrectUserParameter") as OkNegotiatedContentResult<List<HistoryItemDTO>>;
+                    reportController.GetIncidents(1, 2, "IncorrectUserParameter") as OkNegotiatedContentResult<List<HistoryItemDTO>>;
             }
         }
 

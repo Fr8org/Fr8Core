@@ -44,8 +44,8 @@ namespace HubWeb.Controllers
             return Ok(factDTOList);
         }
 
-        //[Route("api/report/GetTopIncidents?page={page}&pageSize={pageSize}&user={current/all}&numOfIncidetns={1000}")]
-        public IHttpActionResult GetTopIncidents(int page, int pageSize, string user, int numOfIncidents = 1000)
+        //[Route("api/v1/report/GetIncidents?page={page}&pageSize={pageSize}&user={current/all}")]
+        public IHttpActionResult GetIncidents(int page, int pageSize, string user)
         {
             //this is a flag to return either all or user-specific incidents
             bool isCurrentUser;
@@ -61,8 +61,7 @@ namespace HubWeb.Controllers
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var incidents = _report.GetTopIncidents(uow, page, pageSize, isCurrentUser,
-                        numOfIncidents);
+                    var incidents = _report.GetIncidents(uow, page, pageSize, isCurrentUser);
                     //We map DO->DTO to avoid lazy load entity references that may lead to crash
                     historyItems.AddRange(incidents.Select(i => Mapper.Map<HistoryItemDTO>(i)));
                 }
