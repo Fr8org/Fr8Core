@@ -19,7 +19,7 @@ namespace DockyardTest.Utilities
         //[Category("IntegrationTests")]
         // actually test is fragile because depends on file name in HubWeb\Config\log4net.tests.config 
         // file name in FileAppender
-        // and of course it is not unit test. 
+        // and of course it is not a unit test. 
         public void Must_Read_External_Configuration_And_Log_events()
         {
             var path = AppDomain.CurrentDomain.BaseDirectory;
@@ -28,13 +28,10 @@ namespace DockyardTest.Utilities
 
             var conf = section as XmlElement;
             var elm = conf.SelectNodes("appender/file");
-            if (elm.Count > 0)
-            {
-                //take first fileAppender
-                fileName = elm[0].Attributes["value"].Value;
-            }
+            //take first fileAppender
+            fileName = elm[0].Attributes["value"].Value;
 
-            var number = new System.Random().Next(0, 100);
+            var number = new System.Random().Next(0, 1000);
 
             // log event
             Logger.GetLogger().Info(number);
@@ -44,8 +41,6 @@ namespace DockyardTest.Utilities
             // look at log4net FileAppender section
             var text = System.IO.File.ReadAllText(path + "\\" + fileName);
             Assert.IsTrue(text.Contains(number.ToString()));
-
         }
-
     }
 }

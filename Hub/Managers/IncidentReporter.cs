@@ -221,7 +221,8 @@ namespace Hub.Managers
 
         private void LogIncident(IncidentDO curIncident)
         {
-            _eventReporter.LogFactInformation(curIncident, curIncident.SecondaryCategory + " " + curIncident.Activity, EventReporter.EventType.Error);
+            _eventReporter.LogHistoryItem(curIncident,EventReporter.EventType.Error);
+            //_eventReporter.LogFactInformation(curIncident, curIncident.SecondaryCategory + " " + curIncident.Activity, EventReporter.EventType.Error);
         }
 
         private void ProcessIncidentTerminalConfigureFailed(string curTerminalUrl, string curAction, string errorMessage, string objectId)

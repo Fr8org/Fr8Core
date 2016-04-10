@@ -664,28 +664,7 @@ namespace Hub.Managers
             SaveFact(curAction);
         }
 
-        //public void BookingRequestCreated(int bookingRequestId)
-        //{
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
 
-
-        //        ObjectFactory.GetInstance<ITracker>().Track(bookingRequestDO.Customer, "BookingRequest", "Submit", new Dictionary<string, object> { { "BookingRequestId", bookingRequestDO.Id } });
-
-        //        FactDO curAction = new FactDO
-        //        {
-        //            PrimaryCategory = "BookingRequest",
-        //            SecondaryCategory = "",
-        //            Activity = "Created",
-        //            Fr8UserId = bookingRequestDO.Fr8UserId,
-        //            ObjectId = bookingRequestId.ToString(CultureInfo.InvariantCulture)
-        //        };
-
-        //        curAction.Data = string.Format("{0} ID :{1},", curAction.PrimaryCategory, curAction.ObjectId);
-        //        SaveFact(curAction);
-        //    }
-        //}
 
         /// <summary>
         /// The method logs the fact of receiving a notification from DocuSign.      
@@ -704,7 +683,8 @@ namespace Hub.Managers
                 Data = string.Format("EnvelopeId: {0}.",
                         envelopeId)
             };
-            LogFactInformation(fact, "DocusignNotificationReceived");
+            //LogFactInformation(fact, "DocusignNotificationReceived");
+            LogHistoryItem(fact);
             SaveFact(fact);
         }
 
@@ -725,7 +705,8 @@ namespace Hub.Managers
                 Data = string.Format("Plan Name: {0}.",
                         planName)
             };
-            LogFactInformation(fact, "RouteCreated");
+            //LogFactInformation(fact, "RouteCreated");
+            LogHistoryItem(fact);
             SaveFact(fact);
         }
 
@@ -749,7 +730,8 @@ namespace Hub.Managers
                 uow.IncidentRepository.Add(fact);
                 uow.SaveChanges();
             }
-            LogFactInformation(fact, "ImproperDocusignNotificationReceived", EventType.Warning);
+            //LogFactInformation(fact, "ImproperDocusignNotificationReceived", EventType.Warning);
+            LogHistoryItem(fact, EventType.Warning);
         }
 
         /// <summary>
@@ -789,23 +771,23 @@ namespace Hub.Managers
         /// </summary>
         /// <param name="userId">UserId received from DocuSign.</param>
         /// <param name="envelopeId">EnvelopeId received from DocuSign.</param>
-        public void AlertProcessProcessing(string userId, string envelopeId, int containerId)
-        {
-            FactDO fact = new FactDO
-            {
-                PrimaryCategory = "Notification",
-                SecondaryCategory = null,
-                Activity = "Processed",
-                Fr8UserId = userId,
-                ObjectId = null,
-                Data = string.Format("A notification from DocuSign is processed. UserId: {0}, EnvelopeId: {1}, ContainerDO id: {2}.",
-                        userId,
-                        envelopeId,
-                        containerId)
-            };
-            LogFactInformation(fact, "ProcessProcessing");
-            SaveFact(fact);
-        }
+        //public void AlertProcessProcessing(string userId, string envelopeId, int containerId)
+        //{
+        //    FactDO fact = new FactDO
+        //    {
+        //        PrimaryCategory = "Notification",
+        //        SecondaryCategory = null,
+        //        Activity = "Processed",
+        //        Fr8UserId = userId,
+        //        ObjectId = null,
+        //        Data = string.Format("A notification from DocuSign is processed. UserId: {0}, EnvelopeId: {1}, ContainerDO id: {2}.",
+        //                userId,
+        //                envelopeId,
+        //                containerId)
+        //    };
+        //    LogFactInformation(fact, "ProcessProcessing");
+        //    SaveFact(fact);
+        //}
 
         private void SaveFact(FactDO curAction)
         {
@@ -819,7 +801,8 @@ namespace Hub.Managers
         private void SaveAndLogFact(FactDO fact)
         {
             SaveFact(fact);
-            LogFactInformation(fact, fact.SecondaryCategory + " " + fact.Activity);
+            //LogFactInformation(fact, fact.SecondaryCategory + " " + fact.Activity);
+            LogHistoryItem(fact);
         }
 
         public void UserRegistered(Fr8AccountDO curUser)
@@ -911,14 +894,51 @@ namespace Hub.Managers
         /// <param name="fact">An instance of FactDO class.</param>
         /// <param name="eventName">Name of the event.</param>
         /// <param name="eventType">Event type.</param>
-        public void LogFactInformation(HistoryItemDO fact, string eventName, EventType eventType = EventType.Info)
+        //public void LogFactInformation(HistoryItemDO fact, string eventName, EventType eventType = EventType.Info)
+        //{
+        //    string message = string.Format(
+        //        "Event {0} generated with Fr8UserId = {1}, ObjectId = {2} and Data = {3}.",
+        //        eventName,
+        //        fact.Fr8UserId,
+        //        fact.ObjectId,
+        //        fact.Data);
+
+        //    switch (eventType)
+        //    {
+        //        case EventType.Info:
+        //            Logger.GetLogger().Info(message);
+        //            break;
+        //        case EventType.Error:
+        //            Logger.GetLogger().Error(message);
+        //            break;
+        //        case EventType.Warning:
+        //            Logger.GetLogger().Warn(message);
+        //            break;
+        //    }
+        //}
+
+        public string ComposeOutputString(HistoryItemDO historyItem)
         {
-            string message = string.Format(
-                "Event {0} generated with Fr8UserId = {1}, ObjectId = {2} and Data = {3}.",
-                eventName,
-                fact.Fr8UserId,
-                fact.ObjectId,
-                fact.Data);
+            string itemType = historyItem.GetType().Name.Replace("DO", "");
+            var message =     $"{itemType}: {historyItem.PrimaryCategory} "+
+                              $"{historyItem.SecondaryCategory}" +
+                              $"{historyItem.Activity}, "+
+                              $"Data = {historyItem.Data}, " +
+                              $"Fr8User = {historyItem.Fr8UserId}, "+
+                              $"ObjectId = {historyItem.ObjectId}";
+
+            return message;
+        }
+
+        /// <summary>
+        /// Logs historyItem information using the standard log mechanisms, replacement for LogFactInformation .
+        /// </summary>
+        /// <param name="fact">An instance of FactDO class.</param>
+        /// <param name="eventName">Name of the event.</param>
+        /// <param name="eventType">Event type.</param>
+        public void LogHistoryItem(HistoryItemDO historyItem, EventType eventType = EventType.Info)
+        {
+            var message = ComposeOutputString(historyItem);
 
             switch (eventType)
             {
@@ -1092,9 +1112,12 @@ namespace Hub.Managers
                 containerInExecution = uow.ContainerRepository.GetByKey(processId);
                 var plan = containerInExecution != null ? uow.PlanRepository.GetById<PlanDO>(containerInExecution.PlanId) : null;
 
+                var Fr8UserId = curActivity.Fr8AccountId;
+
                 fact = new FactDO
                 {
-                    Fr8UserId = containerInExecution != null ? plan.Fr8AccountId : "unknown",
+                    //Fr8UserId = containerInExecution != null ? plan.Fr8AccountId : "unknown",
+                    Fr8UserId = containerInExecution != null ? plan.Fr8AccountId : Fr8UserId,
                     Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                     ObjectId = curActivity.Id.ToStr(),
                     PrimaryCategory = "Process Execution",
@@ -1195,7 +1218,8 @@ namespace Hub.Managers
                     curFact.Data = string.Format("Terminal: {0} - Action: {1}.", activityTemplate.Terminal.Name, activityTemplate.Name);
                 }
 
-                LogFactInformation(curFact, curFact.Data);
+                //LogFactInformation(curFact, curFact.Data);
+                LogHistoryItem(curFact);
                 uow.FactRepository.Add(curFact);
                 uow.SaveChanges();
             }
