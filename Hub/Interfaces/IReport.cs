@@ -12,6 +12,6 @@ namespace Hub.Interfaces
     public interface IReport
     {
         IList<FactDO> GetAllFacts(IUnitOfWork uow);
-        List<IncidentDO> GetTopIncidents(IUnitOfWork uow, int page, int pageSize, bool getCurrentUserIncidents, int numOfIncidents);
+        List<IncidentDO> GetTopIncidents(IUnitOfWork uow, int page, int pageSize, bool isCurrentUser, int numOfIncidents);
     }
 }

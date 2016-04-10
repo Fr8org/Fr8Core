@@ -64,7 +64,7 @@ namespace HubWeb.Controllers
                     var incidents = _report.GetTopIncidents(uow, page, pageSize, isCurrentUser,
                         numOfIncidents);
                     //We map DO->DTO to avoid lazy load entity references that may lead to crash
-                    historyItems.AddRange(incidents.Select(incidentDO => Mapper.Map<HistoryItemDTO>(incidentDO)));
+                    historyItems.AddRange(incidents.Select(i => Mapper.Map<HistoryItemDTO>(i)));
                 }
             }
             catch (Exception e)

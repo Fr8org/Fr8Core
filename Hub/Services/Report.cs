@@ -45,7 +45,7 @@ namespace Hub.Services
         /// <param name="pageSize">Number of incidents to show per page</param>
         /// <param name="allIncidents">This marks if all incidents should be returned or only having current user Id</param>
         /// <returns></returns>
-        public List<IncidentDO> GetTopIncidents(IUnitOfWork uow, int page, int pageSize, bool getCurrentUserIncidents, int numOfIncidents)
+        public List<IncidentDO> GetTopIncidents(IUnitOfWork uow, int page, int pageSize, bool isCurrentUser, int numOfIncidents)
         {
             //get the current account
             var curAccount = _security.GetCurrentAccount(uow);
@@ -58,7 +58,7 @@ namespace Hub.Services
             if(curAccountRoles != null && curAccountRoles.All(x => x.RoleId != adminRoleId))
                 return curIncidents;
             //if user has Admin role and asked for only current user incidents
-            if (getCurrentUserIncidents)
+            if (isCurrentUser)
                 curIncidents = uow.IncidentRepository.GetQuery()
                     .Where(i => i.CustomerId == curAccount.Id)
                     .OrderByDescending(i => i.CreateDate)
