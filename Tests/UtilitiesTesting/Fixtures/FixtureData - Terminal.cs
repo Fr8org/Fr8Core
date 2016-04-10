@@ -84,5 +84,17 @@ namespace UtilitiesTesting.Fixtures
                 Secret = Guid.NewGuid().ToString()
             };
         }
+        public static TerminalDO TerminalSeven()
+        {
+            return new TerminalDO
+            {
+                Id = 1,
+                Name = "terminalDocuSign",
+                Endpoint = "localhost",
+                TerminalStatus = TerminalStatus.Active,
+                Version = "1",
+                Secret = Guid.NewGuid().ToString()
+            };
+        }
     }
 }
