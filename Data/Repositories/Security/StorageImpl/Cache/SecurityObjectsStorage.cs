@@ -8,6 +8,12 @@ using StructureMap;
 
 namespace Data.Repositories.Security.StorageImpl.Cache
 {
+    /// <summary>
+    /// Wrapper for security objects storage.  
+    /// Implements all members of SecurityObjectStorageProvider and hold reference to cache for security objects
+    /// Inside all methods for get security data, at first, we check if that data is found inside cache, if not then we return from security data provider and we update cache with that data
+    /// Inside all create/update methods at first we create data inside storage provider, and then we update the cache. 
+    /// </summary>
     public class SecurityObjectsStorage : ISecurityObjectsStorageProvider
     {
         private readonly ISecurityObjectsCache _cache;
@@ -68,9 +74,9 @@ namespace Data.Repositories.Security.StorageImpl.Cache
             return _securityObjectStorageProvider.GetRolePrivilegesForSecuredObject(fr8AccountId);
         }
 
-        public void SetupDefaultSecurityForDataObject(Guid dataObjectId, string dataObjectType)
+        public void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType)
         {
-            _securityObjectStorageProvider.SetupDefaultSecurityForDataObject(dataObjectId, dataObjectType);
+            _securityObjectStorageProvider.SetDefaultObjectSecurity(dataObjectId, dataObjectType);
 
             //update cache with new ObjectRolePrivilege
             var rolePrivileges = GetRolePrivilegesForSecuredObject(dataObjectId);

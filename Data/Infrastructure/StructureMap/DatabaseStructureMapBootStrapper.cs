@@ -8,12 +8,11 @@ using Data.Repositories.Cache;
 using Data.Repositories.MultiTenant;
 using Data.Repositories.MultiTenant.InMemory;
 using Data.Repositories.MultiTenant.Sql;
-using Data.Repositories.MultiTenant.SqlBased;
 using Data.Repositories.Plan;
 using Data.Repositories.Security;
 using Data.Repositories.Security.StorageImpl.Cache;
 using Data.Repositories.Security.StorageImpl.SqlBased;
-using Microsoft.Data.Edm.Library.Values;
+using Data.Repositories.SqlBased;
 using StructureMap.Configuration.DSL;
 using Utilities.Configuration.Azure;
 
@@ -88,7 +87,7 @@ namespace Data.Infrastructure.StructureMap
                 }
 
                 For<IPlanStorageProvider>().Use<PlanStorageProviderEf>();
-                For<IMtConnectionProvider>().Use<SqlMtConnectionProvider>();
+                For<ISqlConnectionProvider>().Use<SqlConnectionProvider>();
                 For<IMtObjectsStorage>().Use<SqlMtObjectsStorage>().Singleton();
                 For<IMtTypeStorageProvider>().Use<SqlMtTypeStorageProvider>();
                 For<ISqlConnectionProvider>().Use<SqlConnectionProvider>();
@@ -108,7 +107,7 @@ namespace Data.Infrastructure.StructureMap
                 For<IPlanCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(TimeSpan.FromDays(365))).Singleton(); // in test mode cache will never expire in practice
                 For<IPlanCache>().Use<PlanCache>().Singleton();
                 For<IPlanStorageProvider>().Use<PlanStorageProviderMockedDb>();
-                For<IMtConnectionProvider>().Use<DummyConnectionProvider>();
+                For<ISqlConnectionProvider>().Use<DummyConnectionProvider>();
                 For<IMtObjectsStorage>().Use<InMemoryMtObjectsStorage>().Singleton();
                 For<IMtTypeStorageProvider>().Use<InMemoryMtTypeStorageProvider>();
                 DataAutoMapperBootStrapper.ConfigureAutoMapper();

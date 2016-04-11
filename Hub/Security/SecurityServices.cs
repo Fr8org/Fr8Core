@@ -110,10 +110,10 @@ namespace Hub.Security
         /// </summary>
         /// <param name="dataObjectId"></param>
         /// <param name="dataObjectType"></param>
-        public void SetupDefaultSecurityForDataObject(Guid dataObjectId, string dataObjectType)
+        public void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType)
         {
             var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
-            securityStorageProvider.SetupDefaultSecurityForDataObject(dataObjectId, dataObjectType);
+            securityStorageProvider.SetDefaultObjectSecurity(dataObjectId, dataObjectType);
         }
 
         /// <summary>

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Data.Infrastructure;
+using Data.Repositories.SqlBased;
 
 namespace Data.Repositories.Security.StorageImpl.SqlBased
 {

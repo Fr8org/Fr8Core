@@ -1,4 +1,4 @@
-﻿namespace Data.Repositories.Security
+﻿namespace Data.Repositories.SqlBased
 {
     public interface ISqlConnectionProvider
     {

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using Data.Repositories.Security.Entities;
+using Data.Repositories.SqlBased;
 using Data.States;
 
 namespace Data.Repositories.Security.StorageImpl.SqlBased
@@ -146,7 +147,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
-        public void SetupDefaultSecurityForDataObject(Guid dataObjectId, string dataObjectType)
+        public void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType)
         {
             using (var connection = OpenConnection(_sqlConnectionProvider))
             {

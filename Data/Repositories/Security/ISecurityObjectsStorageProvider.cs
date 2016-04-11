@@ -13,6 +13,6 @@ namespace Data.Repositories.Security
         int RemoveObjectRolePrivilege(Guid dataObjectId, Guid rolePrivilegeId);
         IEnumerable<RolePrivilege> GetRolePrivilegesForSecuredObject(Guid dataObjectId);
         IEnumerable<RolePrivilege> GetRolePrivilegesForFr8Account(Guid fr8AccountId);
-        void SetupDefaultSecurityForDataObject(Guid dataObjectId, string dataObjectType);
+        void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType);
     }
 }

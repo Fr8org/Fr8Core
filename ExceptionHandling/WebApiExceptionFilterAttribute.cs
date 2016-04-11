@@ -59,6 +59,10 @@ namespace HubWeb.ExceptionHandling
             {
                 var httpException = (HttpException) ex;
                 context.Response = new HttpResponseMessage((HttpStatusCode) httpException.GetHttpCode());
+
+                context.Response = context.Request.CreateResponse(HttpStatusCode.Forbidden,
+                    ErrorDTO.AuthenticationError("Authorization has been denied for this request."));
+                return;
             }
             else
             {

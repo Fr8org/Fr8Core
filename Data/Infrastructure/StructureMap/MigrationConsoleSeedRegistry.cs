@@ -6,9 +6,10 @@ using Data.Repositories;
 using Data.Repositories.Cache;
 using Data.Repositories.MultiTenant;
 using Data.Repositories.MultiTenant.InMemory;
-using Data.Repositories.MultiTenant.SqlBased;
 using Data.Repositories.Plan;
 using Data.Repositories.Security.StorageImpl.Cache;
+using Data.Repositories.Security.StorageImpl.SqlBased;
+using Data.Repositories.SqlBased;
 
 namespace Data.Infrastructure
 {
@@ -23,7 +24,7 @@ namespace Data.Infrastructure
             For<IPlanCache>().Use<PlanCache>().Singleton();
             For<IMultiTenantObjectRepository>().Use<MultitenantRepository>();
             For<IMtObjectConverter>().Use<MtObjectConverter>().Singleton();
-            For<IMtConnectionProvider>().Use<SqlMtConnectionProvider>().Singleton();
+            For<ISqlConnectionProvider>().Use<SqlConnectionProvider>().Singleton();
             For<IMtTypeStorage>().Use<MtTypeStorage>().Singleton();
 
             For<IMtObjectsStorage>().Use<InMemoryMtObjectsStorage>().Singleton();

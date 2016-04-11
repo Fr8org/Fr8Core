@@ -703,7 +703,6 @@
     <Compile Include="Repositories\MultiTenant\Ast\MtUnaryOp.cs" />
     <Compile Include="Repositories\MultiTenant\Ast\UnaryOpNode.cs" />
     <Compile Include="Repositories\MultiTenant\ExpressionToAstConverter.cs" />
-    <Compile Include="Repositories\MultiTenant\IMtConnectionProvider.cs" />
     <Compile Include="Repositories\MultiTenant\IMtObjectConverter.cs" />
     <Compile Include="Repositories\MultiTenant\IMtObjectsStorage.cs" />
     <Compile Include="Repositories\MultiTenant\IMtTypeStorage.cs" />
@@ -734,7 +733,6 @@
     <Compile Include="Repositories\MultiTenant\StorageImpl\InMemory\InMemoryMtObjectsStorage.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\InMemory\InMemoryMtTypeStorageProvider.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\AstToSqlConverter.cs" />
-    <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtConnectionProvider.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtObjectsStorage.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtTypeStorageProvider.cs" />
     <Compile Include="Repositories\Plan\Expiration.cs" />
@@ -754,13 +752,14 @@
     <Compile Include="Repositories\Security\Entities\RolePrivilegePOCO.cs" />
     <Compile Include="Repositories\Security\ISecurityObjectsRepository.cs" />
     <Compile Include="Repositories\Security\ISecurityObjectsStorageProvider.cs" />
-    <Compile Include="Repositories\Security\ISqlConnectionProvider.cs" />
+    <Compile Include="Repositories\SqlBased\ISqlConnectionProvider.cs" />
     <Compile Include="Repositories\Security\StorageImpl\Cache\ISecurityCacheExpirationStrategy.cs" />
     <Compile Include="Repositories\Security\StorageImpl\Cache\ISecurityObjectsCache.cs" />
     <Compile Include="Repositories\Security\StorageImpl\Cache\SecurityObjectsCache.cs" />
     <Compile Include="Repositories\Security\StorageImpl\Cache\SecurityObjectsStorage.cs" />
     <Compile Include="Repositories\Security\StorageImpl\SqlBased\SqlConnectionProvider.cs" />
     <Compile Include="Repositories\Security\StorageImpl\SqlBased\SqlSecurityObjectsStorageProvider.cs" />
+    <Compile Include="Repositories\SqlBased\SqlConnectionProvider.cs" />
     <Compile Include="Repositories\TagRepository.cs" />
     <Compile Include="Repositories\TerminalRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />

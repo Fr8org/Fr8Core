@@ -20,7 +20,7 @@ namespace Data.Infrastructure.StructureMap
         bool IsAuthenticated();
         void Logout();
         ClaimsIdentity GetIdentity(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO);
-        void SetupDefaultSecurityForDataObject(Guid dataObjectId, string dataObjectType);
+        void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType);
         bool AuthorizeActivity(Privilege privilegeName, Guid curObjectId);
     }
 }

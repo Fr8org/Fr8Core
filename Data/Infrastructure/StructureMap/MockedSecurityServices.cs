@@ -72,7 +72,7 @@ namespace Data.Infrastructure.StructureMap
             throw new NotImplementedException();
         }
 
-        public void SetupDefaultSecurityForDataObject(Guid dataObjectId, string dataObjectType)
+        public void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType)
         {
             //throw new NotImplementedException();
         }

@@ -7,15 +7,31 @@ using Data.Repositories.Security.Entities;
 
 namespace Data.Repositories.Security.StorageImpl.Cache
 {
+    /// <summary>
+    /// Cache service for security objects and role privileges. Every CachedObject has expiration strategy 
+    /// and after given period that object is removed from cache. SecurityObjectsCache is defined as Sigleton and it's constructed only on app start.
+    /// </summary>
     public class SecurityObjectsCache : ISecurityObjectsCache
     {
+        /// <summary>
+        /// Main data structure that holds all cached objects. Key is Guid value and holds all Object Identifiers and Object primary keys.
+        /// </summary>
         private readonly Dictionary<Guid, CachedObject> _cachedObjects = new Dictionary<Guid, CachedObject>();
         private readonly object _sync = new object();
         private readonly ISecurityCacheExpirationStrategy _expirationStrategy;
 
+        /// <summary>
+        /// Wrapper for security cache object 
+        /// </summary>
         private class CachedObject
         {
+            /// <summary>
+            /// All RolePrivileges defined for data object
+            /// </summary>
             public IEnumerable<RolePrivilege> RolePrivileges { get; private set; }
+            /// <summary>
+            /// Expiration token for removing object from cache
+            /// </summary>
             public IExpirationToken Expiration { get; set; }
 
             public CachedObject(IEnumerable<RolePrivilege> rolePrivileges, IExpirationToken expiration)
@@ -31,6 +47,11 @@ namespace Data.Repositories.Security.StorageImpl.Cache
             expirationStrategy.SetExpirationCallback(RemoveExpiredPlans);
         }
         
+        /// <summary>
+        /// Get RolePrivileges list from cache. Return empty list when cache is empty
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         public IEnumerable<RolePrivilege> Get(Guid id)
         {
             CachedObject cachedObject;
@@ -42,6 +63,11 @@ namespace Data.Repositories.Security.StorageImpl.Cache
             return cachedObject.RolePrivileges;
         }
 
+        /// <summary>
+        /// Add new role privileges to list, or update rolePrivileg
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="rolePrivileges"></param>
         public void AddOrUpdate(Guid id, IEnumerable<RolePrivilege> rolePrivileges)
         {
             lock (_sync)
