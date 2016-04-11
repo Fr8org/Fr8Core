@@ -20,12 +20,12 @@ namespace DockyardTest.Services.Container
 
             if (_index <= 1)
             {
-                OperationalState.StoreLocalData("Jump", "data");
+                OperationalState.CallStack.StoreLocalData("Jump", "data");
                 RequestJumpToActivity(id);
             }
             else
             {
-                Assert.AreEqual("data", OperationalState.GetLocalData<string>("Jump"), "Local data is missing");
+                Assert.AreEqual("data", OperationalState.CallStack.GetLocalData<string>("Jump"), "Local data is missing");
             }
         }
     }

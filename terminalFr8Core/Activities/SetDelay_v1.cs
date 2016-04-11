@@ -39,7 +39,7 @@ namespace terminalFr8Core.Actions
                 }
 
                 //find our action state in operations crate
-                var delayState = operationsCrate.GetLocalData<string>("Delay");
+                var delayState = operationsCrate.CallStack.GetLocalData<string>("Delay");
 
                 //extract ActivityResponse type from result
                 if (delayState == "suspended")
@@ -55,7 +55,7 @@ namespace terminalFr8Core.Actions
                 //post to hub to create an alarm
                 await HubCommunicator.CreateAlarm(alarmDTO, CurrentFr8UserId);
 
-                operationsCrate.StoreLocalData("Delay", "suspended");
+                operationsCrate.CallStack.StoreLocalData("Delay", "suspended");
             }
 
             return SuspendHubExecution(curPayloadDTO);

@@ -1056,16 +1056,12 @@ namespace Hub.Managers
             SaveAndLogFact(fact);
         }
 
-        private void LogEventActivityStarted(ActivityDO curActivity)
+        private void LogEventActivityStarted(ActivityDO curActivity, ContainerDO containerInExecution)
         {
-            /*
-            ContainerDO containerInExecution;
             FactDO fact;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                containerInExecution = uow.ContainerRepository.GetQuery()
-                    .FirstOrDefault(p => p.CurrentActivityId.Value == curActivity.Id);
                 var plan = containerInExecution != null ? uow.PlanRepository.GetById<PlanDO>(containerInExecution.PlanId) : null;
 
                 fact = new FactDO
@@ -1080,7 +1076,6 @@ namespace Hub.Managers
             }
 
             SaveAndLogFact(fact);
-            */
         }
 
         // Commented by Vladimir. DO-1214. If one action can have only one Process?

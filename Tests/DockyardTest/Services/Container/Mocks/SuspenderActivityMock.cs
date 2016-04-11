@@ -19,12 +19,12 @@ namespace DockyardTest.Services.Container
             if (_firstCall)
             {
                 _firstCall = false;
-                OperationalState.StoreLocalData("Suspend", "data");
+                OperationalState.CallStack.StoreLocalData("Suspend", "data");
                 RequestHubExecutionSuspension("Hey, wait for me!");
             }
             else
             {
-                Assert.AreEqual("data", OperationalState.GetLocalData<string>("Suspend"), "Local data is missing");
+                Assert.AreEqual("data", OperationalState.CallStack.GetLocalData<string>("Suspend"), "Local data is missing");
             }
         }
     }

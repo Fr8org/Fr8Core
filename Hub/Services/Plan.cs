@@ -440,7 +440,7 @@ namespace Hub.Services
                 
                 var operationalState = new OperationalStateCM();
                 
-                operationalState.CallStack.Push(new OperationalStateCM.StackFrame
+                operationalState.CallStack.PushFrame(new OperationalStateCM.StackFrame
                 {
                     NodeName = "Starting subplan",
                     NodeId = curPlan.StartingSubPlanId,

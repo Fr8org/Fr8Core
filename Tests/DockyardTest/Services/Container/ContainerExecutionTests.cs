@@ -413,7 +413,7 @@ namespace DockyardTest.Services
                 {
                     var opState = storage.CrateContentsOfType<OperationalStateCM>().First();
 
-                    container.CurrentActivityId = opState.CallStack.Peek().NodeId;
+                    container.CurrentActivityId = opState.CallStack.TopFrame.NodeId;
                     opState.CallStack = null;
                 }
 

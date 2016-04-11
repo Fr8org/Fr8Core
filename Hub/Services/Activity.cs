@@ -420,7 +420,7 @@ namespace Hub.Services
                 return null;
             }
 
-            EventManager.ActionStarted(curActivityDO);
+            EventManager.ActionStarted(curActivityDO, curContainerDO);
 
             // Explicitly extract authorization token to make AuthTokenDTO pass to activities.
             curActivityDO.AuthorizationToken = uow.AuthorizationTokenRepository.FindTokenById(curActivityDO.AuthorizationTokenId);

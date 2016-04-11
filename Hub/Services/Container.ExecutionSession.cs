@@ -70,7 +70,7 @@ namespace Hub.Services
 
             /**********************************************************************************/
 
-            private void PushFrame(Guid nodeId)
+            private void AddNodeForExecution(Guid nodeId)
             {
                 var node = _uow.PlanRepository.GetById<PlanNodeDO>(nodeId);
                 string nodeName = "undefined";
@@ -92,7 +92,7 @@ namespace Hub.Services
                     LocalData = _operationalState.BypassData
                 };
 
-                _callStack.Push(frame);
+                _callStack.PushFrame(frame);
                 _operationalState.BypassData = null;
             }
 
@@ -107,7 +107,7 @@ namespace Hub.Services
                         throw new Exception("Container execution stack overflow");
                     }
 
-                    var topFrame = _callStack.Peek();
+                    var topFrame = _callStack.TopFrame;
                     var currentNode = _uow.PlanRepository.GetById<PlanNodeDO>(topFrame.NodeId);
 
                     try
@@ -131,7 +131,7 @@ namespace Hub.Services
                                     topFrame.CurrentActivityExecutionPhase = OperationalStateCM.ActivityExecutionPhase.ProcessingChildren;
 
                                     // process op codes
-                                    if (!ProcessOpCodes(_operationalState.CurrentActivityResponse, OperationalStateCM.ActivityExecutionPhase.WasNotExecuted, topFrame))
+                                    if (!ProcessActivityResponse(_operationalState.CurrentActivityResponse, OperationalStateCM.ActivityExecutionPhase.WasNotExecuted, topFrame))
                                     {
                                         break;
                                     }
@@ -139,13 +139,12 @@ namespace Hub.Services
                                     continue;
                                 }
 
-                                var currentChild = topFrame.CurrentChildId != null ? _uow.PlanRepository.GetById<PlanNodeDO>(topFrame.CurrentChildId.Value) : null;
-                                var nextChild = currentChild != null ? currentNode.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault(x => x.Ordering > currentChild.Ordering) : currentNode.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault();
+                                var nextChild = GetNextChildActivity(topFrame, currentNode);
 
-                                // if there is a child that has not being executed yet - mark it for execution by pushing to stack
+                                // if there is a child that has not being executed yet - add it for execution by pushing to the call stack
                                 if (nextChild != null)
                                 {
-                                    PushFrame(nextChild.Id);
+                                    AddNodeForExecution(nextChild.Id);
                                     topFrame.CurrentChildId = nextChild.Id;
                                 }
                                 // or run current activity in ReturnFromChildren mode
@@ -156,10 +155,10 @@ namespace Hub.Services
                                         await ExecuteNode(currentNode, payloadStorage, ActivityExecutionMode.ReturnFromChildren);
                                     }
 
-                                    _callStack.Pop();
+                                    _callStack.RemoveTopFrame();
 
                                     // process op codes
-                                    if (!ProcessOpCodes(_operationalState.CurrentActivityResponse, OperationalStateCM.ActivityExecutionPhase.ProcessingChildren, topFrame))
+                                    if (!ProcessActivityResponse(_operationalState.CurrentActivityResponse, OperationalStateCM.ActivityExecutionPhase.ProcessingChildren, topFrame))
                                     {
                                         break;
                                     }
@@ -197,7 +196,24 @@ namespace Hub.Services
 
             /**********************************************************************************/
 
-            private Guid ExtractGuidParam(ActivityResponseDTO activityResponse)
+            private PlanNodeDO GetNextChildActivity(OperationalStateCM.StackFrame topFrame, PlanNodeDO currentNode)
+            {
+                // get the currently processing child
+                var currentChild = topFrame.CurrentChildId != null ? _uow.PlanRepository.GetById<PlanNodeDO>(topFrame.CurrentChildId.Value) : null;
+
+                // If we are already processing children of the currentNode, selecte the next one
+                if (currentChild != null)
+                {
+                    return currentNode.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault(x => x.Ordering > currentChild.Ordering);
+                }
+
+                // or, if we have not processed any child yet - select the first one if any
+                return currentNode.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault();
+            }
+
+            /**********************************************************************************/
+
+            private Guid ExtractGuidParameter(ActivityResponseDTO activityResponse)
             {
                 ResponseMessageDTO responseMessage;
 
@@ -211,7 +227,7 @@ namespace Hub.Services
 
             /**********************************************************************************/
 
-            private bool ProcessOpCodes(ActivityResponseDTO activityResponse, OperationalStateCM.ActivityExecutionPhase activityExecutionPhase, OperationalStateCM.StackFrame topFrame)
+            private bool ProcessActivityResponse(ActivityResponseDTO activityResponse, OperationalStateCM.ActivityExecutionPhase activityExecutionPhase, OperationalStateCM.StackFrame topFrame)
             {
                 ActivityResponse opCode;
 
@@ -242,7 +258,7 @@ namespace Hub.Services
                         break;
 
                     case ActivityResponse.LaunchAdditionalPlan:
-                        LoadAndRunPlan(ExtractGuidParam(activityResponse));
+                        LoadAndRunPlan(ExtractGuidParameter(activityResponse));
                         break;
 
                     case ActivityResponse.RequestTerminate:
@@ -255,7 +271,7 @@ namespace Hub.Services
                         
                         if (activityExecutionPhase == OperationalStateCM.ActivityExecutionPhase.ProcessingChildren)
                         {
-                            _callStack.Push(topFrame);
+                            _callStack.PushFrame(topFrame);
                         }
                         else
                         {
@@ -268,12 +284,12 @@ namespace Hub.Services
                     case ActivityResponse.SkipChildren:
                         if (activityExecutionPhase == OperationalStateCM.ActivityExecutionPhase.WasNotExecuted)
                         {
-                            _callStack.Pop();
+                            _callStack.RemoveTopFrame();
                         }
                         break;
                  
                     case ActivityResponse.JumpToSubplan:
-                        id = ExtractGuidParam(activityResponse);
+                        id = ExtractGuidParameter(activityResponse);
                         targetNode = _uow.PlanRepository.GetById<PlanNodeDO>(id);
 
                         if (targetNode == null)
@@ -285,16 +301,15 @@ namespace Hub.Services
 
                         if (currentNode.RootPlanNodeId != targetNode.RootPlanNodeId)
                         {
-                            throw new InvalidOperationException("Can't jump to the activity from different plan.");
+                            throw new InvalidOperationException("Can't jump to the subplan from different plan. Instead, use Jump to Plan.");
                         }
 
                         _callStack.Clear();
-                        PushFrame(id);
+                        AddNodeForExecution(id);
                         break;
 
-                    case ActivityResponse.Jump:
                     case ActivityResponse.JumpToActivity:
-                        id = ExtractGuidParam(activityResponse);
+                        id = ExtractGuidParameter(activityResponse);
                         targetNode = _uow.PlanRepository.GetById<PlanNodeDO>(id);
 
                         if (targetNode == null)
@@ -306,7 +321,7 @@ namespace Hub.Services
 
                         if (currentNode.RootPlanNodeId != targetNode.RootPlanNodeId)
                         {
-                            throw new InvalidOperationException("Can't jump to the activity from different plan.");
+                            throw new InvalidOperationException("Can't jump to the activity from different plan. Instead, use Jump to Plan.");
                         }
 
                         if (targetNode.ParentPlanNodeId == null && currentNode.ParentPlanNodeId == null && currentNode.Id != targetNode.Id)
@@ -322,8 +337,8 @@ namespace Hub.Services
                         // we are jumping after activity's Run
                         if (activityExecutionPhase == OperationalStateCM.ActivityExecutionPhase.WasNotExecuted)
                         {
-                            // remove current activity from stack. 
-                            _callStack.Pop();
+                            // remove the frame representing the current activity from stack. 
+                            _callStack.RemoveTopFrame();
                         }
 
                         if (id == topFrame.NodeId)
@@ -335,22 +350,21 @@ namespace Hub.Services
                         // this is root node. Just push new frame
                         if (_callStack.Count == 0 || currentNode.ParentPlanNode == null)
                         {
-                            PushFrame(id);
+                            AddNodeForExecution(id);
                         }
                         else
                         {
-                            var parentFrame = _callStack.Peek();
                             // find activity that is preceeding the one we are jumping to.
                             // so the next iteration of run cycle will exectute the activity we are jumping to
                             var prevToJump = currentNode.ParentPlanNode.ChildNodes.OrderByDescending(x => x.Ordering).FirstOrDefault(x => x.Ordering < targetNode.Ordering);
 
-                            parentFrame.CurrentChildId = prevToJump?.Id;
+                            _callStack.TopFrame.CurrentChildId = prevToJump?.Id;
                         }
 
                         break;
 
-                    case ActivityResponse.Call:
-                        id = ExtractGuidParam(activityResponse);
+                    case ActivityResponse.CallAndReturn:
+                        id = ExtractGuidParameter(activityResponse);
 
                         targetNode = _uow.PlanRepository.GetById<PlanNodeDO>(id);
 
@@ -363,21 +377,22 @@ namespace Hub.Services
 
                         if (currentNode.RootPlanNodeId != targetNode.RootPlanNodeId)
                         {
-                            throw new InvalidOperationException("Can't call the activity from different plan.");
+                            throw new InvalidOperationException("Can't call the activity from different plan. Instead, use Jump to Plan.");
                         }
 
-                        PushFrame(id);
+                        AddNodeForExecution(id);
                         break;
 
                     case ActivityResponse.Break:
                         if (activityExecutionPhase == OperationalStateCM.ActivityExecutionPhase.WasNotExecuted)
                         {
-                            _callStack.Pop();
+                            // we wan't to have an exception in case of the corrupted stack, so we don't merge this with check below
+                            _callStack.RemoveTopFrame();
                         }
 
                         if (_callStack.Count > 0)
                         {
-                            _callStack.Pop();
+                            _callStack.RemoveTopFrame();
                         }
                         break;
                 }
@@ -437,7 +452,16 @@ namespace Hub.Services
             }
 
             /**********************************************************************************/
-            //this method is for copying payload that activity returns with container's payload.
+            // this method is for updating Container's payload with the payload that activity returns.
+            // We store all information related to container exectution inside the OperationalStateCM crate.
+            // Some of this information is internal like the call stack. Call stack is the replacement of the previously used Conatiner.CurrentPlanNodeId.
+            // Ideally call stack and the related stuff should not be inside OperationalStateCM. It should be placed inside the container, not the payload.
+            // But due to implementation details of activities like Loop, or TestAndBrach we have to store entire call stack inside the payload.
+            // We can't allow activity to change frames sequence inside the call stack. 
+            // Allowing this is just like allowing one process to write into the memory of another without restrictions.
+            // But once again, implementation details of the activities mentioned about requires us to grand some limited access to the stack frames: we allow activity to store some
+            // custom data "binded" to the its own stack frame. But we still don't allow activity to rearrage stack frames, otherwise Hub will lose control over the execution.
+            // The following methods exists to enfore described constrainsts: it allow to change  custom data, but do not allow rearranging the stack frames.
             private void SyncPayload(ICrateStorage activityPayloadStorage, IUpdatableCrateStorage containerStorage)
             {
                 if (activityPayloadStorage == null)
@@ -445,18 +469,24 @@ namespace Hub.Services
                     return;
                 }
 
+                // Update container payload with the payload returned from the activity.
                 containerStorage.Replace(activityPayloadStorage);
 
+                // get OperationalStateCM after update.
                 _operationalState = GetOperationalState(containerStorage);
 
-                // just replace call stack with what we are using while running container. Activity can't change call stack and even if it happens we want to discard such action
-                // the only exception is changes to LocalData related to the top activity in the stack. Activity can change this data and we want to sync it.
-                var localData = _operationalState.CallStack.Count > 0 ? _operationalState.CallStack.Peek().LocalData : null;
+                //_operationalState.CallStack.TopFrame.LocalData - is the data activity wants to store within the stack frame
+                // store this data in the variable
+                var localData = _operationalState.CallStack.TopFrame?.LocalData;
+                // and replace call stack wihtin OperationalStateCM with the call stack Hub is using for this exectuion session. 
                 _operationalState.CallStack = _callStack;
 
+                // We are 100% call stack is correct and was not corrupted by the activity. 
+                // But now we lost the data that activity asked us to persist within the stack frame.
+                // Restore this data.
                 if (_callStack.Count > 0)
                 {
-                    _callStack.Peek().LocalData = localData;
+                    _callStack.TopFrame.LocalData = localData;
                 }
             }
 

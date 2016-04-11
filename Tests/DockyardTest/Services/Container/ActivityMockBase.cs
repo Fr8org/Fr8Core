@@ -114,7 +114,7 @@ namespace DockyardTest.Services.Container
         /// <returns></returns>
         protected void RequestCall(Guid targetNodeId)
         {
-            SetResponse(ActivityResponse.Call);
+            SetResponse(ActivityResponse.CallAndReturn);
             OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetNodeId });
         }
 

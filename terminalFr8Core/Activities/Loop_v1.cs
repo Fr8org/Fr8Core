@@ -41,7 +41,7 @@ namespace terminalFr8Core.Actions
                     throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any crate with Manifest Type: \"" + crateToProcess.ManifestType.Type + "\" and Label: \"" + crateToProcess.Label + "\"");
                 }
 
-                var loopData = operationsCrate.GetLocalData<OperationalStateCM.LoopStatus>("Loop");
+                var loopData = operationsCrate.CallStack.GetLocalData<OperationalStateCM.LoopStatus>("Loop");
 
                 if (loopData == null)
                 {
@@ -55,7 +55,7 @@ namespace terminalFr8Core.Actions
                     loopData.Index++;
                 }
 
-                operationsCrate.StoreLocalData("Loop", loopData);
+                operationsCrate.CallStack.StoreLocalData("Loop", loopData);
 
                 var dataListSize = GetDataListSize(crateToProcess);
 

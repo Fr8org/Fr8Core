@@ -67,7 +67,13 @@ namespace Hub.Services
             await executionSession.Run();
         }
 
-        // Convert "old" execution data to new
+        // Previously we were using CurrentActivityId to track container execution. 
+        // To better accomodate new requirements we changed CurrentActivityId to the Call Stack.
+        // But we still can have pending plans in our DB that were created using CurrentActivityId as the main driven logic.
+        // To be able to continue executuion of those plans we have the following method.
+        // This methods takes CurrentActivityId of the plan and build a call stack using this Id and Plan structure.
+        // As the result we will have correct call stack for the plan that was suspended at the node CurrentActivityId.
+        // After call stack restoration CurrentActivityId is no longer needed.
         private OperationalStateCM.ActivityCallStack RecoverCallStack(IUnitOfWork uow, ContainerDO curContainerDo)
         {
             var node = uow.PlanRepository.GetById<PlanNodeDO>(curContainerDo.CurrentActivityId);
@@ -107,12 +113,12 @@ namespace Hub.Services
             for (int i = pathToRoot.Count - 1; i >= 1; i --)
             {
                 pathToRoot[i].CurrentChildId = pathToRoot[i - 1].NodeId;
-                callStack.Push(pathToRoot[i]);
+                callStack.PushFrame(pathToRoot[i]);
             }
 
-            callStack.Push(pathToRoot[0]);
+            callStack.PushFrame(pathToRoot[0]);
 
-            callStack.Peek().CurrentActivityExecutionPhase = OperationalStateCM.ActivityExecutionPhase.WasNotExecuted;
+            callStack.TopFrame.CurrentActivityExecutionPhase = OperationalStateCM.ActivityExecutionPhase.WasNotExecuted;
 
             using (var storage = _crate.UpdateStorage(() => curContainerDo.CrateStorage))
             {

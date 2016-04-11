@@ -42,7 +42,7 @@ namespace Data.Interfaces.Manifests
 
                 foreach (var stackFrame in array)
                 {
-                    callStack.Push(stackFrame);
+                    callStack.PushFrame(stackFrame);
                 }
 
                 return callStack;

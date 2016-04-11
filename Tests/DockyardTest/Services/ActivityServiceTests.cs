@@ -441,7 +441,7 @@ namespace DockyardTest.Services
         }
         
 
-        private void EventManager_EventActivityStarted(ActivityDO activity)
+        private void EventManager_EventActivityStarted(ActivityDO activity, ContainerDO container)
         {
             _eventReceived = true;
         }

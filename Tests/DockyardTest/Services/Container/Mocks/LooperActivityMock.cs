@@ -18,7 +18,7 @@ namespace DockyardTest.Services.Container
         {
             if (executionMode == ActivityExecutionMode.InitialRun)
             {
-                int? index = OperationalState.GetLocalData<int?>("Loop");
+                int? index = OperationalState.CallStack.GetLocalData<int?>("Loop");
 
                 if (index == null)
                 {
@@ -29,7 +29,7 @@ namespace DockyardTest.Services.Container
                     index++;
                 }
 
-                OperationalState.StoreLocalData("Loop", index);
+                OperationalState.CallStack.StoreLocalData("Loop", index);
 
                 if (index >= _count)
                 {

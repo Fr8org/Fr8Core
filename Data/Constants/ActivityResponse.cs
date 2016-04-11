@@ -16,8 +16,7 @@
         LaunchAdditionalPlan,
 
         //new op codes
-        Jump,
-        Call,
+        CallAndReturn,
         Break,
     }
 

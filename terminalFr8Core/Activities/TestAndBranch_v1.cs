@@ -39,7 +39,7 @@ namespace terminalFr8Core.Actions
                     return curPayloadDTO;
                 }
 
-                var currentBranch = operationsCrate.GetLocalData<OperationalStateCM.BranchStatus>("Branch");
+                var currentBranch = operationsCrate.CallStack.GetLocalData<OperationalStateCM.BranchStatus>("Branch");
                 if (currentBranch == null)
                 {
                     currentBranch = CreateBranch();
@@ -65,7 +65,7 @@ namespace terminalFr8Core.Actions
 
                 currentBranch.LastBranchTime = DateTime.UtcNow;
                 
-                operationsCrate.StoreLocalData("Branch", currentBranch);
+                operationsCrate.CallStack.StoreLocalData("Branch", currentBranch);
             }
 
             var payloadFields = GetAllPayloadFields(curPayloadDTO).Where(f => !string.IsNullOrEmpty(f.Key) && !string.IsNullOrEmpty(f.Value)).AsQueryable();
