@@ -886,7 +886,6 @@
     <Content Include="_PowerShellScripts\Deploy-HMAsWebJob.ps1" />
     <Content Include="_PowerShellScripts\SetCloudServiceSize.ps1" />
     <Content Include="_PowerShellScripts\CloneDatabase.ps1" />
-    <Content Include="_PowerShellScripts\UpdateTerminalHostnameInDb.ps1" />
     <Content Include="_PowerShellScripts\DeleteDatabase.ps1" />
     <Content Include="_PowerShellScripts\Set-StagingHostname.ps1" />
     <Content Include="_PowerShellScripts\CopyAppInsightsConfigs.ps1" />
@@ -900,6 +899,8 @@
     <Content Include="_PowerShellScripts\Stop-StagingWebsite.ps1" />
     <Content Include="_PowerShellScripts\Start-Sleep.ps1" />
     <Content Include="_PowerShellScripts\Update-TerminalHostnameInDb.ps1" />
+    <Content Include="_PowerShellScripts\CreateBuildServer.ps1" />
+    <Content Include="_PowerShellScripts\BuildServer_Templ.json" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
@@ -1042,7 +1043,6 @@
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
-    <Content Include="_PowerShellScripts\SetupStagingDatabase.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FindObjectsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\FindObjectsResultsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\InternalAuthenticationController.ts" />
