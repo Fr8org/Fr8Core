@@ -65,7 +65,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                     }
                     
                     command.Parameters.AddWithValue("@id", rolePrivilege.Id);
-                    command.Parameters.AddWithValue("@privilegeName", rolePrivilege.PrivilegeName);
+                    command.Parameters.AddWithValue("@privilegeName", rolePrivilege.Privilege.Name);
                     command.Parameters.AddWithValue("@roleId", rolePrivilege.Role.RoleId);
                     command.Parameters.AddWithValue("@lastUpdated", DateTimeOffset.UtcNow);
 
@@ -250,7 +250,13 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             var obj = new RolePrivilege
             {
                 Id = reader["Id"] != DBNull.Value ? (Guid)reader["Id"] : Guid.Empty,
-                PrivilegeName = reader["PrivilegeName"] != DBNull.Value ? (string)reader["PrivilegeName"] : string.Empty
+            };
+
+            var privilege = reader["PrivilegeName"] != DBNull.Value ? (string) reader["PrivilegeName"] : string.Empty;
+
+            obj.Privilege = new PrivilegeDO()
+            {
+                Name = privilege
             };
 
             var objRoleId = reader["roleId"] != DBNull.Value ? (string)reader["roleId"] : string.Empty;

@@ -10,6 +10,7 @@ using Data.Repositories.MultiTenant.InMemory;
 using Data.Repositories.MultiTenant.Sql;
 using Data.Repositories.Plan;
 using Data.Repositories.Security;
+using Data.Repositories.Security.StorageImpl;
 using Data.Repositories.Security.StorageImpl.Cache;
 using Data.Repositories.Security.StorageImpl.SqlBased;
 using Data.Repositories.SqlBased;
@@ -105,11 +106,14 @@ namespace Data.Infrastructure.StructureMap
                 For<IDBContext>().Use<MockedDBContext>();
                 For<CloudFileManager>().Use<CloudFileManager>();
                 For<IPlanCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(TimeSpan.FromDays(365))).Singleton(); // in test mode cache will never expire in practice
+                For<ISecurityCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(TimeSpan.FromDays(365))).Singleton(); // in test mode cache will never expire in practice
                 For<IPlanCache>().Use<PlanCache>().Singleton();
+                For<ISecurityObjectsCache>().Use<SecurityObjectsCache>().Singleton();
                 For<IPlanStorageProvider>().Use<PlanStorageProviderMockedDb>();
                 For<ISqlConnectionProvider>().Use<DummyConnectionProvider>();
                 For<IMtObjectsStorage>().Use<InMemoryMtObjectsStorage>().Singleton();
                 For<IMtTypeStorageProvider>().Use<InMemoryMtTypeStorageProvider>();
+                For<ISecurityObjectsStorageProvider>().Use<InMemorySecurityObjectsStorageProvider>();
                 DataAutoMapperBootStrapper.ConfigureAutoMapper();
             }
         }
