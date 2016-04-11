@@ -1,22 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Data.Constants;
-using Moq;
+﻿using System.Linq;
 using StructureMap;
 using Data.Entities;
-using Data.Exceptions;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
 using Hub.Interfaces;
 using NUnit.Framework;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Hub.Managers;
 using InternalInterface = Hub.Interfaces;
-using InternalClasses = Hub.Services;
 
 namespace DockyardTest.Services
 {
@@ -25,32 +15,14 @@ namespace DockyardTest.Services
     public class PlanTests : BaseTest
     {
         private Hub.Interfaces.IPlan _planService;
-        private InternalInterface.IContainer _container;
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-            _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
             _planService = ObjectFactory.GetInstance<IPlan>();
 
         }
-
-        //        [Test]
-        //        public void PlanService_GetSubPlans()
-        //        {
-        //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //            {
-        //                var curPlanDO = FixtureData.TestPlanWithSubroutes();
-        //                uow.PlanRepository.Add(curPlanDO);
-        //                uow.SaveChanges();
-        //
-        //                var curSubroutes = _planService.GetSubroutes(curPlanDO);
-        //
-        //                Assert.IsNotNull(curSubroutes);
-        //                Assert.AreEqual(curPlanDO.Subroutes.Count(), curSubroutes.Count);
-        //            }
-        //        }
 
         // MockDB has boken logic when working with collections of objects of derived types
         // We add object to PlanRepository but Delete logic recusively traverse Activity repository.
@@ -106,50 +78,5 @@ namespace DockyardTest.Services
 
             Assert.AreEqual(result.Status, "no activity");
         }
-        /*
-        [Test]
-        public void PlanService_Can_RunWithoutExceptions()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                //Arrange
-                //Create a Plan 
-
-                var curPlan = FixtureData.TestPlanWithSubscribeEvent();
-
-                //Create activity mock to process the actions
-                Mock<IPlanNode> activityMock = new Mock<IPlanNode>(MockBehavior.Default);
-                activityMock.Setup(a => a.Process(FixtureData.GetTestGuidById(1), It.IsAny<ActivityExecutionMode>(), It.IsAny<ContainerDO>())).Returns(Task.Delay(1));
-                activityMock.Setup(a => a.HasChildren(It.Is<PlanNodeDO>(r => r.Id == curPlan.StartingSubPlan.Id))).Returns(true);
-                activityMock.Setup(a => a.HasChildren(It.Is<PlanNodeDO>(r => r.Id != curPlan.StartingSubPlan.Id))).Returns(false);
-                activityMock.Setup(a => a.GetFirstChild(It.IsAny<PlanNodeDO>())).Returns(curPlan.ChildNodes.First().ChildNodes.First());
-                ObjectFactory.Container.Inject(typeof(IPlanNode), activityMock.Object);
-
-                //Act
-                _planService = ObjectFactory.GetInstance<IPlan>();// new InternalClasses.Plan();
-                _planService.Run(curPlan, FixtureData.TestDocuSignEventCrate());
-
-                //Assert
-                //since we have only one action in the template, the process should be called exactly once
-                activityMock.Verify(activity => activity.Process(FixtureData.GetTestGuidById(1), It.IsAny<ActivityExecutionMode>(), It.IsAny<ContainerDO>()), Times.Exactly(1));
-            }
-        }
-
-        //get this working again once 1124 is merged
-        [Test]
-        public void PlanService_Can_CreateContainer()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var plan = FixtureData.TestPlanWithStartingSubPlanAndActivityList();
-
-                uow.PlanRepository.Add(plan);
-                uow.SaveChanges();
-
-                var container = _planService.Create(uow, plan.Id, FixtureData.GetEnvelopeIdCrate());
-                Assert.IsNotNull(container);
-                Assert.IsTrue(container.Id != Guid.Empty);
-            }
-        }*/
     }
 }

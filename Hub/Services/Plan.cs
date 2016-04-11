@@ -36,18 +36,16 @@ namespace Hub.Services
         private readonly IActivity _activity;
         private readonly ICrateManager _crate;
         private readonly ISecurityServices _security;
-        private readonly IProcessNode _processNode;
         private readonly IJobDispatcher _dispatcher;
 
         public Plan(InternalInterface.IContainer container, Fr8Account dockyardAccount, IActivity activity,
-            ICrateManager crate, ISecurityServices security, IProcessNode processNode, IJobDispatcher dispatcher)
+            ICrateManager crate, ISecurityServices security,  IJobDispatcher dispatcher)
         {
             _container = container;
             _dockyardAccount = dockyardAccount;
             _activity = activity;
             _crate = crate;
             _security = security;
-            _processNode = processNode;
             _dispatcher = dispatcher;
         }
 
@@ -451,11 +449,8 @@ namespace Hub.Services
 
             uow.ContainerRepository.Add(containerDO);
 
-            //then create process node
-            var curProcessNode = _processNode.Create(uow, containerDO.Id, curPlan.StartingSubPlanId, "process node");
-            containerDO.ProcessNodes.Add(curProcessNode);
-
             uow.SaveChanges();
+
             EventManager.ContainerCreated(containerDO);
 
             return containerDO;

@@ -120,9 +120,6 @@ namespace Data.Infrastructure
         public delegate void EventContainerStateChangedHandler(DbPropertyValues currentValues);
         public static event EventContainerStateChangedHandler EventContainerStateChanged;
 
-        public delegate void EventProcessNodeCreatedHandler(ProcessNodeDO processNode);
-        public static event EventProcessNodeCreatedHandler EventProcessNodeCreated;
-
         public delegate void EventCriteriaEvaluationStartedHandler(Guid processId);
         public static event EventCriteriaEvaluationStartedHandler EventCriteriaEvaluationStarted;
 
@@ -531,12 +528,6 @@ namespace Data.Infrastructure
         {
             var handler = EventContainerFailed;
             if (handler != null) handler(plan, ex);
-        }
-
-        public static void ProcessNodeCreated(ProcessNodeDO processNode)
-        {
-            var handler = EventProcessNodeCreated;
-            if (handler != null) handler(processNode);
         }
 
         public static void CriteriaEvaluationStarted(Guid processId)

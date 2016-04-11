@@ -266,7 +266,6 @@
     <Compile Include="Infrastructure\DatabaseTests.cs" />
     <Compile Include="Infrastructure\Fr8HubWebHMACAuthenticateAttributeTests.cs" />
     <Compile Include="Infrastructure\MultiTenantTests.cs" />
-    <Compile Include="Integration\RunTimeTests.cs" />
     <Compile Include="Integration\AccountITests.cs" />
     <Compile Include="Managers\OAuthAuthorizerTest.cs" />
     <Compile Include="Managers\PlanManagerTests.cs" />
@@ -301,7 +300,6 @@
     <Compile Include="Services\FileTests.cs" />
     <Compile Include="Services\Container\ContainerServiceTests.cs" />
     <Compile Include="Services\PlanNodeTests.cs" />
-    <Compile Include="Services\SubPlanTests.cs" />
     <Compile Include="Services\PlanTests.cs" />
     <Compile Include="Services\SubscriptionServiceTests.cs" />
     <Compile Include="Services\Container\ContainerExecutionTests.cs" />
