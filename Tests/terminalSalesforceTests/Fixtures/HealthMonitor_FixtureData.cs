@@ -1,6 +1,10 @@
 ﻿
+using Data.Entities;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Data.States;
 using Salesforce.Common;
+using StructureMap;
 using System;
 using System.Threading.Tasks;
 using terminalSalesforce.Infrastructure;
@@ -23,6 +27,32 @@ namespace terminalSalesforceTests.Fixtures
                 Token = auth.AccessToken,
                 AdditionalAttributes = string.Format("refresh_token=;instance_url={0};api_version={1}", auth.InstanceUrl, auth.ApiVersion)
             };                                                                                                                            
+        }
+
+        public static async Task<AuthorizationTokenDO> CreateSalesforceAuthToken()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var emailAddressId = uow.EmailAddressRepository.FindOne(e => e.Address.Equals("integration_test_runner@fr8.company")).Id;
+                var userDO = uow.UserRepository.FindOne(u => u.EmailAddressID == emailAddressId);
+                var terminalId = uow.TerminalRepository.FindOne(t => t.Name.Equals("terminalSalesforce")).Id;
+
+                var tokenDTO = await Salesforce_AuthToken();
+
+                var tokenDO = new AuthorizationTokenDO()
+                {
+                    Token = tokenDTO.Token,
+                    TerminalID = terminalId,
+                    UserDO = userDO,
+                    AdditionalAttributes = tokenDTO.AdditionalAttributes,
+                    ExpiresAt = DateTime.Today.AddMonths(1)
+                };
+
+                uow.AuthorizationTokenRepository.Add(tokenDO);
+                uow.SaveChanges();
+
+                return tokenDO;
+            }
         }
 
         public static ActivityTemplateDTO Create_Account_v1_ActivityTemplate()

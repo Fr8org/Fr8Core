@@ -51,7 +51,7 @@ namespace Hub.Services
             if (callStack == null || callStack.Count == 0)
             {
                 // try to convert old CurrentPlanNodeId driven logic into call stack
-                if (curContainerDO.CurrentPlanNodeId == null)
+                if (curContainerDO.CurrentActivityId == null)
                 {
                     throw new InvalidOperationException("Current container has empty call stack that usually means that execution is completed. We can't run it again.");
                 }
@@ -59,7 +59,7 @@ namespace Hub.Services
                 callStack = RecoverCallStack(uow, curContainerDO);
             }
 
-            curContainerDO.ContainerState = ContainerState.Executing;
+            curContainerDO.State = State.Executing;
             uow.SaveChanges();
 
             var executionSession = new ExecutionSession(uow, callStack, curContainerDO, _activity, _crate);
@@ -70,11 +70,11 @@ namespace Hub.Services
         // Convert "old" execution data to new
         private OperationalStateCM.ActivityCallStack RecoverCallStack(IUnitOfWork uow, ContainerDO curContainerDo)
         {
-            var node = uow.PlanRepository.GetById<PlanNodeDO>(curContainerDo.CurrentPlanNodeId);
+            var node = uow.PlanRepository.GetById<PlanNodeDO>(curContainerDo.CurrentActivityId);
 
             if (node == null)
             {
-                throw new InvalidOperationException($"Failed to restore call stack from CurrentPlanNodeId. Node {curContainerDo.CurrentPlanNodeId} was not found.");
+                throw new InvalidOperationException($"Failed to restore call stack from CurrentPlanNodeId. Node {curContainerDo.CurrentActivityId} was not found.");
             }
 
             var callStack = new OperationalStateCM.ActivityCallStack();
@@ -120,8 +120,8 @@ namespace Hub.Services
                 operationalState.CallStack = callStack;
             }
 
-            curContainerDo.CurrentPlanNodeId = null;
-            curContainerDo.NextRouteNodeId = null;
+            curContainerDo.CurrentActivityId = null;
+            curContainerDo.NextActivityId = null;
             curContainerDo.CurrentPlanNode = null;
             curContainerDo.NextRouteNode = null;
 

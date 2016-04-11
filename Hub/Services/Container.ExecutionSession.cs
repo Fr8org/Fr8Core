@@ -188,9 +188,9 @@ namespace Hub.Services
                     }
                 }
 
-                if (_container.ContainerState == ContainerState.Executing)
+                if (_container.State == State.Executing)
                 {
-                    _container.ContainerState = ContainerState.Completed;
+                    _container.State = State.Completed;
                     _uow.SaveChanges();
                 }
             }
@@ -251,7 +251,7 @@ namespace Hub.Services
                         return false;
 
                     case ActivityResponse.RequestSuspend:
-                        _container.ContainerState = ContainerState.Pending;
+                        _container.State = State.Suspended;
                         
                         if (activityExecutionPhase == OperationalStateCM.ActivityExecutionPhase.ProcessingChildren)
                         {

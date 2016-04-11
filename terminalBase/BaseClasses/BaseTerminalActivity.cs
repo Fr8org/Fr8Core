@@ -177,7 +177,7 @@ namespace TerminalBase.BaseClasses
 
             return payload;
         }
-
+        
         protected void Success(IUpdatableCrateStorage crateStorage, string message = "")
         {
             var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
@@ -204,9 +204,9 @@ namespace TerminalBase.BaseClasses
         /// <returns></returns>
         protected void SkipChildren(IUpdatableCrateStorage crateStorage)
         {
-            var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-            operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.SkipChildren);
-        }
+                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.SkipChildren);
+            }
 
         /// <summary>
         /// returns error to hub
@@ -253,10 +253,10 @@ namespace TerminalBase.BaseClasses
         /// <param name="payload"></param>
         /// <returns></returns>
         protected PayloadDTO NeedsAuthenticationError(PayloadDTO payload)
-        {
+            {
             return Error(payload, "No AuthToken provided.", ActivityErrorCode.NO_AUTH_TOKEN_PROVIDED);
         }
-        
+
         protected async Task PushUserNotification(TerminalNotificationDTO notificationMessage)
         {
             await HubCommunicator.NotifyUser(notificationMessage, CurrentFr8UserId);
@@ -637,7 +637,7 @@ namespace TerminalBase.BaseClasses
 
             throw new ApplicationException(exceptionMessage);
         }
-        
+
         /*******************************************************************************************/
         // Working with upstream
         /*******************************************************************************************/
@@ -665,6 +665,18 @@ namespace TerminalBase.BaseClasses
         {
             var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(activityDO, direction, availability, CurrentFr8UserId);
             return mergedFields;
+        }
+
+        public virtual IEnumerable<FieldDTO> GetRequiredFields(ActivityDO curActivityDO, string crateLabel)
+        {
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                var requiredFields = crateStorage
+                                        .CrateContentsOfType<FieldDescriptionsCM>(c => c.Label.Equals(crateLabel))
+                                        .SelectMany(f => f.Fields.Where(s => s.IsRequired));
+
+                return requiredFields;
+            }
         }
 
         public virtual async Task<List<CrateManifestType>> BuildUpstreamManifestList(ActivityDO activityDO)
@@ -869,34 +881,6 @@ namespace TerminalBase.BaseClasses
             textSourceControl.Required = required;
 
             AddControl(storage, textSourceControl);
-        }
-
-        /// <summary>
-        /// Adds Text Source for the DTO type. 
-        /// </summary>
-        /// <remarks>The (T), DTO's Proerty Names will be used to name and label the new Text Source Controls</remarks>
-        protected void AddTextSourceControlForDTO<T>(
-            ICrateStorage storage,
-            string upstreamSourceLabel,
-            string filterByTag = "",
-            bool addRequestConfigEvent = false,
-            bool required = false,
-            bool requestUpstream = false)
-        {
-            typeof(T).GetProperties()
-                .Where(property => !property.Name.Equals("Id")).ToList().ForEach(property =>
-                {
-                    AddTextSourceControl(
-                        storage,
-                        property.Name,
-                        property.Name,
-                        upstreamSourceLabel,
-                        filterByTag,
-                        addRequestConfigEvent,
-                        required,
-                        requestUpstream
-                    );
-                });
         }
 
         /// <summary>

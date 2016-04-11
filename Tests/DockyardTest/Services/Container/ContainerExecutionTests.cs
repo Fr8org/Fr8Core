@@ -413,7 +413,7 @@ namespace DockyardTest.Services
                 {
                     var opState = storage.CrateContentsOfType<OperationalStateCM>().First();
 
-                    container.CurrentPlanNodeId = opState.CallStack.Peek().NodeId;
+                    container.CurrentActivityId = opState.CallStack.Peek().NodeId;
                     opState.CallStack = null;
                 }
 
@@ -838,7 +838,7 @@ namespace DockyardTest.Services
 
                 await _plan.Run(uow, plan);
 
-                Assert.AreEqual(ContainerState.Pending, uow.ContainerRepository.GetQuery().Single(x => x.PlanId == plan.Id).ContainerState, "Invalid container state");
+                Assert.AreEqual(State.Suspended, uow.ContainerRepository.GetQuery().Single(x => x.PlanId == plan.Id).State, "Invalid container state");
                 AssertExecutionSequence(new[]
                {
                     new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(2)),

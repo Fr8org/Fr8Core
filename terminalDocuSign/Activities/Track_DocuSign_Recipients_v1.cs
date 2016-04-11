@@ -298,7 +298,7 @@ namespace terminalDocuSign.Actions
                     Conditions = conditions
                 });
 
-                var queryableCriteria = new StandardQueryFieldsCM(new QueryFieldDTO[] {new QueryFieldDTO("Status", "Status", QueryFieldType.String, new TextBox()
+                var queryableCriteria = new TypedFieldsCM(new TypedFieldDTO[] {new TypedFieldDTO("Status", "Status", FieldType.String, new TextBox()
                             {
                                 Name = "QueryField_Status"
                             })});
@@ -356,12 +356,12 @@ namespace terminalDocuSign.Actions
                 });
 
 
-                var queryCriteria = Data.Crates.Crate.FromContent("Queryable Criteria", new StandardQueryFieldsCM(GetFieldsByObjectId(selectedObject.Id)));
+                var queryCriteria = Data.Crates.Crate.FromContent("Queryable Criteria", new TypedFieldsCM(GetFieldsByObjectId(selectedObject.Id)));
                 crateStorage.Add(queryCriteria);
             }
         }
 
-        private IEnumerable<QueryFieldDTO> GetFieldsByObjectId(Guid typeId)
+        private IEnumerable<TypedFieldDTO> GetFieldsByObjectId(Guid typeId)
         {
             var fields = new List<FieldDTO>();
 
@@ -375,10 +375,10 @@ namespace terminalDocuSign.Actions
 
             return fields.OrderBy(x => x.Key)
                 .Select(x =>
-                    new QueryFieldDTO(
+                    new TypedFieldDTO(
                         x.Key,
                         x.Key,
-                        QueryFieldType.String,
+                        FieldType.String,
                         new TextBox()
                         {
                             Name = "QueryField_" + x.Key

@@ -50,7 +50,7 @@ namespace terminalSalesforceTests.Actions
             Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
             FieldDTO testField = new FieldDTO("Account", "TestAccount");
             salesforceIntegrationMock.Setup(
-                s => s.GetFields("Account", It.IsAny<AuthorizationTokenDO>()))
+                s => s.GetFields("Account", It.IsAny<AuthorizationTokenDO>(), false))
                 .Returns(() => Task.FromResult((IList<FieldDTO>)new List<FieldDTO> { testField }));
 
             salesforceIntegrationMock.Setup(
@@ -99,11 +99,11 @@ namespace terminalSalesforceTests.Actions
             var stroage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(activityDO);
             Assert.AreEqual(3, stroage.Count, "Number of configuration crates not populated correctly");
 
-            Assert.AreEqual(stroage.CratesOfType<StandardQueryFieldsCM>()
+            Assert.AreEqual(stroage.CratesOfType<TypedFieldsCM>()
                     .Single(c => c.Label.Equals("Queryable Criteria"))
                     .Content.Fields.Count, 1, "Queryable Criteria is NOT filled with invalid data");
 
-            salesforceIntegrationMock.Verify(s => s.GetFields("Account", It.IsAny<AuthorizationTokenDO>()), Times.Exactly(1));
+            salesforceIntegrationMock.Verify(s => s.GetFields("Account", It.IsAny<AuthorizationTokenDO>(), false), Times.Exactly(1));
         }
 
         [Test, Category("terminalSalesforceTests.Get_Data.Run")]

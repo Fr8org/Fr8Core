@@ -315,7 +315,8 @@ div.action {
     margin-top: 0px;
     padding-bottom: 10px;
     border-bottom: 1px;
-    margin-bottom: 10px;
+    /*FR-2739*/
+    /*margin-bottom: 10px;*/
     text-align: center;
     position: relative;
 }
@@ -1171,4 +1172,30 @@ i.activity-stream-font{
 }
 .file-info {
     display: block;
+}
+
+.expanded {
+    max-height: 1000px;
+    -o-transition: all .6s ease;   
+    -webkit-transition: all .6s ease;
+	-moz-transition: all .6s ease;
+	transition: all .6s ease;
+}
+
+.collapsed {
+    max-height: 0px;
+    overflow: hidden;
+    -o-transition: all .3s ease;   
+    -webkit-transition: all .3s ease;
+    -moz-transition: all .3s ease;
+	transition: all .3s ease;
+}
+
+
+.fr8-full-width {
+    width: 100%;
+}
+
+.fr8-float-right {
+    float: right;
 }

@@ -36,16 +36,16 @@ namespace Data.Entities
 
         [Required]
         [ForeignKey("ContainerStateTemplate")]
-        public int ContainerState { get; set; }
+        public int State { get; set; }
 
         public virtual _ContainerStateTemplate ContainerStateTemplate { get; set; }
 
         [ForeignKey("CurrentPlanNode")]
-        public Guid? CurrentPlanNodeId { get; set; }
+        public Guid? CurrentActivityId { get; set; }
         public virtual PlanNodeDO CurrentPlanNode { get; set; }
 
         [ForeignKey("NextRouteNode")]
-        public Guid? NextRouteNodeId { get; set; }
+        public Guid? NextActivityId { get; set; }
         public virtual PlanNodeDO NextRouteNode { get; set; }
 
         public string CrateStorage { get; set; }
