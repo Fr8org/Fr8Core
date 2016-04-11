@@ -43,19 +43,20 @@ namespace DockyardTest.Security
 
         }
 
-        class CustomDataObject : BaseObject
+        public class CustomDataObject : BaseObject
         {
             public CustomDataObject()
             {
-                this.Id = Guid.NewGuid();
-                Name = "TestValue";
             }
 
             [Key]
             public Guid Id { get; set; }
-            
-            [AuthorizeActivity(Privilege = Privilege.ReadObject)]
-            public string Name { get; set; }
+
+            [AuthorizeActivity(Privilege = Privilege.EditObject)]
+            public virtual string Name
+            {
+                get; set;
+            }
         }
 
         [Test, ExpectedException(typeof(HttpException), ExpectedMessage = "You are not authorized to perform this activity!")]
@@ -63,12 +64,15 @@ namespace DockyardTest.Security
         {
             var proxyGenerator = new ProxyGenerator();
             customDataObject = proxyGenerator.CreateClassProxy<CustomDataObject>(new AuthorizeActivityInterceptor());
+
+            customDataObject.Id = Guid.NewGuid();
             //Create rolePrivilegeFor this
-            _objectsStorageProvider.InsertObjectRolePrivilege(customDataObject.Id.ToString(), readRolePrivilegeId, "CustomDataObject", "Name");
-            
+            _objectsStorageProvider.InsertObjectRolePrivilege(customDataObject.Id.ToString(), readRolePrivilegeId,
+                "CustomDataObject", "Name");
+            //set should pass because of editprivilege
+            customDataObject.Name = "TestValue";
+            //get should raise an error
             Assert.AreEqual("TestValue", customDataObject.Name);
-            //try to edit Name property should raise an error
-            customDataObject.Name = "New Value";
         }
 
         [Test]

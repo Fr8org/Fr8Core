@@ -20,6 +20,11 @@ namespace Data.Repositories.Security.Entities
         public string ObjectId { get; set; }
 
         /// <summary>
+        /// Type of the object
+        /// </summary>
+        public string Type { get; set; }
+
+        /// <summary>
         /// All role privileges of current secured object.
         /// </summary>
         public List<RolePrivilege> RolePrivileges { get; set; } 

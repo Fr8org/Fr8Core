@@ -88,6 +88,9 @@ namespace Data.Infrastructure.StructureMap
             var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
             var objRolePrivilegeWrapper = securityStorageProvider.GetRolePrivilegesForSecuredObject(curObjectId);
 
+            if (objRolePrivilegeWrapper == null)
+                return false;
+
             if (string.IsNullOrEmpty(propertyName))
             {
                 var authorizedRoles = objRolePrivilegeWrapper.RolePrivileges.Where(x => roles.Contains(x.Role.RoleName));

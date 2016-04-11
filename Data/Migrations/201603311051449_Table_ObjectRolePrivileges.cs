@@ -10,7 +10,7 @@ namespace Data.Migrations
             CreateTable("dbo.ObjectRolePrivileges",
                 c => new
                 {
-                    Id = Guid.NewGuid(),
+                    Id = c.Guid(nullable:false, identity:true),
                     ObjectId = c.String(nullable: false, maxLength: 128),
                     RolePrivilegeId = c.Guid(nullable:false),
                     Type = c.String(),

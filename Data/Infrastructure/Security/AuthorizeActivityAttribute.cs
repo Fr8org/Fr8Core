@@ -34,5 +34,10 @@ namespace Data.Infrastructure.Security
         /// Default values is Guid, and could be used with BaseObjects that contains key as Id 
         /// </summary>
         public Type ObjectType { get; set; }
+
+        /// <summary>
+        /// Attribute is set on a property
+        /// </summary>
+        public bool IsProperty { get; set; }
     }
 }

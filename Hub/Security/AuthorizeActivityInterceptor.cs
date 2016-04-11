@@ -29,23 +29,32 @@ namespace Hub.Security
         /// <param name="invocation"></param>
         private void AuthorizeActivity(IInvocation invocation)
         {
-            if (!IsMethodMarkedForAuthorization(invocation.MethodInvocationTarget))
+            if (IsPropertyInterception(invocation.MethodInvocationTarget))
             {
-                invocation.Proceed();
-                return;
+                var getPropertyName = invocation.TargetType.GetProperties().FirstOrDefault(x => x.Name == GetPropertyName(invocation.Method) && x.GetCustomAttributes(typeof(AuthorizeActivityAttribute), true).Any());
+                if (getPropertyName == null)
+                {
+                    invocation.Proceed();
+                    return;
+                } 
+                    
+                var authorizeAttribute = (getPropertyName.GetCustomAttributes(typeof(AuthorizeActivityAttribute), true).First()
+                    as AuthorizeActivityAttribute ?? new AuthorizeActivityAttribute());
+
+                AuthorizePropertyInvocation(invocation, authorizeAttribute);
             }
-
-            var authorizeAttribute = (invocation.MethodInvocationTarget.GetCustomAttributes(typeof(AuthorizeActivityAttribute), true).First()
-                as AuthorizeActivityAttribute ?? new AuthorizeActivityAttribute());
-
-            switch (invocation.Method.MemberType)
+            else
             {
-                case MemberTypes.Property:
-                    AuthorizePropertyInvocation(invocation, authorizeAttribute);
-                    break;
-                case MemberTypes.Method:
-                    AuthorizeMethodInvocation(invocation, authorizeAttribute);
-                    break;
+                if (!IsMethodMarkedForAuthorization(invocation.MethodInvocationTarget))
+                {
+                    invocation.Proceed();
+                    return;
+                }
+
+                var authorizeAttribute = (invocation.MethodInvocationTarget.GetCustomAttributes(typeof(AuthorizeActivityAttribute), true).First()
+                    as AuthorizeActivityAttribute ?? new AuthorizeActivityAttribute());
+
+                AuthorizeMethodInvocation(invocation, authorizeAttribute);
             }
         }
 
@@ -67,7 +76,7 @@ namespace Hub.Security
                 {
                     //todo: in case of requirement for objects not inherited from BaseObject, create a new property inside AuthorizeActivityAttribute that will set object inner propertyName in case of this "Id"  
                     var property = parameter.GetType().GetProperty("Id");
-                    objectId = property.GetValue(parameter).ToString();
+                    objectId = property.GetValue(invocation.Proxy).ToString();
                 }
                 
                 ISecurityServices securityServices = ObjectFactory.GetInstance<ISecurityServices>();
@@ -89,13 +98,25 @@ namespace Hub.Security
         /// <param name="authorizeAttribute"></param>
         private void AuthorizePropertyInvocation(IInvocation invocation, AuthorizeActivityAttribute authorizeAttribute)
         {
-            var property = invocation.Method.GetType().GetProperty("Id");
-            var objectId = property.GetValue(property).ToString();
-            
+            var property = invocation.TargetType.GetProperty("Id");
+            var objectId = property.GetValue(invocation.Proxy).ToString();
+            if (string.IsNullOrEmpty(objectId))
+            {
+                invocation.Proceed();
+            }
+
+            Guid result;
+            if (Guid.TryParse(objectId, out result))
+            {
+                if(result == Guid.Empty)
+                invocation.Proceed();
+            }
+
             ISecurityServices securityServices = ObjectFactory.GetInstance<ISecurityServices>();
             if (securityServices.AuthorizeActivity(authorizeAttribute.Privilege, objectId))
             {
                 invocation.Proceed();
+                return;
             }
             else
             {
@@ -132,6 +153,28 @@ namespace Hub.Security
                 }
             }
             return objectsForAuthorization;
+        }
+
+        public bool IsPropertyInterception(MethodInfo memberInfo)
+        {
+            return memberInfo.IsSpecialName &&
+                   (IsSetterName(memberInfo.Name) ||
+                     IsGetterName(memberInfo.Name));
+        }
+
+        public string GetPropertyName(MethodInfo membeInfo)
+        {
+            return membeInfo.Name.Substring(4);
+        }
+
+        private bool IsGetterName(string name)
+        {
+            return name.StartsWith("get_", StringComparison.Ordinal);
+        }
+
+        private bool IsSetterName(string name)
+        {
+            return name.StartsWith("set_", StringComparison.Ordinal);
         }
     }
 }
