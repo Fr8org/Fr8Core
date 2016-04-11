@@ -13,12 +13,29 @@ namespace HubTests.Integration
     [Category("HubTests.Integration")]
     public class ActivityController_EndToEnd_Tests : BaseHubIntegrationTest
     {
+        private string Mail_Merge_Description = @"<p>Pull data from a variety of sources, including Excel files, 
+                                            Google Sheets, and databases, and merge the data into your DocuSign template. 
+                                            You can link specific fields from your source data to DocuSign fields</p>";
+        private string Extract_Data_Description = @"<p>Link your important outgoing envelopes to Fr8's powerful notification Activities, 
+                                            which allow you to receive SMS notices, emails, or receive posts to popular tracking systems like Slack and Yammer. 
+                                            Get notified when recipients take too long to sign!</p>";
+        private string Track_DocuSign_Description = @"<p>Link your important outgoing envelopes to Fr8's powerful notification Activities, 
+                                            which allow you to receive SMS notices, emails, or receive posts to popular tracking systems like Slack and Yammer. 
+                                            Get notified when recipients take too long to sign!</p>";
+        private string Generate_DocuSign_Report_Description = @"<p>This is Generate DocuSign Report solution action</p>";
+
+        private string SearchFr8Warehouse_Description =
+                                            @"<p>The Search Fr8 Warehouse solution allows you to search the Fr8 Warehouse 
+                                            for information we're storing for you. This might be event data about your cloud services that we track on your 
+                                            behalf. Or it might be files or data that your plans have stored.</p>";
+
+        private string FindObjects_Solution_Description = @"<p>This is the FindObjects Solution.</p>";
         public override string TerminalName
         {
             get { return "Hub"; }
         }
         [Test]
-        public async Task GetSolutionListByTerminalName_EndToEnd()
+        public async Task GetSolutionListByTerminalName_EndToEnd() 
         {
             await GetDocuSignSolutionList();
             await GetFr8CoreSolutionList();
@@ -27,29 +44,62 @@ namespace HubTests.Integration
         [Test]
         private async Task GetDocuSignSolutionList()
         {
+            var solutionNames = new List<string> { "Mail_Merge_Into_DocuSign", "Extract_Data_From_Envelopes", "Track_DocuSign_Recipients", "Generate_DocuSign_Report" };
             var baseUrl = GetHubApiBaseUrl();
             var getSolutionListUrl = baseUrl + "activities/Documentation";
             var emptyActivityDTO = new ActivityDTO { Documentation = "Terminal=terminalDocuSign" };
-            var solutionNameList = await HttpPostAsync<ActivityDTO, List<string>>(getSolutionListUrl, emptyActivityDTO);
-            Assert.IsNotNull(solutionNameList);
-            Assert.IsTrue(solutionNameList.Any());
-            Assert.Contains("Mail_Merge_Into_DocuSign", solutionNameList);
-            Assert.Contains("Extract_Data_From_Envelopes", solutionNameList);
-            Assert.Contains("Track_DocuSign_Recipients", solutionNameList);
-            Assert.Contains("Generate_DocuSign_Report", solutionNameList);
-            //Assert.Contains("Archive_DocuSign_Template", solutionNameList);
+            var solutionPages = await HttpPostAsync<ActivityDTO, List<SolutionPageDTO>>(getSolutionListUrl, emptyActivityDTO);
+            Assert.IsNotNull(solutionPages);
+            Assert.IsTrue(solutionPages.Any());
+            //We provide 4 Solution Pages for the DocuSign terminal
+            Assert.AreEqual(4, solutionPages.Count);
+            foreach (var solutionPage in solutionPages)
+            {
+                Assert.IsTrue(solutionNames.Contains(solutionPage.Name));
+                switch (solutionPage.Name)
+                {
+                    case "Mail_Merge_Into_DocuSign":
+                        Assert.AreEqual(Mail_Merge_Description, solutionPage.Body);
+                        break;
+                    case "Extract_Data_From_Envelopes":
+                        Assert.AreEqual(Extract_Data_Description, solutionPage.Body);
+                        break;
+                    case "Track_DocuSign_Recipients":
+                        Assert.AreEqual(Track_DocuSign_Description, solutionPage.Body);
+                        break;
+                    case "Generate_DocuSign_Report":
+                        Assert.AreEqual(Generate_DocuSign_Report_Description, solutionPage.Body);
+                        break;
+                }
+            }
+
         }
         [Test]
         private async Task GetFr8CoreSolutionList()
         {
+            var solutionNames = new List<string> { "FindObjects_Solution", "SearchFr8Warehouse" };
             var baseUrl = GetHubApiBaseUrl();
             var getSolutionListUrl = baseUrl + "activities/Documentation";
             var emptyActivityDTO = new ActivityDTO { Documentation = "Terminal=terminalFr8Core" };
-            var solutionNameList = await HttpPostAsync<ActivityDTO, List<string>>(getSolutionListUrl, emptyActivityDTO);
-            Assert.IsNotNull(solutionNameList);
-            Assert.IsTrue(solutionNameList.Any());
-            Assert.Contains("FindObjects_Solution", solutionNameList);
-            Assert.Contains("SearchFr8Warehouse", solutionNameList);
+            var solutionPages = await HttpPostAsync<ActivityDTO, List<SolutionPageDTO>>(getSolutionListUrl, emptyActivityDTO);
+            Assert.IsNotNull(solutionPages);
+            Assert.IsTrue(solutionPages.Any());
+            //We provide 2 Solution Pages for the Fr8Core terminal
+            Assert.AreEqual(2, solutionPages.Count);
+            foreach (var solutionPage in solutionPages)
+            {
+                Assert.IsTrue(solutionNames.Contains(solutionPage.Name));
+                switch (solutionPage.Name)
+                {
+                    case "FindObjects_Solution":
+                        Assert.AreEqual(FindObjects_Solution_Description, solutionPage.Body);
+                        break;
+                    case "SearchFr8Warehouse":
+                        Assert.AreEqual(SearchFr8Warehouse_Description, solutionPage.Body);
+                        break;
+                }
+            }
         }
+
     }
 }
