@@ -160,7 +160,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             responseError: function (config) {
                 if (config.status === 403) {
                     $window.location.href = $window.location.origin + '/DockyardAccount'
-                    + '?returnUrl=/Dashboard' + encodeURIComponent($window.location.hash);
+                    + '?returnUrl=/dashboard' + encodeURIComponent($window.location.hash);
                 }
                 Metronic.stopPageLoading();
                 return $q.reject(config);
