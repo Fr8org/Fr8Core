@@ -285,7 +285,7 @@ namespace Hub.Services
                     new ActivityDTO
                     {
                         Documentation = "MainPage",
-                        ActivityTemplate = new ActivityTemplateDTO {Name = terminalName}
+                        ActivityTemplate = new ActivityTemplateDTO {Name = solutionName }
                     }, true);
                 solutionPages.Add(solutionPageDTO);
             }

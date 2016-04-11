@@ -16,9 +16,8 @@ namespace HubTests.Integration
         private string Mail_Merge_Description = @"<p>Pull data from a variety of sources, including Excel files, 
                                             Google Sheets, and databases, and merge the data into your DocuSign template. 
                                             You can link specific fields from your source data to DocuSign fields</p>";
-        private string Extract_Data_Description = @"<p>Link your important outgoing envelopes to Fr8's powerful notification Activities, 
-                                            which allow you to receive SMS notices, emails, or receive posts to popular tracking systems like Slack and Yammer. 
-                                            Get notified when recipients take too long to sign!</p>";
+        private string Extract_Data_Description = @"<p>This powerful report generator extends the capabilities of the standard DocuSign reporting tools. 
+                                                Search by Recipient or Template and build powerful queries with a few mouse clicks</p>";
         private string Track_DocuSign_Description = @"<p>Link your important outgoing envelopes to Fr8's powerful notification Activities, 
                                             which allow you to receive SMS notices, emails, or receive posts to popular tracking systems like Slack and Yammer. 
                                             Get notified when recipients take too long to sign!</p>";
@@ -44,31 +43,28 @@ namespace HubTests.Integration
         [Test]
         private async Task GetDocuSignSolutionList()
         {
-            var solutionNames = new List<string> { "Mail_Merge_Into_DocuSign", "Extract_Data_From_Envelopes", "Track_DocuSign_Recipients", "Generate_DocuSign_Report" };
+             var solutionNames = new List<string> { "Mail Merge Into DocuSign", "Extract Data From Envelopes", "Track DocuSign Recipients" };
             var baseUrl = GetHubApiBaseUrl();
             var getSolutionListUrl = baseUrl + "activities/Documentation";
-            var emptyActivityDTO = new ActivityDTO { Documentation = "Terminal=terminalDocuSign" };
+            var emptyActivityDTO = new ActivityDTO { Documentation = "Terminal=terminalDocuSign", ActivityTemplate = new ActivityTemplateDTO()};
             var solutionPages = await HttpPostAsync<ActivityDTO, List<SolutionPageDTO>>(getSolutionListUrl, emptyActivityDTO);
             Assert.IsNotNull(solutionPages);
             Assert.IsTrue(solutionPages.Any());
-            //We provide 4 Solution Pages for the DocuSign terminal
-            Assert.AreEqual(4, solutionPages.Count);
+            //We provide 3 Solution Pages for the DocuSign terminal
+            Assert.AreEqual(3, solutionPages.Count);
             foreach (var solutionPage in solutionPages)
             {
                 Assert.IsTrue(solutionNames.Contains(solutionPage.Name));
                 switch (solutionPage.Name)
                 {
-                    case "Mail_Merge_Into_DocuSign":
+                    case "Mail Merge Into DocuSign":
                         Assert.AreEqual(Mail_Merge_Description, solutionPage.Body);
                         break;
-                    case "Extract_Data_From_Envelopes":
+                    case "Extract Data From Envelopes":
                         Assert.AreEqual(Extract_Data_Description, solutionPage.Body);
                         break;
-                    case "Track_DocuSign_Recipients":
+                    case "Track DocuSign Recipients":
                         Assert.AreEqual(Track_DocuSign_Description, solutionPage.Body);
-                        break;
-                    case "Generate_DocuSign_Report":
-                        Assert.AreEqual(Generate_DocuSign_Report_Description, solutionPage.Body);
                         break;
                 }
             }
@@ -77,10 +73,10 @@ namespace HubTests.Integration
         [Test]
         private async Task GetFr8CoreSolutionList()
         {
-            var solutionNames = new List<string> { "FindObjects_Solution", "SearchFr8Warehouse" };
+            var solutionNames = new List<string> { "Find Objects Solution", "Search Fr8 Warehouse" };
             var baseUrl = GetHubApiBaseUrl();
             var getSolutionListUrl = baseUrl + "activities/Documentation";
-            var emptyActivityDTO = new ActivityDTO { Documentation = "Terminal=terminalFr8Core" };
+            var emptyActivityDTO = new ActivityDTO { Documentation = "Terminal=terminalFr8Core", ActivityTemplate = new ActivityTemplateDTO() };
             var solutionPages = await HttpPostAsync<ActivityDTO, List<SolutionPageDTO>>(getSolutionListUrl, emptyActivityDTO);
             Assert.IsNotNull(solutionPages);
             Assert.IsTrue(solutionPages.Any());
@@ -91,10 +87,10 @@ namespace HubTests.Integration
                 Assert.IsTrue(solutionNames.Contains(solutionPage.Name));
                 switch (solutionPage.Name)
                 {
-                    case "FindObjects_Solution":
+                    case "Find Objects Solution":
                         Assert.AreEqual(FindObjects_Solution_Description, solutionPage.Body);
                         break;
-                    case "SearchFr8Warehouse":
+                    case "Search Fr8 Warehouse":
                         Assert.AreEqual(SearchFr8Warehouse_Description, solutionPage.Body);
                         break;
                 }
