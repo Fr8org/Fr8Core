@@ -4,7 +4,7 @@ param(
 	[string]$numOfChecks = 11
 )
 
-if (($confirmation -contains $numOfChecks) -and ($confirmation -contains "check") -and ($confirmation -contains "passed") -and ($confirmation -contains "confirm"))
+if (($confirmation -match $numOfChecks) -and ($confirmation -match "check") -and ($confirmation -match "passed") -and ($confirmation -match "confirm"))
 {
 	Write-Host "Build Initiator ($env:BUILD_QUEUEDBY) confirmed that all $numOfChecks pre-deployment checks have passed."
 	exit 0
