@@ -6,21 +6,27 @@
 }
 @Scripts.Render("~/bundles/js/jquery-bootstrap")
 @Html.Partial("_AngularAppScripts")
+@model List<string>
 <section id="solution" data-section="welcome">
     <div class="solution-header jumbotron">
-            <div id="logotext" class="text">
-                <img class="solution-docusion" src="/Content/img/welcome/DocuSign_Logo_Purple_Yellow.png">
-                @*<img class="solution-docusion" src="/Content/img/welcome/docusign.png">*@
-                <p class="descr"><span>Cloud Freight Services for DocuSign</span></p>
-            </div>
+        <div id="logotext" class="text">
+            <img class="solution-docusion" src="/Content/img/welcome/DocuSign_Logo_Purple_Yellow.png">
+            @*<img class="solution-docusion" src="/Content/img/welcome/docusign.png">*@
+            <p class="descr"><span>Cloud Freight Services for DocuSign</span></p>
+        </div>
     </div>
 </section>
 <section class="text-block full-height-block" ng-app="app">
     <h2 class="container">Fr8 Solutions for DocuSign</h2>
-    <hr />
     <div class="container full-height-block" ng-controller="SolutionDocumentationController">
-        <div ng-include="'../AngularTemplate/SolutionDocumentation'">
+        <div class='solution-fr8 container'>
+            @foreach (var solutionDTO in Model)
+            {
+                <div>@solutionDTO</div>
+            }
         </div>
+
+
         @*<div class="base-block-white title-block" style="margin-top: 56px;">
                 <h2>Process the Data In Your DocuSign Envelopes</h2>
             </div>
