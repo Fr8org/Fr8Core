@@ -65,7 +65,6 @@ namespace DockyardTest.Controllers
 
             Assert.AreEqual(1, uow.IncidentRepository.GetAll().Count());
         }
-
         [Test]
         [Category("Controllers.EventController.Event")]
         public void EventController_Post_WithTerminalEvent_ReturnsOK()
