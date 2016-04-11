@@ -661,6 +661,66 @@ div.action-header {
     margin-bottom: 0;
 }
 
+/* Query Builder */
+.query-builder-table {
+    margin-left: 27px;
+    margin-bottom: 5px;
+    width: calc(100% - 25px);
+}
+
+    .query-builder-table td:first-of-type,
+    .query-builder-table th:first-of-type {
+        padding-left: 0;
+    }
+
+    .query-builder-table tbody,
+    .query-builder-table thead {
+        display: block;
+    }
+
+    .query-builder-table tbody {
+        /*max-height: 296px;
+        overflow-y: auto;*/
+    }
+
+        .query-builder-table tbody tr.no-border td {
+            border-top: none;
+            padding: 0;
+        }
+
+    .query-builder-table input[type=text].invalid {
+        border: 1px solid red;
+    }
+
+    .query-builder-table div.invalid-hint {
+        font-size: 1em;
+        color: #FF0000;
+        text-align: right;
+    }
+
+.query-builder-add-button {
+    margin-left: 27px;
+}
+
+.query-builder-table .form-control {
+    padding: 0;
+    height: 25px;
+}
+
+.query-builder-delete-button {
+    cursor: pointer;
+    margin-top: 4px;
+}
+
+.query-builder-table date-picker .btn.btn-default {
+    padding: 1px 3px 2px 3px;
+    border: 1px solid #acacac;
+}
+
+ul.dropdown-menu {
+    padding: 3px 3px 10px 2px;
+}
+
 .table-delete-button {
     width: 15px;
     height: 15px;
@@ -737,6 +797,10 @@ input[type=radio]:checked ~ div.nested-controls {
     margin-bottom: 5px;
     display: block;
 }
+
+    .radio-button-group-content .query-builder-table .form-group {
+        margin: 0;
+    }
 
 .radio-button-option-label {
     display: inline;
@@ -1117,4 +1181,30 @@ i.activity-stream-font {
 }
 .file-info {
     display: block;
+}
+
+.expanded {
+    max-height: 1000px;
+    -o-transition: all .6s ease;   
+    -webkit-transition: all .6s ease;
+	-moz-transition: all .6s ease;
+	transition: all .6s ease;
+}
+
+.collapsed {
+    max-height: 0px;
+    overflow: hidden;
+    -o-transition: all .3s ease;   
+    -webkit-transition: all .3s ease;
+    -moz-transition: all .3s ease;
+	transition: all .3s ease;
+}
+
+
+.fr8-full-width {
+    width: 100%;
+}
+
+.fr8-float-right {
+    float: right;
 }
