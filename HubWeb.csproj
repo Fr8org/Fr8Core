@@ -483,6 +483,8 @@
   <ItemGroup>
     <Content Include="Api\EventResponse.aspx" />
     <Content Include="Api\GetEmailHTML.aspx" />
+    <Content Include="Content\css\dockyard\container-transition.css" />
+    <Content Include="Content\css\dockyard\query-builder.css" />
     <Content Include="Content\css\fonts\brankic.svg" />
     <Content Include="Content\css\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\css\frontcss\main_new.css" />
@@ -894,7 +896,6 @@
     <Content Include="_PowerShellScripts\Deploy-HMAsWebJob.ps1" />
     <Content Include="_PowerShellScripts\SetCloudServiceSize.ps1" />
     <Content Include="_PowerShellScripts\CloneDatabase.ps1" />
-    <Content Include="_PowerShellScripts\UpdateTerminalHostnameInDb.ps1" />
     <Content Include="_PowerShellScripts\DeleteDatabase.ps1" />
     <Content Include="_PowerShellScripts\Set-StagingHostname.ps1" />
     <Content Include="_PowerShellScripts\CopyAppInsightsConfigs.ps1" />
@@ -908,6 +909,9 @@
     <Content Include="_PowerShellScripts\Stop-StagingWebsite.ps1" />
     <Content Include="_PowerShellScripts\Start-Sleep.ps1" />
     <Content Include="_PowerShellScripts\Update-TerminalHostnameInDb.ps1" />
+    <Content Include="_PowerShellScripts\CreateBuildServer.ps1" />
+    <Content Include="_PowerShellScripts\BuildServer_Templ.json" />
+    <Content Include="_PowerShellScripts\UpdateTerminalHostnameInDb.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
@@ -919,6 +923,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ContainerTransition.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DatePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Fr8Event.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\QueryBuilderCondition.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\SourceableCriteria.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\CrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TimePicker.ts" />
@@ -1051,7 +1056,6 @@
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
-    <Content Include="_PowerShellScripts\SetupStagingDatabase.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FindObjectsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\FindObjectsResultsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\InternalAuthenticationController.ts" />

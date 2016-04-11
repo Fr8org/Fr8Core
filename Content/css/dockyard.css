@@ -1,4 +1,7 @@
-﻿.table-linkrows > tbody > tr {
+﻿@import url('dockyard/container-transition.css');
+@import url('dockyard/query-builder.css');
+
+.table-linkrows > tbody > tr {
     cursor: pointer;
 }
 
@@ -1125,7 +1128,7 @@ div.ap-resize div.dndDraggingSource {
     margin: 30px auto;
 }
 
-i.activity-stream-font{
+i.activity-stream-font {
     margin-right: 3px;
     font-size: 40px !important;
     float: left; 
@@ -1149,18 +1152,24 @@ i.activity-stream-font{
     min-width:70%;
 }
 
-.query-builder-value-row {
-    padding-left: 15px; 
-    overflow: auto;
-}
-.query-builder-operator-row {
-    float:left; 
-    width: 70px;
-}
-.configuration-control-form-group{
+.configuration-control-form-group {
     margin-bottom: 5px;
 }
 
+/* Metronic Theme patch (until it's updated) */
+
+.fa-2x {
+  font-size: 2em !important;}
+
+.fa-3x {
+  font-size: 3em !important;}
+
+.fa-4x {
+  font-size: 4em !important;}
+
+.fa-5x {
+  font-size: 5em !important;}
+  
 .filepicker {
         white-space: nowrap;
         overflow: hidden;
@@ -1172,4 +1181,30 @@ i.activity-stream-font{
 }
 .file-info {
     display: block;
+}
+
+.expanded {
+    max-height: 1000px;
+    -o-transition: all .6s ease;   
+    -webkit-transition: all .6s ease;
+	-moz-transition: all .6s ease;
+	transition: all .6s ease;
+}
+
+.collapsed {
+    max-height: 0px;
+    overflow: hidden;
+    -o-transition: all .3s ease;   
+    -webkit-transition: all .3s ease;
+    -moz-transition: all .3s ease;
+	transition: all .3s ease;
+}
+
+
+.fr8-full-width {
+    width: 100%;
+}
+
+.fr8-float-right {
+    float: right;
 }

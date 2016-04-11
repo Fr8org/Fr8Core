@@ -156,6 +156,7 @@ namespace HubWeb.Controllers
         /// POST : Saves or updates the given action
         /// </summary>
         [HttpPost]
+        [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> Save(ActivityDTO curActionDTO)
         {
             ActivityDO submittedActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
