@@ -30,10 +30,10 @@ namespace Data.Interfaces.Manifests
         public string RecipientId;
         public string RoutingOrderId;
         public string Status;
-        public List<DocuSignTab> Tabs = new List<DocuSignTab>();
+        public List<DocuSignTabStatus> Tabs = new List<DocuSignTabStatus>();
     }
 
-    public class DocuSignTab
+    public class DocuSignTabStatus
     {
         public string TabType;
         public string Name;
@@ -41,7 +41,7 @@ namespace Data.Interfaces.Manifests
         public string Value;
         public string TabLabel;
         public string Selected;
-        public List<DocuSignTab> Items = new List<DocuSignTab>();
+        public List<DocuSignTabStatus> Items = new List<DocuSignTabStatus>();
     }
 
     public class DocuSignTemplate

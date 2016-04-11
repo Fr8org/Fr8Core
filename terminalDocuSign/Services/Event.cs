@@ -36,147 +36,64 @@ namespace terminalDocuSign.Services
 
         public async Task<Crate> Process(string curExternalEventPayload)
         {
-            //DO - 1449
             //if the event payload is Fr8 User ID, it is DocuSign Authentication Completed event
             //The Monitor All DocuSign Events plan should be creaed in this case.
             if (curExternalEventPayload.Contains("fr8_user_id"))
             {
-                var jo = (JObject)JsonConvert.DeserializeObject(curExternalEventPayload);
-                var curFr8UserId = jo["fr8_user_id"].Value<string>();
-                var authToken = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(jo["auth_token"].ToString());
-
-                if (authToken == null)
+                try
                 {
-                    throw new ArgumentException("Authorization Token required");
+                    return await ConfirmAuthenticationAndCreateMADSE(curExternalEventPayload);
                 }
-
-                if (string.IsNullOrEmpty(curFr8UserId))
+                catch
                 {
-                    throw new ArgumentException("Fr8 User ID is not in the correct format.");
+                    //create polling
+                    ///////////
                 }
-
-                // create MonitorAllDocuSignEvents plan
-                await _docuSignPlan.CreatePlan_MonitorAllDocuSignEvents(curFr8UserId, authToken);
-
-                return null;
             }
 
+            //If this is a connect event
+            if (curExternalEventPayload.Contains("DocuSignEnvelopeInformation"))
+            {
+                // Connect events come only for a single envelope
+                var curDocuSignEnvelopeInfo = DocuSignConnectParser.GetEnvelopeInformation(curExternalEventPayload);
+                // transform XML structure into DocuSignEnvelopeCM_v2
+                var curDocuSingEnvelopCM = DocuSignConnectParser.ParseXMLintoCM(curDocuSignEnvelopeInfo);
+                var eventReportContent = new EventReportCM
+                {
+                    EventNames = DocuSignConnectParser.GetEventNames(curDocuSignEnvelopeInfo),
+                    ContainerDoId = "",
+                    EventPayload = new CrateStorage(Crate.FromContent("DocuSign Connect Event", curDocuSingEnvelopCM)),
+                    Manufacturer = "DocuSign",
+                    ExternalAccountId = curDocuSignEnvelopeInfo.EnvelopeStatus.Email
+                };
 
-            // Connect events come only for a single envelope
-            var curDocuSignEnvelopeInfo = DocuSignConnectParser.GetEnvelopeInformation(curExternalEventPayload);
-
-            // transform XML structure into DocuSignEnvelopeCM_v2
-            var curDocuSingEnvelopCM = DocuSignConnectParser.ParseXMLintoCM(curDocuSignEnvelopeInfo);
-
-
-
-
-            //Parse(curExternalEventPayload, out curExternalEvents, out curEnvelopeId);
-
-            ////prepare the content from the external event payload
-
-
-            //var eventReportContent = new EventReportCM
-            //{
-            //    EventNames = GetEventNames(curDocuSignEnvelopeInfo),
-            //    ContainerDoId = "",
-            //    EventPayload = ExtractEventPayload(curExternalEvents),
-            //    Manufacturer = "DocuSign",
-            //    ExternalAccountId = curDocuSignEnvelopeInfo.EnvelopeStatus.ExternalAccountId
-            //};
-
-
-
-
-
-
-
-
-
-
-
-            ////prepare the event report
-            //var curEventReport = Crate.FromContent("Standard Event Report", eventReportContent);
-
-            //return curEventReport;
-
+                ////prepare the event report
+                var curEventReport = Crate.FromContent("Standard Event Report", eventReportContent);
+                return curEventReport;
+            }
+            
             return null;
         }
 
-  
+        private async Task<Crate> ConfirmAuthenticationAndCreateMADSE(string curExternalEventPayload)
+        {
+            var jo = (JObject)JsonConvert.DeserializeObject(curExternalEventPayload);
+            var curFr8UserId = jo["fr8_user_id"].Value<string>();
+            var authToken = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(jo["auth_token"].ToString());
 
+            if (authToken == null)
+            {
+                throw new ArgumentException("Authorization Token required");
+            }
 
+            if (string.IsNullOrEmpty(curFr8UserId))
+            {
+                throw new ArgumentException("Fr8 User ID is not in the correct format.");
+            }
 
-        //private void Parse(string xmlPayload, out curEvents, out string curEnvelopeId)
-        //{
-        //    curEvents = new List<DocuSignEventDTO>();
-        //    try
-        //    {
-        //        var docuSignEnvelopeInformation = DocuSignConnectParser.GetEnvelopeInformation(xmlPayload);
-        //        curEnvelopeId = docuSignEnvelopeInformation.EnvelopeStatus.EnvelopeId;
-        //        curEvents.Add(new DocuSignEventDTO
-        //        {
-        //            ExternalEventType = DocuSignEventNames.MapEnvelopeExternalEventType(docuSignEnvelopeInformation.EnvelopeStatus.Status),
-        //            EnvelopeId = docuSignEnvelopeInformation.EnvelopeStatus.EnvelopeId,
-        //            DocumentName = docuSignEnvelopeInformation.EnvelopeStatus.DocumentStatuses.Statuses[0].Name,
-        //            TemplateName = docuSignEnvelopeInformation.EnvelopeStatus.DocumentStatuses.Statuses[0].TemplateName,
-        //            RecipientId = docuSignEnvelopeInformation.EnvelopeStatus.RecipientStatuses.Statuses[0].Id,
-        //            RecipientEmail = docuSignEnvelopeInformation.EnvelopeStatus.RecipientStatuses.Statuses[0].Email,
-        //            RecipientUserName = docuSignEnvelopeInformation.EnvelopeStatus.RecipientStatuses.Statuses[0].UserName,
-        //            Status = docuSignEnvelopeInformation.EnvelopeStatus.Status,
-        //            CreateDate = docuSignEnvelopeInformation.EnvelopeStatus.CreatedDate,
-        //            SentDate = docuSignEnvelopeInformation.EnvelopeStatus.SentDate,
-        //            DeliveredDate = docuSignEnvelopeInformation.EnvelopeStatus.DeliveredDate,
-        //            CompletedDate = docuSignEnvelopeInformation.EnvelopeStatus.CompletedDate,
-        //            HolderEmail = docuSignEnvelopeInformation.EnvelopeStatus.ExternalAccountId,
-        //            EventId = DocuSignEventNames.MapEnvelopeExternalEventType(docuSignEnvelopeInformation.EnvelopeStatus.Status).ToString(),
-        //            Subject = docuSignEnvelopeInformation.EnvelopeStatus.Subject
-        //        });
-        //    }
-        //    catch (ArgumentException)
-        //    {
-        //        _alertReporter.ImproperDocusignNotificationReceived(
-        //            "Cannot extract envelopeId from DocuSign notification: UserId {0}, XML Payload\r\n{1}");
-        //        throw new ArgumentException();
-        //    }
-        //}
-
-        //private ICrateStorage ExtractEventPayload(IEnumerable<DocuSignEventDTO> curEvents)
-        //{
-        //    var stroage = new CrateStorage();
-
-        //    foreach (var curEvent in curEvents)
-        //    {
-        //        var payloadCrate = Data.Crates.Crate.FromContent("", new StandardPayloadDataCM(CreateKeyValuePairList(curEvent)));
-        //        stroage.Add(payloadCrate);
-        //    }
-
-        //    return stroage;
-        //}
-
-        //private List<FieldDTO> CreateKeyValuePairList(DocuSignEventDTO curEvent)
-        //{
-        //    List<FieldDTO> returnList = new List<FieldDTO>();
-        //    returnList.Add(new FieldDTO("EnvelopeId", curEvent.EnvelopeId));
-        //    returnList.Add(new FieldDTO("ExternalEventType", curEvent.ExternalEventType.ToString()));
-        //    returnList.Add(new FieldDTO("RecipientId", curEvent.RecipientId));
-        //    returnList.Add(new FieldDTO("RecipientEmail", curEvent.RecipientEmail));
-        //    returnList.Add(new FieldDTO("RecipientUserName", curEvent.RecipientUserName));
-
-        //    returnList.Add(new FieldDTO("DocumentName", curEvent.DocumentName));
-        //    returnList.Add(new FieldDTO("TemplateName", curEvent.TemplateName));
-
-        //    returnList.Add(new FieldDTO("Object", curEvent.DocuSignObject));
-        //    returnList.Add(new FieldDTO("Status", curEvent.Status));
-        //    returnList.Add(new FieldDTO("CreateDate", curEvent.CreateDate));
-        //    returnList.Add(new FieldDTO("SentDate", curEvent.SentDate));
-
-        //    returnList.Add(new FieldDTO("DeliveredDate", curEvent.DeliveredDate));
-        //    returnList.Add(new FieldDTO("CompletedDate", curEvent.CompletedDate));
-        //    returnList.Add(new FieldDTO("HolderEmail", curEvent.HolderEmail));
-        //    returnList.Add(new FieldDTO("EventId", curEvent.EventId));
-        //    returnList.Add(new FieldDTO("Subject", curEvent.Subject));
-        //    return returnList;
-        //}
+            // create MonitorAllDocuSignEvents plan
+            await _docuSignPlan.CreatePlan_MonitorAllDocuSignEvents(curFr8UserId, authToken);
+            return null;
+        }
     }
 }

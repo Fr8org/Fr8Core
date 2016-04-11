@@ -37,6 +37,7 @@ namespace terminalDocuSign.Services
         private readonly string ProdConnectName = "Fr8 Company DocuSign integration";
         private readonly string TemporaryConnectName = "int-tests-Fr8";
 
+
         public DocuSignPlan()
         {
             _alertReporter = ObjectFactory.GetInstance<IncidentReporter>();
@@ -79,11 +80,19 @@ namespace terminalDocuSign.Services
             if (!string.IsNullOrEmpty(terminalUrl))
             {
                 if (terminalUrl.Contains(devUrl, StringComparison.InvariantCultureIgnoreCase))
+                {
                     connectName = DevConnectName;
+                    // DS doesn't accept port in url, so instead of
+                    //http://dev-terminals.fr8.co:53234/terminals/terminalDocuSign/events
+                    // we should use
+                    //http://dev-terminaldocusign.fr8.co/terminals/terminalDocuSign/events
+                    terminalUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.OverrideDevUrl");
+                }
                 else
                     if (terminalUrl.Contains(prodUrl, StringComparison.InvariantCultureIgnoreCase))
                     connectName = ProdConnectName;
 
+                
                 string publishUrl = terminalUrl + "/terminals/terminalDocuSign/events";
 
                 Console.WriteLine("Connect creation: publishUrl = {0}", publishUrl);

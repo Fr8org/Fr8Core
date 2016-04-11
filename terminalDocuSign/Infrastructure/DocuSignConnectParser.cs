@@ -54,7 +54,7 @@ namespace terminalDocuSign.Infrastructure
                 {
                     foreach (var dstab in recipient.TabStatuses.Where(a => a.CustomTabType != CustomTabType.Radio && a.CustomTabType != CustomTabType.List))
                     {
-                        DocuSignTab tab = ParseTab(dstab);
+                        DocuSignTabStatus tab = ParseTab(dstab);
                         docusignRecipient.Tabs.Add(tab);
                     }
 
@@ -115,12 +115,12 @@ namespace terminalDocuSign.Infrastructure
             //handle list tabs
             foreach (var dslisttab in recipient.TabStatuses.Where(a => a.CustomTabType == CustomTabType.List))
             {
-                DocuSignTab listtab = ParseTab(dslisttab);
+                DocuSignTabStatus listtab = ParseTab(dslisttab);
 
                 string[] values = dslisttab.TabName.Split(new string[] { ";" }, StringSplitOptions.RemoveEmptyEntries); //yes, TabName
                 foreach (var ddlbvalue in values)
                 {
-                    var childItem = new DocuSignTab();
+                    var childItem = new DocuSignTabStatus();
                     childItem.TabLabel = ddlbvalue;
                     childItem.Value = ddlbvalue;
                     childItem.Selected = false.ToString();
@@ -210,9 +210,9 @@ namespace terminalDocuSign.Infrastructure
 
         }
 
-        private static DocuSignTab ParseTab(TabStatus dstab)
+        private static DocuSignTabStatus ParseTab(TabStatus dstab)
         {
-            var tab = new DocuSignTab();
+            var tab = new DocuSignTabStatus();
             tab.DocumentId = dstab.DocumentID;
             tab.Name = dstab.TabName;
             tab.TabLabel = dstab.TabLabel;
@@ -224,7 +224,7 @@ namespace terminalDocuSign.Infrastructure
             return tab;
         }
 
-        private static string GetEventNames(DocuSignEnvelopeInformation curDocuSignEnvelopeInfo)
+        public static string GetEventNames(DocuSignEnvelopeInformation curDocuSignEnvelopeInfo)
         {
             List<string> result = new List<string>();
 
