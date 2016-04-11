@@ -20,6 +20,7 @@ using Data.Validations;
 using terminalDocuSign.Services.New_Api;
 using DocuSign.eSign.Api;
 using Utilities;
+using Data.Constants;
 
 namespace terminalDocuSign.Actions
 {
@@ -275,13 +276,20 @@ namespace terminalDocuSign.Actions
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
             {
+                List<FieldDTO> allFields = new List<FieldDTO>();
+                allFields.AddRange(fields);
+
                 crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
                 crateStorage.Add(Data.Crates.Crate.FromContent("Log Messages", logMessages));
                 if (curSelectedOption == "template")
                 {
                     var userDefinedFieldsPayload = CreateActivityPayload(curActivityDO, authTokenDO, envelopeId);
                     crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
+                    allFields.AddRange(userDefinedFieldsPayload.PayloadObjects.FirstOrDefault().PayloadObject);
                 }
+
+                // Update all fields crate
+                crateStorage.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignAllFields", AvailabilityType.RunTime, allFields.ToArray()));
             }
 
             return Success(payloadCrates);
@@ -302,6 +310,10 @@ namespace terminalDocuSign.Actions
                 // Remove previously added crate of "Standard Event Subscriptions" schema
                 crateStorage.Remove<EventSubscriptionCM>();
                 crateStorage.Add(PackEventSubscriptionsCrate(controlsCrate.Get<StandardConfigurationControlsCM>()));
+
+                // Add Crate Description
+                crateStorage.Add(GetAvailableRunTimeTableCrate());
+
             }
             return await Task.FromResult(curActivityDO);
         }
@@ -311,14 +323,36 @@ namespace terminalDocuSign.Actions
             //just update the user selected envelope events in the follow up configuration
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
+                var allFields = CreateDocuSignEventFields();
                 UpdateSelectedEvents(crateStorage);
                 string selectedOption, selectedValue, selectedTemplate;
                 GetTemplateRecipientPickerValue(curActivityDO, out selectedOption, out selectedValue, out selectedTemplate);
                 if (selectedOption == "template")
-                    AddOrUpdateUserDefinedFields(curActivityDO, authTokenDO, crateStorage, selectedValue);
+                {
+                    AddOrUpdateUserDefinedFields(curActivityDO, authTokenDO, crateStorage, selectedValue, null, allFields);
+                }
+
+                // Update all fields crate
+                crateStorage.RemoveByLabel("DocuSignAllFields");
+                crateStorage.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignAllFields", AvailabilityType.RunTime, allFields.ToArray()));
+
             }
             return Task.FromResult(curActivityDO);
         }
+
+        private Crate GetAvailableRunTimeTableCrate()
+        {
+            var availableRunTimeCrates = Data.Crates.Crate.FromContent("Available Run Time Crates", new CrateDescriptionCM(
+                    new CrateDescriptionDTO
+                    {
+                        ManifestType = MT.FieldDescription.GetEnumDisplayName(),
+                        Label = "DocuSignAllFields",
+                        ManifestId = (int)MT.FieldDescription,
+                        ProducedBy = "Monitor_DocuSign_Envelope_Activity_v1"
+                    }), AvailabilityType.RunTime);
+            return availableRunTimeCrates;
+        }
+
 
         /// <summary>
         /// Updates event subscriptions list by user checked check boxes.

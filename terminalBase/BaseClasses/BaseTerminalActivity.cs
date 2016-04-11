@@ -248,7 +248,7 @@ namespace TerminalBase.BaseClasses
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.ReProcessChildren);
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.ReprocessChildren);
             }
 
             return payload;
@@ -668,6 +668,18 @@ namespace TerminalBase.BaseClasses
             return mergedFields;
         }
 
+        public virtual IEnumerable<FieldDTO> GetRequiredFields(ActivityDO curActivityDO, string crateLabel)
+        {
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                var requiredFields = crateStorage
+                                        .CrateContentsOfType<FieldDescriptionsCM>(c => c.Label.Equals(crateLabel))
+                                        .SelectMany(f => f.Fields.Where(s => s.IsRequired));
+
+                return requiredFields;
+            }
+        }
+
         public virtual async Task<List<CrateManifestType>> BuildUpstreamManifestList(ActivityDO activityDO)
         {
             var upstreamCrates = await this.GetCratesByDirection<Data.Interfaces.Manifests.Manifest>(activityDO, CrateDirection.Upstream);
@@ -870,34 +882,6 @@ namespace TerminalBase.BaseClasses
             textSourceControl.Required = required;
 
             AddControl(storage, textSourceControl);
-        }
-
-        /// <summary>
-        /// Adds Text Source for the DTO type. 
-        /// </summary>
-        /// <remarks>The (T), DTO's Proerty Names will be used to name and label the new Text Source Controls</remarks>
-        protected void AddTextSourceControlForDTO<T>(
-            ICrateStorage storage,
-            string upstreamSourceLabel,
-            string filterByTag = "",
-            bool addRequestConfigEvent = false,
-            bool required = false,
-            bool requestUpstream = false)
-        {
-            typeof(T).GetProperties()
-                .Where(property => !property.Name.Equals("Id")).ToList().ForEach(property =>
-                {
-                    AddTextSourceControl(
-                        storage,
-                        property.Name,
-                        property.Name,
-                        upstreamSourceLabel,
-                        filterByTag,
-                        addRequestConfigEvent,
-                        required,
-                        requestUpstream
-                    );
-                });
         }
 
         /// <summary>

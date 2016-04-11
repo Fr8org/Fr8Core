@@ -3,7 +3,7 @@
         id: string;
         name: string;
         planId: number;
-        containerState: number;
+        state: number;
         currentPlanNodeId: string;
         nextRouteNodeId: string;
         lastUpdated: string;
@@ -14,12 +14,14 @@
         error: any;
     }
 
-    export enum ContainerState {
+    export enum State {
         Unstarted = 1,
         Executing = 2,
         WaitingForTerminal = 3,
         Completed = 4,
-        Failed = 5
+        Failed = 5,
+        Suspended = 6,
+        Deleted = 7
     }
 
     export enum ActivityResponse {
@@ -29,7 +31,7 @@
         RequestTerminate = 3,
         RequestSuspend = 4,
         SkipChildren = 5,
-        ReProcessChildren = 6,
+        ReprocessChildren = 6,
         ExecuteClientAction = 7
     }
 

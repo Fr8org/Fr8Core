@@ -1,0 +1,1 @@
+select top 100 * from history where Discriminator ='IncidentDO' order by CreateDate desc
