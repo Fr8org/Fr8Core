@@ -678,10 +678,6 @@
     <Compile Include="Migrations\201603311220032_OwnerOfObject_Role_Data.Designer.cs">
       <DependentUpon>201603311220032_OwnerOfObject_Role_Data.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201604081453063_Test_Migration_Config.cs" />
-    <Compile Include="Migrations\201604081453063_Test_Migration_Config.Designer.cs">
-      <DependentUpon>201604081453063_Test_Migration_Config.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -749,8 +745,9 @@
     <Compile Include="Repositories\Plan\Internal\PlanNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\Cache\SlidingExpirationStrategy.cs" />
+    <Compile Include="Repositories\Security\Entities\ObjectRolePrivilegesDO.cs" />
+    <Compile Include="Repositories\Security\Entities\RoleDO.cs" />
     <Compile Include="Repositories\Security\Entities\RolePrivilegePOCO.cs" />
-    <Compile Include="Repositories\Security\ISecurityObjectsRepository.cs" />
     <Compile Include="Repositories\Security\ISecurityObjectsStorageProvider.cs" />
     <Compile Include="Repositories\SqlBased\ISqlConnectionProvider.cs" />
     <Compile Include="Repositories\Security\StorageImpl\Cache\ISecurityCacheExpirationStrategy.cs" />
@@ -1198,9 +1195,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201603311220032_OwnerOfObject_Role_Data.resx">
       <DependentUpon>201603311220032_OwnerOfObject_Role_Data.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201604081453063_Test_Migration_Config.resx">
-      <DependentUpon>201604081453063_Test_Migration_Config.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -125,14 +125,6 @@ namespace Data.Entities
             return new PlanDO();
         }
 
-        public override void AfterCreate()
-        {
-            base.AfterCreate();
-
-            var securityService = ObjectFactory.GetInstance<ISecurityServices>();
-            securityService.SetDefaultObjectSecurity(Id, GetType().Name);
-        }
-
         protected override void CopyProperties(PlanNodeDO source)
         {
             var plan = (PlanDO)source;

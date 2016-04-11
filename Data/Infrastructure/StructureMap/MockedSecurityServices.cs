@@ -77,7 +77,7 @@ namespace Data.Infrastructure.StructureMap
             //throw new NotImplementedException();
         }
 
-        public bool AuthorizeActivity(Privilege privilegeName, Guid curObjectId)
+        public bool AuthorizeActivity(Privilege privilegeName, string curObjectId, string propertyName = null)
         {
             return true;
         }

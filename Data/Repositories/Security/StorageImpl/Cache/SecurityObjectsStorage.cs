@@ -35,52 +35,59 @@ namespace Data.Repositories.Security.StorageImpl.Cache
             return _securityObjectStorageProvider.UpdateRolePrivilege(rolePrivilege);
         }
 
-        public int InsertObjectRolePrivilege(Guid dataObjectId, Guid rolePrivilegeId, string dataObjectType)
+        public int InsertObjectRolePrivilege(string dataObjectId, Guid rolePrivilegeId, string dataObjectType, string propertyName = null)
         {
-            var affectedRows = _securityObjectStorageProvider.InsertObjectRolePrivilege(dataObjectId, rolePrivilegeId, dataObjectType);
+            var affectedRows = _securityObjectStorageProvider.InsertObjectRolePrivilege(dataObjectId, rolePrivilegeId, dataObjectType, propertyName);
 
-            //update cache with new ObjectRolePrivilege
-            var rolePrivileges = GetRolePrivilegesForSecuredObject(dataObjectId);
-            _cache.AddOrUpdate(dataObjectId, rolePrivileges);
+            InvokeCacheUpdate(dataObjectId);
 
             return affectedRows;
         }
 
-        public int RemoveObjectRolePrivilege(Guid dataObjectId, Guid rolePrivilegeId)
+        public int RemoveObjectRolePrivilege(string dataObjectId, Guid rolePrivilegeId, string propertyName = null)
         {
-            var affectedRows = _securityObjectStorageProvider.RemoveObjectRolePrivilege(dataObjectId, rolePrivilegeId);
+            var affectedRows = _securityObjectStorageProvider.RemoveObjectRolePrivilege(dataObjectId, rolePrivilegeId, propertyName);
 
-            //update cache with new ObjectRolePrivilege
-            var rolePrivileges = GetRolePrivilegesForSecuredObject(dataObjectId);
-            _cache.AddOrUpdate(dataObjectId, rolePrivileges);
+            InvokeCacheUpdate(dataObjectId);
 
             return affectedRows;
         }
 
-        public IEnumerable<RolePrivilege> GetRolePrivilegesForSecuredObject(Guid dataObjectId)
+        public ObjectRolePrivilegesDO GetRolePrivilegesForSecuredObject(string dataObjectId)
         {
-            var rolePrivileges = _cache.Get(dataObjectId);
-            if (!rolePrivileges.Any())
+            lock (_cache)
             {
-                rolePrivileges = _securityObjectStorageProvider.GetRolePrivilegesForSecuredObject(dataObjectId);
-                _cache.AddOrUpdate(dataObjectId, rolePrivileges);
+                var rolePrivileges = _cache.Get(dataObjectId);
+                if (rolePrivileges == null)
+                {
+                    rolePrivileges = _securityObjectStorageProvider.GetRolePrivilegesForSecuredObject(dataObjectId);
+                    _cache.AddOrUpdate(dataObjectId, rolePrivileges);
+                }
+
+                return rolePrivileges;
             }
-
-            return rolePrivileges.ToList();
         }
 
-        public IEnumerable<RolePrivilege> GetRolePrivilegesForFr8Account(Guid fr8AccountId)
+        public List<RolePrivilege> GetRolePrivilegesForFr8Account(Guid fr8AccountId)
         {
-            return _securityObjectStorageProvider.GetRolePrivilegesForSecuredObject(fr8AccountId);
+            return _securityObjectStorageProvider.GetRolePrivilegesForFr8Account(fr8AccountId);
         }
 
-        public void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType)
+        public void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType)
         {
             _securityObjectStorageProvider.SetDefaultObjectSecurity(dataObjectId, dataObjectType);
 
-            //update cache with new ObjectRolePrivilege
-            var rolePrivileges = GetRolePrivilegesForSecuredObject(dataObjectId);
-            _cache.AddOrUpdate(dataObjectId, rolePrivileges);
+            InvokeCacheUpdate(dataObjectId);
+        }
+
+        private void InvokeCacheUpdate(string dataObjectId)
+        {
+            lock (_cache)
+            {
+                //update cache with new ObjectRolePrivilege
+                var rolePrivileges = GetRolePrivilegesForSecuredObject(dataObjectId);
+                _cache.AddOrUpdate(dataObjectId, rolePrivileges);
+            }
         }
     }
 }

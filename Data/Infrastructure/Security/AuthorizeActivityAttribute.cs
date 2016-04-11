@@ -6,22 +6,22 @@ namespace Data.Infrastructure.Security
     /// <summary>
     /// Attribute used for Security purposes, to determine if logged in user can do CRUD operations. 
     /// This attribute will be intercepted by additional logic that will invoke security checks.
-    /// In case attribute is used on methods must be set the parameter ObjectIdArgumentIndex, 
-    ///    which tells us the index of parameter where we need to look for data object identifier from arguments array.
-    /// In case attribute is used on properties, set IsProperty flag to true, which will tells us on interception of that property will reflect current property to look for Key item if type Guid 
+    /// In case set to methods, must be set parameter ObjectType. That way interceptor will know what method parameters 
+    ///    to extract from method parameters and and to find our object identifier for check.
+    /// In case attribute is used on properties, We don't need to set ObjectType because interceptor will look inside current object to find key property
+    ///    reflect current property to look for Key item of type Guid 
     /// Example :  
-    ///          [AuthorizeActivity(Privilege = Privilege.ReadObject, ObjectIdArgumentIndex = 1)]
+    ///          [AuthorizeActivity(Privilege = Privilege.ReadObject, ObjectType = typeOf(PlanDO)]
     ///          public PlanDO Copy(IUnitOfWork uow, PlanDO curPlanDO, string name) {
-    /// so we can know to look for second parameter and to find inside of object his Id value
+    /// so we can know to look for second parameter and to find inside of curPlanDO object his Id value
     /// </summary>
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Property, AllowMultiple = true)]
     public class AuthorizeActivityAttribute : Attribute
     {
         public AuthorizeActivityAttribute()
         {
-            ObjectIdArgumentIndex = 0;
+            ObjectType = typeof(Guid);
             Privilege = Privilege.ReadObject;
-            IsProperty = false;
         }
 
         /// <summary>
@@ -30,14 +30,9 @@ namespace Data.Infrastructure.Security
         public Privilege Privilege { get; set; }
 
         /// <summary>
-        /// Index of the argument/parameter where dataObjectId is located. 
-        /// Supported values are Guid, and BaseObject that contains key as Id 
+        /// Type of the argument/parameter where dataObjectId is located. 
+        /// Default values is Guid, and could be used with BaseObjects that contains key as Id 
         /// </summary>
-        public int ObjectIdArgumentIndex { get; set; }
-
-        /// <summary>
-        /// Flag that the attribute is set on a property.
-        /// </summary>
-        public bool IsProperty { get; set; }
+        public Type ObjectType { get; set; }
     }
 }

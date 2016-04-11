@@ -1,16 +1,7 @@
-﻿using Data.States;
-using Data.States.Templates;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using AutoMapper;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Newtonsoft.Json;
+﻿using System;
 using System.Collections.Generic;
-using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
-using Data.Infrastructure.StructureMap;
-using StructureMap;
 
 namespace Data.Entities
 {
@@ -72,14 +63,6 @@ namespace Data.Entities
             AuthorizationTokenId = activity.AuthorizationTokenId;
             ActivityTemplateId = activity.ActivityTemplateId;
             currentView = activity.currentView;
-        }
-
-        public override void AfterCreate()
-        {
-            base.AfterCreate();
-
-            var securityService = ObjectFactory.GetInstance<ISecurityServices>();
-            securityService.SetDefaultObjectSecurity(Id, GetType().Name);
         }
 
         //        public CrateStorageDTO CrateStorageDTO()

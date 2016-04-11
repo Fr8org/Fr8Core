@@ -82,7 +82,7 @@ namespace HealthMonitor
                     }
                 }
             }
-            catch (Exception ex)
+            catch (Exception)
             {
                 Dispose();
                 throw;
@@ -162,15 +162,14 @@ namespace HealthMonitor
 
         private SelfHostedTerminalsCollection GetSelfHostedApps()
         {
-            Console.WriteLine("HealthMonitor.SelfHostInitializer inside GetSelfHostedApps -- 1");
             var healthMonitorCS = (HealthMonitorConfigurationSection)
                 ConfigurationManager.GetSection("healthMonitor");
-            Console.WriteLine("HealthMonitor.SelfHostInitializer inside GetSelfHostedApps -- 2");
+
             if (healthMonitorCS == null || healthMonitorCS.SelfHostedApps == null)
             {
                 return null;
             }
-            Console.WriteLine("HealthMonitor.SelfHostInitializer inside GetSelfHostedApps -- 3");
+
             return healthMonitorCS.SelfHostedApps;
         }
 

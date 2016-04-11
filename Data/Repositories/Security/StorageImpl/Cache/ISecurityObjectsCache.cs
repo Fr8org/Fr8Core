@@ -9,7 +9,7 @@ namespace Data.Repositories.Security.StorageImpl.Cache
 {
     public interface ISecurityObjectsCache
     {
-        IEnumerable<RolePrivilege> Get(Guid id);
-        void AddOrUpdate(Guid id, IEnumerable<RolePrivilege> rolePrivileges);
+        ObjectRolePrivilegesDO Get(string id);
+        void AddOrUpdate(string id, ObjectRolePrivilegesDO rolePrivileges);
     }
 }

@@ -1,18 +1,23 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
+using System.Linq;
 using Data.Repositories.Security.Entities;
 using Data.Repositories.SqlBased;
 using Data.States;
 
 namespace Data.Repositories.Security.StorageImpl.SqlBased
 {
+    /// <summary>
+    /// Sql Storage Provider used to manipulate security objects. Not connected to EF Context due to Securuty Objects connection to AspNetRolesDO and their problem with caching.
+    /// This Storage provider has loose coupling with SecurityObjectCache, where results from these methods here are being cached. Check SecurityObjectStorage
+    /// </summary>
     public class SqlSecurityObjectsStorageProvider : ISecurityObjectsStorageProvider
     {
         private readonly string _connectionString;
         private readonly ISqlConnectionProvider _sqlConnectionProvider;
         private const string InsertRolePrivilegeCommand = "insert into dbo.RolePrivileges(id, privilegeName, roleId, createDate, lastUpdated) values (@id, @privilegeName, @roleId, @createDate, @lastUpdated)";
-        private const string InsertObjectRolePrivilegeCommand = "insert into dbo.ObjectRolePrivileges(objectId, rolePrivilegeId, type, createDate, lastUpdated) values (@objectId, @rolePrivilegeId, @type, @createDate, @lastUpdated)";
+        private const string InsertObjectRolePrivilegeCommand = "insert into dbo.ObjectRolePrivileges(objectId, rolePrivilegeId, type, propertyName, createDate, lastUpdated) values (@objectId, @rolePrivilegeId, @propertyName @type, @createDate, @lastUpdated)";
         
         public SqlSecurityObjectsStorageProvider(ISqlConnectionProvider sqlConnectionProvider)
         {
@@ -61,7 +66,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                     
                     command.Parameters.AddWithValue("@id", rolePrivilege.Id);
                     command.Parameters.AddWithValue("@privilegeName", rolePrivilege.PrivilegeName);
-                    command.Parameters.AddWithValue("@roleId", rolePrivilege.RoleId);
+                    command.Parameters.AddWithValue("@roleId", rolePrivilege.Role.RoleId);
                     command.Parameters.AddWithValue("@lastUpdated", DateTimeOffset.UtcNow);
 
                     var cmdText = String.Empty;
@@ -83,7 +88,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
-        public IEnumerable<RolePrivilege> GetRolePrivilegesForSecuredObject(Guid dataObjectId)
+        public ObjectRolePrivilegesDO GetRolePrivilegesForSecuredObject(string dataObjectId)
         {
             using (var connection = OpenConnection(_sqlConnectionProvider))
             {
@@ -100,13 +105,13 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                     command.Parameters.AddWithValue("@objectId", dataObjectId);
                     command.CommandText = cmd;
 
-                    var result = new List<RolePrivilege>();
+                    var result = new ObjectRolePrivilegesDO();
 
                     using (var reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            result.Add(ReadRolePrivilegeFromSql(reader));
+                            ReadObjectRolePrivilegeFromSql(reader, result);
                         }
                     }
 
@@ -115,7 +120,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
-        public IEnumerable<RolePrivilege> GetRolePrivilegesForFr8Account(Guid fr8AccountId)
+        public List<RolePrivilege> GetRolePrivilegesForFr8Account(Guid fr8AccountId)
         {
             using (var connection = OpenConnection(_sqlConnectionProvider))
             {
@@ -147,7 +152,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
-        public void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType)
+        public void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType)
         {
             using (var connection = OpenConnection(_sqlConnectionProvider))
             {
@@ -184,6 +189,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                             insertCommand.Parameters.AddWithValue("@objectId", dataObjectId);
                             insertCommand.Parameters.AddWithValue("@rolePrivilegeId", rolePrivilegeId);
                             insertCommand.Parameters.AddWithValue("@type", dataObjectType);
+                            insertCommand.Parameters.AddWithValue("@propertyName", null);
                             insertCommand.Parameters.AddWithValue("@createDate", DateTimeOffset.UtcNow);
                             insertCommand.Parameters.AddWithValue("@lastUpdated", DateTimeOffset.UtcNow);
 
@@ -204,7 +210,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
-        public int InsertObjectRolePrivilege(Guid dataObjectId, Guid rolePrivilegeId, string dataObjectType)
+        public int InsertObjectRolePrivilege(string dataObjectId, Guid rolePrivilegeId, string dataObjectType, string propertyName = null)
         {
             using (var connection = OpenConnection(_sqlConnectionProvider))
             {
@@ -215,6 +221,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                     command.Parameters.AddWithValue("@objectId", dataObjectId);
                     command.Parameters.AddWithValue("@rolePrivilegeId", rolePrivilegeId);
                     command.Parameters.AddWithValue("@type", dataObjectType);
+                    command.Parameters.AddWithValue("@propertyName", dataObjectType);
                     command.Parameters.AddWithValue("@createDate", DateTimeOffset.UtcNow);
                     command.Parameters.AddWithValue("@lastUpdated", DateTimeOffset.UtcNow);
 
@@ -233,21 +240,53 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
-        public int RemoveObjectRolePrivilege(Guid dataObjectId, Guid rolePrivilegeId)
+        public int RemoveObjectRolePrivilege(string dataObjectId, Guid rolePrivilegeId, string propertyName = null)
         {
             throw new NotImplementedException();
         }
 
         private RolePrivilege ReadRolePrivilegeFromSql(SqlDataReader reader)
         {
-            var obj = new RolePrivilege();
+            var obj = new RolePrivilege
+            {
+                Id = reader["Id"] != DBNull.Value ? (Guid)reader["Id"] : Guid.Empty,
+                PrivilegeName = reader["PrivilegeName"] != DBNull.Value ? (string)reader["PrivilegeName"] : string.Empty
+            };
 
-            obj.Id = reader["Id"] != DBNull.Value ? (Guid)reader["Id"] : Guid.Empty;
-            obj.PrivilegeName = reader["PrivilegeName"] != DBNull.Value ? (string)reader["PrivilegeName"] : string.Empty;
-            obj.RoleId = reader["roleId"] != DBNull.Value ? (string)reader["roleId"] : string.Empty;
-            obj.RoleName = reader["roleName"] != DBNull.Value ? (string)reader["roleName"] : string.Empty;
+            var objRoleId = reader["roleId"] != DBNull.Value ? (string)reader["roleId"] : string.Empty;
+            var objRoleName = reader["roleName"] != DBNull.Value ? (string)reader["roleName"] : string.Empty;
+
+            obj.Role = new RoleDO()
+            {
+                RoleId = objRoleId,
+                RoleName = objRoleName
+            };
 
             return obj;
+        }
+
+        private void ReadObjectRolePrivilegeFromSql(SqlDataReader reader, ObjectRolePrivilegesDO objectRolePrivilegesDO)
+        {
+            var obj = ReadRolePrivilegeFromSql(reader);
+
+            //read property name and check for values
+            var propertyName = reader["PropertyName"] != DBNull.Value ? (string) reader["PropertyName"] : string.Empty;
+            if (string.IsNullOrEmpty(propertyName))
+            {
+                objectRolePrivilegesDO.RolePrivileges.Add(obj);
+            }
+            else
+            {
+                //check if the same property is already added to this list
+                if (objectRolePrivilegesDO.Properties.ContainsKey(propertyName))
+                {
+                    objectRolePrivilegesDO.Properties[propertyName].Add(obj);
+                }
+                else
+                {
+                    objectRolePrivilegesDO.Properties[propertyName] = new List<RolePrivilege>() {obj};
+                }
+            }
         }
     }
 }

@@ -10,15 +10,16 @@ namespace Data.Migrations
             CreateTable("dbo.ObjectRolePrivileges",
                 c => new
                 {
-                    ObjectId = c.Guid(nullable: false),
+                    Id = Guid.NewGuid(),
+                    ObjectId = c.String(nullable: false, maxLength: 128),
                     RolePrivilegeId = c.Guid(nullable:false),
                     Type = c.String(),
+                    PropertyName = c.String(nullable:true),
                     LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),
                     CreateDate = c.DateTimeOffset(nullable: false, precision: 7),
-                })
-                .PrimaryKey(t => new { t.ObjectId, t.RolePrivilegeId });
+                }).PrimaryKey(x=> x.Id);
 
-            CreateIndex("dbo.ObjectRolePrivileges", "ObjectId");
+            CreateIndex("dbo.ObjectRolePrivileges", "Id");
             CreateIndex("dbo.ObjectRolePrivileges", "RolePrivilegeId");
             AddForeignKey("dbo.ObjectRolePrivileges", "RolePrivilegeId", "dbo.RolePrivileges", "Id");
         }

@@ -9,10 +9,10 @@ namespace Data.Repositories.Security
     {
         int InsertRolePrivilege(RolePrivilege rolePrivilege);
         int UpdateRolePrivilege(RolePrivilege rolePrivilege);
-        int InsertObjectRolePrivilege(Guid dataObjectId, Guid rolePrivilegeId, string dataObjectType);
-        int RemoveObjectRolePrivilege(Guid dataObjectId, Guid rolePrivilegeId);
-        IEnumerable<RolePrivilege> GetRolePrivilegesForSecuredObject(Guid dataObjectId);
-        IEnumerable<RolePrivilege> GetRolePrivilegesForFr8Account(Guid fr8AccountId);
-        void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType);
+        int InsertObjectRolePrivilege(string dataObjectId, Guid rolePrivilegeId, string dataObjectType, string propertyName = null);
+        int RemoveObjectRolePrivilege(string dataObjectId, Guid rolePrivilegeId, string propertyName = null);
+        ObjectRolePrivilegesDO GetRolePrivilegesForSecuredObject(string dataObjectId);
+        List<RolePrivilege> GetRolePrivilegesForFr8Account(Guid fr8AccountId);
+        void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType);
     }
 }
