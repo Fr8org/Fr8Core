@@ -879,12 +879,29 @@
     <Content Include="Views\AngularTemplate\ActivityChooser.cshtml" />
     <Content Include="Views\AngularTemplate\ActivityChooserSelectDialog.cshtml" />
     <Content Include="Views\AngularTemplate\ActivityChooserConfigureDialog.cshtml" />
-    <Content Include="Config\log4net.terminal.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Config\log4net.tests.config" />
     <Content Include="Config\log4net.config" />
-    <Content Include="Config\log4net.terminal.papertrail.config">
+    <Content Include="Config\log4net.tests.healthMonitor.Release.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\log4net.Debug.config" />
+    <Content Include="Config\log4net.Dev.config" />
+    <Content Include="Config\log4net.Release.config" />
+    <Content Include="Config\log4net.Stage.config" />
+    <Content Include="Config\log4net.terminals.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\log4net.terminals.Debug.config" />
+    <Content Include="Config\log4net.terminals.Dev.config" />
+    <Content Include="Config\log4net.terminals.Release.config" />
+    <Content Include="Config\log4net.terminals.Stage.config" />
+    <Content Include="Config\log4net.tests.healthMonitor.Debug.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\log4net.tests.healthMonitor.Dev.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Config\log4net.tests.healthMonitor.Stage.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\log4net.tests.healthMonitor.config">
