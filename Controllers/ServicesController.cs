@@ -1,8 +1,10 @@
-﻿using Hub.Interfaces;
+﻿using Data.Interfaces.DataTransferObjects;
+using Hub.Interfaces;
 using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 
@@ -10,15 +12,19 @@ namespace HubWeb.Controllers
 {
     public class ServicesController : Controller
     {
-        private readonly IActivity _activity = ObjectFactory.GetInstance<IActivity>();
-        private List<string> getDocumentationSolutionList(string terminalName)
+        private readonly ITerminal _terminal ;
+        public ServicesController ()
         {
-            var solutionNameList = _activity.GetSolutionList(terminalName);
+            _terminal = ObjectFactory.GetInstance<ITerminal>();
+        }
+        private async Task<List<SolutionPageDTO>> getDocumentationSolutionList(string terminalName)
+        {
+            var solutionNameList = await _terminal.GetSolutionDocumentations(terminalName);
             return solutionNameList;
         }
-        public ActionResult DocuSign()
+        public async Task<ActionResult> DocuSign()
         {
-            List<string> solutionList = getDocumentationSolutionList("DocuSign");
+            var solutionList = await getDocumentationSolutionList("terminalDocuSign");
             return View(solutionList);
         }
 
@@ -27,15 +33,15 @@ namespace HubWeb.Controllers
             return View();
         }
 
-        public ActionResult Salesforce()
+        public async Task<ActionResult> Salesforce()
         {
-            getDocumentationSolutionList("Salesforce");
+            await getDocumentationSolutionList("Salesforce");
             return View();
         }
 
-        public ActionResult GoogleApps()
+        public async Task<ActionResult> GoogleApps()
         {
-            getDocumentationSolutionList("GoogleApps");
+            await getDocumentationSolutionList("GoogleApps");
             return View();
         }
     }
