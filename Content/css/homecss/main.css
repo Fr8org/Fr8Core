@@ -5336,7 +5336,7 @@ img.mfp-img {
 /* SOCIAL NETWORK
 /* --------------------- */
 #social-network {
-  background-image: url('/Content/img/background-cta-3.png');
+  background-image: url('/Content/img/background-cta-3.jpg');
   text-align: center;
   min-height: 550px;
 }
@@ -6061,21 +6061,21 @@ img.mfp-img {
 .demo-card-square-connect > .mdl-card__title {
   color: #F2F4F5;
   font-weight: 700;
-  background: url('/Content/img/freight-connect.png') center no-repeat;
+  background: url('/Content/img/freight-connect.jpg') center no-repeat;
   background-color: #F2F4F5;
 }
 
 .demo-card-square-workflows > .mdl-card__title {
   color: #F2F4F5;
   font-weight: 500;
-  background: url('/Content/img/freight-design.png') center no-repeat;
+  background: url('/Content/img/freight-design.jpg') center no-repeat;
   background-color: #444C58;
 }
 
 .demo-card-square-run > .mdl-card__title {
   color: #F2F4F5;
   font-weight: 500;
-  background: url('/Content/img/freight-train.png') center no-repeat;
+  background: url('/Content/img/freight-train.jpg') center no-repeat;
   background-color: #444C58;
 }
 
