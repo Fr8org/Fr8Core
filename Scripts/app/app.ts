@@ -99,8 +99,8 @@ app.controller('HeaderController', ['$scope', ($scope) => {
 }]);
 
 /* Setup Layout Part - Footer */
-app.controller('FooterController', ['$scope', function ($scope) {
-    $scope.$on('$includeContentLoaded', function () {
+app.controller('FooterController', ['$scope', ($scope) => {
+    $scope.$on('$includeContentLoaded', () => {
         Layout.initFooter(); // init footer
     });
 }]);
@@ -199,6 +199,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                 '@': {
                     templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
                         if ($stateParams['viewMode'] === 'kiosk') {
+                            
                             return "/AngularTemplate/PlanBuilder_KioskMode";
                         }
                         return "/AngularTemplate/PlanBuilder";
