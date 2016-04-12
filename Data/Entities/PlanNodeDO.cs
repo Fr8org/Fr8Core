@@ -15,6 +15,7 @@ namespace Data.Entities
             typeof (PlanNodeDO).GetProperty("ParentPlanNodeId"),
             typeof (PlanNodeDO).GetProperty("Fr8AccountId"),
             typeof (PlanNodeDO).GetProperty("Ordering"),
+            typeof (PlanNodeDO).GetProperty("LastUpdated"),
         };
 
         [Key]
