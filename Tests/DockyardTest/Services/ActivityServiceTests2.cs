@@ -707,7 +707,7 @@ namespace DockyardTest.Services
             }
             //Act
             //Call the activities/GetTerminalSolutionList?terminalName=terminalDocuSign
-            var solutionList = _activity.GetSolutionList("terminalDocuSign");
+            var solutionList = _activity.GetSolutionNameList("terminalDocuSign");
             //Assert
             Assert.True(solutionList.Any());
             Assert.True(solutionList.Count == 2);
