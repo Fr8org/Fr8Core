@@ -131,7 +131,7 @@ app.config(['applicationInsightsServiceProvider', function (applicationInsightsS
 }]);
 
 
-/* Setup Rounting For All Pages */ 
+/* Setup Routing For All Pages */ 
 app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationProvider', ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider, $httpProvider: ng.IHttpProvider, $locationProvider:ng.ILocationProvider) => {
 
 
@@ -153,11 +153,11 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                 }
                 return config;
             },
-            response: function (config: ng.IRequestConfig) {
+            response: (config: ng.IRequestConfig) => {
                 Metronic.stopPageLoading();
                 return config;
             },
-            responseError: function (config) {
+            responseError: (config) => {
                 if (config.status === 403) {
                     $window.location.href = $window.location.origin + '/DockyardAccount'
                     + '?returnUrl=/Dashboard' + encodeURIComponent($window.location.hash);

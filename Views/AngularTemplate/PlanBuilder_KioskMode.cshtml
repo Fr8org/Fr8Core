@@ -3,7 +3,7 @@
     <designer-header ng-show="current.plan" plan="current.plan" kiosk-mode="true"></designer-header>
     <div ng-if="editingMode=='advanced'" class="col-md-12" style="border-bottom: 1px solid; margin-bottom: 10px;"></div>
     <div class="plan-loading-message" block-if="current.plan"></div>
-    <div ng-repeat="pSubPlan in processedSubPlans">
+    <div ng-repeat="pSubPlan in processedSubPlans | filter: hasAnyActivity">
         <div class="route-builder-container" layout-container>
             <div ng-repeat="group in pSubPlan.actionGroups" layout-action-group class="action-group" ng-style="{left: group.offsetLeft, top: group.offsetTop}">
                 <div ng-if="mode !== 'solution' || $index === 0">
