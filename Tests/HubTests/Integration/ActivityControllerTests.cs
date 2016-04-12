@@ -34,7 +34,7 @@ namespace HubTests.Integration
             get { return "Hub"; }
         }
         [Test]
-        public async Task GetSolutionListByTerminalName_EndToEnd() 
+        public async Task GetSolutionListByTerminalName_EndToEnd()
         {
             await GetDocuSignSolutionList();
             await GetFr8CoreSolutionList();
@@ -43,10 +43,10 @@ namespace HubTests.Integration
         [Test]
         private async Task GetDocuSignSolutionList()
         {
-             var solutionNames = new List<string> { "Mail Merge Into DocuSign", "Extract Data From Envelopes", "Track DocuSign Recipients" };
+            var solutionNames = new List<string> { "Mail Merge Into DocuSign", "Extract Data From Envelopes", "Track DocuSign Recipients" };
             var baseUrl = GetHubApiBaseUrl();
             var getSolutionListUrl = baseUrl + "activities/Documentation";
-            var emptyActivityDTO = new ActivityDTO { Documentation = "Terminal=terminalDocuSign", ActivityTemplate = new ActivityTemplateDTO()};
+            var emptyActivityDTO = new ActivityDTO { Documentation = "Terminal=terminalDocuSign", ActivityTemplate = new ActivityTemplateDTO() };
             var solutionPages = await HttpPostAsync<ActivityDTO, List<SolutionPageDTO>>(getSolutionListUrl, emptyActivityDTO);
             Assert.IsNotNull(solutionPages);
             Assert.IsTrue(solutionPages.Any());

@@ -563,7 +563,7 @@ namespace Hub.Services
                     allActivityTemplates = _planNode.GetAvailableActivities(uow, curUser);
                 }
                 //find the activity by the provided name
-                var curActivityTerminalDTO = allActivityTemplates.Single(a => a.Name == activityDTO.ActivityTemplate.Name);
+                var curActivityTerminalDTO = allActivityTemplates.FirstOrDefault(a => a.Name == activityDTO.ActivityTemplate.Name);
                 //prepare an Activity object to be sent to Activity in a Terminal
                 //IMPORTANT: this object will not be hold in the database
                 //It is used to transfer data
