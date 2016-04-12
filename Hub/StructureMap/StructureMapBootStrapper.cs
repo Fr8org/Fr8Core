@@ -271,6 +271,11 @@ namespace Hub.StructureMap
                 return _terminal.IsUserSubscribedToTerminal(terminalId, userId);
                 
             }
+
+            public Task<List<SolutionPageDTO>> GetSolutionDocumentations(string terminalName)
+            {
+                return _terminal.GetSolutionDocumentations(terminalName);
+            }
         }
 
         #endregion

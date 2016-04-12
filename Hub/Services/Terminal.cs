@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.States;
 using Data.Utility;
 using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Restful;
@@ -271,5 +273,24 @@ namespace Hub.Services
             }
             
         }
+
+        public async Task<List<SolutionPageDTO>> GetSolutionDocumentations(string terminalName)
+        {
+            var _activity = ObjectFactory.GetInstance<IActivity>();
+            var solutionNames = _activity.GetSolutionNameList(terminalName);
+            var solutionPages = new List<SolutionPageDTO>();
+            foreach (var solutionName in solutionNames)
+            {
+               var solutionPageDTO = await _activity.GetActivityDocumentation<SolutionPageDTO>(
+                    new ActivityDTO
+                    {
+                        Documentation = "MainPage",
+                        ActivityTemplate = new ActivityTemplateDTO {Name = solutionName }
+                    }, true);
+                solutionPages.Add(solutionPageDTO);
+            }
+            return solutionPages;
+        }
+       
     }
 }
