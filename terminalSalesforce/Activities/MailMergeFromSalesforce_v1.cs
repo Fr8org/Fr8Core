@@ -20,7 +20,7 @@ using Utilities.Configuration.Azure;
 
 namespace terminalSalesforce.Activities
 {
-    public class Mail_Merge_From_Salesforce_v1 : EnhancedTerminalActivity<Mail_Merge_From_Salesforce_v1.ActivityUi>
+    public class MailMergeFromSalesforce : EnhancedTerminalActivity<MailMergeFromSalesforce.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -76,7 +76,7 @@ namespace terminalSalesforce.Activities
 
         private readonly int terminalId;
 
-        public Mail_Merge_From_Salesforce_v1() : base(true)
+        public MailMergeFromSalesforce() : base(true)
         {
             ActivityName = "Mail Merge from Salesforce";
             _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
