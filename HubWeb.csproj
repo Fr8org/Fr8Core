@@ -898,7 +898,7 @@
       <DependentUpon>log4net.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
     </None>
-    <Content Include="Config\log4net.Stage.config" />
+    <Content Include="Config\log4net.Staging.config" />
     <Content Include="Config\log4net.terminals.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <TransformOnBuild>true</TransformOnBuild>
@@ -911,13 +911,13 @@
       <DependentUpon>log4net.terminals.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
     </None>
-    <Content Include="Config\log4net.terminals.Stage.config" />
+    <Content Include="Config\log4net.terminals.Staging.config" />
     <None Include="Config\log4net.tests.healthMonitor.Dev.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
       <DependentUpon>log4net.tests.healthMonitor.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
     </None>
-    <Content Include="Config\log4net.tests.healthMonitor.Stage.config">
+    <Content Include="Config\log4net.tests.healthMonitor.Staging.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\log4net.tests.healthMonitor.config">
