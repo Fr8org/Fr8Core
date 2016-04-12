@@ -82,7 +82,9 @@
                 }
             </div>
         </div>
-        <div class="hero-bg-pattern"></div>
+        <div class="hero-bg-pattern">
+            <div class="full-area"></div>
+        </div>
         <span id="#inner" class="fa fa-arrow-down"></span>
     </div>
     <!-- END HERO UNIT -->
@@ -290,30 +292,10 @@
         </div>
     </footer>
     <!-- END FOOTER -->
-
     <div class="back-to-top">
         <a href="#top"><i class="fa fa-angle-up"></i></a>
     </div>
 
     @Scripts.Render("~/bundles/js/home")
-    
-    <script>
-      /*  $(document).ready(function () {
-            // Get instance of the plugin
-            var instance = $('#hero-unit').data('vide');
-
-            // Get video element of the background. Do what you want.
-            var video = instance.getVideoObject();
-
-            //this plugin doesn't set poster for video - which causes white flashes on video end
-            video.setAttribute('poster', '/Content/videos/motion.png');
-            video.onended = function (e) {
-                video.load();
-                video.play();
-            };
-        });*/
-        
-    </script>
-
 </body>
 </html>
