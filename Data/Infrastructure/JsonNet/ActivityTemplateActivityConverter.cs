@@ -49,8 +49,6 @@ namespace Data.Infrastructure.JsonNet
             writer.WriteValue(item.MinPaneWidth);
             writer.WritePropertyName("needsAuthentication");
             writer.WriteValue(item.NeedsAuthentication);
-            writer.WritePropertyName("terminalId");
-            writer.WriteValue(item.TerminalId);
             writer.WritePropertyName("webService");
             writer.WriteRawValue(JsonConvert.SerializeObject(item.WebService, customWebServiceConvert));
             writer.WriteEndObject();

@@ -65,8 +65,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "terminal_azure_sql_server",
-                Version = "1",
-                TerminalId = 1
+                Version = "1"
             };
 
             return curActionTemplate;

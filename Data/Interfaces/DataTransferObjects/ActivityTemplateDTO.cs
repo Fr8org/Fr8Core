@@ -25,7 +25,6 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("terminal")]
         public TerminalDTO Terminal { get; set; }
-        public int TerminalId { get; set; }
 
         [JsonProperty("tags")]
         public string Tags { get; set; }

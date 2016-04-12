@@ -46,7 +46,6 @@ namespace HubWeb.App_Start
                .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
                .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
                .ForMember(x => x.Description, opts => opts.ResolveUsing(x => x.Description))
-               .ForMember(x => x.TerminalId, opts => opts.ResolveUsing(x => x.TerminalId))
                .ForMember(x => x.Terminal, opts => opts.ResolveUsing(GetTerminal))
                .ForMember(x => x.NeedsAuthentication, opts => opts.ResolveUsing(x => x.NeedsAuthentication));
 

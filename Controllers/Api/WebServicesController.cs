@@ -94,7 +94,6 @@ namespace HubWeb.Controllers
                             Category = p.Category,
                             Label = p.Label,
                             MinPaneWidth = p.MinPaneWidth,
-                            TerminalId = p.Terminal.Id,
                             Version = p.Version,
                             Type = p.Type,
                             Tags = p.Tags,
