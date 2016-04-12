@@ -6,7 +6,6 @@
         version: string;
         description: string;
         defaultEndPoint: string;
-        componentActivities: string;
         category: string;
         type: string;
         tags: string;
@@ -20,7 +19,6 @@
             name: string,
             version: string,
             description: string,
-            componentActivities: string,
             category: string,
             label?: string,
             minPaneWidth?: number,
@@ -32,7 +30,6 @@
             this.label = label;
             this.version = version;
             this.description = description;
-            this.componentActivities = componentActivities;
             this.category = category;
             this.type = type;
             this.webService = webService;
@@ -46,7 +43,6 @@
                 this.label,
                 this.version,
                 this.description,
-                this.componentActivities,
                 this.category,
                 this.minPaneWidth,
                 this.type,

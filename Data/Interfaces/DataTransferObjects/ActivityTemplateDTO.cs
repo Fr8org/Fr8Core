@@ -27,8 +27,6 @@ namespace Data.Interfaces.DataTransferObjects
         public TerminalDTO Terminal { get; set; }
         public int TerminalId { get; set; }
 
-        [JsonProperty("componentActivities")]
-        public string ComponentActivities { get; set; }
         [JsonProperty("tags")]
         public string Tags { get; set; }
 
