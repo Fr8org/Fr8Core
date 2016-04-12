@@ -93,6 +93,9 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <OutputPath>bin\Release\</OutputPath>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Demo' ">
+    <OutputPath>bin\Demo\</OutputPath>
+  </PropertyGroup>
   <!-- These SecondarySite items represent the collection of sites (other than the web application associated with the role) that need special packaging. -->
   <ItemGroup>
     <SecondarySite Include="..\terminalAzure\terminalAzure.csproj" />
@@ -108,7 +111,7 @@
     <SecondarySite Include="..\terminalDropbox\terminalDropbox.csproj" />
     <SecondarySite Include="..\terminalAtlassian\terminalAtlassian.csproj" />
     <SecondarySite Include="..\terminalQuickBooks\terminalQuickBooks.csproj" />
-	<SecondarySite Include="..\terminalYammer\terminalYammer.csproj" />
+    <SecondarySite Include="..\terminalYammer\terminalYammer.csproj" />
   </ItemGroup>
   <Target Name="CleanSecondarySites">
     <RemoveDir Directories="%(SecondarySite.RootDir)%(Directory)$(SecondarySitePublishDir)" />
