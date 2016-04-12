@@ -234,6 +234,7 @@
     <Compile Include="Constants\FieldValidationResult.cs" />
     <Compile Include="Constants\ActivityDirection.cs" />
     <Compile Include="Constants\ManifestIdEnum.cs" />
+    <Compile Include="Constants\Tags.cs" />
     <Compile Include="Control\Control.cs" />
     <Compile Include="Crates\Crate.cs" />
     <Compile Include="Crates\CrateManifestAttribute.cs" />
@@ -664,10 +665,6 @@
     <Compile Include="Migrations\201604061440228_RenameContainerFields.cs" />
     <Compile Include="Migrations\201604061440228_RenameContainerFields.Designer.cs">
       <DependentUpon>201604061440228_RenameContainerFields.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201604121331399_UpdateSalesforceActivities.cs" />
-    <Compile Include="Migrations\201604121331399_UpdateSalesforceActivities.Designer.cs">
-      <DependentUpon>201604121331399_UpdateSalesforceActivities.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1164,9 +1161,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604061440228_RenameContainerFields.resx">
       <DependentUpon>201604061440228_RenameContainerFields.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201604121331399_UpdateSalesforceActivities.resx">
-      <DependentUpon>201604121331399_UpdateSalesforceActivities.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

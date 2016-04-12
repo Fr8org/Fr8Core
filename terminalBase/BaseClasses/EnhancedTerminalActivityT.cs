@@ -392,7 +392,7 @@ namespace TerminalBase.BaseClasses
             {
                 CheckCurrentActivityStorageAvailability();
                 var crate = CurrentActivityStorage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == ConfigurationValuesCrateLabel);
-                return crate?.Content.Fields.FirstOrDefault(x => x.Key == key)?.Key;
+                return crate?.Content.Fields.FirstOrDefault(x => x.Key == key)?.Value;
             }
             set
             {

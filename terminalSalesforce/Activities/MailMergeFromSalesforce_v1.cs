@@ -13,14 +13,15 @@ using Data.States;
 using Hub.Services;
 using TerminalBase.Infrastructure.Behaviors;
 using Data.Entities;
-using terminalSalesforce.Actions;
 using AutoMapper;
 using Data.Interfaces;
 using Utilities.Configuration.Azure;
+using Hub.Managers;
+using Data.Constants;
 
-namespace terminalSalesforce.Activities
+namespace terminalSalesforce.Actions
 {
-    public class MailMergeFromSalesforce : EnhancedTerminalActivity<MailMergeFromSalesforce.ActivityUi>
+    public class MailMergeFromSalesforce_v1 : EnhancedTerminalActivity<MailMergeFromSalesforce_v1.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -38,7 +39,8 @@ namespace terminalSalesforce.Activities
                 {
                     Name = nameof(SalesforceObjectSelector),
                     Label = "Get Which Object?",
-                    Required = true
+                    Required = true,
+                    Events = new List<ControlEvent> {  ControlEvent.RequestConfig }
                 };
                 SalesforceObjectFilter = new QueryBuilder
                 {
@@ -69,22 +71,23 @@ namespace terminalSalesforce.Activities
                 Controls.Add(RunMailMergeButton);
             }
         }
-
-        private const string QueryFilterCrateLabel = "Query Filter";
+        //NOTE: this label must be the same as the one expected in QueryBuilder.ts
+        private const string QueryFilterCrateLabel = "Queryable Criteria";
 
         private readonly ISalesforceManager _salesforceManager;
 
         private readonly int terminalId;
 
-        public MailMergeFromSalesforce() : base(true)
+        public MailMergeFromSalesforce_v1() : base(true)
         {
             ActivityName = "Mail Merge from Salesforce";
             _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
+            var terminalName = CloudConfigurationManager.GetSetting("TerminalName");
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 terminalId = uow.TerminalRepository
                                 .GetQuery()
-                                .Where(x => x.Name == CloudConfigurationManager.GetSetting("TerminalName"))
+                                .Where(x => x.Name == terminalName)
                                 .Select(x => x.Id)
                                 .First();
             }
@@ -92,10 +95,19 @@ namespace terminalSalesforce.Activities
 
         protected override Task<bool> Validate()
         {
+            if (!ConfigurationControls.RunMailMergeButton.Clicked)
+            {
+                return Task.FromResult(true);
+            }
+            //We perform validation only when user clicks on 'Prepare Mail Merge' button so he is not bothered with error messages untill he makes final step
             ConfigurationControls.SalesforceObjectSelector.ErrorMessage = string.IsNullOrEmpty(ConfigurationControls.SalesforceObjectSelector.selectedKey)
                                                                             ? "Object is not selected"
                                                                             : string.Empty;
-            return Task.FromResult(string.IsNullOrEmpty(ConfigurationControls.SalesforceObjectSelector.ErrorMessage));
+            ConfigurationControls.MailSenderActivitySelector.ErrorMessage = string.IsNullOrEmpty(ConfigurationControls.MailSenderActivitySelector.selectedKey)
+                                                                            ? "Mail sender is not selected"
+                                                                            : string.Empty;
+            return Task.FromResult(string.IsNullOrEmpty(ConfigurationControls.SalesforceObjectSelector.ErrorMessage)
+                                && string.IsNullOrEmpty(ConfigurationControls.MailSenderActivitySelector.ErrorMessage));
         }
 
         protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
@@ -144,19 +156,54 @@ namespace terminalSalesforce.Activities
             await behavior.ReconfigureActivities(CurrentActivity, AuthorizationToken, reconfigurationList);
         }
 
-        private Task<bool> HasProcessingActivity(ReconfigurationContext arg)
+        private async Task<bool> HasProcessingActivity(ReconfigurationContext context)
         {
-            throw new NotImplementedException();
+            if (context.SolutionActivity.ChildNodes == null)
+            {
+                return false;
+            }
+            var loopActivity = context.SolutionActivity
+                                      .ChildNodes
+                                      .OfType<ActivityDO>()
+                                      .SingleOrDefault(x => x.ActivityTemplate.Name == "Loop" && x.Ordering == 2);
+            if (loopActivity == null || loopActivity.ChildNodes.Count != 1)
+            {
+                return false;
+            }
+            var emailSenderActivity = loopActivity.ChildNodes.OfType<ActivityDO>().SingleOrDefault();
+            if (emailSenderActivity == null)
+            {
+                return false;
+            }
+            if (emailSenderActivity.ActivityTemplate.Name != ConfigurationControls.MailSenderActivitySelector.selectedKey)
+            {
+                return false;
+            }
+            return true;
         }
 
-        private Task<ActivityDO> CreateProcessingActivity(ReconfigurationContext arg)
+        private async Task<ActivityDO> CreateProcessingActivity(ReconfigurationContext context)
         {
-            throw new NotImplementedException();
+            var loopActivity = await AddAndConfigureChildActivity(context.SolutionActivity, "Loop", "Loop", "Loop", 2);
+            using (var crateStorage = CrateManager.GetUpdatableStorage(loopActivity))
+            {
+                var loopConfigControls = GetConfigurationControls(crateStorage);
+                var crateChooser = loopConfigControls.Controls.OfType<CrateChooser>().Single();
+                var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(x => x.ManifestId == (int)MT.StandardTableData);
+                if (tableDescription != null)
+                {
+                    tableDescription.Selected = true;
+                }
+            }
+            var solutionActivityUi = new ActivityUi().ClonePropertiesFrom(CrateManager.GetStorage(context.SolutionActivity).FirstCrate<StandardConfigurationControlsCM>().Content) as ActivityUi;
+            var sendEmailActivity = await AddAndConfigureChildActivity(loopActivity, solutionActivityUi.MailSenderActivitySelector.Value, order: 1);
+            return loopActivity;
         }
 
-        private Task<ActivityDO> ConfigureProcessingActivity(ReconfigurationContext arg)
+        private Task<ActivityDO> ConfigureProcessingActivity(ReconfigurationContext context)
         {
-            throw new NotImplementedException();
+            //No extra config required
+            return Task.FromResult(context.SolutionActivity.ChildNodes.OfType<ActivityDO>().FirstOrDefault(x => x.Ordering == 2));
         }
 
         private Task<bool> HasSalesforceDataActivity(ReconfigurationContext context)
@@ -185,8 +232,6 @@ namespace terminalSalesforce.Activities
                 context.SolutionActivity,
                 getSalesforceDataActivityTemplate.Id.ToString(),
                 order: 1);
-            context.SolutionActivity.ChildNodes.Remove(dataSourceActivity);
-            context.SolutionActivity.ChildNodes.Insert(0, dataSourceActivity);
             return dataSourceActivity;
         }
 
@@ -196,11 +241,18 @@ namespace terminalSalesforce.Activities
                                   .ChildNodes
                                   .OfType<ActivityDO>()
                                   .Single(x => x.Ordering == 1);
-            //Let activity configure its initial UI
-            activity.CrateStorage = string.Empty;
+            using (var storage = CrateManager.GetUpdatableStorage(activity))
+            {
+                var controlsCrate = storage.FirstCrate<StandardConfigurationControlsCM>();
+                var activityUi = new Get_Data_v1.ActivityUi().ClonePropertiesFrom(controlsCrate.Content) as Get_Data_v1.ActivityUi;
+                var solutionActivityUi = new ActivityUi().ClonePropertiesFrom(CrateManager.GetStorage(context.SolutionActivity).FirstCrate<StandardConfigurationControlsCM>().Content) as ActivityUi;
+                activityUi.SalesforceObjectSelector.selectedKey = solutionActivityUi.SalesforceObjectSelector.selectedKey;
+                activityUi.SalesforceObjectSelector.Value = solutionActivityUi.SalesforceObjectSelector.Value;
+                activityUi.SalesforceObjectFilter.Value = solutionActivityUi.SalesforceObjectFilter.Value;
+                storage.ReplaceByLabel(Crate.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls), controlsCrate.Availability));
+            }
+            //Followup configuration
             activity = await HubCommunicator.ConfigureActivity(activity, CurrentFr8UserId);
-            //Now copy data from solution UI to this child activity UI and ask
-            //TODO: this can be done properly after Get_Data activity is refactored into using ETA
             return activity;
         }
 

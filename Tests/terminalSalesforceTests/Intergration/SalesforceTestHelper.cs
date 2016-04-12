@@ -19,10 +19,5 @@ namespace terminalSalesforceTests.Intergration
         {
             return await new SalesforceManager().DeleteObject(objectName, objectId, authTokenDO);
         }
-
-        public static async Task<bool> DeleteObject(AuthorizationTokenDO authTokenDO, string objectName, string objectId)
-        {
-            return await new SalesforceManager().DeleteObject(objectName, objectId, authTokenDO);
-        }
     }
 }
