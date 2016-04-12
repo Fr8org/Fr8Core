@@ -41,7 +41,7 @@ namespace HubWeb.Controllers
                 var curSubPlanDO = new SubPlanDO(false)
                 {
                     Id = Guid.Empty,
-                    ParentPlanNodeId = subPlanDTO.PlanId,
+                    ParentPlanNodeId = subPlanDTO.ParentId,
                     RootPlanNodeId = subPlanDTO.PlanId,
                     Name = subPlanDTO.Name
                 };

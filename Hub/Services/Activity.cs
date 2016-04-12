@@ -55,7 +55,8 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                SaveAndUpdateActivity(uow, submittedActivityData, new List<ActivityDO>());
+                // SaveAndUpdateActivity(uow, submittedActivityData, new List<ActivityDO>());
+                SaveAndUpdateActivity(uow, submittedActivityData);
 
                 uow.SaveChanges();
 
@@ -106,15 +107,14 @@ namespace Hub.Services
             submittedActivity.AuthorizationTokenId = existingActivity.AuthorizationTokenId;
         }
 
-        private void SaveAndUpdateActivity(IUnitOfWork uow, ActivityDO submittedActiviy, List<ActivityDO> pendingConfiguration)
+        // private void SaveAndUpdateActivity(IUnitOfWork uow, ActivityDO submittedActiviy, List<ActivityDO> pendingConfiguration)
+        private void SaveAndUpdateActivity(IUnitOfWork uow, ActivityDO submittedActiviy)
         {
             PlanTreeHelper.Visit(submittedActiviy, x =>
             {
-                var activity = (ActivityDO)x;
-
-                if (activity.Id == Guid.Empty)
+                if (x.Id == Guid.Empty)
                 {
-                    activity.Id = Guid.NewGuid();
+                    x.Id = Guid.NewGuid();
                 }
             });
 
@@ -136,26 +136,25 @@ namespace Hub.Services
             {
                 plan.ChildNodes.Remove(originalAction);
 
+                // Add child subplans.
+                foreach (var subPlan in originalAction.ChildNodes.OfType<SubPlanDO>())
+                {
+                    submittedActiviy.ChildNodes.Add(subPlan);
+                }
+
                 var originalActions = PlanTreeHelper.Linearize(originalAction)
-                    .ToDictionary(x => x.Id, x => (ActivityDO)x);
+                    .OfType<ActivityDO>()
+                    .ToDictionary(x => x.Id, x => x);
 
                 foreach (var submitted in PlanTreeHelper.Linearize(submittedActiviy))
                 {
                     ActivityDO existingActivity;
 
-                    if (!originalActions.TryGetValue(submitted.Id, out existingActivity))
-                    {
-                        pendingConfiguration.Add((ActivityDO)submitted);
-                    }
-                    else
+                    if (originalActions.TryGetValue(submitted.Id, out existingActivity))
                     {
                         RestoreSystemProperties(existingActivity, (ActivityDO)submitted);
                     }
                 }
-            }
-            else
-            {
-                pendingConfiguration.AddRange(PlanTreeHelper.Linearize(submittedActiviy).OfType<ActivityDO>());
             }
 
             if (submittedActiviy.Ordering <= 0)
@@ -342,7 +341,9 @@ namespace Hub.Services
 
                 if (saveResult)
                 {
-                    SaveAndUpdateActivity(uow, curActivityDO, new List<ActivityDO>());
+                    // SaveAndUpdateActivity(uow, curActivityDO, new List<ActivityDO>());
+                    SaveAndUpdateActivity(uow, curActivityDO);
+
                     uow.SaveChanges();
                     curActivityDO = uow.PlanRepository.GetById<ActivityDO>(curActivityDO.Id);
                     return Mapper.Map<ActivityDTO>(curActivityDO);

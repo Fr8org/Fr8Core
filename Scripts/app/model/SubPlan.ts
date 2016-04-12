@@ -3,6 +3,7 @@
         public subPlanId: string;
         public isTempId: boolean;
         public planId: string;
+        public parentId: string;
         public name: string;
         public criteria: CriteriaDTO;
         public activities: Array<ActivityDTO>;
@@ -11,11 +12,13 @@
             id: string,
             isTempId: boolean,
             planId: string,
+            parentId: string,
             name: string
         ) {
             this.subPlanId = id;
             this.isTempId = isTempId;
             this.planId = planId;
+            this.parentId = parentId;
             this.name = name;
 
             this.criteria = null;
@@ -23,7 +26,7 @@
         }
 
         clone(): SubPlanDTO {
-            var result = new SubPlanDTO(this.subPlanId, this.isTempId, this.planId, this.name);
+            var result = new SubPlanDTO(this.subPlanId, this.isTempId, this.planId, this.parentId, this.name);
             result.criteria = this.criteria !== null ? this.criteria.clone() : null;
             angular.forEach(this.activities, function (it) { result.activities.push(it.clone()); });
 
@@ -41,6 +44,7 @@
             var subPlan = new model.SubPlanDTO(
                 subPlanId,
                 true,
+                planId,
                 planId,
                 'New criteria'
             );

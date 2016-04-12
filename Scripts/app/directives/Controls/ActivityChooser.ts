@@ -17,11 +17,12 @@ module dockyard.directives {
                 currentAction: '=',
                 plan: '='
             },
-            controller: ['$rootScope', '$scope', '$http', 'SubPlanService', 'ActionService', '$modal',
+            controller: ['$rootScope', '$scope', '$http', '$q', 'SubPlanService', 'ActionService', '$modal',
                 function (
                     $rootScope: ng.IRootScopeService,
                     $scope: IActivityChooserScope,
                     $http: ng.IHttpService,
+                    $q: ng.IQService,
                     SubPlanService: services.ISubPlanService,
                     ActionService: services.IActionService,
                     $modal: any
@@ -57,16 +58,23 @@ module dockyard.directives {
                     };
 
                     // Call Hub API to create activity.
-                    var createActivity = (activityTemplate: model.ActivityTemplate) => {
-                        var activity = new model.ActivityDTO($scope.plan.id, $scope.field.subPlanId, null);
+                    var createActivity = (activityTemplate: model.ActivityTemplate, subPlanId: string) => {
+                        var defered = $q.defer();
+
+                        var activity = new model.ActivityDTO($scope.plan.id, subPlanId, null);
                         activity.activityTemplate = activityTemplate;
 
                         ActionService.save(activity).$promise
                             .then((activity: model.ActivityDTO) => {
-                                $scope.field.activityTemplateLabel = activityTemplate.label || activityTemplate.name;
-
                                 displayConfigureActivityModal($scope.plan, activity);
+                                console.log('activity.id = ', activity.id);
+                                defered.resolve();
+                            })
+                            .catch((reason: any) => {
+                                defered.reject(reason);
                             });
+
+                        return defered.promise;
                     };
 
                     // Display dialog to select activity, and possibly create subplan and blank selected activity.
@@ -79,15 +87,31 @@ module dockyard.directives {
                         selectActivityModal.result
                             .then((activityTemplate: model.ActivityTemplate) => {
                                 if (!$scope.field.subPlanId) {
-                                    var subplan = new model.SubPlanDTO(null, true, $scope.plan.id, 'subplan-' + $scope.field.name);
+                                    var subplan = new model.SubPlanDTO(
+                                        null,
+                                        true,
+                                        $scope.plan.id,
+                                        $scope.currentAction.id,
+                                        'subplan-' + $scope.field.name
+                                    );
+
                                     SubPlanService.create(subplan).$promise
                                         .then((subplan: model.SubPlanDTO) => {
-                                            $scope.field.subPlanId = subplan.subPlanId;
-                                            createActivity(activityTemplate);
+                                            console.log('subplan.id = ', subplan.subPlanId);
+                                            createActivity(activityTemplate, subplan.subPlanId)
+                                                .then(() => {
+                                                    $scope.field.subPlanId = subplan.subPlanId;
+                                                    $scope.field.activityTemplateLabel = activityTemplate.label || activityTemplate.name;
+                                                });
                                         });
                                 }
+                                // This should never happen, just in case.
                                 else {
-                                    createActivity(activityTemplate);
+                                    createActivity(activityTemplate, $scope.field.subPlanId)
+                                        .then(() => {
+                                            $scope.field.subPlanId = subplan.subPlanId;
+                                            $scope.field.activityTemplateLabel = activityTemplate.label || activityTemplate.name;
+                                        });
                                 }
                             });
                     };
@@ -128,9 +152,10 @@ module dockyard.directives {
 
                         SubPlanService.remove({ id: $scope.field.subPlanId }).$promise
                             .then(() => {
-
                                 $scope.field.subPlanId = null;
                                 $scope.field.activityTemplateLabel = null;
+
+                                debugger;
                             });
                     };
                 }
