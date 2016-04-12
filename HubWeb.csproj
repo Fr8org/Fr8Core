@@ -879,33 +879,63 @@
     <Content Include="Views\AngularTemplate\ActivityChooser.cshtml" />
     <Content Include="Views\AngularTemplate\ActivityChooserSelectDialog.cshtml" />
     <Content Include="Views\AngularTemplate\ActivityChooserConfigureDialog.cshtml" />
-    <Content Include="Config\log4net.tests.config" />
-    <Content Include="Config\log4net.config" />
-    <Content Include="Config\log4net.tests.healthMonitor.Release.config">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    <Content Include="Config\log4net.tests.config">
+      <TransformOnBuild>true</TransformOnBuild>
     </Content>
-    <Content Include="Config\log4net.Debug.config" />
-    <Content Include="Config\log4net.Dev.config" />
-    <Content Include="Config\log4net.Release.config" />
+    <Content Include="Config\log4net.config">
+      <TransformOnBuild>true</TransformOnBuild>
+    </Content>
+    <None Include="Config\log4net.tests.healthMonitor.Release.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <DependentUpon>log4net.tests.healthMonitor.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="Config\log4net.Debug.config">
+      <DependentUpon>log4net.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="Config\log4net.Dev.config">
+      <DependentUpon>log4net.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="Config\log4net.Release.config">
+      <DependentUpon>log4net.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
     <Content Include="Config\log4net.Stage.config" />
     <Content Include="Config\log4net.terminals.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TransformOnBuild>true</TransformOnBuild>
     </Content>
-    <Content Include="Config\log4net.terminals.Debug.config" />
-    <Content Include="Config\log4net.terminals.Dev.config" />
-    <Content Include="Config\log4net.terminals.Release.config" />
+    <None Include="Config\log4net.terminals.Debug.config">
+      <DependentUpon>log4net.terminals.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="Config\log4net.terminals.Dev.config">
+      <DependentUpon>log4net.terminals.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="Config\log4net.terminals.Release.config">
+      <DependentUpon>log4net.terminals.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
     <Content Include="Config\log4net.terminals.Stage.config" />
-    <Content Include="Config\log4net.tests.healthMonitor.Debug.config">
+    <None Include="Config\log4net.tests.healthMonitor.Debug.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Config\log4net.tests.healthMonitor.Dev.config">
+      <DependentUpon>log4net.tests.healthMonitor.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="Config\log4net.tests.healthMonitor.Dev.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
+      <DependentUpon>log4net.tests.healthMonitor.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
     <Content Include="Config\log4net.tests.healthMonitor.Stage.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Config\log4net.tests.healthMonitor.config">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <TransformOnBuild>true</TransformOnBuild>
     </Content>
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
