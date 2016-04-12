@@ -1,9 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Results;
+using System.Web.Script.Serialization;
 using AutoMapper;
 using Moq;
 using Newtonsoft.Json;
@@ -53,7 +56,7 @@ namespace DockyardTest.Controllers
         [Test]
         public void ActivityController_ShouldHaveHMACOnCreateMethod()
         {
-            var createMethod = typeof (ActivitiesController).GetMethod("Create", new Type[] { typeof(int), typeof(string), typeof(int ?), typeof(Guid ?), typeof(bool), typeof(Guid ?)});
+            var createMethod = typeof(ActivitiesController).GetMethod("Create", new Type[] { typeof(int), typeof(string), typeof(int?), typeof(Guid?), typeof(bool), typeof(Guid?) });
             ShouldHaveFr8HMACAuthorizeOnFunction(createMethod);
         }
 
@@ -63,7 +66,7 @@ namespace DockyardTest.Controllers
             ShouldHaveFr8HMACAuthorizeOnFunction(typeof(ActivitiesController), "Configure");
         }
 
-        [Test,Ignore]
+        [Test, Ignore]
         public void ActivityController_ShouldHaveHMACOnDocumentationMethod()
         {
             ShouldHaveFr8HMACAuthorizeOnFunction(typeof(ActivitiesController), "Documentation");
@@ -89,9 +92,9 @@ namespace DockyardTest.Controllers
             //Act
             var actualAction = CreateActivityWithId(FixtureData.GetTestGuidById(1));
             actualAction.ParentPlanNodeId = subPlan.Id;
-                
+
             var controller = new ActivitiesController();
-            var result = (OkNegotiatedContentResult<ActivityDTO>) await controller.Save(actualAction);
+            var result = (OkNegotiatedContentResult<ActivityDTO>)await controller.Save(actualAction);
             var savedAction = result.Content;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -126,13 +129,13 @@ namespace DockyardTest.Controllers
                 subPlan.ChildNodes.Add(activity);
                 uow.SaveChanges();
             }
-                //Act
-                var actualAction = CreateActivityWithId(FixtureData.GetTestGuidById(2));
-                actualAction.ParentPlanNodeId = subPlan.Id;
+            //Act
+            var actualAction = CreateActivityWithId(FixtureData.GetTestGuidById(2));
+            actualAction.ParentPlanNodeId = subPlan.Id;
 
-                var controller = new ActivitiesController();
-                var result = (OkNegotiatedContentResult<ActivityDTO>) await controller.Save(actualAction);
-                var savedAction = result.Content;
+            var controller = new ActivitiesController();
+            var result = (OkNegotiatedContentResult<ActivityDTO>)await controller.Save(actualAction);
+            var savedAction = result.Content;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -151,15 +154,15 @@ namespace DockyardTest.Controllers
 
         public void ActivityController_Save_WithActionExists_ExistingActionShouldBeUpdated()
         {
-                //Arrange
-                //Add one test action
-                var activity = FixtureData.TestActivity1();
+            //Arrange
+            //Add one test action
+            var activity = FixtureData.TestActivity1();
 
             var plan = new PlanDO
             {
                 PlanState = PlanState.Active,
                 Name = "name",
-                ChildNodes = {activity}
+                ChildNodes = { activity }
             };
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -169,13 +172,13 @@ namespace DockyardTest.Controllers
                 uow.PlanRepository.Add(plan);
                 uow.SaveChanges();
             }
-                //Act
-                var actualAction = CreateActivityWithId(FixtureData.GetTestGuidById(1));
+            //Act
+            var actualAction = CreateActivityWithId(FixtureData.GetTestGuidById(1));
 
             actualAction.ParentPlanNodeId = plan.Id;
 
-                var controller = new ActivitiesController();
-                controller.Save(actualAction);
+            var controller = new ActivitiesController();
+            controller.Save(actualAction);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -196,38 +199,38 @@ namespace DockyardTest.Controllers
         [Ignore("The real server is not in execution in AppVeyor. Remove these tests once Jasmine Front End integration tests are added.")]
         public void ActivityController_Configure_WithoutConnectionString_ShouldReturnOneEmptyConnectionString()
         {
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                //Arrange
-//                //remvoe existing action templates
-//                uow.ActivityTemplateRepository.Remove(uow.ActivityTemplateRepository.GetByKey(1));
-//                uow.SaveChanges();
-//
-//                //create action
-//                var curAction = CreateActionWithV2ActionTemplate(uow);
-//                curAction.CrateStorage = JsonConvert.SerializeObject(FixtureData.TestConfigurationStore());
-//                uow.SaveChanges();
-//
-//                var curActionDesignDO = Mapper.Map<ActionDTO>(curAction);
-//                //Act
-//                var result = await
-//                    new ActionController(_action).Configure(curActionDesignDO) as
-//                        OkNegotiatedContentResult<string>;
-//
-//                CrateStorageDTO resultantCrateStorageDto =
-//                    JsonConvert.DeserializeObject<CrateStorageDTO>(result.Content);
-//
-//                //Assert
-//                Assert.IsNotNull(result, "Configure POST reqeust is failed");
-//                Assert.IsNotNull(resultantCrateStorageDto, "Configure returns no Configuration Store");
-//                Assert.IsTrue(resultantCrateStorageDto.CrateDTO.Count == 1, "Configure is not assuming this is the first request from the client");
-//                //different V2 format
-//                //Assert.AreEqual("connection_string", resultantCrateStorageDto.Fields[0].Name, "Configure does not return one connection string with empty value");
-//                //Assert.IsEmpty(resultantCrateStorageDto.Fields[0].Value, "Configure returned some connectoin string when the first request made");
-//                
-//                ////There should be no data fields as this is the first request from the client
-//                //Assert.IsTrue(resultantCrateStorageDto.DataFields.Count == 0, "Configure did not assume this is the first call from the client");
-//            }
+            //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            //            {
+            //                //Arrange
+            //                //remvoe existing action templates
+            //                uow.ActivityTemplateRepository.Remove(uow.ActivityTemplateRepository.GetByKey(1));
+            //                uow.SaveChanges();
+            //
+            //                //create action
+            //                var curAction = CreateActionWithV2ActionTemplate(uow);
+            //                curAction.CrateStorage = JsonConvert.SerializeObject(FixtureData.TestConfigurationStore());
+            //                uow.SaveChanges();
+            //
+            //                var curActionDesignDO = Mapper.Map<ActionDTO>(curAction);
+            //                //Act
+            //                var result = await
+            //                    new ActionController(_action).Configure(curActionDesignDO) as
+            //                        OkNegotiatedContentResult<string>;
+            //
+            //                CrateStorageDTO resultantCrateStorageDto =
+            //                    JsonConvert.DeserializeObject<CrateStorageDTO>(result.Content);
+            //
+            //                //Assert
+            //                Assert.IsNotNull(result, "Configure POST reqeust is failed");
+            //                Assert.IsNotNull(resultantCrateStorageDto, "Configure returns no Configuration Store");
+            //                Assert.IsTrue(resultantCrateStorageDto.CrateDTO.Count == 1, "Configure is not assuming this is the first request from the client");
+            //                //different V2 format
+            //                //Assert.AreEqual("connection_string", resultantCrateStorageDto.Fields[0].Name, "Configure does not return one connection string with empty value");
+            //                //Assert.IsEmpty(resultantCrateStorageDto.Fields[0].Value, "Configure returned some connectoin string when the first request made");
+            //                
+            //                ////There should be no data fields as this is the first request from the client
+            //                //Assert.IsTrue(resultantCrateStorageDto.DataFields.Count == 0, "Configure did not assume this is the first call from the client");
+            //            }
         }
 
         [Test]
@@ -235,74 +238,74 @@ namespace DockyardTest.Controllers
         [Ignore("The real server is not in execution in AppVeyor. Remove these tests once Jasmine Front End integration tests are added.")]
         public void ActivityController_Configure_WithConnectionString_ShouldReturnDataFields()
         {
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                //Arrange
-//                //remvoe existing action templates
-//                uow.ActivityTemplateRepository.Remove(uow.ActivityTemplateRepository.GetByKey(1));
-//                uow.SaveChanges();
-//
-//                //create action
-//                var curAction = CreateActionWithV2ActionTemplate(uow);
-//                var configurationStore = FixtureData.TestConfigurationStore();
-//                //different V2 format
-//                //configurationStore.Fields[0].Value = "Data Source=s79ifqsqga.database.windows.net;database=demodb_health;User ID=alexeddodb;Password=Thales89;";
-//                curAction.CrateStorage = JsonConvert.SerializeObject(configurationStore);
-//                uow.SaveChanges();
-//                var curActionDesignDO = Mapper.Map<ActionDTO>(curAction);
-//                //Act
-//                var result = await
-//                    new ActionController(_action).Configure(curActionDesignDO) as
-//                        OkNegotiatedContentResult<string>;
-//
-//                CrateStorageDTO resultantCrateStorageDto =
-//                    JsonConvert.DeserializeObject<CrateStorageDTO>(result.Content);
-//
-//                //Assert
-//                Assert.IsNotNull(result, "Configure POST reqeust is failed");
-//                Assert.IsNotNull(resultantCrateStorageDto, "Configure returns no Configuration Store");
-//                Assert.IsTrue(resultantCrateStorageDto.CrateDTO.Count == 3, "Configure returned invalid data fields");
-//            }
+            //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            //            {
+            //                //Arrange
+            //                //remvoe existing action templates
+            //                uow.ActivityTemplateRepository.Remove(uow.ActivityTemplateRepository.GetByKey(1));
+            //                uow.SaveChanges();
+            //
+            //                //create action
+            //                var curAction = CreateActionWithV2ActionTemplate(uow);
+            //                var configurationStore = FixtureData.TestConfigurationStore();
+            //                //different V2 format
+            //                //configurationStore.Fields[0].Value = "Data Source=s79ifqsqga.database.windows.net;database=demodb_health;User ID=alexeddodb;Password=Thales89;";
+            //                curAction.CrateStorage = JsonConvert.SerializeObject(configurationStore);
+            //                uow.SaveChanges();
+            //                var curActionDesignDO = Mapper.Map<ActionDTO>(curAction);
+            //                //Act
+            //                var result = await
+            //                    new ActionController(_action).Configure(curActionDesignDO) as
+            //                        OkNegotiatedContentResult<string>;
+            //
+            //                CrateStorageDTO resultantCrateStorageDto =
+            //                    JsonConvert.DeserializeObject<CrateStorageDTO>(result.Content);
+            //
+            //                //Assert
+            //                Assert.IsNotNull(result, "Configure POST reqeust is failed");
+            //                Assert.IsNotNull(resultantCrateStorageDto, "Configure returns no Configuration Store");
+            //                Assert.IsTrue(resultantCrateStorageDto.CrateDTO.Count == 3, "Configure returned invalid data fields");
+            //            }
         }
 
         [Test]
         [Ignore("The real server is not in execution in AppVeyor. Remove these tests once Jasmine Front End integration tests are added.")]
         public void ActivityController_Configure_WithConnectionStringAndDataFields_ShouldReturnUpdatedDataFields()
         {
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//                //Arrange
-//                //remvoe existing action templates
-//                uow.ActivityTemplateRepository.Remove(uow.ActivityTemplateRepository.GetByKey(1));
-//                uow.SaveChanges();
-//
-//                //create action
-//                var curAction = CreateActionWithV2ActionTemplate(uow);
-//                var configurationStore = FixtureData.TestConfigurationStore();
-//                //V2 changes
-//                //configurationStore.Fields[0].Value = "Data Source=s79ifqsqga.database.windows.net;database=demodb_health;User ID=alexeddodb;Password=Thales89;";
-//                //configurationStore.DataFields.Add("something");
-//                //configurationStore.DataFields.Add("Wrong");
-//                //configurationStore.DataFields.Add("data fields");
-//                //configurationStore.DataFields.Add("data fields");
-//                curAction.CrateStorage = JsonConvert.SerializeObject(configurationStore);
-//                uow.SaveChanges();
-//                var curActionDesignDO = Mapper.Map<ActionDTO>(curAction);
-//                //Act
-//                var result = await
-//                    new ActionController(_action).Configure(curActionDesignDO) as
-//                        OkNegotiatedContentResult<string>;
-//
-//                CrateStorageDTO resultantCrateStorageDto =
-//                    JsonConvert.DeserializeObject<CrateStorageDTO>(result.Content);
-//
-//                //Assert
-//                Assert.IsNotNull(result, "Configure POST reqeust is failed");
-//                Assert.IsNotNull(resultantCrateStorageDto, "Configure returns no Configuration Store");
-//                //V2 changes
-//                //Assert.IsTrue(resultantCrateStorageDto.DataFields.Count != 4, "Since we already had 4 invalid data fields, the number of data fields should not be 4 now.");
-//                //Assert.IsTrue(resultantCrateStorageDto.DataFields.Count == 3, "The new data field should be 3 data fields as with the update one.");
-//            }
+            //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            //            {
+            //                //Arrange
+            //                //remvoe existing action templates
+            //                uow.ActivityTemplateRepository.Remove(uow.ActivityTemplateRepository.GetByKey(1));
+            //                uow.SaveChanges();
+            //
+            //                //create action
+            //                var curAction = CreateActionWithV2ActionTemplate(uow);
+            //                var configurationStore = FixtureData.TestConfigurationStore();
+            //                //V2 changes
+            //                //configurationStore.Fields[0].Value = "Data Source=s79ifqsqga.database.windows.net;database=demodb_health;User ID=alexeddodb;Password=Thales89;";
+            //                //configurationStore.DataFields.Add("something");
+            //                //configurationStore.DataFields.Add("Wrong");
+            //                //configurationStore.DataFields.Add("data fields");
+            //                //configurationStore.DataFields.Add("data fields");
+            //                curAction.CrateStorage = JsonConvert.SerializeObject(configurationStore);
+            //                uow.SaveChanges();
+            //                var curActionDesignDO = Mapper.Map<ActionDTO>(curAction);
+            //                //Act
+            //                var result = await
+            //                    new ActionController(_action).Configure(curActionDesignDO) as
+            //                        OkNegotiatedContentResult<string>;
+            //
+            //                CrateStorageDTO resultantCrateStorageDto =
+            //                    JsonConvert.DeserializeObject<CrateStorageDTO>(result.Content);
+            //
+            //                //Assert
+            //                Assert.IsNotNull(result, "Configure POST reqeust is failed");
+            //                Assert.IsNotNull(resultantCrateStorageDto, "Configure returns no Configuration Store");
+            //                //V2 changes
+            //                //Assert.IsTrue(resultantCrateStorageDto.DataFields.Count != 4, "Since we already had 4 invalid data fields, the number of data fields should not be 4 now.");
+            //                //Assert.IsTrue(resultantCrateStorageDto.DataFields.Count == 3, "The new data field should be 3 data fields as with the update one.");
+            //            }
         }
 
         [Test]
@@ -405,33 +408,33 @@ namespace DockyardTest.Controllers
             };
         }
 
-//        private ActivityDO CreateActionWithV2ActionTemplate(IUnitOfWork uow)
-//        {
-//
-//            var curActionTemplate = FixtureData.TestActivityTemplateV2();
-//            uow.ActivityTemplateRepository.Add(curActionTemplate);
-//
-//            var curAction = FixtureData.TestActivity1();
-//            curAction.ActivityTemplateId = curActionTemplate.Id;
-//            curAction.ActivityTemplate = curActionTemplate;
-//            uow.ActivityRepository.Add(curAction);
-//
-//            return curAction;
-//        }
+        //        private ActivityDO CreateActionWithV2ActionTemplate(IUnitOfWork uow)
+        //        {
+        //
+        //            var curActionTemplate = FixtureData.TestActivityTemplateV2();
+        //            uow.ActivityTemplateRepository.Add(curActionTemplate);
+        //
+        //            var curAction = FixtureData.TestActivity1();
+        //            curAction.ActivityTemplateId = curActionTemplate.Id;
+        //            curAction.ActivityTemplate = curActionTemplate;
+        //            uow.ActivityRepository.Add(curAction);
+        //
+        //            return curAction;
+        //        }
 
 
-     
+
 
         [Test, Ignore]
 
         public async Task ActivityController_GetConfigurationSettings_ValidActionDesignDTO()
         {
-            
+
             var controller = new ActivitiesController();
             ActivityDTO actionDesignDTO = CreateActivityWithId(FixtureData.GetTestGuidById(2));
             actionDesignDTO.ActivityTemplate = FixtureData.TestActivityTemplateDTOV2();
 
-            
+
 
             var actionResult = await controller.Configure(actionDesignDTO);
 
@@ -471,6 +474,29 @@ namespace DockyardTest.Controllers
 
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Content);
+        }
+
+        [Test]
+        [ExpectedException(typeof(Exception))]
+        public async Task ActivityController_IncorrectDocumentationSupport()
+        {
+            var docSupportList = new List<string>
+            {
+                "Terminal=terminalDocuSign, MainPage, HelpMenu",
+                "MainPage, HelpMenu",
+                "Terminal=terminalDocuSign, HelpMenu",
+                "Terminal=terminalDocuSign, MainPage"
+            };
+            foreach (var docSupport in docSupportList)
+                await ActivityController_IncorrectDocumentationSupport_ThrowsException(docSupport);
+        }
+
+        private async Task ActivityController_IncorrectDocumentationSupport_ThrowsException(string docSupport)
+        {
+            var controller = new ActivitiesController();
+            var emptyActivity = new ActivityDTO { Documentation = docSupport };
+            var response = await controller.Documentation(emptyActivity);
+            var okResult = response as OkNegotiatedContentResult<List<string>>;
         }
     }
 }

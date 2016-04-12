@@ -77,17 +77,14 @@ namespace terminalFr8Core.Actions
         {
             using (var curStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                var updateButton = GetConfigurationControls(curStorage).FindByName<Button>("update_launcher");
-                if (updateButton.Clicked)
-                {
-                    updateButton.Clicked = false;
-                    curStorage.RemoveByLabel(CollectionControlsLabel);
-                    var controls = CreateCollectionControlsCrate(curStorage);
-                    AddFileDescriptionToStorage(curStorage, controls.Get<StandardConfigurationControlsCM>().Controls.Where(a => a.Type == ControlTypes.FilePicker).ToList());
-                    curStorage.Add(controls);
-                    await PushLaunchURLNotification(curActivityDO);
-                }
+                curStorage.RemoveByLabel(CollectionControlsLabel);
+                var controls = CreateCollectionControlsCrate(curStorage);
+                AddFileDescriptionToStorage(curStorage, controls.Get<StandardConfigurationControlsCM>().Controls.Where(a => a.Type == ControlTypes.FilePicker).ToList());
+                curStorage.Add(controls);
             }
+
+            await HubCommunicator.SaveActivity(curActivityDO, CurrentFr8UserId);
+            await PushLaunchURLNotification(curActivityDO);
         }
 
         private StandardConfigurationControlsCM GetMetaControls(ActivityDO curActivityDO)
@@ -127,15 +124,17 @@ namespace terminalFr8Core.Actions
                     //so next configure calls will be made with a fresh state
                     UnClickSubmitButton(curActivityDO);
                 }
+                /*
                 else
                 {
                     await UpdateMetaControls(curActivityDO);
-                }
+                }*/
             }
+            /*
             else
             {
                 await UpdateMetaControls(curActivityDO);
-            }
+            }*/
 
             return await Task.FromResult<ActivityDO>(curActivityDO);
         }
@@ -242,20 +241,15 @@ namespace terminalFr8Core.Actions
             //TODO this activity should be able to put textbox values as StandardPayloadDataCM
             //user might have pressed submit button on Collection UI
             var collectionControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => c.Label == CollectionControlsLabel).FirstOrDefault();
-            if (collectionControls == null)
-            {
-                //TODO warn user?
-                //no controls were created yet
-                return TerminateHubExecution(curPayloadDTO);
-            }
 
             //did we run from run button upon PlanBuilder or from submit button inside activity?
-            if (!WasActivityRunFromSubmitButton(payloadStorage))
+            if (collectionControls == null || !WasActivityRunFromSubmitButton(payloadStorage))
             {
                 //this was triggered by run button on screen
                 //not from submit button
                 //let's just activate and return
-                await PushLaunchURLNotification(curActivityDO);
+                await UpdateMetaControls(curActivityDO);
+                //await PushLaunchURLNotification(curActivityDO);
                 return TerminateHubExecution(curPayloadDTO);
             }
 
@@ -299,18 +293,7 @@ namespace terminalFr8Core.Actions
                 Name = "control_container"
             };
 
-            var updateButton = new Button
-            {
-                CssClass = "float-right mt30 btn btn-default",
-                Label = "Update Launcher",
-                Name = "update_launcher",
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onClick", "requestConfig")
-                }
-            };
-
-            return PackControlsCrate(infoText, cc, updateButton);
+            return PackControlsCrate(infoText, cc);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
