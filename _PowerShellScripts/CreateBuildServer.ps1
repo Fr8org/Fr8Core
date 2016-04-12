@@ -11,18 +11,25 @@
 
 $rgName = "BuildServers"
 $storageAccName = "buildservers6531"
-$vmName = "BuildServer-01"
+$vmName = "fr8BuildServer-1"
 $vmSize = "Standard_DS1"
-$computerName = $vmName
+$computerName = "BuildServer-1"
 $osDiskName = "System"
 $location="West US"
+$pipName = $vmName + '-PIP'
+$nicname = $vmName + '-NIC'
+$vnetName="BuildServers"
 
-$pip = Get-AzureRmPublicIpAddress -Name "BuildAgent-01" -ResourceGroupName $rgName
-$vm = Get-AzureRmVirtualNetwork -Name BuildServers -ResourceGroupName BuildServers
+# Uncomment to use existing network objects
+#$pip = Get-AzureRmPublicIpAddress -Name $pipName -ResourceGroupName $rgName
+#$vnet = Get-AzureRmVirtualNetwork -Name BuildServers -ResourceGroupName BuildServers
+#$subnetconfig = Get-AzureRmVirtualNetworkSubnetConfig -VirtualNetwork $vnet
+#$nic = Get-AzureRmNetworkInterface -Name "buildagent-01175" -ResourceGroupName $rgName
 
-$subnetconfig = Get-AzureRmVirtualNetworkSubnetConfig -VirtualNetwork $vm
-$vnet = Get-AzureRmVirtualNetwork -Name BuildServers -ResourceGroupName BuildServers
-$nic = Get-AzureRmNetworkInterface -Name "buildagent-01175" -ResourceGroupName $rgName
+# Create new entwork objects (existing virtual network)
+$pip = New-AzureRmPublicIpAddress -Name $pipName -ResourceGroupName $rgName -Location $location -AllocationMethod Dynamic
+$vnet =  Get-AzureRmVirtualNetwork -Name $vnetName -ResourceGroupName $rgName
+$nic = New-AzureRmNetworkInterface -Name $nicname -ResourceGroupName $rgName -Location $location -SubnetId $vnet.Subnets[0].Id -PublicIpAddressId $pip.Id
 
 
 #Enter a new admin user name and password in the pop-up for the following
