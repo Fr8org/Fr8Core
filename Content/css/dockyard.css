@@ -1208,3 +1208,16 @@ i.activity-stream-font {
 .fr8-float-right {
     float: right;
 }
+
+.footer {
+    padding-top: 20px;
+    padding-bottom: 10px;
+    background-color: #444d58;
+    color: white;
+}
+
+.copyright {
+    font-size: 0.9em;
+    line-height: 36px;
+    text-align: center;
+}
