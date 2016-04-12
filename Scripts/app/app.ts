@@ -99,8 +99,8 @@ app.controller('HeaderController', ['$scope', ($scope) => {
 }]);
 
 /* Setup Layout Part - Footer */
-app.controller('FooterController', ['$scope', function ($scope) {
-    $scope.$on('$includeContentLoaded', function () {
+app.controller('FooterController', ['$scope', ($scope) => {
+    $scope.$on('$includeContentLoaded', () => {
         Layout.initFooter(); // init footer
     });
 }]);
@@ -131,7 +131,7 @@ app.config(['applicationInsightsServiceProvider', function (applicationInsightsS
 }]);
 
 
-/* Setup Rounting For All Pages */ 
+/* Setup Routing For All Pages */ 
 app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationProvider', ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider, $httpProvider: ng.IHttpProvider, $locationProvider:ng.ILocationProvider) => {
 
 
@@ -153,14 +153,14 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                 }
                 return config;
             },
-            response: function (config: ng.IRequestConfig) {
+            response: (config: ng.IRequestConfig) => {
                 Metronic.stopPageLoading();
                 return config;
             },
-            responseError: function (config) {
+            responseError: (config) => {
                 if (config.status === 403) {
                     $window.location.href = $window.location.origin + '/DockyardAccount'
-                    + '?returnUrl=/Dashboard' + encodeURIComponent($window.location.hash);
+                    + '?returnUrl=/dashboard' + encodeURIComponent($window.location.hash);
                 }
                 Metronic.stopPageLoading();
                 return $q.reject(config);
@@ -194,9 +194,16 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
     // Plan Builder framework
         .state('planBuilder', {
             url: "/plans/{id}/builder?viewMode&view",
-            //templateUrl: "/AngularTemplate/PlanBuilder",
             views: {
-                '@': {
+                'maincontainer@': {
+                    templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
+                        if ($stateParams['viewMode'] === 'kiosk') {
+                            return "/AngularTemplate/MainContainer";
+                        }
+                        return "/AngularTemplate/MainContainer_AS";
+                    }
+                },
+                '@planBuilder': {
                     templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
                         if ($stateParams['viewMode'] === 'kiosk') {
                             return "/AngularTemplate/PlanBuilder_KioskMode";

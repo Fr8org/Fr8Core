@@ -1,15 +1,14 @@
 ﻿param(
-	[Parameter(Mandatory = $true)]
 	[string]$hubApiBaseUrl,
 
-	[Parameter(Mandatory = $true)]
     [string]$connectionString,	
 
-	[Parameter(Mandatory = $true)]
 	[string]$overrideDbName,
 
 	[Parameter(Mandatory = $true)]
-	[string]$filePath
+	[string]$filePath,
+
+	[string]$keyVaultClientSecret
 )
 
 if ([System.String]::IsNullOrEmpty($overrideDbName) -ne $true) {
@@ -26,14 +25,27 @@ if(Test-Path $configPath)
 	Write-Host "HealthMonitor configuration file: $configPath" 
 	$xml = [xml](Get-Content $configPath)
    
-	Write-Host "Updating HubApiBaseUrl value" 
-	$urlNode = $xml.configuration.appSettings.add | where {$_.key -eq 'HubApiBaseUrl'}
-	$urlNode.value = $hubApiBaseUrl
+	if (-not([String]::IsNullOrEmpty($hubApiBaseUrl)) )
+	{
+		Write-Host "Updating HubApiBaseUrl value" 
+		$urlNode = $xml.configuration.appSettings.add | where {$_.key -eq 'HubApiBaseUrl'}
+		$urlNode.value = $hubApiBaseUrl
+	}
 
-	Write-Host "Updating connection string" 
-	$node = $xml.configuration.connectionStrings.add | where {$_.name -eq 'DockyardDB'}
-	$node.connectionString="$connectionString"
-   
+	if (-not([String]::IsNullOrEmpty($keyVaultClientSecret)) )
+	{
+		Write-Host "Updating KeyVault secret" 
+		$kvNode = $xml.configuration.appSettings.add | where {$_.key -eq 'KeyVaultClientSecret'}
+		$kvNode.value="$keyVaultClientSecret"	
+	}
+	
+	if (-not([String]::IsNullOrEmpty($connectionString)) )
+	{
+		Write-Host "Updating connection string" 
+		$node = $xml.configuration.connectionStrings.add | where {$_.name -eq 'DockyardDB'}
+		$node.connectionString="$connectionString"
+	}
+
 	try
 	{
 		$xml.Save($configPath)

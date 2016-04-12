@@ -84,35 +84,30 @@ namespace HealthMonitor
                     throw new ArgumentException("--overrideDbName can only be specified when --connectionString is specified.");
                 }
 
-                if (selfHosting)
+                if (string.IsNullOrEmpty(connectionStringArg))
                 {
-
-                    if (string.IsNullOrEmpty(connectionStringArg))
-                    {
-                        throw new ArgumentException("You should specify --connectionString \"{ConnectionStringName}={ConnectionString}\" argument when using self-hosted mode.");
-                    }
-
-                    var regex = new System.Text.RegularExpressions.Regex("([\\w\\d]{1,})=([\\s\\S]+)");
-                    var match = regex.Match(connectionStringArg);
-                    if (match == null || !match.Success || match.Groups.Count != 3)
-                    {
-                        throw new ArgumentException("Please specify connection string in the following format: \"{ConnectionStringName}={ConnectionString}\".");
-                    }
-
-                    connectionString = match.Groups[2].Value;
-                    csName = match.Groups[1].Value;
-
-                    if (!string.IsNullOrEmpty(overrideDbName))
-                    {
-                        // Override database name in the connection string
-                        var builder = new SqlConnectionStringBuilder(connectionString);
-                        builder.InitialCatalog = overrideDbName;
-                        connectionString = builder.ToString();
-                    }
-
-                    UpdateConnectionString(csName, connectionString);
-
+                    throw new ArgumentException("You should specify --connectionString \"{ConnectionStringName}={ConnectionString}\" argument.");
                 }
+
+                var regex = new System.Text.RegularExpressions.Regex("([\\w\\d]{1,})=([\\s\\S]+)");
+                var match = regex.Match(connectionStringArg);
+                if (match == null || !match.Success || match.Groups.Count != 3)
+                {
+                    throw new ArgumentException("Please specify connection string in the following format: \"{ConnectionStringName}={ConnectionString}\".");
+                }
+
+                connectionString = match.Groups[2].Value;
+                csName = match.Groups[1].Value;
+
+                if (!string.IsNullOrEmpty(overrideDbName))
+                {
+                    // Override database name in the connection string
+                    var builder = new SqlConnectionStringBuilder(connectionString);
+                    builder.InitialCatalog = overrideDbName;
+                    connectionString = builder.ToString();
+                }
+
+                UpdateConnectionString(csName, connectionString);
 
             }
 
@@ -217,7 +212,7 @@ namespace HealthMonitor
             var report = testRunner.Run(test, skipLocal);
 
             var failedTestsCount = report.Tests.Count(x => !x.Success);
-            
+
             if (failedTestsCount > 0)
             {
                 var failedTests = report.Tests.Where(x => !x.Success);
@@ -269,7 +264,7 @@ namespace HealthMonitor
             Trace.Indent();
             foreach (var failedTest in failedTests)
             {
-                Trace.TraceWarning(failedTest.Name);    
+                Trace.TraceWarning(failedTest.Name);
             }
             Trace.Unindent();
         }
