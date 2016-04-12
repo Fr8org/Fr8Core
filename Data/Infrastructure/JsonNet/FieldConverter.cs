@@ -50,6 +50,10 @@ namespace Data.Infrastructure.JsonNet
             writer.WriteValue(item.Key);
             writer.WritePropertyName("value");
             writer.WriteValue(item.Value);
+            writer.WritePropertyName("fieldType");
+            writer.WriteValue(item.FieldType);
+            writer.WritePropertyName("isRequired");
+            writer.WriteValue(item.IsRequired);
             writer.WritePropertyName("tags");
             writer.WriteValue(item.Tags);
             writer.WritePropertyName("availability");
@@ -61,7 +65,7 @@ namespace Data.Infrastructure.JsonNet
             {
                 writer.WriteValue(item.Availability);
             }
-            
+
             if (item.SourceCrateManifest != null && item.SourceCrateManifest.Type != null && item.SourceCrateManifest.Id != 0)
             {
                 writer.WritePropertyName("sourceCrateManifest");

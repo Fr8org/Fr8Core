@@ -639,7 +639,7 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         protected void RequestReprocessChildren()
         {
-            SetResponse(ActivityResponse.ReProcessChildren);
+            SetResponse(ActivityResponse.ReprocessChildren);
         }
 
         /**********************************************************************************/

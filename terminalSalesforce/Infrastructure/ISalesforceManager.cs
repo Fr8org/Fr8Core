@@ -10,9 +10,11 @@ namespace terminalSalesforce.Infrastructure
     {
         Task<string> CreateObject<T>(T salesforceObject, AuthorizationTokenDO authTokenDO) where T : ISalesforceObject;
 
-        Task<IList<FieldDTO>> GetFields(string salesforceObjectName, AuthorizationTokenDO authTokenDO);
+        Task<string> CreateObject(IDictionary<string, object> salesforceObject, string salesforceObjectName, AuthorizationTokenDO authTokenDO);
 
         Task<StandardTableDataCM> QueryObjects(string salesforceObjectName, IEnumerable<string> fields, string conditionQuery, AuthorizationTokenDO authTokenDO);
+        
+        Task<IList<FieldDTO>> GetFields(string salesforceObjectName, AuthorizationTokenDO authTokenDO, bool onlyUpdatableFields = false);
 
         T CreateSalesforceDTO<T>(ActivityDO curActivity, PayloadDTO curPayload) where T : new();
 

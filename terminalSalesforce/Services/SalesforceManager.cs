@@ -44,17 +44,56 @@ namespace terminalSalesforce.Services
             var result = await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.CreateAsync(newObject.SalesforceObjectType, newObject), authTokenDO);
             return result?.Id ?? string.Empty;
         }
+
+        public async Task<string> CreateObject(IDictionary<string, object> salesforceObject, string salesforceObjectName, AuthorizationTokenDO authTokenDO)
+        {
+            var result = await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.CreateAsync(salesforceObjectName, salesforceObject), authTokenDO);
+            return result?.Id ?? string.Empty;
+        }
+
+
         /// <summary>
         /// Gets Fields of the given Salesforce Object Name
         /// </summary>
-        public async Task<IList<FieldDTO>> GetFields(string salesforceObjectName, AuthorizationTokenDO authTokenDO)
+        public async Task<IList<FieldDTO>> GetFields(string salesforceObjectName, AuthorizationTokenDO authTokenDO, bool onlyUpdatableFields = false)
         {
             var responce = (JObject)await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.DescribeAsync<object>(salesforceObjectName), authTokenDO);
             var objectFields = new List<FieldDTO>();
             JToken resultFields;
             if (responce.TryGetValue("fields", out resultFields) && resultFields is JArray)
             {
-                objectFields.AddRange(resultFields.Select(x => new FieldDTO(x.Value<string>("name"), x.Value<string>("label"), AvailabilityType.RunTime)));
+                if (onlyUpdatableFields)
+                {
+                    resultFields = new JArray(resultFields.Where(fieldDescription => (fieldDescription.Value<bool>("updateable") == true)));
+                }
+
+                var fields = resultFields.Select(fieldDescription =>
+                                    /*
+                                    Select Fields as FieldDTOs with                                    
+
+                                    Key -> Field Name
+                                    Value -> Field Lable
+                                    AvailabilityType -> Run Time
+                                    FieldType -> Field Type
+
+                                    IsRequired -> The Field is required when ALL the below conditions are true.
+                                      nillable            = false, Meaning, the field must have a valid value. The field's value should not be NULL or NILL or Empty
+                                      defaultedOnCreate   = false, Meaning, Salesforce itself does not assign default value for this field when object is created (ex. ID)
+                                      updateable          = true,  Meaning, The filed's value must be updatable by the user. 
+                                                                            User must be able to set or modify the value of this field.
+                                    */
+                                    new FieldDTO(fieldDescription.Value<string>("name"), fieldDescription.Value<string>("label"), Data.States.AvailabilityType.RunTime)
+                                    {
+                                        FieldType = fieldDescription.Value<string>("type"),
+
+                                        IsRequired = fieldDescription.Value<bool>("nillable") == false &&
+                                                     fieldDescription.Value<bool>("defaultedOnCreate") == false &&
+                                                     fieldDescription.Value<bool>("updateable") == true,
+                                        Availability = AvailabilityType.RunTime
+
+                                    }).OrderBy(field => field.Key);
+
+                objectFields.AddRange(fields);
             }
             return objectFields;
         }
