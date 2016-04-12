@@ -21,6 +21,10 @@ namespace terminalFr8Core.Actions
 {
     public class FindObjects_Solution_v1 : BaseTerminalActivity
     {
+        private const string SolutionName = "Find Objects Solution";
+        private const double SolutionVersion = 1.0;
+        private const string TerminalName = "terminalFr8Core";
+        private const string SolutionBody = @"<p>This is the FindObjects Solution.</p>";
         public FindObjectHelper FindObjectHelper { get; set; }
 
         public FindObjects_Solution_v1()
@@ -355,5 +359,24 @@ namespace terminalFr8Core.Actions
         }
 
         #endregion
+        /// <summary>
+        /// This method provides documentation in two forms:
+        /// SolutionPageDTO for general information and 
+        /// ActivityResponseDTO for specific Help on minicon
+        /// </summary>
+        /// <param name="activityDO"></param>
+        /// <param name="curDocumentation"></param>
+        /// <returns></returns>
+        public dynamic Documentation(ActivityDO activityDO, string curDocumentation)
+        {
+            if (curDocumentation.Contains("MainPage"))
+            {
+                var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
+                return Task.FromResult(curSolutionPage);
+            }
+            return
+                Task.FromResult(
+                    GenerateErrorRepsonse("Unknown displayMechanism: we currently support MainPage cases"));
+        }
     }
 }
