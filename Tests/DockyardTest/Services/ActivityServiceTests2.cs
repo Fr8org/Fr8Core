@@ -158,7 +158,7 @@ namespace DockyardTest.Services
 
             //Add
                 await activity.SaveOrUpdateActivity(origActivityDO);
-            
+
             ActivityDO activityDO;
             //Get
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -240,7 +240,7 @@ namespace DockyardTest.Services
                     removeCounter++;
                 });
             }
-            
+                
             await _activity.SaveOrUpdateActivity(updatedTree);
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -692,6 +692,27 @@ namespace DockyardTest.Services
         private void EventManager_EventActivityStarted(ActivityDO activity)
         {
             _eventReceived = true;
+        }
+
+        [Test]
+        public void ActivityController_GetSolutionList()
+        {
+            //Arrange
+            //Add two activity templates to the database
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActivityTemplateRepository.Add(FixtureData.TestActivityTemplateDO3());
+                uow.ActivityTemplateRepository.Add(FixtureData.TestActivityTemplateDO4());
+                uow.SaveChanges();
+            }
+            //Act
+            //Call the activities/GetTerminalSolutionList?terminalName=terminalDocuSign
+            var solutionList = _activity.GetSolutionList("terminalDocuSign");
+            //Assert
+            Assert.True(solutionList.Any());
+            Assert.True(solutionList.Count == 2);
+            Assert.Contains("Mail_Merge_Into_DocuSign", solutionList);
+            Assert.Contains("Extract_Data_From_Envelopes", solutionList);
         }
 
         // DO-1214
