@@ -234,7 +234,7 @@ namespace terminalAzure.Actions
 
             if (mappedFieldsCrate == null)
             {
-                throw new ApplicationException("No payload crate found with Label == MappdFields.");
+                throw new ApplicationException("No payload crate found with Label == MappedFields.");
             }
 
             var valuesCrate = CrateManager.GetStorage(payloadCrates).CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == "DocuSign Envelope Data");
