@@ -38,7 +38,7 @@ namespace terminalDropbox.Actions
             }
         }
 
-        private const string RunTimeCrateLabel = "Dropbox file list";
+        private const string RuntimeCrateLabel = "Dropbox file list";
         private const string FileCrateLabel = "File from Dropbox";
 
         private readonly IDropboxService _dropboxService;
@@ -53,7 +53,7 @@ namespace terminalDropbox.Actions
             var fileNames = await _dropboxService.GetFileList(GetDropboxAuthToken());
             ConfigurationControls.FileList.ListItems = fileNames
                 .Select(x => new ListItem { Key = x, Value = x }).ToList();
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardFileListCM>(RunTimeCrateLabel);
+            runtimeCrateManager.MarkAvailableAtRuntime<StandardFileListCM>(RuntimeCrateLabel);
             CurrentActivityStorage.ReplaceByLabel(PackDropboxFileListCrate(fileNames.ToArray()));
         }
 
@@ -62,7 +62,7 @@ namespace terminalDropbox.Actions
             var fileNames = await _dropboxService.GetFileList(GetDropboxAuthToken());
             ConfigurationControls.FileList.ListItems = fileNames
                 .Select(x => new ListItem { Key = x, Value = x }).ToList();
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardFileListCM>(RunTimeCrateLabel);
+            runtimeCrateManager.MarkAvailableAtRuntime<StandardFileListCM>(RuntimeCrateLabel);
             CurrentActivityStorage.ReplaceByLabel(PackDropboxFileListCrate(fileNames.ToArray()));
         }
 
@@ -73,12 +73,11 @@ namespace terminalDropbox.Actions
 
         protected override async Task RunCurrentActivity()
         {
-            var fileDescription = new StandardFileDescriptionCM
-            {
-                Filetype = Path.GetExtension(ConfigurationControls.FileList.Value),
-                Filename = Path.GetFileName(ConfigurationControls.FileList.Value)
-            };
-            CurrentPayloadStorage.Add(Crate.FromContent(FileCrateLabel, fileDescription, AvailabilityType.Always));
+            var fileDTO = new StandardPayloadDataCM(
+                new FieldDTO(Path.GetExtension(ConfigurationControls.FileList.Value), "[Files].[FileExtension]"),
+                new FieldDTO(Path.GetFileName(ConfigurationControls.FileList.Value), "[Files].[FileExtension]")
+                );
+            CurrentPayloadStorage.Add(Crate.FromContent("MappedFields", fileDTO, AvailabilityType.Always));
         }
 
         private Crate<StandardFileListCM> PackDropboxFileListCrate(string[] fileNames)
@@ -91,7 +90,7 @@ namespace terminalDropbox.Actions
                 .ToList();
 
             return Crate<StandardFileListCM>.FromContent(
-                RunTimeCrateLabel, 
+                RuntimeCrateLabel,
                 new StandardFileListCM
                 {
                     FileList = descriptionList

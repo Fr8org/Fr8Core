@@ -22,8 +22,7 @@ namespace terminalDropbox.Controllers
 
         [HttpPost]
         [Route("token")]
-        public async Task<AuthorizationTokenDTO> GenerateOAuthToken(
-         ExternalAuthenticationDTO externalAuthDTO)
+        public async Task<AuthorizationTokenDTO> GenerateOAuthToken(ExternalAuthenticationDTO externalAuthDTO)
         {
             try
             {
