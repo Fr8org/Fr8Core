@@ -73,11 +73,16 @@ namespace terminalDropbox.Actions
 
         protected override async Task RunCurrentActivity()
         {
-            var fileDTO = new StandardPayloadDataCM(
-                new FieldDTO(Path.GetExtension(ConfigurationControls.FileList.Value), "[Files].[FileExtension]"),
-                new FieldDTO(Path.GetFileName(ConfigurationControls.FileList.Value), "[Files].[FileExtension]")
+            var mappedFields = new StandardPayloadDataCM(
+                new FieldDTO("FileName", "[Files].[FileName]"),
+                new FieldDTO("FileExtension", "[Files].[FileExtension]")
                 );
-            CurrentPayloadStorage.Add(Crate.FromContent("MappedFields", fileDTO, AvailabilityType.Always));
+            var values = new StandardPayloadDataCM(
+                new FieldDTO("FileName", Path.GetFileName(ConfigurationControls.FileList.Value)),
+                new FieldDTO("FileExtension", Path.GetExtension(ConfigurationControls.FileList.Value))
+                );
+            CurrentPayloadStorage.Add(Crate.FromContent("MappedFields", mappedFields, AvailabilityType.Always));
+            CurrentPayloadStorage.Add(Crate.FromContent("TableData", values, AvailabilityType.Always));
         }
 
         private Crate<StandardFileListCM> PackDropboxFileListCrate(string[] fileNames)
