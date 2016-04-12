@@ -33,7 +33,7 @@ namespace Hub.Interfaces
         Task<ActivityDTO> Activate(ActivityDO curActivityDO);
         Task<ActivityDTO> Deactivate(ActivityDO curActivityDO);
         Task<T> GetActivityDocumentation<T>(ActivityDTO curActivityDTO, bool isSolution = false);
-        List<string> GetSolutionList(string terminalName);
+        List<string> GetSolutionNameList(string terminalName);
         void Delete(Guid id);
         //bool IsAuthenticated(Fr8AccountDO user, PluginDO plugin);
         //Task AuthenticateInternal(Fr8AccountDO user, PluginDO plugin, string username, string password);

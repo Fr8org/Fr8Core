@@ -604,8 +604,7 @@ namespace Hub.Services
             //Call the terminal
             return await ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<T>(actionName, fr8Data, curContainerId.ToString());
         }
-
-        public List<string> GetSolutionList(string terminalName)
+        public List<string> GetSolutionNameList(string terminalName)
         {
             var solutionNameList = new List<string>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
