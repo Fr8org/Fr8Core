@@ -310,15 +310,15 @@ namespace DockyardTest.Repositories.Plan
             var provider = new PersistentPlanStorage(null);
             var cache = new PlanCache(new ExpirationStrategyMock());
             var repository = new PlanRepository(new PlanStorage(cache, provider));
-
-            repository.Add(GenerateTestPlan());
+            var plan = GenerateTestPlan();
+            repository.Add(plan);
 
             repository.SaveChanges();
 
             var loadedPlan = provider.LoadPlan(Guid.Empty);
 
-            Assert.IsTrue(AreEquals(GenerateTestPlan(), loadedPlan));
-            Assert.IsTrue(AreEquals(repository.GetById<PlanDO>(NewGuid(13)), GenerateTestPlan()));
+            Assert.IsTrue(AreEquals(plan, loadedPlan));
+            Assert.IsTrue(AreEquals(repository.GetById<PlanDO>(NewGuid(13)), plan));
         }
 
 
@@ -345,6 +345,7 @@ namespace DockyardTest.Repositories.Plan
         [Test]
         public void CanAddPlanInEF()
         {
+            var plan = GenerateTestPlan();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.ActivityTemplateRepository.Add(new ActivityTemplateDO
@@ -383,7 +384,7 @@ namespace DockyardTest.Repositories.Plan
                     Id = 1,
                     TerminalStatus = 1
                 });
-                uow.PlanRepository.Add(GenerateTestPlan());
+                uow.PlanRepository.Add(plan);
                 uow.SaveChanges();
             }
 
@@ -394,7 +395,7 @@ namespace DockyardTest.Repositories.Plan
             using (var uow = container.GetInstance<IUnitOfWork>())
             {
                 var loadedPlan = uow.PlanRepository.GetById<PlanDO>(NewGuid(13));
-                 Assert.IsTrue(AreEquals(GenerateTestPlan(), loadedPlan));
+                 Assert.IsTrue(AreEquals(plan, loadedPlan));
             }
         }
 

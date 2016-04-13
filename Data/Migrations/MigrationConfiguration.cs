@@ -340,15 +340,8 @@ namespace Data.Migrations
                               let value = constant.GetValue(null)
                               select creatorFunc((string)value, name)).ToList();
 
-            var repo = new GenericRepository<AspNetRolesDO>(uow);
             var existingRows = new GenericRepository<AspNetRolesDO>(uow).GetAll().ToList();
-            foreach (var row in existingRows) //Delete old rows that are no longer seeded
-            {
-                if (!rolesToAdd.Select(i => i.Name).Contains(row.Name))
-                {
-                    repo.Remove(row);
-                }
-            }
+            
             foreach (var row in rolesToAdd)
             {
                 if (!existingRows.Select(r => r.Name).Contains(row.Name))
@@ -370,6 +363,7 @@ namespace Data.Migrations
             CreateAdmin("bahadir.bb@gmail.com", "123456ab", unitOfWork);
             CreateAdmin("omer@fr8.co", "123456ab", unitOfWork);
             CreateAdmin("mvcdeveloper@gmail.com", "123qwe", unitOfWork);
+            CreateAdmin("maki.gjuroski@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("fr8system_monitor@fr8.company", "123qwe", unitOfWork);
 
             //CreateAdmin("eschebenyuk@gmail.com", "kate235", unitOfWork);
@@ -412,6 +406,7 @@ namespace Data.Migrations
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, user.Id);
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Booker, user.Id);
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.OwnerOfCurrentObject, user.Id);
 
             user.TestAccount = false;
             return user;

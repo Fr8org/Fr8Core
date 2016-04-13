@@ -108,7 +108,6 @@ namespace DockyardTest.Security
             var testToken = _authorization.GetToken(tokenDO.UserDO.Id, tokenDO.TerminalID);
 
             Assert.AreEqual(Token, testToken);
-            
         }
 
         [Test]
