@@ -1,13 +1,11 @@
 ﻿using System.Configuration;
-using System.Data.Entity.Core.EntityClient;
-using System.Data.Entity.Infrastructure;
 using Data.Infrastructure;
 using Data.Interfaces;
-using Utilities.Configuration.Azure;
+using Data.Repositories.MultiTenant;
 
-namespace Data.Repositories.MultiTenant.SqlBased
+namespace Data.Repositories.SqlBased
 {
-    class SqlMtConnectionProvider : IMtConnectionProvider
+    class SqlMtConnectionProvider : ISqlConnectionProvider
     {
         private readonly IUnitOfWork _uow;
 
