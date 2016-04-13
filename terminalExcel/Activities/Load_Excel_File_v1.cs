@@ -115,7 +115,6 @@ namespace terminalExcel.Actions
                 throw new ActivityExecutionException("Excel file is not selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
 
-            var test = 100;
             var byteArray = ExcelUtils.GetExcelFileAsByteArray(ConfigurationControls.FilePicker.Value);
             var payload = ExcelUtils.GetExcelFile(byteArray, ConfigurationControls.FilePicker.Value);
             var fileDescription = new StandardFileDescriptionCM
