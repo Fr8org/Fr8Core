@@ -31,6 +31,7 @@ namespace TerminalBase.Infrastructure
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, string userId);
         Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields, string userId);
         Task<ActivityDTO> ConfigureActivity(ActivityDTO activityDTO, string userId);
+        Task<ActivityDO> SaveActivity(ActivityDO activityDO, string userId);
         Task<ActivityDO> ConfigureActivity(ActivityDO activityDO, string userId);
         Task<ActivityDTO> CreateAndConfigureActivity(int templateId, string userId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null);
         Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO, string userId);
@@ -48,5 +49,6 @@ namespace TerminalBase.Infrastructure
         Task DeleteExistingChildNodesFromActivity(Guid curActivityId, string userId);
         Task<PlanDTO> GetPlansByActivity(string activityId, string userId);
         Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan, string userId);
+        Task NotifyUser(TerminalNotificationDTO notificationMessage, string userId);
     }
 }

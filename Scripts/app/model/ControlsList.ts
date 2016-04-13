@@ -228,12 +228,14 @@
         crateDescriptions: Array<CrateDescriptionDTO>;
         singleManifestOnly: boolean;
         requestUpstream: boolean;
+        source: FieldSource;
     }
 
     export class TextSource extends DropDownList {
         initialLabel: string;
         valueSource: string;
         textValue: string;
+        isCollapsed: boolean;
     }
 
     export class TextBlockField extends ControlDefinitionDTO {
@@ -288,5 +290,10 @@
         comparatorList: Array<DropDownListItem>;
         valueSource: string;
         textValue: string;
+    }
+
+    export class ActivityChooser extends ControlDefinitionDTO {
+        subPlanId: string;
+        activityTemplateLabel: string;
     }
 }

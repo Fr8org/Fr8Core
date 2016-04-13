@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.Entity;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Web;
@@ -96,7 +97,6 @@ namespace HubWeb
 
             ConfigureValidationEngine();
             StartupMigration.CreateSystemUser();
-
         }
 
         private void ConfigureValidationEngine()
@@ -108,6 +108,7 @@ namespace HubWeb
         protected void Application_Error(Object sender, EventArgs e)
         {
             var exception = Server.GetLastError();
+
             String errorMessage = "Critical internal error occured.";
             try
             {
@@ -134,13 +135,20 @@ namespace HubWeb
             SetServerUrl(HttpContext.Current);
 #endif
             NormalizeUrl();
+            RewriteAngularRequests();
+        }
+
+        private void RewriteAngularRequests()
+        {
+            if (Request.Url.LocalPath.StartsWith(AngularRootPath))
+                Context.RewritePath(AngularRootPath);
         }
 
         /// <summary>
         /// Make sure that User is accessing the website using correct and secure URL
         /// </summary>
         private void NormalizeUrl()
-        {
+        {  
             // Ignore requests to dev and API since API clients usually cannot process 301 redirects
             if (Request.Url.PathAndQuery.ToLower().StartsWith("/api") 
                 || Request.Url.PathAndQuery.ToLower().StartsWith("/authenticationcallback")
@@ -166,10 +174,6 @@ namespace HubWeb
                         break;
                 }
             }
-
-            //now we need to rewrite angular related requests
-            if (Request.Url.LocalPath.StartsWith(AngularRootPath))
-                Context.RewritePath(AngularRootPath);
         }
 
         private void RedirectToCanonicalUrl()

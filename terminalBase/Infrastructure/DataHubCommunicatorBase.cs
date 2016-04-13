@@ -209,6 +209,11 @@ namespace TerminalBase.Infrastructure
             throw new NotImplementedException();
         }
 
+        public Task<ActivityDO> SaveActivity(ActivityDO activityDO, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<ActivityDTO> CreateAndConfigureActivity(int templateId, string userId, string label = null, int? order = null, Guid? parentNodeId = default(Guid?), bool createPlan = false, Guid? authorizationTokenId = null)
         {
             throw new NotImplementedException();
@@ -245,6 +250,11 @@ namespace TerminalBase.Infrastructure
         }
 
         public Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task NotifyUser(TerminalNotificationDTO notificationMessage, string userId)
         {
             throw new NotImplementedException();
         }

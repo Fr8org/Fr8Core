@@ -18,7 +18,9 @@ using StructureMap;
 using System.Net.Http;
 using System.Net;
 using System.Linq;
+using Data.Entities;
 using Data.Interfaces;
+using Data.States;
 
 namespace HealthMonitor.Utility
 {
@@ -39,7 +41,7 @@ namespace HealthMonitor.Utility
         protected string TestEmail;
         protected string TestEmailName;
 
-        protected CredentialsDTO GetDocuSignCredentials()
+        public CredentialsDTO GetDocuSignCredentials()
         {
             //var creds = new CredentialsDTO()
             //{
@@ -150,6 +152,19 @@ namespace HealthMonitor.Utility
         {
             await HttpPostAsync<string, object>(_baseUrl
                 + string.Format("authentication/login?username={0}&password={1}", Uri.EscapeDataString(email), Uri.EscapeDataString(password)), null);
+        }
+
+        public async Task<List<CrateDescriptionDTO>> GetRuntimeCrateDescriptionsFromUpstreamActivities(Guid curActivityId)
+        {
+            var url = $"{GetHubApiBaseUrl()}/plannodes/upstream_actions/?id={curActivityId}";
+            var upstreamActivities = await HttpGetAsync<List<ActivityDTO>>(url);
+            var result = new List<CrateDescriptionDTO>();
+            foreach (var activity in upstreamActivities)
+            {
+                var storage = Crate.FromDto(activity.CrateStorage);
+                result.AddRange(storage.CratesOfType<CrateDescriptionCM>().SelectMany(x => x.Content.CrateDescriptions));
+            }
+            return result;
         }
 
 

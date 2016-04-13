@@ -133,7 +133,7 @@ namespace HubWeb
             {
                 try
                 {
-                    var activityTemplateList = await terminalService.GetAvailableActivities(url);
+                    var activityTemplateList = (await terminalService.GetAvailableActivities(url)).ToList();
 
                     foreach (var curItem in activityTemplateList)
                     {
@@ -145,11 +145,12 @@ namespace HubWeb
                         catch (Exception ex)
                         {
                             alertReporter.ActivityTemplateTerminalRegistrationError(
-                                string.Format("Failed to register {0} terminal. Error Message: {1}", curItem.Terminal.Name, ex.Message),
+                                $"Failed to register {curItem.Terminal.Name} terminal. Error Message: {ex.Message}",
                                 ex.GetType().Name);
                         }
-
                     }
+
+                    activityTemplate.RemoveInactiveActivities(activityTemplateList);
                 }
                 catch (Exception ex)
                 {

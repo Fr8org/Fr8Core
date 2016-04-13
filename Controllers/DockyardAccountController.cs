@@ -50,8 +50,6 @@ namespace HubWeb.Controllers
         public ActionResult Index(string returnUrl)
         {
             ViewBag.ReturnUrl = returnUrl;
-            if (this.UserIsAuthenticated())
-                return RedirectToAction("MyAccount", "User");
             return View();
         }
 
@@ -93,13 +91,15 @@ namespace HubWeb.Controllers
                 if (ModelState.IsValid)
                 {
                     RegistrationStatus curRegStatus;
+                    OrganizationDO organizationDO = null;
+                    bool isNewOrganization = false;
+
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
-                        OrganizationDO organizationDO = null;
                         //check for organizations 
                         if (submittedRegData.HasOrganization && !string.IsNullOrEmpty(submittedRegData.OrganizationName))
                         {
-                            organizationDO = _organization.GetOrCreateOrganization(uow, submittedRegData.OrganizationName);
+                            organizationDO = _organization.GetOrCreateOrganization(uow, submittedRegData.OrganizationName, out isNewOrganization);
                         }
                         
                         if (!String.IsNullOrWhiteSpace(submittedRegData.GuestUserTempEmail))
@@ -110,9 +110,7 @@ namespace HubWeb.Controllers
                         }
                         else
                         {
-                            curRegStatus = _account.ProcessRegistrationRequest(uow,
-                                submittedRegData.Email.Trim(), submittedRegData.Password.Trim(),
-                                organizationDO);
+                            curRegStatus = _account.ProcessRegistrationRequest(uow, submittedRegData.Email.Trim(), submittedRegData.Password.Trim(), organizationDO, isNewOrganization);
                         }
 
                         uow.SaveChanges();
@@ -351,11 +349,6 @@ Please register first.");
         public async Task<ActionResult> ProcessGuestUserMode()
         {
             LoginStatus loginStatus = await _account.CreateAuthenticateGuestUser();
-
-            if (loginStatus == LoginStatus.Successful)
-            {
-                return RedirectToAction("Index", "Dashboard");
-            }
             return RedirectToAction("Index", "Welcome");
         }
     }

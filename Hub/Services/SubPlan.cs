@@ -136,7 +136,7 @@ namespace Hub.Services
         /// <summary>
         /// Remove SubPlan and children entities by id.
         /// </summary>
-        public void Delete(IUnitOfWork uow, Guid id)
+        public async Task Delete(IUnitOfWork uow, Guid id)
         {
             var subPlan = uow.PlanRepository.GetById<SubPlanDO>(id);
 
@@ -145,6 +145,7 @@ namespace Hub.Services
                 throw new Exception(string.Format("Unable to find SubPlan by id = {0}", id));
             }
 
+            await DeleteAllChildNodes(id);
             subPlan.RemoveFromParent();
 
             uow.SaveChanges();
@@ -239,6 +240,16 @@ namespace Hub.Services
             return validationErrors.Count < 1;
         }
 
+        public Task<ActivityDO> GetFirstActivity(IUnitOfWork uow, Guid subPlanId)
+        {
+            var result = uow.PlanRepository.GetActivityQueryUncached()
+                .Where(x => x.ParentPlanNodeId == subPlanId)
+                .OrderBy(x => x.Ordering)
+                .FirstOrDefault();
+
+            return Task.FromResult(result);
+        }
+
         //TODO find a better response type for this function
         public async Task<bool> DeleteActivity(string userId, Guid actionId, bool confirmed)
         {
@@ -309,18 +320,18 @@ namespace Hub.Services
                     // Detach containers from action, where CurrentPlanNodeId == id.
                     var containersWithCurrentPlanNode = uow.ContainerRepository
                         .GetQuery()
-                        .Where(x => x.CurrentPlanNodeId == downStreamActivity.Id)
+                        .Where(x => x.CurrentActivityId == downStreamActivity.Id)
                         .ToList();
 
-                    containersWithCurrentPlanNode.ForEach(x => x.CurrentPlanNodeId = null);
+                    containersWithCurrentPlanNode.ForEach(x => x.CurrentActivityId = null);
 
                     // Detach containers from action, where NextRouteNodeId == id.
                     var containersWithNextPlanNode = uow.ContainerRepository
                         .GetQuery()
-                        .Where(x => x.NextRouteNodeId == downStreamActivity.Id)
+                        .Where(x => x.NextActivityId == downStreamActivity.Id)
                         .ToList();
 
-                    containersWithNextPlanNode.ForEach(x => x.NextRouteNodeId = null);
+                    containersWithNextPlanNode.ForEach(x => x.NextActivityId = null);
                 }
 
                 uow.SaveChanges();
@@ -345,18 +356,18 @@ namespace Hub.Services
                 // Detach containers from action, where CurrentPlanNodeId == id.
                 var containersWithCurrentPlanNode = uow.ContainerRepository
                     .GetQuery()
-                    .Where(x => x.CurrentPlanNodeId == id)
+                    .Where(x => x.CurrentActivityId == id)
                     .ToList();
 
-                containersWithCurrentPlanNode.ForEach(x => x.CurrentPlanNodeId = null);
+                containersWithCurrentPlanNode.ForEach(x => x.CurrentActivityId = null);
 
                 // Detach containers from action, where NextRouteNodeId == id.
                 var containersWithNextPlanNode = uow.ContainerRepository
                     .GetQuery()
-                    .Where(x => x.NextRouteNodeId == id)
+                    .Where(x => x.NextActivityId == id)
                     .ToList();
 
-                containersWithNextPlanNode.ForEach(x => x.NextRouteNodeId = null);
+                containersWithNextPlanNode.ForEach(x => x.NextActivityId = null);
 
                 uow.SaveChanges();
 

@@ -38,6 +38,19 @@ namespace terminalDocuSign.Controllers
                 IconPath = "/Content/icons/web_services/docusign-icon-64x64.png"
             };
 
+
+            var process_personal_report = new ActivityTemplateDTO()
+            {
+                Version = "1",
+                Name = "Process_Personal_Report",
+                Label = "Process Personal Report",
+                Category = ActivityCategory.Forwarders,
+                Terminal = terminal,
+                NeedsAuthentication = true,
+                MinPaneWidth = 380,
+                WebService = webService,
+            };
+
             var waitForDocusignEventActionTemplate = new ActivityTemplateDTO()
             {
                 Version = "1",
@@ -164,19 +177,6 @@ namespace terminalDocuSign.Controllers
                 MinPaneWidth = 380
             };
 
-            var generateDocusignReport = new ActivityTemplateDTO
-            {
-                Name = "Generate_DocuSign_Report",
-                Label = "Generate a DocuSign Report",
-                Version = "1",
-                Category = ActivityCategory.Solution,
-                NeedsAuthentication = true,
-                Terminal = terminal,
-                WebService = webService,
-                MinPaneWidth = 420,
-                Tags = "HideChildren"
-            };
-
             var searchDocusignHistory = new ActivityTemplateDTO
             {
                 Name = "Search_DocuSign_History",
@@ -190,19 +190,6 @@ namespace terminalDocuSign.Controllers
                 Tags = "internal"
             };
 
-            var archiveDocusignTemplate = new ActivityTemplateDTO
-            {
-                Name = "Archive_DocuSign_Template",
-                Label = "Archive DocuSign Template",
-                Version = "1",
-                NeedsAuthentication = true,
-                Category = ActivityCategory.Solution,
-                WebService = webService,
-                Terminal = terminal,
-                Tags = "internal"
-            };
-
-
             var actionList = new List<ActivityTemplateDTO>()
             {
                 waitForDocusignEventActionTemplate,
@@ -214,10 +201,9 @@ namespace terminalDocuSign.Controllers
                 collectFormDataSolution,
                 trackDocuSignRecipientsSolution,
                 queryDocusign,
-                generateDocusignReport,
                 searchDocusignHistory,
-                archiveDocusignTemplate,
-                getDocuSignTemplateActionTemplate
+                getDocuSignTemplateActionTemplate,
+                process_personal_report
             };
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()

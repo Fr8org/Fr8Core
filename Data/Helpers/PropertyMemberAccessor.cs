@@ -3,7 +3,7 @@ using System.Reflection;
 
 namespace Data.Helpers
 {
-    class PropertyMemberAccessor : IMemberAccessor
+    public class PropertyMemberAccessor : IMemberAccessor
     {
         private readonly PropertyInfo _propertyInfo;
 

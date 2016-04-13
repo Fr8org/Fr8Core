@@ -5,6 +5,7 @@ using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using TerminalBase.BaseClasses;
@@ -14,170 +15,129 @@ using Data.Interfaces.Manifests;
 using Data.Control;
 using Data.States;
 using System.Text.RegularExpressions;
+using Data.Constants;
+using Utilities;
 
 namespace terminalFr8Core.Actions
 {
-    public class Build_Message_v1 : BaseTerminalActivity
+    public class Build_Message_v1 : EnhancedTerminalActivity<Build_Message_v1.ActivityUi>
     {
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public class ActivityUi : StandardConfigurationControlsCM
         {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-            else
-            {
-                return ConfigurationRequestType.Followup;
-            }
-        }
+            public const string RuntimeCrateLabel = "Build Message";
+            public TextBox Name { get; set; }
 
-        protected async override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            var configurationCrate = CreateControlsCrate();
-            await FillAvailableFieldsSource(configurationCrate, "AvailableFields", curActivityDO);
+            public TextArea Body { get; set; }
 
-            using (var updater = CrateManager.GetUpdatableStorage(curActivityDO))
+            public DropDownList AvailableFields { get; set; }
+
+            public ActivityUi()
             {
-                updater.Clear();
-                updater.Add(configurationCrate);
-            }
-            AddNameDesignTimeField(curActivityDO);
-            return curActivityDO;
-        }
-
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            AddNameDesignTimeField(curActivityDO);
-            return await base.FollowupConfigurationResponse(curActivityDO, authTokenDO);
-        }
-
-        private Crate CreateControlsCrate()
-        {
-            var controls = new List<ControlDefinitionDTO>()
-            {
-                new TextBox()
+                Name = new TextBox
                 {
                     Label = "Name",
-                    Name = "Name",
-                    Source = new FieldSourceDTO
-                    {
-                        Label = "Build Message",
-                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                    },
-                    Events = new List<ControlEvent> {new ControlEvent("onChange", "requestConfig")}
-                },
-                new TextArea()
+                    Name = nameof(Name),
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
+                };
+                Body = new TextArea()
                 {
                     Label = "Body",
-                    Name = "Body"
-                    ,IsReadOnly = false
-                    , Required = true
-                },
-                new DropDownList
+                    Name = nameof(Body),
+                    IsReadOnly = false,
+                    Required = true
+                };
+                AvailableFields = new DropDownList
                 {
-                    Name = "AvailableFields",
+                    Name = nameof(AvailableFields),
                     Required = true,
                     Label = "Available Fields",
-                    Source = null
-                }
-            };
-
-            return CrateManager.CreateStandardConfigurationControlsCrate("Craft a Message", controls.ToArray());
-        }
-
-        private void AddNameDesignTimeField(ActivityDO curActivityDO)
-        {
-            var storage = CrateManager.GetStorage(curActivityDO);
-            var buildMsgConfigurationControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => String.Equals(c.Label, "Craft a Message", StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-            var key = ((TextBox)GetControl(buildMsgConfigurationControls, "Name")).Value;
-            using (var updater = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                updater.RemoveByLabel("Build Message");
-
-                var bodyFieldDTO = new List<FieldDTO> { new FieldDTO() { Key = key, Value = key, Availability = AvailabilityType.RunTime } };
-                updater.Add(CrateManager.CreateDesignTimeFieldsCrate("Build Message", bodyFieldDTO, AvailabilityType.RunTime));
+                    Source = new FieldSourceDTO
+                    {
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields,
+                        RequestUpstream = true,
+                        AvailabilityType = AvailabilityType.RunTime
+                    }
+                };
+                Controls = new List<ControlDefinitionDTO> { Name, Body, AvailableFields };
             }
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public Build_Message_v1() : base(false)
         {
-            var payloadCrates = await GetPayload(curActivityDO, containerId);
+        }
 
-            var payloadCrateStorage = CrateManager.GetStorage(payloadCrates);
-            var payloadDataObjects = payloadCrateStorage.CratesOfType<StandardPayloadDataCM>().ToList();
+        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        {
+            //var upstreamFields = await ExtractUpstreamFields();
+            //ConfigurationControls.AvailableFields.ListItems = upstreamFields.OrderBy(x => x.Key).Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
+            runtimeCrateManager.MarkAvailableAtRuntime<FieldDescriptionsCM>(ActivityUi.RuntimeCrateLabel);
+            CurrentActivityStorage.ReplaceByLabel(PackMessageCrate());
+        }
 
-            if (payloadDataObjects.Count > 0)
+        private Crate<FieldDescriptionsCM> PackMessageCrate(string actualBody = null)
+        {
+            return Crate<FieldDescriptionsCM>.FromContent(ActivityUi.RuntimeCrateLabel,
+                                                          new FieldDescriptionsCM(new FieldDTO(ConfigurationControls.Name.Value,
+                                                                                               actualBody ?? ConfigurationControls.Body.Value)), AvailabilityType.RunTime);
+        }
+
+        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        {
+            runtimeCrateManager.MarkAvailableAtRuntime<FieldDescriptionsCM>(ActivityUi.RuntimeCrateLabel);
+            CurrentActivityStorage.ReplaceByLabel(PackMessageCrate());
+        }
+
+        private static readonly Regex FieldPlaceholdersRegex = new Regex(@"\[.*?\]");
+
+        protected override async Task RunCurrentActivity()
+        {
+            await Task.Factory.StartNew(RunCurrentActivityImpl);
+        }
+
+        private void RunCurrentActivityImpl()
+        {
+            var availableFields = ExtractAvaialbleFieldsFromPayload();
+            var message = ConfigurationControls.Body.Value;
+            if (availableFields.Count > 0)
             {
-                var fieldsDTO = payloadDataObjects.SelectMany(s => s.Content.PayloadObjects).SelectMany(s => s.PayloadObject).ToList();
-
-                if (fieldsDTO.Count > 0)
+                var messageBodyBuilder = new StringBuilder(message);
+                //We sort placeholders in reverse order so we can replace them starting from the last that won't break any previous match indices
+                var foundPlaceholders = FieldPlaceholdersRegex.Matches(message).Cast<Match>().OrderByDescending(x => x.Index).ToArray();
+                foreach (var placeholder in foundPlaceholders)
                 {
-                    //get build message configuration controls for interpolation
-                    var storage = CrateManager.GetStorage(curActivityDO);
-                    var buildMsgConfigurationControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => String.Equals(c.Label, "Craft a Message", StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-
-                    if (buildMsgConfigurationControls != null)
+                    var replaceWith = availableFields.FirstOrDefault(x => string.Equals(x.Key, placeholder.Value.TrimStart('[').TrimEnd(']')));
+                    if (replaceWith != null)
                     {
-                        var bodyMsg = ((TextArea)GetControl(buildMsgConfigurationControls, "Body")).Value;
-                        var bodyMsgInterpolated = ((TextArea)GetControl(buildMsgConfigurationControls, "Body")).Value;
-                        //search for placeholders ^\[.*?\]$
-                        Regex regexPattern = new Regex(@"\[.*?\]");
-                        var resultMatch = regexPattern.Matches(bodyMsg);
-
-                        //if found placeholders
-                        if (resultMatch.Count > 0)
-                        {
-                            //match payloadFieldsDTO and get its value
-                            foreach (var placeholder in resultMatch.Cast<Match>().Select(match => match.Value).ToList())
-                            {
-                                var fieldDTO = fieldsDTO.Where(w => w.Key.ToLower() == placeholder.ToLower().TrimStart(new char[] { '[' }).TrimEnd(new char[] { ']' })).FirstOrDefault();
-                                if (fieldDTO != null)
-                                {
-                                    //replace placeholder with its value
-                                    bodyMsgInterpolated = bodyMsgInterpolated.Replace(placeholder, fieldDTO.Value);
-                                }
-                            }
-                        }
-
-                        //add the body to payloadcrates
-                        List<FieldDTO> payloadFieldDTO = new List<FieldDTO>();
-                        FieldDTO _fieldDTO = new FieldDTO();
-                        _fieldDTO.Key = ((TextBox)GetControl(buildMsgConfigurationControls, "Name")).Value;
-                        _fieldDTO.Value = bodyMsgInterpolated;
-                        payloadFieldDTO.Add(_fieldDTO);
-
-                        using (var updater = CrateManager.GetUpdatableStorage(payloadCrates))
-                        {
-                            updater.Add(Data.Crates.Crate.FromContent("BuildAMessage", new StandardPayloadDataCM(payloadFieldDTO)));
-                        }
+                        messageBodyBuilder.Replace(placeholder.Value, replaceWith.Value, placeholder.Index, placeholder.Value.Length);
                     }
                 }
+                message = messageBodyBuilder.ToString();
             }
-
-            return Success(payloadCrates);
+            CurrentPayloadStorage.Add(PackMessageCrate(message));
         }
 
-        #region Fill Source
-        private async Task FillAvailableFieldsSource(Crate configurationCrate, string controlName, ActivityDO curActivityDO)
+        private List<FieldDTO> ExtractAvaialbleFieldsFromPayload()
         {
-            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
-            if (control != null)
+            var result = new List<FieldDTO>();
+            result.AddRange(CurrentPayloadStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.AllValues()));
+            result.AddRange(CurrentPayloadStorage.CratesOfType<FieldDescriptionsCM>().SelectMany(x => x.Content.Fields));
+            foreach (var tableCrate in CurrentPayloadStorage.CratesOfType<StandardTableDataCM>().Select(x => x.Content))
             {
-                control.ListItems = await GetAvailableFields(curActivityDO);
+                //We should take first row of data only if there is at least one data row. We never take header row if it exists
+                var rowToTake = tableCrate.FirstRowHeaders
+                                    ? tableCrate.Table.Count > 1
+                                          ? 1
+                                          : -1
+                                    : tableCrate.Table.Count > 0
+                                            ? 0
+                                            : -1;
+                if (rowToTake == -1)
+                {
+                    continue;
+                }
+                result.AddRange(tableCrate.Table[rowToTake].Row.Select(x => x.Cell));
             }
+            return result;
         }
-
-        private async Task<List<ListItem>> GetAvailableFields(ActivityDO curActivityDO)
-        {
-            var upstreamFieldsAddress = await CreateDesignTimeFieldsCrate(curActivityDO, "Available Fields");
-            if (upstreamFieldsAddress != null)
-            {
-                FieldDescriptionsCM curFieldDescriptionsCrate = ((Crate<FieldDescriptionsCM>)upstreamFieldsAddress).Content;
-                return curFieldDescriptionsCrate.Fields.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
-            }
-            return null;
-        }
-        #endregion
     }
 }

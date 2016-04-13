@@ -41,6 +41,10 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DocuSign.eSign, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\Utilities\DocuSign.eSign.dll</HintPath>
+    </Reference>
     <Reference Include="Moq, Version=4.2.1507.118, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
       <Private>True</Private>
@@ -110,7 +114,6 @@
     <Compile Include="Integration\Mail_Merge_Into_DocuSign_v1_Tests.cs" />
     <Compile Include="Integration\Monitor_DocuSign_v1_Tests.cs" />
     <Compile Include="Integration\Query_DocuSign_v1_Tests.cs" />
-    <Compile Include="Integration\Receive_DocuSign_Envelope_v1_Tests.cs" />
     <Compile Include="Integration\Track_DocuSign_Recipients_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Authentication_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Discover_v1Tests.cs" />

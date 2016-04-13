@@ -51,6 +51,16 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
+                Name = "Process_Personnel_Report",
+                Label = "Process Personnel Report",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1"
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
                 Name = "TestIncomingData",
                 Label = "Test Incoming Data",
                 Category = ActivityCategory.Processors,
@@ -303,20 +313,8 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
-                Name = "CreateLauncher",
-                Label = "Create Launcher",
-                Version = "1",
-                Category = ActivityCategory.Processors,
-                NeedsAuthentication = false,
-                Terminal = terminal,
-                WebService = webService
-            });
-
-
-            result.Add(new ActivityTemplateDTO
-            {
-                Name = "PlanLauncher",
-                Label = "Plan Launcher",
+                Name = "CollectData",
+                Label = "Collect Data",
                 Version = "1",
                 Category = ActivityCategory.Processors,
                 NeedsAuthentication = false,

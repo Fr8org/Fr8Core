@@ -1,6 +1,8 @@
 ﻿<#
     .SYNOPSIS
-    The script updates terminal hostname in the database to prepare it for integration testing.
+  	THIS SCRIPT FILE IS OBSOLETE. THE BUILD SYSTEM IS BEING MIGRATED TO THE SCRIPT Update-TerminalHostnameInDb.ps1.
+	Please do any changes in that script. 
+	The script updates terminal hostname in the database to prepare it for integration testing.
 	Called during CI process for non-Dev/Master builds. 
 #>
 param(

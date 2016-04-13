@@ -263,6 +263,20 @@ namespace TerminalBase.Infrastructure
             return await _restfulServiceClient.PostAsync<ActivityDTO, ActivityDTO>(uri, activityDTO, null, await GetHMACHeader(uri, userId, activityDTO));
         }
 
+        public async Task<ActivityDTO> SaveActivity(ActivityDTO activityDTO, string userId)
+        {
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/activities/save";
+            var uri = new Uri(url);
+            return await _restfulServiceClient.PostAsync<ActivityDTO, ActivityDTO>(uri, activityDTO, null, await GetHMACHeader(uri, userId, activityDTO));
+        }
+
+        public async Task<ActivityDO> SaveActivity(ActivityDO activityDO, string userId)
+        {
+            var activityDTO = Mapper.Map<ActivityDTO>(activityDO);
+            return Mapper.Map<ActivityDO>(await SaveActivity(activityDTO, userId));
+        }
+
         public async Task<ActivityDTO> CreateAndConfigureActivity(int templateId, string userId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
@@ -356,6 +370,16 @@ namespace TerminalBase.Infrastructure
             var uri = new Uri(hubUrl);
 
             return await _restfulServiceClient.PostAsync<PlanDTO>(uri, jsonContent, null, await GetHMACHeader(uri, userId, jsonContent));
+        }
+
+        public async Task NotifyUser(TerminalNotificationDTO notificationMessage, string userId)
+        {
+            var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+               + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/notifications";
+
+            var uri = new Uri(hubUrl);
+
+            await _restfulServiceClient.PostAsync<TerminalNotificationDTO>(uri, notificationMessage, null, await GetHMACHeader(uri, userId, notificationMessage));
         }
 
         public async Task DeletePlan(Guid planId, string userId)

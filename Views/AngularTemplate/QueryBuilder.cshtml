@@ -1,21 +1,28 @@
-﻿<div class="filter-pane" style="min-width:400px;">
+﻿<div class="filter-pane">
     <div>
-        <div ng-class="{'noclick-background': isDisabled}">
-            <div style="padding: 0 15px 0 5px;">
-                <div class="row">
-                    <div class="col-md-5">Field</div>
-                    <div class="col-md-5">
-                        <div class="query-builder-operator-row">Operator</div>
-                        <div class="query-builder-value-row">Value</div>
-                    </div>
-                    <div class="col-md-2"></div>
-                </div>
-                <div ng-repeat="condition in conditions track by $index" query-builder-condition current-action="currentAction" condition="condition" is-single="conditions.length <= 1" fields="fields" operators="operators" on-remove-condition="removeCondition($index)">
-
-                </div>
-            </div>
-            <div>
-                <a href class="btn btn-primary query-builder-add-button" ng-click="addCondition()" stop-click-propagation>{{::addRowText}}</a>
+        <table ng-class="{'noclick-background': isDisabled}">
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Operator</th>
+                    <th>Value</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr query-builder-condition
+                    ng-repeat="condition in conditions track by $index"
+                    current-action="currentAction"
+                    condition="condition"
+                    is-single="conditions.length <= 1"
+                    fields="fields"
+                    operators="operators"
+                    on-remove-condition="removeCondition($index)">
+                </tr>
+            </tbody>
+        </table>
+            <div class="add-condition">
+                <p><span>AND</span><a class="btn btn-primary btn-sm" ng-click="addCondition()" stop-click-propagation>{{::addRowText}}</a></p>
             </div>
         </div>
     </div>
