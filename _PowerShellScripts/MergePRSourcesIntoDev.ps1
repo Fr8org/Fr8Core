@@ -30,7 +30,6 @@ Function DeleteBranchIfExists($buildBranchName)
 }
 
 $tempFileName = $tempDirectory + "\gitCommandsOutput+$sourceBranchName.txt"
-
 $giturl = "https://{0}:{1}@github.com/alexed1/fr8company" -f $github_username, $github_password
 
 $buildBranchName = "$mainBranchName+$sourceBranchName"
