@@ -9,21 +9,21 @@ using Ploeh.AutoFixture;
 
 namespace terminalDropboxTests.Fixtures
 {
-    public class FixtureData
+    public static class FixtureData
     {
-        private static Fixture _fixture;
+        private static readonly Fixture Fixture;
 
         static FixtureData()
         {
             // AutoFixture Setup
-            _fixture = new Fixture();
-            _fixture.Behaviors.Remove(new ThrowingRecursionBehavior());
-            _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
+            Fixture = new Fixture();
+            Fixture.Behaviors.Remove(new ThrowingRecursionBehavior());
+            Fixture.Behaviors.Add(new OmitOnRecursionBehavior());
         }
 
         public static AuthorizationTokenDO DropboxAuthorizationToken()
         {
-            return _fixture.Build<AuthorizationTokenDO>()
+            return Fixture.Build<AuthorizationTokenDO>()
                 .With(x => x.Token, "bLgeJYcIkHAAAAAAAAAAFf6hjXX_RfwsFNTfu3z00zrH463seBYMNqBaFpbfBmqf")
                 .OmitAutoProperties()
                 .Create();
@@ -31,13 +31,13 @@ namespace terminalDropboxTests.Fixtures
 
         public static ActivityDO GetFileListActivityDO()
         {
-            ActivityTemplateDO activityTemplateDO = _fixture.Build<ActivityTemplateDO>()
+            ActivityTemplateDO activityTemplateDO = Fixture.Build<ActivityTemplateDO>()
                  .With(x => x.Id)
                  .With(x => x.Name)
                  .With(x => x.Version)
                  .OmitAutoProperties()
                  .Create();
-            ActivityDO activityDO = _fixture.Build<ActivityDO>()
+            ActivityDO activityDO = Fixture.Build<ActivityDO>()
                 .With(x => x.Id)
                 .With(x => x.ActivityTemplate, activityTemplateDO)
                 .With(x => x.CrateStorage, string.Empty)
@@ -61,12 +61,13 @@ namespace terminalDropboxTests.Fixtures
 
         public static ActivityTemplateDO GetFileListTestActivityTemplateDO()
         {
-            return new ActivityTemplateDO
-            {
-                Id = 1,
-                Name = "Get File List",
-                Version = "1"
-            };
+            ActivityTemplateDO activityTemplateDO = Fixture.Build<ActivityTemplateDO>()
+                .With(x => x.Id)
+                .With(x => x.Name, "Get File List")
+                .With(x => x.Version, "1")
+                .OmitAutoProperties()
+                .Create();
+            return activityTemplateDO;
         }
 
         public static PayloadDTO FakePayloadDTO
