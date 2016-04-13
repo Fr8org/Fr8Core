@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using DockyardTest.Controllers.Api;
 using Hub.Interfaces;
 using UtilitiesTesting;
@@ -140,7 +141,7 @@ namespace DockyardTest.Controllers
                 Password = "Password",
                 Username = "Username",
                 Domain = "Domain",
-                TerminalId = activityTemplateDO.Terminal.Id
+                Terminal = Mapper.Map<TerminalDTO>(activityTemplateDO.Terminal)
             };
 
             var result = _authenticationController.Authenticate(credentialsDTO);

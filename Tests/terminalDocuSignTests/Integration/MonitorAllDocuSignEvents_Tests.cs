@@ -20,6 +20,7 @@ using terminalDocuSignTests.Fixtures;
 using Newtonsoft.Json;
 using terminalDocuSign.DataTransferObjects;
 using System.Diagnostics;
+using AutoMapper;
 using TerminalBase.Infrastructure;
 using Hub.Managers;
 
@@ -153,8 +154,7 @@ namespace terminalDocuSignTests.Integration
                 Username = DocuSignEmail,
                 Password = DocuSignApiPassword,
                 IsDemoAccount = true,
-                Terminal = Mapper.
-                TerminalId = docuSignTerminal.Id
+                Terminal = Mapper.Map<TerminalDTO>(docuSignTerminal)
             };
 
             var tokenResponse = await HttpPostAsync<CredentialsDTO, JObject>(
