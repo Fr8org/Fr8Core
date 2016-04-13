@@ -22,7 +22,7 @@ namespace terminalDropboxTests.Actions
 {
     [TestFixture]
     [Category("terminalDropboxTests")]
-    public class Get_File_List_v1Tests : BaseTest
+    public class Get_File_List_v1_Tests : BaseTest
     {
         private Get_File_List_v1 _getFileList_v1;
         private static Fixture _fixture;
