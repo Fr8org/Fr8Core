@@ -40,7 +40,7 @@ namespace terminalSalesforce.Actions
                     Name = nameof(SalesforceObjectSelector),
                     Label = "Get Which Object?",
                     Required = true,
-                    Events = new List<ControlEvent> {  ControlEvent.RequestConfig }
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
                 SalesforceObjectFilter = new QueryBuilder
                 {
@@ -95,41 +95,34 @@ namespace terminalSalesforce.Actions
 
         protected override Task<bool> Validate()
         {
-            if (!ConfigurationControls.RunMailMergeButton.Clicked)
+            if (ConfigurationControls.RunMailMergeButton.Clicked)
             {
-                return Task.FromResult(true);
+                ConfigurationControls.SalesforceObjectSelector.ErrorMessage = string.IsNullOrEmpty(ConfigurationControls.SalesforceObjectSelector.selectedKey)
+                                                                          ? "Object is not selected"
+                                                                          : string.Empty;
+                ConfigurationControls.MailSenderActivitySelector.ErrorMessage = string.IsNullOrEmpty(ConfigurationControls.MailSenderActivitySelector.selectedKey)
+                                                                                ? "Mail sender is not selected"
+                                                                                : string.Empty;
+                var isValid = string.IsNullOrEmpty(ConfigurationControls.SalesforceObjectSelector.ErrorMessage)
+                           && string.IsNullOrEmpty(ConfigurationControls.MailSenderActivitySelector.ErrorMessage);
+                if (!isValid)
+                {
+                    ConfigurationControls.RunMailMergeButton.Clicked = false;
+                }
+                return Task.FromResult(isValid);
             }
-            //We perform validation only when user clicks on 'Prepare Mail Merge' button so he is not bothered with error messages untill he makes final step
-            ConfigurationControls.SalesforceObjectSelector.ErrorMessage = string.IsNullOrEmpty(ConfigurationControls.SalesforceObjectSelector.selectedKey)
-                                                                            ? "Object is not selected"
-                                                                            : string.Empty;
-            ConfigurationControls.MailSenderActivitySelector.ErrorMessage = string.IsNullOrEmpty(ConfigurationControls.MailSenderActivitySelector.selectedKey)
-                                                                            ? "Mail sender is not selected"
-                                                                            : string.Empty;
-            return Task.FromResult(string.IsNullOrEmpty(ConfigurationControls.SalesforceObjectSelector.ErrorMessage)
-                                && string.IsNullOrEmpty(ConfigurationControls.MailSenderActivitySelector.ErrorMessage));
+            return Task.FromResult(true);
         }
 
         protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
         {
-            //Lets first check if we just reconfigure initial solution UI or a user requested to prepare child activities
-            var solutionBuildIsRequestedPreviously = !string.IsNullOrEmpty(this[nameof(ActivityUi.RunMailMergeButton)]);
-            var solutionBuildIsRequested = ConfigurationControls.RunMailMergeButton.Clicked;
-            //It means that user is still configuring UI OR he got back to design stage
-            if (!solutionBuildIsRequested)
-            {
-                await ConfigureSolutionActivityUi();
-            }
-            //It means that this is reconfiguration caused by child activities
-            else if (solutionBuildIsRequestedPreviously)
-            {
-                //TODO: what to do?
-            }
-            else
-            //This means that user clicked on the button and we need to create child activities
+            if (ConfigurationControls.RunMailMergeButton.Clicked)
             {
                 await ConfigureChildActivities();
-                this[nameof(ActivityUi.RunMailMergeButton)] = true.ToString();
+            }
+            else
+            {
+                await ConfigureSolutionActivityUi();
             }
         }
 
@@ -232,28 +225,31 @@ namespace terminalSalesforce.Actions
                 context.SolutionActivity,
                 getSalesforceDataActivityTemplate.Id.ToString(),
                 order: 1);
-            return dataSourceActivity;
+            //This config call will make SF Get_Data activity to load properties of the selected object (and removes filter)
+            CopySolutionUiValuesToSalesforceActivity(context.SolutionActivity, dataSourceActivity);
+            dataSourceActivity = await ConfigureChildActivity(context.SolutionActivity, dataSourceActivity);
+            //This config call will set the proper filter value for the selected object 
+            CopySolutionUiValuesToSalesforceActivity(context.SolutionActivity, dataSourceActivity);
+            return await ConfigureChildActivity(context.SolutionActivity, dataSourceActivity);
         }
 
         private async Task<ActivityDO> ConfigureSalesforceDataActivity(ReconfigurationContext context)
         {
-            var activity = context.SolutionActivity
-                                  .ChildNodes
-                                  .OfType<ActivityDO>()
-                                  .Single(x => x.Ordering == 1);
-            using (var storage = CrateManager.GetUpdatableStorage(activity))
+            return context.SolutionActivity.ChildNodes.OfType<ActivityDO>().Single(x => x.Ordering == 2);
+        }
+
+        private void CopySolutionUiValuesToSalesforceActivity(ActivityDO solutionActivity, ActivityDO salesforceActivity)
+        {
+            using (var storage = CrateManager.GetUpdatableStorage(salesforceActivity))
             {
                 var controlsCrate = storage.FirstCrate<StandardConfigurationControlsCM>();
                 var activityUi = new Get_Data_v1.ActivityUi().ClonePropertiesFrom(controlsCrate.Content) as Get_Data_v1.ActivityUi;
-                var solutionActivityUi = new ActivityUi().ClonePropertiesFrom(CrateManager.GetStorage(context.SolutionActivity).FirstCrate<StandardConfigurationControlsCM>().Content) as ActivityUi;
+                var solutionActivityUi = new ActivityUi().ClonePropertiesFrom(CrateManager.GetStorage(solutionActivity).FirstCrate<StandardConfigurationControlsCM>().Content) as ActivityUi;
                 activityUi.SalesforceObjectSelector.selectedKey = solutionActivityUi.SalesforceObjectSelector.selectedKey;
                 activityUi.SalesforceObjectSelector.Value = solutionActivityUi.SalesforceObjectSelector.Value;
                 activityUi.SalesforceObjectFilter.Value = solutionActivityUi.SalesforceObjectFilter.Value;
-                storage.ReplaceByLabel(Crate.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls), controlsCrate.Availability));
+                storage.ReplaceByLabel(Crate.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
             }
-            //Followup configuration
-            activity = await HubCommunicator.ConfigureActivity(activity, CurrentFr8UserId);
-            return activity;
         }
 
         private async Task ConfigureSolutionActivityUi()
@@ -292,7 +288,7 @@ namespace terminalSalesforce.Actions
 
         protected override Task RunCurrentActivity()
         {
-            throw new NotImplementedException();
+            return Task.FromResult(0);
         }
     }
 }

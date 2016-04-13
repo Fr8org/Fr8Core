@@ -410,6 +410,7 @@ namespace TerminalBase.BaseClasses
                     crate.Content.Fields.Add(field);
                 }
                 field.Value = value;
+                CurrentActivityStorage.ReplaceByLabel(crate);
             }
         }
 

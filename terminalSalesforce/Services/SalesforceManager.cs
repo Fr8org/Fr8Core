@@ -212,16 +212,16 @@ namespace terminalSalesforce.Services
         {
             return objectDescriptions ?? (objectDescriptions = new FieldDTO[]
                                                 {
-                                                    new FieldDTO("Account") { Availability = AvailabilityType.Configuration},
-                                                    new FieldDTO("Case") { Availability = AvailabilityType.Configuration},
-                                                    new FieldDTO("Contact") { Availability = AvailabilityType.Configuration},
-                                                    new FieldDTO("Contract") { Availability = AvailabilityType.Configuration},
-                                                    new FieldDTO("Document") { Availability = AvailabilityType.Configuration},
-                                                    new FieldDTO("Lead") { Availability = AvailabilityType.Configuration},
-                                                    new FieldDTO("Opportunity") { Availability = AvailabilityType.Configuration},
-                                                    new FieldDTO("Order") { Availability = AvailabilityType.Configuration},
-                                                    new FieldDTO("Product2") { Availability = AvailabilityType.Configuration},
-                                                    new FieldDTO("Solution") { Availability = AvailabilityType.Configuration},
+                                                    new FieldDTO("Account", "Account", AvailabilityType.Configuration),
+                                                    new FieldDTO("Case", "Case", AvailabilityType.Configuration),
+                                                    new FieldDTO("Contact", "Contact", AvailabilityType.Configuration),
+                                                    new FieldDTO("Contract", "Contract", AvailabilityType.Configuration),
+                                                    new FieldDTO("Document", "Document", AvailabilityType.Configuration),
+                                                    new FieldDTO("Lead", "Lead", AvailabilityType.Configuration),
+                                                    new FieldDTO("Opportunity", "Opportunity", AvailabilityType.Configuration),
+                                                    new FieldDTO("Order", "Order", AvailabilityType.Configuration),
+                                                    new FieldDTO("Product2", "Product2", AvailabilityType.Configuration),
+                                                    new FieldDTO("Solution", "Solution", AvailabilityType.Configuration),
                                                 });
         }
 
