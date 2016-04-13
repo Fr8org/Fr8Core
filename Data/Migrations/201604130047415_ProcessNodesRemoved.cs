@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class ProcessNodeRemoved : DbMigration
+    public partial class ProcessNodesRemoved : DbMigration
     {
         public override void Up()
         {
