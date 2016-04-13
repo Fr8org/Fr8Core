@@ -1222,3 +1222,7 @@ i.activity-stream-font {
     line-height: 36px;
     text-align: center;
 }
+
+.md-open-menu-container {
+    z-index: 1001;
+}
