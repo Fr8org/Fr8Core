@@ -11,6 +11,7 @@ using Data.States;
 using Hub.Interfaces;
 using Hub.Services;
 using Utilities;
+using Utilities.Configuration.Azure;
 using Utilities.Logging;
 
 namespace Hub.Managers
@@ -118,12 +119,7 @@ namespace Hub.Managers
             var incident = new IncidentDO
             {
                 CustomerId = _sercurity.GetCurrentUser(),
-                Data = string.Join(
-                    Environment.NewLine,
-                    "KeyVault method: " + keyVaultMethod,
-                    ex.Message,
-                    ex.StackTrace ?? ""
-                ),
+                Data = Environment.NewLine + $"KeyVault Uri: {CloudConfigurationManager.GetSetting("KeyVaultUrl")}, Client Id: {CloudConfigurationManager.GetSetting("KeyVaultClientId")} Method: {keyVaultMethod}. Reason: {ex.Message}. StackTrace: {ex.StackTrace ?? ""}",
                 PrimaryCategory = "KeyVault",
                 SecondaryCategory = "QuerySecurePartAsync",
                 Component = "Hub",
