@@ -25,7 +25,6 @@ namespace terminalDropboxTests.Actions
     public class Get_File_List_v1_Tests : BaseTest
     {
         private Get_File_List_v1 _getFileList_v1;
-        private static Fixture _fixture;
 
         public override void SetUp()
         {
@@ -39,33 +38,14 @@ namespace terminalDropboxTests.Actions
 
             _getFileList_v1 = ObjectFactory.GetInstance<Get_File_List_v1>();
             _getFileList_v1.HubCommunicator.Configure("terminalDropbox");
-            _fixture = new Fixture();
-            _fixture.Behaviors.Remove(new ThrowingRecursionBehavior());
-            _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
-            _fixture.Register(() => new AuthorizationTokenDO
-            {
-                Token = "bLgeJYcIkHAAAAAAAAAAFf6hjXX_RfwsFNTfu3z00zrH463seBYMNqBaFpbfBmqf"
-            });
         }
 
         [Test]
         public void Initialize_ReturnsActivityDto()
         {
             //Arrange
-            ActivityTemplateDO activityTemplateDO = _fixture.Build<ActivityTemplateDO>()
-                .With(x => x.Id)
-                .With(x => x.Name)
-                .With(x => x.Version)
-                .OmitAutoProperties()
-                .Create();
-            ActivityDO curActivityDO = _fixture.Build<ActivityDO>()
-                .With(x => x.Id)
-                .With(x => x.ActivityTemplate, activityTemplateDO)
-                .With(x => x.CrateStorage, string.Empty)
-                .OmitAutoProperties()
-                .Create();
-
-            AuthorizationTokenDO tokenDO = _fixture.Create<AuthorizationTokenDO>();
+            var curActivityDO = FixtureData.GetFileListActivityDO();
+            AuthorizationTokenDO tokenDO = FixtureData.DropboxAuthorizationToken();
 
             //Act
             var activityDto = _getFileList_v1.Configure(curActivityDO, tokenDO).Result;

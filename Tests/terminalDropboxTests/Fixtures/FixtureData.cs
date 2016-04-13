@@ -5,36 +5,44 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
 using Newtonsoft.Json;
+using Ploeh.AutoFixture;
 
 namespace terminalDropboxTests.Fixtures
 {
     public class FixtureData
     {
-        public static Guid TestGuid_Id_333()
+        private static Fixture _fixture;
+
+        static FixtureData()
         {
-            return new Guid("8339DC87-F011-4FB1-B47C-FEC406E4100A");
+            // AutoFixture Setup
+            _fixture = new Fixture();
+            _fixture.Behaviors.Remove(new ThrowingRecursionBehavior());
+            _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
         }
 
         public static AuthorizationTokenDO DropboxAuthorizationToken()
         {
-            return new AuthorizationTokenDO()
-            {
-                Token = "bLgeJYcIkHAAAAAAAAAAFf6hjXX_RfwsFNTfu3z00zrH463seBYMNqBaFpbfBmqf"
-            };
+            return _fixture.Build<AuthorizationTokenDO>()
+                .With(x => x.Token, "bLgeJYcIkHAAAAAAAAAAFf6hjXX_RfwsFNTfu3z00zrH463seBYMNqBaFpbfBmqf")
+                .OmitAutoProperties()
+                .Create();
         }
 
-        public static ActivityDO GetFileListTestActivityDO1()
+        public static ActivityDO GetFileListActivityDO()
         {
-            var actionTemplate = GetFileListTestActivityTemplateDO();
-
-            var activityDO = new ActivityDO()
-            {
-                Id = TestGuid_Id_333(),
-                ActivityTemplateId = actionTemplate.Id,
-                ActivityTemplate = actionTemplate,
-                CrateStorage = "",
-                
-            };
+            ActivityTemplateDO activityTemplateDO = _fixture.Build<ActivityTemplateDO>()
+                 .With(x => x.Id)
+                 .With(x => x.Name)
+                 .With(x => x.Version)
+                 .OmitAutoProperties()
+                 .Create();
+            ActivityDO activityDO = _fixture.Build<ActivityDO>()
+                .With(x => x.Id)
+                .With(x => x.ActivityTemplate, activityTemplateDO)
+                .With(x => x.CrateStorage, string.Empty)
+                .OmitAutoProperties()
+                .Create();
             return activityDO;
         }
 

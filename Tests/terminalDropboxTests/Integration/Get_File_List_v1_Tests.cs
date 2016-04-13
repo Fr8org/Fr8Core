@@ -5,8 +5,16 @@ using NUnit.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Entities;
+using Hub.Managers;
+using Microsoft.Owin.Hosting;
+using Microsoft.Owin.Testing;
+using Ploeh.AutoFixture;
+using terminalDropbox;
 using terminalDropboxTests.Fixtures;
 
 namespace terminalDropboxTests.Integration
@@ -19,22 +27,60 @@ namespace terminalDropboxTests.Integration
     [Explicit]
     public class Get_File_List_v1_Tests : BaseTerminalIntegrationTest
     {
+        private const string Host = "http://localhost:19760";
+        private IDisposable _app;
+        private Fixture _fixture;
+
         public override string TerminalName => "terminalDropbox";
+
+        [TestFixtureSetUp]
+        public void FixtureSetup()
+        {
+            _app = WebApp.Start<Startup>(Host);
+
+            // AutoFixture Setup
+            _fixture = new Fixture();
+            _fixture.Behaviors.Remove(new ThrowingRecursionBehavior());
+            _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
+            _fixture.Register(() => new AuthorizationTokenDTO
+            {
+                Token = "bLgeJYcIkHAAAAAAAAAAFf6hjXX_RfwsFNTfu3z00zrH463seBYMNqBaFpbfBmqf"
+            });
+        }
+
+        [TearDown]
+        public void FixtureTearDown()
+        {
+            _app.Dispose();
+        }
 
         [Test, Category("Integration.terminalDropbox")]
         public async Task GetFileList_InitialConfig_ReturnsActivity()
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
+            ActivityTemplateDTO activityTemplateDto = _fixture.Build<ActivityTemplateDTO>()
+                .With(x => x.Id)
+                .With(x => x.Name, "Get_File_List_TEST")
+                .With(x => x.Version, "1")
+                .OmitAutoProperties()
+                .Create();
+            AuthorizationTokenDTO tokenDO = _fixture.Create<AuthorizationTokenDTO>();
+            ActivityDTO activityDto = _fixture.Build<ActivityDTO>()
+                .With(x => x.Id)
+                .With(x => x.ActivityTemplate, activityTemplateDto)
+                .With(x => x.CrateStorage, null)
+                .With(x => x.AuthToken, tokenDO)
+                .OmitAutoProperties()
+                .Create();
+            
+            Fr8DataDTO requestActionDTO = new Fr8DataDTO() { ActivityDTO = activityDto };
 
             //Act
-            var requestActionDTO = HealthMonitor_FixtureData.GetFileListTestFr8DataDTO();
-
-            var responseActionDTO =
-                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
+            var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
                     requestActionDTO
-                );
+                    );
 
             // Assert
             Assert.NotNull(responseActionDTO);
@@ -43,26 +89,87 @@ namespace terminalDropboxTests.Integration
         }
 
         [Test, Category("Integration.terminalDropbox")]
-        public async Task GetFileList_Run_ReturnsPayload()
+        public async Task Activate_Returns_ActivityDTO()
         {
             //Arrange
+            var activateUrl = GetTerminalActivateUrl();
 
-            var configureUrl = GetTerminalConfigureUrl();
-            var requestActionDTO = HealthMonitor_FixtureData.GetFileListTestFr8DataDTO();
-            await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, requestActionDTO);
-
-            var runUrl = GetTerminalRunUrl();
-            var dataDTO = HealthMonitor_FixtureData.GetFileListTestFr8DataDTO();
-            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
-
+            ActivityTemplateDTO activityTemplateDto = _fixture.Build<ActivityTemplateDTO>()
+               .With(x => x.Id)
+               .With(x => x.Name, "Get_File_List_TEST")
+               .With(x => x.Version, "1")
+               .OmitAutoProperties()
+               .Create();
+            AuthorizationTokenDTO tokenDO = _fixture.Create<AuthorizationTokenDTO>();
+            ActivityDTO activityDto = _fixture.Build<ActivityDTO>()
+                .With(x => x.Id)
+                .With(x => x.ActivityTemplate, activityTemplateDto)
+                .With(x => x.CrateStorage, null)
+                .With(x => x.AuthToken, tokenDO)
+                .OmitAutoProperties()
+                .Create();
+            
+            Fr8DataDTO dataDto = new Fr8DataDTO() { ActivityDTO = activityDto };
+            
+            // Add initial configuretion controls
+            using (var crateStorage = Crate.GetUpdatableStorage(dataDto.ActivityDTO))
+            {
+                crateStorage.Add(Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", new ControlDefinitionDTO[] { }));
+            }
 
             //Act
-            var payloadDTOResult = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
+            var responseActionDTO =
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
+                    activateUrl,
+                    dataDto
+                );
 
-            // Assert
-            Assert.NotNull(payloadDTOResult);
-            Assert.NotNull(payloadDTOResult.CrateStorage);
-            Assert.NotNull(payloadDTOResult.CrateStorage.Crates);
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
+        }
+
+        [Test, Category("Integration.terminalDropbox")]
+        public async Task Run_Returns_ActivityDTO()
+        {
+            //Arrange
+            var runUrl = GetTerminalRunUrl();
+
+            ActivityTemplateDTO activityTemplateDto = _fixture.Build<ActivityTemplateDTO>()
+               .With(x => x.Id)
+               .With(x => x.Name, "Get_File_List_TEST")
+               .With(x => x.Version, "1")
+               .OmitAutoProperties()
+               .Create();
+            AuthorizationTokenDTO tokenDO = _fixture.Create<AuthorizationTokenDTO>();
+            ActivityDTO activityDto = _fixture.Build<ActivityDTO>()
+                .With(x => x.Id)
+                .With(x => x.ActivityTemplate, activityTemplateDto)
+                .With(x => x.CrateStorage, null)
+                .With(x => x.AuthToken, tokenDO)
+                .OmitAutoProperties()
+                .Create();
+
+            Fr8DataDTO dataDto = new Fr8DataDTO() { ActivityDTO = activityDto };
+
+            // Add initial configuretion controls
+            using (var crateStorage = Crate.GetUpdatableStorage(dataDto.ActivityDTO))
+            {
+                crateStorage.Add(Crate.CreateStandardConfigurationControlsCrate("Configuration_Controls", new ControlDefinitionDTO[] { }));
+            }
+            // Add operational state crate
+            AddOperationalStateCrate(dataDto, new OperationalStateCM());
+
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
+                    runUrl,
+                    dataDto
+                );
+
+            //Assert
+            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
         }
 
         //var dataDTO = HealthMonitor_FixtureData.GetFileListTestFr8DataDTO();
