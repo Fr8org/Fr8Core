@@ -40,17 +40,6 @@ namespace terminalExcel.Actions
             {
                 Controls = new List<ControlDefinitionDTO>();
 
-                Controls.Add((activityChooser = new ActivityChooser()
-                {
-                    Label = "Select an Excel file",
-                    Name = "FileChooser",
-                    Required = true,
-                    Events = new List<ControlEvent>()
-                    {
-                        new ControlEvent("onChange", "requestConfig")
-                    }
-                }));
-
                 Controls.Add((select_file = new ControlDefinitionDTO(ControlTypes.FilePicker)
                 {
                     Label = "Select an Excel file",

@@ -104,7 +104,7 @@ namespace Hub.Services
             if (skipChildren || currentNode.ChildNodes.Count == 0)
             {
                 var nextSibling = _activity.GetNextSibling(currentNode);
-                if (currentNode is SubPlanDO && nextSibling is SubPlanDO)
+                if ((currentNode is SubPlanDO) && (nextSibling is SubPlanDO) && (currentNode.ParentPlanNode is PlanDO))
                 {
                     //we should never jump between subplans unless explicitly told
                     //let's stop here

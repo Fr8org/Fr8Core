@@ -28,62 +28,62 @@ namespace Hub.Security.ObjectDecorators
 
         public Task<ActivateActivitiesDTO> Activate(Guid planId, bool planBuilderActivate)
         {
-            if (_securityServices.AuthorizeActivity(Privilege.EditObject, planId.ToString()))
+            // if (_securityServices.AuthorizeActivity(Privilege.EditObject, planId.ToString()))
             {
                 return _target.Activate(planId, planBuilderActivate);
             }
-            else
-            {
-                throw new HttpException(401, "You are not authorized to perform this activity!");
-            }
+            // else
+            // {
+            //     throw new HttpException(401, "You are not authorized to perform this activity!");
+            // }
         }
 
         public Task<PlanDO> Clone(Guid planId)
         {
-            if (_securityServices.AuthorizeActivity(Privilege.ReadObject, planId.ToString()))
+            // if (_securityServices.AuthorizeActivity(Privilege.ReadObject, planId.ToString()))
             {
                 return _target.Clone(planId);
             }
-            else
-            {
-                throw new HttpException(401, "You are not authorized to perform this activity!");
-            }
+            // else
+            // {
+            //     throw new HttpException(401, "You are not authorized to perform this activity!");
+            // }
         }
 
         public Task<ContainerDO> Continue(Guid containerId)
         {
-            if (_securityServices.AuthorizeActivity(Privilege.EditObject, containerId.ToString()))
+            // if (_securityServices.AuthorizeActivity(Privilege.EditObject, containerId.ToString()))
             {
                 return _target.Continue(containerId);
             }
-            else
-            {
-                throw new HttpException(401, "You are not authorized to perform this activity!");
-            }
+            // else
+            // {
+            //     throw new HttpException(401, "You are not authorized to perform this activity!");
+            // }
         }
 
         public PlanDO Copy(IUnitOfWork uow, PlanDO curPlanDO, string name)
         {
-            if (_securityServices.AuthorizeActivity(Privilege.ReadObject, curPlanDO.Id.ToString()))
+            // if (_securityServices.AuthorizeActivity(Privilege.ReadObject, curPlanDO.Id.ToString()))
             {
                 return _target.Copy(uow, curPlanDO, name);
             }
-            else
-            {
-                throw new HttpException(401, "You are not authorized to perform this activity!");
-            }
+            // else
+            // {
+            //     throw new HttpException(401, "You are not authorized to perform this activity!");
+            // }
         }
 
         public ContainerDO Create(IUnitOfWork uow, Guid planId, params Crate[] curPayload)
         {
-            if (_securityServices.AuthorizeActivity(Privilege.EditObject, planId.ToString()))
+            // if (_securityServices.AuthorizeActivity(Privilege.EditObject, planId.ToString()))
             {
                 return _target.Create(uow, planId, curPayload);
             }
-            else
-            {
-                throw new HttpException(401, "You are not authorized to perform this activity!");
-            }
+            // else
+            // {
+            //     throw new HttpException(401, "You are not authorized to perform this activity!");
+            // }
         }
 
         public PlanDO Create(IUnitOfWork uow, string name, string category = "")
@@ -98,26 +98,26 @@ namespace Hub.Security.ObjectDecorators
 
         public Task<string> Deactivate(Guid curPlanId)
         {
-            if (_securityServices.AuthorizeActivity(Privilege.EditObject, curPlanId.ToString()))
+            // if (_securityServices.AuthorizeActivity(Privilege.EditObject, curPlanId.ToString()))
             {
                 return _target.Deactivate(curPlanId);
             }
-            else
-            {
-                throw new HttpException(401, "You are not authorized to perform this activity!");
-            }
+            // else
+            // {
+            //     throw new HttpException(401, "You are not authorized to perform this activity!");
+            // }
         }
 
         public void Delete(IUnitOfWork uow, Guid id)
         {
-            if (_securityServices.AuthorizeActivity(Privilege.DeleteObject, id.ToString()))
+            // if (_securityServices.AuthorizeActivity(Privilege.DeleteObject, id.ToString()))
             {
                 _target.Delete(uow, id);
             }
-            else
-            {
-                throw new HttpException(401, "You are not authorized to perform this activity!");
-            }
+            // else
+            // {
+            //     throw new HttpException(401, "You are not authorized to perform this activity!");
+            // }
         }
 
         public void Enqueue(List<PlanDO> curPlans, params Crate[] curEventReport)
@@ -127,14 +127,14 @@ namespace Hub.Security.ObjectDecorators
 
         public void Enqueue(Guid curPlanId, params Crate[] curEventReport)
         {
-            if (_securityServices.AuthorizeActivity(Privilege.EditObject, curPlanId.ToString()))
+            // if (_securityServices.AuthorizeActivity(Privilege.EditObject, curPlanId.ToString()))
             {
                 _target.Enqueue(curPlanId, curEventReport);
             }
-            else
-            {
-                throw new HttpException(401, "You are not authorized to perform this activity!");
-            }
+            // else
+            // {
+            //     throw new HttpException(401, "You are not authorized to perform this activity!");
+            // }
         }
 
         public IList<PlanDO> GetByName(IUnitOfWork uow, Fr8AccountDO account, string name, PlanVisibility visibility)
@@ -154,14 +154,14 @@ namespace Hub.Security.ObjectDecorators
 
         public PlanDO GetPlanByActivityId(IUnitOfWork uow, Guid planActivityId)
         {
-            if (_securityServices.AuthorizeActivity(Privilege.ReadObject, planActivityId.ToString()))
+            // if (_securityServices.AuthorizeActivity(Privilege.ReadObject, planActivityId.ToString()))
             {
                 return _target.GetPlanByActivityId(uow, planActivityId);
             }
-            else
-            {
-                throw new HttpException(401, "You are not authorized to perform this activity!");
-            }
+            // else
+            // {
+            //     throw new HttpException(401, "You are not authorized to perform this activity!");
+            // }
         }
 
         public List<PlanDO> MatchEvents(List<PlanDO> curPlans, EventReportCM curEventReport)
@@ -171,38 +171,38 @@ namespace Hub.Security.ObjectDecorators
 
         public Task<ContainerDO> Run(Guid planId, params Crate[] curPayload)
         {
-            if (_securityServices.AuthorizeActivity(Privilege.EditObject, planId.ToString()))
+            // if (_securityServices.AuthorizeActivity(Privilege.EditObject, planId.ToString()))
             {
                 return _target.Run(planId, curPayload);
             }
-            else
-            {
-                throw new HttpException(401, "You are not authorized to perform this activity!");
-            }
+            // else
+            // {
+            //     throw new HttpException(401, "You are not authorized to perform this activity!");
+            // }
         }
 
         public Task<ContainerDO> Run(PlanDO curPlan, params Crate[] curPayload)
         {
-            if (_securityServices.AuthorizeActivity(Privilege.EditObject, curPlan.Id.ToString()))
+            // if (_securityServices.AuthorizeActivity(Privilege.EditObject, curPlan.Id.ToString()))
             {
                 return _target.Run(curPlan, curPayload);
             }
-            else
-            {
-                throw new HttpException(401, "You are not authorized to perform this activity!");
-            }
+            // else
+            // {
+            //     throw new HttpException(401, "You are not authorized to perform this activity!");
+            // }
         }
 
         public Task<ContainerDO> Run(IUnitOfWork uow, PlanDO curPlan, params Crate[] curPayload)
         {
-            if (_securityServices.AuthorizeActivity(Privilege.EditObject, curPlan.Id.ToString()))
+            // if (_securityServices.AuthorizeActivity(Privilege.EditObject, curPlan.Id.ToString()))
             {
                 return _target.Run(uow, curPlan, curPayload);
             }
-            else
-            {
-                throw new HttpException(401, "You are not authorized to perform this activity!");
-            }
+            // else
+            // {
+            //     throw new HttpException(401, "You are not authorized to perform this activity!");
+            // }
         }
     }
 }

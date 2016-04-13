@@ -18,5 +18,7 @@ namespace Data.Interfaces.DataTransferObjects
         public string Name { get; set; }
 
         public string TransitionKey { get; set; }
+
+        public bool Runnable { get; set; }
     }
 }

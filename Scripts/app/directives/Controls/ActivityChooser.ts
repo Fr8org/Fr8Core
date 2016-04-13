@@ -77,43 +77,86 @@ module dockyard.directives {
                         return defered.promise;
                     };
 
+                    // Call Hub API to create subplan.
+                    var createSubPlan = function () {
+                        var defered = $q.defer();
+
+                        var subplan = new model.SubPlanDTO(
+                            null,
+                            true,
+                            $scope.plan.id,
+                            $scope.currentAction.id,
+                            'subplan-' + $scope.field.name
+                        );
+
+                        subplan.runnable = $scope.field.runnable;
+
+                        SubPlanService.create(subplan).$promise
+                            .then((subplan: model.SubPlanDTO) => {
+                                defered.resolve(subplan);
+                            })
+                            .catch((reason: any) => {
+                                defered.reject(reason);
+                            });
+
+                        return defered.promise;
+                    };
+
                     // Display dialog to select activity, and possibly create subplan and blank selected activity.
                     var selectActivity = () => {
-                        var selectActivityModal = $modal.open({
-                            templateUrl: '/AngularTemplate/ActivityChooserSelectDialog',
-                            controller: 'ACSelectActivityController'
-                        });
+                        debugger;
+                        if (!$scope.field.definedActivityTemplateId) {
+                            var scope = <IACSelectActivityControllerScope>$scope.$new(true);
+                            scope.tag = $scope.field.activityTemplateTag;
 
-                        selectActivityModal.result
-                            .then((activityTemplate: model.ActivityTemplate) => {
-                                if (!$scope.field.subPlanId) {
-                                    var subplan = new model.SubPlanDTO(
-                                        null,
-                                        true,
-                                        $scope.plan.id,
-                                        $scope.currentAction.id,
-                                        'subplan-' + $scope.field.name
-                                    );
+                            var selectActivityModal = $modal.open({
+                                templateUrl: '/AngularTemplate/ActivityChooserSelectDialog',
+                                controller: 'ACSelectActivityController',
+                                scope: scope
+                            });
 
-                                    SubPlanService.create(subplan).$promise
+                            selectActivityModal.result
+                                .then((activityTemplate: model.ActivityTemplate) => {
+                                    if (!$scope.field.subPlanId) {
+                                        createSubPlan()
+                                            .then((subplan: model.SubPlanDTO) => {
+                                                console.log('subplan.id = ', subplan.subPlanId);
+                                                createActivity(activityTemplate, subplan.subPlanId)
+                                                    .then(() => {
+                                                        $scope.field.subPlanId = subplan.subPlanId;
+                                                        $scope.field.activityTemplateLabel = activityTemplate.label || activityTemplate.name;
+                                                        $scope.field.activityTemplateId = activityTemplate.id;
+                                                    });
+                                            });
+                                    }
+                                    // This should never happen, just in case.
+                                    else {
+                                        createActivity(activityTemplate, $scope.field.subPlanId)
+                                            .then(() => {
+                                                $scope.field.subPlanId = $scope.field.subPlanId;
+                                                $scope.field.activityTemplateLabel = activityTemplate.label || activityTemplate.name;
+                                                $scope.field.activityTemplateId = activityTemplate.id;
+                                            });
+                                    }
+                                });
+                        }
+                        else {
+                            $http.get('/api/webservices/?id=' + $scope.field.definedActivityTemplateId)
+                                .then(function (res) {
+                                    var activityTemplate = <model.ActivityTemplate>res.data;
+
+                                    createSubPlan()
                                         .then((subplan: model.SubPlanDTO) => {
                                             console.log('subplan.id = ', subplan.subPlanId);
                                             createActivity(activityTemplate, subplan.subPlanId)
                                                 .then(() => {
                                                     $scope.field.subPlanId = subplan.subPlanId;
                                                     $scope.field.activityTemplateLabel = activityTemplate.label || activityTemplate.name;
+                                                    $scope.field.activityTemplateId = activityTemplate.id;
                                                 });
                                         });
-                                }
-                                // This should never happen, just in case.
-                                else {
-                                    createActivity(activityTemplate, $scope.field.subPlanId)
-                                        .then(() => {
-                                            $scope.field.subPlanId = subplan.subPlanId;
-                                            $scope.field.activityTemplateLabel = activityTemplate.label || activityTemplate.name;
-                                        });
-                                }
-                            });
+                                });
+                        }
                     };
 
                     // "Select" button handler in scope of root ActivityChooser control.
@@ -154,8 +197,6 @@ module dockyard.directives {
                             .then(() => {
                                 $scope.field.subPlanId = null;
                                 $scope.field.activityTemplateLabel = null;
-
-                                debugger;
                             });
                     };
                 }
@@ -194,6 +235,16 @@ module dockyard.directives {
                     .then((res) => {
                         var webServiceActivities = <Array<model.WebServiceActionSetDTO>>res.data;
                         angular.forEach(webServiceActivities, (webServiceActivity) => {
+                            if ($scope.tag) {
+                                webServiceActivity.activities = webServiceActivity.activities.filter((a) => {
+                                    return a.tags && a.tags.toUpperCase().indexOf($scope.tag.toUpperCase()) >= 0;
+                                });
+                            }
+
+                            if (!webServiceActivity.activities || !webServiceActivity.activities.length) {
+                                return;
+                            }
+
                             $scope.webServiceActivities.push(webServiceActivity);
                         });
                     });
@@ -225,6 +276,8 @@ module dockyard.directives {
     // Scope for ACSelectActivityController controller.
     // --------------------------------------------------------------------------------
     interface IACSelectActivityControllerScope extends ng.IScope {
+        tag: string;
+
         webServiceActivities: Array<model.WebServiceActionSetDTO>;
         selectedWebService: model.WebServiceActionSetDTO;
         selectedActivityTemplate: model.ActivityTemplate;

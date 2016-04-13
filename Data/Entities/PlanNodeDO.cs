@@ -17,6 +17,7 @@ namespace Data.Entities
             typeof (PlanNodeDO).GetProperty("ParentPlanNodeId"),
             typeof (PlanNodeDO).GetProperty("Fr8AccountId"),
             typeof (PlanNodeDO).GetProperty("Ordering"),
+            typeof (PlanNodeDO).GetProperty("Runnable")
         };
 
         [Key]
@@ -42,8 +43,11 @@ namespace Data.Entities
 
         public int Ordering { get; set; }
 
+        public bool Runnable { get; set; }
+
         public PlanNodeDO()
         {
+            Runnable = true;
             ChildNodes = new List<PlanNodeDO>();
         }
 
@@ -154,6 +158,7 @@ namespace Data.Entities
             Fr8Account = source.Fr8Account;
             RootPlanNodeId = source.RootPlanNodeId;
             Ordering = source.Ordering;
+            Runnable = source.Runnable;
         }
     }
 }

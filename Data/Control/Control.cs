@@ -64,8 +64,20 @@ namespace Data.Control
             Type = ControlTypes.ActivityChooser;
         }
 
+        [JsonProperty("runnable")]
+        public bool Runnable { get; set; }
+
+        [JsonProperty("activityTemplateTag")]
+        public string ActivityTemplateTag { get; set; }
+
         [JsonProperty("subPlanId")]
         public Guid? SubPlanId { get; set; }
+
+        [JsonProperty("definedActivityTemplateId")]
+        public int? DefinedActivityTemplateId { get; set; }
+
+        [JsonProperty("activityTemplateId")]
+        public int? ActivityTemplateId { get; set; }
 
         [JsonProperty("activityTemplateLabel")]
         public string ActivityTemplateLabel { get; set; }
@@ -224,6 +236,27 @@ namespace Data.Control
             };
         }
     }
+
+    public class GenerateExternalObjectChooserDTO : ControlMetaDescriptionDTO
+    {
+        public GenerateExternalObjectChooserDTO()
+            : base("GenerateExternalObjectChooserDTO", "External Object Chooser")
+        {
+        }
+
+        public override ControlDefinitionDTO CreateControl()
+        {
+            return new ActivityChooser
+            {
+                Label = this.Controls[0].Value,
+                Name = "ExternalObjectChooser",
+                Runnable = true,
+                // ActivityTemplateTag = ((ActivityChooser)this.Controls[1]).ActivityTemplateTag
+                DefinedActivityTemplateId = ((ActivityChooser)this.Controls[1]).ActivityTemplateId
+            };
+        }
+    }
+
 
     [JsonConverter(typeof(ControlMetaDescriptionDTOConverter))]
     public class ControlMetaDescriptionDTO

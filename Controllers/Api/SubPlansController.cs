@@ -35,6 +35,7 @@ namespace HubWeb.Controllers
                 {
                     return BadRequest("Validation failed for posted Subplan");
                 }
+
                 //TODO invalid mappings prevent this line from running
                 //fix invalid automapper configurations
                 //var curSubPlanDO = Mapper.Map<SubrouteDTO, SubrouteDO>(subPlanDTO);
@@ -43,10 +44,13 @@ namespace HubWeb.Controllers
                     Id = Guid.Empty,
                     ParentPlanNodeId = subPlanDTO.ParentId,
                     RootPlanNodeId = subPlanDTO.PlanId,
-                    Name = subPlanDTO.Name
+                    Name = subPlanDTO.Name,
+                    Runnable = subPlanDTO.Runnable
                 };
+
                 _subPlan.Create(uow, curSubPlanDO);
                 uow.SaveChanges();
+
                 return Ok(Mapper.Map<SubPlanDO, SubPlanDTO>(curSubPlanDO));
             }
         }
