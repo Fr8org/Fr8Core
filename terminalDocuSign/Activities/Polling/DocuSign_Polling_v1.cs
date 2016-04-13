@@ -17,15 +17,25 @@ using terminalDocuSign.Services.New_Api;
 using StructureMap;
 using TerminalBase.Infrastructure;
 using terminalDocuSign.Actions;
+using DocuSign.eSign.Api;
 
 namespace terminalDocuSign.Actions
 {
     public class DocuSign_Polling_v1 : BaseDocuSignActivity
     {
+        public DocuSign_Polling_v1()
+        {
+
+        }
+
         protected override string ActivityUserFriendlyName => "DocuSign Polling";
 
         protected internal override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
+            
+            //EnvelopesApi api = new EnvelopesApi();
+            //api.ListStatusChanges()       
+
             return Success(await GetPayload(curActivityDO, containerId));
         }
 

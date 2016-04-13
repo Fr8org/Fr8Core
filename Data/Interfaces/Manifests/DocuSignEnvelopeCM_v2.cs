@@ -17,7 +17,7 @@ namespace Data.Interfaces.Manifests
         public List<DocuSignTemplate> Templates = new List<DocuSignTemplate>();
 
         public DocuSignEnvelopeCM_v2()
-              : base(Constants.MT.DocuSignEnvelope)
+              : base(Constants.MT.DocuSignEnvelope_v2)
         {
         }
     }
