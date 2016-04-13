@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Data.Entities;
+using Data.Repositories.Cache;
 using Data.Repositories.Plan;
 using Hub.StructureMap;
 using NUnit.Framework;

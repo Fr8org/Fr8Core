@@ -4,7 +4,9 @@ using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Reflection;
+using Data.Infrastructure.StructureMap;
 using Data.Repositories.Plan;
+using StructureMap;
 
 namespace Data.Entities
 {
@@ -106,6 +108,14 @@ namespace Data.Entities
             }
 
             return node;
+        }
+
+        public override void AfterCreate()
+        {
+            base.AfterCreate();
+
+            var securityService = ObjectFactory.GetInstance<ISecurityServices>();
+            securityService.SetDefaultObjectSecurity(Id, GetType().Name);
         }
 
         public List<PlanNodeDO> GetDescendantsOrdered()
