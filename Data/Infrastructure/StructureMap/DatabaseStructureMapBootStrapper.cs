@@ -4,12 +4,16 @@ using Data.Entities;
 using Data.Infrastructure.AutoMapper;
 using Data.Interfaces;
 using Data.Repositories;
+using Data.Repositories.Cache;
 using Data.Repositories.MultiTenant;
 using Data.Repositories.MultiTenant.InMemory;
 using Data.Repositories.MultiTenant.Sql;
-using Data.Repositories.MultiTenant.SqlBased;
 using Data.Repositories.Plan;
-using Microsoft.Data.Edm.Library.Values;
+using Data.Repositories.Security;
+using Data.Repositories.Security.StorageImpl;
+using Data.Repositories.Security.StorageImpl.Cache;
+using Data.Repositories.Security.StorageImpl.SqlBased;
+using Data.Repositories.SqlBased;
 using StructureMap.Configuration.DSL;
 using Utilities.Configuration.Azure;
 
@@ -32,6 +36,7 @@ namespace Data.Infrastructure.StructureMap
                 {
                     planCacheExpiration = TimeSpan.FromMinutes(exp);
                 }
+                //todo: add setting key with expiration for security objects
 
                 For<IAttachmentDO>().Use<AttachmentDO>();
                 For<IEmailDO>().Use<EmailDO>();
@@ -43,9 +48,11 @@ namespace Data.Infrastructure.StructureMap
                 For<IMultiTenantObjectRepository>().Use<MultitenantRepository>();
                 For<IMtObjectConverter>().Use<MtObjectConverter>().Singleton();
                 For<IMtTypeStorage>().Use<MtTypeStorage>().Singleton();
-                For<IPlanCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(planCacheExpiration)).Singleton();
                 For<IPlanCache>().Use<PlanCache>().Singleton();
                 For<PlanStorage>().Use<PlanStorage>();
+                For<ISecurityObjectsCache>().Use<SecurityObjectsCache>().Singleton();
+                For<IPlanCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(planCacheExpiration)).Singleton();
+                For<ISecurityCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(planCacheExpiration)).Singleton();
                 // For<IMT_Field>().Use<MT_FieldService>();
             }
         }
@@ -81,10 +88,13 @@ namespace Data.Infrastructure.StructureMap
                 }
 
                 For<IPlanStorageProvider>().Use<PlanStorageProviderEf>();
-                For<IMtConnectionProvider>().Use<SqlMtConnectionProvider>();
+                For<ISqlConnectionProvider>().Use<SqlConnectionProvider>();
                 For<IMtObjectsStorage>().Use<SqlMtObjectsStorage>().Singleton();
                 For<IMtTypeStorageProvider>().Use<SqlMtTypeStorageProvider>();
-               DataAutoMapperBootStrapper.ConfigureAutoMapper();
+                For<ISqlConnectionProvider>().Use<SqlConnectionProvider>();
+                For<ISecurityObjectsStorageProvider>().Use<SqlSecurityObjectsStorageProvider>();
+                For<ISecurityObjectsStorageProvider>().DecorateAllWith<SecurityObjectsStorage>();
+                DataAutoMapperBootStrapper.ConfigureAutoMapper();
             }
         }
 
@@ -96,11 +106,14 @@ namespace Data.Infrastructure.StructureMap
                 For<IDBContext>().Use<MockedDBContext>();
                 For<CloudFileManager>().Use<CloudFileManager>();
                 For<IPlanCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(TimeSpan.FromDays(365))).Singleton(); // in test mode cache will never expire in practice
+                For<ISecurityCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(TimeSpan.FromDays(365))).Singleton(); // in test mode cache will never expire in practice
                 For<IPlanCache>().Use<PlanCache>().Singleton();
+                For<ISecurityObjectsCache>().Use<SecurityObjectsCache>().Singleton();
                 For<IPlanStorageProvider>().Use<PlanStorageProviderMockedDb>();
-                For<IMtConnectionProvider>().Use<DummyConnectionProvider>();
+                For<ISqlConnectionProvider>().Use<DummyConnectionProvider>();
                 For<IMtObjectsStorage>().Use<InMemoryMtObjectsStorage>().Singleton();
                 For<IMtTypeStorageProvider>().Use<InMemoryMtTypeStorageProvider>();
+                For<ISecurityObjectsStorageProvider>().Use<InMemorySecurityObjectsStorageProvider>();
                 DataAutoMapperBootStrapper.ConfigureAutoMapper();
             }
         }

@@ -277,6 +277,7 @@
     <Compile Include="Infrastructure\JsonNet\FieldConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\TerminalActivityTemplateConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\WebServiceConverter.cs" />
+    <Compile Include="Infrastructure\Security\AuthorizeActivityAttribute.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityDataPackageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivateActivitiesDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityResponseDTO.cs" />
@@ -666,6 +667,22 @@
     <Compile Include="Migrations\201604061440228_RenameContainerFields.Designer.cs">
       <DependentUpon>201604061440228_RenameContainerFields.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201603302057295_Table_RolePrivilege.cs" />
+    <Compile Include="Migrations\201603302057295_Table_RolePrivilege.Designer.cs">
+      <DependentUpon>201603302057295_Table_RolePrivilege.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201603311051449_Table_ObjectRolePrivileges.cs" />
+    <Compile Include="Migrations\201603311051449_Table_ObjectRolePrivileges.Designer.cs">
+      <DependentUpon>201603311051449_Table_ObjectRolePrivileges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201603311220032_OwnerOfObject_Role_Data.cs" />
+    <Compile Include="Migrations\201603311220032_OwnerOfObject_Role_Data.Designer.cs">
+      <DependentUpon>201603311220032_OwnerOfObject_Role_Data.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201604112326145_Empty_Fix_Migration.cs" />
+    <Compile Include="Migrations\201604112326145_Empty_Fix_Migration.Designer.cs">
+      <DependentUpon>201604112326145_Empty_Fix_Migration.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -675,6 +692,8 @@
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryStub.cs" />
     <Compile Include="Repositories\Authorization\IAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\Authorization\KeyVaultAuthorizationTokenRepository.cs" />
+    <Compile Include="Repositories\Cache\ICacheExpirationStrategy.cs" />
+    <Compile Include="Repositories\Cache\IExpirationToken.cs" />
     <Compile Include="Repositories\FileTagsRepository.cs" />
     <Compile Include="Interfaces\IMultiTenantObjectRepository.cs" />
     <Compile Include="Repositories\MultiTenant\Ast\AstNode.cs" />
@@ -685,7 +704,6 @@
     <Compile Include="Repositories\MultiTenant\Ast\MtUnaryOp.cs" />
     <Compile Include="Repositories\MultiTenant\Ast\UnaryOpNode.cs" />
     <Compile Include="Repositories\MultiTenant\ExpressionToAstConverter.cs" />
-    <Compile Include="Repositories\MultiTenant\IMtConnectionProvider.cs" />
     <Compile Include="Repositories\MultiTenant\IMtObjectConverter.cs" />
     <Compile Include="Repositories\MultiTenant\IMtObjectsStorage.cs" />
     <Compile Include="Repositories\MultiTenant\IMtTypeStorage.cs" />
@@ -716,7 +734,6 @@
     <Compile Include="Repositories\MultiTenant\StorageImpl\InMemory\InMemoryMtObjectsStorage.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\InMemory\InMemoryMtTypeStorageProvider.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\AstToSqlConverter.cs" />
-    <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtConnectionProvider.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtObjectsStorage.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtTypeStorageProvider.cs" />
     <Compile Include="Repositories\Plan\Expiration.cs" />
@@ -732,7 +749,21 @@
     <Compile Include="Repositories\Plan\PlanTreeHelper.cs" />
     <Compile Include="Repositories\Plan\Internal\PlanNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
-    <Compile Include="Repositories\Plan\SlidingExpirationStrategy.cs" />
+    <Compile Include="Repositories\Cache\SlidingExpirationStrategy.cs" />
+    <Compile Include="Repositories\Security\Entities\ObjectRolePrivilegesDO.cs" />
+    <Compile Include="Repositories\Security\Entities\PrivilegeDO.cs" />
+    <Compile Include="Repositories\Security\Entities\RoleDO.cs" />
+    <Compile Include="Repositories\Security\Entities\RolePrivilegePOCO.cs" />
+    <Compile Include="Repositories\Security\ISecurityObjectsStorageProvider.cs" />
+    <Compile Include="Repositories\Security\StorageImpl\InMemorySecurityObjectsStorageProvider.cs" />
+    <Compile Include="Repositories\SqlBased\ISqlConnectionProvider.cs" />
+    <Compile Include="Repositories\Security\StorageImpl\Cache\ISecurityCacheExpirationStrategy.cs" />
+    <Compile Include="Repositories\Security\StorageImpl\Cache\ISecurityObjectsCache.cs" />
+    <Compile Include="Repositories\Security\StorageImpl\Cache\SecurityObjectsCache.cs" />
+    <Compile Include="Repositories\Security\StorageImpl\Cache\SecurityObjectsStorage.cs" />
+    <Compile Include="Repositories\Security\StorageImpl\SqlBased\SqlConnectionProvider.cs" />
+    <Compile Include="Repositories\Security\StorageImpl\SqlBased\SqlSecurityObjectsStorageProvider.cs" />
+    <Compile Include="Repositories\SqlBased\SqlConnectionProvider.cs" />
     <Compile Include="Repositories\TagRepository.cs" />
     <Compile Include="Repositories\TerminalRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
@@ -798,6 +829,7 @@
     <Compile Include="Repositories\UserStatusRepository.cs" />
     <Compile Include="States\AccessLevel.cs" />
     <Compile Include="States\PlanVisibility.cs" />
+    <Compile Include="States\Privileges.cs" />
     <Compile Include="States\SubscriptionState.cs" />
     <Compile Include="States\Templates\_SubscriptionStateTemplate.cs" />
     <Compile Include="States\TerminalStatus.cs" />
@@ -1161,6 +1193,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604061440228_RenameContainerFields.resx">
       <DependentUpon>201604061440228_RenameContainerFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603302057295_Table_RolePrivilege.resx">
+      <DependentUpon>201603302057295_Table_RolePrivilege.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603311051449_Table_ObjectRolePrivileges.resx">
+      <DependentUpon>201603311051449_Table_ObjectRolePrivileges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603311220032_OwnerOfObject_Role_Data.resx">
+      <DependentUpon>201603311220032_OwnerOfObject_Role_Data.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604112326145_Empty_Fix_Migration.resx">
+      <DependentUpon>201604112326145_Empty_Fix_Migration.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
