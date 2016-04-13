@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
+using Data.Infrastructure.Security;
 using Data.Repositories.Plan;
 using Data.Infrastructure.StructureMap;
 using Data.States;
@@ -167,6 +168,7 @@ namespace Hub.Services
             }
         }
 
+        [AuthorizeActivity(Privilege = Privilege.ReadObject, ObjectType = typeof(Guid))]
         public ActivityDO GetById(IUnitOfWork uow, Guid id)
         {
             return uow.PlanRepository.GetById<ActivityDO>(id);
@@ -546,7 +548,7 @@ namespace Hub.Services
         /// <param name="isSolution">This parameter controls the access level: if it is a solution case
         /// we allow calls without CurrentAccount; if it is not - we need a User to get the list of available activities</param>
         /// <returns>Task<SolutionPageDTO/> or Task<ActivityResponceDTO/></returns>
-        public async Task<T> GetActivityDocumentation<T>(ActivityDTO activityDTO, bool isSolution = false)
+        public async Task<T> GetActivityDocumentation<T>(ActivityDTO activityDTO, bool isSolution = false) where T : class
         {
             //activityResponce can be either of type SolutoinPageDTO or ActivityRepsonceDTO
             T activityResponce;
@@ -564,11 +566,19 @@ namespace Hub.Services
                     allActivityTemplates = _planNode.GetAvailableActivities(uow, curUser);
                 }
                 //find the activity by the provided name
-                var curActivityTerminalDTO = allActivityTemplates.Single(a => a.Name == activityDTO.ActivityTemplate.Name);
+
+                // To prevent mismatch between db and terminal solution lists, Single or Default used
+                var curActivityTerminalDTO = allActivityTemplates.SingleOrDefault(a => a.Name == activityDTO.ActivityTemplate.Name);
                 //prepare an Activity object to be sent to Activity in a Terminal
                 //IMPORTANT: this object will not be hold in the database
                 //It is used to transfer data
                 //as ActivityDTO is the first mean of communication between The Hub and Terminals
+
+                // Since there can be mismatched data between db and terminal solution list, we should make a null check here 
+                if (curActivityTerminalDTO == null)
+                {
+                    return null;
+                }
                 var curActivityDTO = new ActivityDTO
                 {
                     Id = Guid.NewGuid(),
@@ -605,8 +615,7 @@ namespace Hub.Services
             //Call the terminal
             return await ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<T>(actionName, fr8Data, curContainerId.ToString());
         }
-
-        public List<string> GetSolutionList(string terminalName)
+        public List<string> GetSolutionNameList(string terminalName)
         {
             var solutionNameList = new List<string>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
