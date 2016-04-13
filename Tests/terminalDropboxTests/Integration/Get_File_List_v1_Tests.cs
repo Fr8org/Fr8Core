@@ -22,23 +22,33 @@ namespace terminalDropboxTests.Integration
     [Explicit]
     public class Get_File_List_v1_Tests : BaseTerminalIntegrationTest
     {
+        public override string TerminalName => "terminalDropbox";
+
         private const string Host = "http://localhost:19760";
         private IDisposable _app;
-
-        public override string TerminalName => "terminalDropbox";
 
         [TestFixtureSetUp]
         public void FixtureSetup()
         {
-            _app = WebApp.Start<Startup>(Host);
+            try
+            {
+                _app = WebApp.Start<Startup>(Host);
+            }
+            catch
+            {
+                /* Ignored
+                We need this empty exception handling when terminal already started.
+                So, if you already start terminal manually (or it started on build server),
+                there is no need to use self-hosted Owin server
+                */
+            }
         }
 
         [TestFixtureTearDown]
         public void FixtureTearDown()
         {
-            _app.Dispose();
+            _app?.Dispose();
         }
-
         [Test, Category("Integration.terminalDropbox")]
         public async Task GetFileList_InitialConfig_ReturnsActivity()
         {
