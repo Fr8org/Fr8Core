@@ -43,7 +43,8 @@ module dockyard.controllers {
         openMenu: ($mdOpenMenu: any , ev: any) => void;
         view: string;
         viewMode: string;
-    }
+        hasAnyActivity: (pSubPlan: any) => boolean;
+}
 
 
     //Setup aliases
@@ -119,6 +120,14 @@ module dockyard.controllers {
                 this.addAction(group);
             }
 
+            this.$scope.hasAnyActivity = (pSubPlan) => {
+                var actionGroups = <Array<model.ActionGroup>>pSubPlan.actionGroups;
+                return _.any(actionGroups, (actionGroup: model.ActionGroup) => {
+                    // return true where any outcome has a "test" property defined
+                    return actionGroup.envelopes.length > 0;
+                });
+            };
+
             this.$scope.isBusy = () => {
                 return this._longRunningActionsCounter > 0 || this._loading;
             };
@@ -127,7 +136,7 @@ module dockyard.controllers {
 
             $scope.deleteAction = <() => void>angular.bind(this, this.deleteAction);
             $scope.addSubPlan = <() => void>angular.bind(this, this.addSubPlan);
-            $scope.openMenu = function ($mdOpenMenu, ev) {
+            $scope.openMenu = ($mdOpenMenu, ev) => {
                 $mdOpenMenu(ev);
             };
             $scope.reConfigureAction = (action: model.ActivityDTO) => {
@@ -447,7 +456,6 @@ module dockyard.controllers {
         //This function filters activities by checking if they contain specified StandardConfigurationControls
         //crate with given label
         private filterActivitiesByUICrate(activities: Array<model.ActivityDTO>, uiCrateLabel: string): Array<model.ActivityDTO> {
-
             var filteredList: Array<model.ActivityDTO>;
             //if our view parameter is set - we should make sure we render only activities with given crates
             if (uiCrateLabel) {
