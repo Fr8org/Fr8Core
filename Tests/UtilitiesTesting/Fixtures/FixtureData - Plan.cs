@@ -105,7 +105,7 @@ namespace UtilitiesTesting.Fixtures
                 {
                     Id = TestContainer_Id_1(),
                     PlanId = planDO.Id,
-                    ContainerState = 1
+                    State = 1
                 };
 
                 using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))
@@ -181,7 +181,7 @@ namespace UtilitiesTesting.Fixtures
                 {
                     Id = TestContainer_Id_1(),
                     PlanId = planDO.Id,
-                    ContainerState = 1
+                    State = 1
                 };
 
                 using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => containerDO.CrateStorage))

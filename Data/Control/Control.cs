@@ -29,6 +29,7 @@ namespace Data.Control
     public class ControlTypes
     {
         public const string TextBox = "TextBox";
+        public const string TextBoxBig = "TextBoxBig";
         public const string CheckBox = "CheckBox";
         public const string DropDownList = "DropDownList";
         public const string RadioButtonGroup = "RadioButtonGroup";
@@ -290,6 +291,14 @@ namespace Data.Control
         public Generic()
         {
             Type = ControlTypes.TextBox; // Yes, default to TextBox
+        }
+    }
+
+    public class TextBoxBig : ControlDefinitionDTO
+    {
+        public TextBoxBig()
+        {
+            Type = ControlTypes.TextBoxBig; // Text box with multilines
         }
     }
 

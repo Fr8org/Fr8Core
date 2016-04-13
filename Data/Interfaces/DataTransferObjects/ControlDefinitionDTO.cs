@@ -79,6 +79,9 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("isHidden")]
         public bool IsHidden { get; set; }
 
+        [JsonProperty("isCollapsed")]
+        public bool IsCollapsed  { get; set; }
+
         public virtual void Reset(List<string> fieldNames)
         {
             //This is here to prevent development bugs

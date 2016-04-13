@@ -35,7 +35,7 @@ namespace Data.Repositories
                                     {
                                         ClientId = clientID,
                                         ClientSecret = clientSecret,
-                                        Scopes = "https://spreadsheets.google.com/feeds,https://docs.google.com/feeds"
+                                        Scopes = "https://spreadsheets.google.com/feeds,https://docs.google.com/feeds https://www.googleapis.com/auth/drive"
                                     }),
                             EndPoint = ""
                         }

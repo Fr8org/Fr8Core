@@ -218,6 +218,8 @@ namespace Hub.Managers
         {
             try
             {
+                Guid planId;
+                DateTimeOffset planLastUpdated;
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     var template = _activityTemplate.GetByKey(activityDo.ActivityTemplateId);
@@ -238,7 +240,10 @@ namespace Hub.Managers
                     };
 
                     uow.FactRepository.Add(factDO);
+                    var planDO = uow.PlanRepository.GetById<PlanDO>(activityDo.RootPlanNodeId);
                     uow.SaveChanges();
+                    planId = planDO.Id;
+                    planLastUpdated = planDO.LastUpdated;
                 }
 
                 //create user notifications
@@ -251,6 +256,8 @@ namespace Hub.Managers
                         ActivityName = activityDo.Label,
                         PlanName = containerDO.Name,
                         ContainerId = containerDO.Id.ToString(),
+                        PlanId = planId,
+                        PlanLastUpdated = planLastUpdated,
                     });
             }
             catch (Exception exception)
@@ -1084,7 +1091,7 @@ namespace Hub.Managers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 containerInExecution = uow.ContainerRepository.GetQuery()
-                    .FirstOrDefault(p => p.CurrentPlanNodeId.Value == curActivity.Id);
+                    .FirstOrDefault(p => p.CurrentActivityId.Value == curActivity.Id);
                 var plan = containerInExecution != null ? uow.PlanRepository.GetById<PlanDO>(containerInExecution.PlanId) : null;
 
                 fact = new FactDO

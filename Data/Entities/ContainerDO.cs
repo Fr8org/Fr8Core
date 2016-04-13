@@ -9,6 +9,8 @@ using Newtonsoft.Json;
 using System;
 using Data.Infrastructure;
 using System.Data.Entity.Infrastructure;
+using Data.Infrastructure.StructureMap;
+using StructureMap;
 
 
 namespace Data.Entities
@@ -36,16 +38,16 @@ namespace Data.Entities
 
         [Required]
         [ForeignKey("ContainerStateTemplate")]
-        public int ContainerState { get; set; }
+        public int State { get; set; }
 
         public virtual _ContainerStateTemplate ContainerStateTemplate { get; set; }
 
         [ForeignKey("CurrentPlanNode")]
-        public Guid? CurrentPlanNodeId { get; set; }
+        public Guid? CurrentActivityId { get; set; }
         public virtual PlanNodeDO CurrentPlanNode { get; set; }
 
         [ForeignKey("NextRouteNode")]
-        public Guid? NextRouteNodeId { get; set; }
+        public Guid? NextActivityId { get; set; }
         public virtual PlanNodeDO NextRouteNode { get; set; }
 
         public string CrateStorage { get; set; }
@@ -80,6 +82,14 @@ namespace Data.Entities
         public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
         {
             base.OnModify(originalValues, currentValues);
+        }
+
+        public override void AfterCreate()
+        {
+            base.AfterCreate();
+
+            var securityService = ObjectFactory.GetInstance<ISecurityServices>();
+            securityService.SetDefaultObjectSecurity(Id, GetType().Name);
         }
     }
 }
