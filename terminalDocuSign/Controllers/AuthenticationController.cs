@@ -24,7 +24,6 @@ namespace terminalDocuSign.Controllers
     {
         private const string curTerminal = "terminalDocuSign";
         
-
         [HttpPost]
         [Route("internal")]
         public async Task<AuthorizationTokenDTO> GenerateInternalOAuthToken(CredentialsDTO curCredentials)
