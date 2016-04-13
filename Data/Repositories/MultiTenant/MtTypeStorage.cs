@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Reflection;
+using Data.Repositories.SqlBased;
 
 namespace Data.Repositories.MultiTenant
 {
@@ -15,12 +16,12 @@ namespace Data.Repositories.MultiTenant
             _typeConverter = typeConverter;
         }
 
-        public MtTypeDefinition ResolveType(IMtConnectionProvider connectionProvider, Type clrType, IMtTypeStorageProvider typeStorageProvider, bool storeIfNew)
+        public MtTypeDefinition ResolveType(ISqlConnectionProvider connectionProvider, Type clrType, IMtTypeStorageProvider typeStorageProvider, bool storeIfNew)
         {
             return ResolveMtType(connectionProvider, clrType, typeStorageProvider, false, storeIfNew);
         }
 
-        private void CacheTypeDependences(IMtConnectionProvider connectionProvider, MtTypeDefinition typeDefinition, IMtTypeStorageProvider typeStorageProvider)
+        private void CacheTypeDependences(ISqlConnectionProvider connectionProvider, MtTypeDefinition typeDefinition, IMtTypeStorageProvider typeStorageProvider)
         {
             if (_clrTypeMappings.ContainsKey(typeDefinition.ClrType))
             {
@@ -46,7 +47,7 @@ namespace Data.Repositories.MultiTenant
             }
         }
 
-        private MtTypeDefinition ResolveMtType(IMtConnectionProvider connectionProvider, Type clrType, IMtTypeStorageProvider typeStorageProvider, bool forceComplexType, bool storeIfNew)
+        private MtTypeDefinition ResolveMtType(ISqlConnectionProvider connectionProvider, Type clrType, IMtTypeStorageProvider typeStorageProvider, bool forceComplexType, bool storeIfNew)
         {
             MtTypeDefinition typeDefinition;
 
@@ -90,7 +91,7 @@ namespace Data.Repositories.MultiTenant
             return !_isUnsavedType.Contains(typeId);
         }
         
-        private MtTypeDefinition BuildMtType(IMtConnectionProvider connectionProvider, Type clrType, IMtTypeStorageProvider typeStorageProvider, bool forceComplexType)
+        private MtTypeDefinition BuildMtType(ISqlConnectionProvider connectionProvider, Type clrType, IMtTypeStorageProvider typeStorageProvider, bool forceComplexType)
         {
             if (_typeConverter.IsPrimitiveType(clrType))
             {
