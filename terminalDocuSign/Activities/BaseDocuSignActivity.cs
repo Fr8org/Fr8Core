@@ -115,6 +115,26 @@ namespace terminalDocuSign.Actions
             return control;
         }
 
+        public IEnumerable<FieldDTO> GetTemplateUserDefinedFields(AuthorizationTokenDO authTokenDO, string templateId, string envelopeId = null)
+        {
+            if (String.IsNullOrEmpty(templateId))
+            {
+                throw new ArgumentNullException(nameof(templateId));
+            }
+            var conf = DocuSignManager.SetUp(authTokenDO);
+            return DocuSignManager.GetTemplateRecipientsAndTabs(conf, templateId);
+        }
+
+        public IEnumerable<FieldDTO> GetEnvelopeUserDefinedFields(AuthorizationTokenDO authTokenDO, string templateId, string envelopeId = null)
+        {
+            if (String.IsNullOrEmpty(templateId))
+            {
+                throw new ArgumentNullException(nameof(templateId));
+            }
+            var conf = DocuSignManager.SetUp(authTokenDO);
+            return DocuSignManager.GetEnvelopeRecipientsAndTabs(conf, templateId);
+        }
+
         public void AddOrUpdateUserDefinedFields(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, IUpdatableCrateStorage updater, string templateId, string envelopeId = null, List<FieldDTO> allFields = null)
         {
             updater.RemoveByLabel("DocuSignTemplateUserDefinedFields");
@@ -128,13 +148,6 @@ namespace terminalDocuSign.Actions
                 }
                 updater.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", AvailabilityType.RunTime, userDefinedFields.ToArray()));
             }
-        }
-
-        public StandardPayloadDataCM CreateActivityPayload(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, string curEnvelopeId)
-        {
-            var conf = DocuSignManager.SetUp(authTokenDO);
-            var payload = DocuSignManager.GetEnvelopeRecipientsAndTabs(conf, curEnvelopeId);
-            return new StandardPayloadDataCM(payload.ToArray());
         }
 
         public void FillDocuSignTemplateSource(Crate configurationCrate, string controlName, AuthorizationTokenDO authToken)
