@@ -214,7 +214,7 @@ namespace terminalAzureTests.Integration
                     new FieldDTO("Field1", "test physician"),
                     new FieldDTO("Field2", "teststring")
                 ),
-               "DocuSign Envelope Data"
+               "TableData"
             );
 
             var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, fr8DataDTO);

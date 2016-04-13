@@ -5,8 +5,6 @@ using System.Threading.Tasks;
 using Data.Crates;
 using Hub.Interfaces;
 using Moq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
 using Data.Interfaces.DataTransferObjects;
@@ -22,7 +20,7 @@ namespace terminalDropboxTests.Actions
 {
     [TestFixture]
     [Category("terminalDropboxTests")]
-    public class GetFileList_v1Tests : BaseTest
+    public class Get_File_List_v1Tests : BaseTest
     {
         private Get_File_List_v1 _getFileList_v1;
 
