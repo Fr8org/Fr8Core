@@ -153,6 +153,7 @@ namespace terminalDocuSignTests.Integration
                 Username = DocuSignEmail,
                 Password = DocuSignApiPassword,
                 IsDemoAccount = true,
+                Terminal = Mapper.
                 TerminalId = docuSignTerminal.Id
             };
 

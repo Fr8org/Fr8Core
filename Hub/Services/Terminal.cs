@@ -175,6 +175,22 @@ namespace Hub.Services
             }
         }
 
+        public TerminalDO GetByNameAndVersion(string name, string version)
+        {
+            Initialize();
+
+            lock (_terminals)
+            {
+                TerminalDO terminal =_terminals.FirstOrDefault(t => t.Value.Name == name && t.Value.Version == version).Value;
+                if (terminal == null)
+                {
+                    throw new KeyNotFoundException($"Unable to find terminal with name {name} and version {version}");
+                }
+
+                return terminal;
+            }
+        }
+
         public TerminalDO RegisterOrUpdate(TerminalDO terminalDo)
         {
             if (terminalDo == null)

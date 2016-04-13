@@ -101,7 +101,7 @@ namespace terminalDocuSignTests.Integration
             if (!defaultDocuSignAuthTokenExists)
             {
                 var creds = GetDocuSignCredentials();
-                creds.TerminalId = solution.ActivityTemplate.TerminalId;
+                creds.Terminal = solution.ActivityTemplate.Terminal;
 
                 var token = await HttpPostAsync<CredentialsDTO, JObject>(
                     _baseUrl + "authentication/token", creds
