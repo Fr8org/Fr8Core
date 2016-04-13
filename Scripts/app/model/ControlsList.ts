@@ -192,7 +192,7 @@
 
             var ac = new model.ActivityChooser();
             ac.label = 'Template Activity';
-            ac.activityTemplateTag = 'Table Data Generator';
+            // ac.activityTemplateTag = 'Table Data Generator';
             ac.name = 'ExternalObjectChooser';
             ac.runnable = false;
             this.controls.push(ac);
