@@ -118,6 +118,7 @@ namespace Hub.Services
                 curPlan.Name = submittedPlan.Name;
                 curPlan.Description = submittedPlan.Description;
                 curPlan.Category = submittedPlan.Category;
+                curPlan.LastUpdated = DateTimeOffset.UtcNow;
             }
         }
 
@@ -214,7 +215,9 @@ namespace Hub.Services
                 if (result.Status != "validation_error")
                 {
                     plan.PlanState = PlanState.Active;
+                    plan.LastUpdated = DateTimeOffset.UtcNow;
                     uow.SaveChanges();
+                    uow.PlanRepository.Reload<PlanDO>(plan.Id);
                 }
             }
 
