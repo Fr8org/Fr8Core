@@ -37,45 +37,57 @@ namespace terminalDocuSign.Services
         public async Task<Crate> Process(string curExternalEventPayload)
         {
             //if the event payload is Fr8 User ID, it is DocuSign Authentication Completed event
-            //The Monitor All DocuSign Events plan should be creaed in this case.
             if (curExternalEventPayload.Contains("fr8_user_id"))
             {
+                var curFr8UserAndToken = ConfirmAuthentication(curExternalEventPayload);
+
                 try
                 {
-                    return await ConfirmAuthenticationAndCreateMADSE(curExternalEventPayload);
+                    _docuSignPlan.CreateConnect(curFr8UserAndToken.Item1, curFr8UserAndToken.Item2);
                 }
                 catch
                 {
                     //create polling
-                    ///////////
+
+                }
+                finally
+                {
+                    // create MonitorAllDocuSignEvents plan
+                    await _docuSignPlan.CreatePlan_MonitorAllDocuSignEvents(curFr8UserAndToken.Item1, curFr8UserAndToken.Item2);
                 }
             }
 
             //If this is a connect event
             if (curExternalEventPayload.Contains("DocuSignEnvelopeInformation"))
             {
-                // Connect events come only for a single envelope
-                var curDocuSignEnvelopeInfo = DocuSignConnectParser.GetEnvelopeInformation(curExternalEventPayload);
-                // transform XML structure into DocuSignEnvelopeCM_v2
-                var curDocuSingEnvelopCM = DocuSignConnectParser.ParseXMLintoCM(curDocuSignEnvelopeInfo);
-                var eventReportContent = new EventReportCM
-                {
-                    EventNames = DocuSignConnectParser.GetEventNames(curDocuSignEnvelopeInfo),
-                    ContainerDoId = "",
-                    EventPayload = new CrateStorage(Crate.FromContent("DocuSign Connect Event", curDocuSingEnvelopCM)),
-                    Manufacturer = "DocuSign",
-                    ExternalAccountId = curDocuSignEnvelopeInfo.EnvelopeStatus.Email
-                };
-
-                ////prepare the event report
-                var curEventReport = Crate.FromContent("Standard Event Report", eventReportContent);
-                return curEventReport;
+                return ProcessConnectEvent(curExternalEventPayload);
             }
-            
+
+
             return null;
         }
 
-        private async Task<Crate> ConfirmAuthenticationAndCreateMADSE(string curExternalEventPayload)
+        private Crate ProcessConnectEvent(string curExternalEventPayload)
+        {
+            // Connect events come only for a single envelope
+            var curDocuSignEnvelopeInfo = DocuSignConnectParser.GetEnvelopeInformation(curExternalEventPayload);
+            // transform XML structure into DocuSignEnvelopeCM_v2
+            var curDocuSingEnvelopCM = DocuSignConnectParser.ParseXMLintoCM(curDocuSignEnvelopeInfo);
+            var eventReportContent = new EventReportCM
+            {
+                EventNames = DocuSignConnectParser.GetEventNames(curDocuSignEnvelopeInfo),
+                ContainerDoId = "",
+                EventPayload = new CrateStorage(Crate.FromContent("DocuSign Connect Event", curDocuSingEnvelopCM)),
+                Manufacturer = "DocuSign",
+                ExternalAccountId = curDocuSignEnvelopeInfo.EnvelopeStatus.Email
+            };
+
+            ////prepare the event report
+            var curEventReport = Crate.FromContent("Standard Event Report", eventReportContent);
+            return curEventReport;
+        }
+
+        private Tuple<string, AuthorizationTokenDTO> ConfirmAuthentication(string curExternalEventPayload)
         {
             var jo = (JObject)JsonConvert.DeserializeObject(curExternalEventPayload);
             var curFr8UserId = jo["fr8_user_id"].Value<string>();
@@ -91,9 +103,7 @@ namespace terminalDocuSign.Services
                 throw new ArgumentException("Fr8 User ID is not in the correct format.");
             }
 
-            // create MonitorAllDocuSignEvents plan
-            await _docuSignPlan.CreatePlan_MonitorAllDocuSignEvents(curFr8UserId, authToken);
-            return null;
+            return new Tuple<string, AuthorizationTokenDTO>(curFr8UserId, authToken);
         }
     }
 }

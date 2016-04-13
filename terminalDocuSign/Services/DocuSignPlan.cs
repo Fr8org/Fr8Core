@@ -55,15 +55,12 @@ namespace terminalDocuSign.Services
         /// </summary>
         public async Task CreatePlan_MonitorAllDocuSignEvents(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
-            CreateConnect(curFr8UserId, authTokenDTO);
             if (!(await FindAndActivateExistingPlan(curFr8UserId, authTokenDTO)))
-                await CreateAndActivateNewPlan(curFr8UserId, authTokenDTO);
+                await CreateAndActivateNewMADSEPlan(curFr8UserId, authTokenDTO);
         }
 
-
-
         //only create a connect when running on dev/production
-        private void CreateConnect(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
+        public void CreateConnect(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
             var authTokenDO = new AuthorizationTokenDO() { Token = authTokenDTO.Token, ExternalAccountId = authTokenDTO.ExternalAccountId };
             var config = _docuSignManager.SetUp(authTokenDO);
@@ -92,7 +89,7 @@ namespace terminalDocuSign.Services
                     if (terminalUrl.Contains(prodUrl, StringComparison.InvariantCultureIgnoreCase))
                     connectName = ProdConnectName;
 
-                
+
                 string publishUrl = terminalUrl + "/terminals/terminalDocuSign/events";
 
                 Console.WriteLine("Connect creation: publishUrl = {0}", publishUrl);
@@ -117,6 +114,22 @@ namespace terminalDocuSign.Services
                 }
             }
         }
+
+        public async void CreateOrUpdatePollingPlan(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
+        {
+            var existingPlans = (await _hubCommunicator.GetPlansByName("DocuSignPollingFor" + authTokenDTO.ExternalAccountId, curFr8UserId, PlanVisibility.Internal)).ToList();
+            if (existingPlans.Count > 0)
+            {
+
+            }
+
+        }
+
+
+
+
+
+
 
         private async Task<bool> FindAndActivateExistingPlan(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
@@ -188,7 +201,7 @@ namespace terminalDocuSign.Services
             return false;
         }
 
-        private async Task CreateAndActivateNewPlan(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
+        private async Task CreateAndActivateNewMADSEPlan(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
             var emptyMonitorPlan = new PlanEmptyDTO
             {
@@ -212,7 +225,6 @@ namespace terminalDocuSign.Services
             var planDO = Mapper.Map<PlanDO>(monitorDocusignPlan.Plan);
             await _hubCommunicator.ActivatePlan(planDO, curFr8UserId);
         }
-
 
         private void SetSelectedCrates(ActivityDTO storeMTDataActivity)
         {
