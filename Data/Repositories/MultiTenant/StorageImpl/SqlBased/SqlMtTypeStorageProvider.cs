@@ -5,6 +5,7 @@ using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
 using Data.Crates;
+using Data.Repositories.SqlBased;
 
 namespace Data.Repositories.MultiTenant.Sql
 {
@@ -20,7 +21,7 @@ namespace Data.Repositories.MultiTenant.Sql
             _connectionString = ConfigurationManager.ConnectionStrings["DockyardDB"].ConnectionString;
         }
 
-        private SqlConnection OpenConnection(IMtConnectionProvider connectionProvider)
+        private SqlConnection OpenConnection(ISqlConnectionProvider connectionProvider)
         {
             var connection = new SqlConnection(_connectionString);
 
@@ -51,7 +52,7 @@ namespace Data.Repositories.MultiTenant.Sql
             return mtType;
         }
 
-        public IEnumerable<MtTypeReference> ListTypeReferences(IMtConnectionProvider connectionProvider)
+        public IEnumerable<MtTypeReference> ListTypeReferences(ISqlConnectionProvider connectionProvider)
         {
             const string loadTypeReferences = "select * from MtTypes";
 
@@ -87,7 +88,7 @@ namespace Data.Repositories.MultiTenant.Sql
             }
         }
 
-        public IEnumerable<MtTypePropertyReference> ListTypePropertyReferences(IMtConnectionProvider connectionProvider, Guid typeId)
+        public IEnumerable<MtTypePropertyReference> ListTypePropertyReferences(ISqlConnectionProvider connectionProvider, Guid typeId)
         {
             using (var connection = OpenConnection(connectionProvider))
             using (var loadPropCommand = new SqlCommand(@"select  MtProperties.*, ptype.IsPrimitive, ptype.IsComplex, pType.ClrName, pType.ManifestId from MtProperties 
@@ -133,7 +134,7 @@ namespace Data.Repositories.MultiTenant.Sql
             }
         }
 
-        public MtTypeReference FindTypeReference(IMtConnectionProvider connectionProvider, Type type)
+        public MtTypeReference FindTypeReference(ISqlConnectionProvider connectionProvider, Type type)
         {
             MtTypeDefinition typeDef;
 
@@ -145,7 +146,7 @@ namespace Data.Repositories.MultiTenant.Sql
             return new MtTypeReference(typeDef.Alias, typeDef.ClrType, typeDef.Id);
         }
 
-        public MtTypeReference FindTypeReference(IMtConnectionProvider connectionProvider, Guid typeId)
+        public MtTypeReference FindTypeReference(ISqlConnectionProvider connectionProvider, Guid typeId)
         {
             const string loadTypeReferences = "select * from MtTypes where Id = @id";
 
@@ -185,7 +186,7 @@ namespace Data.Repositories.MultiTenant.Sql
         // All our properties are of primitive types (types that has no own properties) and  we don't want to introduce unnecessary complications related to types graphs
         // So we make assumption that we can always safely load the type with all possible references by loading only topmost level of type hierarchy
         // This is as easy as making one sql join.
-        public bool TryLoadType(IMtConnectionProvider connectionProvider, Type clrType, out MtTypeDefinition mtType)
+        public bool TryLoadType(ISqlConnectionProvider connectionProvider, Type clrType, out MtTypeDefinition mtType)
         {
             // we want handle Manifests in the special way. Instead of storing manifest name as CLR type name we'll store it as manifest id.
             // this will make out system more robust because it will not depend on manifest names.
@@ -281,12 +282,12 @@ namespace Data.Repositories.MultiTenant.Sql
             return true;
         }
 
-        public void PersistType(IMtConnectionProvider connectionProvider, MtTypeDefinition mtType)
+        public void PersistType(ISqlConnectionProvider connectionProvider, MtTypeDefinition mtType)
         {
             _newTypes.Add(mtType);
         }
 
-        public void SaveChanges(IMtConnectionProvider connectionProvider)
+        public void SaveChanges(ISqlConnectionProvider connectionProvider)
         {
             const string insertTypeCommand = @"insert into MtTypes (Id, Alias, ClrName, IsPrimitive, IsComplex, ManifestId) values (@typeId, @alias, @clrName, @isPrimitive, @isComplex, @manifestId)";
             const string insertPropertyCommand = @"insert into MtProperties (Name, Offset, Type, DeclaringType) values (@name, @offset, @type, @declaringType)";
