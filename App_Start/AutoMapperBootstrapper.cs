@@ -92,12 +92,12 @@ namespace HubWeb.App_Start
 
         private TerminalDTO GetTerminal(ActivityTemplateDO t)
         {
-            if (t == null)
+            if (t?.Terminal == null)
             {
                 return null;
             }
 
-            return Mapper.Map<TerminalDTO>(_terminal.GetByKey(t.TerminalId));
+            return Mapper.Map<TerminalDTO>(t.Terminal);
         }
 
         private ActivityTemplateDTO GetActivityTemplate(ActivityDO ad)

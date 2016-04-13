@@ -98,7 +98,8 @@ namespace HubWeb.Controllers
                             Type = p.Type,
                             Tags = p.Tags,
                             Description = p.Description,
-                            WebService = Mapper.Map<WebServiceDTO>(p.WebService)
+                            WebService = Mapper.Map<WebServiceDTO>(p.WebService),
+                            Terminal = Mapper.Map<TerminalDTO>(p.Terminal)
 			            }).ToList()
 			        }).ToList();
 			}

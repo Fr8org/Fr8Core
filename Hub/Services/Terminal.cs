@@ -264,7 +264,7 @@ namespace Hub.Services
 
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
             var standardFr8TerminalCM = await restClient.GetAsync<StandardFr8TerminalCM>(new Uri(uri, UriKind.Absolute));
-            return Mapper.Map<IList<ActivityTemplateDO>>(standardFr8TerminalCM.Activities);
+            return standardFr8TerminalCM.Activities.Select(Mapper.Map<ActivityTemplateDO>).ToList();
         }
         
         public async Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId)

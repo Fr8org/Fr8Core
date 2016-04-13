@@ -34,7 +34,9 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(dto => dto.Status, opts => opts.ResolveUsing(e => e.State.Value));
 
             Mapper.CreateMap<WebServiceDO, WebServiceDTO>();
-            Mapper.CreateMap<WebServiceDTO, WebServiceDO>();
+            Mapper.CreateMap<WebServiceDTO, WebServiceDO>()
+                .ForMember(x => x.LastUpdated, opts => opts.Ignore())
+                .ForMember(x => x.CreateDate, opts => opts.Ignore());
             Mapper.CreateMap<string, JToken>().ConvertUsing<StringToJTokenConverter>();
             Mapper.CreateMap<JToken, string>().ConvertUsing<JTokenToStringConverter>();
 
@@ -65,9 +67,11 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
                 .ForMember(x => x.Description, opts => opts.ResolveUsing(x => x.Description))
-                .ForMember(x => x.NeedsAuthentication, opts => opts.ResolveUsing(x => x.NeedsAuthentication));
+                .ForMember(x => x.NeedsAuthentication, opts => opts.ResolveUsing(x => x.NeedsAuthentication))
+                .ForMember(x => x.ShowDocumentation, opts => opts.Ignore());
 
             Mapper.CreateMap<ActivityTemplateDTO, ActivityTemplateDO>()
+                .ConstructUsing((Func<ResolutionContext, ActivityTemplateDO>)(r => new ActivityTemplateDO()))
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
                 .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
@@ -79,7 +83,12 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.ActivityTemplateStateTemplate,
                     opts => opts.ResolveUsing((ActivityTemplateDTO x) => null))
                 .ForMember(x => x.WebServiceId, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null))
-                .ForMember(x => x.Description, opts => opts.ResolveUsing(x => x.Description));
+                .ForMember(x => x.Description, opts => opts.ResolveUsing(x => x.Description))
+                .ForMember(x => x.ComponentActivities, opts => opts.Ignore())
+                .ForMember(x => x.ActivityTemplateState, opts => opts.Ignore())
+                .ForMember(x => x.TerminalId, opts => opts.Ignore())
+                .ForMember(x => x.LastUpdated, opts => opts.Ignore())
+                .ForMember(x => x.CreateDate, opts => opts.Ignore());
 
             //
             //            Mapper.CreateMap<ActionListDO, ActionListDTO>()
@@ -163,12 +172,18 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<ManifestDescriptionCM, ManifestDescriptionDTO>();
             Mapper.CreateMap<ManifestDescriptionDTO, ManifestDescriptionCM>();
-                                    
+
 
             Mapper.CreateMap<TerminalDO, TerminalDTO>();
-            Mapper.CreateMap<TerminalDTO, TerminalDO>();
+            Mapper.CreateMap<TerminalDTO, TerminalDO>()
+                .ForMember(x => x.LastUpdated, opts => opts.Ignore())
+                .ForMember(x => x.CreateDate, opts => opts.Ignore())
+                .ForMember(x => x.Id, opts => opts.Ignore())
+                .ForMember(x => x.PublicIdentifier, opts => opts.Ignore())
+                .ForMember(x => x.Secret, opts => opts.Ignore())
+                .ForMember(x => x.AuthenticationTypeTemplate, opts => opts.Ignore());
 
-            
+
 
 
         }

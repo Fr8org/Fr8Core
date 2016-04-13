@@ -160,7 +160,6 @@ namespace terminaBaselTests.Tools.Activities
                 AuthTokenId = Guid.Parse(queryDocuSignActivity.AuthToken.Token),
             };
             await _baseHubITest.HttpPostAsync<ManageAuthToken_Apply[], string>( _baseHubITest.GetHubApiBaseUrl() + "ManageAuthToken/apply", new ManageAuthToken_Apply[] { applyToken });
-            //}
 
             //send configure with the auth token
             queryDocuSignActivity = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/save", queryDocuSignActivity);
