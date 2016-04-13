@@ -4,6 +4,7 @@ using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
 using Data.Repositories.MultiTenant.Ast;
+using Data.Repositories.SqlBased;
 
 namespace Data.Repositories.MultiTenant.Sql
 {
@@ -18,7 +19,7 @@ namespace Data.Repositories.MultiTenant.Sql
             //_connectionString = ConfigurationManager.ConnectionStrings["DockyardDB"].ConnectionString;
         }
 
-        private SqlConnection OpenConnection(IMtConnectionProvider connectionProvider)
+        private SqlConnection OpenConnection(ISqlConnectionProvider connectionProvider)
         {
             var connection = new SqlConnection((string)connectionProvider.ConnectionInfo);
 
@@ -26,7 +27,7 @@ namespace Data.Repositories.MultiTenant.Sql
             return connection;
         }
         
-        private int Upsert(IMtConnectionProvider connectionProvider, string fr8AccountId, MtObject obj, AstNode @where, bool allowUpdate, bool allowInsert)
+        private int Upsert(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtObject obj, AstNode @where, bool allowUpdate, bool allowInsert)
         {
             var fields = new List<string>
             {
@@ -125,12 +126,12 @@ namespace Data.Repositories.MultiTenant.Sql
             }
         }
 
-        public int Upsert(IMtConnectionProvider connectionProvider, string fr8AccountId, MtObject obj, AstNode @where)
+        public int Upsert(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtObject obj, AstNode @where)
         {
             return Upsert(connectionProvider, fr8AccountId, obj, @where, true, true);
         }
 
-        public int Insert(IMtConnectionProvider connectionProvider, string fr8AccountId, MtObject obj, AstNode uniqueConstraint)
+        public int Insert(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtObject obj, AstNode uniqueConstraint)
         {
             var affectedRows = Upsert(connectionProvider, fr8AccountId, obj, uniqueConstraint, false, true);
 
@@ -142,12 +143,12 @@ namespace Data.Repositories.MultiTenant.Sql
             return affectedRows;
         }
         
-        public int Update(IMtConnectionProvider connectionProvider, string fr8AccountId, MtObject obj, AstNode @where)
+        public int Update(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtObject obj, AstNode @where)
         {
             return Upsert(connectionProvider, fr8AccountId, obj, @where, true, false);
         }
 
-        public IEnumerable<MtObject> Query(IMtConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode @where)
+        public IEnumerable<MtObject> Query(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode @where)
         {
             var fields = new List<string>
             {
@@ -225,7 +226,7 @@ namespace Data.Repositories.MultiTenant.Sql
             }
         }
 
-        public int Delete(IMtConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode @where)
+        public int Delete(ISqlConnectionProvider connectionProvider, string fr8AccountId, MtTypeDefinition type, AstNode @where)
         {
             throw new System.NotImplementedException();
         }
