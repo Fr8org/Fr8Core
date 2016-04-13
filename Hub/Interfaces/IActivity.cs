@@ -23,8 +23,8 @@ namespace Hub.Interfaces
         Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActivityExecutionMode curActionExecutionMode, ContainerDO curContainerDO);
         Task<ActivityDTO> Activate(ActivityDO curActivityDO);
         Task<ActivityDTO> Deactivate(ActivityDO curActivityDO);
-        Task<T> GetActivityDocumentation<T>(ActivityDTO curActivityDTO, bool isSolution = false);
-        List<string> GetSolutionList(string terminalName);
+        Task<T> GetActivityDocumentation<T>(ActivityDTO curActivityDTO, bool isSolution = false) where T : class;
+        List<string> GetSolutionNameList(string terminalName);
         void Delete(Guid id);
     }
 }

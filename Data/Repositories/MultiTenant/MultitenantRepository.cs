@@ -7,19 +7,20 @@ using Data.Interfaces;
 using Data.Interfaces.Manifests;
 using Data.Repositories.MultiTenant.Ast;
 using Data.Repositories.MultiTenant.Queryable;
+using Data.Repositories.SqlBased;
 
 namespace Data.Repositories.MultiTenant
 {
     partial class MultitenantRepository : IMultiTenantObjectRepository
     {
-        private readonly IMtConnectionProvider _connectionProvider;
+        private readonly ISqlConnectionProvider _connectionProvider;
         private readonly IMtTypeStorageProvider _typeStorageProvider;
         private readonly IMtTypeStorage _typeStorage;
         private readonly IMtObjectConverter _converter;
         private readonly IMtObjectsStorage _mtObjectsStorage;
         private readonly List<MtObjectChange> _changes = new List<MtObjectChange>(); 
 
-        public MultitenantRepository(IMtConnectionProvider connectionProvider, IMtTypeStorageProvider typeStorageProvider, IMtTypeStorage typeStorage, IMtObjectConverter converter, IMtObjectsStorage mtObjectsStorage)
+        public MultitenantRepository(ISqlConnectionProvider connectionProvider, IMtTypeStorageProvider typeStorageProvider, IMtTypeStorage typeStorage, IMtObjectConverter converter, IMtObjectsStorage mtObjectsStorage)
         {
             _connectionProvider = connectionProvider;
             _typeStorageProvider = typeStorageProvider;

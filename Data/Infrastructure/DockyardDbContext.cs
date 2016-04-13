@@ -11,6 +11,7 @@ using Data.Entities.CTE;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Repositories.Security;
 using Utilities;
 using Data.Utility;
 using Data.Utility.JoinClasses;

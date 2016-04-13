@@ -82,14 +82,14 @@ namespace DockyardTest.Services.Container
             return _activity.Deactivate(curActivityDO);
         }
 
-        public Task<T> GetActivityDocumentation<T>(ActivityDTO curActivityDTO, bool isSolution = false)
+        Task<T> IActivity.GetActivityDocumentation<T>(ActivityDTO curActivityDTO, bool isSolution)
         {
             return _activity.GetActivityDocumentation<T>(curActivityDTO, isSolution);
         }
-
-        public List<string> GetSolutionList(string terminalName)
+        
+        public List<string> GetSolutionNameList(string terminalName)
         {
-            return _activity.GetSolutionList(terminalName);
+            return _activity.GetSolutionNameList(terminalName);
         }
 
         public void Delete(Guid id)

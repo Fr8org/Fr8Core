@@ -213,11 +213,12 @@ namespace Hub.Services
         /// <param name="email"></param>
         /// <param name="password"></param>
         /// <param name="organizationDO">organization where the user belongs</param>
+        /// <param name="isNewOrganization">In case of new created organization, make user admin of that organization</param>
         /// <returns></returns>
-        public RegistrationStatus ProcessRegistrationRequest(IUnitOfWork uow, string email, string password, OrganizationDO organizationDO)
+        public RegistrationStatus ProcessRegistrationRequest(IUnitOfWork uow, string email, string password, OrganizationDO organizationDO, bool isNewOrganization)
         {
             RegistrationStatus curRegStatus;
-            Fr8AccountDO newDockyardAccountDO = null;
+            Fr8AccountDO newFr8Account = null;
             //check if we know this email address
 
             EmailAddressDO existingEmailAddressDO =
@@ -244,22 +245,26 @@ namespace Hub.Services
                 }
                 else
                 {
-                    newDockyardAccountDO = Register(uow, email, email, email, password, Roles.Customer, organizationDO);
+                    newFr8Account = Register(uow, email, email, email, password, Roles.Customer, organizationDO);
                     curRegStatus = RegistrationStatus.Successful;
                 }
             }
             else
             {
-                newDockyardAccountDO = Register(uow, email, email, email, password, Roles.Customer, organizationDO);
+                newFr8Account = Register(uow, email, email, email, password, Roles.Customer, organizationDO);
                 curRegStatus = RegistrationStatus.Successful;
+            }
+
+            if (organizationDO != null && newFr8Account != null)
+            {
+                AssingRolesToUserBasedOnOrganization(uow, newFr8Account.Id, organizationDO.Name, isNewOrganization);
             }
 
             uow.SaveChanges();
 
-            if (newDockyardAccountDO != null)
+            if (newFr8Account != null)
             {
-                //AlertManager.CustomerCreated(newDockyardAccountDO);
-                EventManager.UserRegistration(newDockyardAccountDO);
+                EventManager.UserRegistration(newFr8Account);
             }
 
             return curRegStatus;
@@ -299,7 +304,25 @@ namespace Hub.Services
             uow.UserRepository.UpdateUserCredentials(userDO, userName, password);
             uow.AspNetUserRolesRepository.AssignRoleToUser(roleID, userDO.Id);
 
+            //assign OwnerOfCurrentObject role to user
+            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.OwnerOfCurrentObject, userDO.Id);
+
             return userDO;
+        }
+
+        private void AssingRolesToUserBasedOnOrganization(IUnitOfWork uow, string newFr8AccountId, string organizationName, bool isNewOrganization)
+        {
+            //New Fr8Account need to be linked with roles based on organization 
+            var orgMemberRoleName = Organization.MemberOfOrganizationRoleName(organizationName);
+            //every new user that registers inside some organization must have role that is member of that organization
+            uow.AspNetUserRolesRepository.AssignRoleToUser(orgMemberRoleName, newFr8AccountId);
+
+            //in case when the new user is the one that created this new organization, add to user role as admin of new organization
+            if (isNewOrganization)
+            {
+                var orgAdminRoleName = Organization.AdminOfOrganizationRoleName(organizationName);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(orgAdminRoleName, newFr8AccountId);
+            }
         }
 
         public LoginStatus Login(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO, string password,

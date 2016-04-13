@@ -38,6 +38,9 @@ using Utilities.Interfaces;
 using System.Net.Http;
 using Microsoft.ApplicationInsights;
 using System.Linq.Expressions;
+using Castle.DynamicProxy;
+using Data.States;
+using Hub.Security.ObjectDecorators;
 
 namespace Hub.StructureMap
 {
@@ -109,10 +112,12 @@ namespace Hub.StructureMap
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
                 For<IRestfulServiceClient>().Singleton().Use<RestfulServiceClient>().SelectConstructor(() => new RestfulServiceClient());
                 For<ITerminalTransmitter>().Use<TerminalTransmitter>();
-                For<IPlan>().Use<Hub.Services.Plan>();
+
+                For<IPlan>().Use<Hub.Services.Plan>().DecorateWith((context, service) => new PlanSecurityDecorator(service, ObjectFactory.GetInstance<ISecurityServices>()));
                 For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
                 For<InternalInterfaces.IFact>().Use<InternalClass.Fact>();
-                For<IActivity>().Use<Activity>().Singleton();
+                var dynamicProxy = new ProxyGenerator();
+                For<IActivity>().Use<Activity>().Singleton().DecorateWith(z => dynamicProxy.CreateInterfaceProxyWithTarget(z, new AuthorizeActivityInterceptor()));
 				For<IPlanNode>().Use<PlanNode>();
                 For<ISubscription>().Use<Subscription>();
                 For<ISubPlan>().Use<SubPlan>();
@@ -176,6 +181,7 @@ namespace Hub.StructureMap
 					 For<IPlanNode>().Use<PlanNode>();
 
                 For<IPlan>().Use<Hub.Services.Plan>();
+
                 For<ISubPlan>().Use<SubPlan>();
                 For<IField>().Use<Field>();
                 //var mockProcess = new Mock<IProcessService>();
@@ -266,6 +272,11 @@ namespace Hub.StructureMap
             {
                 return _terminal.IsUserSubscribedToTerminal(terminalId, userId);
                 
+            }
+
+            public Task<List<SolutionPageDTO>> GetSolutionDocumentations(string terminalName)
+            {
+                return _terminal.GetSolutionDocumentations(terminalName);
             }
         }
 

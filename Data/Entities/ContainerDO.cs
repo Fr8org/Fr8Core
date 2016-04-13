@@ -5,6 +5,8 @@ using Data.Validations;
 using FluentValidation;
 using System;
 using System.Data.Entity.Infrastructure;
+using Data.Infrastructure.StructureMap;
+using StructureMap;
 
 
 namespace Data.Entities
@@ -46,6 +48,18 @@ namespace Data.Entities
             ContainerValidator curValidator = new ContainerValidator();
             curValidator.ValidateAndThrow(this);
 
+        }
+        public override void OnModify(DbPropertyValues originalValues, DbPropertyValues currentValues)
+        {
+            base.OnModify(originalValues, currentValues);
+        }
+
+        public override void AfterCreate()
+        {
+            base.AfterCreate();
+
+            var securityService = ObjectFactory.GetInstance<ISecurityServices>();
+            securityService.SetDefaultObjectSecurity(Id, GetType().Name);
         }
     }
 }
