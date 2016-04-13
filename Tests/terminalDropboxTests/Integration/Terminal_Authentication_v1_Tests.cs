@@ -6,16 +6,30 @@ using System.Threading.Tasks;
 using Data.Interfaces.DataTransferObjects;
 using HealthMonitor.Utility;
 using Hub.Managers.APIManagers.Transmitters.Restful;
+using Microsoft.Owin.Hosting;
 using NUnit.Framework;
+using terminalDropbox;
 
 namespace terminalDocuSignTests.Integration
 {
     [Explicit]
     public class Terminal_Authentication_v1_Tests : BaseTerminalIntegrationTest
     {
-        public override string TerminalName
+        private const string Host = "http://localhost:19760";
+        private IDisposable _app;
+
+        public override string TerminalName => "terminalDropbox";
+
+        [TestFixtureSetUp]
+        public void FixtureSetup()
         {
-            get { return "terminalDropbox"; }
+            _app = WebApp.Start<Startup>(Host);
+        }
+
+        [TestFixtureTearDown]
+        public void FixtureTearDown()
+        {
+            _app.Dispose();
         }
 
         /// <summary>

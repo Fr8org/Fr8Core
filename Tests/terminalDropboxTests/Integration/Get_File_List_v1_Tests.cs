@@ -24,7 +24,6 @@ namespace terminalDropboxTests.Integration
     {
         private const string Host = "http://localhost:19760";
         private IDisposable _app;
-        private Fixture _fixture;
 
         public override string TerminalName => "terminalDropbox";
 
@@ -32,11 +31,6 @@ namespace terminalDropboxTests.Integration
         public void FixtureSetup()
         {
             _app = WebApp.Start<Startup>(Host);
-
-            // AutoFixture Setup
-            _fixture = new Fixture();
-            _fixture.Behaviors.Remove(new ThrowingRecursionBehavior());
-            _fixture.Behaviors.Add(new OmitOnRecursionBehavior());
         }
 
         [TestFixtureTearDown]
