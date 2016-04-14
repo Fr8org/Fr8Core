@@ -80,9 +80,9 @@ namespace terminalSalesforce.Services
         {
             var stroage = new CrateStorage();
 
-            foreach (var curEvent in curEventEnvelope.Body.Notifications.NotificationList)
+            foreach (var curNotification in curEventEnvelope.Body.Notifications.NotificationList)
             {
-                var payloadCrate = Crate.FromContent("Salesforce Event Notification Payload", new StandardPayloadDataCM(CreateKeyValuePairList(curEvent)));
+                var payloadCrate = Crate.FromContent("Salesforce Event Notification Payload", new StandardPayloadDataCM(CreateKeyValuePairList(curNotification)));
                 stroage.Add(payloadCrate);
             }
 
@@ -96,6 +96,7 @@ namespace terminalSalesforce.Services
             returnList.Add(new FieldDTO("Id", curNotification.SObject.Id));
             returnList.Add(new FieldDTO("CreatedDate", curNotification.SObject.CreatedDate.ToString()));
             returnList.Add(new FieldDTO("LastModifiedDate", curNotification.SObject.LastModifiedDate.ToString()));
+            returnList.Add(new FieldDTO("ObjectType", curNotification.SObject.Type.Substring(curNotification.SObject.Type.LastIndexOf(':') + 1)));
 
             return returnList;
         }

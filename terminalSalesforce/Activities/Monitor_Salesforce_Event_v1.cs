@@ -9,6 +9,8 @@ using System.Threading.Tasks;
 using terminalSalesforce.Infrastructure;
 using StructureMap;
 using System.Linq;
+using Data.Interfaces.DataTransferObjects;
+using Data.States;
 
 namespace terminalSalesforce.Actions
 {
@@ -77,7 +79,17 @@ namespace terminalSalesforce.Actions
                 return;
             }
 
+            if(CurrentActivityStorage.CratesOfType<FieldDescriptionsCM>().Any(x => x.Label.EndsWith(" - " + curSfChosenObject)))
+            {
+                return;
+            }
+
             CurrentActivityStorage.ReplaceByLabel(PackEventSubscriptionsCrate(ConfigurationControls));
+
+            var curSfChosenObjectfields = (await _salesforceManager.GetFields(curSfChosenObject, this.AuthorizationToken)).ToList();
+            CurrentActivityStorage.ReplaceByLabel(
+                CrateManager.CreateDesignTimeFieldsCrate("Salesforce Object Fields - " + curSfChosenObject, curSfChosenObjectfields, AvailabilityType.Configuration)
+                );
         }
 
         protected override async Task RunCurrentActivity()
@@ -92,7 +104,26 @@ namespace terminalSalesforce.Actions
                 RequestHubExecutionTermination("Plan successfully activated. It will wait and respond to specified Salesforce Event messages.");
             }
 
-            string vvk = "vvk";
+            string curSfChosenObject = ConfigurationControls.SalesforceObjectList.selectedKey;
+            var curSfObjectFields = CurrentActivityStorage.CrateContentsOfType<FieldDescriptionsCM>(c => c.Label.Equals("Salesforce Object Fields - " + curSfChosenObject))
+                                             .SelectMany(f => f.Fields);
+
+            var curEventReport = CurrentPayloadStorage.CratesOfType<EventReportCM>().Single(er => er.Content.Manufacturer.Equals("Salesforce")).Content;
+            var curEventPayloads = curEventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().ToList();
+
+
+            curEventPayloads.ForEach(async payload =>
+            {
+                var idValue = payload.PayloadObjects.Single().PayloadObject.Single(p => p.Key.Equals("Id")).Value;
+                var parsedCondition = string.Format("WHERE ID = '{0}'", idValue);
+
+                var resultObject = await _salesforceManager.GetObjectByQuery(curSfChosenObject, 
+                                                                             curSfObjectFields.Select(f => f.Key), 
+                                                                             parsedCondition, 
+                                                                             AuthorizationToken);
+
+                CurrentPayloadStorage.Add(Crate.FromContent("Salesforce Objects", resultObject));
+            });
         }
 
         private Crate PackEventSubscriptionsCrate(ActivityUi curSfActivityUi)
