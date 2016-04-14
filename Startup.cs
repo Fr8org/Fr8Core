@@ -40,10 +40,10 @@ namespace HubWeb
 
             ConfigureHangfire(app, "DockyardDB");
 
-            if (!selfHostMode)
-            {
+            //if (!selfHostMode)
+            //{
                 await RegisterTerminalActions();
-            }
+            //}
         }
 
         public void ConfigureHangfire(IAppBuilder app, string connectionString)

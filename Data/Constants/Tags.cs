@@ -16,8 +16,6 @@
 
         public const string TableDataGenerator = "Table Data Generator";
 
-        public const string Twillio = "Twillio";
-
         public const string UsesReconfigureList = "UsesReconfigureList";
     }
 }
