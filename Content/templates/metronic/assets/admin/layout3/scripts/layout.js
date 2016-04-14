@@ -132,16 +132,14 @@ var Layout = function () {
             el = $(el);
         } else if (mode === 'match') {
             menu.find("li > a").each(function () {
-
                 if ($(this).attr("href")) {
                     var path = $(this).attr("href").toLowerCase();
-
                     // url match condition         
                     if (path.length > 1 && url.substr(1, path.length - 1) == path.substr(1)) {
                         el = $(this);
-                        return;
+                        return; 
                     }
-                }
+                } 
             });
         }
 
