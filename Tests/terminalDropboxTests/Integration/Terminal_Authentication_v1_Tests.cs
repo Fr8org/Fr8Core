@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Data.Interfaces.DataTransferObjects;
 using HealthMonitor.Utility;
@@ -10,7 +8,7 @@ using Microsoft.Owin.Hosting;
 using NUnit.Framework;
 using terminalDropbox;
 
-namespace terminalDocuSignTests.Integration
+namespace terminalDropboxTests.Integration
 {
     [Explicit]
     public class Terminal_Authentication_v1_Tests : BaseTerminalIntegrationTest

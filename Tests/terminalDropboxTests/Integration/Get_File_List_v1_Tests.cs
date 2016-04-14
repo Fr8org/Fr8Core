@@ -119,7 +119,7 @@ namespace terminalDropboxTests.Integration
             Assert.IsNotNull(responseActionDTO);
             var crateFromDTO = Crate.FromDto(responseActionDTO.CrateStorage);
             Assert.IsNotNull(crateFromDTO);
-            Assert.Greater(crateFromDTO.CratesOfType<StandardPayloadDataCM>().Count(), 0);
+            Assert.Greater(crateFromDTO.CratesOfType<StandardFileListCM>().Count(), 0);
         }
     }
 }
