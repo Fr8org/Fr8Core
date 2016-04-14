@@ -239,31 +239,31 @@ namespace terminalDocuSign.Services
                 var existingLabelDdlb = upstreamCrateChooser.SelectedCrates[0].Label;
                 var docusignEnvelope = new DropDownList
                 {
-                    selectedKey = MT.DocuSignEnvelope.ToString(),
-                    Value = ((int)MT.DocuSignEnvelope).ToString(),
+                    selectedKey = MT.DocuSignEnvelope_v2.ToString(),
+                    Value = ((int)MT.DocuSignEnvelope_v2).ToString(),
                     Name = "UpstreamCrateChooser_mnfst_dropdown_0",
                     Source = existingDdlbSource
                 };
-                var docusignEvent = new DropDownList
-                {
-                    selectedKey = MT.DocuSignEvent.ToString(),
-                    Value = ((int)MT.DocuSignEvent).ToString(),
-                    Name = "UpstreamCrateChooser_mnfst_dropdown_1",
-                    Source = existingDdlbSource
-                };
-                var docusignRecipient = new DropDownList
-                {
-                    selectedKey = MT.DocuSignRecipient.ToString(),
-                    Value = ((int)MT.DocuSignRecipient).ToString(),
-                    Name = "UpstreamCrateChooser_mnfst_dropdown_2",
-                    Source = existingDdlbSource
-                };
+                //var docusignEvent = new DropDownList
+                //{
+                //    selectedKey = MT.DocuSignEvent.ToString(),
+                //    Value = ((int)MT.DocuSignEvent).ToString(),
+                //    Name = "UpstreamCrateChooser_mnfst_dropdown_1",
+                //    Source = existingDdlbSource
+                //};
+                //var docusignRecipient = new DropDownList
+                //{
+                //    selectedKey = MT.DocuSignRecipient.ToString(),
+                //    Value = ((int)MT.DocuSignRecipient).ToString(),
+                //    Name = "UpstreamCrateChooser_mnfst_dropdown_2",
+                //    Source = existingDdlbSource
+                //};
 
                 upstreamCrateChooser.SelectedCrates = new List<CrateDetails>()
                 {
                     new CrateDetails { ManifestType = docusignEnvelope, Label = existingLabelDdlb },
-                    new CrateDetails { ManifestType = docusignEvent, Label = existingLabelDdlb },
-                    new CrateDetails { ManifestType = docusignRecipient, Label = existingLabelDdlb }
+                    //new CrateDetails { ManifestType = docusignEvent, Label = existingLabelDdlb },
+                    //new CrateDetails { ManifestType = docusignRecipient, Label = existingLabelDdlb }
                 };
             }
         }

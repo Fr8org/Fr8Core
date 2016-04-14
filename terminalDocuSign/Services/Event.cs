@@ -70,12 +70,12 @@ namespace terminalDocuSign.Services
         private Crate ProcessConnectEvent(string curExternalEventPayload)
         {
             // Connect events come only for a single envelope
-            var curDocuSignEnvelopeInfo = DocuSignConnectParser.GetEnvelopeInformation(curExternalEventPayload);
+            var curDocuSignEnvelopeInfo = DocuSignEventParser.GetEnvelopeInformation(curExternalEventPayload);
             // transform XML structure into DocuSignEnvelopeCM_v2
-            var curDocuSingEnvelopCM = DocuSignConnectParser.ParseXMLintoCM(curDocuSignEnvelopeInfo);
+            var curDocuSingEnvelopCM = DocuSignEventParser.ParseXMLintoCM(curDocuSignEnvelopeInfo);
             var eventReportContent = new EventReportCM
             {
-                EventNames = DocuSignConnectParser.GetEventNames(curDocuSignEnvelopeInfo),
+                EventNames = DocuSignEventParser.GetEventNames(curDocuSignEnvelopeInfo),
                 ContainerDoId = "",
                 EventPayload = new CrateStorage(Crate.FromContent("DocuSign Connect Event", curDocuSingEnvelopCM)),
                 Manufacturer = "DocuSign",

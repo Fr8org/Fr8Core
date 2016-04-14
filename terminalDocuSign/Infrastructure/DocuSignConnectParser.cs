@@ -1,14 +1,18 @@
 ﻿using Data.Interfaces.Manifests;
+using DocuSign.eSign.Model;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
+using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure.DocuSignParserModels;
+using terminalDocuSign.Services.NewApi;
 
 namespace terminalDocuSign.Infrastructure
 {
-    public static class DocuSignConnectParser
+    public static class DocuSignEventParser
     {
         public static DocuSignEnvelopeInformation GetEnvelopeInformation(string xmlPayload)
         {
@@ -85,6 +89,68 @@ namespace terminalDocuSign.Infrastructure
 
             return result;
         }
+
+        public static DocuSignEnvelopeCM_v2 ParseAPIresponsesIntoCM(DocuSignEnvelopeCM_v2 envelope, TemplateInformation templates, Recipients recipients)
+        {
+            envelope.CurrentRoutingOrderId = recipients.CurrentRoutingOrder;
+
+            if (templates.Templates != null)
+                foreach (var ds_template in templates.Templates)
+                {
+                    DocuSignTemplate template = new DocuSignTemplate();
+                    template.DocumentId = ds_template.DocumentId;
+                    template.Name = ds_template.Name;
+                    template.TemplateId = ds_template.TemplateId;
+                    envelope.Templates.Add(template);
+                }
+
+            //Recipients
+
+            if (recipients.Signers != null)
+                foreach (var dsrecipient in recipients.Signers)
+                {
+                    DocuSignRecipientStatus recipient = new DocuSignRecipientStatus();
+                    recipient.Email = dsrecipient.Email;
+                    recipient.Name = dsrecipient.Name;
+                    recipient.RecipientId = dsrecipient.RecipientId;
+                    recipient.RoutingOrderId = dsrecipient.RoutingOrder;
+                    recipient.Status = dsrecipient.Status;
+                    recipient.Type = "Signer";
+                    envelope.Recipients.Add(recipient);
+
+                    //Tabs
+                    if (dsrecipient.Tabs != null)
+                    {
+                        var tabsDTO = DocuSignTab.ExtractTabs(JObject.Parse(dsrecipient.Tabs.ToJson()), "");
+
+                        foreach (var tabDTO in tabsDTO)
+                        {
+                            DocuSignTabStatus tab = new DocuSignTabStatus();
+                            tab.DocumentId = tabDTO.DocumentId.ToString();
+                            tab.Name = tabDTO.Name;
+                            tab.TabType = tabDTO.Type;
+                            tab.Value = tabDTO.Value;
+                            tab.TabLabel = tabDTO.TabLabel;
+
+                            if (tabDTO is DocuSignMultipleOptionsTabDTO)
+                            {
+                                var multiTabDTO = (DocuSignMultipleOptionsTabDTO)tabDTO;
+                                foreach (var childDTO in multiTabDTO.Items)
+                                {
+                                    var childTab = new DocuSignTabStatus();
+                                    childTab.Selected = childDTO.Selected.ToString();
+                                    childTab.Value = childDTO.Value;
+                                    childTab.TabLabel = childDTO.Text;
+                                    tab.Items.Add(childTab);
+                                }
+                            }
+                            recipient.Tabs.Add(tab);
+                        }
+                    }
+                }
+            return envelope;
+        }
+
 
         // if you change something here - make sure you also changing the way polling populates the manifest to keep constistency
         private static void ParseTabsWithItems(RecipientStatus recipient, DocuSignRecipientStatus docusignRecipient)
