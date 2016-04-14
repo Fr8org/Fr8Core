@@ -1,10 +1,11 @@
 using System;
 using System.Threading;
-using Utilities.Configuration.Azure;
+using Data.Repositories.Plan;
+using Data.Repositories.Security.StorageImpl.Cache;
 
-namespace Data.Repositories.Plan
+namespace Data.Repositories.Cache
 {
-    public class SlidingExpirationStrategy : IPlanCacheExpirationStrategy, IDisposable
+    public class SlidingExpirationStrategy : ISecurityCacheExpirationStrategy, IPlanCacheExpirationStrategy, IDisposable
     {
         private class ExpirationToken : IExpirationToken
         {
@@ -23,7 +24,7 @@ namespace Data.Repositories.Plan
 
         private readonly Timer _timer;
         private readonly TimeSpan _slidingExpiration;
-        private Action _expirationCallback; 
+        private Action _expirationCallback;
         private const long MinimalRefreshInterval = 1000;
 
         public SlidingExpirationStrategy(TimeSpan slidingExpiration)
@@ -32,11 +33,11 @@ namespace Data.Repositories.Plan
             _timer = new Timer(InvokeExpirationCallback, null, refreshInterval, refreshInterval);
             _slidingExpiration = slidingExpiration;
         }
-        
+
         private void InvokeExpirationCallback(object state)
         {
             var callback = _expirationCallback;
-            
+
             if (callback != null)
             {
                 callback();

@@ -20,6 +20,8 @@ module dockyard.controllers {
         activePlansCategory: Array<interfaces.IPlanVM>;
         inActivePlansCategory: Array<interfaces.IPlanVM>;
         reArrangePlans: (plan: interfaces.IPlanVM) => void;
+        runningStatus: any;
+        updatePlansLastUpdated: (id: any, date: any) => void;
     }
 
     /*
@@ -37,7 +39,9 @@ module dockyard.controllers {
             'DTOptionsBuilder',
             'DTColumnDefBuilder',
             '$state',
-            'UIHelperService'
+            'UIHelperService',
+            'UserService',
+            'PusherNotifierService'
         ];
 
         constructor(
@@ -47,7 +51,9 @@ module dockyard.controllers {
             private DTOptionsBuilder,
             private DTColumnDefBuilder,
             private $state: ng.ui.IStateService,
-            private uiHelperService: services.IUIHelperService
+            private uiHelperService: services.IUIHelperService,
+            private UserService: services.IUserService,
+            private PusherNotifierService: services.IPusherNotifierService
             ) {
 
             $scope.$on('$viewContentLoaded', () => {
@@ -74,6 +80,13 @@ module dockyard.controllers {
             $scope.activatePlan = <(plan: interfaces.IPlanVM) => void>angular.bind(this, this.activatePlan);
             $scope.deactivatePlan = <(plan: interfaces.IPlanVM) => void>angular.bind(this, this.deactivatePlan);
             $scope.reArrangePlans = <(plan: interfaces.IPlanVM) => void>angular.bind(this, this.reArrangePlans);
+            $scope.updatePlansLastUpdated = <(id: any, date: any) => void>angular.bind(this, this.updatePlanLastUpdated);
+            
+                UserService.getCurrentUser().$promise.then(data => {
+                                     PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, dockyard.services.pusherNotifierExecutionEvent, (data: any) => {
+                                             this.updatePlanLastUpdated(data.PlanId, data.PlanLastUpdated);
+                                         });
+                                     });
         }
 
         private reArrangePlans(plan) {
@@ -132,12 +145,24 @@ module dockyard.controllers {
         }
         private deactivatePlan(plan) {
             this.PlanService.deactivate({ planId: plan.id }).$promise.then((result) => {
-                location.reload();
+                this.$scope.inActivePlans = this.PlanService.getbystatus({ id: null, status: 1, category: '' });
+                this.$scope.activePlans = this.PlanService.getbystatus({ id: null, status: 2, category: '' });
+                //location.reload();
             }, () => {
                 //deactivation failed
                 //TODO show some kind of error message
             });
         }
+        private updatePlanLastUpdated(id, date) {
+                       for (var i = 0; i < this.$scope.activePlans.length; i++) {
+                                 if (!this.$scope.activePlans[i].id)
+                                           break;
+                                 if (this.$scope.activePlans[i].id == id) {
+                                           this.$scope.activePlans[i].lastUpdated = date;
+                                           break;
+                                       }
+                             }
+                   }
         private executePlan(plan, $event) {
             // If Plan is inactive, activate it in-order to move under Running section
             var isInactive = plan.planState === 1;
@@ -160,6 +185,7 @@ module dockyard.controllers {
                             // mark plan as Inactive as it is Run Once and then rearrange
                             plan.planState = 1;
                             this.reArrangePlans(plan);
+                            this.$scope.inActivePlans = this.PlanService.getbystatus({ id: null, status: 1, category: '' });
                         }
                     })
                     .catch((failResponse) => {
@@ -170,6 +196,7 @@ module dockyard.controllers {
                                 // mark plan as Inactive as it is Run Once and then rearrange
                                 plan.planState = 1;
                                 this.reArrangePlans(plan);
+                                this.$scope.inActivePlans = this.PlanService.getbystatus({ id: null, status: 1, category: '' });
                             }
                         }
                     });
