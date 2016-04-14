@@ -50,7 +50,7 @@ namespace terminalSalesforceTests.Intergration
                 (configControls.Content.Controls.Single(c => c.Name.Equals(nameof(Get_Data_v1.ActivityUi.SalesforceObjectSelector))) as DropDownList).selectedKey = "Lead";
 
                     //give condition
-                    var conditionQuery = new List<FilterConditionDTO>() { new FilterConditionDTO { Field = "Full Name", Operator = "eq", Value = "Marty McSorely" } };
+                    var conditionQuery = new List<FilterConditionDTO>() { new FilterConditionDTO { Field = "LastName", Operator = "eq", Value = "McSorely" } };
                 (configControls.Content.Controls.Single(c => c.Name.Equals(nameof(Get_Data_v1.ActivityUi.SalesforceObjectFilter))) as QueryBuilder).Value = JsonConvert.SerializeObject(conditionQuery);
                 }
                 getData = await ConfigureActivity(getData);
