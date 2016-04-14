@@ -1,15 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity.Infrastructure;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web.UI.WebControls;
-using Newtonsoft.Json;
-using log4net;
-using StructureMap;
 using Data.Constants;
-using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Infrastructure;
@@ -20,7 +13,8 @@ using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
-using Utilities.Logging;
+using Newtonsoft.Json;
+using StructureMap;
 
 namespace Hub.Services
 {

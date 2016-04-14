@@ -208,37 +208,37 @@ namespace DockyardTest.Services
                 _activity.Process(FixtureData.GetTestGuidById(1), It.IsAny<ActivityState>(), containerDO);
             }
         }
-
-    // Commented out by Vladimir. There is no ActionLists now. What this test is going to check?
-//        [Test]
-//        public void Process_curActivityDOIsActionListDO()
-//        {
-//            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-//            {
-//
-//                ActivityTemplateDO templateObj = FixtureData.TestActivityTemplate1();
-//                uow.ActivityTemplateRepository.Add(templateObj);
-//                uow.SaveChanges();
-//
-//                var action = FixtureData.TestAction1();
-//                uow.ActionRepository.Add(action);
-//                uow.SaveChanges();
-//
-//                ActionDO obj = FixtureData.TestActionProcess();
-//                uow.ActivityRepository.Add(obj);
-//                uow.SaveChanges();
-//
-//                ActionListDO listObj = FixtureData.TestActionListProcess();
-//                listObj.Activities.Add(obj);
-//                uow.ActivityRepository.Add(listObj);
-//                uow.SaveChanges();
-//
-//                ProcessDO processDo = FixtureData.TestProcess1();               
-//
-//                _activity = ObjectFactory.GetInstance<IActivity>();
-//                _activity.Process(52, processDo);
-//            }
-//        }
+       
+        // Commented out by Vladimir. There is no ActionLists now. What this test is going to check?
+        //        [Test]
+        //        public void Process_curActivityDOIsActionListDO()
+        //        {
+        //            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //            {
+        //
+        //                ActivityTemplateDO templateObj = FixtureData.TestActivityTemplate1();
+        //                uow.ActivityTemplateRepository.Add(templateObj);
+        //                uow.SaveChanges();
+        //
+        //                var action = FixtureData.TestAction1();
+        //                uow.ActionRepository.Add(action);
+        //                uow.SaveChanges();
+        //
+        //                ActionDO obj = FixtureData.TestActionProcess();
+        //                uow.ActivityRepository.Add(obj);
+        //                uow.SaveChanges();
+        //
+        //                ActionListDO listObj = FixtureData.TestActionListProcess();
+        //                listObj.Activities.Add(obj);
+        //                uow.ActivityRepository.Add(listObj);
+        //                uow.SaveChanges();
+        //
+        //                ProcessDO processDo = FixtureData.TestProcess1();               
+        //
+        //                _activity = ObjectFactory.GetInstance<IActivity>();
+        //                _activity.Process(52, processDo);
+        //            }
+        //        }
 
     }
 }

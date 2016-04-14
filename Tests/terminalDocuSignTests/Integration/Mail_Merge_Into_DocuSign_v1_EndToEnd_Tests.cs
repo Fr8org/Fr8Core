@@ -90,13 +90,12 @@ namespace terminalDocuSignTests.Integration
                 var loopControls = loopControlsCrate.Content.Controls;
 
                 var loopCrateChooser = loopControls
-                    .Where(x => x.Type == ControlTypes.CrateChooser && x.Name == "Available_Crates")
-                    .SingleOrDefault() as CrateChooser;
+                    .SingleOrDefault(x => x.Type == ControlTypes.CrateChooser && x.Name == "Available_Crates") as CrateChooser;
 
-                Assert.NotNull(loopCrateChooser);
-                Assert.AreEqual(1, loopCrateChooser.CrateDescriptions.Count);
-                Assert.AreEqual("Standard Table Data", loopCrateChooser.CrateDescriptions[0].ManifestType);
-                Assert.AreEqual("Table Generated From Google Sheet Data", loopCrateChooser.CrateDescriptions[0].Label);
+                Assert.NotNull(loopCrateChooser, "Unable to find CrateChooser control from loop activity");
+                Assert.AreEqual(1, loopCrateChooser.CrateDescriptions.Count, "Selected crate count is not equal to 1 on loopActivity CrateChooser");
+                Assert.AreEqual("Standard Table Data", loopCrateChooser.CrateDescriptions[0].ManifestType, "Selected crate on CrateChooser doesn't have ManifestType: Standard Table Data");
+                Assert.AreEqual("Table Generated From Google Sheet Data", loopCrateChooser.CrateDescriptions[0].Label, "Selected crate on CrateChooser doesn't have label: Table Generated From Google Sheet Data");
 
                 loopCrateChooser.CrateDescriptions = new List<CrateDescriptionDTO>();
             }
@@ -242,7 +241,7 @@ namespace terminalDocuSignTests.Integration
             // Activate and run plan
             //
             var container = await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
-            Assert.AreEqual(container.State, State.Completed);
+            Assert.AreEqual(container.State, State.Completed, "Container state is not equal to completed on Mail_Merge e2e test");
 
             //
             // Deactivate plan
@@ -392,7 +391,7 @@ namespace terminalDocuSignTests.Integration
             // Activate and run plan
             //
             var container = await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
-            Assert.AreEqual(container.State, State.Completed);
+            Assert.AreEqual(container.State, State.Completed, "Container state is not equal to completed on Mail_Merge e2e test");
             
             //
             // Assert 
@@ -464,17 +463,19 @@ namespace terminalDocuSignTests.Integration
 
         private async Task<Guid> ExtractGoogleDefaultToken()
         {
+            var errorMessage = $"Authorization token for Google is not found for the integration testing user {TestUserEmail}. Please go to the target instance of fr8 and log in with the integration testing user credentials. Then add a Google action to any plan and be sure to set the \"Use for all Activities\" checkbox on the Authorize Accounts dialog while authenticating. Reason: ";
+
             var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
                 _baseUrl + "manageauthtoken/"
             );
 
-            Assert.NotNull(tokens);
+            Assert.NotNull(tokens, errorMessage + "No auth-tokens found");
 
             var terminal = tokens.FirstOrDefault(x => x.Name == "terminalGoogle");
-            Assert.NotNull(terminal);
+            Assert.NotNull(terminal, errorMessage + "No auth-tokens found for terminalGoogle");
 
             var token = terminal.AuthTokens.FirstOrDefault(x => x.IsMain);
-            Assert.NotNull(token);
+            Assert.NotNull(token, errorMessage + "No Main auth-token found for terminalGoogle");
 
             return token.Id;
         }
