@@ -23,8 +23,8 @@ module dockyard.directives {
                     });
                 });
             },
-            controller: ['$scope', 'WebServiceService',
-                ($scope: IActionPickerScope,webServiceService: services.IWebServiceService) => {
+            controller: ['$scope', '$element', 'WebServiceService', '$timeout',
+                ($scope: IActionPickerScope, $element: ng.IRootElementService, webServiceService: services.IWebServiceService, $timeout: ng.ITimeoutService) => {
 
                     $scope.actionCategories = [
                         { id: 1, name: "Monitor", description: "Learn when something happen", icon: "eye" },
@@ -35,6 +35,15 @@ module dockyard.directives {
                     $scope.activeCategory = null;
                     $scope.activeTerminal = null;
 
+                    var scrollToList = () => {
+                        $timeout(() => {
+                            var scrollToElement = $element.find('.action-slider');
+                            $element.closest('.route-builder-container').animate({
+                                scrollLeft: scrollToElement.position().left + parseInt(scrollToElement.closest('.action-group').css('left'), 10) - ($(window).width()/2)
+                            }, 100);
+                        }, 500);
+                    }; 
+
                     $scope.setActive = (actionCategoryId) => {
 
                         if ($scope.activeCategory === actionCategoryId) {
@@ -44,6 +53,7 @@ module dockyard.directives {
                         }
                         $scope.webServiceActionList = webServiceService.getActivities([$scope.activeCategory]);
                         $scope.activeTerminal = null;
+                        scrollToList();
                     };
 
                     $scope.setActiveAction = (action, group) => {
@@ -69,6 +79,8 @@ module dockyard.directives {
                     $scope.sortBuiltinServices = (service) => {
                         return (service.webServiceName === 'Built-In Services') ? -1 : 1;
                     };
+
+                  
                 }
             ]
         }
@@ -84,7 +96,8 @@ module dockyard.directives {
         deactivateTerminal: () => void;
         setActiveAction: (action: any, group: any) => void;
         sortBuiltinServices: (service: model.WebServiceActionSetDTO) => number;
+        scrollToList: () => void;
     }
 }
 
-app.directive('actionPicker', dockyard.directives.ActionPicker);
+app.directive('actionPicker', [dockyard.directives.ActionPicker]);
