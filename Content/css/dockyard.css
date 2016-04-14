@@ -1210,6 +1210,19 @@ i.activity-stream-font {
     float: right;
 }
 
+footer {
+    padding-top: 20px;
+    padding-bottom: 10px;
+}
+
+footer p {
+    text-align:center;
+    font-size:12px;
+    color:#687688
+}
+
+
+
 .footer {
     padding-top: 20px;
     padding-bottom: 10px;

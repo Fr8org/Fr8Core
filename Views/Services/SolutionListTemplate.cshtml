@@ -1,0 +1,25 @@
+﻿<div class='solution-fr8 container'>
+    @foreach (var solutionDTO in Model)
+    {
+        <div class="row">
+            <div class="col-md-1">
+                <a href="~/dashboard/solution/@solutionDTO.Name.Replace(" ","_")" class="btn btn-md btn-sln-turquoise">Create</a>
+            </div>
+            <div class="col-md-11 h2" style="margin-top:0px">@solutionDTO.Name</div>
+        </div>
+        <div class="row solution-body">
+            <div class="panel-body col-md-12 h4" ng-bind-html="solutionDTO.body">@Html.Raw(solutionDTO.Body)</div>
+        </div>
+        <div class="base-block-white content-block row">
+            <p class="col-md-2">
+                Version: @solutionDTO.Version
+            </p>
+            <p class="col-md-3">
+                Host Terminal: <strong>@solutionDTO.Terminal</strong>
+            </p>
+        </div>
+        <div class="row">
+            <hr />
+        </div>
+    }
+</div>
