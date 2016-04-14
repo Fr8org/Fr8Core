@@ -1210,6 +1210,19 @@ i.activity-stream-font {
     float: right;
 }
 
+footer {
+    padding-top: 20px;
+    padding-bottom: 10px;
+}
+
+footer p {
+    text-align:center;
+    font-size:12px;
+    color:#687688
+}
+
+
+
 .footer {
     padding-top: 20px;
     padding-bottom: 10px;
@@ -1221,4 +1234,8 @@ i.activity-stream-font {
     font-size: 0.9em;
     line-height: 36px;
     text-align: center;
+}
+
+.md-open-menu-container {
+    z-index: 1001;
 }

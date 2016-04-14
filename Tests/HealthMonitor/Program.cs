@@ -215,7 +215,7 @@ namespace HealthMonitor
             var report = testRunner.Run(test, skipLocal);
 
             var failedTestsCount = report.Tests.Count(x => !x.Success);
-            
+
             if (failedTestsCount > 0)
             {
                 var failedTests = report.Tests.Where(x => !x.Success);
@@ -267,7 +267,7 @@ namespace HealthMonitor
             Trace.Indent();
             foreach (var failedTest in failedTests)
             {
-                Trace.TraceWarning(failedTest.Name);    
+                Trace.TraceWarning(failedTest.Name);
             }
             Trace.Unindent();
         }
