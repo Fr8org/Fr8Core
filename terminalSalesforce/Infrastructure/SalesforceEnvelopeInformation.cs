@@ -1,10 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Xml.Serialization;
-using System.Collections.Generic;
 
 namespace terminalSalesforce.Infrastructure
 {
@@ -53,7 +48,7 @@ namespace terminalSalesforce.Infrastructure
         [XmlElement(ElementName = "PartnerUrl", Namespace = "http://soap.sforce.com/2005/09/outbound")]
         public string PartnerUrl { get; set; }
         [XmlElement(ElementName = "Notification", Namespace = "http://soap.sforce.com/2005/09/outbound")]
-        public IList<Notification> NotificationList { get; set; }
+        public Notification[] NotificationList { get; set; }
         [XmlAttribute(AttributeName = "xmlns")]
         public string Xmlns { get; set; }
     }

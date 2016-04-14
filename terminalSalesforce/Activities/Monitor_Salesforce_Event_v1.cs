@@ -8,13 +8,14 @@ using System;
 using System.Threading.Tasks;
 using terminalSalesforce.Infrastructure;
 using StructureMap;
+using System.Linq;
 
 namespace terminalSalesforce.Actions
 {
     public class Monitor_Salesforce_Event_v1 : EnhancedTerminalActivity<Monitor_Salesforce_Event_v1.ActivityUi>
     {
         private const string CreatedEventname = "Created";
-        private const string UpdatedEventname = "Created";
+        private const string UpdatedEventname = "Updated";
 
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -79,9 +80,19 @@ namespace terminalSalesforce.Actions
             CurrentActivityStorage.ReplaceByLabel(PackEventSubscriptionsCrate(ConfigurationControls));
         }
 
-        protected override Task RunCurrentActivity()
+        protected override async Task RunCurrentActivity()
         {
-            throw new NotImplementedException();
+            var sfEventPayloads = CurrentPayloadStorage.CratesOfType<EventReportCM>().ToList().SelectMany(er => er.Content.EventPayload).ToList();
+
+            if (sfEventPayloads == null || 
+                sfEventPayloads.Count == 0 || 
+                !sfEventPayloads.Any(payload => payload.Label.Equals("Salesforce Event Notification Payload")))
+            {
+                await Activate(CurrentActivity, AuthorizationToken);
+                RequestHubExecutionTermination("Plan successfully activated. It will wait and respond to specified Salesforce Event messages.");
+            }
+
+            string vvk = "vvk";
         }
 
         private Crate PackEventSubscriptionsCrate(ActivityUi curSfActivityUi)
@@ -92,11 +103,11 @@ namespace terminalSalesforce.Actions
             
             if (curSfActivityUi.Created.Selected)
             {
-                eventSubscriptions.Add(string.Format("{0} {1}", curSfChosenObject, CreatedEventname));
+                eventSubscriptions.Add(string.Format("{0}{1}", curSfChosenObject, CreatedEventname));
             }
             if (curSfActivityUi.Updated.Selected)
             {
-                eventSubscriptions.Add(string.Format("{0} {1}", curSfChosenObject, UpdatedEventname));
+                eventSubscriptions.Add(string.Format("{0}{1}", curSfChosenObject, UpdatedEventname));
             }
 
             return CrateManager.CreateStandardEventSubscriptionsCrate(

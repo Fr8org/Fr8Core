@@ -15,29 +15,22 @@ namespace terminalSalesforce.Services
     public class Event : IEvent
     {
        
-        private readonly ICrateManager _crate;
         private BaseTerminalController _baseTerminalController = new BaseTerminalController();
        
 
         public Event()
-        {
-            _crate = ObjectFactory.GetInstance<ICrateManager>();
+        {        
         }
-
 
         public Task<Crate> ProcessEvent(string curExternalEventPayload)
         {
-            //string leadId = string.Empty;
-            //string accountId = string.Empty;
-            //Parse(curExternalEventPayload, out leadId, out accountId);
-
             try
             {
                 var curEventEnvelope = SalesforceNotificationParser.GetEnvelopeInformation(curExternalEventPayload);
 
                 string accountId = string.Empty;
 
-                if(curEventEnvelope.Body.Notifications.NotificationList != null && curEventEnvelope.Body.Notifications.NotificationList.Count > 0)
+                if(curEventEnvelope.Body.Notifications.NotificationList != null && curEventEnvelope.Body.Notifications.NotificationList.Length > 0)
                 {
                     accountId = curEventEnvelope.Body.Notifications.NotificationList[0].SObject.OwnerId;
                 }
@@ -59,7 +52,6 @@ namespace terminalSalesforce.Services
                 _baseTerminalController.ReportTerminalError("terminalSalesforce", e);
                 throw new Exception(string.Format("Error while processing. \r\n{0}", curExternalEventPayload));
             }
-            
         }
 
         private string GetEventNames(Envelope curEventEnvelope)
@@ -71,9 +63,13 @@ namespace terminalSalesforce.Services
                             {
                                 return notification.SObject.Type.Substring(notification.SObject.Type.LastIndexOf(':') + 1) + "Created";
                             }
-                            else
+                            else if(notification.SObject.CreatedDate < notification.SObject.LastModifiedDate)
                             {
                                 return notification.SObject.Type.Substring(notification.SObject.Type.LastIndexOf(':') + 1) + "Updated";
+                            }
+                            else
+                            {
+                                throw new InvalidOperationException("Not able to detect the Salesforce event notification reason.");
                             }
                         }).ToList();
 
@@ -86,7 +82,7 @@ namespace terminalSalesforce.Services
 
             foreach (var curEvent in curEventEnvelope.Body.Notifications.NotificationList)
             {
-                var payloadCrate = Data.Crates.Crate.FromContent("", new StandardPayloadDataCM(CreateKeyValuePairList(curEvent)));
+                var payloadCrate = Crate.FromContent("Salesforce Event Notification Payload", new StandardPayloadDataCM(CreateKeyValuePairList(curEvent)));
                 stroage.Add(payloadCrate);
             }
 
