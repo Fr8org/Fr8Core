@@ -195,7 +195,8 @@ module dockyard.directives.paneConfigureAction {
                     this.loadConfiguration().then(() => {
                         var authCrate = this.crateHelper.findByManifestType(
                             this.$scope.currentAction.crateStorage,
-                            'Standard Authentication'
+                            'Standard Authentication',
+                            true
                         );
 
                         if (!authCrate || !authCrate.contents || !(<any>authCrate.contents).Revocation) {
