@@ -377,4 +377,50 @@ gulp.task('cdnizer-js', ['bower'], function () {
         .pipe(gulp.dest('./Views/Shared/CDN'));
 });
 
-gulp.task('default', ['bower', 'concattemplates', 'cdnizer-js', 'cdnizer-css']);
+    var log4netConfigs = {
+        terminals:     ["./Config/log4net.terminals.config",
+                        "./Config/log4net.terminals.Dev.config",
+                        "./Config/log4net.terminals.Demo.config",
+                        "./Config/log4net.terminals.Release.config"],
+
+        tests:         ["./Config/log4net.tests.config"],
+
+        healthMonitor: ["./Config/log4net.healthMonitor.config",
+                        "./Config/log4net.healthMonitor.config",
+                        "./Config/log4net.healthMonitor.config",
+                        "./Config/log4net.healthMonitor.config"]
+    };
+
+gulp.task('log4netTests', [], function () {
+    return gulp.src(log4netConfigs.tests)
+        .pipe(gulp.dest("./Tests/DockyardTest/"));
+});
+
+gulp.task('log4netHealthMonitor',[], function() {
+    return gulp.src(log4netConfigs.healthMonitor)
+        .pipe(gulp.dest("./Tests/HealthMonitor/"))
+        .pipe(gulp.dest("./Tests/HealthMonitor.HubLauncher/"));
+});
+
+gulp.task('log4netTerminals',[], function() {
+        return gulp.src(log4netConfigs.terminals)
+            .pipe(gulp.dest("./terminalPapertrail/"))
+            .pipe(gulp.dest("./terminalAtlassian/"))
+            .pipe(gulp.dest("./terminalAzure/"))
+            .pipe(gulp.dest("./terminalDocuSign/"))
+            .pipe(gulp.dest("./terminalDropbox/"))
+            .pipe(gulp.dest("./terminalExcel/"))
+            .pipe(gulp.dest("./terminalFr8Core/"))
+            .pipe(gulp.dest("./terminalQuickBooks/"))
+            .pipe(gulp.dest("./terminalSalesforce/"))
+            .pipe(gulp.dest("./terminalSendGrid/"))
+            .pipe(gulp.dest("./terminalSlack/"))
+            .pipe(gulp.dest("./terminalTwilio/"))
+            .pipe(gulp.dest("./terminalYammer/"))
+            .pipe(gulp.dest("./terminalGoogle/"));
+});
+
+gulp.task('log4net', ['log4netTerminals', 'log4netHealthMonitor', 'log4netTests']);
+
+
+gulp.task('default', ['bower', 'concattemplates', 'cdnizer-js', 'cdnizer-css', 'log4net']);
