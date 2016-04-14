@@ -895,6 +895,8 @@
     <Content Include="Views\AngularTemplate\ActivityChooser.cshtml" />
     <Content Include="Views\AngularTemplate\ActivityChooserSelectDialog.cshtml" />
     <Content Include="Views\AngularTemplate\ActivityChooserConfigureDialog.cshtml" />
+    <Content Include="Views\AngularTemplate\MainContainer_AS.cshtml" />
+    <Content Include="Views\AngularTemplate\MainContainer.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />
@@ -915,7 +917,7 @@
     <Content Include="_PowerShellScripts\Stop-StagingWebsite.ps1" />
     <Content Include="_PowerShellScripts\Start-Sleep.ps1" />
     <Content Include="_PowerShellScripts\Update-TerminalHostnameInDb.ps1" />
-    <Content Include="_PowerShellScripts\CreateBuildServer.ps1" />
+    <Content Include="_PowerShellScripts\Add-BuildServer.ps1" />
     <Content Include="_PowerShellScripts\BuildServer_Templ.json" />
     <Content Include="_PowerShellScripts\UpdateTerminalHostnameInDb.ps1" />
     <Content Include="_PowerShellScripts\Check-Confirmation.ps1" />
@@ -1060,6 +1062,7 @@
     <Content Include="Views\Shared\_HomePageNew.cshtml" />
     <Content Include="Views\AngularTemplate\PlanBuilder_KioskMode.cshtml" />
     <Content Include="Views\AngularTemplate\ActivityStream.cshtml" />
+    <Content Include="Views\Shared\401.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

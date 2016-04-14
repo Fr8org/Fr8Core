@@ -169,6 +169,7 @@
     overflow-y: auto;
     position: relative;
     white-space: nowrap;
+    width: 100%;
 }
 
 .action-arrow-right {
@@ -1207,4 +1208,21 @@ i.activity-stream-font {
 
 .fr8-float-right {
     float: right;
+}
+
+.footer {
+    padding-top: 20px;
+    padding-bottom: 10px;
+    background-color: #444d58;
+    color: white;
+}
+
+.copyright {
+    font-size: 0.9em;
+    line-height: 36px;
+    text-align: center;
+}
+
+.md-open-menu-container {
+    z-index: 1001;
 }
