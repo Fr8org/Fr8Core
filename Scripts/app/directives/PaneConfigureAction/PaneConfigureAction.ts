@@ -199,6 +199,7 @@ module dockyard.directives.paneConfigureAction {
                             true
                         );
 
+
                         if (!authCrate || !authCrate.contents || !(<any>authCrate.contents).Revocation) {
                             $scope.$emit(MessageType[MessageType.PaneConfigureAction_DownStreamReconfiguration], new DownStreamReConfigureEventArgs($scope.currentAction));
                         }
