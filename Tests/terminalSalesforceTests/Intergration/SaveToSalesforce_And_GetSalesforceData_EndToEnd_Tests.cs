@@ -28,7 +28,7 @@ namespace terminalSalesforceTests.Intergration
             get { return "terminalSalesforce"; }
         }
 
-        [Test, Ignore("This test is ignored since the activity is not available in dev database.")]
+        [Test]
         public async Task SaveToSalesforce_And_GetSalesforceData_EndToEnd()
         {
             AuthorizationTokenDO authTokenDO = null;
