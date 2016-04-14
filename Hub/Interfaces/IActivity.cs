@@ -23,7 +23,7 @@ namespace Hub.Interfaces
 
 //      ActivityDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, int? order, PlanNodeDO parentNode, Guid? authorizationTokenId = null);
 
-        Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, 
+        Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid actionTemplateId, 
                                              string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null);
 
         Task PrepareToExecute(ActivityDO curActivity, ActivityState curActionState, ContainerDO curContainerDO, IUnitOfWork uow);

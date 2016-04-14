@@ -385,7 +385,7 @@ namespace DockyardTest.Controllers
             {
                 uow.ActivityTemplateRepository.Add(new ActivityTemplateDO
                 {
-                    Id = 1,
+                    Id = Guid.NewGuid(),
                     Name = name,
                     Terminal = FixtureData.TerminalTwo(),
                     Version = version

@@ -1,6 +1,6 @@
 ﻿module dockyard.model {
     export class ActivityTemplate {
-        id: number;
+        id: string;
         name: string;
         label: string;
         version: string;
@@ -15,7 +15,7 @@
         webService: WebServiceDTO; 
 
         constructor(
-            id: number,
+            id: string,
             name: string,
             version: string,
             description: string,

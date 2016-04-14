@@ -95,9 +95,11 @@ namespace terminalDocuSign.Actions
 
             // Always use default template for solution
             const string firstTemplateName = "Monitor_DocuSign_Envelope_Activity";
+            var monitorDocusignTemplate = await GetActivityTemplate("terminalDocuSign", firstTemplateName);
+            var secondActivityTemplate = await GetActivityTemplate(Guid.Parse(actionUi.FinalActionsList.Value));
 
-            var firstActivity = await AddAndConfigureChildActivity(curActivityDO, firstTemplateName);
-            var secondActivity = await AddAndConfigureChildActivity(curActivityDO, actionUi.FinalActionsList.Value, "Final activity");
+            var firstActivity = await AddAndConfigureChildActivity(curActivityDO, monitorDocusignTemplate);
+            var secondActivity = await AddAndConfigureChildActivity(curActivityDO, secondActivityTemplate, "Final activity");
 
             return curActivityDO;
         }

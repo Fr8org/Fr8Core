@@ -486,17 +486,41 @@ namespace TerminalBase.BaseClasses
                 crate.Content.Fields.AddRange(fields);
             }
         }
-        
-        protected async Task<ActivityDO> AddAndConfigureChildActivity(Guid parentActivityId, string templateName_Or_templateID, string name = null, string label = null, int? order = null)
-        {
-            //search activity template by name or id
-            var allActivityTemplates = _activityTemplateCache ?? (_activityTemplateCache = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId));
-            int templateId;
-            var activityTemplate = Int32.TryParse(templateName_Or_templateID, out templateId) ?
-                allActivityTemplates.FirstOrDefault(a => a.Id == templateId)
-                : allActivityTemplates.FirstOrDefault(a => a.Name == templateName_Or_templateID);
 
-            if (activityTemplate == null) throw new Exception(string.Format("ActivityTemplate {0} was not found", templateName_Or_templateID));
+        protected async Task<ActivityTemplateDTO> GetActivityTemplate(Guid activityTemplateId)
+        {
+            var allActivityTemplates = _activityTemplateCache ?? (_activityTemplateCache = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId));
+
+            var foundActivity = allActivityTemplates.FirstOrDefault(a => a.Id == activityTemplateId);
+
+
+            if (foundActivity == null) { 
+                throw new Exception($"ActivityTemplate was not found. Id: {activityTemplateId}");
+            }
+
+            return foundActivity;
+        }
+
+        protected async Task<ActivityTemplateDTO> GetActivityTemplate(string terminalName, string activityTemplateName, string activityTemplateVersion = "1", string terminalVersion = "1")
+        {
+            var allActivityTemplates = _activityTemplateCache ?? (_activityTemplateCache = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId));
+
+            var foundActivity =
+                allActivityTemplates.FirstOrDefault(
+                    a =>
+                        a.Terminal.Name == terminalName && a.Terminal.Version == terminalVersion &&
+                        a.Name == activityTemplateName && a.Version == activityTemplateVersion);
+
+
+            if (foundActivity == null) {
+                throw new Exception($"ActivityTemplate was not found. TerminalName: {terminalName}\nTerminalVersion: {terminalVersion}\nActivitiyTemplateName: {activityTemplateName}\nActivityTemplateVersion: {activityTemplateVersion}");
+            }
+
+            return foundActivity;
+        }
+
+        protected async Task<ActivityDO> AddAndConfigureChildActivity(Guid parentActivityId, ActivityTemplateDTO activityTemplate, string name = null, string label = null, int? order = null)
+        {
 
             //assign missing properties
             label = string.IsNullOrEmpty(label) ? activityTemplate.Label : label;
@@ -512,10 +536,10 @@ namespace TerminalBase.BaseClasses
             return resultDO;
         }
 
-        protected async Task<ActivityDO> AddAndConfigureChildActivity(ActivityDO parent, string templateName_Or_templateID, string name = null, string label = null, int? order = null)
+        protected async Task<ActivityDO> AddAndConfigureChildActivity(ActivityDO parent, ActivityTemplateDTO activityTemplate, string name = null, string label = null, int? order = null)
         {
 
-            var resultDO = await AddAndConfigureChildActivity(parent.Id, templateName_Or_templateID, name, label, order);
+            var resultDO = await AddAndConfigureChildActivity(parent.Id, activityTemplate, name, label, order);
 
             if (resultDO != null)
             {

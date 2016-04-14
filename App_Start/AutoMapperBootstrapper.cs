@@ -107,7 +107,7 @@ namespace HubWeb.App_Start
                 return Mapper.Map<ActivityTemplateDTO>(ad.ActivityTemplate);
             }
 
-            if (ad.ActivityTemplateId == 0)
+            if (ad.ActivityTemplateId == Guid.Empty)
             {
                 return null;                
             }
