@@ -12,7 +12,7 @@ MERGE ActivityTemplate AS Target
 USING (SELECT 'MailMergeFromSalesforce' as Name) AS SOURCE
 ON (Target.Name = Source.Name)
 WHEN MATCHED THEN
-	UPDATE SET Target.ActivityTemplateState = 1		
+	UPDATE SET Target.ActivityTemplateState = 1, Target.TerminalId = (SELECT TOP 1 Id FROM Terminals WHERE Name = 'terminalSalesforce')		
 WHEN NOT MATCHED BY TARGET THEN
 	INSERT (
 		Name, 
@@ -33,7 +33,7 @@ WHEN NOT MATCHED BY TARGET THEN
 	VALUES (
 		'MailMergeFromSalesforce', 
 		'1', 
-		3,
+		(SELECT TOP 1 Id FROM Terminals WHERE Name = 'terminalSalesforce'),
 		5,
 		GETDATE(),
 		GETDATE(),
