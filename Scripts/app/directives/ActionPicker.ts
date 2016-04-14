@@ -35,11 +35,18 @@ module dockyard.directives {
                     $scope.activeCategory = null;
                     $scope.activeTerminal = null;
 
-                    var scrollToList = () => {
+                    // when new activity picker is opened, this method provide it to be shown in the viewport, 
+                    // by scrolling to the new opened activity picker element 
+                    var scrollToActivityPicker = () => {
+                        // method is in the timeout since activity picker appears screen animated, in 500 ms
                         $timeout(() => {
-                            var scrollToElement = $element.find('.action-slider');
+                            var scrollToElement = $element.find('.action-slider'); // element to be scrolled on
+                            var leftPositionOfElement = scrollToElement.position().left;
+                            var leftPositionOfContainer = parseInt(scrollToElement.closest('.action-group').css('left'), 10);
+                            var windowSize = $(window).width(); // substracted from total width since we want activity to be shown center of the screen
+
                             $element.closest('.route-builder-container').animate({
-                                scrollLeft: scrollToElement.position().left + parseInt(scrollToElement.closest('.action-group').css('left'), 10) - ($(window).width()/2)
+                                scrollLeft: leftPositionOfElement + leftPositionOfContainer - (windowSize/2)
                             }, 100);
                         }, 500);
                     }; 
@@ -53,7 +60,7 @@ module dockyard.directives {
                         }
                         $scope.webServiceActionList = webServiceService.getActivities([$scope.activeCategory]);
                         $scope.activeTerminal = null;
-                        scrollToList();
+                        scrollToActivityPicker();
                     };
 
                     $scope.setActiveAction = (action, group) => {
@@ -96,7 +103,6 @@ module dockyard.directives {
         deactivateTerminal: () => void;
         setActiveAction: (action: any, group: any) => void;
         sortBuiltinServices: (service: model.WebServiceActionSetDTO) => number;
-        scrollToList: () => void;
     }
 }
 
