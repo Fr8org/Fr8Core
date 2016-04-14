@@ -250,23 +250,11 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Infrastructure\Account.cs" />
     <Compile Include="Infrastructure\Authentication.cs" />
-    <Compile Include="Infrastructure\Case.cs" />
-    <Compile Include="Infrastructure\Contact.cs" />
-    <Compile Include="Infrastructure\Contract.cs" />
-    <Compile Include="Infrastructure\Document.cs" />
     <Compile Include="Infrastructure\IEvent.cs" />
     <Compile Include="Infrastructure\ISalesforceManager.cs" />
-    <Compile Include="Infrastructure\ISalesforceObject.cs" />
-    <Compile Include="Infrastructure\Lead.cs" />
-    <Compile Include="Infrastructure\Opportunity.cs" />
-    <Compile Include="Infrastructure\Order.cs" />
-    <Compile Include="Infrastructure\Product.cs" />
     <Compile Include="Infrastructure\SalesforceEnvelopeInformation.cs" />
     <Compile Include="Infrastructure\SalesforceNotificationParser.cs" />
-    <Compile Include="Infrastructure\SalesforceObject.cs" />
-    <Compile Include="Infrastructure\Solution.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

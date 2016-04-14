@@ -8,8 +8,6 @@ namespace terminalSalesforce.Infrastructure
 {
     public interface ISalesforceManager
     {
-        Task<string> CreateObject<T>(T salesforceObject, AuthorizationTokenDO authTokenDO) where T : ISalesforceObject;
-
         Task<string> CreateObject(IDictionary<string, object> salesforceObject, string salesforceObjectName, AuthorizationTokenDO authTokenDO);
 
         Task<StandardTableDataCM> QueryObjects(string salesforceObjectName, IEnumerable<string> fields, string conditionQuery, AuthorizationTokenDO authTokenDO);

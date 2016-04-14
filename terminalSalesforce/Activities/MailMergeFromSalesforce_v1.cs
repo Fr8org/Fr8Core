@@ -82,12 +82,11 @@ namespace terminalSalesforce.Actions
         {
             ActivityName = "Mail Merge from Salesforce";
             _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
-            var terminalName = CloudConfigurationManager.GetSetting("TerminalName");
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 terminalId = uow.TerminalRepository
                                 .GetQuery()
-                                .Where(x => x.Name == terminalName)
+                                .Where(x => x.Name == "terminalSalesforce")
                                 .Select(x => x.Id)
                                 .First();
             }

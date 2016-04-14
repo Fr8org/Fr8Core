@@ -31,26 +31,12 @@ namespace terminalSalesforce.Services
         {
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
-
-        /// <summary>
-        /// Creates Salesforce object
-        /// </summary>
-        public async Task<string> CreateObject<T>(T newObject, AuthorizationTokenDO authTokenDO) where T : ISalesforceObject
-        {
-            if (newObject == null)
-            {
-                throw new ArgumentNullException(nameof(newObject));
-            }
-            var result = await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.CreateAsync(newObject.SalesforceObjectType, newObject), authTokenDO);
-            return result?.Id ?? string.Empty;
-        }
-
+        
         public async Task<string> CreateObject(IDictionary<string, object> salesforceObject, string salesforceObjectName, AuthorizationTokenDO authTokenDO)
         {
             var result = await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.CreateAsync(salesforceObjectName, salesforceObject), authTokenDO);
             return result?.Id ?? string.Empty;
         }
-
 
         /// <summary>
         /// Gets Fields of the given Salesforce Object Name
