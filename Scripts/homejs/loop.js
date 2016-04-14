@@ -49,8 +49,13 @@ jQuery( function($){
 	}
 // change this one to have it demo main nav bar above the fold - logo-f8.svg is the turq one
 	function setNavbarTransparent() {
-		$('.navbar').removeClass('navbar-light');
-		$('.navbar-brand img').attr('src', '/Content/img/dockyard_logo_white.png');
+	    $('.navbar').removeClass('navbar-light');
+	    if (window.location.pathname === "/Services/DocuSign") {
+	        $('.navbar-brand img').attr('src', '/Content/img/dockyard_logo_dark.png');
+	    }
+	    else {
+	        $('.navbar-brand img').attr('src', '/Content/img/dockyard_logo_white.png');
+	    }
 	}
 
 	// hide collapsible menu

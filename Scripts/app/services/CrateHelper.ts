@@ -59,7 +59,7 @@
 
 
         // Find single Crate by ManifestType in CrateStorage.
-        public findByManifestType(crateStorage: model.CrateStorage, manifestType: string): model.Crate {
+        public findByManifestType(crateStorage: model.CrateStorage, manifestType: string, silent: boolean = false): model.Crate {
             // Check that CrateStorage is not empty.
             if (!crateStorage || !crateStorage.crates) {
                 this.throwError('CrateStorage is empty.');
@@ -78,9 +78,11 @@
             }
 
             // Validate foundCrates.length that only single Crate was found.
-            if (foundCrates.length == 0 ) {
+            if (!silent && foundCrates.length === 0 ) {
                 this.throwError('Invalid foundCrates.length = ' + foundCrates.length.toString());
                 return;
+            } else if (silent && foundCrates.length === 0) {
+                return null;
             }
 
             // Return single Crate.
