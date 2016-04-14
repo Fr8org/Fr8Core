@@ -1,7 +1,4 @@
-﻿@import url('dockyard/container-transition.css');
-@import url('dockyard/query-builder.css');
-
-.table-linkrows > tbody > tr {
+﻿.table-linkrows > tbody > tr {
     cursor: pointer;
 }
 
