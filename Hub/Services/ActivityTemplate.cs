@@ -238,7 +238,7 @@ namespace Hub.Services
 
                     if (activity == null)
                     {
-                        activityTemplateDo.Id = Guid.Empty;
+                        activityTemplateDo.Id = Guid.NewGuid();
                         uow.ActivityTemplateRepository.Add(activity = activityTemplateDo);
                         uow.SaveChanges();
                     }
