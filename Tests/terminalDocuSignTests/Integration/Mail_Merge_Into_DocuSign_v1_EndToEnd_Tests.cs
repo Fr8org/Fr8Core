@@ -54,19 +54,6 @@ namespace terminalDocuSignTests.Integration
             _terminalDocuSignTestTools = new terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalDocuSign(this);
             _docuSignActivitiesTestTools = new IntegrationTestTools_terminalDocuSign(this);
         }
-        
-
-        [Test, Ignore("The test is not related to actual functionality. Some false positivies were observed recently. Probably worth increasing wait timeout")]
-        [ExpectedException(typeof(AssertionException))]
-        public async Task TestEmail_ShouldBeMissing()
-        {
-            await Task.Delay(EmailAssert.RecentMsgThreshold); //to avoid false positives from any earlier tests
-
-            // Verify that test email has been received
-            // Actually it should not be received and AssertionException 
-            // should be thrown
-            EmailAssert.EmailReceived("dse_demo@docusign.net", "Test Message from Fr8");
-        }
 
         [Test]
         public async Task Mail_Merge_Into_DocuSign_EndToEnd()
