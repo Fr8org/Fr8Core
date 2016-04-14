@@ -39,7 +39,6 @@ namespace terminalDropbox.Actions
         }
 
         private const string RuntimeCrateLabel = "Dropbox file list";
-        private const string FileCrateLabel = "File from Dropbox";
 
         private readonly IDropboxService _dropboxService;
 
@@ -73,16 +72,9 @@ namespace terminalDropbox.Actions
 
         protected override async Task RunCurrentActivity()
         {
-            var mappedFields = new StandardPayloadDataCM(
-                new FieldDTO("FileName", "[Files].[FileName]"),
-                new FieldDTO("FileExtension", "[Files].[FileExtension]")
-                );
-            var values = new StandardPayloadDataCM(
-                new FieldDTO("FileName", Path.GetFileName(ConfigurationControls.FileList.Value)),
-                new FieldDTO("FileExtension", Path.GetExtension(ConfigurationControls.FileList.Value))
-                );
-            CurrentPayloadStorage.Add(Crate.FromContent("MappedFields", mappedFields, AvailabilityType.Always));
-            CurrentPayloadStorage.Add(Crate.FromContent("TableData", values, AvailabilityType.Always));
+            var fileNames = await _dropboxService.GetFileList(GetDropboxAuthToken());
+            var dropboxFileList = PackDropboxFileListCrate(fileNames.ToArray());
+            CurrentPayloadStorage.Add(dropboxFileList);
         }
 
         private Crate<StandardFileListCM> PackDropboxFileListCrate(string[] fileNames)
@@ -90,7 +82,8 @@ namespace terminalDropbox.Actions
             List<StandardFileDescriptionCM> descriptionList = fileNames
                 .Select(fileName => new StandardFileDescriptionCM()
                 {
-                    Filename = fileName
+                    Filename = Path.GetFileName(fileName),
+                    Filetype = Path.GetExtension(fileName)
                 })
                 .ToList();
 
@@ -99,7 +92,9 @@ namespace terminalDropbox.Actions
                 new StandardFileListCM
                 {
                     FileList = descriptionList
-                });
+                },
+                AvailabilityType.Always);
+
         }
     }
 }

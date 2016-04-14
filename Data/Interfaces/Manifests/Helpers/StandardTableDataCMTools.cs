@@ -22,7 +22,7 @@ namespace Data.Interfaces.Manifests.Helpers
             }
 
             var columnSet = new HashSet<string>(dest.GetHeaderRow().Row.Select(x => x.Cell.Key));
-            
+
             for (var i = 1; i < source.Table.Count; ++i)
             {
                 var row = new TableRowDTO();
@@ -55,18 +55,18 @@ namespace Data.Interfaces.Manifests.Helpers
             {
                 var fields = crate.Get<FieldDescriptionsCM>();
                 return new StandardTableDataCM
-                       {
-                           FirstRowHeaders = true,
-                           Table = new List<TableRowDTO>
+                {
+                    FirstRowHeaders = true,
+                    Table = new List<TableRowDTO>
                                    {
                                        //Keys of fields will become column headers
                                        new TableRowDTO { Row = fields.Fields.Select(x => new TableCellDTO { Cell = new FieldDTO(x.Key, x.Key) }).ToList() },
                                        new TableRowDTO { Row = fields.Fields.Select(x => new TableCellDTO { Cell = x }).ToList() }
                                    }
-                       };
+                };
             }
             var tableData = new StandardTableDataCM
-                            {
+            {
                 FirstRowHeaders = true,
                 Table = new List<TableRowDTO>()
             };
@@ -103,12 +103,49 @@ namespace Data.Interfaces.Manifests.Helpers
                                     var fieldObj = (JObject)innerArrayItem;
                                     if (fieldObj.Property("key") != null && fieldObj.Property("value") != null)
                                     {
-                                        headerRow.Row.Add(new TableCellDTO { Cell = new FieldDTO(fieldObj["key"].ToString(), fieldObj["key"].ToString()) });
-                                        dataRow.Row.Add(new TableCellDTO { Cell = new FieldDTO(fieldObj["key"].ToString(), fieldObj["value"].ToString()) });
+                                        headerRow.Row.Add(new TableCellDTO
+                                        {
+                                            Cell = new FieldDTO(fieldObj["key"].ToString(), fieldObj["key"].ToString())
+                                        });
+                                        dataRow.Row.Add(new TableCellDTO
+                                        {
+                                            Cell =
+                                                new FieldDTO(fieldObj["key"].ToString(), fieldObj["value"].ToString())
+                                        });
                                     }
                                 }
                             }
 
+                            if (!headerIsAdded)
+                            {
+                                tableData.Table.Add(headerRow);
+                                headerIsAdded = true;
+                            }
+                            tableData.Table.Add(dataRow);
+                        }
+
+                        // StandardFileListCM manifest has structure like this.
+                        else
+                        {
+                            var headerRow = new TableRowDTO();
+                            var dataRow = new TableRowDTO();
+
+                            foreach (var property in ((JObject)arrayItem).Properties())
+                            {
+                                //try to parse the property as FieldDTO
+                                if (property.Name != null && property.Value != null)
+                                {
+                                    headerRow.Row.Add(new TableCellDTO
+                                    {
+                                        Cell = new FieldDTO(property.Name, property.Name)
+                                    });
+                                    dataRow.Row.Add(new TableCellDTO
+                                    {
+                                        Cell =
+                                            new FieldDTO(property.Name, property.Value.ToString())
+                                    });
+                                }
+                            }
                             if (!headerIsAdded)
                             {
                                 tableData.Table.Add(headerRow);
