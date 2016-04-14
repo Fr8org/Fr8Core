@@ -139,6 +139,11 @@ namespace HubWeb.Controllers
             return View();
         }
 
+        public ActionResult UnauthorizedAccess()
+        {
+            return View("~/shared/401.cshtml");
+        }
+
         //Validate emailAddress and meetingInfo then call Generate() parameterized method in BookingRequest controller
         [HttpPost]
         public ActionResult ProcessHomePageBookingRequest(string emailAddress, string meetingInfo)

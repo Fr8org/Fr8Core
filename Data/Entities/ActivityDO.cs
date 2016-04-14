@@ -1,13 +1,6 @@
-﻿using Data.States;
-using Data.States.Templates;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using AutoMapper;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Newtonsoft.Json;
+﻿using System;
 using System.Collections.Generic;
-using System;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
 
 namespace Data.Entities
@@ -72,21 +65,21 @@ namespace Data.Entities
             currentView = activity.currentView;
         }
 
-//        public CrateStorageDTO CrateStorageDTO()
-//        {
-//            return JsonConvert.DeserializeObject<CrateStorageDTO>(this.CrateStorage);
-//        }
-//
-//        public void UpdateCrateStorageDTO(List<CrateDTO> curCratesDTO)
-//        {
-//            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
-//
-//            if(!String.IsNullOrEmpty(CrateStorage))//if crateStorage is not empty deserialize it
-//                crateStorageDTO = CrateStorageDTO();
-//
-//            crateStorageDTO.CrateDTO.AddRange(curCratesDTO);
-//
-//            this.CrateStorage = JsonConvert.SerializeObject(crateStorageDTO);
-//        }
+        //        public CrateStorageDTO CrateStorageDTO()
+        //        {
+        //            return JsonConvert.DeserializeObject<CrateStorageDTO>(this.CrateStorage);
+        //        }
+        //
+        //        public void UpdateCrateStorageDTO(List<CrateDTO> curCratesDTO)
+        //        {
+        //            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
+        //
+        //            if(!String.IsNullOrEmpty(CrateStorage))//if crateStorage is not empty deserialize it
+        //                crateStorageDTO = CrateStorageDTO();
+        //
+        //            crateStorageDTO.CrateDTO.AddRange(curCratesDTO);
+        //
+        //            this.CrateStorage = JsonConvert.SerializeObject(crateStorageDTO);
+        //        }
     }
 }

@@ -303,7 +303,10 @@ namespace Hub.Services
                         Documentation = "MainPage",
                         ActivityTemplate = new ActivityTemplateDTO {Name = solutionName }
                     }, true);
-                solutionPages.Add(solutionPageDTO);
+                if (solutionPageDTO != null)
+                {
+                    solutionPages.Add(solutionPageDTO);
+                }
             }
             return solutionPages;
         }
