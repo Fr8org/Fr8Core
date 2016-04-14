@@ -665,6 +665,10 @@
     <Compile Include="Migrations\201604061440228_RenameContainerFields.Designer.cs">
       <DependentUpon>201604061440228_RenameContainerFields.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201604140935279_ActivityTemplateDO_Id_Int32_To_Guid.cs" />
+    <Compile Include="Migrations\201604140935279_ActivityTemplateDO_Id_Int32_To_Guid.Designer.cs">
+      <DependentUpon>201604140935279_ActivityTemplateDO_Id_Int32_To_Guid.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -1160,6 +1164,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604061440228_RenameContainerFields.resx">
       <DependentUpon>201604061440228_RenameContainerFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604140935279_ActivityTemplateDO_Id_Int32_To_Guid.resx">
+      <DependentUpon>201604140935279_ActivityTemplateDO_Id_Int32_To_Guid.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
