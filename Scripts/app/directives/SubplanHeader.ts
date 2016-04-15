@@ -2,6 +2,8 @@
 module dockyard.directives.SubplanHeader {
     'use strict';
 
+    import planEvents = dockyard.Fr8Events.Plan;
+
     export interface ISubplanHeaderScope extends ng.IScope {
         subplan: model.SubPlanDTO;
         editing: boolean;
@@ -21,7 +23,7 @@ module dockyard.directives.SubplanHeader {
             $scope.onTitleChange = () => {
                 $scope.editing = false;
                 subPlanService.update($scope.subplan);
-                $rootScope.$broadcast('subPlanModification');
+                $rootScope.$broadcast(<any>planEvents.SUB_PLAN_MODIFICATION);
             };
             
         }];
