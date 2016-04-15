@@ -37,7 +37,7 @@ namespace terminalDocuSignTests.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Monitor_DocuSign_Envelope_Activity_TEST",
                 Version = "1",
                 Terminal = new TerminalDTO()
@@ -51,7 +51,7 @@ namespace terminalDocuSignTests.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Query_DocuSign_TEST",
                 Version = "1"
             };
@@ -61,7 +61,7 @@ namespace terminalDocuSignTests.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 2,
+                Id = Guid.NewGuid(),
                 Name = "Receive_DocuSign_Envelope_TEST",
                 Version = "1"
             };
@@ -71,7 +71,7 @@ namespace terminalDocuSignTests.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 3,
+                Id = Guid.NewGuid(),
                 Name = "Send_DocuSign_Envelope_TEST",
                 Version = "1"
             };
@@ -140,7 +140,7 @@ namespace terminalDocuSignTests.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 3,
+                Id = Guid.NewGuid(),
                 Name = "Prepare_DocuSign_Events_For_Storage_TEST",
                 Version = "1",
                 Terminal = new TerminalDTO()
@@ -169,7 +169,7 @@ namespace terminalDocuSignTests.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 4,
+                Id = Guid.NewGuid(),
                 Name = "Mail_Merge_Into_DocuSign_TEST",
                 Version = "1",
             };
@@ -194,7 +194,7 @@ namespace terminalDocuSignTests.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 7,
+                Id = Guid.NewGuid(),
                 Name = "Track_DocuSign_Recipients_TEST",
                 Version = "1"
             };
@@ -219,7 +219,7 @@ namespace terminalDocuSignTests.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 4,
+                Id = Guid.NewGuid(),
                 Name = "Extract_Data_From_Envelopes_TEST",
                 Version = "1"
             };
@@ -243,7 +243,7 @@ namespace terminalDocuSignTests.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 6,
+                Id = Guid.NewGuid(),
                 Name = "Monitor_DocuSign_Envelope_Activity",
                 Version = "1",
                 Label = "Monitor DocuSign Envelope Activity",
@@ -255,7 +255,7 @@ namespace terminalDocuSignTests.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 5,
+                Id = Guid.NewGuid(),
                 Name = "Send_DocuSign_Envelope",
                 Label = "Send DocuSign Envelope",
                 Version = "1",

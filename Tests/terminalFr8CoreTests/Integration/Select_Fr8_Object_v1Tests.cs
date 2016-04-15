@@ -274,7 +274,7 @@ namespace terminalFr8CoreTests.Integration
 		{
 			var activityTemplate = new ActivityTemplateDTO
 			{
-				Id = 1,
+				Id = Guid.NewGuid(),
 				Name = "Select_Fr8_Object_TEST",
 				Version = "1"
 			};

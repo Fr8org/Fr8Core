@@ -65,7 +65,7 @@ namespace terminaBaselTests.Tools.Activities
             if (!defaultDocuSignAuthTokenExists)
             {
                 // Authenticate with DocuSign
-                tokenGuid = await _terminalDocuSignTestTools.AuthenticateDocuSignAndAssociateTokenWithAction(solution.Id, _baseHubITest.GetDocuSignCredentials(), solution.ActivityTemplate.TerminalId);
+                tokenGuid = await _terminalDocuSignTestTools.AuthenticateDocuSignAndAssociateTokenWithAction(solution.Id, _baseHubITest.GetDocuSignCredentials(), solution.ActivityTemplate.Terminal);
             }
 
             //
@@ -152,7 +152,7 @@ namespace terminaBaselTests.Tools.Activities
             //if (!defaultDocuSignAuthTokenExists)
             //{
             var terminalDocuSignTools = new Terminals.IntegrationTestTools_terminalDocuSign(_baseHubITest);
-            queryDocuSignActivity.AuthToken = await terminalDocuSignTools.GenerateAuthToken("fr8test@gmail.com", "fr8mesomething", queryDocuSignActivity.ActivityTemplate.TerminalId);
+            queryDocuSignActivity.AuthToken = await terminalDocuSignTools.GenerateAuthToken("fr8test@gmail.com", "fr8mesomething", queryDocuSignActivity.ActivityTemplate.Terminal);
 
             var applyToken = new ManageAuthToken_Apply()
             {
@@ -160,7 +160,6 @@ namespace terminaBaselTests.Tools.Activities
                 AuthTokenId = Guid.Parse(queryDocuSignActivity.AuthToken.Token),
             };
             await _baseHubITest.HttpPostAsync<ManageAuthToken_Apply[], string>( _baseHubITest.GetHubApiBaseUrl() + "ManageAuthToken/apply", new ManageAuthToken_Apply[] { applyToken });
-            //}
 
             //send configure with the auth token
             queryDocuSignActivity = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/save", queryDocuSignActivity);

@@ -91,30 +91,30 @@
                 return true;
             };
 
-            var _authenticateInternal = function (terminal: model.ManageAuthToken_TerminalDTO) {
+            var _authenticateInternal = (terminal: model.ManageAuthToken_TerminalDTO) => {
                 var modalScope = <any>$scope.$new(true);
-                modalScope.terminalId = terminal.id;
+                modalScope.terminal = terminal;
                 modalScope.mode = terminal.authenticationType;
                 modalScope.terminalName = terminal.name;
 
                 $modal.open({
-                    animation: true,
-                    templateUrl: '/AngularTemplate/InternalAuthentication',
-                    controller: 'InternalAuthenticationController',
-                    scope: modalScope
-                })
-                .result
-                .then(data => {
-                    var selectedAuthTokens = [];
-                    if (data.terminalId && data.authTokenId) {
-                        selectedAuthTokens.push({
-                            terminalId: data.terminalId,
-                            authTokenId: data.authTokenId
-                        });
-                    }
+                        animation: true,
+                        templateUrl: '/AngularTemplate/InternalAuthentication',
+                        controller: 'InternalAuthenticationController',
+                        scope: modalScope
+                    })
+                    .result
+                    .then(data => {
+                        var selectedAuthTokens = [];
+                        if (data.terminalId && data.authTokenId) {
+                            selectedAuthTokens.push({
+                                terminalId: data.terminalId,
+                                authTokenId: data.authTokenId
+                            });
+                        }
 
-                    _reloadTerminals(selectedAuthTokens);
-                });
+                        _reloadTerminals(selectedAuthTokens);
+                    });
             };
 
             var _authenticateExternal = function (terminal: model.ManageAuthToken_TerminalDTO) {

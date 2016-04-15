@@ -47,7 +47,7 @@ namespace terminalSendGrid.Tests.Fixtures
         {
             return new ActivityTemplateDO
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Send Email Via SendGrid",
                 Version = "1"
             };
