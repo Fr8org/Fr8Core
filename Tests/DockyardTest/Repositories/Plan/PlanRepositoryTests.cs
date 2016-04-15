@@ -12,6 +12,7 @@ using Hub.StructureMap;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Repositories.Plan
 {
@@ -140,10 +141,10 @@ namespace DockyardTest.Repositories.Plan
                         ActivityTemplate = new ActivityTemplateDO
                         {
                             TerminalId = 1,
-                            Id = 1,
+                            Id = FixtureData.GetTestGuidById(1),
                             Name = "New template",
                         },
-                        ActivityTemplateId = 1,
+                        ActivityTemplateId = FixtureData.GetTestGuidById(1),
                         AuthorizationToken = new AuthorizationTokenDO
                         {
                              TerminalID = 1,
@@ -164,12 +165,12 @@ namespace DockyardTest.Repositories.Plan
                             new ActivityDO
                             {
                                 ActivityTemplate = new ActivityTemplateDO
-                        {
-                            TerminalId = 1,
-                            Id = 1,
-                            Name = "New template",
-                        },
-                        ActivityTemplateId = 1,
+                                {
+                                    TerminalId = 1,
+                                    Id = FixtureData.GetTestGuidById(1),
+                                    Name = "New template",
+                                },
+                                ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                 RootPlanNodeId = NewGuid(13),
                                 Id = NewGuid(2),
                                 Fr8Account = new Fr8AccountDO()
@@ -182,12 +183,12 @@ namespace DockyardTest.Repositories.Plan
                             new ActivityDO
                             {
                                 ActivityTemplate = new ActivityTemplateDO
-                        {
-                            TerminalId = 1,
-                            Id = 1,
-                            Name = "New template",
-                        },
-                        ActivityTemplateId = 1,
+                                {
+                                    TerminalId = 1,
+                                    Id = FixtureData.GetTestGuidById(1),
+                                    Name = "New template",
+                                },
+                                ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                 RootPlanNodeId = NewGuid(13),
                                 Id = NewGuid(3),
                                 Fr8Account = new Fr8AccountDO()
@@ -310,15 +311,15 @@ namespace DockyardTest.Repositories.Plan
             var provider = new PersistentPlanStorage(null);
             var cache = new PlanCache(new ExpirationStrategyMock());
             var repository = new PlanRepository(new PlanStorage(cache, provider));
-
-            repository.Add(GenerateTestPlan());
+            var plan = GenerateTestPlan();
+            repository.Add(plan);
 
             repository.SaveChanges();
 
             var loadedPlan = provider.LoadPlan(Guid.Empty);
 
-            Assert.IsTrue(AreEquals(GenerateTestPlan(), loadedPlan));
-            Assert.IsTrue(AreEquals(repository.GetById<PlanDO>(NewGuid(13)), GenerateTestPlan()));
+            Assert.IsTrue(AreEquals(plan, loadedPlan));
+            Assert.IsTrue(AreEquals(repository.GetById<PlanDO>(NewGuid(13)), plan));
         }
 
 
@@ -345,13 +346,14 @@ namespace DockyardTest.Repositories.Plan
         [Test]
         public void CanAddPlanInEF()
         {
+            var plan = GenerateTestPlan();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.ActivityTemplateRepository.Add(new ActivityTemplateDO
                 {
                     TerminalId = 1,
                     
-                    Id = 1,
+                    Id = FixtureData.GetTestGuidById(1),
                     Name = "New template",
                 });
 
@@ -385,7 +387,7 @@ namespace DockyardTest.Repositories.Plan
                     Id = 1,
                     TerminalStatus = 1
                 });
-                uow.PlanRepository.Add(GenerateTestPlan());
+                uow.PlanRepository.Add(plan);
                 uow.SaveChanges();
             }
 
@@ -396,7 +398,7 @@ namespace DockyardTest.Repositories.Plan
             using (var uow = container.GetInstance<IUnitOfWork>())
             {
                 var loadedPlan = uow.PlanRepository.GetById<PlanDO>(NewGuid(13));
-                 Assert.IsTrue(AreEquals(GenerateTestPlan(), loadedPlan));
+                 Assert.IsTrue(AreEquals(plan, loadedPlan));
             }
         }
 

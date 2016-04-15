@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Runtime.InteropServices;
@@ -12,6 +13,7 @@ using StructureMap;
 using Utilities.Configuration;
 using Utilities.Configuration.Azure;
 using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Services
 {
@@ -143,14 +145,14 @@ namespace DockyardTest.Services
             };
         }
 
-        private ActivityTemplateDO CreateActivityTemplate(int id, TerminalDO terminal, WebServiceDO webService, string prefix = "")
+        private ActivityTemplateDO CreateActivityTemplate(Guid id, TerminalDO terminal, WebServiceDO webService, string prefix = "")
         {
             return new ActivityTemplateDO
             {
                 Id = id,
                 ActivityTemplateState = 1,
                 Category = ActivityCategory.Forwarders,
-                MinPaneWidth = id*10,
+                MinPaneWidth = 330,
                 ComponentActivities = prefix + "ca" + id,
                 Description = prefix + "des" + id,
                 Name = "name" + id,
@@ -161,7 +163,7 @@ namespace DockyardTest.Services
                 Type = ActivityType.Standard,
                 Version = "1",
                 WebService = webService,
-                WebServiceId = webService != null ? webService.Id : (int?)null
+                WebServiceId = webService?.Id
             };
         }
 
@@ -229,7 +231,7 @@ namespace DockyardTest.Services
 
                 for (int i = 1; i <= 20; i ++)
                 {
-                    templates[i-1] = CreateActivityTemplate(i, terminals[i%5], webServices[i%5]);
+                    templates[i-1] = CreateActivityTemplate(FixtureData.GetTestGuidById(i), terminals[i%5], webServices[i%5]);
                     uow.ActivityTemplateRepository.Add(templates[i-1]);
                 }
 
@@ -256,7 +258,7 @@ namespace DockyardTest.Services
         [Test]
         public void CanRegister()
         {
-            var template = CreateActivityTemplate(-1, CreateTerminal(-234, "new"), CreateWebService(234234, "new"));
+            var template = CreateActivityTemplate(Guid.NewGuid(), CreateTerminal(-234, "new"), CreateWebService(234234, "new"));
             template.TerminalId = 23444234;
             template.WebServiceId = -2344;
 
@@ -286,10 +288,10 @@ namespace DockyardTest.Services
         {
             GenerateSeedData();
 
-            var template = CreateActivityTemplate(1, CreateTerminal(-234), CreateWebService(234234));
+            var template = CreateActivityTemplate(FixtureData.GetTestGuidById(1), CreateTerminal(-234), CreateWebService(234234));
             template.TerminalId = 23444234;
             template.WebServiceId = -2344;
-            template.Id = 0;
+            template.Id = Guid.Empty;
 
             var service = ObjectFactory.GetInstance<ActivityTemplate>();
 

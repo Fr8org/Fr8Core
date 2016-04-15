@@ -22,7 +22,7 @@ using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
-using Utilities.Interfaces;
+using Utilities;
 
 namespace Hub.Services
 {
@@ -169,13 +169,13 @@ namespace Hub.Services
             }
         }
 
-        [AuthorizeActivity(Privilege = Privilege.ReadObject, ObjectType = typeof(Guid))]
+        //[AuthorizeActivity(Privilege = Privilege.ReadObject, ObjectType = typeof(Guid))]
         public ActivityDO GetById(IUnitOfWork uow, Guid id)
         {
             return uow.PlanRepository.GetById<ActivityDO>(id);
         }
 
-        public async Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
+        public async Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
         {
             if (parentNodeId != null && createPlan)
             {
@@ -408,34 +408,29 @@ namespace Hub.Services
             }
         }
 
-        public async Task PrepareToExecute(ActivityDO curActivity, ActivityState curActionState, ContainerDO curContainerDO, IUnitOfWork uow)
-        {
-            EventManager.ActionStarted(curActivity);
-
-            var payload = await Run(uow, curActivity, curActionState, curContainerDO);
-
-            if (payload != null)
-            {
-                using (var crateStorage = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
-                {
-                    crateStorage.Replace(_crate.FromDto(payload.CrateStorage));
-                }
-            }
-
-            uow.SaveChanges();
-        }
-
-        // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
-        public async Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActivityState curActionState, ContainerDO curContainerDO)
+        public async Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActivityExecutionMode curActionExecutionMode, ContainerDO curContainerDO)
         {
             if (curActivityDO == null)
             {
-                throw new ArgumentNullException("curActivityDO");
+                throw new ArgumentNullException(nameof(curActivityDO));
             }
+
+            //FR-2642 Logic to skip execution of activities with "SkipAtRunTime" Tag
+            var template = _activityTemplate.GetByKey(curActivityDO.ActivityTemplateId);
+            if (template.Tags != null && template.Tags.Contains("SkipAtRunTime", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return null;
+            }
+
+            EventManager.ActionStarted(curActivityDO, curContainerDO);
+
+            // Explicitly extract authorization token to make AuthTokenDTO pass to activities.
+            curActivityDO.AuthorizationToken = uow.AuthorizationTokenRepository.FindTokenById(curActivityDO.AuthorizationTokenId);
 
             try
             {
-                var actionName = curActionState == ActivityState.InitialRun ? "Run" : "ExecuteChildActivities";
+                var actionName = curActionExecutionMode == ActivityExecutionMode.InitialRun ? "Run" : "ExecuteChildActivities";
+
                 EventManager.ActivityRunRequested(curActivityDO, curContainerDO);
 
                 var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, actionName, curActivityDO, curContainerDO.Id);

@@ -102,6 +102,7 @@ namespace HubWeb.Controllers.Api
                             {
                                 Id = template.Terminal.Id,
                                 Name = template.Terminal.Name,
+                                Version = template.Terminal.Version,
                                 Label = template.Terminal.Label,
                                 AuthenticationType = template.Terminal.AuthenticationType,
                                 AuthTokens = authTokens

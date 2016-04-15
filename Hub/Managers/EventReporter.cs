@@ -67,7 +67,6 @@ namespace Hub.Managers
 
             EventManager.EventDocuSignNotificationReceived += LogDocuSignNotificationReceived;
             EventManager.EventContainerLaunched += LogEventProcessLaunched;
-            EventManager.EventProcessNodeCreated += LogEventProcessNodeCreated;
             EventManager.EventCriteriaEvaluationStarted += LogEventCriteriaEvaluationStarted;
             EventManager.EventCriteriaEvaluationFinished += LogEventCriteriaEvaluationFinished;
             EventManager.EventActionStarted += LogEventActivityStarted;
@@ -118,7 +117,6 @@ namespace Hub.Managers
 
             EventManager.EventDocuSignNotificationReceived -= LogDocuSignNotificationReceived;
             EventManager.EventContainerLaunched -= LogEventProcessLaunched;
-            EventManager.EventProcessNodeCreated -= LogEventProcessNodeCreated;
             EventManager.EventCriteriaEvaluationStarted -= LogEventCriteriaEvaluationStarted;
             EventManager.EventCriteriaEvaluationFinished -= LogEventCriteriaEvaluationFinished;
             EventManager.EventActionStarted -= LogEventActivityStarted;
@@ -218,6 +216,8 @@ namespace Hub.Managers
         {
             try
             {
+                Guid planId;
+                DateTimeOffset planLastUpdated;
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     var template = _activityTemplate.GetByKey(activityDo.ActivityTemplateId);
@@ -238,7 +238,10 @@ namespace Hub.Managers
                     };
 
                     uow.FactRepository.Add(factDO);
+                    var planDO = uow.PlanRepository.GetById<PlanDO>(activityDo.RootPlanNodeId);
                     uow.SaveChanges();
+                    planId = planDO.Id;
+                    planLastUpdated = planDO.LastUpdated;
                 }
 
                 //create user notifications
@@ -251,6 +254,8 @@ namespace Hub.Managers
                         ActivityName = activityDo.Label,
                         PlanName = containerDO.Name,
                         ContainerId = containerDO.Id.ToString(),
+                        PlanId = planId,
+                        PlanLastUpdated = planLastUpdated,
                     });
             }
             catch (Exception exception)
@@ -984,30 +989,6 @@ namespace Hub.Managers
             }
         }
 
-        private void LogEventProcessNodeCreated(ProcessNodeDO processNode)
-        {
-            ContainerDO containerInExecution;
-            FactDO fact;
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                containerInExecution = uow.ContainerRepository.GetByKey(processNode.ParentContainerId);
-                var plan = containerInExecution != null ? uow.PlanRepository.GetById<PlanDO>(containerInExecution.PlanId) : null;
-
-                fact = new FactDO
-                {
-                    CustomerId = containerInExecution != null ? plan.Fr8AccountId : "unknown",
-                    Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
-                    ObjectId = processNode.Id.ToStr(),
-                    PrimaryCategory = "Container Execution",
-                    SecondaryCategory = "Process Node",
-                    Activity = "Created"
-                };
-            }
-
-            SaveAndLogFact(fact);
-        }
-
         private void LogEventCriteriaEvaluationStarted(Guid containerId)
         {
             ContainerDO containerInExecution;
@@ -1056,15 +1037,12 @@ namespace Hub.Managers
             SaveAndLogFact(fact);
         }
 
-        private void LogEventActivityStarted(ActivityDO curActivity)
+        private void LogEventActivityStarted(ActivityDO curActivity, ContainerDO containerInExecution)
         {
-            ContainerDO containerInExecution;
             FactDO fact;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                containerInExecution = uow.ContainerRepository.GetQuery()
-                    .FirstOrDefault(p => p.CurrentActivityId.Value == curActivity.Id);
                 var plan = containerInExecution != null ? uow.PlanRepository.GetById<PlanDO>(containerInExecution.PlanId) : null;
 
                 fact = new FactDO

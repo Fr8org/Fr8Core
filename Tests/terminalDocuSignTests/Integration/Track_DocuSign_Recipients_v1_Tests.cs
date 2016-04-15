@@ -132,7 +132,7 @@ namespace terminalDocuSignTests.Integration
                 dataDTO,
                 new ActivityTemplateDTO()
                 {
-                    Id = 9,
+                    Id = Guid.NewGuid(),
                     Name = "Send Email_Via_Send_Grid",
                     Label = "Send Email",
                     Tags = "Notifier",

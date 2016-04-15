@@ -11,8 +11,6 @@ namespace Data.Interfaces.DataTransferObjects
             AuthenticationType = States.AuthenticationType.None;
         }
 
-        [JsonProperty("id")]
-        public int Id { get; set; }
         [JsonProperty("name")]
         public string Name { get; set; }
         [JsonProperty("label")]

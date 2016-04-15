@@ -161,6 +161,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityTemplateDO()
             {
+                Id = Guid.NewGuid(),
                 Name = "SaveToFr8Warehouse",
                 Label = "Save To Fr8 Warehouse",
                 Category = ActivityCategory.Processors,
@@ -221,6 +222,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityTemplateDO()
             {
+                Id = Guid.NewGuid(),
                 Name = "Monitor_Fr8_Events",
                 Label = "Monitor Fr8 Events",
                 Version = "1",

@@ -4,6 +4,7 @@
         id: number;
         name: string;
         label: string;
+        version: string;
         authTokens: Array<ManageAuthToken_AuthTokenDTO>;
         authenticationType: number;
         selectedAuthTokenId: number;
@@ -11,14 +12,12 @@
         constructor(
             id: number,
             name: string,
-            label: string,
             authTokens: Array<ManageAuthToken_AuthTokenDTO>,
             authenticationType: number,
             selectedAuthTokenId: number) {
 
             this.id = id;
             this.name = name;
-            this.label = label;
             this.authTokens = authTokens;
             this.authenticationType = authenticationType;
             this.selectedAuthTokenId = selectedAuthTokenId;
