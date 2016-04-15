@@ -397,6 +397,6 @@ gulp.task('protractor-run', function (done) {
         stdio: 'inherit'
     });
 });
-gulp.task('default', ['bower', 'concattemplates', 'cdnizer-js', 'cdnizer-css', 'update-web-driver', 'protractor-run']);
+gulp.task('default', ['bower', 'concattemplates', 'cdnizer-js', 'cdnizer-css']);
 
 gulp.task('e2etests', ['update-web-driver', 'protractor-run']);
