@@ -308,7 +308,7 @@ namespace DockyardTest.Controllers
                 {
                     TerminalId = 1,
 
-                    Id = Guid.NewGuid(),
+                    Id = FixtureData.GetTestGuidById(1),
                     Name = "New template",
                 });
 
