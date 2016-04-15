@@ -31,7 +31,6 @@ namespace terminalDocuSignTests.Integration
         public async Task Extract_Data_From_Envelopes_EndToEnd()
         {
             await RevokeTokens();
-
             string baseUrl = GetHubApiBaseUrl();
 
             var solutionCreateUrl = baseUrl + "activities/create?solutionName=Extract_Data_From_Envelopes";
