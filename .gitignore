@@ -130,7 +130,6 @@ Scripts/tests/unit/*.js
 Scripts/tests/utils/*.js
 Scripts/tests/integration/*.js
 Scripts/tests/integration/DockyardAccountControllerTests/*.js
-!Scripts/tests/e2e/*.js
 *.js.map
 
  
