@@ -280,7 +280,6 @@
     <Compile Include="Infrastructure\DatabaseTests.cs" />
     <Compile Include="Infrastructure\Fr8HubWebHMACAuthenticateAttributeTests.cs" />
     <Compile Include="Infrastructure\MultiTenantTests.cs" />
-    <Compile Include="Integration\RunTimeTests.cs" />
     <Compile Include="Integration\AccountITests.cs" />
     <Compile Include="Managers\OAuthAuthorizerTest.cs" />
     <Compile Include="Managers\PlanManagerTests.cs" />
@@ -299,40 +298,34 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Security\AuthorizeActivityTests.cs" />
     <Compile Include="Services\ActivityTemplateTests.cs" />
-    <Compile Include="Services\ActivityTests.cs" />
-    <Compile Include="Services\CrateServiceTests.cs" />
+    <Compile Include="Services\Container\ActivityExecutionCall.cs" />
+    <Compile Include="Services\Container\ActivityExecutionMock.cs" />
+    <Compile Include="Services\Container\ActivityMockBase.cs" />
+    <Compile Include="Services\Container\Mocks\CallerActivityMock.cs" />
+    <Compile Include="Services\Container\Mocks\LooperActivityMock.cs" />
+    <Compile Include="Services\Container\Mocks\SubplanJumperActivityMock.cs" />
+    <Compile Include="Services\Container\Mocks\SuspenderActivityMock.cs" />
+    <Compile Include="Services\Container\Mocks\JumperActivityMock.cs" />
+    <Compile Include="Services\Container\Mocks\JumpToSelfActivityMock.cs" />
     <Compile Include="Services\DisableCacheSettings.cs" />
     <Compile Include="Services\DockyardAccountTest.cs" />
-    <Compile Include="Services\ActionDTO.cs" />
-    <Compile Include="Services\ActivityServiceTests2.cs" />
+    <Compile Include="Services\ActivityServiceTests.cs" />
     <Compile Include="Services\EventTests.cs" />
     <Compile Include="Services\HMACAuthenticatorTests.cs" />
-    <Compile Include="Services\ITerminalClient.cs" />
     <Compile Include="Services\FileTests.cs" />
-    <Compile Include="Services\ContainerServiceTests.cs" />
+    <Compile Include="Services\Container\ContainerServiceTests.cs" />
     <Compile Include="Services\PlanNodeTests.cs" />
-    <Compile Include="Services\SubPlanTests.cs" />
     <Compile Include="Services\PlanTests.cs" />
-    <Compile Include="Services\SMSMessageTests.cs" />
-    <Compile Include="Services\StartupTests.cs" />
     <Compile Include="Services\SubscriptionServiceTests.cs" />
-    <Compile Include="Services\ContainerExecuteTests.cs" />
+    <Compile Include="Services\Container\ContainerExecutionTests.cs" />
     <Compile Include="Services\TagTests.cs" />
     <Compile Include="Services\TerminalServiceTests.cs" />
     <Compile Include="Services\UserServiceTests.cs" />
-    <Compile Include="Utilities\EncryptionTests.cs" />
     <Compile Include="Utilities\LoggerTests.cs" />
-    <Compile Include="Utilities\MiscUtils.cs" />
-    <Compile Include="Utilities\StandardConfigurationControlsCMTests.cs" />
-    <Compile Include="Utilities\TextSourceMappingBehaviorTests.cs" />
     <Compile Include="Validations\ValidationsTest.cs" />
     <Compile Include="Wrapper\DcousingAccountTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\Config\log4net.tests.config">
-      <Link>log4net.tests.config</Link>
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
     <None Include="App.config">
       <SubType>Designer</SubType>
     </None>
@@ -393,11 +386,7 @@
       <Name>UtilitiesTesting</Name>
     </ProjectReference>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Activities\" />
-    <Folder Include="DocuSign\" />
-    <Folder Include="Timeslots\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Content\DocusignXmlPayload_healthdemo.xml">
       <SubType>Designer</SubType>
