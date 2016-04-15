@@ -33,15 +33,17 @@ namespace DockyardTest.Services
             FixtureData.AddAuthorizationToken(FixtureData.TestDockyardAccount1(), externalAccountId);
             FixtureData.AddAuthorizationToken(FixtureData.TestDeveloperAccount(), externalAccountId);
 
-            var activityMock = new PlanNodeMock(plan1, plan2);
+            var planNode = new PlanNodeMock(plan1, plan2);
+            var activity = new ActivityMock(ObjectFactory.GetInstance<IActivity>(), planNode.PlanNodes);
 
-            ObjectFactory.Container.Inject(typeof(IPlanNode), activityMock);
+            ObjectFactory.Container.Inject(typeof(IPlanNode), planNode);
+            ObjectFactory.Container.Inject(typeof(IActivity), activity);
 
             //Act
             var eventService = new Event();
             var curCrateStandardEventReport = ObjectFactory.GetInstance<ICrateManager>().FromDto(FixtureData.CrateDTOForEvents(externalAccountId));
             await eventService.ProcessInboundEvents(curCrateStandardEventReport);
-            Assert.AreEqual(2, activityMock.Processed);
+            Assert.AreEqual(2, activity.Processed);
         }
         //[Test]
         //[ExpectedException(ExpectedException = typeof(System.ArgumentNullException))]
@@ -74,21 +76,99 @@ namespace DockyardTest.Services
         //}
     }
 
+    public class ActivityMock : IActivity
+    {
+        private readonly IActivity _activity;
+        private readonly Dictionary<Guid, PlanDO> _planNodes;
+
+        public int Processed { get; set; }
+
+        public ActivityMock(IActivity activity, Dictionary<Guid, PlanDO> planNodes)
+        {
+            _activity = activity;
+            _planNodes = planNodes;
+        }
+
+        public IEnumerable<TViewModel> GetAllActivities<TViewModel>()
+        {
+            return _activity.GetAllActivities<TViewModel>();
+        }
+
+        public Task<ActivityDTO> SaveOrUpdateActivity(ActivityDO currentActivityDo)
+        {
+            return _activity.SaveOrUpdateActivity(currentActivityDo);
+        }
+
+        public Task<ActivityDTO> Configure(IUnitOfWork uow, string userId, ActivityDO curActivityDO, bool saveResult = true)
+        {
+            return _activity.Configure(uow, userId, curActivityDO, saveResult);
+        }
+
+        public ActivityDO GetById(IUnitOfWork uow, Guid id)
+        {
+            return _activity.GetById(uow, id);
+        }
+
+        public ActivityDO MapFromDTO(ActivityDTO curActivityDTO)
+        {
+            return _activity.MapFromDTO(curActivityDTO);
+        }
+
+        public Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
+        {
+            return _activity.CreateAndConfigure(uow, userId, actionTemplateId, label, order, parentNodeId, createPlan, authorizationTokenId);
+        }
+
+        public async Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActivityExecutionMode curActionExecutionMode, ContainerDO curContainerDO)
+        {
+            if (PlanTreeHelper.Linearize(_planNodes[curActivityDO.Id]).OfType<ActivityDO>().Any(x => x.Id == curActivityDO.Id))
+            {
+                Processed++;
+            }
+
+            await Task.Delay(1);
+
+            return await _activity.Run(uow, curActivityDO, curActionExecutionMode, curContainerDO);
+        }
+
+        public Task<ActivityDTO> Activate(ActivityDO curActivityDO)
+        {
+            return _activity.Activate(curActivityDO);
+        }
+
+        public Task<ActivityDTO> Deactivate(ActivityDO curActivityDO)
+        {
+            return _activity.Deactivate(curActivityDO);
+        }
+
+        Task<T> IActivity.GetActivityDocumentation<T>(ActivityDTO curActivityDTO, bool isSolution)
+        {
+            return _activity.GetActivityDocumentation<T>(curActivityDTO, isSolution);
+        }
+
+        public List<string> GetSolutionNameList(string terminalName)
+        {
+            return _activity.GetSolutionNameList(terminalName);
+        }
+
+        public void Delete(Guid id)
+        {
+            _activity.Delete(id);
+        }
+    }
+
     public class PlanNodeMock : IPlanNode
     {
-        public int Processed;
-        private readonly Dictionary<Guid, PlanDO> _planNodes = new Dictionary<Guid, PlanDO>();
+        public readonly Dictionary<Guid, PlanDO> PlanNodes = new Dictionary<Guid, PlanDO>();
         private readonly HashSet<Guid> _plans = new HashSet<Guid>();
-        private readonly ICrateManager _crate;
 
         public PlanNodeMock(params PlanDO[] plans)
         {
             foreach (var planDo in plans)
             {
-                _crate = ObjectFactory.GetInstance<ICrateManager>();
                 _plans.Add(planDo.Id);
                 var plan = planDo;
-                PlanTreeHelper.Visit(planDo, x => _planNodes[x.Id] = plan);
+                PlanTreeHelper.Visit(planDo, x => PlanNodes[x.Id] = plan);
             }
         }
 
@@ -111,22 +191,6 @@ namespace DockyardTest.Services
         public FieldDescriptionsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability)
         {
             throw new NotImplementedException();
-        }
-
-        public Task Process(Guid curActivityId, ActivityState curActionState, ContainerDO curContainerDO)
-        {
-            if (PlanTreeHelper.Linearize(_planNodes[curActivityId]).OfType<ActivityDO>().Any(x => x.Id == curActivityId))
-            {
-                Processed++;
-
-                //                    using (var storage = _crate.GetUpdatableStorage(() => curContainerDO.CrateStorage))
-                //                    {
-                //                        var operationalState = storage.CrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                //                        operationalState.CurrentActivityResponse = ActivityResponse.Success;
-                //                    }
-            }
-
-            return Task.Delay(1);
         }
 
         public IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, IFr8AccountDO curAccount)
@@ -156,12 +220,12 @@ namespace DockyardTest.Services
 
         public PlanNodeDO GetFirstChild(PlanNodeDO currentActivity)
         {
-            return _planNodes[currentActivity.Id].ChildNodes.First().ChildNodes.First();
+            return PlanNodes[currentActivity.Id].ChildNodes.First().ChildNodes.First();
         }
 
         public bool HasChildren(PlanNodeDO currentActivity)
         {
-            return _planNodes[currentActivity.Id].StartingSubPlanId == currentActivity.Id;
+            return PlanNodes[currentActivity.Id].StartingSubPlanId == currentActivity.Id;
         }
 
         public void Delete(IUnitOfWork uow, PlanNodeDO activity)
