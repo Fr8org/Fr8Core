@@ -690,6 +690,10 @@
     <Compile Include="Migrations\201604130047415_ProcessNodesRemoved.Designer.cs">
       <DependentUpon>201604130047415_ProcessNodesRemoved.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201604151634121_AddSalesforceMMSolution.cs" />
+    <Compile Include="Migrations\201604151634121_AddSalesforceMMSolution.Designer.cs">
+      <DependentUpon>201604151634121_AddSalesforceMMSolution.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -1211,6 +1215,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604130047415_ProcessNodesRemoved.resx">
       <DependentUpon>201604130047415_ProcessNodesRemoved.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604151634121_AddSalesforceMMSolution.resx">
+      <DependentUpon>201604151634121_AddSalesforceMMSolution.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
