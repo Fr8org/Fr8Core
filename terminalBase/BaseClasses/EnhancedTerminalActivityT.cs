@@ -400,7 +400,7 @@ namespace TerminalBase.BaseClasses
             
             if (ui.Controls != null)
             {
-                var dynamicControlsCollection = GetMembers(ConfigurationControls.GetType()).Where(x => x.CanRead && x.GetCustomAttribute<DynamicControlsAttribute>() != null && CheckIfMemberIsControlsCollection(x)).ToDictionary(x => x.Name, x => x);
+                var dynamicControlsCollection = Fr8ReflectionHelper.GetMembers(ConfigurationControls.GetType()).Where(x => x.CanRead && x.GetCustomAttribute<DynamicControlsAttribute>() != null && CheckIfMemberIsControlsCollection(x)).ToDictionary(x => x.Name, x => x);
 
                 if (dynamicControlsCollection.Count > 0)
                 {
@@ -485,15 +485,7 @@ namespace TerminalBase.BaseClasses
 
             return false;
         }
-
-        /**********************************************************************************/
-
-        private static IEnumerable<IMemberAccessor> GetMembers(Type type)
-        {
-            return type.GetProperties(BindingFlags.Instance | BindingFlags.Public).Select(x => (IMemberAccessor)new PropertyMemberAccessor(x))
-                .Concat(type.GetFields(BindingFlags.Instance | BindingFlags.Public).Select(x => (IMemberAccessor)new FieldMemberAccessor(x)));
-        }
-
+        
         /**********************************************************************************/
         // Activity logic can update state of configuration controls. But as long we have copied  configuration controls crate from the storage into 
         // new instance of ActivityUi changes made to ActivityUi won't be reflected in storage.
@@ -510,7 +502,7 @@ namespace TerminalBase.BaseClasses
 
             int insertIndex = 0;
 
-            foreach (var member in GetMembers(ConfigurationControls.GetType()).Where(x => x.CanRead))
+            foreach (var member in Fr8ReflectionHelper.GetMembers(ConfigurationControls.GetType()).Where(x => x.CanRead))
             {
                 if (member.GetCustomAttribute<DynamicControlsAttribute>() != null && CheckIfMemberIsControlsCollection(member))
                 {

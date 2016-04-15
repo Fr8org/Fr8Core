@@ -8,6 +8,7 @@ namespace Data.Interfaces.Manifests
     public class CrateDescriptionCM : Manifest
     {
         public List<CrateDescriptionDTO> CrateDescriptions { get; set; }
+
         public CrateDescriptionCM() : base(MT.CrateDescription)
         {
             CrateDescriptions = new List<CrateDescriptionDTO>();
@@ -23,20 +24,18 @@ namespace Data.Interfaces.Manifests
             CrateDescriptions.AddRange(crateDescriptions);
         }
 
-        //public CrateDescriptionCM(int manifestId, string manifestType, string label) : this()
-        //{
-        //    CrateDescriptions.Add(new CrateDescriptionDTO { ManifestType = manifestType, Label = label, ManifestId = manifestId});
-        //}
-
-
-        public void AddIfNotExists(CrateDescriptionDTO crateDescription)
+        public CrateDescriptionDTO AddIfNotExists(CrateDescriptionDTO crateDescription)
         {
-            if (CrateDescriptions.Any(x => x.Label == crateDescription.Label && x.ManifestId == crateDescription.ManifestId))
+            var crateDescr = CrateDescriptions.FirstOrDefault(x => x.Label == crateDescription.Label && x.ManifestId == crateDescription.ManifestId);
+            
+            if (crateDescr != null)
             {
-                return;
+                return crateDescr;
             }
 
-            CrateDescriptions.Add(crateDescription);
+            CrateDescriptions.Add(crateDescr = crateDescription);
+
+            return crateDescr;
         }
     }
 }

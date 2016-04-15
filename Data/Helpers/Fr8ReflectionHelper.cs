@@ -91,5 +91,19 @@ namespace Data.Helpers
             return null;
         }
 
+        public static IEnumerable<IMemberAccessor> GetMembers(Type type)
+        {
+            return type.GetProperties(BindingFlags.Instance | BindingFlags.Public).Select(x => (IMemberAccessor)new PropertyMemberAccessor(x))
+                       .Concat(type.GetFields(BindingFlags.Instance | BindingFlags.Public).Select(x => (IMemberAccessor)new FieldMemberAccessor(x)));
+        }
+
+        public static bool IsPrimitiveType(Type type)
+        {
+            return type.IsPrimitive
+                   || type == typeof (string)
+                   || type == typeof (Guid)
+                   || type == typeof (DateTime)
+                   || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Nullable<>) && IsPrimitiveType(type.GetGenericArguments()[0]));
+        }
     }
 }
