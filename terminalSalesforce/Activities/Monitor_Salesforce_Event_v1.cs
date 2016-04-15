@@ -79,17 +79,11 @@ namespace terminalSalesforce.Actions
                 return;
             }
 
-            if(CurrentActivityStorage.CratesOfType<FieldDescriptionsCM>().Any(x => x.Label.EndsWith(" - " + curSfChosenObject)))
-            {
-                return;
-            }
+            var eventSubscriptionCrate = PackEventSubscriptionsCrate(ConfigurationControls);
+            CurrentActivityStorage.ReplaceByLabel(eventSubscriptionCrate);
 
-            CurrentActivityStorage.ReplaceByLabel(PackEventSubscriptionsCrate(ConfigurationControls));
-
-            var curSfChosenObjectfields = (await _salesforceManager.GetFields(curSfChosenObject, this.AuthorizationToken)).ToList();
             CurrentActivityStorage.ReplaceByLabel(
-                CrateManager.CreateDesignTimeFieldsCrate("Salesforce Object Fields - " + curSfChosenObject, curSfChosenObjectfields, AvailabilityType.Configuration)
-                );
+                CrateManager.CreateDesignTimeFieldsCrate("Monitor Salesforce Fields", CreateSfMonitorDesignTimeFields().ToList(), AvailabilityType.RunTime));
         }
 
         protected override async Task RunCurrentActivity()
@@ -102,27 +96,21 @@ namespace terminalSalesforce.Actions
             {
                 await Activate(CurrentActivity, AuthorizationToken);
                 RequestHubExecutionTermination("Plan successfully activated. It will wait and respond to specified Salesforce Event messages.");
+                return;
             }
 
-            string curSfChosenObject = ConfigurationControls.SalesforceObjectList.selectedKey;
-            var curSfObjectFields = CurrentActivityStorage.CrateContentsOfType<FieldDescriptionsCM>(c => c.Label.Equals("Salesforce Object Fields - " + curSfChosenObject))
-                                             .SelectMany(f => f.Fields);
-
             var curEventReport = CurrentPayloadStorage.CratesOfType<EventReportCM>().Single(er => er.Content.Manufacturer.Equals("Salesforce")).Content;
-            var curEventPayloads = curEventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().ToList();
+            var curEventPayloads = curEventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().Single().PayloadObjects;
 
-
-            curEventPayloads.ForEach(async payload =>
+            curEventPayloads.ForEach(p =>
             {
-                var idValue = payload.PayloadObjects.Single().PayloadObject.Single(p => p.Key.Equals("Id")).Value;
-                var parsedCondition = string.Format("WHERE ID = '{0}'", idValue);
+                p.PayloadObject.ForEach(po =>
+                {
+                    po.Availability = AvailabilityType.RunTime;
+                });
 
-                var resultObject = await _salesforceManager.GetObjectByQuery(curSfChosenObject, 
-                                                                             curSfObjectFields.Select(f => f.Key), 
-                                                                             parsedCondition, 
-                                                                             AuthorizationToken);
-
-                CurrentPayloadStorage.Add(Crate.FromContent("Salesforce Objects", resultObject));
+                CurrentPayloadStorage.ReplaceByLabel(
+                    Crate.FromContent("Monitor Salesforce Fields", new StandardPayloadDataCM(p.PayloadObject), AvailabilityType.RunTime));
             });
         }
 
@@ -145,6 +133,20 @@ namespace terminalSalesforce.Actions
                 "Standard Event Subscriptions",
                 "Salesforce",
                 eventSubscriptions.ToArray());
+        }
+
+        private List<FieldDTO> CreateSfMonitorDesignTimeFields()
+        {
+            var monitorEventFields = new List<FieldDTO> {
+
+                new FieldDTO("ObjectType", "ObjectType", AvailabilityType.RunTime),
+                new FieldDTO("Id", "Id", AvailabilityType.RunTime),
+                new FieldDTO("CreatedDate", "CreatedDate", AvailabilityType.RunTime),
+                new FieldDTO("LastModifiedDate", "LastModifiedDate", AvailabilityType.RunTime),
+                new FieldDTO("OccuredEvent", "OccuredEvent", AvailabilityType.RunTime)
+            };
+
+            return monitorEventFields;
         }
     }
 }
