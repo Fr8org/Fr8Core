@@ -522,6 +522,27 @@ namespace TerminalBase.BaseClasses
             return foundActivity;
         }
 
+        /// <summary>
+        /// DON'T USE THIS FUNCTION THIS IS JUST FOR BACKWARD COMPABILITY !!
+        /// </summary>
+        /// <param name="terminalName"></param>
+        /// <param name="activityTemplateName"></param>
+        /// <param name="activityTemplateVersion"></param>
+        /// <param name="terminalVersion"></param>
+        /// <returns></returns>
+        protected async Task<ActivityTemplateDTO> GetActivityTemplateByName(string activityTemplateName)
+        {
+            var allActivityTemplates = _activityTemplateCache ?? (_activityTemplateCache = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId));
+            var foundActivity = allActivityTemplates.FirstOrDefault(a => a.Name == activityTemplateName);
+
+            if (foundActivity == null)
+            {
+                throw new Exception($"ActivityTemplate was not found. ActivitiyTemplateName: {activityTemplateName}");
+            }
+
+            return foundActivity;
+        }
+
         protected async Task<ActivityDO> AddAndConfigureChildActivity(Guid parentActivityId, ActivityTemplateDTO activityTemplate, string name = null, string label = null, int? order = null)
         {
 
