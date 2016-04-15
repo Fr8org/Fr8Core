@@ -104,7 +104,7 @@ namespace terminalDocuSignTests.Integration
                 // Authenticate with DocuSign
                 //
                 var creds = GetDocuSignCredentials();
-                creds.TerminalId = solution.ActivityTemplate.TerminalId;
+                creds.Terminal = solution.ActivityTemplate.Terminal;
 
                 var token = await HttpPostAsync<CredentialsDTO, JObject>(baseUrl + "authentication/token", creds);
                 Assert.AreEqual(false, String.IsNullOrEmpty(token["authTokenId"].Value<string>()), "AuthTokenId is missing in API response.");

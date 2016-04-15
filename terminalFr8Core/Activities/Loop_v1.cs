@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Web;
-using AutoMapper.Internal;
 using Data.Constants;
 using Data.Control;
 using Data.Crates;
@@ -15,14 +10,11 @@ using Data.Helpers;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
-using Hub.Helper;
 using Hub.Managers;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TerminalBase;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using Utilities;
 
 namespace terminalFr8Core.Actions
 {
@@ -31,35 +23,63 @@ namespace terminalFr8Core.Actions
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var curPayloadDTO = await GetPayload(curActivityDO, containerId);
-            var payloadStorage = CrateManager.GetStorage(curPayloadDTO);
-            var operationsCrate = payloadStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
-            if (operationsCrate == null)
-            {
-                return Error(curPayloadDTO, "This Action can't run without OperationalStateCM crate", ActivityErrorCode.PAYLOAD_DATA_MISSING);
-            }
 
-            var crateToProcess = FindCrateToProcess(curActivityDO, payloadStorage);
-
-            if (crateToProcess == null)
+            using (var payloadStorage = CrateManager.UpdateStorage(() => curPayloadDTO.CrateStorage))
             {
-                Error(curPayloadDTO, "This Action can't run without OperationalStateCM crate", ActivityErrorCode.PAYLOAD_DATA_MISSING);
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any crate with Manifest Type: \"" + crateToProcess.ManifestType.Type + "\" and Label: \"" + crateToProcess.Label + "\"");
-            }
+                var operationsCrate = payloadStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
 
-            //set default loop index for initial state
-            CreateLoop(curActivityDO.GetLoopId(), curPayloadDTO, crateToProcess);
-            try
-            {
-                if (ShouldBreakLoop(curPayloadDTO, curActivityDO, crateToProcess))
+                if (operationsCrate == null)
                 {
-                    return SkipChildren(curPayloadDTO);
+                    return Error(curPayloadDTO, "This Action can't run without OperationalStateCM crate", ActivityErrorCode.PAYLOAD_DATA_MISSING);
+                }
+
+                var crateToProcess = FindCrateToProcess(curActivityDO, payloadStorage);
+
+                if (crateToProcess == null)
+                {
+                    Error(curPayloadDTO, "This Action can't run without OperationalStateCM crate", ActivityErrorCode.PAYLOAD_DATA_MISSING);
+                    throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any crate with Manifest Type: \"" + crateToProcess.ManifestType.Type + "\" and Label: \"" + crateToProcess.Label + "\"");
+                }
+
+                var loopData = operationsCrate.CallStack.GetLocalData<OperationalStateCM.LoopStatus>("Loop");
+
+                if (loopData == null)
+                {
+                    loopData = new OperationalStateCM.LoopStatus();
+
+                    loopData.CrateManifest = crateToProcess.ManifestType.Type;
+                    loopData.Label = crateToProcess.Label;
+                }
+                else
+                {
+                    loopData.Index++;
+                }
+
+                operationsCrate.CallStack.StoreLocalData("Loop", loopData);
+
+                var dataListSize = GetDataListSize(crateToProcess);
+
+                if (dataListSize == null)
+                {
+                    Error(curPayloadDTO, "Unable to find a list in specified crate with Manifest Type: \"" + crateToProcess.ManifestType.Type + "\" and Label: \"" + crateToProcess.Label + "\"", ActivityErrorCode.PAYLOAD_DATA_MISSING);
+                    throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING);
+                }
+
+                if (loopData.Index >= dataListSize.Value)
+                {
+                    SkipChildren(payloadStorage);
+                    return curPayloadDTO;
                 }
             }
-            catch (TerminalCodedException)
-            {
-                return curPayloadDTO;
-            }
+
             return Success(curPayloadDTO);
+        }
+
+        public override async Task<PayloadDTO> ExecuteChildActivities(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        {
+            var curPayloadDTO = await GetPayload(curActivityDO, containerId);
+
+            return JumpToActivity(curPayloadDTO, curActivityDO.Id);
         }
 
         protected override async Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
@@ -77,71 +97,7 @@ namespace terminalFr8Core.Actions
             }
             return await Task.FromResult<ICrateStorage>(null);
         }
-
-        public override async Task<PayloadDTO> ExecuteChildActivities(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-        {
-            var curPayloadDTO = await GetPayload(curActivityDO, containerId);
-            var payloadStorage = CrateManager.GetStorage(curPayloadDTO);
-            int i = IncrementLoopIndex(curActivityDO.GetLoopId(), curPayloadDTO);
-            try
-            {
-                var crateToProcess = FindCrateToProcess(curActivityDO, payloadStorage);
-
-                if (crateToProcess == null)
-                {
-                    Error(curPayloadDTO, "This Action can't run without OperationalStateCM crate", ActivityErrorCode.PAYLOAD_DATA_MISSING);
-                    throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any crate with Manifest Type: \"" + crateToProcess.ManifestType.Type + "\" and Label: \"" + crateToProcess.Label + "\"");
-                }
-
-                //check if we need to end this loop
-                if (ShouldBreakLoop(curPayloadDTO, curActivityDO, crateToProcess))
-                {
-                    BreakLoop(curActivityDO.GetLoopId(), curPayloadDTO);
-                    return Success(curPayloadDTO);
-                }
-            }
-            catch (TerminalCodedException)
-            {
-                return curPayloadDTO;
-            }
-
-            return ReProcessChildActivities(curPayloadDTO);
-        }
-
-        private bool ShouldBreakLoop(PayloadDTO curPayloadDTO, ActivityDO curActivityDO, Crate crateToProcess)
-        {
-            var payloadStorage = CrateManager.GetStorage(curPayloadDTO);
-
-            var loopId = curActivityDO.GetLoopId();
-            var operationsCrate = payloadStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
-            if (operationsCrate == null)
-            {
-                //update payload with error
-                Error(curPayloadDTO, "This Action can't run without OperationalStateCM crate", ActivityErrorCode.PAYLOAD_DATA_MISSING);
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_INVALID);
-            }
-            //set default loop index for initial state
-            var myLoop = operationsCrate.Loops.FirstOrDefault(l => l.Id == loopId);
-            var currentLoopIndex = myLoop.Index;
-
-            //find our list data that we will iterate
-            var dataListSize = GetDataListSize(crateToProcess);
-
-            if (dataListSize == null)
-            {
-                Error(curPayloadDTO, "Unable to find a list in specified crate with Manifest Type: \"" + crateToProcess.ManifestType.Type + "\" and Label: \"" + crateToProcess.Label + "\"", ActivityErrorCode.PAYLOAD_DATA_MISSING);
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING);
-            }
-
-            //check if we need to end this loop
-            if (currentLoopIndex > dataListSize - 1)
-            {
-                return true;
-            }
-
-            return false;
-        }
-
+        
         internal static int? GetDataListSize(Crate crateToProcess)
         {
             var tableData = crateToProcess.ManifestType.Id == (int)MT.StandardTableData ? crateToProcess.Get<StandardTableDataCM>() : null;
@@ -163,44 +119,7 @@ namespace terminalFr8Core.Actions
             //find crate by user selected values
             return payloadStorage.FirstOrDefault(c => c.ManifestType.Type == selectedCrateDescription.ManifestType && c.Label == selectedCrateDescription.Label);
         }
-
-        private void BreakLoop(string loopId, PayloadDTO payload)
-        {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
-            {
-                var operationsData = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationsData.Loops.Single(l => l.Id == loopId).BreakSignalReceived = true;
-            }
-        }
-
-        private void CreateLoop(string loopId, PayloadDTO payload, Crate crateToProcess)
-        {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
-            {
-                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                var loopLevel = operationalState.Loops.Count(l => l.BreakSignalReceived == false);
-                operationalState.Loops.Add(new OperationalStateCM.LoopStatus
-                {
-                    BreakSignalReceived = false,
-                    Id = loopId,
-                    Index = 0,
-                    Level = loopLevel,
-                    Label = crateToProcess.Label,
-                    CrateManifest = crateToProcess.ManifestType.Type
-                });
-            }
-        }
-
-        private int IncrementLoopIndex(string loopId, PayloadDTO payload)
-        {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
-            {
-                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.Loops.First(l => l.Id == loopId).Index += 1;
-                return operationalState.Loops.First(l => l.Id == loopId).Index;
-            }
-        }
-
+        
         /// <summary>
         /// Helper function that Vladimir wrote to find first array in a JToken
         /// </summary>
@@ -313,15 +232,7 @@ namespace terminalFr8Core.Actions
 
             return curActivityDO;
         }
-
-        private async Task<Crate> GetUpstreamManifestTypes(ActivityDO curActivityDO)
-        {
-            var upstreamCrates = await GetCratesByDirection(curActivityDO, CrateDirection.Upstream);
-            var manifestTypeOptions = upstreamCrates.GroupBy(c => c.ManifestType).Select(c => new FieldDTO(c.Key.Type, c.Key.Type));
-            var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Available Manifests", manifestTypeOptions.ToArray());
-            return queryFieldsCrate;
-        }
-
+        
         private async Task<Crate> CreateControlsCrate(ActivityDO curActivityDO)
         {
             var crateChooser = await GenerateCrateChooser(

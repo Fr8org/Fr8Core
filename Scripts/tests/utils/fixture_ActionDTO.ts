@@ -111,7 +111,7 @@ module dockyard.tests.utils.fixtures {
                 }]
             },
             activityTemplate: {
-                id: 2
+                id: 'E553A5F9-A3AB-4196-A43D-6F5DDB923CF8'
             },
             currentView: null,
             id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8'
@@ -143,7 +143,7 @@ module dockyard.tests.utils.fixtures {
                 }]
             },
             activityTemplate: {
-                id: 2
+                id: 'E553A229-A3AB-4196-A43D-6F5DDB923CF8'
             },
             currentView: null,
             id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8'
@@ -175,7 +175,7 @@ module dockyard.tests.utils.fixtures {
                 }]
             },
             activityTemplate: {
-                id: 2
+                id: 'E553A5F9-A3AB-4196-A43D-6F522B923CF8'
             },
             currentView: null,
             id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8'

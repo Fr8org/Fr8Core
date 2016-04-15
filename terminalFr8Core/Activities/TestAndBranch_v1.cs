@@ -1,23 +1,15 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using System.Web.UI;
-using AutoMapper;
 using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Data.States;
 using Hub.Managers;
-using TerminalBase;
-using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using Utilities;
 
 namespace terminalFr8Core.Actions
 {
@@ -37,30 +29,31 @@ namespace terminalFr8Core.Actions
         {
             var curPayloadDTO = await GetPayload(curActivityDO, containerId);
 
-
             //let's check current branch status
             using (var crateStorage = CrateManager.GetUpdatableStorage(curPayloadDTO))
             {
                 var operationsCrate = crateStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
                 if (operationsCrate == null)
                 {
-                    return Error(curPayloadDTO, "This Action can't run without OperationalStateCM crate", ActivityErrorCode.PAYLOAD_DATA_MISSING);
+                    Error(crateStorage, "This Action can't run without OperationalStateCM crate", ActivityErrorCode.PAYLOAD_DATA_MISSING);
+                    return curPayloadDTO;
                 }
 
-                var currentBranch = GetCurrentBranch(operationsCrate, curActivityDO.GetLoopId());
+                var currentBranch = operationsCrate.CallStack.GetLocalData<OperationalStateCM.BranchStatus>("Branch");
                 if (currentBranch == null)
                 {
-                    currentBranch = CreateBranch(curActivityDO.GetLoopId());
-                    operationsCrate.Branches.Add(currentBranch);
+                    currentBranch = CreateBranch();
                 }
 
                 currentBranch.Count += 1;
 
                 if (currentBranch.Count >= SlowRunLimit)
                 {
-                    return Error(curPayloadDTO, "This container hit a maximum loop count and was stopped because we're afraid it might be an infinite loop");
+                    Error(crateStorage, "This container hit a maximum loop count and was stopped because we're afraid it might be an infinite loop");
+                    return curPayloadDTO;
                 }
-                else if (currentBranch.Count >= SmoothRunLimit)
+
+                if (currentBranch.Count >= SmoothRunLimit)
                 {
                     //it seems we need to slow down things
                     var diff = DateTime.UtcNow - currentBranch.LastBranchTime;
@@ -71,8 +64,9 @@ namespace terminalFr8Core.Actions
                 }
 
                 currentBranch.LastBranchTime = DateTime.UtcNow;
+                
+                operationsCrate.CallStack.StoreLocalData("Branch", currentBranch);
             }
-
 
             var payloadFields = GetAllPayloadFields(curPayloadDTO).Where(f => !string.IsNullOrEmpty(f.Key) && !string.IsNullOrEmpty(f.Value)).AsQueryable();
 
@@ -110,17 +104,11 @@ namespace terminalFr8Core.Actions
             return Success(curPayloadDTO);
         }
 
-        private OperationalStateCM.BranchStatus GetCurrentBranch(OperationalStateCM operationalState, string currentActivityId)
-        {
-            return operationalState.Branches.FirstOrDefault(l => l.Id == currentActivityId);
-        }
-
-        private OperationalStateCM.BranchStatus CreateBranch(string currentActivityId)
+        private OperationalStateCM.BranchStatus CreateBranch()
         {
             return new OperationalStateCM.BranchStatus
             {
                 Count = 0,
-                Id = currentActivityId,
                 LastBranchTime = DateTime.UtcNow
             };
         }

@@ -11,7 +11,7 @@ namespace Data.Entities
         public string Label { get; set; }
 
         [ForeignKey("ActivityTemplate")]
-        public int ActivityTemplateId { get; set; }
+        public Guid ActivityTemplateId { get; set; }
 
         public virtual ActivityTemplateDO ActivityTemplate { get; set; }
         public string currentView { get; set; }
@@ -20,11 +20,6 @@ namespace Data.Entities
         public Guid? AuthorizationTokenId { get; set; }
 
         public virtual AuthorizationTokenDO AuthorizationToken { get; set; }
-
-        public string GetLoopId()
-        {
-            return Id.ToString();
-        }
 
         protected override PlanNodeDO CreateNewInstance()
         {

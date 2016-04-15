@@ -101,6 +101,7 @@ namespace HubWeb.Controllers.Api
                             {
                                 Id = template.Terminal.Id,
                                 Name = template.Terminal.Name,
+                                Version = template.Terminal.Version,
                                 AuthenticationType = template.Terminal.AuthenticationType,
                                 AuthTokens = authTokens
                                     .Where(x => x.TerminalID == template.Terminal.Id)
