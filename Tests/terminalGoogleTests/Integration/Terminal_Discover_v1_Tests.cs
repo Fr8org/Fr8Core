@@ -36,6 +36,7 @@ namespace terminalGoogleTests.Integration
             Assert.IsNotNull(googleTerminalDiscoveryResponse.Activities, "Google terminal does not have actions.");
             Assert.AreEqual(3, googleTerminalDiscoveryResponse.Activities.Count, "Google terminal expected 3 actions.");
             Assert.AreEqual("terminalGoogle", googleTerminalDiscoveryResponse.Definition.Name);
+            Assert.AreEqual("Google", googleTerminalDiscoveryResponse.Definition.Label);
             Assert.AreEqual(googleTerminalDiscoveryResponse.Activities.Any(a => a.Name == "Get_Google_Sheet_Data"), true, "Action Get_Google_Sheet_Data was not loaded");
             Assert.AreEqual(googleTerminalDiscoveryResponse.Activities.Any(a => a.Name == "Monitor_Form_Responses"), true, "Action Monitor_Form_Responses was not loaded");
             Assert.AreEqual(googleTerminalDiscoveryResponse.Activities.Any(a => a.Name == "Save_To_Google_Sheet"), true, "Action Save_To_Google_Sheet was not loaded");

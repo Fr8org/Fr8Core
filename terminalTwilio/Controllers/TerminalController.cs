@@ -19,6 +19,7 @@ namespace terminalTwilio.Controllers
             var terminal = new TerminalDTO
             {
                 Name = "terminalTwilio",
+                Label = "Twilio",
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("terminalTwilio.TerminalEndpoint"),
                 Version = "1",

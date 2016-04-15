@@ -474,9 +474,9 @@ namespace Data.Migrations
             // AddTerminals(uow, "terminalDocuSign", "localhost:53234", "1", true);
             // AddTerminals(uow, "terminalExcel", "localhost:47011", "1", false);
             // AddTerminals(uow, "terminalSalesforce", "localhost:51234", "1", true);
-            AddTerminals(uow, "terminalDocuSign", "localhost:53234", "1");
-            AddTerminals(uow, "terminalExcel", "localhost:47011", "1");
-            AddTerminals(uow, "terminalSalesforce", "localhost:51234", "1");
+            AddTerminals(uow, "terminalDocuSign", "DocuSign", "localhost:53234", "1");
+            AddTerminals(uow, "terminalExcel", "Excel", "localhost:47011", "1");
+            AddTerminals(uow, "terminalSalesforce", "Salesforce", "localhost:51234", "1");
 
             uow.SaveChanges();
         }
@@ -485,8 +485,8 @@ namespace Data.Migrations
 
         // private static void AddTerminals(IUnitOfWork uow, string terminalName, string endPoint,
         //     string version, bool requiresAuthentication)
-        private static void AddTerminals(IUnitOfWork uow, string terminalName, string endPoint,
-            string version)
+        private static void AddTerminals(IUnitOfWork uow, string terminalName, string terminalLabel, 
+            string endPoint, string version)
         {
             // Check that terminal does not exist yet.
             var terminalExists = uow.TerminalRepository.GetQuery().Any(x => x.Name == terminalName);
@@ -498,6 +498,7 @@ namespace Data.Migrations
                 var terminalDO = new TerminalDO()
                 {
                     Name = terminalName,
+                    Label = terminalLabel,
                     TerminalStatus = TerminalStatus.Active,
                     Endpoint = endPoint,
                     Version = version,
@@ -515,14 +516,14 @@ namespace Data.Migrations
 
         private void AddActionTemplates(IUnitOfWork uow)
         {
-            AddActionTemplate(uow, "Filter Using Run-Time Data", "localhost:46281", "1");
-            AddActionTemplate(uow, "Wait For DocuSign Event", "localhost:53234", "1");
-            AddActionTemplate(uow, "Extract From DocuSign Envelope", "localhost:53234", "1");
-            AddActionTemplate(uow, "Extract Table Data", "localhost:47011", "1");
+            AddActionTemplate(uow, "Filter Using Run-Time Data", "Filter Using Run-Time Data", "localhost:46281", "1");
+            AddActionTemplate(uow, "Wait For DocuSign Event", "Wait For DocuSign Event", "localhost:53234", "1");
+            AddActionTemplate(uow, "Extract From DocuSign Envelope", "Extract From DocuSign Envelope", "localhost:53234", "1");
+            AddActionTemplate(uow, "Extract Table Data", "Extract Table Data", "localhost:47011", "1");
             uow.SaveChanges();
         }
 
-        private void AddActionTemplate(IUnitOfWork uow, string name, string endPoint, string version)
+        private void AddActionTemplate(IUnitOfWork uow, string name, string label, string endPoint, string version)
         {
             var existingActivityTemplateDO = uow.ActivityTemplateRepository
                 .GetQuery().Include("Terminal")
@@ -533,7 +534,7 @@ namespace Data.Migrations
                 return;
 
             var curActivityTemplateDO = new ActivityTemplateDO(
-                name, version, endPoint, endPoint);
+                name, label, version, endPoint, endPoint);
             uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
         }
 

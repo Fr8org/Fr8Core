@@ -20,6 +20,7 @@ namespace terminalAtlassian.Controllers
             var terminal = new TerminalDTO()
             {
                 Name = "terminalAtlassian",
+                Label = "Atlassian",
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("terminalAtlassian.TerminalEndpoint"),
                 Version = "1",

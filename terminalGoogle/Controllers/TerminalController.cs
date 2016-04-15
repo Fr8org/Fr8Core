@@ -34,6 +34,7 @@ namespace terminalGoogle.Controllers
                 Endpoint = CloudConfigurationManager.GetSetting("terminalGoogle.TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
                 Name = "terminalGoogle",
+                Label = "Google",
                 Version = "1",
                 AuthenticationType = AuthenticationType.External
             };

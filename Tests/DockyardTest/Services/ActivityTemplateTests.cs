@@ -68,6 +68,7 @@ namespace DockyardTest.Services
                    a.Endpoint == b.Endpoint &&
                    (skipId || a.Id == b.Id) &&
                    a.Name == b.Name &&
+                   a.Label == b.Label &&
                    a.PublicIdentifier == b.PublicIdentifier &&
                    a.Secret == b.Secret &&
                    a.TerminalStatus == b.TerminalStatus &&
@@ -118,6 +119,7 @@ namespace DockyardTest.Services
                 Endpoint = prefix + "ep" + id,
                 Description = prefix + "desc" + id,
                 Name = "name" + id,
+                Label = prefix + "Label" + id,
                 Version = prefix + "Ver" + id,
                 TerminalStatus = 1,
             };

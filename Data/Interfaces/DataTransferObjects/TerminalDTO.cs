@@ -15,6 +15,8 @@ namespace Data.Interfaces.DataTransferObjects
         public int Id { get; set; }
         [JsonProperty("name")]
         public string Name { get; set; }
+        [JsonProperty("label")]
+        public string Label { get; set; }
         [JsonProperty("version")]
         public string Version { get; set; }
         [JsonProperty("terminalStatus")]

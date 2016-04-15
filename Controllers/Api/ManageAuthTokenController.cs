@@ -45,6 +45,7 @@ namespace HubWeb.Controllers.Api
                 {
                     Id = x.Id,
                     Name = x.Name,
+                    Label = x.Label,
                     AuthTokens = authTokens
                         .Where(y => y.TerminalID == x.Id && !string.IsNullOrEmpty(y.ExternalAccountId))
                         .OrderBy(y => y.ExternalAccountId)
@@ -101,6 +102,7 @@ namespace HubWeb.Controllers.Api
                             {
                                 Id = template.Terminal.Id,
                                 Name = template.Terminal.Name,
+                                Label = template.Terminal.Label,
                                 AuthenticationType = template.Terminal.AuthenticationType,
                                 AuthTokens = authTokens
                                     .Where(x => x.TerminalID == template.Terminal.Id)

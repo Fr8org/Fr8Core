@@ -20,6 +20,7 @@ namespace terminalDropbox.Controllers
             var terminal = new TerminalDTO()
             {
                 Name = "terminalDropbox",
+                Label = "Dropbox",
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("terminalDropbox.TerminalEndpoint"),
                 Version = "1",

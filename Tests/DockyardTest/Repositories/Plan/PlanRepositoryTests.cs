@@ -366,6 +366,7 @@ namespace DockyardTest.Repositories.Plan
                     Id=1,
                     TerminalStatus = TerminalStatus.Active,
                     Name = "terminal",
+                    Label = "term",
                     Version = "1"
 
                 });
@@ -379,6 +380,7 @@ namespace DockyardTest.Repositories.Plan
                 uow.TerminalRepository.Add(new TerminalDO
                 {
                     Name = "asdfasdf",
+                    Label = "asdf",
                     Version = "1",
                     Id = 1,
                     TerminalStatus = 1

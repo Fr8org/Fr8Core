@@ -54,6 +54,7 @@ namespace DockyardTest.Controllers
                 var terminalDO = new TerminalDO()
                 {
                     Name = "terminalTest",
+                    Label = "Test",
                     Version = "1",
                     TerminalStatus = 1,
                     Endpoint = "localhost:39504",
