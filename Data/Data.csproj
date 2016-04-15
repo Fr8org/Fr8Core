@@ -689,9 +689,9 @@
     <Compile Include="Migrations\201604130047415_ProcessNodesRemoved.Designer.cs">
       <DependentUpon>201604130047415_ProcessNodesRemoved.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201604140935279_ActivityTemplateDO_Id_Int32_To_Guid.cs" />
-    <Compile Include="Migrations\201604140935279_ActivityTemplateDO_Id_Int32_To_Guid.Designer.cs">
-      <DependentUpon>201604140935279_ActivityTemplateDO_Id_Int32_To_Guid.cs</DependentUpon>
+    <Compile Include="Migrations\201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.cs" />
+    <Compile Include="Migrations\201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.Designer.cs">
+      <DependentUpon>201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1215,8 +1215,8 @@
     <EmbeddedResource Include="Migrations\201604130047415_ProcessNodesRemoved.resx">
       <DependentUpon>201604130047415_ProcessNodesRemoved.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201604140935279_ActivityTemplateDO_Id_Int32_To_Guid.resx">
-      <DependentUpon>201604140935279_ActivityTemplateDO_Id_Int32_To_Guid.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.resx">
+      <DependentUpon>201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
