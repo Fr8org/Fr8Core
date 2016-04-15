@@ -516,14 +516,14 @@ namespace Data.Migrations
 
         private void AddActionTemplates(IUnitOfWork uow)
         {
-            AddActionTemplate(uow, "Filter Using Run-Time Data", "Filter Using Run-Time Data", "localhost:46281", "1");
-            AddActionTemplate(uow, "Wait For DocuSign Event", "Wait For DocuSign Event", "localhost:53234", "1");
-            AddActionTemplate(uow, "Extract From DocuSign Envelope", "Extract From DocuSign Envelope", "localhost:53234", "1");
-            AddActionTemplate(uow, "Extract Table Data", "Extract Table Data", "localhost:47011", "1");
+            AddActionTemplate(uow, "Filter Using Run-Time Data", "localhost:46281", "1");
+            AddActionTemplate(uow, "Wait For DocuSign Event", "localhost:53234", "1");
+            AddActionTemplate(uow, "Extract From DocuSign Envelope", "localhost:53234", "1");
+            AddActionTemplate(uow, "Extract Table Data", "localhost:47011", "1");
             uow.SaveChanges();
         }
 
-        private void AddActionTemplate(IUnitOfWork uow, string name, string label, string endPoint, string version)
+        private void AddActionTemplate(IUnitOfWork uow, string name, string endPoint, string version)
         {
             var existingActivityTemplateDO = uow.ActivityTemplateRepository
                 .GetQuery().Include("Terminal")
@@ -534,7 +534,7 @@ namespace Data.Migrations
                 return;
 
             var curActivityTemplateDO = new ActivityTemplateDO(
-                name, label, version, endPoint, endPoint);
+                name, version, endPoint, endPoint, endPoint);
             uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
         }
 
