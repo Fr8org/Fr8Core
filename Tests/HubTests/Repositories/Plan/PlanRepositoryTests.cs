@@ -12,6 +12,7 @@ using Hub.StructureMap;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace HubTests.Repositories.Plan
 {

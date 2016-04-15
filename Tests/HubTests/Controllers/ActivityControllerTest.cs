@@ -46,7 +46,7 @@ namespace HubTests.Controllers
         [Test]
         public void ActivityController_ShouldHaveHMACOnCreateMethod()
         {
-            var createMethod = typeof(ActivitiesController).GetMethod("Create", new Type[] { typeof(int), typeof(string), typeof(int?), typeof(Guid?), typeof(bool), typeof(Guid?) });
+            var createMethod = typeof(ActivitiesController).GetMethod("Create", new Type[] { typeof(Guid), typeof(string), typeof(int?), typeof(Guid?), typeof(bool), typeof(Guid?) });
             ShouldHaveFr8HMACAuthorizeOnFunction(createMethod);
         }
 
@@ -214,7 +214,7 @@ namespace HubTests.Controllers
                 actionMock.Verify(a => a.GetById(It.IsAny<IUnitOfWork>(), activityDO.Id));
             }
         }
-        
+
         private void CreateActivityTemplate()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -230,7 +230,7 @@ namespace HubTests.Controllers
             {
                 uow.ActivityTemplateRepository.Add(new ActivityTemplateDO
                 {
-                    Id = 1,
+                    Id = Guid.NewGuid(),
                     Name = name,
                     Terminal = FixtureData.TerminalTwo(),
                     Version = version
@@ -252,7 +252,7 @@ namespace HubTests.Controllers
                 //,ActionTemplate = FixtureData.TestActivityTemplateDO2()
             };
         }
-        
+
 
         [Test, Ignore]
         public async Task ActivityController_GetConfigurationSettings_ValidActionDesignDTO()

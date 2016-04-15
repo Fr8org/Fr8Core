@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Net.WebSockets;
 using System.Runtime.InteropServices;
@@ -12,6 +13,7 @@ using StructureMap;
 using Utilities.Configuration;
 using Utilities.Configuration.Azure;
 using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace HubTests.Services
 {

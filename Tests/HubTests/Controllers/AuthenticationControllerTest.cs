@@ -17,6 +17,7 @@ using HubTests.Controllers.Api;
 using Hub.Interfaces;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using AutoMapper;
 
 namespace HubTests.Controllers
 {
@@ -114,6 +115,7 @@ namespace HubTests.Controllers
             var tokenDO = CreateAndAddTokenDO();
 
             var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", "test_description", tokenDO.TerminalID);
+            activityTemplateDO.Id = FixtureData.GetTestGuidById(1);
             activityTemplateDO.Terminal = tokenDO.Terminal;
             activityTemplateDO.Terminal.AuthenticationType = AuthenticationType.Internal;
 
@@ -125,11 +127,11 @@ namespace HubTests.Controllers
             {
                 uow.PlanRepository.Add(new PlanDO()
                 {
-                    Name="name",
+                    Name = "name",
                     PlanState = PlanState.Active,
-                    ChildNodes = {activityDO }
+                    ChildNodes = { activityDO }
                 });
-                
+
                 //uow.ActivityRepository.Add(activityDO);
                 uow.ActivityTemplateRepository.Add(activityTemplateDO);
                 uow.SaveChanges();
@@ -140,7 +142,7 @@ namespace HubTests.Controllers
                 Password = "Password",
                 Username = "Username",
                 Domain = "Domain",
-                TerminalId = activityTemplateDO.Terminal.Id
+                Terminal = Mapper.Map<TerminalDTO>(activityTemplateDO.Terminal)
             };
 
             var result = _authenticationController.Authenticate(credentialsDTO);
@@ -163,7 +165,7 @@ namespace HubTests.Controllers
 
 
             restClientMock.VerifyAll();
-            
+
         }
     }
 }
