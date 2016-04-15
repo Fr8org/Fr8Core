@@ -178,6 +178,13 @@ namespace TerminalBase.BaseClasses
             return payload;
         }
         
+        protected void Success(IUpdatableCrateStorage crateStorage, string message = "")
+        {
+            var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+            operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Success);
+            operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Message = message });
+        }
+
         protected PayloadDTO ExecuteClientActivity(PayloadDTO payload, string clientActionName)
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
@@ -195,16 +202,11 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         /// <param name="payload"></param>
         /// <returns></returns>
-        protected PayloadDTO SkipChildren(PayloadDTO payload)
+        protected void SkipChildren(IUpdatableCrateStorage crateStorage)
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
-            {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.SkipChildren);
             }
-
-            return payload;
-        }
 
         /// <summary>
         /// returns error to hub
@@ -229,29 +231,30 @@ namespace TerminalBase.BaseClasses
         }
 
         /// <summary>
+        /// returns error to hub
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <param name="errorMessage"></param>
+        /// <param name="errorCode"></param>
+        /// <param name="currentActivity">Activity where the error occured</param>
+        /// <param name="currentTerminal">Terminal where the error occured</param>
+        /// <returns></returns>
+        protected void Error(IUpdatableCrateStorage crateStorage, string errorMessage = null, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
+        {
+            var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+            operationalState.CurrentActivityErrorCode = errorCode;
+            operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Error);
+            operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, ErrorType.Generic, errorCode.ToString(), null, currentActivity, currentTerminal));
+        }
+
+        /// <summary>
         /// returns Needs authentication error to hub
         /// </summary>
         /// <param name="payload"></param>
         /// <returns></returns>
         protected PayloadDTO NeedsAuthenticationError(PayloadDTO payload)
-        {
-            return Error(payload, "No AuthToken provided.", ActivityErrorCode.NO_AUTH_TOKEN_PROVIDED);
-        }
-
-        /// <summary>
-        /// Creates a reprocess child actions request
-        /// </summary>
-        /// <param name="payload"></param>
-        /// <returns></returns>
-        protected PayloadDTO ReProcessChildActivities(PayloadDTO payload)
-        {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.ReprocessChildren);
-            }
-
-            return payload;
+            return Error(payload, "No AuthToken provided.", ActivityErrorCode.NO_AUTH_TOKEN_PROVIDED);
         }
 
         protected async Task PushUserNotification(TerminalNotificationDTO notificationMessage)
@@ -634,10 +637,6 @@ namespace TerminalBase.BaseClasses
 
             throw new ApplicationException(exceptionMessage);
         }
-
-
-
-
 
         /*******************************************************************************************/
         // Working with upstream
@@ -1251,17 +1250,17 @@ namespace TerminalBase.BaseClasses
         /// Is a helper method to decouple some of the GetCurrentElement Functionality
         /// </summary>
         /// <param name="operationalCrate">Crate of the OperationalStateCM</param>
-        /// <param name="loopId">Integer that is equal to the Action.Id</param>
         /// <returns>Index or pointer of the current IEnumerable Object</returns>
-        protected int GetLoopIndex(OperationalStateCM operationalCrate, string loopId)
+        protected int GetLoopIndex(OperationalStateCM operationalState)
         {
-            var curLoop = operationalCrate.Loops.FirstOrDefault(l => l.Id.Equals(loopId.ToString()));
-            if (curLoop == null)
+            var loopState = operationalState.CallStack.FirstOrDefault(x => x.LocalData?.Type == "Loop");
+
+            if (loopState != null) //this is a loop related data request
             {
-                throw new NullReferenceException("No Loop with the specified LoopId inside the provided OperationalStateCM crate");
+                return loopState.LocalData.ReadAs<OperationalStateCM.LoopStatus>().Index;
             }
-            var curIndex = curLoop.Index;
-            return curIndex;
+
+            throw new NullReferenceException("No Loop was found inside the provided OperationalStateCM crate");
         }
 
         // do not use after EnhancedTerminalActivity is introduced

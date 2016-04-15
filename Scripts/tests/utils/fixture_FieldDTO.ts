@@ -144,6 +144,7 @@ module dockyard.tests.utils.fixtures {
             errorMessage: null,
             isFocused: false,
             isHidden: false,
+            isCollapsed:false,
             source: {
                 manifestType: 'testManifest',
                 label: 'testLabel',

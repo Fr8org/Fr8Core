@@ -36,18 +36,16 @@ namespace Hub.Services
         private readonly IActivity _activity;
         private readonly ICrateManager _crate;
         private readonly ISecurityServices _security;
-        private readonly IProcessNode _processNode;
         private readonly IJobDispatcher _dispatcher;
 
         public Plan(InternalInterface.IContainer container, Fr8Account dockyardAccount, IActivity activity,
-            ICrateManager crate, ISecurityServices security, IProcessNode processNode, IJobDispatcher dispatcher)
+            ICrateManager crate, ISecurityServices security,  IJobDispatcher dispatcher)
         {
             _container = container;
             _dockyardAccount = dockyardAccount;
             _activity = activity;
             _crate = crate;
             _security = security;
-            _processNode = processNode;
             _dispatcher = dispatcher;
         }
 
@@ -118,6 +116,7 @@ namespace Hub.Services
                 curPlan.Name = submittedPlan.Name;
                 curPlan.Description = submittedPlan.Description;
                 curPlan.Category = submittedPlan.Category;
+                curPlan.LastUpdated = DateTimeOffset.UtcNow;
             }
         }
 
@@ -214,7 +213,9 @@ namespace Hub.Services
                 if (result.Status != "validation_error")
                 {
                     plan.PlanState = PlanState.Active;
+                    plan.LastUpdated = DateTimeOffset.UtcNow;
                     uow.SaveChanges();
+                    uow.PlanRepository.Reload<PlanDO>(plan.Id);
                 }
             }
 
@@ -368,7 +369,7 @@ namespace Hub.Services
 
             }
         }
-        
+
         public PlanDO GetPlanByActivityId(IUnitOfWork uow, Guid id)
         {
             return (PlanDO)uow.PlanRepository.GetById<PlanNodeDO>(id).GetTreeRoot();
@@ -430,23 +431,29 @@ namespace Hub.Services
             containerDO.Name = curPlan.Name;
             containerDO.State = State.Unstarted;
 
-            if (curPayload.Length > 0)
-            {
                 using (var crateStorage = _crate.UpdateStorage(() => containerDO.CrateStorage))
                 {
+                if (curPayload.Length > 0)
+                {
                     crateStorage.AddRange(curPayload);
+                    crateStorage.Remove<OperationalStateCM>();
                 }
-            }
+                
+                var operationalState = new OperationalStateCM();
+                
+                operationalState.CallStack.PushFrame(new OperationalStateCM.StackFrame
+                {
+                    NodeName = "Starting subplan",
+                    NodeId = curPlan.StartingSubPlanId,
+                });
 
-            containerDO.CurrentActivityId = curPlan.StartingSubPlanId;
+                crateStorage.Add(Crate.FromContent("Operational state", operationalState));
+            }
 
             uow.ContainerRepository.Add(containerDO);
 
-            //then create process node
-            var curProcessNode = _processNode.Create(uow, containerDO.Id, curPlan.StartingSubPlanId, "process node");
-            containerDO.ProcessNodes.Add(curProcessNode);
-
             uow.SaveChanges();
+
             EventManager.ContainerCreated(containerDO);
 
             return containerDO;
@@ -525,8 +532,8 @@ namespace Hub.Services
                 try
                 {
                     var curContainerDO = Create(uow, curPlan, curPayload);
-                return await Run(uow, curContainerDO);
-            }
+                    return await Run(uow, curContainerDO);
+                }
                 catch (Exception ex)
                 {
                     EventManager.ContainerFailed(curPlan, ex);

@@ -393,7 +393,6 @@
     <Compile Include="Controllers\AuthenticationCallbackController.cs" />
     <Compile Include="Controllers\Api\FilesController.cs" />
     <Compile Include="Controllers\JsTestsController.cs" />
-    <Compile Include="Controllers\Api\ProcessNodeTemplateController.cs" />
     <Compile Include="Controllers\Api\EventController.cs" />
     <Compile Include="Controllers\EnvelopeController.cs" />
     <Compile Include="Controllers\Api\ContainerController.cs" />
@@ -483,6 +482,8 @@
   <ItemGroup>
     <Content Include="Api\EventResponse.aspx" />
     <Content Include="Api\GetEmailHTML.aspx" />
+    <Content Include="Content\css\dockyard\container-transition.css" />
+    <Content Include="Content\css\dockyard\query-builder.css" />
     <Content Include="Content\css\fonts\brankic.svg" />
     <Content Include="Content\css\fonts\fontawesome-webfont.svg" />
     <Content Include="Content\css\frontcss\main_new.css" />
@@ -492,15 +493,20 @@
     <Content Include="Content\css\homecss\main.css" />
     <Content Include="Content\css\shared\navbar.css" />
     <Content Include="Content\img\background-7.png" />
+    <Content Include="Content\img\background-cta-3.jpg" />
     <Content Include="Content\img\background-cta-3.png" />
+    <Content Include="Content\img\dockyard_logo_dark.png" />
     <Content Include="Content\img\dockyard_logo_lower.png" />
     <Content Include="Content\img\dockyard_logo_white.png" />
     <Content Include="Content\img\docusign-logo.png" />
     <Content Include="Content\img\docusign.png" />
     <Content Include="Content\img\fr8-service.png" />
+    <Content Include="Content\img\freight-connect.jpg" />
     <Content Include="Content\img\freight-connect.png" />
     <Content Include="Content\img\freight-containers.jpg" />
+    <Content Include="Content\img\freight-design.jpg" />
     <Content Include="Content\img\freight-design.png" />
+    <Content Include="Content\img\freight-train.jpg" />
     <Content Include="Content\img\freight-train.png" />
     <Content Include="Content\img\google.png" />
     <Content Include="Content\img\gray-crate.png" />
@@ -641,6 +647,8 @@
     <Content Include="Content\img\welcome\welcome_header.png" />
     <Content Include="Content\videos\motion.mp4" />
     <Content Include="Content\videos\motion.png" />
+    <Content Include="Content\videos\motion_1920.jpg" />
+    <Content Include="Content\videos\motion_1920.mp4" />
     <Content Include="Documentation\DocuSignRESTAPI.html" />
     <Content Include="Documentation\UpstreamCrates.html" />
     <Content Include="fr8terminals.txt" />
@@ -849,6 +857,8 @@
     <Content Include="Scripts\PlanBuilder\pb-resources.js" />
     <Content Include="Scripts\PlanBuilder\pb-widget.js" />
     <Content Include="Scripts\templateCache.js" />
+    <Content Include="Scripts\tests\e2e\conf.js" />
+    <Content Include="Scripts\tests\e2e\login.js" />
     <Content Include="Views\AngularTemplate\DatePicker.cshtml" />
     <Content Include="ApplicationInsights.config">
       <TransformOnBuild>true</TransformOnBuild>
@@ -887,6 +897,8 @@
     <Content Include="Views\AngularTemplate\ActivityChooser.cshtml" />
     <Content Include="Views\AngularTemplate\ActivityChooserSelectDialog.cshtml" />
     <Content Include="Views\AngularTemplate\ActivityChooserConfigureDialog.cshtml" />
+    <Content Include="Views\AngularTemplate\MainContainer_AS.cshtml" />
+    <Content Include="Views\AngularTemplate\MainContainer.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />
@@ -894,7 +906,6 @@
     <Content Include="_PowerShellScripts\Deploy-HMAsWebJob.ps1" />
     <Content Include="_PowerShellScripts\SetCloudServiceSize.ps1" />
     <Content Include="_PowerShellScripts\CloneDatabase.ps1" />
-    <Content Include="_PowerShellScripts\UpdateTerminalHostnameInDb.ps1" />
     <Content Include="_PowerShellScripts\DeleteDatabase.ps1" />
     <Content Include="_PowerShellScripts\Set-StagingHostname.ps1" />
     <Content Include="_PowerShellScripts\CopyAppInsightsConfigs.ps1" />
@@ -908,6 +919,12 @@
     <Content Include="_PowerShellScripts\Stop-StagingWebsite.ps1" />
     <Content Include="_PowerShellScripts\Start-Sleep.ps1" />
     <Content Include="_PowerShellScripts\Update-TerminalHostnameInDb.ps1" />
+    <Content Include="_PowerShellScripts\Add-BuildServer.ps1" />
+    <Content Include="_PowerShellScripts\BuildServer_Templ.json" />
+    <Content Include="_PowerShellScripts\UpdateTerminalHostnameInDb.ps1" />
+    <Content Include="_PowerShellScripts\Check-Confirmation.ps1" />
+    <Content Include="_PowerShellScripts\MergePRSourcesIntoDev.ps1" />
+    <Content Include="_PowerShellScripts\UpdateGitHubBuildStatus.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
@@ -919,6 +936,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ContainerTransition.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DatePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Fr8Event.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\QueryBuilderCondition.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\SourceableCriteria.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\CrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TimePicker.ts" />
@@ -1048,10 +1066,11 @@
     <Content Include="Views\Shared\_HomePageNew.cshtml" />
     <Content Include="Views\AngularTemplate\PlanBuilder_KioskMode.cshtml" />
     <Content Include="Views\AngularTemplate\ActivityStream.cshtml" />
+    <Content Include="Views\Shared\401.cshtml" />
+    <Content Include="Views\Services\SolutionListTemplate.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
-    <Content Include="_PowerShellScripts\SetupStagingDatabase.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FindObjectsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\FindObjectsResultsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\InternalAuthenticationController.ts" />

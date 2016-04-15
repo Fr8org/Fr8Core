@@ -1,6 +1,8 @@
     var gulp = require('gulp');
 var bower = require('gulp-bower');
 var concat = require('gulp-concat');
+var path = require('path');
+var child_process = require('child_process');
 var sourcemaps = require('gulp-sourcemaps');
 var templateCache = require('gulp-angular-templatecache');
 
@@ -100,6 +102,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/RunPlanButton.js',
         'Scripts/app/directives/Controls/FieldList.js',
         'Scripts/app/directives/Controls/QueryBuilder.js',
+        'Scripts/app/directives/Controls/QueryBuilderCondition.js',
         'Scripts/app/directives/Controls/TextSource.js',
         'Scripts/app/directives/Controls/SourceableCriteria.js',
         'Scripts/app/directives/Controls/InputFocus.js',
@@ -376,4 +379,24 @@ gulp.task('cdnizer-js', ['bower'], function () {
         .pipe(gulp.dest('./Views/Shared/CDN'));
 });
 
+function getProtractorBinary(binaryName){
+    var winExt = /^win/.test(process.platform)? '.cmd' : '';
+    var pkgPath = require.resolve('protractor');
+    var protractorDir = path.resolve(path.join(path.dirname(pkgPath), '..', '..', '.bin'));
+    return path.join(protractorDir, '/'+binaryName+winExt);
+}
+
+gulp.task('update-web-driver', function(done){
+    child_process.spawnSync(getProtractorBinary('webdriver-manager'), ['update'], {
+        stdio: 'inherit'
+    });
+});
+
+gulp.task('protractor-run', function (done) {
+    child_process.spawnSync(getProtractorBinary('protractor'),  ['Scripts\\tests\\e2e\\conf.js'] ,{
+        stdio: 'inherit'
+    });
+});
 gulp.task('default', ['bower', 'concattemplates', 'cdnizer-js', 'cdnizer-css']);
+
+gulp.task('e2etests', ['update-web-driver', 'protractor-run']);
