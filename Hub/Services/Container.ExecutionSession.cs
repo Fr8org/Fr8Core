@@ -204,11 +204,11 @@ namespace Hub.Services
                 // If we are already processing children of the currentNode, selecte the next one
                 if (currentChild != null)
                 {
-                    return currentNode.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault(x => x.Ordering > currentChild.Ordering);
+                    return currentNode.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault(x => x.Ordering > currentChild.Ordering && x.Runnable);
                 }
 
                 // or, if we have not processed any child yet - select the first one if any
-                return currentNode.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault();
+                return currentNode.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault(x => x.Runnable);
             }
 
             /**********************************************************************************/
