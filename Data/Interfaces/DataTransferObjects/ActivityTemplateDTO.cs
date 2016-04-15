@@ -9,7 +9,7 @@ namespace Data.Interfaces.DataTransferObjects
 {
     public class ActivityTemplateDTO
     {
-        [JsonProperty("id")]
+        //[JsonProperty("id")]
         public Guid Id { get; set; }
 
         [JsonProperty("name")]

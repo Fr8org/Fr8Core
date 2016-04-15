@@ -31,6 +31,8 @@ namespace Data.Infrastructure.JsonNet
             var customWebServiceConvert = new WebServiceConverter();
             var item = (ActivityTemplateDTO)value;
             writer.WriteStartObject();
+            writer.WritePropertyName("id");
+            writer.WriteValue(item.Id.ToString());
             writer.WritePropertyName("name");
             writer.WriteValue(item.Name);
             writer.WritePropertyName("version");

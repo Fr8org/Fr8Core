@@ -72,7 +72,7 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<ActivityTemplateDTO, ActivityTemplateDO>()
                 .ConstructUsing((Func<ResolutionContext, ActivityTemplateDO>)(r => new ActivityTemplateDO()))
-                .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
+                .ForMember(x => x.Id, opts => opts.MapFrom(x => x.Id))
                 .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
                 .ForMember(x => x.Terminal, opts => opts.ResolveUsing(x => x.Terminal))
