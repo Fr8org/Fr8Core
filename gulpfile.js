@@ -1,6 +1,8 @@
     var gulp = require('gulp');
 var bower = require('gulp-bower');
 var concat = require('gulp-concat');
+var path = require('path');
+var child_process = require('child_process');
 var sourcemaps = require('gulp-sourcemaps');
 var templateCache = require('gulp-angular-templatecache');
 
@@ -377,18 +379,24 @@ gulp.task('cdnizer-js', ['bower'], function () {
         .pipe(gulp.dest('./Views/Shared/CDN'));
 });
 
-    var log4netConfigs = {
-        terminals:     ["./Config/log4net.terminals.config",
-                        "./Config/log4net.terminals.Dev.config",
-                        "./Config/log4net.terminals.Demo.config",
-                        "./Config/log4net.terminals.Release.config"],
+function getProtractorBinary(binaryName){
+    var winExt = /^win/.test(process.platform)? '.cmd' : '';
+    var pkgPath = require.resolve('protractor');
+    var protractorDir = path.resolve(path.join(path.dirname(pkgPath), '..', '..', '.bin'));
+    return path.join(protractorDir, '/'+binaryName+winExt);
+}
 
-        tests:         ["./Config/log4net.tests.config"],
+gulp.task('update-web-driver', function(done){
+    child_process.spawnSync(getProtractorBinary('webdriver-manager'), ['update'], {
+        stdio: 'inherit'
+    });
+});
 
-        healthMonitor: ["./Config/log4net.tests.healthMonitor.config",
-                        "./Config/log4net.tests.healthMonitor.Dev.config",
-                        "./Config/log4net.tests.healthMonitor.Demo.config",
-                        "./Config/log4net.tests.healthMonitor.Release.config"]
-    };
-
+gulp.task('protractor-run', function (done) {
+    child_process.spawnSync(getProtractorBinary('protractor'),  ['Scripts\\tests\\e2e\\conf.js'] ,{
+        stdio: 'inherit'
+    });
+});
 gulp.task('default', ['bower', 'concattemplates', 'cdnizer-js', 'cdnizer-css']);
+
+gulp.task('e2etests', ['update-web-driver', 'protractor-run']);
