@@ -385,10 +385,10 @@ gulp.task('cdnizer-js', ['bower'], function () {
 
         tests:         ["./Config/log4net.tests.config"],
 
-        healthMonitor: ["./Config/log4net.healthMonitor.config",
-                        "./Config/log4net.healthMonitor.config",
-                        "./Config/log4net.healthMonitor.config",
-                        "./Config/log4net.healthMonitor.config"]
+        healthMonitor: ["./Config/log4net.tests.healthMonitor.config",
+                        "./Config/log4net.tests.healthMonitor.Dev.config",
+                        "./Config/log4net.tests.healthMonitor.Demo.config",
+                        "./Config/log4net.tests.healthMonitor.Release.config"]
     };
 
 gulp.task('log4netTests', [], function () {
