@@ -182,20 +182,18 @@
 
     }
 
-    export class GenerateExternalObjectChooserDTO extends ControlMetaDescriptionDTO {
+    export class SelectDataMetaDescriptionDTO extends ControlMetaDescriptionDTO {
         constructor() {
-            super('GenerateExternalObjectChooserDTO', 'External Object Chooser');
+            super('SelectDataMetaDescriptionDTO', 'Select Data');
 
             var tb = new model.TextBox();
             tb.label = "Label :";
             this.controls.push(tb);
 
-            var ac = new model.ActivityChooser();
-            ac.label = 'Template Activity';
-            // ac.activityTemplateTag = 'Table Data Generator';
-            ac.name = 'ExternalObjectChooser';
-            ac.runnable = false;
-            this.controls.push(ac);
+            var sd = new model.SelectData();
+            sd.label = 'Template Activity';
+            sd.name = 'SelectData';
+            this.controls.push(sd);
         }
     }
 
@@ -309,17 +307,27 @@
         textValue: string;
     }
 
-    export class ActivityChooser extends ControlDefinitionDTO {
+    export class SelectData extends ControlDefinitionDTO {
         constructor() {
             super();
-            this.type = 'ActivityChooser';
+            this.type = 'SelectData';
         }
 
-        runnable: boolean;
-        subPlanId: string;
-        definedActivityTemplateId: number;
         activityTemplateId: number;
-        activityTemplateLabel: string;
-        activityTemplateTag: string;
+        activityTemplateName: string;
+
+        subPlanId: string;
+        externalObjectName: string;
+    }
+
+    export class ExternalObjectChooser extends ControlDefinitionDTO {
+        constructor() {
+            super();
+            this.type = 'ExternalObjectChooser';
+        }
+
+        activityTemplateId: number;
+        subPlanId: string;
+        externalObjectName: string;
     }
 }

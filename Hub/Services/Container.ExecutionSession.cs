@@ -356,7 +356,7 @@ namespace Hub.Services
                         {
                             // find activity that is preceeding the one we are jumping to.
                             // so the next iteration of run cycle will exectute the activity we are jumping to
-                            var prevToJump = currentNode.ParentPlanNode.ChildNodes.OrderByDescending(x => x.Ordering).FirstOrDefault(x => x.Ordering < targetNode.Ordering);
+                            var prevToJump = currentNode.ParentPlanNode.ChildNodes.OrderByDescending(x => x.Ordering).FirstOrDefault(x => x.Ordering < targetNode.Ordering && x.Runnable);
 
                             _callStack.TopFrame.CurrentChildId = prevToJump?.Id;
                         }

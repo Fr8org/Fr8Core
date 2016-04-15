@@ -79,12 +79,11 @@ module dockyard.directives.controlContainer {
 
     app.controller('MetaControlContainer__MetaDescSelectionController', ['$scope', '$modalInstance', ($scope: any, $modalInstance: any): void => {
 
-        //we have 3 meta descriptions for now
         $scope.metaDescriptions = [
             new model.TextBoxMetaDescriptionDTO(),
             new model.TextBlockMetaDescriptionDTO(),
             new model.FilePickerMetaDescriptionDTO(),
-            new model.GenerateExternalObjectChooserDTO()
+            new model.SelectDataMetaDescriptionDTO()
         ];
 
         $scope.selectControl = (control: model.ControlMetaDescriptionDTO) => {

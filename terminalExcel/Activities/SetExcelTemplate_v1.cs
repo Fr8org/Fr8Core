@@ -33,9 +33,6 @@ namespace terminalExcel.Actions
             [JsonIgnore]
             public readonly ControlDefinitionDTO select_file;
 
-            [JsonIgnore]
-            public readonly ActivityChooser activityChooser;
-
             public ActivityUi(string uploadedFileName = null, string uploadedFilePath = null)
             {
                 Controls = new List<ControlDefinitionDTO>();
