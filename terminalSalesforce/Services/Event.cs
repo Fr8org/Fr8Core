@@ -87,7 +87,7 @@ namespace terminalSalesforce.Services
             var returnList = new List<FieldDTO>();
 
             returnList.Add(new FieldDTO("ObjectType", curNotification.SObject.Type.Substring(curNotification.SObject.Type.LastIndexOf(':') + 1)));
-            returnList.Add(new FieldDTO("Id", curNotification.SObject.Id));
+            returnList.Add(new FieldDTO("ObjectId", curNotification.SObject.Id));
             returnList.Add(new FieldDTO("CreatedDate", curNotification.SObject.CreatedDate.ToString()));
             returnList.Add(new FieldDTO("LastModifiedDate", curNotification.SObject.LastModifiedDate.ToString()));
             returnList.Add(new FieldDTO("OccuredEvent", ExtractOccuredEvent(curNotification)));

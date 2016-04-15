@@ -103,7 +103,10 @@ namespace Data.Constants
         CrateDescription = 32,
 
         [Display(Name = "Typed Fields")]
-        TypedFields = 33
+        TypedFields = 33,
+
+        [Display(Name = "Salesforce Event")]
+        SalesforceEvent = 34
     }
 }
 

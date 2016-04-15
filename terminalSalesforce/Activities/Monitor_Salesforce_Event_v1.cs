@@ -11,6 +11,8 @@ using StructureMap;
 using System.Linq;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Data.Constants;
+using System.Globalization;
 
 namespace terminalSalesforce.Actions
 {
@@ -84,6 +86,13 @@ namespace terminalSalesforce.Actions
 
             CurrentActivityStorage.ReplaceByLabel(
                 CrateManager.CreateDesignTimeFieldsCrate("Monitor Salesforce Fields", CreateSfMonitorDesignTimeFields().ToList(), AvailabilityType.RunTime));
+
+            var eventCrate = CrateManager.CreateManifestDescriptionCrate(
+                                            "Available Run-Time Objects",
+                                            MT.SalesforceEvent.ToString(),
+                                            ((int)MT.SalesforceEvent).ToString(CultureInfo.InvariantCulture),
+                                            AvailabilityType.RunTime);
+            CurrentActivityStorage.ReplaceByLabel(eventCrate);
         }
 
         protected override async Task RunCurrentActivity()
@@ -104,13 +113,17 @@ namespace terminalSalesforce.Actions
 
             curEventPayloads.ForEach(p =>
             {
-                p.PayloadObject.ForEach(po =>
+                var sfEvent = new SalesforceEventCM
                 {
-                    po.Availability = AvailabilityType.RunTime;
-                });
+                    CreatedDate = p.PayloadObject.Single(requiredProperty => requiredProperty.Key.Equals("CreatedDate")).Value,
+                    LastModifiedDate = p.PayloadObject.Single(requiredProperty => requiredProperty.Key.Equals("LastModifiedDate")).Value,
+                    ObjectId = p.PayloadObject.Single(requiredProperty => requiredProperty.Key.Equals("ObjectId")).Value,
+                    ObjectType = p.PayloadObject.Single(requiredProperty => requiredProperty.Key.Equals("ObjectType")).Value,
+                    OccuredEvent = p.PayloadObject.Single(requiredProperty => requiredProperty.Key.Equals("OccuredEvent")).Value
+                };
 
                 CurrentPayloadStorage.ReplaceByLabel(
-                    Crate.FromContent("Monitor Salesforce Fields", new StandardPayloadDataCM(p.PayloadObject), AvailabilityType.RunTime));
+                    Crate.FromContent("Salesforce Event", sfEvent, AvailabilityType.RunTime));
             });
         }
 
@@ -140,7 +153,7 @@ namespace terminalSalesforce.Actions
             var monitorEventFields = new List<FieldDTO> {
 
                 new FieldDTO("ObjectType", "ObjectType", AvailabilityType.RunTime),
-                new FieldDTO("Id", "Id", AvailabilityType.RunTime),
+                new FieldDTO("ObjectId", "ObjectId", AvailabilityType.RunTime),
                 new FieldDTO("CreatedDate", "CreatedDate", AvailabilityType.RunTime),
                 new FieldDTO("LastModifiedDate", "LastModifiedDate", AvailabilityType.RunTime),
                 new FieldDTO("OccuredEvent", "OccuredEvent", AvailabilityType.RunTime)
