@@ -234,7 +234,6 @@
     <Compile Include="Constants\FieldValidationResult.cs" />
     <Compile Include="Constants\ActivityDirection.cs" />
     <Compile Include="Constants\ManifestIdEnum.cs" />
-    <Compile Include="Constants\Tags.cs" />
     <Compile Include="Control\Control.cs" />
     <Compile Include="Crates\Crate.cs" />
     <Compile Include="Crates\CrateManifestAttribute.cs" />
@@ -690,9 +689,9 @@
     <Compile Include="Migrations\201604130047415_ProcessNodesRemoved.Designer.cs">
       <DependentUpon>201604130047415_ProcessNodesRemoved.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201604151634121_AddSalesforceMMSolution.cs" />
-    <Compile Include="Migrations\201604151634121_AddSalesforceMMSolution.Designer.cs">
-      <DependentUpon>201604151634121_AddSalesforceMMSolution.cs</DependentUpon>
+    <Compile Include="Migrations\201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.cs" />
+    <Compile Include="Migrations\201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.Designer.cs">
+      <DependentUpon>201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1216,8 +1215,8 @@
     <EmbeddedResource Include="Migrations\201604130047415_ProcessNodesRemoved.resx">
       <DependentUpon>201604130047415_ProcessNodesRemoved.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201604151634121_AddSalesforceMMSolution.resx">
-      <DependentUpon>201604151634121_AddSalesforceMMSolution.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.resx">
+      <DependentUpon>201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

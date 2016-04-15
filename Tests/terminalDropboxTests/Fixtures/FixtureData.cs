@@ -55,7 +55,7 @@ namespace terminalDropboxTests.Fixtures
         {
             return new ActivityTemplateDO
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Get File List",
                 Version = "1"
             };
