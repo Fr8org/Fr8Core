@@ -44,19 +44,19 @@ namespace DockyardTest.Controllers
                             {
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(2),
                                     Ordering = 1
                                 },
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(3),
                                     Ordering = 2
                                 },
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(4),
                                     Ordering = 3
                                 },
