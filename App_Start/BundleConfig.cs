@@ -135,6 +135,8 @@ namespace HubWeb.App_Start
                 .Include("~/bower_components/angular-ivh-treeview/dist/ivh-treeview-theme-basic.css", new CssRewriteUrlTransform())
                 .Include("~/bower_components/angular-resizable/angular-resizable.min.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/dockyard.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/dockyard/container-transition.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/dockyard/query-builder.css", new CssRewriteUrlTransform())
             );
 
             bundles.Add(new ScriptBundle("~/bundles/jsunittests")

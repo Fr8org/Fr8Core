@@ -1,7 +1,4 @@
-﻿@import url('dockyard/container-transition.css');
-@import url('dockyard/query-builder.css');
-
-.table-linkrows > tbody > tr {
+﻿.table-linkrows > tbody > tr {
     cursor: pointer;
 }
 
@@ -1209,6 +1206,19 @@ i.activity-stream-font {
 .fr8-float-right {
     float: right;
 }
+
+footer {
+    padding-top: 20px;
+    padding-bottom: 10px;
+}
+
+footer p {
+    text-align:center;
+    font-size:12px;
+    color:#687688
+}
+
+
 
 .footer {
     padding-top: 20px;
