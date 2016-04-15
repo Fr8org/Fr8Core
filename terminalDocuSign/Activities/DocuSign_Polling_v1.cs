@@ -18,40 +18,71 @@ using StructureMap;
 using TerminalBase.Infrastructure;
 using terminalDocuSign.Actions;
 using DocuSign.eSign.Api;
-using terminalDocuSign.Services.NewApi;
+using DocuSign.eSign.Client;
+using Utilities.Configuration.Azure;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 using terminalDocuSign.DataTransferObjects;
-using DocuSign.eSign.Model;
 
 namespace terminalDocuSign.Actions
 {
-    public class Notify_DocuSign_Events_v1 : BaseDocuSignActivity
+    public class DocuSign_Polling_v1 : BaseDocuSignActivity
     {
         private IDocuSignManager _docusignManager;
+        private IRestfulServiceClient _restfulServiceClient;
 
-        protected override string ActivityUserFriendlyName => "Notify DocuSign Events";
-
-        public Notify_DocuSign_Events_v1()
+        public DocuSign_Polling_v1()
         {
             _docusignManager = ObjectFactory.GetInstance<IDocuSignManager>();
+            _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
         }
+
+        protected override string ActivityUserFriendlyName => "DocuSign Polling";
 
         protected internal override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payload = await GetPayload(curActivityDO, containerId);
-
             var config = _docusignManager.SetUp(authTokenDO);
+            EnvelopesApi api = new EnvelopesApi((Configuration)config.Configuration);
+            List<CrateDTO> changed_crates = new List<CrateDTO>();
 
-            var changed_crates = payload.CrateStorage.Crates.Where(a => a.ManifestId == (int)MT.DocuSignEnvelope_v2 && a.Label == "ChangedEnvelope");
-            var recorded_crates = payload.CrateStorage.Crates.Where(a => a.ManifestId == (int)MT.DocuSignEnvelope_v2 && a.Label == "RecordedEnvelope");
+            // 1. Poll changes
+            string pollingInterval = CloudConfigurationManager.GetSetting("terminalDocuSign.PollingInterval");
+            var changed_envelopes_info = api.ListStatusChanges(config.AccountId, new EnvelopesApi.ListStatusChangesOptions()
+            { fromDate = DateTime.UtcNow.AddMinutes(-Convert.ToInt32(pollingInterval) - 1).ToString("o") });
+            foreach (var envelope in changed_envelopes_info.Envelopes)
+            {
+                var envelopeCrate = Data.Crates.Crate.FromContent("ChangedEnvelope", new DocuSignEnvelopeCM_v2()
+                {
+                    EnvelopeId = envelope.EnvelopeId,
+                    Status = envelope.Status,
+                    StatusChangedDateTime = DateTime.Parse(envelope.StatusChangedDateTime),
+                    ExternalAccountId = JToken.Parse(authTokenDO.Token)["Email"].ToString(),
+                }, AvailabilityType.RunTime);
+                changed_crates.Add(CrateManager.ToDto(envelopeCrate));
+            }
 
+            // 2. Check if we processed these envelopes before and if so - retrieve them
+            var recorded_crates = await HubCommunicator.GetStoredManifests(CurrentFr8UserId, changed_crates);
+            // 3. Fill polled envelopes with data 
             var changed_envelopes = FillChangedEnvelopesWithData(config, changed_crates);
-
+            // 4. Exclude envelopes that came from a 1 minute overlap
             var envelopesToNotify = ExcludeCollisions(changed_envelopes, recorded_crates);
+            // 5. Push envelopes to event controller
+            await PushEnvelopesToTerminalEndpoint(envelopesToNotify);
 
-            //notify
+            return Success(await GetPayload(curActivityDO, containerId));
+        }
 
-            return Success(payload);
+        private async Task PushEnvelopesToTerminalEndpoint(IEnumerable<DocuSignEnvelopeCM_v2> envelopesToNotify)
+        {
+            foreach (var envelope in envelopesToNotify)
+            {
+                var crate = CrateManager.ToDto(Data.Crates.Crate.FromContent("Polling Event", envelope));
+                string publishUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint") + "/terminals/terminalDocuSign/events";
+                var uri = new Uri(publishUrl, UriKind.Absolute);
+                await _restfulServiceClient.PostAsync<CrateDTO>(new Uri(publishUrl, UriKind.Absolute), crate, null);
+            }
         }
 
         private IEnumerable<DocuSignEnvelopeCM_v2> ExcludeCollisions(IEnumerable<DocuSignEnvelopeCM_v2> changed_crates, IEnumerable<CrateDTO> recorded_crates)
@@ -134,6 +165,10 @@ namespace terminalDocuSign.Actions
                     Controls = new List<ControlDefinitionDTO>()
                 { new TextBlock { Value = "This activity doesn't require any configuration" } }
                 }));
+
+                var authToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+                var docuSignUserCrate = Data.Crates.Crate.FromContent("DocuSignUserCrate", new StandardPayloadDataCM(new FieldDTO("DocuSignUserEmail", authToken.Email)));
+                storage.Add(docuSignUserCrate);
             }
             return curActivityDO;
         }

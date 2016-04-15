@@ -200,20 +200,7 @@ namespace terminalDocuSign.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 MinPaneWidth = 380,
-                //Tags = "internal"
-            };
-
-            var notifyDocuSignEvents = new ActivityTemplateDTO
-            {
-                Name = "Notify_DocuSign_Events",
-                Label = "Notify DocuSign Events",
-                Version = "1",
-                Category = ActivityCategory.Forwarders,
-                NeedsAuthentication = true,
-                Terminal = terminal,
-                WebService = webService,
-                MinPaneWidth = 380,
-                //Tags = "internal"
+                Tags = "internal"
             };
 
             var actionList = new List<ActivityTemplateDTO>()
@@ -230,8 +217,7 @@ namespace terminalDocuSign.Controllers
                 searchDocusignHistory,
                 getDocuSignTemplateActionTemplate,
                 process_personal_report,
-                pollingSolution,
-                notifyDocuSignEvents
+                pollingSolution
             };
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()

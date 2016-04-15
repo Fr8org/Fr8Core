@@ -84,6 +84,7 @@ namespace HubWeb
                     typeof(ProcessNodeTemplateController),
                     typeof(TerminalsController),
                     typeof(UserController),
+                    typeof(WarehouseController),
                     typeof(WebServicesController)
                 };
         }

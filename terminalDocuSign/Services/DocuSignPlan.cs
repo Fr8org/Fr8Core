@@ -19,6 +19,7 @@ using Data.Constants;
 using terminalDocuSign.Services.New_Api;
 using Utilities.Configuration.Azure;
 using Utilities;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 
 namespace terminalDocuSign.Services
 {
@@ -55,7 +56,8 @@ namespace terminalDocuSign.Services
         /// </summary>
         public async Task CreatePlan_MonitorAllDocuSignEvents(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
-            if (!(await FindAndActivateExistingPlan(curFr8UserId, authTokenDTO)))
+            string currentPlanId = await FindAndActivateExistingPlan(curFr8UserId, "MonitorAllDocuSignEvents", authTokenDTO);
+            if (string.IsNullOrEmpty(currentPlanId))
                 await CreateAndActivateNewMADSEPlan(curFr8UserId, authTokenDTO);
         }
 
@@ -117,25 +119,59 @@ namespace terminalDocuSign.Services
 
         public async void CreateOrUpdatePollingPlan(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
-            var existingPlans = (await _hubCommunicator.GetPlansByName("DocuSignPollingFor" + authTokenDTO.ExternalAccountId, curFr8UserId, PlanVisibility.Internal)).ToList();
+            var existingPlans = (await _hubCommunicator.GetPlansByName("DocuSignPolling", curFr8UserId, PlanVisibility.Internal)).ToList();
+
+            string currentPlanId = "";
             if (existingPlans.Count > 0)
             {
-
+                currentPlanId = await FindAndActivateExistingPlan(curFr8UserId, "DocuSignPolling", authTokenDTO);
             }
 
+            if (string.IsNullOrEmpty(currentPlanId))
+                currentPlanId = await CreatePlan_DocuSignPolling(curFr8UserId, authTokenDTO);
+
+            await SchedulePlan(curFr8UserId, currentPlanId);
         }
 
+        private async Task SchedulePlan(string curFr8UserID, string planId)
+        {
+            string pollingInterval = CloudConfigurationManager.GetSetting("terminalDocuSign.PollingInterval");
+            await _hubCommunicator.SchedulePlan(curFr8UserID, planId, pollingInterval);
+        }
 
+        private async Task<string> CreatePlan_DocuSignPolling(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
+        {
+            var emptyMonitorPlan = new PlanEmptyDTO
+            {
+                Name = "DocuSignPolling",
+                Description = "DocuSignPolling",
+                PlanState = PlanState.Active,
+                Visibility = PlanVisibility.Internal
+            };
 
+            var docusignPolling = await _hubCommunicator.CreatePlan(emptyMonitorPlan, curFr8UserId);
+            var activityTemplates = await _hubCommunicator.GetActivityTemplates(null, curFr8UserId);
+            var pollingActivity = GetActivityTemplate(activityTemplates, "DocuSign_Polling");
+            await _hubCommunicator.CreateAndConfigureActivity(pollingActivity.Id,
+                curFr8UserId, "Polling DocuSign", 1, docusignPolling.Plan.StartingSubPlanId, false, new Guid(authTokenDTO.Id));
 
+            var planDO = Mapper.Map<PlanDO>(docusignPolling.Plan);
+            await _hubCommunicator.ActivatePlan(planDO, curFr8UserId);
 
+            return planDO.Id.ToStr();
+        }
 
+        private bool CheckIfSaveToFr8WarehouseConfiguredWithOldManifest(PlanDTO val)
+        {
+            return (_crateManager.GetStorage(val.Plan.SubPlans.ElementAt(0).Activities[1]).CrateContentsOfType<StandardConfigurationControlsCM>()
+                     .First().FindByName("UpstreamCrateChooser") as UpstreamCrateChooser).SelectedCrates.Count > 1;
+        }
 
-        private async Task<bool> FindAndActivateExistingPlan(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
+        private async Task<string> FindAndActivateExistingPlan(string curFr8UserId, string plan_name, AuthorizationTokenDTO authTokenDTO)
         {
             try
             {
-                var existingPlans = (await _hubCommunicator.GetPlansByName("MonitorAllDocuSignEvents", curFr8UserId, PlanVisibility.Internal)).ToList();
+                var existingPlans = (await _hubCommunicator.GetPlansByName(plan_name, curFr8UserId, PlanVisibility.Internal)).ToList();
                 if (existingPlans.Count > 0)
                 {
 
@@ -152,8 +188,11 @@ namespace terminalDocuSign.Services
                         //second condition
                         val.Plan.SubPlans.ElementAt(0).Activities.Count() > 0 &&
                         //third condtion
-                        _crateManager.GetStorage(val.Plan.SubPlans.ElementAt(0).Activities[0]).Where(t => t.Label == "DocuSignUserCrate").FirstOrDefault() != null)
-                      .ToDictionary(g => g.Key, g => g.ToList());
+                        _crateManager.GetStorage(val.Plan.SubPlans.ElementAt(0).Activities[0]).Where(t => t.Label == "DocuSignUserCrate").FirstOrDefault() != null &&
+                        //fourth condition -> check if SaveToFr8Warehouse configured with old manifests
+                        !(plan_name == "MonitorAllDocuSignEvents" && CheckIfSaveToFr8WarehouseConfiguredWithOldManifest(val))
+
+                      ).ToDictionary(g => g.Key, g => g.ToList());
 
                     //removing obsolete/malformed plans
                     if (plans.ContainsKey(false))
@@ -189,7 +228,7 @@ namespace terminalDocuSign.Services
                                 await _hubCommunicator.ApplyNewToken(firstActivity.Id, Guid.Parse(authTokenDTO.Id), curFr8UserId);
                                 var existingPlanDO = Mapper.Map<PlanDO>(existingPlan.Plan);
                                 await _hubCommunicator.ActivatePlan(existingPlanDO, curFr8UserId);
-                                return true;
+                                return existingPlan.Plan.Id.to_S();
                             }
                         }
                     }
@@ -198,7 +237,7 @@ namespace terminalDocuSign.Services
             // if anything bad happens we would like not to create a new MADSE plan and fail loudly
             catch (Exception exc) { throw new ApplicationException("Couldn't update an existing Monitor_All_DocuSign_Events plan", exc); };
 
-            return false;
+            return null;
         }
 
         private async Task CreateAndActivateNewMADSEPlan(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
@@ -244,26 +283,10 @@ namespace terminalDocuSign.Services
                     Name = "UpstreamCrateChooser_mnfst_dropdown_0",
                     Source = existingDdlbSource
                 };
-                //var docusignEvent = new DropDownList
-                //{
-                //    selectedKey = MT.DocuSignEvent.ToString(),
-                //    Value = ((int)MT.DocuSignEvent).ToString(),
-                //    Name = "UpstreamCrateChooser_mnfst_dropdown_1",
-                //    Source = existingDdlbSource
-                //};
-                //var docusignRecipient = new DropDownList
-                //{
-                //    selectedKey = MT.DocuSignRecipient.ToString(),
-                //    Value = ((int)MT.DocuSignRecipient).ToString(),
-                //    Name = "UpstreamCrateChooser_mnfst_dropdown_2",
-                //    Source = existingDdlbSource
-                //};
 
                 upstreamCrateChooser.SelectedCrates = new List<CrateDetails>()
                 {
-                    new CrateDetails { ManifestType = docusignEnvelope, Label = existingLabelDdlb },
-                    //new CrateDetails { ManifestType = docusignEvent, Label = existingLabelDdlb },
-                    //new CrateDetails { ManifestType = docusignRecipient, Label = existingLabelDdlb }
+                    new CrateDetails { ManifestType = docusignEnvelope, Label = existingLabelDdlb }
                 };
             }
         }

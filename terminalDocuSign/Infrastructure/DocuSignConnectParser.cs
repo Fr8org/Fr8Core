@@ -39,7 +39,7 @@ namespace terminalDocuSign.Infrastructure
             result.EnvelopeId = curDocuSignEnvelopeInfo.EnvelopeStatus.EnvelopeID;
             result.Status = Enum.GetName(typeof(EnvelopeStatusCode), curDocuSignEnvelopeInfo.EnvelopeStatus.Status);
             result.StatusChangedDateTime = DateTime.UtcNow;
-
+            result.ExternalAccountId = curDocuSignEnvelopeInfo.EnvelopeStatus.Email;
             //Recipients
             foreach (var recipient in curDocuSignEnvelopeInfo.EnvelopeStatus.RecipientStatuses)
             {
@@ -307,5 +307,23 @@ namespace terminalDocuSign.Infrastructure
             }
             return string.Join(",", result);
         }
+
+        public static string GetEventNames(DocuSignEnvelopeCM_v2 eventManifest)
+        {
+            List<string> result = new List<string>();
+
+            //Envelope events
+            if (eventManifest.Status != null)
+                result.Add("Envelope" + eventManifest.Status);
+
+            //Recipinent events
+            if (eventManifest.Recipients.Count != 0)
+            {
+                var recipientEvents = eventManifest.Recipients.Select(s => "Recipient" + s.Status).Distinct();
+                result.AddRange(recipientEvents);
+            }
+            return string.Join(",", result);
+        }
+
     }
 }

@@ -283,5 +283,15 @@ namespace TerminalBase.Infrastructure
         {
             throw new NotImplementedException();
         }
+
+        public Task<List<CrateDTO>> GetStoredManifests(string currentFr8UserId, List<CrateDTO> cratesForMTRequest)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task SchedulePlan(string userId, string planId, string minutes)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

@@ -37,6 +37,7 @@ namespace TerminalBase.Infrastructure
         Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO, string userId);
         Task RunPlan(Guid planId, List<CrateDTO> payload, string userId);
         Task<PlanDO> ActivatePlan(PlanDO planDO, string userId);
+        Task<List<CrateDTO>> GetStoredManifests(string currentFr8UserId, List<CrateDTO> cratesForMTRequest);
         Task<IEnumerable<PlanDTO>> GetPlansByName(string name, string userId, PlanVisibility visibility = PlanVisibility.Standard);
         Task<FileDO> SaveFile(string name, Stream stream, string userId);
         Task<Stream> DownloadFile(int fileId, string userId);
@@ -50,5 +51,6 @@ namespace TerminalBase.Infrastructure
         Task<PlanDTO> GetPlansByActivity(string activityId, string userId);
         Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan, string userId);
         Task NotifyUser(TerminalNotificationDTO notificationMessage, string userId);
+        Task SchedulePlan(string userId, string planId, string minutes);
     }
 }

@@ -14,5 +14,8 @@ namespace terminalDocuSign.Interfaces
         Task CreatePlan_MonitorAllDocuSignEvents(string curFr8UserId, AuthorizationTokenDTO authTokenDTO);
 
         void CreateConnect(string curFr8UserId, AuthorizationTokenDTO authTokenDTO);
+
+        void CreateOrUpdatePollingPlan(string curFr8UserId, AuthorizationTokenDTO authTokenDTO);
+
     }
 }

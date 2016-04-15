@@ -27,11 +27,13 @@ namespace terminalDocuSign.Services
     {
         private readonly EventReporter _alertReporter;
         private readonly IDocuSignPlan _docuSignPlan;
+        private readonly ICrateManager _crateManager;
 
         public Event()
         {
             _alertReporter = ObjectFactory.GetInstance<EventReporter>();
             _docuSignPlan = ObjectFactory.GetInstance<IDocuSignPlan>();
+            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         public async Task<Crate> Process(string curExternalEventPayload)
@@ -41,20 +43,20 @@ namespace terminalDocuSign.Services
             {
                 var curFr8UserAndToken = ConfirmAuthentication(curExternalEventPayload);
 
-                try
-                {
-                    _docuSignPlan.CreateConnect(curFr8UserAndToken.Item1, curFr8UserAndToken.Item2);
-                }
-                catch
-                {
+                //try
+                //{
+                //    _docuSignPlan.CreateConnect(curFr8UserAndToken.Item1, curFr8UserAndToken.Item2);
+                //}
+                //catch
+                //{
                     //create polling
-
-                }
-                finally
-                {
-                    // create MonitorAllDocuSignEvents plan
-                    await _docuSignPlan.CreatePlan_MonitorAllDocuSignEvents(curFr8UserAndToken.Item1, curFr8UserAndToken.Item2);
-                }
+                    _docuSignPlan.CreateOrUpdatePollingPlan(curFr8UserAndToken.Item1, curFr8UserAndToken.Item2);
+                //}
+                //finally
+                //{
+                //    // create MonitorAllDocuSignEvents plan
+                //    await _docuSignPlan.CreatePlan_MonitorAllDocuSignEvents(curFr8UserAndToken.Item1, curFr8UserAndToken.Item2);
+                //}
             }
 
             //If this is a connect event
@@ -63,8 +65,28 @@ namespace terminalDocuSign.Services
                 return ProcessConnectEvent(curExternalEventPayload);
             }
 
+            if (curExternalEventPayload.Contains("Polling Event"))
+            {
+                return ProcessPollingEvent(curExternalEventPayload);
+            }
 
             return null;
+        }
+
+        private Crate ProcessPollingEvent(string curExternalEventPayload)
+        {
+            var eventCrate = JsonConvert.DeserializeObject<CrateDTO>(curExternalEventPayload);
+            var eventManifest = _crateManager.FromDto(eventCrate).Get<DocuSignEnvelopeCM_v2>();
+            var eventReportContent = new EventReportCM
+            {
+                EventNames = DocuSignEventParser.GetEventNames(eventManifest),
+                ContainerDoId = "",
+                EventPayload = new CrateStorage(Crate.FromContent("DocuSign Connect Event", eventManifest)),
+                Manufacturer = "DocuSign",
+                ExternalAccountId = eventManifest.ExternalAccountId
+            };
+
+            return Crate.FromContent("Standard Event Report", eventReportContent);
         }
 
         private Crate ProcessConnectEvent(string curExternalEventPayload)

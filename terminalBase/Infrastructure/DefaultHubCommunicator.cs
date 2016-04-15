@@ -239,7 +239,7 @@ namespace TerminalBase.Infrastructure
 
         public async Task ApplyNewToken(Guid activityId, Guid authTokenId, string userId)
         {
-         
+
             var applyToken = new ManageAuthToken_Apply()
             {
                 ActivityId = activityId,
@@ -451,6 +451,26 @@ namespace TerminalBase.Infrastructure
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/files/download?id=" + fileId;
             var uri = new Uri(hubUrl);
             return await _restfulServiceClient.DownloadAsync(uri, null, await GetHMACHeader(uri, userId));
+        }
+
+        public async Task<List<CrateDTO>> GetStoredManifests(string currentFr8UserId, List<CrateDTO> cratesForMTRequest)
+        {
+            var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+            + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/warehouse?userId=" + currentFr8UserId;
+
+            var uri = new Uri(hubUrl);
+            return await _restfulServiceClient.PostAsync<List<CrateDTO>, List<CrateDTO>>(uri, cratesForMTRequest, null, await GetHMACHeader(uri, currentFr8UserId, cratesForMTRequest));
+        }
+
+        public async Task SchedulePlan(string userId, string planId, string minutes)
+        {
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                     + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion")
+                     + string.Format("/plans/schedule?planId={0}&minutes={1}", planId, minutes);
+
+            var uri = new Uri(url);
+
+            await _restfulServiceClient.PostAsync(uri, null, await GetHMACHeader(uri, userId));
         }
     }
 }

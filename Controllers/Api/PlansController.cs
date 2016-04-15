@@ -28,6 +28,9 @@ using Data.Interfaces.Manifests;
 using System.Text;
 using Data.Constants;
 using Data.Infrastructure;
+using Hangfire;
+using Nito.AsyncEx;
+using System.Web.Http.Results;
 
 namespace HubWeb.Controllers
 {
@@ -285,7 +288,7 @@ namespace HubWeb.Controllers
         {
             string activityDTO = await _plan.Deactivate(planId);
             EventManager.PlanDeactivated(planId);
-            
+
             return Ok(activityDTO);
         }
 
@@ -311,7 +314,7 @@ namespace HubWeb.Controllers
             string currentPlanType = string.Empty;
 
             //ACTIVATE - activate route if its inactive
-            
+
             bool inActive = false;
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -338,7 +341,7 @@ namespace HubWeb.Controllers
 
                     return Ok(activateDTO.Container);
                 }
-                
+
             }
 
             //RUN
@@ -432,6 +435,27 @@ namespace HubWeb.Controllers
             }
         }
 
+        [HttpPost]
+        [ActionName("schedule")]
+        [Fr8HubWebHMACAuthenticate]
+        public async Task<IHttpActionResult> Schedule(Guid planId, int minutes)
+        {
+            //hangfire doesn't support async methods
+            RecurringJob.AddOrUpdate(planId.ToString(), () => LaunchScheduledActivity(planId), "*/" + minutes + " * * * *");
+            return Ok();
+        }
+
+
+        public void LaunchScheduledActivity(Guid planId)
+        {
+            //http://stackoverflow.com/questions/9343594/how-to-call-asynchronous-method-from-synchronous-method-in-c
+            var result = AsyncContext.Run(() => Run(planId, null));
+            if (!(result is OkNegotiatedContentResult<ContainerDTO>))
+            {
+                RecurringJob.RemoveIfExists(planId.ToString());
+            }
+        }
+
         private string GetResponseMessage(OperationalStateCM response)
         {
             string responseMsg = "";
@@ -454,10 +478,10 @@ namespace HubWeb.Controllers
             {
                 messageToNotify = errorMessage;
             }
-                       
+
             var message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, messageToNotify);
             _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
-            
+
         }
 
         [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
@@ -510,7 +534,7 @@ namespace HubWeb.Controllers
                         _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, $"Launching a new Container for Plan \"{planDO.Name}\"");
 
                         var crates = payload.Select(c => _crate.FromDto(c)).ToArray();
-                        var containerDO = await _plan.Run(uow , planDO, crates);
+                        var containerDO = await _plan.Run(uow, planDO, crates);
                         if (!planDO.IsOngoingPlan())
                         {
                             await _plan.Deactivate(planId);
