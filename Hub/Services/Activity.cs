@@ -43,7 +43,7 @@ namespace Hub.Services
             _activityTemplate = activityTemplate;
             _planNode = planNode;
         }
-
+        
         public IEnumerable<TViewModel> GetAllActivities<TViewModel>()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

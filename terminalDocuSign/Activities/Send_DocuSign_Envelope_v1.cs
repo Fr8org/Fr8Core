@@ -402,7 +402,7 @@ namespace terminalDocuSign.Actions
                 updater.Remove(curUpstreamFieldsCrate);
             }
 
-            var curUpstreamFields = (await GetDesignTimeFields(curActivityDO.Id, CrateDirection.Upstream))
+            var curUpstreamFields = (await GetDesignTimeFields(curActivityDO, CrateDirection.Upstream))
                 .Fields
                 .Where(a => a.Availability == AvailabilityType.RunTime)
                 .ToArray();

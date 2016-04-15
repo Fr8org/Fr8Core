@@ -67,7 +67,7 @@ namespace terminalSalesforce.Actions
             {
                 crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate, availableChatters));
 
-                var curUpstreamFields = (await GetDesignTimeFields(curActivityDO.Id, CrateDirection.Upstream)).Fields.ToArray();
+                var curUpstreamFields = (await GetDesignTimeFields(curActivityDO, CrateDirection.Upstream)).Fields.ToArray();
                 var upstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided Fields", curUpstreamFields);
                 crateStorage.ReplaceByLabel(upstreamFieldsCrate);
             }

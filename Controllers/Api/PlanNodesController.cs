@@ -139,18 +139,14 @@ namespace HubWeb.Controllers
             return Ok(data);
         }
 
-        [ActionName("designtime_fields_dir")]
-        [ResponseType(typeof(FieldDescriptionsCM))]
-        [Fr8HubWebHMACAuthenticate]
-        public IHttpActionResult GetDesignTimeFieldsByDirection(
-            Guid id,
-            CrateDirection direction,
-            AvailabilityType availability = AvailabilityType.NotSet)
+        [HttpGet]
+        [ActionName("available_data")]
+        [Fr8ApiAuthorize]
+        public IHttpActionResult GetAvailableData(Guid id, CrateDirection crateDirection, AvailabilityType availability)
         {
-            var downstreamActions = _activity.GetDesignTimeFieldsByDirection(id, direction, availability);
-            return Ok(downstreamActions);
+            return Ok(_activity.GetAvailableData(id, crateDirection, availability));
         }
-
+        
         [ActionName("available")]
         [ResponseType(typeof(IEnumerable<ActivityTemplateCategoryDTO>))]
         [AllowAnonymous]

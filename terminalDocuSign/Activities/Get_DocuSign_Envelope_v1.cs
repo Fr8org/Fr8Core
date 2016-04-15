@@ -68,7 +68,7 @@ namespace terminalDocuSign.Actions
             {
                 List<FieldDTO> allFields = new List<FieldDTO>();
 
-                var curUpstreamFields = (await GetDesignTimeFields(curActivityDO.Id, CrateDirection.Upstream)).Fields.ToArray();
+                var curUpstreamFields = (await GetDesignTimeFields(curActivityDO, CrateDirection.Upstream)).Fields.ToArray();
                 var upstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Design-Time Fields", curUpstreamFields);
                 crateStorage.ReplaceByLabel(upstreamFieldsCrate);
 

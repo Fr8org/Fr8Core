@@ -30,6 +30,7 @@ namespace TerminalBase.BaseClasses
     //standard ProcessConfigurationRequest
     public delegate ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO);
 
+
     public class BaseTerminalActivity
     {
         #region Fields
@@ -634,11 +635,7 @@ namespace TerminalBase.BaseClasses
 
             throw new ApplicationException(exceptionMessage);
         }
-
-
-
-
-
+        
         /*******************************************************************************************/
         // Working with upstream
         /*******************************************************************************************/
@@ -648,6 +645,11 @@ namespace TerminalBase.BaseClasses
         {
             return await HubCommunicator.GetCratesByDirection<TManifest>(activityDO, direction, CurrentFr8UserId);
             // return await Activity.GetCratesByDirection<TManifest>(activityId, direction);
+        }
+
+        public Task<AvailableDataDTO> GetAvailableData(ActivityDO activity, CrateDirection direction = CrateDirection.Upstream)
+        {
+            return HubCommunicator.GetAvailableRunTimeData(activity.Id, direction, CurrentFr8UserId);
         }
 
         //wrapper for support test method
