@@ -281,7 +281,7 @@ namespace TerminalBase.Infrastructure
             return Mapper.Map<ActivityDO>(await SaveActivity(activityDTO, userId));
         }
 
-        public async Task<ActivityDTO> CreateAndConfigureActivity(int templateId, string userId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
+        public async Task<ActivityDTO> CreateAndConfigureActivity(Guid templateId, string userId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                       + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/activities/create";

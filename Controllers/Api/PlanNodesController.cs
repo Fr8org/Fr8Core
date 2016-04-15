@@ -39,7 +39,7 @@ namespace HubWeb.Controllers
         [HttpGet]
         [ResponseType(typeof(ActivityTemplateDTO))]
         [Fr8ApiAuthorize]
-        public IHttpActionResult Get(int id)
+        public IHttpActionResult Get(Guid id)
         {
             var curActivityTemplateDO = _activityTemplate.GetByKey(id);
             var curActivityTemplateDTO = Mapper.Map<ActivityTemplateDTO>(curActivityTemplateDO);

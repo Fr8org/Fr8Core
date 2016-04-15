@@ -1,25 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using AutoMapper;
-using Data.Constants;
 using Data.Crates;
-using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-
 using Hub.Interfaces;
 using Hub.Managers;
-using Utilities.Configuration.Azure;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using Data.Interfaces.Manifests;
-using Utilities;
 
 namespace Hub.Services
 {
@@ -28,8 +19,6 @@ namespace Hub.Services
         #region Fields
 
         private readonly ICrateManager _crate;
-        private readonly IRestfulServiceClient _restfulServiceClient;
-        private readonly IPlanNode _activity;
         private readonly IActivityTemplate _activityTemplate;
         #endregion
 
@@ -37,7 +26,6 @@ namespace Hub.Services
         {
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
-            _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
         }
 
         public List<PlanNodeDO> GetUpstreamActivities(IUnitOfWork uow, PlanNodeDO curActivityDO)
@@ -290,40 +278,7 @@ namespace Hub.Services
             foreach (PlanNodeDO child in parent.ChildNodes)
                 TraverseActivity(child, visitAction);
         }
-
-        public async Task Process(Guid curActivityId, ActivityState curActionState, ContainerDO containerDO)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                //why do we get container from db again???
-                var curContainerDO = uow.ContainerRepository.GetByKey(containerDO.Id);
-                var curActivityDO = uow.PlanRepository.GetById<PlanNodeDO>(curActivityId);
-
-                if (curActivityDO == null)
-                {
-                    throw new ArgumentException("Cannot find Activity with the supplied curActivityId");
-                }
-
-                if (curActivityDO is ActivityDO)
-                {
-                    // Explicitly extract authorization token to make AuthTokenDTO pass to activities.
-                    var currentActivity = (ActivityDO)curActivityDO;
-                    currentActivity.AuthorizationToken = uow.AuthorizationTokenRepository
-                        .FindTokenById(currentActivity.AuthorizationTokenId);
-
-                    IActivity _activity = ObjectFactory.GetInstance<IActivity>();
-
-                    //FR-2642 Logic to skip execution of activities with "SkipAtRunTime" Tag
-                    var template = _activityTemplate.GetByKey(currentActivity.ActivityTemplateId);
-                    if (!(template.Tags != null && template.Tags.Contains("SkipAtRunTime", StringComparison.InvariantCultureIgnoreCase)))
-                        await _activity.PrepareToExecute(currentActivity, curActionState, curContainerDO, uow);
-                    //TODO inspect this
-                    //why do we get container from db again???
-                    containerDO.CrateStorage = curContainerDO.CrateStorage;
-                }
-            }
-        }
-
+       
         public IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, IFr8AccountDO curAccount)
         {
             IEnumerable<ActivityTemplateDTO> curActivityTemplates;

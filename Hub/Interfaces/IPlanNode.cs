@@ -20,7 +20,7 @@ namespace Hub.Interfaces
         List<T> GetCrateManifestsByDirection<T>(Guid activityId, CrateDirection direction,
             AvailabilityType availability, bool includeCratesFromActivity = true) where T: Manifest;
 
-        Task Process(Guid curActivityId, ActivityState curActionState, ContainerDO curContainerDO);
+        //Task Process(Guid curActivityId, ActivityExecutionMode curActionExecutionMode, ContainerDO curContainerDO);
 
         AvailableDataDTO GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability);
         IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, IFr8AccountDO curAccount);

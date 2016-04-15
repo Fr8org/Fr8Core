@@ -120,16 +120,13 @@ namespace Data.Infrastructure
         public delegate void EventContainerStateChangedHandler(DbPropertyValues currentValues);
         public static event EventContainerStateChangedHandler EventContainerStateChanged;
 
-        public delegate void EventProcessNodeCreatedHandler(ProcessNodeDO processNode);
-        public static event EventProcessNodeCreatedHandler EventProcessNodeCreated;
-
         public delegate void EventCriteriaEvaluationStartedHandler(Guid processId);
         public static event EventCriteriaEvaluationStartedHandler EventCriteriaEvaluationStarted;
 
         public delegate void EventCriteriaEvaluationFinishedHandler(Guid processId);
         public static event EventCriteriaEvaluationFinishedHandler EventCriteriaEvaluationFinished;
 
-        public delegate void EventActionStartedHandler(ActivityDO activity);
+        public delegate void EventActionStartedHandler(ActivityDO activity, ContainerDO container);
         public static event EventActionStartedHandler EventActionStarted;
 
         public delegate void EventActionDispatchedHandler(ActivityDO curActivity, Guid processId);
@@ -533,12 +530,6 @@ namespace Data.Infrastructure
             if (handler != null) handler(plan, ex);
         }
 
-        public static void ProcessNodeCreated(ProcessNodeDO processNode)
-        {
-            var handler = EventProcessNodeCreated;
-            if (handler != null) handler(processNode);
-        }
-
         public static void CriteriaEvaluationStarted(Guid processId)
         {
             var handler = EventCriteriaEvaluationStarted;
@@ -551,10 +542,10 @@ namespace Data.Infrastructure
             if (handler != null) handler(processId);
         }
 
-        public static void ActionStarted(ActivityDO activity)
+        public static void ActionStarted(ActivityDO activity, ContainerDO container)
         {
             var handler = EventActionStarted;
-            if (handler != null) handler(activity);
+            if (handler != null) handler(activity, container);
         }
 
         public static void ActionDispatched(ActivityDO curActivity, Guid processId)
