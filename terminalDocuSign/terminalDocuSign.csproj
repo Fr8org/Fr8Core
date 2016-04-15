@@ -261,7 +261,7 @@
     <Compile Include="Infrastructure\DataContracts\FolderListResponse.cs" />
     <Compile Include="Infrastructure\DataContracts\FolderSearchResults.cs" />
     <Compile Include="Infrastructure\DateTimeHelper.cs" />
-    <Compile Include="Infrastructure\DocuSignConnectParser.cs" />
+    <Compile Include="Infrastructure\DocuSignEventParser.cs" />
     <Compile Include="Infrastructure\DataContracts\DocusignFolderInfo.cs" />
     <Compile Include="Infrastructure\DocuSignParserModels\DocuSignConnectEventModel.cs" />
     <Compile Include="Global.asax.cs">
