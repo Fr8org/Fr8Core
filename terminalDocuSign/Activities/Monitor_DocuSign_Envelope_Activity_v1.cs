@@ -287,7 +287,12 @@ namespace terminalDocuSign.Actions
                     //allFields.AddRange(userDefinedFieldsPayload.PayloadObjects.FirstOrDefault().PayloadObject);
                 }
 
+                // TODO: This is probably obsolete crate, however lookup of that particular crate is hardcoded in QueryFr8Warehouse_v1#GetCurrentEnvelopeId.
+                //          This was possibly required by Generate_DocuSign_Report.
                 crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
+
+                // Crate that should be used, since it is base on CrateDescriptionCM.
+                crateStorage.Add(Crate.CreateDesignTimeFieldsCrate(AllFieldsCrateName, AvailabilityType.RunTime, allFields.ToArray()));
             }
 
             return Success(payloadCrates);

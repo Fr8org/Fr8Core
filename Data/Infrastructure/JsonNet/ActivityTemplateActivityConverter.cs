@@ -31,6 +31,8 @@ namespace Data.Infrastructure.JsonNet
             var customWebServiceConvert = new WebServiceConverter();
             var item = (ActivityTemplateDTO)value;
             writer.WriteStartObject();
+            writer.WritePropertyName("id");
+            writer.WriteValue(item.Id.ToString());
             writer.WritePropertyName("name");
             writer.WriteValue(item.Name);
             writer.WritePropertyName("version");
@@ -49,8 +51,6 @@ namespace Data.Infrastructure.JsonNet
             writer.WriteValue(item.MinPaneWidth);
             writer.WritePropertyName("needsAuthentication");
             writer.WriteValue(item.NeedsAuthentication);
-            writer.WritePropertyName("terminalId");
-            writer.WriteValue(item.TerminalId);
             writer.WritePropertyName("webService");
             writer.WriteRawValue(JsonConvert.SerializeObject(item.WebService, customWebServiceConvert));
             writer.WriteEndObject();

@@ -20,7 +20,7 @@ namespace terminalDocuSign.Tests.Fixtures
                 NeedsAuthentication = true,
                 MinPaneWidth = 550,
                 Tags = "HideChildren",
-                Id = 0
+                Id = Guid.NewGuid()
             };
         }
     }
