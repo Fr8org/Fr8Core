@@ -40,7 +40,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityTemplateDO("Test", "test", "v1", "test", 1)
             {
-                Id = Guid.NewGuid()
+                Id = FixtureData.GetTestGuidById(1)
             };
         }
 
