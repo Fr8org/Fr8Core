@@ -99,7 +99,7 @@ namespace terminalFr8CoreTests.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "ConnectToSql_TEST",
                 Version = "1"
             };
@@ -123,7 +123,7 @@ namespace terminalFr8CoreTests.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 2,
+                Id = Guid.NewGuid(),
                 Name = "ExecuteSql_TEST",
                 Version = "1"
             };
@@ -147,7 +147,7 @@ namespace terminalFr8CoreTests.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 6,
+                Id = Guid.NewGuid(),
                 Name = "SaveToFr8Warehouse_TEST",
                 Version = "1"
             };
@@ -157,7 +157,7 @@ namespace terminalFr8CoreTests.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 4,
+                Id = Guid.NewGuid(),
                 Name = "Monitor_Fr8_Events_TEST",
                 Version = "1"
             };

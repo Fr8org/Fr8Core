@@ -75,25 +75,25 @@ namespace DockyardTest.Services
                             {
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(2),
                                     Ordering = 1
                                 },
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(3),
                                     Ordering = 2
                                 },
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId =FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(4),
                                     Ordering = 3
                                 },
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(5),
                                     Ordering = 4
                                 }
@@ -140,7 +140,7 @@ namespace DockyardTest.Services
                             {
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(2),
                                     Ordering = 1
                                 },
@@ -153,7 +153,7 @@ namespace DockyardTest.Services
                             {
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(4),
                                     Ordering = 1
                                 },
@@ -196,45 +196,45 @@ namespace DockyardTest.Services
                             {
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(2),
                                     Ordering = 1
                                 },
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(3),
                                     Ordering = 2,
                                     ChildNodes =
                                     {
                                         new ActivityDO()
                                         {
-                                            ActivityTemplateId = 1,
+                                            ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                             Id = FixtureData.GetTestGuidById(4),
                                             Ordering = 1
                                         },
                                         new ActivityDO()
                                         {
-                                            ActivityTemplateId = 1,
+                                            ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                             Id = FixtureData.GetTestGuidById(5),
                                             Ordering = 3
                                         },
                                         new ActivityDO()
                                         {
-                                            ActivityTemplateId = 1,
+                                            ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                             Id = FixtureData.GetTestGuidById(6),
                                             Ordering = 4,
                                             ChildNodes =
                                             {
                                                 new ActivityDO()
                                                 {
-                                                    ActivityTemplateId = 1,
+                                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                                     Id = FixtureData.GetTestGuidById(7),
                                                     Ordering = 1
                                                 },
                                                 new ActivityDO()
                                                 {
-                                                    ActivityTemplateId = 1,
+                                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                                     Id = FixtureData.GetTestGuidById(8),
                                                     Ordering = 2
                                                 },
@@ -244,20 +244,20 @@ namespace DockyardTest.Services
                                 },
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(9),
                                     Ordering = 3,
                                     ChildNodes =
                                     {
                                         new ActivityDO()
                                         {
-                                            ActivityTemplateId = 1,
+                                            ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                             Id = FixtureData.GetTestGuidById(10),
                                             Ordering = 1
                                         },
                                         new ActivityDO()
                                         {
-                                            ActivityTemplateId = 1,
+                                            ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                             Id = FixtureData.GetTestGuidById(11),
                                             Ordering = 2
                                         },
@@ -265,7 +265,7 @@ namespace DockyardTest.Services
                                 },
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(12),
                                     Ordering = 4
                                 }
@@ -321,45 +321,45 @@ namespace DockyardTest.Services
                             {
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(2),
                                     Ordering = 1
                                 },
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(3),
                                     Ordering = 2,
                                     ChildNodes =
                                     {
                                         new ActivityDO()
                                         {
-                                            ActivityTemplateId = 1,
+                                            ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                             Id = FixtureData.GetTestGuidById(4),
                                             Ordering = 1
                                         },
                                         new ActivityDO()
                                         {
-                                            ActivityTemplateId = 1,
+                                            ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                             Id = FixtureData.GetTestGuidById(5),
                                             Ordering = 3
                                         },
                                         new ActivityDO()
                                         {
-                                            ActivityTemplateId = 1,
+                                            ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                             Id = FixtureData.GetTestGuidById(6),
                                             Ordering = 4,
                                             ChildNodes =
                                             {
                                                 new ActivityDO()
                                                 {
-                                                    ActivityTemplateId = 1,
+                                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                                     Id = FixtureData.GetTestGuidById(7),
                                                     Ordering = 1
                                                 },
                                                 new ActivityDO()
                                                 {
-                                                    ActivityTemplateId = 1,
+                                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                                     Id = FixtureData.GetTestGuidById(8),
                                                     Ordering = 2
                                                 },
@@ -369,20 +369,20 @@ namespace DockyardTest.Services
                                 },
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(9),
                                     Ordering = 3,
                                     ChildNodes =
                                     {
                                         new ActivityDO()
                                         {
-                                            ActivityTemplateId = 1,
+                                            ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                             Id = FixtureData.GetTestGuidById(10),
                                             Ordering = 1
                                         },
                                         new ActivityDO()
                                         {
-                                            ActivityTemplateId = 1,
+                                            ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                             Id = FixtureData.GetTestGuidById(11),
                                             Ordering = 2
                                         },
@@ -390,7 +390,7 @@ namespace DockyardTest.Services
                                 },
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(12),
                                     Ordering = 4
                                 }
@@ -463,25 +463,25 @@ namespace DockyardTest.Services
                             {
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(2),
                                     Ordering = 1
                                 },
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(3),
                                     Ordering = 2
                                 },
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(4),
                                     Ordering = 3
                                 },
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(5),
                                     Ordering = 4
                                 }
@@ -529,14 +529,14 @@ namespace DockyardTest.Services
                             {
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(2),
                                     Ordering = 1,
                                     ChildNodes =
                                     {
                                         new ActivityDO()
                                         {
-                                            ActivityTemplateId = 1,
+                                            ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                             Id = FixtureData.GetTestGuidById(3),
                                             Ordering = 2
                                         },
@@ -544,20 +544,20 @@ namespace DockyardTest.Services
                                 },
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(4),
                                     Ordering = 3
                                 },
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(5),
                                     Ordering = 4,
                                     ChildNodes =
                                     {
                                         new ActivityDO()
                                         {
-                                            ActivityTemplateId = 1,
+                                            ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                             Id = FixtureData.GetTestGuidById(6),
                                             Ordering = 2
                                         },
@@ -606,13 +606,13 @@ namespace DockyardTest.Services
                             {
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(2),
                                     Ordering = 1
                                 },
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(3),
                                     Ordering = 2
                                 },
@@ -659,13 +659,13 @@ namespace DockyardTest.Services
                             {
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(2),
                                     Ordering = 1
                                 },
                                  new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(3),
                                     Ordering = 2
                                 },
@@ -678,14 +678,14 @@ namespace DockyardTest.Services
                             {
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(5),
                                     Ordering = 1
                                 },
 
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(6),
                                     Ordering = 2
                                 },
@@ -732,13 +732,13 @@ namespace DockyardTest.Services
                             {
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId =FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(2),
                                     Ordering = 1
                                 },
                                  new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(3),
                                     Ordering = 2
                                 },
@@ -751,14 +751,14 @@ namespace DockyardTest.Services
                             {
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(5),
                                     Ordering = 1
                                 },
 
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(6),
                                     Ordering = 2
                                 },
@@ -807,20 +807,20 @@ namespace DockyardTest.Services
                             {
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(2),
                                     Ordering = 1
                                 },
 
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(3),
                                     Ordering = 2
                                 },
                                  new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(4),
                                     Ordering = 3
                                 },
@@ -879,21 +879,21 @@ namespace DockyardTest.Services
                             {
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(2),
                                     Ordering = 1
                                 },
 
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(3),
                                     Ordering = 2,
                                     ChildNodes =
                                     {
                                         new ActivityDO()
                                         {
-                                            ActivityTemplateId = 1,
+                                            ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                             Id = FixtureData.GetTestGuidById(4),
                                             Ordering = 1
                                         }
@@ -909,14 +909,14 @@ namespace DockyardTest.Services
                             {
                                 new ActivityDO()
                                 {
-                                    ActivityTemplateId = 1,
+                                    ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                     Id = FixtureData.GetTestGuidById(6),
                                     Ordering = 1,
                                     ChildNodes =
                                     {
                                         new ActivityDO()
                                         {
-                                            ActivityTemplateId = 1,
+                                            ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                             Id = FixtureData.GetTestGuidById(7),
                                             Ordering = 1
                                         },
