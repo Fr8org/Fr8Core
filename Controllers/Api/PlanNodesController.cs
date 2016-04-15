@@ -142,7 +142,7 @@ namespace HubWeb.Controllers
         [HttpGet]
         [ActionName("available_data")]
         [Fr8ApiAuthorize]
-        public IHttpActionResult GetAvailableData(Guid id, CrateDirection crateDirection, AvailabilityType availability)
+        public IHttpActionResult GetAvailableData(Guid id, CrateDirection crateDirection = CrateDirection.Upstream, AvailabilityType availability = AvailabilityType.RunTime)
         {
             return Ok(_activity.GetAvailableData(id, crateDirection, availability));
         }
