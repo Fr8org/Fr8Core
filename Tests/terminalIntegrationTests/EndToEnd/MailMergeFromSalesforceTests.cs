@@ -131,7 +131,7 @@ namespace terminalIntegrationTests.EndToEnd
             if (authenticationRequired)
             {
                 // Authenticate with DocuSign
-                tokenId = await _docuSignTestTools.AuthenticateDocuSignAndAssociateTokenWithAction(docuSignActivity.Id, GetDocuSignCredentials(), docuSignActivity.ActivityTemplate.TerminalId);
+                tokenId = await _docuSignTestTools.AuthenticateDocuSignAndAssociateTokenWithAction(docuSignActivity.Id, GetDocuSignCredentials(), docuSignActivity.ActivityTemplate.Terminal);
                 docuSignActivity = await Configure(docuSignActivity);
             }
             using (var storage = Crate.GetUpdatableStorage(docuSignActivity))

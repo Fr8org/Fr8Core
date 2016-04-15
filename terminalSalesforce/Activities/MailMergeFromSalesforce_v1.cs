@@ -74,22 +74,14 @@ namespace terminalSalesforce.Actions
         //NOTE: this label must be the same as the one expected in QueryBuilder.ts
         private const string QueryFilterCrateLabel = "Queryable Criteria";
 
-        private readonly ISalesforceManager _salesforceManager;
+        private const string TerminalName = "terminalSalesforce";
 
-        private readonly int terminalId;
+        private readonly ISalesforceManager _salesforceManager;
 
         public MailMergeFromSalesforce_v1() : base(true)
         {
             ActivityName = "Mail Merge from Salesforce";
             _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                terminalId = uow.TerminalRepository
-                                .GetQuery()
-                                .Where(x => x.Name == "terminalSalesforce")
-                                .Select(x => x.Id)
-                                .First();
-            }
         }
 
         protected override Task<bool> Validate()
@@ -176,7 +168,7 @@ namespace terminalSalesforce.Actions
 
         private async Task<ActivityDO> CreateProcessingActivity(ReconfigurationContext context)
         {
-            var loopActivity = await AddAndConfigureChildActivity(context.SolutionActivity, "Loop", "Loop", "Loop", 2);
+            var loopActivity = await AddAndConfigureChildActivity(context.SolutionActivity, await GetActivityTemplate("terminalFr8Core", "Loop"), "Loop", "Loop", 2);
             using (var crateStorage = CrateManager.GetUpdatableStorage(loopActivity))
             {
                 var loopConfigControls = GetConfigurationControls(crateStorage);
@@ -188,7 +180,8 @@ namespace terminalSalesforce.Actions
                 }
             }
             var solutionActivityUi = new ActivityUi().ClonePropertiesFrom(CrateManager.GetStorage(context.SolutionActivity).FirstCrate<StandardConfigurationControlsCM>().Content) as ActivityUi;
-            var sendEmailActivity = await AddAndConfigureChildActivity(loopActivity, solutionActivityUi.MailSenderActivitySelector.Value, order: 1);
+            var mailSenderActivityTemplate = await GetActivityTemplate(Guid.Parse(solutionActivityUi.MailSenderActivitySelector.Value));
+            var sendEmailActivity = await AddAndConfigureChildActivity(loopActivity, mailSenderActivityTemplate, order: 1);
             return loopActivity;
         }
 
@@ -205,24 +198,19 @@ namespace terminalSalesforce.Actions
                 return Task.FromResult(false);
             }
             var result = context.SolutionActivity
-                .ChildNodes
-                .OfType<ActivityDO>()
-                .Any(x => $"{x.ActivityTemplate.Name}_v{x.ActivityTemplate.Version}" == nameof(Get_Data_v1)
-                     && x.Ordering == 1
-                     && x.ActivityTemplate.TerminalId == terminalId);
+                                .ChildNodes
+                                .OfType<ActivityDO>()
+                                .Any(x => x.ActivityTemplate.Name == "Get_Data" && x.Ordering == 2);
             return Task.FromResult(result);
         }
 
         private async Task<ActivityDO> CreateSalesforceDataActivity(ReconfigurationContext context)
         {
             var getSalesforceDataActivityTemplate = (await HubCommunicator.GetActivityTemplates(null))
-                                                     .Select(Mapper.Map<ActivityTemplateDO>)
-                                                     .Where(x => $"{x.Name}_v{x.Version}" == nameof(Get_Data_v1)
-                                                            && x.TerminalId == terminalId)
-                                                     .First();
+                .First(x => x.Name == "Get_Data" && x.Terminal.Name == TerminalName && x.Version == "1");
             var dataSourceActivity = await AddAndConfigureChildActivity(
                 context.SolutionActivity,
-                getSalesforceDataActivityTemplate.Id.ToString(),
+                getSalesforceDataActivityTemplate,
                 order: 1);
             //This config call will make SF Get_Data activity to load properties of the selected object (and removes filter)
             CopySolutionUiValuesToSalesforceActivity(context.SolutionActivity, dataSourceActivity);
@@ -278,10 +266,11 @@ namespace terminalSalesforce.Actions
 
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
-            //No extra configuration required
             ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager.GetObjectDescriptions().Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
-            ConfigurationControls.MailSenderActivitySelector.ListItems = (await HubCommunicator.GetActivityTemplates(ActivityTemplate.EmailDelivererTag, CurrentFr8UserId))
-                                                                            .Select(x => new ListItem { Key = x.Label, Value = x.Name })
+            var activityTemplates = await HubCommunicator.GetActivityTemplates(ActivityTemplate.EmailDelivererTag, CurrentFr8UserId);
+            activityTemplates.Sort((x, y) => x.Name.CompareTo(y.Name));
+            ConfigurationControls.MailSenderActivitySelector.ListItems = activityTemplates
+                                                                            .Select(x => new ListItem { Key = x.Label, Value = x.Id.ToString() })
                                                                             .ToList();
         }
 
