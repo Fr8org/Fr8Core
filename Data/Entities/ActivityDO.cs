@@ -21,11 +21,6 @@ namespace Data.Entities
 
         public virtual AuthorizationTokenDO AuthorizationToken { get; set; }
 
-        public string GetLoopId()
-        {
-            return Id.ToString();
-        }
-
         protected override PlanNodeDO CreateNewInstance()
         {
             return new ActivityDO();

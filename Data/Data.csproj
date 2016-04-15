@@ -230,7 +230,7 @@
   <ItemGroup>
     <Compile Include="Constants\ActivityErrorCode.cs" />
     <Compile Include="Constants\ActivityResponse.cs" />
-    <Compile Include="Constants\ActivityState.cs" />
+    <Compile Include="Constants\ActivityExecutionMode.cs" />
     <Compile Include="Constants\FieldValidationResult.cs" />
     <Compile Include="Constants\ActivityDirection.cs" />
     <Compile Include="Constants\ManifestIdEnum.cs" />
@@ -357,6 +357,9 @@
     <Compile Include="Interfaces\Manifests\DocuSignRecipientCM.cs" />
     <Compile Include="Interfaces\Manifests\MtPrimaryKeyAttribute.cs" />
     <Compile Include="Helpers\PropertyMemberAccessor.cs" />
+    <Compile Include="Interfaces\Manifests\OperationalStateCM.CallStack.cs" />
+    <Compile Include="Interfaces\Manifests\OperationalStateCM.CallStackConverter.cs" />
+    <Compile Include="Interfaces\Manifests\OperationalStateCM.InternalStates.cs" />
     <Compile Include="Interfaces\Manifests\StandardAccountingTransactionCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFileListCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFr8PlansCM .cs" />
@@ -684,9 +687,17 @@
     <Compile Include="Migrations\201604112326145_Empty_Fix_Migration.Designer.cs">
       <DependentUpon>201604112326145_Empty_Fix_Migration.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201604130047415_ProcessNodesRemoved.cs" />
+    <Compile Include="Migrations\201604130047415_ProcessNodesRemoved.Designer.cs">
+      <DependentUpon>201604130047415_ProcessNodesRemoved.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201604130823228_PlanNodeDO_Runnable.cs" />
     <Compile Include="Migrations\201604130823228_PlanNodeDO_Runnable.Designer.cs">
       <DependentUpon>201604130823228_PlanNodeDO_Runnable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201604150514047_Empty_Fix_Migration_2.cs" />
+    <Compile Include="Migrations\201604150514047_Empty_Fix_Migration_2.Designer.cs">
+      <DependentUpon>201604150514047_Empty_Fix_Migration_2.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -788,7 +799,6 @@
     <Compile Include="Entities\EnvelopeDO.cs" />
     <Compile Include="Entities\TerminalDO.cs" />
     <Compile Include="Entities\ContainerDO.cs" />
-    <Compile Include="Entities\ProcessNodeDO.cs" />
     <Compile Include="Entities\PlanDO.cs" />
     <Compile Include="Entities\SlipDO.cs" />
     <Compile Include="Entities\SubscriptionDO.cs" />
@@ -818,7 +828,6 @@
     <Compile Include="Repositories\CriteriaRepository.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\EnvelopeRepository.cs" />
-    <Compile Include="Repositories\ProcessNodeRepository.cs" />
     <Compile Include="Repositories\Plan\Internal\SubPlanRepository.cs" />
     <Compile Include="Repositories\Plan\Internal\PlansRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
@@ -838,7 +847,6 @@
     <Compile Include="States\SubscriptionState.cs" />
     <Compile Include="States\Templates\_SubscriptionStateTemplate.cs" />
     <Compile Include="States\TerminalStatus.cs" />
-    <Compile Include="States\ProcessNodeState.cs" />
     <Compile Include="States\ContainerState.cs" />
     <Compile Include="States\BookingRequestAvailability.cs" />
     <Compile Include="States\BookingRequestState.cs" />
@@ -859,7 +867,6 @@
     <Compile Include="States\Templates\_CriteriaExecutionTypeTemplate.cs" />
     <Compile Include="States\Templates\_TerminalStatusTemplate.cs" />
     <Compile Include="Entities\SubPlanDO.cs" />
-    <Compile Include="States\Templates\_ProcessNodeStatusTemplate.cs" />
     <Compile Include="States\Templates\_ContainerStateTemplate.cs" />
     <Compile Include="States\Templates\IStateTemplate.cs" />
     <Compile Include="States\InstructionConstants.cs" />
@@ -1211,8 +1218,14 @@
     <EmbeddedResource Include="Migrations\201604112326145_Empty_Fix_Migration.resx">
       <DependentUpon>201604112326145_Empty_Fix_Migration.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604130047415_ProcessNodesRemoved.resx">
+      <DependentUpon>201604130047415_ProcessNodesRemoved.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604130823228_PlanNodeDO_Runnable.resx">
       <DependentUpon>201604130823228_PlanNodeDO_Runnable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604150514047_Empty_Fix_Migration_2.resx">
+      <DependentUpon>201604150514047_Empty_Fix_Migration_2.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
