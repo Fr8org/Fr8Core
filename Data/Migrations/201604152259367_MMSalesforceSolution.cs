@@ -3,11 +3,11 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class AddSalesforceMMSolution : DbMigration
+    public partial class MMSalesforceSolution : DbMigration
     {
         public override void Up()
         {
-            Sql(@"
+            Sql($@"
 MERGE ActivityTemplate AS Target
 USING (SELECT 'MailMergeFromSalesforce' as Name) AS SOURCE
 ON (Target.Name = Source.Name)
@@ -15,6 +15,7 @@ WHEN MATCHED THEN
 	UPDATE SET Target.ActivityTemplateState = 1, Target.TerminalId = (SELECT TOP 1 Id FROM Terminals WHERE Name = 'terminalSalesforce')		
 WHEN NOT MATCHED BY TARGET THEN
 	INSERT (
+        Id,
 		Name, 
 		Version, 
 		TerminalId, 
@@ -31,6 +32,7 @@ WHEN NOT MATCHED BY TARGET THEN
 		NeedsAuthentication,
 		ClientVisibility)
 	VALUES (
+        '{Guid.NewGuid().ToString()}',
 		'MailMergeFromSalesforce', 
 		'1', 
 		(SELECT TOP 1 Id FROM Terminals WHERE Name = 'terminalSalesforce'),

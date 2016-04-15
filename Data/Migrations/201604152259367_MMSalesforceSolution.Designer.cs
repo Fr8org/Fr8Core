@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class AddSalesforceMMSolution : IMigrationMetadata
+    public sealed partial class MMSalesforceSolution : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddSalesforceMMSolution));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(MMSalesforceSolution));
         
         string IMigrationMetadata.Id
         {
-            get { return "201604151634121_AddSalesforceMMSolution"; }
+            get { return "201604152259367_MMSalesforceSolution"; }
         }
         
         string IMigrationMetadata.Source
