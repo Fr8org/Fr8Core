@@ -13,6 +13,7 @@ using StructureMap;
 using Utilities.Configuration;
 using Utilities.Configuration.Azure;
 using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace DockyardTest.Services
 {
@@ -228,7 +229,7 @@ namespace DockyardTest.Services
 
                 for (int i = 1; i <= 20; i ++)
                 {
-                    templates[i-1] = CreateActivityTemplate(Guid.NewGuid(), terminals[i%5], webServices[i%5]);
+                    templates[i-1] = CreateActivityTemplate(FixtureData.GetTestGuidById(i), terminals[i%5], webServices[i%5]);
                     uow.ActivityTemplateRepository.Add(templates[i-1]);
                 }
 
@@ -285,10 +286,10 @@ namespace DockyardTest.Services
         {
             GenerateSeedData();
 
-            var template = CreateActivityTemplate(Guid.NewGuid(), CreateTerminal(-234), CreateWebService(234234));
+            var template = CreateActivityTemplate(FixtureData.GetTestGuidById(1), CreateTerminal(-234), CreateWebService(234234));
             template.TerminalId = 23444234;
             template.WebServiceId = -2344;
-            template.Id = Guid.NewGuid();
+            template.Id = Guid.Empty;
 
             var service = ObjectFactory.GetInstance<ActivityTemplate>();
 
