@@ -382,20 +382,21 @@ gulp.task('cdnizer-js', ['bower'], function () {
 function getProtractorBinary(binaryName){
     var winExt = /^win/.test(process.platform)? '.cmd' : '';
     var pkgPath = require.resolve('protractor');
-    var protractorDir = path.resolve(path.join(path.dirname(pkgPath), '..', 'bin'));
+    var protractorDir = path.resolve(path.join(path.dirname(pkgPath), '..', '..', '.bin'));
     return path.join(protractorDir, '/'+binaryName+winExt);
 }
 
-gulp.task('protractor-install', function(done){
-    child_process.spawn(getProtractorBinary('webdriver-manager'), ['update'], {
+gulp.task('update-web-driver', function(done){
+    child_process.spawnSync(getProtractorBinary('webdriver-manager'), ['update'], {
         stdio: 'inherit'
-    }).once('close', done);
+    });
 });
 
 gulp.task('protractor-run', function (done) {
-    var argv = process.argv.slice(3); // forward args to protractor
-    child_process.spawn(getProtractorBinary('protractor'), argv, {
+    child_process.spawnSync(getProtractorBinary('protractor'),  ['Scripts\\tests\\e2e\\conf.js'] ,{
         stdio: 'inherit'
-    }).once('close', done);
+    });
 });
-gulp.task('default', ['bower', 'concattemplates', 'cdnizer-js', 'cdnizer-css','protractor-install','protractor-run']);
+gulp.task('default', ['bower', 'concattemplates', 'cdnizer-js', 'cdnizer-css', 'update-web-driver', 'protractor-run']);
+
+gulp.task('e2etests', ['update-web-driver', 'protractor-run']);
