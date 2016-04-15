@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class AddSalesforceMMSolution : DbMigration
+    public partial class AddOrUpdateSalesforceMMSolution : DbMigration
     {
         public override void Up()
         {
@@ -49,7 +49,7 @@ WHEN NOT MATCHED BY TARGET THEN
             Sql("UPDATE ActivityTemplate SET Tags = 'AggressiveReload,Email Deliverer' WHERE Name = 'Send_DocuSign_Envelope'");
             Sql("UPDATE ActivityTemplate SET Tags = 'Notifier,Email Deliverer' WHERE Name = 'SendEmailViaSendGrid'");
         }
-        
+
         public override void Down()
         {
             Sql("DELETE FROM ActivityTemplate WHERE Name = 'MailMergeFromSalesforce'");

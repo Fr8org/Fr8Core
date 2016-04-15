@@ -686,10 +686,6 @@
     <Compile Include="Migrations\201604112326145_Empty_Fix_Migration.Designer.cs">
       <DependentUpon>201604112326145_Empty_Fix_Migration.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201604142239106_AddSalesforceMMSolution.cs" />
-    <Compile Include="Migrations\201604142239106_AddSalesforceMMSolution.Designer.cs">
-      <DependentUpon>201604142239106_AddSalesforceMMSolution.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201604130047415_ProcessNodesRemoved.cs" />
     <Compile Include="Migrations\201604130047415_ProcessNodesRemoved.Designer.cs">
       <DependentUpon>201604130047415_ProcessNodesRemoved.cs</DependentUpon>
@@ -1212,9 +1208,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604112326145_Empty_Fix_Migration.resx">
       <DependentUpon>201604112326145_Empty_Fix_Migration.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201604142239106_AddSalesforceMMSolution.resx">
-      <DependentUpon>201604142239106_AddSalesforceMMSolution.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604130047415_ProcessNodesRemoved.resx">
       <DependentUpon>201604130047415_ProcessNodesRemoved.cs</DependentUpon>
