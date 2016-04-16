@@ -13,7 +13,7 @@ namespace terminalTests.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "terminalActivityMock_TEST",
                 Version = "1"
             };
@@ -23,7 +23,7 @@ namespace terminalTests.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "terminalActivityMock",
                 Version = "1"
             };

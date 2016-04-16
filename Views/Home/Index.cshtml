@@ -2,6 +2,8 @@
 @using StructureMap
 @using Utilities
 @model HubWeb.ViewModels.HomeVM
+
+
 <!DOCTYPE html>
 <!--[if lt IE 7 ]><html class="ie ie6" lang="en" class="no-js"> <![endif]-->
 <!--[if IE 7 ]><html class="ie ie7" lang="en" class="no-js"> <![endif]-->
@@ -62,7 +64,7 @@
     @Html.Partial("_HomeNavNew", new HubWeb.ViewModels.NavLinksHome())
 
     <!-- HERO UNIT -->
-    <div id="hero-unit" class="hero-unit hero-light hero-video" data-vide-bg="mp4: Content/videos/motion.mp4, webm: Content/videos/motion.webm, ogv: Content/videos/motion.ogv, poster: Content/videos/motion.png" data-vide-options="loop: true, posterType: png">
+    <div id="hero-unit" class="hero-unit hero-light hero-video" data-vide-bg="mp4: /Content/videos/motion_1920.mp4, webm: /Content/videos/motion.webm, ogv: /Content/videos/motion.ogv, poster: /Content/videos/motion_1920.jpg" data-vide-options="loop: true, posterType: jpg">
         <div class="hero-content text-center">
             <div id="slidecaption" class="slide-caption">
                 <div class="hero-text">
@@ -82,7 +84,9 @@
                 }
             </div>
         </div>
-        <div class="hero-bg-pattern"></div>
+        <div class="hero-bg-pattern">
+            <div class="full-area"></div>
+        </div>
         <span id="#inner" class="fa fa-arrow-down"></span>
     </div>
     <!-- END HERO UNIT -->
@@ -290,30 +294,10 @@
         </div>
     </footer>
     <!-- END FOOTER -->
-
     <div class="back-to-top">
         <a href="#top"><i class="fa fa-angle-up"></i></a>
     </div>
 
     @Scripts.Render("~/bundles/js/home")
-    
-    <script>
-      /*  $(document).ready(function () {
-            // Get instance of the plugin
-            var instance = $('#hero-unit').data('vide');
-
-            // Get video element of the background. Do what you want.
-            var video = instance.getVideoObject();
-
-            //this plugin doesn't set poster for video - which causes white flashes on video end
-            video.setAttribute('poster', '/Content/videos/motion.png');
-            video.onended = function (e) {
-                video.load();
-                video.play();
-            };
-        });*/
-        
-    </script>
-
 </body>
 </html>

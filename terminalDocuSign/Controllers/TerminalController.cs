@@ -1,17 +1,12 @@
-using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Web.Http;
-using AutoMapper;
-using Newtonsoft.Json;
-using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Hub.Services;
-using TerminalBase.BaseClasses;
+
 using Utilities.Configuration.Azure;
 using System.Web.Http.Description;
 using Data.Interfaces.Manifests;
+using Data.Constants;
 
 namespace terminalDocuSign.Controllers
 {
@@ -70,7 +65,7 @@ namespace terminalDocuSign.Controllers
                 Name = "Send_DocuSign_Envelope",
                 Label = "Send DocuSign Envelope",
                 Category = ActivityCategory.Forwarders,
-                Tags = "AggressiveReload",
+                Tags = string.Join(",", Tags.AggressiveReload, Tags.EmailDeliverer),
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 WebService = webService,
@@ -83,7 +78,7 @@ namespace terminalDocuSign.Controllers
                 Name = "Use_DocuSign_Template_With_New_Document",
                 Label = "Use DocuSign Template With New Document",
                 Category = ActivityCategory.Forwarders,
-                Tags = "AggressiveReload",
+                Tags = Tags.AggressiveReload,
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 WebService = webService,
@@ -124,7 +119,7 @@ namespace terminalDocuSign.Controllers
                 NeedsAuthentication = true,
                 WebService = webService,
                 MinPaneWidth = 330,
-                Tags = "internal"
+                Tags = Tags.Internal
             };
 
             var mailMergeActionTemplate = new ActivityTemplateDTO
@@ -137,7 +132,7 @@ namespace terminalDocuSign.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 MinPaneWidth = 500,
-                Tags = "UsesReconfigureList"
+                Tags = Tags.UsesReconfigureList
             };
 
             var collectFormDataSolution = new ActivityTemplateDTO
@@ -187,7 +182,7 @@ namespace terminalDocuSign.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 MinPaneWidth = 380,
-                Tags = "internal"
+                Tags = Tags.Internal
             };
 
             var pollingSolution = new ActivityTemplateDTO

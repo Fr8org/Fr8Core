@@ -100,7 +100,7 @@ namespace terminalDocuSign.Tests.Services
                 Mock<IActivity> _actionMock = new Mock<IActivity>(MockBehavior.Default);
 
                 _actionMock.Setup(
-                    a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
+                    a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<Guid>(),
                         It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -113,7 +113,7 @@ namespace terminalDocuSign.Tests.Services
                         }).Returns(Task.FromResult(recordDocuSignAction as PlanNodeDO));
 
                 _actionMock.Setup(
-                    a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<int>(),
+                    a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<Guid>(),
                         It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())

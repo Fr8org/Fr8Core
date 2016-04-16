@@ -40,7 +40,7 @@ namespace HubWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                terminalDO = _terminal.GetByKey(credentials.TerminalId);
+                terminalDO = _terminal.GetByNameAndVersion(credentials.Terminal.Name, credentials.Terminal.Version);
                 account = _security.GetCurrentAccount(uow);
             }
 
