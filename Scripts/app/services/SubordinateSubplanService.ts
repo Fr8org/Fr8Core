@@ -1,6 +1,8 @@
 ﻿/// <reference path="../_all.ts" />
 
 module dockyard.services {
+
+    import pwd = dockyard.directives.paneWorkflowDesigner;
     
     // --------------------------------------------------------------------------------
     // Interface for SubordinateSubplanService.
@@ -133,10 +135,19 @@ module dockyard.services {
                     }
                 }
 
+                // Stop plan-builder animation.
+                $scope.$emit(
+                    pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_LongRunningOperation],
+                    new pwd.LongRunningOperationEventArgs(pwd.LongRunningOperationFlag.Stopped)
+                );
+
                 // Create new child scope derived from PlanBuilder's scope.
                 var scope = <IConfigureActivityControllerScope>pbScope.$new(true);
                 scope.plan = plan;
                 scope.activity = activity;
+                scope.view = null;
+                scope.isReConfiguring = false;
+                scope.mode = 'plan';
 
                 var configureActivityModal = this.$modal.open({
                     templateUrl: '/AngularTemplate/ConfigureActivityDialog',
@@ -150,6 +161,12 @@ module dockyard.services {
 
             // Method logic.
             var result = this.$q.defer<model.SubordinateSubplan>();
+
+            // Start plan-builder animation.
+            $scope.$emit(
+                pwd.MessageType[pwd.MessageType.PaneWorkflowDesigner_LongRunningOperation],
+                new pwd.LongRunningOperationEventArgs(pwd.LongRunningOperationFlag.Started)
+            );
 
             if (!existingSubPlanId) {
                 createSubPlan(parentPlan, parentActivity, subPlanName, subPlanRunnable)
@@ -170,7 +187,10 @@ module dockyard.services {
                 this.$http.post('/api/subplans/first_activity?id=' + existingSubPlanId, null)
                     .then((res: ng.IHttpPromiseCallbackArg<model.ActivityDTO>) => {
                         var activity = res.data;
-                        displayConfigureActivityModal(parentPlan, activity);
+                        displayConfigureActivityModal(parentPlan, activity)
+                            .then(() => {
+                                result.resolve(new model.SubordinateSubplan(existingSubPlanId, activity.id));
+                            });
                     });
             }
 
@@ -258,7 +278,6 @@ module dockyard.services {
         '$scope',
         function ($scope: IConfigureActivityControllerScope) {
             $scope.save = () => {
-                debugger;
                 $scope.$close();
             };
         }
@@ -272,6 +291,9 @@ module dockyard.services {
     interface IConfigureActivityControllerScope extends ng.IScope {
         plan: model.PlanDTO,
         activity: model.ActivityDTO,
+        view: string;
+        isReConfiguring: boolean;
+        mode: string;
 
         save: () => void;
 

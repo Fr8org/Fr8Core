@@ -1,12 +1,12 @@
 ﻿<div>
-    <label>User will select which data/file:</label>
+    <label>User selects what kind of data:</label>
     <div>
         <button class="btn btn-default" ng-click="select()">Select</button>
         <span ng-if="field.activityTemplateId" style="padding-left: 5px;">Selected: {{field.activityTemplateName}}</span>
     </div>
 
-    <div ng-if="field.activityTemplateId" style="margin-top: 10px;">
-        <label>Select one now to use as a template:</label>
+    <div ng-if="field.activityTemplateId" style="margin-top: 10px; padding-left: 30px;">
+        <label>(optional) Specify a template:</label>
         <div>
             <button class="btn btn-default" ng-click="configure()">Select</button>
             <span ng-if="field.externalObjectName" style="padding-left: 5px;">Template: {{field.externalObjectName}}</span>

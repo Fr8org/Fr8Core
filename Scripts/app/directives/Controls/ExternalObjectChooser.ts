@@ -27,13 +27,13 @@ module dockyard.directives {
 
                             SubordinateSubplanService
                                 .createSubplanAndConfigureActivity(
-                                $scope,
-                                $scope.field.name,
-                                true,
-                                $scope.plan,
-                                $scope.currentAction,
-                                $scope.field.subPlanId,
-                                activityTemplate)
+                                    $scope,
+                                    $scope.field.name,
+                                    true,
+                                    $scope.plan,
+                                    $scope.currentAction,
+                                    $scope.field.subPlanId,
+                                    activityTemplate)
                                 .then((subplanInfo: model.SubordinateSubplan) => {
                                     $scope.field.subPlanId = subplanInfo.subPlanId;
 
