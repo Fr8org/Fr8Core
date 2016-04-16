@@ -583,7 +583,7 @@ module dockyard.controllers {
         }
 
         private PaneSelectAction_ActivityTypeSelected(eventArgs: psa.ActivityTypeSelectedEventArgs) {
-
+            debugger;
             var activityTemplate = eventArgs.activityTemplate;
             // Generate next Id.
             var id = this.LocalIdentityGenerator.getNextId();

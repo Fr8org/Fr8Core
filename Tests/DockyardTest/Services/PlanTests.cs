@@ -1,7 +1,10 @@
 ﻿using System.Linq;
+using Data.Constants;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
+using DockyardTest.Services.Container;
 using Hub.Interfaces;
 using NUnit.Framework;
 using UtilitiesTesting;
@@ -12,17 +15,8 @@ namespace DockyardTest.Services
 {
     [TestFixture]
     [Category("Plan")]
-    public class PlanTests : BaseTest
+    public class PlanTests : ContainerExecutionTestBase
     {
-        private Hub.Interfaces.IPlan _planService;
-
-        [SetUp]
-        public override void SetUp()
-        {
-            base.SetUp();
-            _planService = ObjectFactory.GetInstance<IPlan>();
-
-        }
 
         // MockDB has boken logic when working with collections of objects of derived types
         // We add object to PlanRepository but Delete logic recusively traverse Activity repository.
@@ -36,7 +30,7 @@ namespace DockyardTest.Services
                 var curUserAccount = FixtureData.TestDockyardAccount1();
                 curPlanDO.Fr8Account = curUserAccount;
 
-                _planService.CreateOrUpdate(uow, curPlanDO, false);
+                Plan.CreateOrUpdate(uow, curPlanDO, false);
 
                 uow.SaveChanges();
 
@@ -61,20 +55,20 @@ namespace DockyardTest.Services
                 Assert.AreNotEqual(curPlanDO.Id, 0);
 
                 var currPlanDOId = curPlanDO.Id;
-                _planService.Delete(uow, curPlanDO.Id);
+                Plan.Delete(uow, curPlanDO.Id);
                 var result = uow.PlanRepository.GetById<PlanDO>(currPlanDOId);
 
                 Assert.NotNull(result);
             }
         }
-
+        
         [Test]
         [Ignore("ActivityTemplates are not being added to ActivityTemplate respository. Should be fixed if test is needed")]
         public void Activate_NoMatchingParentActivityId_ReturnsNoActivity()
         {
             var curPlanDO = FixtureData.TestPlanNoMatchingParentActivity();
 
-            var result = _planService.Activate(curPlanDO.Id, true).Result;
+            var result = Plan.Activate(curPlanDO.Id, true).Result;
 
             Assert.AreEqual(result.Status, "no activity");
         }

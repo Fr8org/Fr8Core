@@ -11,7 +11,7 @@ namespace Data.Migrations
             Sql("UPDATE [dbo].[PlanNodes] SET [Runnable] = 1");
             AlterColumn("dbo.PlanNodes", "Runnable", c => c.Boolean(nullable: false));
         }
-        
+
         public override void Down()
         {
             DropColumn("dbo.PlanNodes", "Runnable");

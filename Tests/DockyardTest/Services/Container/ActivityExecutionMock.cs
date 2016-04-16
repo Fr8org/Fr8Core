@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using Data.Constants;
 using Data.Crates;
 using Data.Entities;
@@ -11,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace DockyardTest.Services.Container
 {
-    class ActivityServiceMock : IActivity
+    public class ActivityServiceMock : IActivity
     {
         private readonly IActivity _activity;
 
@@ -48,7 +49,7 @@ namespace DockyardTest.Services.Container
             return _activity.MapFromDTO(curActivityDTO);
         }
 
-        public Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
+        public Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
         {
             return _activity.CreateAndConfigure(uow, userId, actionTemplateId, label, order, parentNodeId, createPlan, authorizationTokenId);
         }
@@ -74,12 +75,12 @@ namespace DockyardTest.Services.Container
 
         public Task<ActivityDTO> Activate(ActivityDO curActivityDO)
         {
-            return _activity.Activate(curActivityDO);
+            return Task.FromResult(Mapper.Map<ActivityDTO>(curActivityDO));
         }
 
         public Task<ActivityDTO> Deactivate(ActivityDO curActivityDO)
         {
-            return _activity.Deactivate(curActivityDO);
+            return Task.FromResult(Mapper.Map<ActivityDTO>(curActivityDO));
         }
 
         Task<T> IActivity.GetActivityDocumentation<T>(ActivityDTO curActivityDTO, bool isSolution)

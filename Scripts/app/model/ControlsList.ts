@@ -313,7 +313,7 @@
             this.type = 'SelectData';
         }
 
-        activityTemplateId: number;
+        activityTemplateId: string;
         activityTemplateName: string;
 
         subPlanId: string;
@@ -326,7 +326,7 @@
             this.type = 'ExternalObjectChooser';
         }
 
-        activityTemplateId: number;
+        activityTemplateId: string;
         subPlanId: string;
         externalObjectName: string;
     }

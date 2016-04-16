@@ -66,7 +66,7 @@ namespace Data.Control
         }
 
         [JsonProperty("activityTemplateId")]
-        public int? ActivityTemplateId { get; set; }
+        public string ActivityTemplateId { get; set; }
 
         [JsonProperty("activityTemplateName")]
         public string ActivityTemplateName { get; set; }
@@ -86,7 +86,7 @@ namespace Data.Control
         }
 
         [JsonProperty("activityTemplateId")]
-        public int? ActivityTemplateId { get; set; }
+        public string ActivityTemplateId { get; set; }
 
         [JsonProperty("subPlanId")]
         public string SubPlanId { get; set; }

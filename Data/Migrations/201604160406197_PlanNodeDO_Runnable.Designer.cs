@@ -13,7 +13,7 @@ namespace Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201604130823228_PlanNodeDO_Runnable"; }
+            get { return "201604160406197_PlanNodeDO_Runnable"; }
         }
         
         string IMigrationMetadata.Source

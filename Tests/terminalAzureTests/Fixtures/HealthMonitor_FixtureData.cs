@@ -9,7 +9,7 @@ namespace terminalAzureTests.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Write_To_Sql_Server_TEST",
                 Version = "1"
             };
