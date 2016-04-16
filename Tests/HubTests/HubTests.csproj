@@ -286,6 +286,7 @@
     <Compile Include="Services\Container\ActivityExecutionCall.cs" />
     <Compile Include="Services\Container\ActivityExecutionMock.cs" />
     <Compile Include="Services\Container\ActivityMockBase.cs" />
+    <Compile Include="Services\Container\ContainerExecutionTestBase.cs" />
     <Compile Include="Services\Container\ContainerExecutionTests.cs" />
     <Compile Include="Services\Container\ContainerServiceTests.cs" />
     <Compile Include="Services\Container\Mocks\CallerActivityMock.cs" />
