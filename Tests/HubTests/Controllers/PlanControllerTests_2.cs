@@ -97,7 +97,6 @@ namespace HubTests.Controllers
                     new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(3)),
                     new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(4)),
                 }, ActivityService.ExecutedActivities);
-
             }
         }
 
