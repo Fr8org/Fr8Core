@@ -2,6 +2,8 @@
 module dockyard.directives.sourceableCriteria {
     'use strict';
 
+    import planEvents = dockyard.Fr8Events.Plan;
+
     export interface ISourceableCriteriaScope extends ng.IScope {
         field: model.SourceableCriteria;
         change: () => (field: model.ControlDefinitionDTO) => void;
@@ -29,7 +31,7 @@ module dockyard.directives.sourceableCriteria {
                 }
             };
 
-            $scope.$on("onFieldFocus", function (event, args: pca.CallConfigureResponseEventArgs) {
+            $scope.$on(<any>planEvents.ON_FIELD_FOCUS, function (event, args: pca.CallConfigureResponseEventArgs) {
                 if ($scope.field.name === args.focusElement.name) {
                     $scope.isFocused = true;
                 } else {
