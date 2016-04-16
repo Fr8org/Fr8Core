@@ -109,7 +109,6 @@ module dockyard.directives.controlContainer {
         $scope.metaDescriptions = [
             new model.TextBoxMetaDescriptionDTO(),
             new model.TextBlockMetaDescriptionDTO(),
-            new model.FilePickerMetaDescriptionDTO(),
             new model.SelectDataMetaDescriptionDTO()
         ];
 
