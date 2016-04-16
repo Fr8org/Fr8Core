@@ -68,7 +68,7 @@ namespace HubTests.Controllers
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(3)] = new SuspenderActivityMock(CrateManager);
 
                 plan.PlanState = PlanState.Active;
-                plan.StartingSubPlan = (SubPlanDO) plan.ChildNodes[0];
+                plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
 
                 uow.SaveChanges();
 
@@ -86,7 +86,6 @@ namespace HubTests.Controllers
                 Assert.IsInstanceOf<OkNegotiatedContentResult<ContainerDTO>>(container); // Result of correct HTTP response type with correct payload
 
                 container = await controller.Run(plan.Id, null, ((OkNegotiatedContentResult<ContainerDTO>)container).Content.Id);
-                container = await controller.Run(plan.Id, null, ((OkNegotiatedContentResult<ContainerDTO>) container).Content.Id);
 
                 Assert.NotNull(container); // Get not empty result
                 Assert.IsInstanceOf<OkNegotiatedContentResult<ContainerDTO>>(container); // Result of correct HTTP response type with correct payload
