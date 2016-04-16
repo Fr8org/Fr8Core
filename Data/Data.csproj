@@ -234,6 +234,7 @@
     <Compile Include="Constants\FieldValidationResult.cs" />
     <Compile Include="Constants\ActivityDirection.cs" />
     <Compile Include="Constants\ManifestIdEnum.cs" />
+    <Compile Include="Constants\Tags.cs" />
     <Compile Include="Control\Control.cs" />
     <Compile Include="Crates\Crate.cs" />
     <Compile Include="Crates\CrateManifestAttribute.cs" />
@@ -692,6 +693,10 @@
     <Compile Include="Migrations\201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.cs" />
     <Compile Include="Migrations\201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.Designer.cs">
       <DependentUpon>201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201604152259367_MMSalesforceSolution.cs" />
+    <Compile Include="Migrations\201604152259367_MMSalesforceSolution.Designer.cs">
+      <DependentUpon>201604152259367_MMSalesforceSolution.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1217,6 +1222,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.resx">
       <DependentUpon>201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604152259367_MMSalesforceSolution.resx">
+      <DependentUpon>201604152259367_MMSalesforceSolution.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

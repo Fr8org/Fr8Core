@@ -33,6 +33,7 @@ gulp.task('concattemplates', function () {
 
 gulp.task('compile_js', function () {
     return gulp.src([
+        'Scripts/app/events/Fr8Events.js',
         'Scripts/app/model/ActionDTO.js',
         'Scripts/app/model/ActivityTemplate.js',
         'Scripts/app/model/Condition.js',
