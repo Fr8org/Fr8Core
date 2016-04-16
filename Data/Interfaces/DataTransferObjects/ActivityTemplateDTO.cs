@@ -1,4 +1,5 @@
-﻿using Data.Control;
+﻿using System;
+using Data.Control;
 using Data.Infrastructure.JsonNet;
 using Data.States;
 using Newtonsoft.Json;
@@ -8,8 +9,8 @@ namespace Data.Interfaces.DataTransferObjects
 {
     public class ActivityTemplateDTO
     {
-        [JsonProperty("id")]
-        public int Id { get; set; }
+        //[JsonProperty("id")]
+        public Guid Id { get; set; }
 
         [JsonProperty("name")]
         public string Name { get; set; }
@@ -25,10 +26,9 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("terminal")]
         public TerminalDTO Terminal { get; set; }
-        public int TerminalId { get; set; }
 
-        [JsonProperty("componentActivities")]
-        public string ComponentActivities { get; set; }
+        //public int TerminalId { get; set; }
+
         [JsonProperty("tags")]
         public string Tags { get; set; }
 

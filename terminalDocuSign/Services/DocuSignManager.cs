@@ -222,7 +222,7 @@ namespace terminalDocuSign.Services.New_Api
 
         #region private methods
 
-        private static IEnumerable<FieldDTO> GetRecipientsAndTabs(DocuSignApiConfiguration conf, dynamic api, string id)
+        private static IEnumerable<FieldDTO> GetRecipientsAndTabs(DocuSignApiConfiguration conf, object api, string id)
         {
             var result = new List<FieldDTO>();
             var recipients = GetRecipients(conf, api, id);
@@ -235,16 +235,28 @@ namespace terminalDocuSign.Services.New_Api
             return result;
         }
 
-        private static Recipients GetRecipients(DocuSignApiConfiguration conf, dynamic api, string id)
+        private static Recipients GetRecipients(DocuSignApiConfiguration conf, object api, string id)
         {
-            return api.ListRecipients(conf.AccountId, id) as Recipients;
+            var templatesApi = api as TemplatesApi;
+            if (templatesApi != null)
+            {
+                return templatesApi.ListRecipients(conf.AccountId, id) as Recipients;
+            }
+            var envelopesApi = api as EnvelopesApi;
+            if (envelopesApi != null)
+            {
+                return envelopesApi.ListRecipients(conf.AccountId, id) as Recipients;
+            }
+            throw new NotSupportedException($"The api of '{api.GetType()}' is not supported");
         }
 
-        private static IEnumerable<FieldDTO> GetTabs(DocuSignApiConfiguration conf, dynamic api, string id, Signer recipient)
+        private static IEnumerable<FieldDTO> GetTabs(DocuSignApiConfiguration conf, object api, string id, Signer recipient)
         {
-            var docutabs = (api is EnvelopesApi) ?
-                       api.ListTabs(conf.AccountId, id, recipient.RecipientId)
-                       : api.ListTabs(conf.AccountId, id, recipient.RecipientId, new Tabs());
+            var envelopesApi = api as EnvelopesApi;
+            var templatesApi = api as TemplatesApi;
+            var docutabs = envelopesApi != null 
+                            ? envelopesApi.ListTabs(conf.AccountId, id, recipient.RecipientId)
+                            : templatesApi.ListTabs(conf.AccountId, id, recipient.RecipientId, new Tabs());
 
             return (DocuSignTab.GetEnvelopeTabsPerSigner(JObject.Parse(docutabs.ToJson()), recipient.RoleName));
         }
