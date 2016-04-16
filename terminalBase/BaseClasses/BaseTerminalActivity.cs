@@ -531,6 +531,7 @@ namespace TerminalBase.BaseClasses
         /// <param name="activityTemplateVersion"></param>
         /// <param name="terminalVersion"></param>
         /// <returns></returns>
+        [Obsolete("This function is for backward comatibility only. Please use Task<ActivityTemplateDTO> GetActivityTemplate(string, string, string, string)")]
         protected async Task<ActivityTemplateDTO> GetActivityTemplateByName(string activityTemplateName)
         {
             var allActivityTemplates = _activityTemplateCache ?? (_activityTemplateCache = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId));
