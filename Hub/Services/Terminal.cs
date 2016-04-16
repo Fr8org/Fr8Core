@@ -176,6 +176,22 @@ namespace Hub.Services
             }
         }
 
+        public TerminalDO GetByNameAndVersion(string name, string version)
+        {
+            Initialize();
+
+            lock (_terminals)
+            {
+                TerminalDO terminal =_terminals.FirstOrDefault(t => t.Value.Name == name && t.Value.Version == version).Value;
+                if (terminal == null)
+                {
+                    throw new KeyNotFoundException($"Unable to find terminal with name {name} and version {version}");
+                }
+
+                return terminal;
+            }
+        }
+
         public TerminalDO RegisterOrUpdate(TerminalDO terminalDo)
         {
             if (terminalDo == null)
@@ -249,7 +265,7 @@ namespace Hub.Services
 
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
             var standardFr8TerminalCM = await restClient.GetAsync<StandardFr8TerminalCM>(new Uri(uri, UriKind.Absolute));
-            return Mapper.Map<IList<ActivityTemplateDO>>(standardFr8TerminalCM.Activities);
+            return standardFr8TerminalCM.Activities.Select(Mapper.Map<ActivityTemplateDO>).ToList();
         }
         
         public async Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId)

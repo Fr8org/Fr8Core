@@ -35,7 +35,8 @@ namespace terminalTest.Actions
             if (ConfigurationControls.AddChild.Clicked)
             {
                 ConfigurationControls.AddChild.Clicked = false;
-                await AddAndConfigureChildActivity(CurrentActivity, ConfigurationControls.ActivityToAdd.Value, CurrentActivity.Label + "." + (CurrentActivity.ChildNodes.Count + 1), CurrentActivity.Label + "." + (CurrentActivity.ChildNodes.Count + 1));
+                var activityTemplate = await GetActivityTemplateByName(ConfigurationControls.ActivityToAdd.Value);
+                await AddAndConfigureChildActivity(CurrentActivity, activityTemplate, CurrentActivity.Label + "." + (CurrentActivity.ChildNodes.Count + 1), CurrentActivity.Label + "." + (CurrentActivity.ChildNodes.Count + 1));
             }
         }
 
