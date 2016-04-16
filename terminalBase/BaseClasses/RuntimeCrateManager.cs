@@ -88,7 +88,7 @@ namespace TerminalBase.BaseClasses
                 });
             }
 
-            _runtimeAvailableData.AddIfNotExists(new CrateDescriptionDTO
+            _runtimeAvailableData.AddIfMissing(new CrateDescriptionDTO
             {
                 Label = label,
                 ManifestId = manifestType.Id,
