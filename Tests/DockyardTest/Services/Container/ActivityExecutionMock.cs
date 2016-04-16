@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using AutoMapper;
 using Data.Constants;
 using Data.Crates;
 using Data.Entities;
@@ -11,7 +12,7 @@ using Newtonsoft.Json;
 
 namespace DockyardTest.Services.Container
 {
-    class ActivityServiceMock : IActivity
+    public class ActivityServiceMock : IActivity
     {
         private readonly IActivity _activity;
 
@@ -74,12 +75,12 @@ namespace DockyardTest.Services.Container
 
         public Task<ActivityDTO> Activate(ActivityDO curActivityDO)
         {
-            return _activity.Activate(curActivityDO);
+            return Task.FromResult(Mapper.Map<ActivityDTO>(curActivityDO));
         }
 
         public Task<ActivityDTO> Deactivate(ActivityDO curActivityDO)
         {
-            return _activity.Deactivate(curActivityDO);
+            return Task.FromResult(Mapper.Map<ActivityDTO>(curActivityDO));
         }
 
         Task<T> IActivity.GetActivityDocumentation<T>(ActivityDTO curActivityDTO, bool isSolution)
