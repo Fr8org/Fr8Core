@@ -354,6 +354,7 @@
     <Compile Include="Interfaces\Manifests\CrateManifestTypes.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignTemplateCM.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignRecipientCM.cs" />
+    <Compile Include="Interfaces\Manifests\ManifestFieldAttribute.cs" />
     <Compile Include="Interfaces\Manifests\MtPrimaryKeyAttribute.cs" />
     <Compile Include="Helpers\PropertyMemberAccessor.cs" />
     <Compile Include="Interfaces\Manifests\OperationalStateCM.CallStack.cs" />

@@ -54,6 +54,19 @@ namespace Data.Helpers
             return fields;
         }
 
+        public static bool CheckAttributeOrTrue<T>(IMemberAccessor memberAccessor, Predicate<T> predicate)
+            where T:Attribute
+        {
+            var attribute = memberAccessor.GetCustomAttribute<T>();
+
+            if (attribute == null)
+            {
+                return true;
+            }
+
+            return predicate(attribute);
+        }
+
         public static object[] FindFirstArray(Object obj, int maxSearchDepth = 0)
         {
             return FindFirstArrayRecursive(obj, maxSearchDepth, 0);

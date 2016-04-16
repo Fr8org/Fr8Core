@@ -695,9 +695,9 @@ namespace TerminalBase.BaseClasses
             // return await Activity.GetCratesByDirection<TManifest>(activityId, direction);
         }
 
-        public Task<AvailableDataDTO> GetAvailableData(ActivityDO activity, CrateDirection direction = CrateDirection.Upstream)
+        public Task<AvailableDataDTO> GetAvailableData(ActivityDO activity, CrateDirection direction = CrateDirection.Upstream, AvailabilityType availability = AvailabilityType.RunTime)
         {
-            return HubCommunicator.GetAvailableRunTimeData(activity.Id, direction, CurrentFr8UserId);
+            return HubCommunicator.GetAvailableData(activity, direction, availability, CurrentFr8UserId);
         }
 
         //wrapper for support test method
@@ -705,13 +705,7 @@ namespace TerminalBase.BaseClasses
         {
             return await HubCommunicator.GetCratesByDirection(activityDO, direction, CurrentFr8UserId);
         }
-
-        public virtual async Task<FieldDescriptionsCM> GetDesignTimeFields(Guid activityId, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
-        {
-            var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(activityId, direction, availability, CurrentFr8UserId);
-            return mergedFields;
-        }
-
+        
         public virtual async Task<FieldDescriptionsCM> GetDesignTimeFields(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
         {
             var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(activityDO, direction, availability, CurrentFr8UserId);
@@ -766,7 +760,7 @@ namespace TerminalBase.BaseClasses
 
         protected async Task<Crate<FieldDescriptionsCM>> MergeUpstreamFields(ActivityDO activityDO, string label)
         {
-            var curUpstreamFields = (await GetDesignTimeFields(activityDO.Id, CrateDirection.Upstream)).Fields.ToArray();
+            var curUpstreamFields = (await GetDesignTimeFields(activityDO, CrateDirection.Upstream)).Fields.ToArray();
             var upstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
 
             return upstreamFieldsCrate;

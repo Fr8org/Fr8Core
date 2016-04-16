@@ -682,11 +682,6 @@ namespace TerminalBase.BaseClasses
             return base.GetCratesByDirection(activityDO, direction);
         }
 
-        public sealed override Task<FieldDescriptionsCM> GetDesignTimeFields(Guid activityId, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
-        {
-            return base.GetDesignTimeFields(activityId, direction, availability);
-        }
-
         public sealed override Task<FieldDescriptionsCM> GetDesignTimeFields(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
         {
             return base.GetDesignTimeFields(activityDO, direction, availability);

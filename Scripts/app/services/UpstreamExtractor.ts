@@ -6,12 +6,10 @@
         ) {
         }
 
-        // So far extracts only Fields Descriptions.
-        public extractUpstreamData(activityId: string, manifestType: string, availability: string) {
+        public getAvailableData(activityId: string, availability: string) {
             var defer = this.$q.defer();
 
-            var url = '/api/plannodes/upstream_fields/?id=' + activityId
-                + '&manifestType=' + manifestType
+            var url = '/api/plannodes/available_data/?id=' + activityId
                 + '&availability=' + availability;
 
             this.$http.get(url)
