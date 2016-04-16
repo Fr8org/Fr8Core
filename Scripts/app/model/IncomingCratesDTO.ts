@@ -1,5 +1,5 @@
 ﻿module dockyard.model {
-    export class AvailableDataDTO {
+    export class IncomingCratesDTO {
 		availableFields: FieldDTO[];
 		availableCrates: CrateDescriptionDTO[];
 	}

@@ -63,7 +63,7 @@ module dockyard.directives.dropDownListBox {
 
                     return UpstreamExtractor
                         .getAvailableData($scope.currentAction.id, availabilityType)
-                        .then((data: model.AvailableDataDTO) => {
+                        .then((data: model.IncomingCratesDTO) => {
                             var listItems: Array<model.DropDownListItem> = [];
 
                                 angular.forEach(data.availableFields, (it) => {

@@ -3,7 +3,7 @@ using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-    public class AvailableDataDTO
+    public class IncomingCratesDTO
     {
         [JsonProperty("availableFields")]
         public readonly List<FieldDTO> AvailableFields = new List<FieldDTO>();

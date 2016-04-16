@@ -162,7 +162,7 @@ namespace TerminalBase.Infrastructure
             return curCrates;
         }
 
-        public async Task<AvailableDataDTO> GetAvailableData(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
+        public async Task<IncomingCratesDTO> GetAvailableData(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                       + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/available_data"
@@ -171,7 +171,7 @@ namespace TerminalBase.Infrastructure
                       + "&availability=" + (int)availability;
             var uri = new Uri(url, UriKind.Absolute);
 
-            var availableData = await _restfulServiceClient.GetAsync<AvailableDataDTO>(uri, null, await GetHMACHeader(uri, userId));
+            var availableData = await _restfulServiceClient.GetAsync<IncomingCratesDTO>(uri, null, await GetHMACHeader(uri, userId));
             return availableData;
         }
 

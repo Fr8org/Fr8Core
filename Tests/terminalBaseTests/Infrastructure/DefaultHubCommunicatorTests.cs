@@ -31,7 +31,7 @@ namespace terminaBaselTests.Infrastructure
         public void GetAvailableData_ShouldGenerateCorrectDesigntimeURL()
         {
             var _restfulServiceClient = new Mock<IRestfulServiceClient>();
-            _restfulServiceClient.Setup(r => r.GetAsync<AvailableDataDTO>(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()));
+            _restfulServiceClient.Setup(r => r.GetAsync<IncomingCratesDTO>(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()));
             ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(_restfulServiceClient.Object));
             IHubCommunicator _hubCommunicator = new DefaultHubCommunicator();
             _hubCommunicator.Configure("sampleterminal");
@@ -46,7 +46,7 @@ namespace terminaBaselTests.Infrastructure
                 ((int)availability).ToString());
             _hubCommunicator.GetAvailableData(new ActivityDO() {Id = id}, direction, availability, null);
 
-            _restfulServiceClient.Verify(o => o.GetAsync<AvailableDataDTO>(It.Is<Uri>(p => p.ToString() == resultUrl), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()));
+            _restfulServiceClient.Verify(o => o.GetAsync<IncomingCratesDTO>(It.Is<Uri>(p => p.ToString() == resultUrl), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()));
         }
     }
 }

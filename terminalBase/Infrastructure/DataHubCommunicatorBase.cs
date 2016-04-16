@@ -193,11 +193,11 @@ namespace TerminalBase.Infrastructure
             return mergedFields;
         }
 
-        public async Task<AvailableDataDTO> GetAvailableData(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
+        public async Task<IncomingCratesDTO> GetAvailableData(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
         {
             var fields = await GetCratesByDirection<FieldDescriptionsCM>(activityDO, direction,  userId);
             var crates = await GetCratesByDirection<CrateDescriptionCM>(activityDO, direction, userId);
-            var availableData = new AvailableDataDTO();
+            var availableData = new IncomingCratesDTO();
 
             availableData.AvailableFields.AddRange(fields.SelectMany(x => x.Content.Fields).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
             availableData.AvailableFields.AddRange(crates.SelectMany(x => x.Content.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0).SelectMany(x => x.Fields));
