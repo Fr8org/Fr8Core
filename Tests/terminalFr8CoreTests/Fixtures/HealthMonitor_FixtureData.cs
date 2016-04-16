@@ -9,7 +9,7 @@ namespace terminalTests.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "MapFields_TEST",
                 Version = "1"
             };

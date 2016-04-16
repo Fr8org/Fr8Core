@@ -13,6 +13,7 @@ namespace Hub.Interfaces
         Task<IList<ActivityTemplateDO>> GetAvailableActivities(string uri);
 
         TerminalDO GetByKey(int terminalId);
+        TerminalDO GetByNameAndVersion(string name, string version);
         TerminalDO RegisterOrUpdate(TerminalDO terminalDo);
 
         Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId);

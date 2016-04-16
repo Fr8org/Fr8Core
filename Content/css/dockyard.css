@@ -1138,6 +1138,8 @@ i.activity-stream-font {
     position:relative;
     margin-bottom:15px;
     min-width:10%;
+    margin-top:-25px;
+    margin-right:-15px;
 }
 .activity-stream-template {
     width:100%;

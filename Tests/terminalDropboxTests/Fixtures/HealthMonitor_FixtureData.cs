@@ -47,6 +47,16 @@ namespace terminalDropboxTests.Fixtures
                 .Create();
         }
 
+        public static ActivityTemplateDTO GetFileListTestActivityTemplateDTO()
+        {
+            return new ActivityTemplateDTO
+            {
+                Id = Guid.NewGuid(),
+                Name = "Get_File_List_TEST",
+                Version = "1"
+            };
+        }
+
         public static AuthorizationTokenDTO DropboxAuthorizationTokenDTO()
         {
             return Fixture.Build<AuthorizationTokenDTO>()

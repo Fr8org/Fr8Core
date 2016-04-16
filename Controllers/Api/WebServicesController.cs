@@ -92,15 +92,14 @@ namespace HubWeb.Controllers
                             Id = p.Id,
                             Name = p.Name,
                             Category = p.Category,
-                            ComponentActivities = p.ComponentActivities,
                             Label = p.Label,
                             MinPaneWidth = p.MinPaneWidth,
-                            TerminalId = p.Terminal.Id,
                             Version = p.Version,
                             Type = p.Type,
                             Tags = p.Tags,
                             Description = p.Description,
-                            WebService = Mapper.Map<WebServiceDTO>(p.WebService)
+                            WebService = Mapper.Map<WebServiceDTO>(p.WebService),
+                            Terminal = Mapper.Map<TerminalDTO>(p.Terminal)
 			            }).ToList()
 			        }).ToList();
 			}
