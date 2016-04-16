@@ -238,6 +238,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activities\ActivitiesHelper.cs" />
+    <Compile Include="Activities\MailMergeFromSalesforce_v1.cs" />
     <Compile Include="Activities\Save_To_SalesforceDotCom_v1.cs" />
     <Compile Include="Activities\Post_To_Chatter_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
@@ -254,7 +255,6 @@
     <Compile Include="Infrastructure\ISalesforceManager.cs" />
     <Compile Include="Infrastructure\SalesforceEnvelopeInformation.cs" />
     <Compile Include="Infrastructure\SalesforceNotificationParser.cs" />
-    <Compile Include="Infrastructure\SalesforceObject.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

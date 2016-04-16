@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using StructureMap;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
-using InternalInterface = Hub.Interfaces;
 using Data.Interfaces;
-using Hub.Managers;
-using UtilitiesTesting;
 using System.Threading.Tasks;
 using Data.Constants;
 using Data.Crates;
@@ -379,7 +375,8 @@ namespace HubTests.Services
                 });
 
                 plan.PlanState = PlanState.Active;
-                plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
+                plan.StartingSubPlan = (SubPlanDO) plan.ChildNodes[0];
+
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(4)] = new SuspenderActivityMock(CrateManager);
 
                 uow.SaveChanges();
@@ -754,7 +751,7 @@ namespace HubTests.Services
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(2)] = new CallerActivityMock(CrateManager, FixtureData.GetTestGuidById(4));
 
                 await Plan.Run(uow, plan);
-
+                
                 AssertExecutionSequence(new[]
                 {
                     new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(2)),

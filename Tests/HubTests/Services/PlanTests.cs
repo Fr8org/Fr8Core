@@ -61,7 +61,7 @@ namespace HubTests.Services
                 Assert.NotNull(result);
             }
         }
-
+        
         [Test]
         [Ignore("ActivityTemplates are not being added to ActivityTemplate respository. Should be fixed if test is needed")]
         public void Activate_NoMatchingParentActivityId_ReturnsNoActivity()
