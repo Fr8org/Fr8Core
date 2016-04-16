@@ -27,6 +27,7 @@ namespace terminalFr8Core.Actions
     public class CollectData_v1 : BaseTerminalActivity
     {
         private const string RuntimeCrateLabelPrefix = "Standard Data Table";
+        private const string RuntimeFieldCrateLabelPrefix = "Run Time Fields From CollectData";
         private const string RunFromSubmitButtonLabel = "RunFromSubmitButton";
         public const string CollectionControlsLabel = "Collection";
         protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
@@ -116,14 +117,28 @@ namespace terminalFr8Core.Actions
                         throw new Exception($"Activity with id \"{curActivityDO.Id}\" has no owner plan");
                     }
                     //TODO think of a better way to flag activity
-                    var flagCrate = CrateManager.CreateDesignTimeFieldsCrate(RunFromSubmitButtonLabel, AvailabilityType.RunTime);
-                    var payload = new List<CrateDTO>() { CrateManager.ToDto(flagCrate) };
+                    var flagCrate = CrateManager.CreateDesignTimeFieldsCrate(RunFromSubmitButtonLabel,
+                        AvailabilityType.RunTime);
+                    var payload = new List<CrateDTO>() {CrateManager.ToDto(flagCrate)};
                     //we need to start the process - run current plan - that we belong to
                     await HubCommunicator.RunPlan(curActivityDO.RootPlanNodeId.Value, payload, CurrentFr8UserId);
                     //after running the plan - let's reset button state
                     //so next configure calls will be made with a fresh state
                     UnClickSubmitButton(curActivityDO);
                 }
+                else
+                {
+                    //TODO this part should be modified with 2975
+                    //run logic should be applied here
+                    //currently we will only publish textbox fields
+
+
+                }
+
+
+
+
+
                 /*
                 else
                 {
@@ -176,7 +191,8 @@ namespace terminalFr8Core.Actions
 
         private void ProcessTextBox(IUpdatableCrateStorage pStorage, TextBox textBox)
         {
-            //TODO add StandardPayloadCM here when needed
+            var fieldsCrate = pStorage.CratesOfType<FieldDescriptionsCM>(c => c.Label == RuntimeFieldCrateLabelPrefix).First();
+            fieldsCrate.Content.Fields.Add(new FieldDTO(textBox.Label, textBox.Value));
         }
 
         private void ProcessFilePickers(IUpdatableCrateStorage pStorage, IEnumerable<ControlDefinitionDTO> filepickers)
@@ -219,6 +235,9 @@ namespace terminalFr8Core.Actions
         {
             using (var pStorage = CrateManager.GetUpdatableStorage(payloadDTO))
             {
+                var fieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(RuntimeFieldCrateLabelPrefix, AvailabilityType.RunTime, new FieldDTO[] {});
+                pStorage.Add(fieldsCrate);
+
                 foreach (var controlDefinitionDTO in collectionControls.Controls)
                 {
                     ProcessCollectionControl(pStorage, controlDefinitionDTO);
@@ -290,7 +309,8 @@ namespace terminalFr8Core.Actions
             var cc = new MetaControlContainer()
             {
                 Label = "Show which form fields:",
-                Name = "control_container"
+                Name = "control_container",
+                Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
             };
 
             return PackControlsCrate(infoText, cc);
