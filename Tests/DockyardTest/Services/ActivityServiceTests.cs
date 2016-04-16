@@ -215,7 +215,7 @@ namespace DockyardTest.Services
                         {
                             Id = FixtureData.GetTestGuidById(addCounter + 666),
                             ParentPlanNode = a,
-                            ActivityTemplateId = 1
+                            ActivityTemplateId = FixtureData.GetTestGuidById(1)
                         };
 
                         a.ParentPlanNode.ChildNodes.Add(newAction);
@@ -235,7 +235,7 @@ namespace DockyardTest.Services
                             {
                                 Id = FixtureData.GetTestGuidById(addCounter + 666),
                                 ParentPlanNode = a,
-                                ActivityTemplateId = 1
+                                ActivityTemplateId = FixtureData.GetTestGuidById(1)
                             };
 
                             a.ParentPlanNode.ChildNodes.Add(newAction);

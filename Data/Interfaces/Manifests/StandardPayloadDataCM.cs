@@ -7,30 +7,6 @@ using Data.Interfaces.DataTransferObjects;
 
 namespace Data.Interfaces.Manifests
 {
-//    [CrateManifest(MT.StandardPayloadData)]
-//    public class PayloadDataCM : List<FieldDTO>
-//    {
-//        public PayloadDataCM()
-//        {
-//        }
-//
-//        public PayloadDataCM(int capacity) 
-//            : base(capacity)
-//        {
-//        }
-//
-//        public PayloadDataCM(IEnumerable<FieldDTO> collection) 
-//            : base(collection)
-//        {
-//        }
-//
-//        public IEnumerable<string> GetValues(string fieldKey)
-//        {
-//            return this.Where(x => x.Key == fieldKey).Select(x => x.Value);
-//        }
-//    }
-
-
     public class StandardPayloadDataCM : Manifest
     {
         public string Name { get; set; }

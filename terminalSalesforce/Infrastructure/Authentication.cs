@@ -1,12 +1,8 @@
 ﻿using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json.Linq;
-using Salesforce.Common.Models;
 using Salesforce.Force;
-using terminalSalesforce.Services;
 using Salesforce.Common;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using Utilities.Configuration.Azure;

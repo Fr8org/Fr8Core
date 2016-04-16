@@ -258,6 +258,11 @@ namespace Hub.StructureMap
                 return _terminal.GetAvailableActivities(uri);
             }
 
+            public TerminalDO GetByNameAndVersion(string name, string version)
+            {
+                return _terminal.GetByNameAndVersion(name, version);
+            }
+
             public TerminalDO RegisterOrUpdate(TerminalDO terminalDo)
             {
                 return _terminal.RegisterOrUpdate(terminalDo);

@@ -857,6 +857,8 @@
     <Content Include="Scripts\PlanBuilder\pb-resources.js" />
     <Content Include="Scripts\PlanBuilder\pb-widget.js" />
     <Content Include="Scripts\templateCache.js" />
+    <Content Include="Scripts\tests\e2e\conf.js" />
+    <Content Include="Scripts\tests\e2e\login.js" />
     <Content Include="Views\AngularTemplate\DatePicker.cshtml" />
     <Content Include="ApplicationInsights.config">
       <TransformOnBuild>true</TransformOnBuild>
@@ -943,6 +945,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\ActivityResize.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\SubplanHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Validators\ManifestDescriptionValidators.ts" />
+    <TypeScriptCompile Include="Scripts\app\events\Fr8Events.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\DateTimeFormatter.ts" />
     <TypeScriptCompile Include="Scripts\app\filters\FilterByTag.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\AuthenticationDialogController.ts" />
