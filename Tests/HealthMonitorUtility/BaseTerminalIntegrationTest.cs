@@ -29,22 +29,6 @@ namespace HealthMonitor.Utility
             HMACService = new Fr8HMACService();
         }
 
-        private void AddHubCrate<T>(Fr8DataDTO dataDTO, T crateManifest, string label, string innerLabel)
-        {
-            var crateStorage = Crate.GetStorage(dataDTO.ExplicitData);
-
-            var fullLabel = label;
-            if (!string.IsNullOrEmpty(innerLabel))
-            {
-                fullLabel += "_" + innerLabel;
-            }
-
-            var crate = Crate<T>.FromContent(fullLabel, crateManifest);
-            crateStorage.Add(crate);
-
-            dataDTO.ExplicitData = Crate.CrateStorageAsStr(crateStorage);
-        }
-
         public void AddCrate<T>(Fr8DataDTO dataDTO, T crateManifest, string label)
         {
             var crateStorage = Crate.GetStorage(dataDTO.ExplicitData);
@@ -71,16 +55,6 @@ namespace HealthMonitor.Utility
         public void AddDownstreamCrate<T>(Fr8DataDTO dataDTO, T crateManifest, string crateLabel = "")
         {
             AddHubCrate(dataDTO, crateManifest, "HealthMonitor_DownstreamCrate", crateLabel);
-        }
-
-        public void AddPayloadCrate<T>(Fr8DataDTO dataDTO, T crateManifest, string crateLabel = "")
-        {
-            AddHubCrate(dataDTO, crateManifest, "HealthMonitor_PayloadCrate", crateLabel);
-        }
-
-        public void AddOperationalStateCrate(Fr8DataDTO dataDTO, OperationalStateCM operationalState)
-        {
-            AddPayloadCrate(dataDTO, operationalState, "Operational Status");
         }
 
         protected async Task<Dictionary<string, string>> GetHMACHeader<T>(Uri requestUri, string userId, T content)

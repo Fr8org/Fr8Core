@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
-using Hub.Managers;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using TerminalBase.Infrastructure;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 using TerminalBase.BaseClasses;
-using Data.Entities;
 using Data.States;
 
 namespace terminalSlack.Actions
@@ -72,11 +68,11 @@ namespace terminalSlack.Actions
             }
         }
 
-        private const string SlackMessagePropertiesCrateLabel = "Slack Message Properties";
+        public const string SlackMessagePropertiesCrateLabel = "Slack Message Properties";
 
-        private const string RuntimeAvailableCratesLabel = "Slack Message";
+        public const string ResultPayloadCrateLabel = "Slack Message";
 
-        private const string EventSubscriptionsCrateLabel = "Standard Event Subscriptions";
+        public const string EventSubscriptionsCrateLabel = "Standard Event Subscriptions";
 
         private readonly ISlackIntegration _slackIntegration;
 
@@ -95,7 +91,7 @@ namespace terminalSlack.Actions
                 .ToList();
             CurrentActivityStorage.Add(CreateChannelPropertiesCrate());
             CurrentActivityStorage.Add(CreateEventSubscriptionCrate());
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeAvailableCratesLabel);
+            runtimeCrateManager.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel);
         }
         
         private Crate CreateChannelPropertiesCrate()
@@ -141,7 +137,7 @@ namespace terminalSlack.Actions
                     || ConfigurationControls.ChannelList.Value == incomingMessageContents["channel_id"];
                 if (channelMatches)
                 {
-                    CurrentPayloadStorage.Add(Crate.FromContent(RuntimeAvailableCratesLabel, new StandardPayloadDataCM(incomingMessageContents.Fields), AvailabilityType.RunTime));
+                    CurrentPayloadStorage.Add(Crate.FromContent(ResultPayloadCrateLabel, new StandardPayloadDataCM(incomingMessageContents.Fields), AvailabilityType.RunTime));
                 }
                 else
                 {
