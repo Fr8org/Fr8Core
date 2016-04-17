@@ -7,7 +7,6 @@ using Newtonsoft.Json.Linq;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-    [JsonConverter(typeof(FieldConverter))]
     public class FieldDTO : System.ICloneable
     {
         [JsonProperty("key")]
@@ -28,7 +27,7 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("tags")]
         public string Tags { get; set; }
 
-        [JsonProperty("availability")]
+        [JsonProperty("availability", DefaultValueHandling = DefaultValueHandling.Ignore)]
         public AvailabilityType Availability { get; set; }
 
         [JsonProperty("sourceCrateManifest")]
@@ -38,7 +37,7 @@ namespace Data.Interfaces.DataTransferObjects
         public string SourceCrateLabel { get; set; }
 
         [JsonProperty("data")]
-        public Dictionary<string, JToken> Data { get; set; } = new Dictionary<string, JToken>();
+        public Dictionary<string, JToken> Data { get; set; }
         
         public FieldDTO()
         {
