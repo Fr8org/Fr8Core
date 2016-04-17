@@ -27,7 +27,7 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("tags")]
         public string Tags { get; set; }
 
-        [JsonProperty("availability", DefaultValueHandling = DefaultValueHandling.Ignore)]
+        [JsonProperty("availability", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public AvailabilityType Availability { get; set; }
 
         [JsonProperty("sourceCrateManifest")]
