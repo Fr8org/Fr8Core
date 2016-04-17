@@ -141,14 +141,7 @@ namespace terminalSendGrid.Actions
 
             var payloadCrateStorage = CrateManager.GetStorage(payloadCrates);
             StandardConfigurationControlsCM configurationControls = GetConfigurationControls(curActivityDO);
-
-            // A fix to support an old (wrong) crate label (FR-1972). The following block can be savely removed in Feb 2016
-            if (configurationControls == null)
-            {
-                var storage = CrateManager.GetStorage(curActivityDO);
-                configurationControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => String.Equals(c.Label, "SendGrid", StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-            }
-
+            
             var emailAddressField = (TextSource)GetControl(configurationControls, "EmailAddress", ControlTypes.TextSource);
             var emailSubjectField = (TextSource)GetControl(configurationControls, "EmailSubject", ControlTypes.TextSource);
             var emailBodyField = (TextSource)GetControl(configurationControls, "EmailBody", ControlTypes.TextSource);
