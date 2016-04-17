@@ -45,7 +45,7 @@ namespace TerminalBase.BaseClasses
 
         private readonly ICrateStorage _crateStorage;
         private readonly string _owner;
-        private const string RuntimeCrateDescriptionsCrateLabel = "Runtime Available Crates";
+        public const string RuntimeCrateDescriptionsCrateLabel = "Runtime Available Crates";
         private CrateDescriptionCM _runtimeAvailableData;
 
         public RuntimeCrateManager(ICrateStorage crateStorage, string owner)

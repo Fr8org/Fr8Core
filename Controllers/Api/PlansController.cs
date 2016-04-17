@@ -285,7 +285,7 @@ namespace HubWeb.Controllers
         {
             string activityDTO = await _plan.Deactivate(planId);
             EventManager.PlanDeactivated(planId);
-            
+
             return Ok(activityDTO);
         }
 
@@ -309,7 +309,7 @@ namespace HubWeb.Controllers
         [HttpGet]
         public Task<IHttpActionResult> Run(Guid planId, Guid? containerId = null)
         {
-             return Run(planId, null, containerId);
+            return Run(planId, null, containerId);
         }
 
         [Fr8ApiAuthorize("Admin", "Customer")]
@@ -319,7 +319,7 @@ namespace HubWeb.Controllers
             string currentPlanType = string.Empty;
 
             //ACTIVATE - activate route if its inactive
-            
+
             bool inActive = false;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -349,12 +349,12 @@ namespace HubWeb.Controllers
 
                     return Ok(activateDTO.Container);
                 }
-                
+
             }
 
             //RUN
             Crate curPayload = null;
-            
+
             // there is no reason to check for payload if we have continerId passed because this indicates execution continuation scenario.
             if (model != null && containerId == null)
             {
@@ -398,7 +398,7 @@ namespace HubWeb.Controllers
                 {
                     if (planDO != null)
                     {
-                        
+
                         if (containerId == null)
                         {
                             container = await _plan.Run(planDO, curPayload);
@@ -484,10 +484,10 @@ namespace HubWeb.Controllers
             {
                 messageToNotify = errorMessage;
             }
-                       
+
             var message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, messageToNotify);
             _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
-            
+
         }
 
         [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
@@ -540,7 +540,7 @@ namespace HubWeb.Controllers
                         _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, $"Launching a new Container for Plan \"{planDO.Name}\"");
 
                         var crates = payload.Select(c => _crate.FromDto(c)).ToArray();
-                        var containerDO = await _plan.Run(uow , planDO, crates);
+                        var containerDO = await _plan.Run(uow, planDO, crates);
                         if (!planDO.IsOngoingPlan())
                         {
                             await _plan.Deactivate(planId);

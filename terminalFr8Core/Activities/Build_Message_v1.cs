@@ -89,8 +89,7 @@ namespace terminalFr8Core.Actions
         {
             var availableFields = ExtractAvaialbleFieldsFromPayload();
             var message = ConfigurationControls.Body.Value;
-
-            if (availableFields.Count > 0)
+            if (availableFields.Count > 0 && !string.IsNullOrEmpty(message))
             {
                 var messageBodyBuilder = new StringBuilder(message);
                 //We sort placeholders in reverse order so we can replace them starting from the last that won't break any previous match indices
