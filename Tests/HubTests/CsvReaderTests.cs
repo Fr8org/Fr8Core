@@ -271,7 +271,6 @@ namespace HubTests
 				}
 			}
 		}
-
 		private string[] GenerateColumns(int cnt)
 		{
 			if (cnt <= 0)
