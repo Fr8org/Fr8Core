@@ -114,6 +114,7 @@
     <Compile Include="Integration\WebServicesControllerTests.cs" />
     <Compile Include="Managers\CrateManagerTests.cs" />
     <Compile Include="Managers\CrateManagerTests.Fixtures.cs" />
+    <Compile Include="Managers\EventReporterTests.cs" />
     <Compile Include="Managers\IncidentReporterTests.cs" />
     <Compile Include="ManifestDiscoveryTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
