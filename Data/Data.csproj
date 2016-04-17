@@ -704,6 +704,10 @@
     <Compile Include="Migrations\201604160406197_PlanNodeDO_Runnable.Designer.cs">
       <DependentUpon>201604160406197_PlanNodeDO_Runnable.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201604171001029_Rename_HistoryItemDO_CustomerId_to_Fr8UserId.cs" />
+    <Compile Include="Migrations\201604171001029_Rename_HistoryItemDO_CustomerId_to_Fr8UserId.Designer.cs">
+      <DependentUpon>201604171001029_Rename_HistoryItemDO_CustomerId_to_Fr8UserId.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -1234,6 +1238,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604160406197_PlanNodeDO_Runnable.resx">
       <DependentUpon>201604160406197_PlanNodeDO_Runnable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604171001029_Rename_HistoryItemDO_CustomerId_to_Fr8UserId.resx">
+      <DependentUpon>201604171001029_Rename_HistoryItemDO_CustomerId_to_Fr8UserId.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

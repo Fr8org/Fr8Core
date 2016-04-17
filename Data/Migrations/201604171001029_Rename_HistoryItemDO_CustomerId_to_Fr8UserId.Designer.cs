@@ -13,7 +13,7 @@ namespace Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201604160652074_Rename_HistoryItemDO_CustomerId_to_Fr8UserId"; }
+            get { return "201604171001029_Rename_HistoryItemDO_CustomerId_to_Fr8UserId"; }
         }
         
         string IMigrationMetadata.Source
