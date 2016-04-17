@@ -1,7 +1,4 @@
-﻿@import url('dockyard/container-transition.css');
-@import url('dockyard/query-builder.css');
-
-.table-linkrows > tbody > tr {
+﻿.table-linkrows > tbody > tr {
     cursor: pointer;
 }
 
@@ -1135,18 +1132,19 @@ i.activity-stream-font {
     float: left; 
     padding-top: 5px;
 }
+
 .activity-stream-flex{
     flex:1;
     margin-left:17px;
     position:relative;
     margin-bottom:15px;
     min-width:10%;
+    margin-right:-15px;
 }
 .activity-stream-template {
     width:100%;
     height:100%;
     min-height:700px;
-    margin-top:10px;
 }
 .flexable-content{
     width:80%;

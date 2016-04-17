@@ -87,7 +87,7 @@ namespace terminalGoogleTests.Unit
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Monitor_Form_Responses_TEST",
                 Version = "1"
             };
@@ -239,7 +239,7 @@ namespace terminalGoogleTests.Unit
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Get_Google_Sheet_Data_TEST",
                 Version = "1"
             };

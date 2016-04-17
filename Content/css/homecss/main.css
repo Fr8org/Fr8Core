@@ -5104,10 +5104,17 @@ img.mfp-img {
 }
 .hero-unit .hero-bg-pattern {
   /*filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=20);*/
+  /*filter: progid:DXImageTransform.Microsoft.Gradient(startColorstr=#550000FF, endColorstr=#55FFFF00);*/
   /*opacity: 0.7;*/
   width: 100%;
   height: 100%;
-  background-image: url('/Content/img/background-7.png');
+  position: relative;
+  /*background-image: url('/Content/img/background-7.png');/**/
+  background: -webkit-linear-gradient(rgba(0,0,10,0.5), transparent 75%); /* For Safari 5.1 to 6.0 */
+  background: -o-linear-gradient(rgba(0,0,10,0.5), transparent 75%); /* For Opera 11.1 to 12.0 */
+  background: -moz-linear-gradient(rgba(0,0,10,0.5), transparent 75%); /* For Firefox 3.6 to 15 */
+  background: linear-gradient(rgba(0,0,10,0.5), transparent 75%);/**/
+  
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
@@ -5336,7 +5343,7 @@ img.mfp-img {
 /* SOCIAL NETWORK
 /* --------------------- */
 #social-network {
-  background-image: url('/Content/img/background-cta-3.png');
+  background-image: url('/Content/img/background-cta-3.jpg');
   text-align: center;
   min-height: 550px;
 }
@@ -6061,21 +6068,21 @@ img.mfp-img {
 .demo-card-square-connect > .mdl-card__title {
   color: #F2F4F5;
   font-weight: 700;
-  background: url('/Content/img/freight-connect.png') center no-repeat;
+  background: url('/Content/img/freight-connect.jpg') center no-repeat;
   background-color: #F2F4F5;
 }
 
 .demo-card-square-workflows > .mdl-card__title {
   color: #F2F4F5;
   font-weight: 500;
-  background: url('/Content/img/freight-design.png') center no-repeat;
+  background: url('/Content/img/freight-design.jpg') center no-repeat;
   background-color: #444C58;
 }
 
 .demo-card-square-run > .mdl-card__title {
   color: #F2F4F5;
   font-weight: 500;
-  background: url('/Content/img/freight-train.png') center no-repeat;
+  background: url('/Content/img/freight-train.jpg') center no-repeat;
   background-color: #444C58;
 }
 
@@ -6202,6 +6209,18 @@ img.mfp-img {
   background-size: cover;
   background: black;
   /*background-repeat: repeat;*/
-
 }
 
+
+.full-area {
+    width: 100%;
+    height: 100%;
+    background: -webkit-radial-gradient(1200px 1200px at 0px 0px,  rgba(255,255,255,0.20) , rgba(255,255,255,0.15) 45%, transparent 60%); 
+    /* For Opera 11.6 to 12.0 */
+    background: -o-radial-gradient(1200px 1200px at 0px 0px, rgba(255, 255, 255, 0.20), rgba(255, 255, 255, 0.15) 45%, transparent 60%);
+    /* For Firefox 3.6 to 15 */
+    background: -moz-radial-gradient(1200px 1200px at 0px 0px, rgba(255, 255, 255, 0.20), rgba(255, 255, 255, 0.15) 45%, transparent 60%);
+    /* Standard syntax */
+    background: radial-gradient(1200px 1200px at 0px 0px,  rgba(255,255,255,0.20) , rgba(255,255,255,0.15) 45%, transparent 60%);
+
+}

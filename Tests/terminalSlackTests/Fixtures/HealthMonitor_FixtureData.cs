@@ -26,7 +26,7 @@ namespace terminalSlackTests.Fixtures
         {
             return new ActivityTemplateDTO
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Monitor_Channel_TEST",
                 Label = "Monitor Channel",
                 Category = ActivityCategory.Monitors,
@@ -38,7 +38,7 @@ namespace terminalSlackTests.Fixtures
         {
             return new ActivityTemplateDTO
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Publish_To_Slack_TEST",
                 Label = "Publish To Slack",
                 Category = ActivityCategory.Forwarders,
