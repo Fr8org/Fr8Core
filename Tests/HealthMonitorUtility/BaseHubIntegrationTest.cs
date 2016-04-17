@@ -154,17 +154,10 @@ namespace HealthMonitor.Utility
                 + string.Format("authentication/login?username={0}&password={1}", Uri.EscapeDataString(email), Uri.EscapeDataString(password)), null);
         }
 
-        public async Task<List<CrateDescriptionDTO>> GetRuntimeCrateDescriptionsFromUpstreamActivities(Guid curActivityId)
+        public async Task<IncomingCratesDTO> GetRuntimeCrateDescriptionsFromUpstreamActivities(Guid curActivityId)
         {
-            var url = $"{GetHubApiBaseUrl()}/plannodes/upstream_actions/?id={curActivityId}";
-            var upstreamActivities = await HttpGetAsync<List<ActivityDTO>>(url);
-            var result = new List<CrateDescriptionDTO>();
-            foreach (var activity in upstreamActivities)
-            {
-                var storage = Crate.FromDto(activity.CrateStorage);
-                result.AddRange(storage.CratesOfType<CrateDescriptionCM>().SelectMany(x => x.Content.CrateDescriptions));
-            }
-            return result;
+            var url = $"{GetHubApiBaseUrl()}/plannodes/available_data/?id={curActivityId}";
+            return await HttpGetAsync<IncomingCratesDTO>(url);
         }
         protected async Task<Guid> ExtractTerminalDefaultToken(string terminalName)
         {

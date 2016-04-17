@@ -43,10 +43,13 @@ namespace terminaBaselTests.Tools.Activities
             var activityName = "Save_To_Google_Sheet";
             var saveToGoogleSheetActivityDTO = await AddGoogleActivityToPlan(plan, ordering, ActivityCategory.Forwarders, activityName);
             //Activity won't be able to run if there is no upstream data
+
             var upstreamCrateDescriptions = await _baseHubITest.GetRuntimeCrateDescriptionsFromUpstreamActivities(saveToGoogleSheetActivityDTO.Id);
-            Assert.Greater(upstreamCrateDescriptions.Count, 0, $"{activityName}: upstream activities didn't provide at least one runtime CrateDescription");
-            var expectedCrateDescription = upstreamCrateDescriptions.FirstOrDefault(x => x.ManifestType == manifestTypeToUse && x.Label == crateDescriptionLabelToUse);
+            Assert.Greater(upstreamCrateDescriptions.AvailableCrates.Count, 0, $"{activityName}: upstream activities didn't provide at least one runtime CrateDescription");
+
+            var expectedCrateDescription = upstreamCrateDescriptions.AvailableCrates.FirstOrDefault(x => x.ManifestType == manifestTypeToUse && x.Label == crateDescriptionLabelToUse);
             Assert.IsNotNull(expectedCrateDescription, $"{activityName}: upstream activities didn't provide expected runtime CrateDescription");
+            
             //Select the expected crate description
             using (var crateStorage = _baseHubITest.Crate.GetUpdatableStorage(saveToGoogleSheetActivityDTO))
             {
@@ -54,7 +57,7 @@ namespace terminaBaselTests.Tools.Activities
                 var activityUi = new Save_To_Google_Sheet_v1.ActivityUi();
                 activityUi.SyncWith(controlsCrate.Content);
                 crateStorage.Remove<StandardConfigurationControlsCM>();
-                activityUi.UpstreamCrateChooser.CrateDescriptions = upstreamCrateDescriptions;
+                activityUi.UpstreamCrateChooser.CrateDescriptions = upstreamCrateDescriptions.AvailableCrates;
                 activityUi.UpstreamCrateChooser.CrateDescriptions.First(x => x.Label == crateDescriptionLabelToUse && x.ManifestType == manifestTypeToUse).Selected = true;
                 //Set the name of new spreadheet that need to be created
                 activityUi.NewSpreadsheetName.Value = newSpeadsheetName;
