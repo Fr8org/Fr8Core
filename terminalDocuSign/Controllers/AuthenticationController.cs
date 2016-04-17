@@ -23,7 +23,7 @@ namespace terminalDocuSign.Controllers
     public class AuthenticationController : BaseTerminalController
     {
         private const string curTerminal = "terminalDocuSign";
-
+        
         [HttpPost]
         [Route("internal")]
         public async Task<AuthorizationTokenDTO> GenerateInternalOAuthToken(CredentialsDTO curCredentials)
