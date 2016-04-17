@@ -28,7 +28,6 @@ namespace Data.Interfaces.Manifests
         //    CrateDescriptions.Add(new CrateDescriptionDTO { ManifestType = manifestType, Label = label, ManifestId = manifestId});
         //}
 
-
         public void AddIfNotExists(CrateDescriptionDTO crateDescription)
         {
             if (CrateDescriptions.Any(x => x.Label == crateDescription.Label && x.ManifestId == crateDescription.ManifestId))
