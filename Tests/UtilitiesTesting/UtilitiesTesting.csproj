@@ -177,7 +177,6 @@
     <Compile Include="Fixtures\FixtureData - EmailAddress.cs" />
     <Compile Include="Fixtures\FixtureData - EnvelopeData.cs" />
     <Compile Include="Fixtures\FixtureData - Event.cs" />
-    <Compile Include="Fixtures\FixtureData - IncidentDO.cs" />
     <Compile Include="Fixtures\FixtureData - FactDO.cs" />
     <Compile Include="Fixtures\FixtureData - FieldDefinitionDTO.cs" />
     <Compile Include="Fixtures\FixtureData - File.cs" />

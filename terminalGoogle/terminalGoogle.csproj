@@ -346,10 +346,6 @@
     </None>
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
     <EmbeddedResource Include="Template\googleAppScriptFormResponse.json" />
-    <Content Include="log4net.terminals.config" />
-    <Content Include="log4net.terminals.Demo.config" />
-    <Content Include="log4net.terminals.Dev.config" />
-    <Content Include="log4net.terminals.Release.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -410,7 +406,4 @@
   </Target>
   <Target Name="AfterBuild">
   </Target> -->
-  <Target Name="BeforeBuild">
-    <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
-  </Target>
 </Project>
