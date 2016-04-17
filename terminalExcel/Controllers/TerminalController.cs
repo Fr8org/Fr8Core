@@ -45,7 +45,7 @@ namespace terminalExcel.Controllers
                 Description = "",
                 Category = ActivityCategory.Receivers,
                 Terminal = terminal,
-                Tags = "Table Data Generator",
+                Tags = "Table Data Generator,Getter",
                 MinPaneWidth = 300,
 				WebService = webService
             });

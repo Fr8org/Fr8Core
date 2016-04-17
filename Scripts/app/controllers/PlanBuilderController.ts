@@ -246,7 +246,7 @@ module dockyard.controllers {
             var currentPlan = this.$scope.current.plan;
 
             this.setAdvancedEditingMode();
-            var newSubPlan = new model.SubPlanDTO(null, true, currentPlan.id, "SubPlan-" + currentPlan.subPlans.length);
+            var newSubPlan = new model.SubPlanDTO(null, true, currentPlan.id, currentPlan.id, "SubPlan-" + currentPlan.subPlans.length);
 
             this.SubPlanService.create(newSubPlan).$promise.then((createdSubPlan: model.SubPlanDTO) => {
                 createdSubPlan.activities = [];
