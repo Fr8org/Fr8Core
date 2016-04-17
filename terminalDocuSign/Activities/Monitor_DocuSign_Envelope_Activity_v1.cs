@@ -333,7 +333,7 @@ namespace terminalDocuSign.Actions
                 if (selectedOption == "template")
                 {
                     allFields.AddRange(GetTemplateUserDefinedFields(authTokenDO, selectedValue, null));
-                }   
+                }
 
                 // Update all fields crate
                 crateStorage.RemoveByLabel(AllFieldsCrateName);

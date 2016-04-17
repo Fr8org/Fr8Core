@@ -123,13 +123,14 @@ namespace terminalGoogle.Actions
 
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
-            await UpdateSpreadsheetList();
+            var spreadsheets = await _googleApi.GetSpreadsheets(GetGoogleAuthToken());
+            ConfigurationControls.SpreadsheetList.ListItems = spreadsheets.Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
+
             runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
         protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
         {
-            await UpdateSpreadsheetList();
             CurrentActivityStorage.RemoveByLabel(ColumnHeadersCrateLabel);
             var googleAuth = GetGoogleAuthToken();
             //If spreadsheet selection is cleared we hide worksheet DDLB
@@ -178,25 +179,29 @@ namespace terminalGoogle.Actions
             var selectedSpreadsheet = ConfigurationControls.SpreadsheetList.Value;
             if (string.IsNullOrEmpty(selectedSpreadsheet))
             {
-                throw new ActivityExecutionException("Spreadsheet is not selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                throw new ActivityExecutionException("Spreadsheet is not selected",
+                    ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
-            var selectedWorksheet = ConfigurationControls.WorksheetList == null ? string.Empty : ConfigurationControls.WorksheetList.Value;
+            var selectedWorksheet = ConfigurationControls.WorksheetList == null
+                ? string.Empty
+                : ConfigurationControls.WorksheetList.Value;
             var data = (await _googleApi.GetData(selectedSpreadsheet, selectedWorksheet, GetGoogleAuthToken())).ToList();
             var hasHeaderRow = false;
             //Adding header row if possible
             if (data.Count > 0)
             {
-                data.Insert(0, new TableRowDTO { Row = data.First().Row.Select(x => new TableCellDTO { Cell = new FieldDTO(x.Cell.Key, x.Cell.Key) }).ToList() });
+                data.Insert(0,
+                    new TableRowDTO
+                    {
+                        Row =
+                            data.First()
+                                .Row.Select(x => new TableCellDTO { Cell = new FieldDTO(x.Cell.Key, x.Cell.Key) })
+                                .ToList()
+                    });
                 hasHeaderRow = true;
             }
-            CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM { Table = data, FirstRowHeaders = hasHeaderRow }));
+            CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel,
+                new StandardTableDataCM { Table = data, FirstRowHeaders = hasHeaderRow }));
         }
-
-        private async Task UpdateSpreadsheetList()
-        {
-            var spreadsheets = await _googleApi.GetSpreadsheets(GetGoogleAuthToken());
-            ConfigurationControls.SpreadsheetList.ListItems = spreadsheets.Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
-        }
-
     }
 }

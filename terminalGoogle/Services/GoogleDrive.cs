@@ -74,7 +74,7 @@ namespace terminalGoogle.Services
         public async Task<Dictionary<string, string>> GetGoogleForms(GoogleAuthDTO authDTO)
         {
             var driveService = await CreateDriveService(authDTO);
-
+            
             // Define parameters of request.
             FilesResource.ListRequest listRequest = driveService.Files.List();
             listRequest.Q = "mimeType='application/vnd.google-apps.form'  and Trashed=false";

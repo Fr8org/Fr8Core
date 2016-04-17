@@ -64,7 +64,7 @@ namespace terminalGoogle.Actions
 
             return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
         }
-        
+
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
@@ -73,10 +73,13 @@ namespace terminalGoogle.Actions
             {
                 var ccCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
                 var control = ccCrate.FindByNameNested<DropDownList>("Selected_Google_Form");
-
-                if (!string.IsNullOrWhiteSpace(control?.Value))
+                //If no Google Form is selected, reload the available forms from Google Drive Account
+                if (string.IsNullOrWhiteSpace(control?.Value))
                 {
-                    /*var result = await _googleAppScript.RunScript("M_snhqvaPfe7gMc5XhGu52ZK7araUiK37", "getFoldersUnderRoot", authDTO, control.Value);
+                    await FillSelectedGoogleFormSource(storage.CratesOfType<StandardConfigurationControlsCM>().First(), "Selected_Google_Form", authDTO);
+                    return curActivityDO;
+                }
+                /*var result = await _googleAppScript.RunScript("M_snhqvaPfe7gMc5XhGu52ZK7araUiK37", "getFoldersUnderRoot", authDTO, control.Value);
                     object response;
                     
                     if (result.TryGetValue("result", out response))
@@ -93,35 +96,34 @@ namespace terminalGoogle.Actions
                     }*/
 
 
-                    storage.RemoveByLabel("Google Form Payload Data");
-                    storage.Add(CrateManager.CreateDesignTimeFieldsCrate("Google Form Payload Data", AvailabilityType.RunTime, new[]
+                storage.RemoveByLabel("Google Form Payload Data");
+                storage.Add(CrateManager.CreateDesignTimeFieldsCrate("Google Form Payload Data", AvailabilityType.RunTime, new[]
+                {
+                    new FieldDTO("Full Name", "Full Name")
                     {
-                        new FieldDTO("Full Name", "Full Name")
-                        {
-                            Availability = AvailabilityType.RunTime,
-                            SourceCrateLabel = "Google Form Payload Data",
-                            SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
-                        },
-                        new FieldDTO("TR ID", "TR ID")
-                        {
-                            Availability = AvailabilityType.RunTime,
-                            SourceCrateLabel = "Google Form Payload Data",
-                            SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
-                        },
-                        new FieldDTO("Email Address", "Email Address")
-                        {
-                            Availability = AvailabilityType.RunTime,
-                            SourceCrateLabel = "Google Form Payload Data",
-                            SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
-                        },
-                        new FieldDTO("Period of Availability", "Period of Availability")
-                        {
-                            Availability = AvailabilityType.RunTime,
-                            SourceCrateLabel = "Google Form Payload Data",
-                            SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
-                        }
-                    }));
-                }
+                        Availability = AvailabilityType.RunTime,
+                        SourceCrateLabel = "Google Form Payload Data",
+                        SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
+                    },
+                    new FieldDTO("TR ID", "TR ID")
+                    {
+                        Availability = AvailabilityType.RunTime,
+                        SourceCrateLabel = "Google Form Payload Data",
+                        SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
+                    },
+                    new FieldDTO("Email Address", "Email Address")
+                    {
+                        Availability = AvailabilityType.RunTime,
+                        SourceCrateLabel = "Google Form Payload Data",
+                        SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
+                    },
+                    new FieldDTO("Period of Availability", "Period of Availability")
+                    {
+                        Availability = AvailabilityType.RunTime,
+                        SourceCrateLabel = "Google Form Payload Data",
+                        SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
+                    }
+                }));
             }
 
             return curActivityDO;
@@ -143,7 +145,7 @@ namespace terminalGoogle.Actions
             {
                 var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
                 var configurationCrate = PackCrate_ConfigurationControls();
-                await FillSelectedGoogleFormSource(configurationCrate, "Selected_Google_Form", authDTO);            
+                await FillSelectedGoogleFormSource(configurationCrate, "Selected_Google_Form", authDTO);
                 var eventCrate = CreateEventSubscriptionCrate();
 
                 using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
@@ -168,7 +170,7 @@ namespace terminalGoogle.Actions
                 Name = "Selected_Google_Form",
                 Required = true,
                 Source = null,
-                Events = new List<ControlEvent>() {new ControlEvent("onChange", "requestConfig")}
+                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
             };
 
             var controls = PackControlsCrate(fieldSelectTemplate);
@@ -228,7 +230,7 @@ namespace terminalGoogle.Actions
         }
 
 
-      
+
 
         public override async Task<ActivityDO> Deactivate(ActivityDO curActionDTO)
         {
