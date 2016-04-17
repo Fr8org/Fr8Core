@@ -108,7 +108,7 @@ namespace TerminalBase.Infrastructure
             //create event logging data with required information
             var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingDataCm
             {
-                Fr8UserId = fr8UserId,
+                CustomerId = fr8UserId,
                 ObjectId = terminalName,
                 Data = exceptionMessage,
                 PrimaryCategory = "TerminalError",
