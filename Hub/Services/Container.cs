@@ -117,7 +117,6 @@ namespace Hub.Services
             }
 
             callStack.PushFrame(pathToRoot[0]);
-
             callStack.TopFrame.CurrentActivityExecutionPhase = OperationalStateCM.ActivityExecutionPhase.WasNotExecuted;
 
             using (var storage = _crate.UpdateStorage(() => curContainerDo.CrateStorage))

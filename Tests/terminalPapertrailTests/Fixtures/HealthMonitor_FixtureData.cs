@@ -11,7 +11,7 @@ namespace terminalPapertrailTests.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Write_To_Log_TEST",
                 Version = "1"
             };
