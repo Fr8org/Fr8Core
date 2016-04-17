@@ -3,6 +3,7 @@ using Data.Crates;
 using Data.Infrastructure.JsonNet;
 using Data.States;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Data.Interfaces.DataTransferObjects
 {
@@ -36,8 +37,8 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("sourceCrateLabel")]
         public string SourceCrateLabel { get; set; }
 
-        [JsonProperty("extensionData")]
-        public Dictionary<string, string> ExtensionData { get; set; } = new Dictionary<string, string>();
+        [JsonProperty("data")]
+        public Dictionary<string, JToken> Data { get; set; } = new Dictionary<string, JToken>();
         
         public FieldDTO()
         {
@@ -76,17 +77,39 @@ namespace Data.Interfaces.DataTransferObjects
                 Value = Value,
                 Tags = Tags,
                 Label = Label,
-                ExtensionData = new Dictionary<string, string>(ExtensionData),
+                Data = new Dictionary<string, JToken>(Data),
                 Availability = Availability,
                 SourceCrateManifest = SourceCrateManifest,
                 SourceCrateLabel = SourceCrateLabel
                 
             };
         }
-
+        
         object System.ICloneable.Clone()
         {
             return Clone();
+        }
+
+        public T GetData<T>(string key)
+        {
+            JToken value;
+
+            if (Data == null || !Data.TryGetValue(key, out value))
+            {
+                return default(T);
+            }
+
+            return value.ToObject<T>();
+        }
+
+        public void SetData(string key, object value)
+        {
+            if (Data == null)
+            {
+                Data = new Dictionary<string, JToken>();
+            }
+
+            Data[key] = JToken.FromObject(value);
         }
     }
 }
