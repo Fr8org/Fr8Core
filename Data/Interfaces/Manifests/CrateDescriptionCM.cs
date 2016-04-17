@@ -27,7 +27,7 @@ namespace Data.Interfaces.Manifests
         public CrateDescriptionDTO AddIfMissing(CrateDescriptionDTO crateDescription)
         {
             var existingCrateDescription = CrateDescriptions.FirstOrDefault(x => x.Label == crateDescription.Label && x.ManifestId == crateDescription.ManifestId);
-            
+
             if (existingCrateDescription != null)
             {
                 return existingCrateDescription;
