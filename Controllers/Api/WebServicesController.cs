@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Http;
@@ -24,15 +25,25 @@ namespace HubWeb.Controllers
 	    }
 
 	    [HttpGet]
-		public IHttpActionResult Get()
+		public IHttpActionResult Get(Guid? id = null)
 		{
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
-				var models = uow.WebServiceRepository.GetAll()
-					.Select(x => Mapper.Map<WebServiceDTO>(x))
-					.ToList();
+                if (!id.HasValue)
+                {
+                    var models = uow.WebServiceRepository.GetAll()
+                        .Select(x => Mapper.Map<WebServiceDTO>(x))
+                        .ToList();
 
-				return Ok(models);
+                    return Ok(models);
+                }
+                else
+                {
+                    var activityTemplate = uow.ActivityTemplateRepository
+                        .GetByKey(id.Value);
+
+                    return Ok(Mapper.Map<ActivityTemplateDTO>(activityTemplate));
+                }
 			}
 		}
 
