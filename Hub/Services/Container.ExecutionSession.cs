@@ -204,11 +204,11 @@ namespace Hub.Services
                 // If we are already processing children of the currentNode, selecte the next one
                 if (currentChild != null)
                 {
-                    return currentNode.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault(x => x.Ordering > currentChild.Ordering);
+                    return currentNode.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault(x => x.Ordering > currentChild.Ordering && x.Runnable);
                 }
 
                 // or, if we have not processed any child yet - select the first one if any
-                return currentNode.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault();
+                return currentNode.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault(x => x.Runnable);
             }
 
             /**********************************************************************************/
@@ -356,7 +356,7 @@ namespace Hub.Services
                         {
                             // find activity that is preceeding the one we are jumping to.
                             // so the next iteration of run cycle will exectute the activity we are jumping to
-                            var prevToJump = currentNode.ParentPlanNode.ChildNodes.OrderByDescending(x => x.Ordering).FirstOrDefault(x => x.Ordering < targetNode.Ordering);
+                            var prevToJump = currentNode.ParentPlanNode.ChildNodes.OrderByDescending(x => x.Ordering).FirstOrDefault(x => x.Ordering < targetNode.Ordering && x.Runnable);
 
                             _callStack.TopFrame.CurrentChildId = prevToJump?.Id;
                         }
