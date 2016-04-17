@@ -3,6 +3,7 @@
 
 module dockyard.tests.unit.directives.controls {
     import fx = utils.fixtures; // just an alias
+    import filePickerEvents = dockyard.Fr8Events.FilePicker;
 
     var compileTemplate = (localScope, rawTemplate, $compile) => {
         var template = angular.element(rawTemplate);
@@ -73,7 +74,7 @@ module dockyard.tests.unit.directives.controls {
             scope.$digest();
             expect(scope.$root.$broadcast.calls.count()).toBe(1);
             expect(scope.onChange.calls.count()).toBe(1);
-            expect(scope.$root.$broadcast.calls.argsFor(0)).toEqual(['fp-success', uploadedFile]);
+            expect(scope.$root.$broadcast.calls.argsFor(0)).toEqual([<any>filePickerEvents.FP_SUCCESS, uploadedFile]);
         });
 
 
