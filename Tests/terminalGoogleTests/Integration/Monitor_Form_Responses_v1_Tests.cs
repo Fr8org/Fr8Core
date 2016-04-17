@@ -10,8 +10,9 @@ using System.Threading.Tasks;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Newtonsoft.Json.Linq;
+using terminalGoogleTests.Unit;
 
-namespace terminalGoogleTests.Unit
+namespace terminalGoogleTests.Integration
 {
     [Explicit]
     public class Monitor_Form_Responses_v1_Tests : BaseTerminalIntegrationTest
@@ -30,21 +31,21 @@ namespace terminalGoogleTests.Unit
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Monitor_Form_Responses_v1_InitialConfiguration_Fr8DataDTO();
+            var requestActivityDTO = HealthMonitor_FixtureData.Monitor_Form_Responses_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
-            var responseActionDTO =
+            var responseActivityDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    requestActivityDTO
                 );
 
             //Assert
-            Assert.NotNull(responseActionDTO);
-            Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
+            Assert.NotNull(responseActivityDTO);
+            Assert.NotNull(responseActivityDTO.CrateStorage);
+            Assert.NotNull(responseActivityDTO.CrateStorage.Crates);
 
-            var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
+            var crateStorage = Crate.FromDto(responseActivityDTO.CrateStorage);
             Assert.AreEqual(3, crateStorage.Count);
             Assert.IsNotNull(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault());
             Assert.IsNotNull(crateStorage.CrateContentsOfType<FieldDescriptionsCM>().SingleOrDefault());
@@ -60,17 +61,17 @@ namespace terminalGoogleTests.Unit
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Monitor_Form_Responses_v1_InitialConfiguration_Fr8DataDTO();
+            var requestActivityDTO = HealthMonitor_FixtureData.Monitor_Form_Responses_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
-            var responseActionDTO =
+            var responseActivityDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    requestActivityDTO
                 );
 
             //Assert
-            var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
+            var crateStorage = Crate.FromDto(responseActivityDTO.CrateStorage);
 
             var standardConfigurationControlsCM = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
             var FieldDescriptionsCM = crateStorage.CrateContentsOfType<FieldDescriptionsCM>().SingleOrDefault();
@@ -99,17 +100,17 @@ namespace terminalGoogleTests.Unit
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActionDTO = HealthMonitor_FixtureData.Monitor_Form_Responses_v1_InitialConfiguration_Fr8DataDTO();
+            var requestActivityDTO = HealthMonitor_FixtureData.Monitor_Form_Responses_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
-            var responseActionDTO =
+            var responseActivityDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    requestActivityDTO
                 );
 
             //Assert
-            var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
+            var crateStorage = Crate.FromDto(responseActivityDTO.CrateStorage);
             var FieldDescriptionsCM = crateStorage.CratesOfType<FieldDescriptionsCM>().Where(x => x.Label == "Available Forms").ToArray();
 
             Assert.IsNotNull(FieldDescriptionsCM);
@@ -129,13 +130,40 @@ namespace terminalGoogleTests.Unit
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var dataDTO = HealthMonitor_FixtureData.Monitor_Form_Responses_v1_InitialConfiguration_Fr8DataDTO();
-            dataDTO.ActivityDTO.AuthToken = null;
+            var requestActivityDTO = HealthMonitor_FixtureData.Monitor_Form_Responses_v1_InitialConfiguration_Fr8DataDTO();
+            requestActivityDTO.ActivityDTO.AuthToken = null;
 
             await HttpPostAsync<Fr8DataDTO, JToken>(
                 configureUrl,
-                dataDTO
+                requestActivityDTO
             );
+        }
+        /// <summary>
+        /// This test covers the test that the Drop Down List Box gets updated on followup configuration
+        /// if it was empty after initial configuration. It needs to handle the case when Form was uploaded
+        /// after the initial configuration.
+        /// </summary>
+        [Test, Category("Integration.terminalGoogle")]
+        public async Task Monitor_Form_Responses_Folloup_Configuration_Updates_DDLB()
+        {
+            //Arrange
+            var configureUrl = GetTerminalConfigureUrl();
+            var emptyActivityDTO = HealthMonitor_FixtureData.Monitor_Form_Responses_v1_InitialConfiguration_Fr8DataDTO();
+            //initial configuration call
+            var initialConfigurationActivityDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
+                configureUrl,
+                emptyActivityDTO
+            );
+            var ddlb = GetDropDownListControl(initialConfigurationActivityDTO);
+            Assert.AreEqual(0, ddlb.ListItems.Count());
+            //var responseActivityDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
+            //    configureUrl,
+            //    initialActivityDTO
+            //);
+            ////Assert
+            //Assert.IsNotNull(responseActivityDTO);
+
+
         }
 
         /// <summary>
@@ -148,19 +176,19 @@ namespace terminalGoogleTests.Unit
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = fixture.Monitor_Form_Responses_v1_ActivateDeactivate_Fr8DataDTO();
+            var requestActivityDTO = fixture.Monitor_Form_Responses_v1_ActivateDeactivate_Fr8DataDTO();
 
             //Act
-            var responseActionDTO =
+            var responseActivityDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    requestActivityDTO
                 );
 
             //Assert
-            Assert.IsNotNull(responseActionDTO);
+            Assert.IsNotNull(responseActivityDTO);
 
-            var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
+            var crateStorage = Crate.FromDto(responseActivityDTO.CrateStorage);
             var formID = crateStorage.CrateContentsOfType<StandardPayloadDataCM>().SingleOrDefault();
 
             Assert.Greater(formID.PayloadObjects.SelectMany(s => s.PayloadObject).Count(), 0);
@@ -173,18 +201,18 @@ namespace terminalGoogleTests.Unit
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = fixture.Monitor_Form_Responses_v1_ActivateDeactivate_Fr8DataDTO();
+            var requestActivityDTO = fixture.Monitor_Form_Responses_v1_ActivateDeactivate_Fr8DataDTO();
 
             //Act
-            var responseActionDTO =
+            var responseActivityDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    requestActivityDTO
                 );
 
             //Assert
-            Assert.IsNotNull(responseActionDTO);
-            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
+            Assert.IsNotNull(responseActivityDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActivityDTO.CrateStorage));
         }
 
         [Test, Category("Integration.terminalGoogle")]
@@ -194,18 +222,18 @@ namespace terminalGoogleTests.Unit
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = fixture.Monitor_Form_Responses_v1_ActivateDeactivate_Fr8DataDTO();
+            var requestActivityDTO = fixture.Monitor_Form_Responses_v1_ActivateDeactivate_Fr8DataDTO();
 
             //Act
-            var responseActionDTO =
+            var responseActivityDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    requestActivityDTO
                 );
 
             //Assert
-            Assert.IsNotNull(responseActionDTO);
-            Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
+            Assert.IsNotNull(responseActivityDTO);
+            Assert.IsNotNull(Crate.FromDto(responseActivityDTO.CrateStorage));
         }
 
         /// <summary>
@@ -221,7 +249,7 @@ namespace terminalGoogleTests.Unit
             //Arrange
             var runUrl = GetTerminalRunUrl();
 
-            //prepare the action DTO with valid target URL
+            //prepare the activity DTO with valid target URL
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
             var activityDTO = fixture.Monitor_Form_Responses_v1_Run_EmptyPayload();
             var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
@@ -258,8 +286,6 @@ namespace terminalGoogleTests.Unit
                    }
                }
             );
-
-            
             //Act
             var responsePayloadDTO =
                 await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
@@ -272,6 +298,14 @@ namespace terminalGoogleTests.Unit
             Assert.IsNotNull(FieldDescriptionsCM);
             var fields = FieldDescriptionsCM.PayloadObjects.SelectMany(s => s.PayloadObject);
             Assert.Greater(fields.Count(), 0);
+        }
+
+        private DropDownList GetDropDownListControl(ActivityDTO activityDTO)
+        {
+            var crateStorage = Crate.FromDto(activityDTO.CrateStorage);
+            var controls = crateStorage.CratesOfType<StandardConfigurationControlsCM>();
+            var ddlb = (DropDownList)controls.First(c => c.Label == "Selected_Google_Form").Content.FindByName("Selected_Google_Form");
+            return ddlb;
         }
     }
 }

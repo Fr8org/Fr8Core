@@ -85,6 +85,17 @@ namespace terminalGoogle.Services
             return await Task.FromResult(files.ToDictionary(a => a.Id, a => a.Title));
         }
 
+        public async Task<string> CreateGoogleForm(GoogleAuthDTO authDTO, string title)
+        {
+            var driveService = await CreateDriveService(authDTO);
+            var file = new Google.Apis.Drive.v2.Data.File();
+            file.Title = title;
+            file.MimeType = "application/vnd.google-apps.form";
+            var request = driveService.Files.Insert(file);
+            var result = request.Execute();
+            return result.Id;
+        }
+
         public async Task<ScriptService> CreateScriptsService(GoogleAuthDTO authDTO)
         {
             var flowData = _googleAuth.CreateFlowMetadata(authDTO, "", CloudConfigurationManager.GetSetting("GoogleRedirectUri"));
@@ -269,6 +280,11 @@ namespace terminalGoogle.Services
 
             return fileName;
         }
-
+        public async Task DeleteForm(string formId, GoogleAuthDTO authDTO)
+        {
+            GoogleDrive googleDrive = new GoogleDrive();
+            var driveService = await googleDrive.CreateDriveService(authDTO);
+            driveService.Files.Delete(formId).Execute();
+        }
     }
 }

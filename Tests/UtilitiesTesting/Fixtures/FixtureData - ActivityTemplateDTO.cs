@@ -94,7 +94,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Monitor_Form_Responses",
                 Version = "1"
             };
