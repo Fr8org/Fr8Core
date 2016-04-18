@@ -138,9 +138,12 @@ namespace terminalExcel.Actions
 
         private Crate CreateExternalObjectHandlesCrate()
         {
+            var fileName = ExtractFileName(ConfigurationControls.FilePicker.Value);
+
             var externalObjectHandle = new ExternalObjectHandleDTO()
             {
-                Name = ExtractFileName(ConfigurationControls.FilePicker.Value),
+                Name = fileName,
+                Description = $"Table Data from Excel File '{fileName}'",
                 DirectUrl = ConfigurationControls.FilePicker.Value,
                 ManifestType = ManifestDiscovery.Default.GetManifestType<StandardTableDataCM>().Type
             };
