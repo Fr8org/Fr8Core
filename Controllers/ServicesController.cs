@@ -35,8 +35,8 @@ namespace HubWeb.Controllers
 
         public async Task<ActionResult> Salesforce()
         {
-            await getDocumentationSolutionList("Salesforce");
-            return View();
+            var solutionList = await getDocumentationSolutionList("terminalSalesforce");
+            return View(solutionList);
         }
 
         public async Task<ActionResult> GoogleApps()
