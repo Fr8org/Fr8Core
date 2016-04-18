@@ -30,6 +30,10 @@ namespace terminalSlackTests.Fixtures
                 Name = "Monitor_Channel_TEST",
                 Label = "Monitor Channel",
                 Category = ActivityCategory.Monitors,
+                Terminal = new TerminalDTO
+                {
+                    AuthenticationType = AuthenticationType.Internal
+                },
                 Version = "1"
             };
         }

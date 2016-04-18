@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 
 namespace Data.Interfaces.DataTransferObjects
 {
+    [System.Diagnostics.DebuggerDisplay("Key = '{Key}', Value = '{Value}'")]
     public class FieldDTO : System.ICloneable
     {
         [JsonProperty("key")]
@@ -24,19 +25,19 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("isRequired")]
         public bool IsRequired { get; set; }
 
-        [JsonProperty("tags")]
+        [JsonProperty("tags", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public string Tags { get; set; }
 
         [JsonProperty("availability", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public AvailabilityType Availability { get; set; }
 
-        [JsonProperty("sourceCrateManifest")]
+        [JsonProperty("sourceCrateManifest", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public CrateManifestType SourceCrateManifest { get; set; }
 
-        [JsonProperty("sourceCrateLabel")]
+        [JsonProperty("sourceCrateLabel", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public string SourceCrateLabel { get; set; }
 
-        [JsonProperty("data")]
+        [JsonProperty("data", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public Dictionary<string, JToken> Data { get; set; }
         
         public FieldDTO()
@@ -83,7 +84,7 @@ namespace Data.Interfaces.DataTransferObjects
                 
             };
         }
-        
+
         object System.ICloneable.Clone()
         {
             return Clone();
