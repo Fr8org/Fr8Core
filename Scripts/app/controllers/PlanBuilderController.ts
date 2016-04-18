@@ -51,6 +51,7 @@ module dockyard.controllers {
     import pwd = dockyard.directives.paneWorkflowDesigner;
     import pca = dockyard.directives.paneConfigureAction;
     import psa = dockyard.directives.paneSelectAction;
+    import planEvents = dockyard.Fr8Events.Plan;
 
     export class PlanBuilderController {
         // $inject annotation.
@@ -245,7 +246,7 @@ module dockyard.controllers {
             var currentPlan = this.$scope.current.plan;
 
             this.setAdvancedEditingMode();
-            var newSubPlan = new model.SubPlanDTO(null, true, currentPlan.id, "SubPlan-" + currentPlan.subPlans.length);
+            var newSubPlan = new model.SubPlanDTO(null, true, currentPlan.id, currentPlan.id, "SubPlan-" + currentPlan.subPlans.length);
 
             this.SubPlanService.create(newSubPlan).$promise.then((createdSubPlan: model.SubPlanDTO) => {
                 createdSubPlan.activities = [];
@@ -256,6 +257,7 @@ module dockyard.controllers {
                 var processedGroup = this.LayoutService.addEmptyProcessedGroup(createdSubPlan.subPlanId);
                 this.$scope.processedSubPlans.push({ subPlan: createdSubPlan, actionGroups: processedGroup });
                 //this.renderPlan(<interfaces.IPlanVM>currentPlan);
+                this.$scope.$broadcast(<any>planEvents.SUB_PLAN_MODIFICATION);
             });
         }
 
@@ -583,7 +585,6 @@ module dockyard.controllers {
         }
 
         private PaneSelectAction_ActivityTypeSelected(eventArgs: psa.ActivityTypeSelectedEventArgs) {
-
             var activityTemplate = eventArgs.activityTemplate;
             // Generate next Id.
             var id = this.LocalIdentityGenerator.getNextId();
@@ -817,7 +818,7 @@ module dockyard.controllers {
             this.$timeout(() => {
                 if (callConfigureResponseEventArgs.focusElement != null) {
                     //broadcast to control to set focus on current element        
-                    this.$scope.$broadcast("onFieldFocus", callConfigureResponseEventArgs);
+                    this.$scope.$broadcast(<any>planEvents.ON_FIELD_FOCUS, callConfigureResponseEventArgs);
                 }
             }, 300);
         }

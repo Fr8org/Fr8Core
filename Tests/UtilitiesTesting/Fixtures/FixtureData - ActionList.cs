@@ -335,7 +335,7 @@ namespace UtilitiesTesting.Fixtures
 //
             var activityTempate = new ActivityTemplateDO()
             {
-                Id = 1,
+                Id = GetTestGuidById(1),
                 Version = "1",
                 Terminal = FixtureData.TerminalFive(),
                 Name = "Monitor_DocuSign"
@@ -363,7 +363,7 @@ namespace UtilitiesTesting.Fixtures
 //
               var activityTempate = new ActivityTemplateDO()
               {
-                  Id = 1,
+                  Id = GetTestGuidById(1),
                   Version = "1",
                   Terminal = FixtureData.TerminalFive(),
                   Name = "Monitor_DocuSign"

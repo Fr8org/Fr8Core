@@ -65,8 +65,7 @@ namespace TerminalBase.BaseClasses
         protected T ConfigurationControls { get; private set; }
         protected UpstreamQueryManager UpstreamQueryManager { get; private set; }
         protected UiBuilder UiBuilder { get; private set; }
-        protected int LoopIndex => GetLoopIndex(OperationalState, LoopId);
-        protected string LoopId => CurrentActivity.GetLoopId();
+        protected int LoopIndex => GetLoopIndex(OperationalState);
 
         /**********************************************************************************/
         // Functions
@@ -380,6 +379,48 @@ namespace TerminalBase.BaseClasses
             return Task.FromResult(true);
         }
 
+        private const string ConfigurationValuesCrateLabel = "Configuration Values";
+        /// <summary>
+        /// Get or sets value of configuration field with the given key stored in current activity storage
+        /// </summary>
+        /// <param name="key"></param>
+        /// <returns></returns>
+        protected string this[string key]
+        {
+            get
+            {
+                CheckCurrentActivityStorageAvailability();
+                var crate = CurrentActivityStorage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == ConfigurationValuesCrateLabel);
+                return crate?.Content.Fields.FirstOrDefault(x => x.Key == key)?.Value;
+            }
+            set
+            {
+                CheckCurrentActivityStorageAvailability();
+                var crate = CurrentActivityStorage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == ConfigurationValuesCrateLabel);
+                if (crate == null)
+                {
+                    crate = Crate<FieldDescriptionsCM>.FromContent(ConfigurationValuesCrateLabel, new FieldDescriptionsCM(), AvailabilityType.Configuration);
+                    CurrentActivityStorage.Add(crate);
+                }
+                var field = crate.Content.Fields.FirstOrDefault(x => x.Key == key);
+                if (field == null)
+                {
+                    field = new FieldDTO(key, AvailabilityType.Configuration);
+                    crate.Content.Fields.Add(field);
+                }
+                field.Value = value;
+                CurrentActivityStorage.ReplaceByLabel(crate);
+            }
+        }
+
+        private void CheckCurrentActivityStorageAvailability()
+        {
+            if (CurrentActivityStorage == null)
+            {
+                throw new ApplicationException("Current activity storage is not available");
+            }
+        }
+
         /**********************************************************************************/
         // SyncConfControls and SyncConfControlsBack are pair of methods that serves the following reason:
         // We want to work with StandardConfigurationControlsCM in form of ActivityUi that has handy properties to directly access certain controls
@@ -594,11 +635,13 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
         /// <summary>
-        /// Creates a reprocess child actions request
+        /// Call an activity or subplan  and return to the current activity
         /// </summary>
-        protected void RequestReprocessChildren()
+        /// <returns></returns>
+        protected void RequestCall(Guid targetNodeId)
         {
-            SetResponse(ActivityResponse.ReprocessChildren);
+            SetResponse(ActivityResponse.CallAndReturn);
+            OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetNodeId });
         }
 
         /**********************************************************************************/
@@ -636,13 +679,13 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        protected void SetResponse(ActivityResponse response, string message = null)
+        protected void SetResponse(ActivityResponse response, string message = null, object details = null)
         {
             OperationalState.CurrentActivityResponse = ActivityResponseDTO.Create(response);
 
-            if (!string.IsNullOrWhiteSpace(message))
+            if (!string.IsNullOrWhiteSpace(message) || details != null)
             {
-                OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() {Message = message});
+                OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() {Message = message, Details = details});
             }
         }
 

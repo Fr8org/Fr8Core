@@ -195,7 +195,6 @@
     <Compile Include="Fixtures\FixtureData - Terminal.cs" />
     <Compile Include="Fixtures\FixtureData - TerminalIntegration.cs" />
     <Compile Include="Fixtures\FixtureData - Container.cs" />
-    <Compile Include="Fixtures\FixtureData - ProcessNode.cs" />
     <Compile Include="Fixtures\FixtureData - SQLTable.cs" />
     <Compile Include="Fixtures\FixtureData - SubPlanDO.cs" />
     <Compile Include="Fixtures\FixtureData - Plan.cs" />

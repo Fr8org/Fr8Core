@@ -11,6 +11,7 @@ using Data.States;
 using Utilities.Configuration.Azure;
 using System.Web.Http.Description;
 using Data.Interfaces.Manifests;
+using Data.Constants;
 
 namespace terminalSalesforce.Controllers
 {
@@ -57,7 +58,8 @@ namespace terminalSalesforce.Controllers
                 NeedsAuthentication = true,
                 Category = ActivityCategory.Receivers,
                 MinPaneWidth = 330,
-                WebService = webService
+                WebService = webService,
+                Tags = Tags.TableDataGenerator
             };
 
             var postToChatterAction = new ActivityTemplateDTO()
@@ -70,11 +72,24 @@ namespace terminalSalesforce.Controllers
                 Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 WebService = webService
-            }; 
+            };
+
+            var mailMergeFromSalesforce = new ActivityTemplateDTO
+            {
+                Version = "1",
+                Name = "Mail_Merge_From_Salesforce",
+                Label = "Mail Merge from Salesforce",
+                Terminal = terminal,
+                NeedsAuthentication = true,
+                Category = ActivityCategory.Solution,
+                MinPaneWidth = 500,
+                WebService = webService,
+                Tags = Tags.UsesReconfigureList
+            };
 
             var actionList = new List<ActivityTemplateDTO>()
             {
-                saveToSalesforce, getDataAction, postToChatterAction
+                saveToSalesforce, getDataAction, postToChatterAction, mailMergeFromSalesforce
             };
 
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()

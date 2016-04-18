@@ -1,0 +1,21 @@
+﻿<div class="modal-header">
+    <h4 ng-if="!selectedWebService">Select which data:</h4>
+    <h4 ng-if="selectedWebService" style="cursor: pointer;">
+        <i class="fa fa-arrow-left" style="font-size: 16px; display: inline-block" ng-click="unselectWebService()"></i>
+        <span style="display: inline-block;" ng-click="unselectWebService()">Activities</span>
+    </h4>
+</div>
+<div class="modal-body activity-chooser-select-dialog">
+    <div ng-show="!selectedWebService" class="show-hide-transition web-service-list">
+        <div ng-repeat="webService in webServiceActivities" ng-click="selectWebService(webService)" style="margin: 0 0 5px 0; cursor: pointer;">
+            <img ng-src="{{webService.webServiceIconPath}}" style="width: 48px; height: 48px;" />
+            <span style="font-size: 1.3em; margin-left: 10px;">{{webService.webServiceName}}</span>
+        </div>
+    </div>
+    <div ng-show="selectedWebService" class="show-hide-transition activity-list">
+        <div ng-repeat="activity in selectedWebService.activities" ng-click="selectActivityTemplate(activity)" style="cursor: pointer;">
+            <i class="fa fa-cogs" style="font-size: 24px; display: inline-block; vertical-align: middle;"></i>
+            <span style="font-size: 1.3em; display: inline-block; margin: 20px 0 20px 10px; vertical-align: middle;">{{activity.label}}</span>
+        </div>
+    </div>
+</div>

@@ -111,6 +111,31 @@ namespace HealthMonitor.Utility
             return TerminalUrl;
         }
 
+        protected void AddHubCrate<T>(Fr8DataDTO dataDTO, T crateManifest, string label, string innerLabel)
+        {
+            var crateStorage = Crate.GetStorage(dataDTO.ExplicitData);
+
+            var fullLabel = label;
+            if (!string.IsNullOrEmpty(innerLabel))
+            {
+                fullLabel += "_" + innerLabel;
+            }
+
+            var crate = Crate<T>.FromContent(fullLabel, crateManifest);
+            crateStorage.Add(crate);
+
+            dataDTO.ExplicitData = Crate.CrateStorageAsStr(crateStorage);
+        }
+
+        public void AddPayloadCrate<T>(Fr8DataDTO dataDTO, T crateManifest, string crateLabel = "")
+        {
+            AddHubCrate(dataDTO, crateManifest, "HealthMonitor_PayloadCrate", crateLabel);
+        }
+
+        public void AddOperationalStateCrate(Fr8DataDTO dataDTO, OperationalStateCM operationalState)
+        {
+            AddPayloadCrate(dataDTO, operationalState, "Operational Status");
+        }
 
         public void CheckIfPayloadHasNeedsAuthenticationError(PayloadDTO payload)
         {

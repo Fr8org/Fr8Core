@@ -1,6 +1,7 @@
 ﻿/// <reference path="../../_all.ts" />
 module dockyard.directives.containerTransition {
     import ContainerTransitions = dockyard.model.ContainerTransitions;
+    import planEvents = dockyard.Fr8Events.Plan;
     'use strict';
 
     interface IContainerTransitionScope extends ng.IScope {
@@ -241,6 +242,14 @@ module dockyard.directives.containerTransition {
 
                 informJumpTargets();
             };
+
+            $scope.$on(<any>planEvents.SUB_PLAN_MODIFICATION, function () {
+                for (var i = 0; i < $scope.field.transitions.length; i++) {
+                    if ($scope.field.transitions[i].transition == ContainerTransitions.JumpToSubplan) {
+                        (<any>$scope.field.transitions[i])._dummySecondaryOperationDD.listItems = getCurrentSubplans();
+                    };
+                };
+            });
 
             $scope.onTargetChange = (transition: model.ContainerTransitionField) => {
                 var dd = <model.DropDownList>(<any>transition)._dummySecondaryOperationDD;

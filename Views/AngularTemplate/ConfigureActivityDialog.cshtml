@@ -1,0 +1,12 @@
+﻿<div class="modal-header">
+    <h4>Please, configure activity {{activity.activityTemplate.label}}</h4>
+</div>
+<div class="modal-body">
+    <div style="overflow-y: auto; max-height: 500px">
+        <!--<pane-configure-action plan="plan" current-action="activity" view="view" mode="mode" processing="isReConfiguring"></pane-configure-action>-->
+        <pane-configure-action plan="plan" current-action="activity" view="{{view}}" mode="mode" processing="isReConfiguring"></pane-configure-action>
+    </div>
+</div>
+<div class="modal-footer">
+    <button class="btn btn-primary" ng-click="save()">Save</button>
+</div>
