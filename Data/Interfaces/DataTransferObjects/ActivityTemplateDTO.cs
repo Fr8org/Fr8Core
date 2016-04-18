@@ -27,8 +27,6 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("terminal")]
         public TerminalDTO Terminal { get; set; }
 
-        //public int TerminalId { get; set; }
-
         [JsonProperty("tags")]
         public string Tags { get; set; }
 
@@ -49,11 +47,5 @@ namespace Data.Interfaces.DataTransferObjects
         public string Description { get; set; }
 
         public bool NeedsAuthentication { get; set; }
-      
-        [JsonProperty("showDocumentation")]
-        public ActivityResponseDTO ShowDocumentation { get; set; }
-
-        [JsonProperty("clientVisibility")]
-        public bool ClientVisibility { get; set; } = true;
     }
 }
