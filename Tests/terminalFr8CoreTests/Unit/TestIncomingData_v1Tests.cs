@@ -19,7 +19,7 @@ using UtilitiesTesting.Fixtures;
 using terminalFr8Core.Actions;
 using TerminalBase.Infrastructure;
 
-namespace DockyardTest.Unit
+namespace HubTests.Unit
 {
     [TestFixture]
     [Category("TestIncomingData_v1")]
