@@ -122,11 +122,11 @@ module dockyard.directives.containerTransition {
                 var subplanActivities = new Array<model.DropDownListItem>();
                 for (var i = 0; i < subplan.activities.length; i++) {
                     var current = subplan.activities[i];
-                    subplanActivities.push(new model.DropDownListItem(current.label, current.id));
+                    subplanActivities.push(new model.DropDownListItem(current.name, current.id));
                     if (!isThisCurrentLevel(subplan.activities[i])) {
                         var childActivityTree = getActivityTree(current);
                         for (var j = 0; j < childActivityTree.length; j++) {
-                            subplanActivities.push(new model.DropDownListItem(childActivityTree[j].label, childActivityTree[j].id));
+                            subplanActivities.push(new model.DropDownListItem(childActivityTree[j].name, childActivityTree[j].id));
                         }
                     }
                 }

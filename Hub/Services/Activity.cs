@@ -99,6 +99,7 @@ namespace Hub.Services
             //existingActivity.ActivityTemplateId = submittedActivity.ActivityTemplateId;
 
             existingActivity.Label = submittedActivity.Label;
+            existingActivity.Name = submittedActivity.Name;
             existingActivity.CrateStorage = submittedActivity.CrateStorage;
             existingActivity.Ordering = submittedActivity.Ordering;
         }
@@ -174,7 +175,7 @@ namespace Hub.Services
             return uow.PlanRepository.GetById<ActivityDO>(id);
         }
 
-        public async Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
+        public async Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid actionTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
         {
             if (parentNodeId != null && createPlan)
             {
@@ -231,7 +232,7 @@ namespace Hub.Services
             {
                 Id = Guid.NewGuid(),
                 ActivityTemplateId = actionTemplateId,
-                Label = label,
+                Name = name,
                 CrateStorage = _crate.EmptyStorageAsStr(),
                 AuthorizationTokenId = authorizationTokenId
             };
@@ -578,6 +579,7 @@ namespace Hub.Services
                 {
                     Id = Guid.NewGuid(),
                     Label = curActivityTerminalDTO.Label,
+                    Name = curActivityTerminalDTO.Name,
                     ActivityTemplate = curActivityTerminalDTO,
                     AuthToken = new AuthorizationTokenDTO
                     {

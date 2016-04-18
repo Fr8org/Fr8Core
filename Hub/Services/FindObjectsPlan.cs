@@ -40,7 +40,7 @@ namespace Hub.Services
                 Id = Guid.NewGuid(),
                 Ordering = 1,
                 ActivityTemplateId = connectToSqlActivityTemplate.Id,
-                Label = connectToSqlActivityTemplate.Name
+                Name = connectToSqlActivityTemplate.Name
             };
 
             var buildQueryActivityTemplate = _activityTemplate.GetByName(uow, "BuildQuery_v1");
@@ -49,7 +49,7 @@ namespace Hub.Services
                 Id = Guid.NewGuid(),
                 Ordering = 2,
                 ActivityTemplateId = buildQueryActivityTemplate.Id,
-                Label = buildQueryActivityTemplate.Name
+                Name = buildQueryActivityTemplate.Name
             };
 
             var executeSqlActivityTemplate = _activityTemplate.GetByName(uow, "ExecuteSql_v1");
@@ -58,7 +58,7 @@ namespace Hub.Services
                 Id = Guid.NewGuid(),
                 Ordering = 3,
                 ActivityTemplateId = executeSqlActivityTemplate.Id,
-                Label = executeSqlActivityTemplate.Name
+                Name = executeSqlActivityTemplate.Name
             };
 
             var managePlanActivityTemplate = _activityTemplate.GetByName(uow, "ManagePlan_v1");
@@ -67,7 +67,7 @@ namespace Hub.Services
                 Id = Guid.NewGuid(),
                 Ordering = 4,
                 ActivityTemplateId = managePlanActivityTemplate.Id,
-                Label = managePlanActivityTemplate.Name
+                Name = managePlanActivityTemplate.Name
             };
 
             plan.ChildNodes.Add(subPlan);

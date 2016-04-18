@@ -102,7 +102,7 @@ namespace terminalSalesforce.Actions
                 return Success(payloadCrates, string.Format("Successfully posted {0} to {1}", feedText, selectedChatterObjectId));
             }
 
-            return Error(payloadCrates, "Error when posting a Feed to Chatter", currentActivity: curActivityDO.Label, 
+            return Error(payloadCrates, "Error when posting a Feed to Chatter", currentActivity: curActivityDO.Name, 
                 currentTerminal: curActivityDO.ActivityTemplate.Terminal.Name);
         }
 

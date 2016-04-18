@@ -15,6 +15,7 @@ module dockyard.interfaces {
         id: string;
         parentPlanNodeId: string;
         label?: string;
+        name?: string;
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;
         activityTemplate: model.ActivityTemplate;
