@@ -35,10 +35,14 @@ namespace terminalSalesforce.Actions
         public static void GetAvailableFields(Crate configurationCrate, string controlName)
         {
             var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
-            if (control != null)
+            GetAvailableFields(configurationControl.FindByNameNested<DropDownList>(controlName));
+        }
+
+        public static void GetAvailableFields(DropDownList dropDownControl)
+        {
+            if (dropDownControl != null)
             {
-                control.ListItems = FillSalesforceSupportedObjects();
+                dropDownControl.ListItems = FillSalesforceSupportedObjects();
             }
         }
 
