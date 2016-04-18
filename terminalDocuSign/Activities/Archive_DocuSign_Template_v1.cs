@@ -154,17 +154,17 @@ namespace terminalDocuSign.Actions
 
         private async Task<ActivityDO> CreateGetDocuSignTemplateActivity(ActivityTemplateDTO template, AuthorizationTokenDO authTokenDO, ActivityDO parentAction)
         {
-            var activity = await HubCommunicator.CreateAndConfigureActivity(template.Id, CurrentFr8UserId, "Get Docusign Template", 1, parentAction.Id, false, authTokenDO.Id);
+            var activity = await HubCommunicator.CreateAndConfigureActivity(template.Id, CurrentFr8UserId, null, "Get Docusign Template", 1, parentAction.Id, false, authTokenDO.Id);
             return Mapper.Map<ActivityDO>(activity);
         }
         private async Task<ActivityDO> CreateConvertCratesActivity(ActivityTemplateDTO template, ActivityDO parentAction)
         {
-            var activity = await HubCommunicator.CreateAndConfigureActivity(template.Id, CurrentFr8UserId, "Convert Crates", 2, parentAction.Id);
+            var activity = await HubCommunicator.CreateAndConfigureActivity(template.Id, CurrentFr8UserId, null, "Convert Crates", 2, parentAction.Id);
             return Mapper.Map<ActivityDO>(activity);
         }
         private async Task<ActivityDO> CreateStoreFileActivity(ActivityTemplateDTO template, ActivityDO parentAction)
         {
-            var activity = await HubCommunicator.CreateAndConfigureActivity(template.Id, CurrentFr8UserId, "Store File", 3, parentAction.Id);
+            var activity = await HubCommunicator.CreateAndConfigureActivity(template.Id, CurrentFr8UserId, null, "Store File", 3, parentAction.Id);
             return Mapper.Map<ActivityDO>(activity);
         }
 
