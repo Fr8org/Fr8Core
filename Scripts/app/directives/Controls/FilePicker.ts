@@ -12,6 +12,7 @@ module dockyard.directives.filePicker {
     }
 
     import pca = dockyard.directives.paneConfigureAction;
+    import filePickerEvents = dockyard.Fr8Events.FilePicker;
 
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
@@ -23,7 +24,7 @@ module dockyard.directives.filePicker {
 
             var OnFileUploadSuccess = function (fileDTO: interfaces.IFileDescriptionDTO) {
                 $scope.selectedFile = fileDTO;
-                $scope.$root.$broadcast("fp-success", fileDTO);
+                $scope.$root.$broadcast(<any>filePickerEvents.FP_SUCCESS, fileDTO);
                 $scope.field.value = (<dockyard.model.FileDTO>fileDTO).cloudStorageUrl;
                 if ($scope.change != null && angular.isFunction($scope.change)) {
                     $scope.change()($scope.field);

@@ -70,6 +70,9 @@ namespace terminalExcel.Actions
 
         private const string ColumnHeadersCrateLabel = "Spreadsheet Column Headers";
 
+        private const string ExternalObjectHandlesLabel = "External Object Handles";
+
+
         public Load_Excel_File_v1() : base(false)
         {
             ActivityName = "Load Excel File";
@@ -96,14 +99,20 @@ namespace terminalExcel.Actions
                 if (previousValues == null || previousValues.Key != ConfigurationControls.FilePicker.Value)
                 {
                     var selectedFileDescription = new FieldDTO(ConfigurationControls.FilePicker.Value, ExtractFileName(ConfigurationControls.FilePicker.Value));
-                    var columnHeadersCrate = Crate.FromContent(ColumnHeadersCrateLabel,
-                                                               await Task.Run(() => ExcelUtils.GetColumnHeadersData(selectedFileDescription.Key)),
-                                                               AvailabilityType.Always);
+                    var columnHeadersCrate = Crate.FromContent(
+                        ColumnHeadersCrateLabel,
+                        await Task.Run(() => ExcelUtils.GetColumnHeadersData(selectedFileDescription.Key)),
+                        AvailabilityType.Always
+                    );
+
                     ConfigurationControls.MarkFileAsUploaded(selectedFileDescription.Value, selectedFileDescription.Key);
                     CurrentActivityStorage.ReplaceByLabel(columnHeadersCrate);
                     SelectedFileDescription = selectedFileDescription;
+
+                    CurrentActivityStorage.ReplaceByLabel(CreateExternalObjectHandlesCrate());
                 }
             }
+
             runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
             CurrentActivityStorage.Add(Crate.FromContent(FileCrateLabel, new StandardFileDescriptionCM() { Filename = FileCrateLabel }));
         }
@@ -125,6 +134,24 @@ namespace terminalExcel.Actions
             };
             CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, payload, AvailabilityType.RunTime));
             CurrentPayloadStorage.Add(Crate.FromContent(FileCrateLabel, fileDescription, AvailabilityType.Always));
+        }
+
+        private Crate CreateExternalObjectHandlesCrate()
+        {
+            var externalObjectHandle = new ExternalObjectHandleDTO()
+            {
+                Name = ExtractFileName(ConfigurationControls.FilePicker.Value),
+                DirectUrl = ConfigurationControls.FilePicker.Value,
+                ManifestType = ManifestDiscovery.Default.GetManifestType<StandardTableDataCM>().Type
+            };
+
+            var crate = Crate.FromContent(
+                ExternalObjectHandlesLabel,
+                new ExternalObjectHandlesCM(externalObjectHandle),
+                AvailabilityType.Always
+            );
+
+            return crate;
         }
 
         private FieldDTO SelectedFileDescription

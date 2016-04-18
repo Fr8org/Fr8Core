@@ -564,6 +564,7 @@ namespace Hub.Services
         public async Task<PlanDO> Clone(Guid planId)
         {
 
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var currentUser = _security.GetCurrentAccount(uow);
@@ -575,9 +576,14 @@ namespace Hub.Services
                 }
 
                 var cloneTag = "Cloned From " + planId;
+
+                /*
                 //let's check if we have cloned this plan before
                 var existingPlan = await uow.PlanRepository.GetPlanQueryUncached()
-                    .Where(p => p.Fr8AccountId == currentUser.Id && p.Tag.Contains(cloneTag)).FirstOrDefaultAsync();
+                    .Where(p => p.Fr8AccountId == currentUser.Id 
+                    && p.Tag.Contains(cloneTag) 
+                    && p.PlanState != PlanState.Deleted)
+                    .FirstOrDefaultAsync();
 
 
                 if (existingPlan != null)
@@ -585,11 +591,13 @@ namespace Hub.Services
                     //we already have cloned this plan before
                     return existingPlan;
                 }
+                */
 
                 //we should clone this plan for current user
                 //let's clone the plan entirely
                 var clonedPlan = (PlanDO)PlanTreeHelper.CloneWithStructure(targetPlan);
                 clonedPlan.Name = clonedPlan.Name + " - " + "Customized for User " + currentUser.UserName;
+                clonedPlan.Description = clonedPlan.Name + " - " + "Customized for User " + currentUser.UserName + " on " + DateTime.Now;
                 clonedPlan.PlanState = PlanState.Inactive;
                 clonedPlan.Tag = cloneTag;
 

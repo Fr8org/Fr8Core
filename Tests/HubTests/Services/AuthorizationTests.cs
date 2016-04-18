@@ -17,12 +17,13 @@ using Moq;
 using Hub.Services;
 using System.Collections.Generic;
 using Data.Interfaces;
+using UtilitiesTesting;
 
 namespace HubTests.Services
 {
     [TestFixture]
     [Category("CrateManager")]
-    public partial class AuthorizationTests
+    public partial class AuthorizationTests : BaseTest
     {
         [SetUp]
         public void Setup()
