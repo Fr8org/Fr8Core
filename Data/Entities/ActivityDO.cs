@@ -55,6 +55,7 @@ namespace Data.Entities
 
             base.CopyProperties(source);
             Label = activity.Label;
+            Name = activity.Name;
             CrateStorage = activity.CrateStorage;
             AuthorizationTokenId = activity.AuthorizationTokenId;
             ActivityTemplateId = activity.ActivityTemplateId;
