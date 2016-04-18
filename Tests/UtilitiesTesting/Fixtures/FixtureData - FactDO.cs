@@ -12,7 +12,7 @@ namespace UtilitiesTesting.Fixtures
             var curFactDO = new FactDO
             {
                 ObjectId = "Terminal Incident",
-                CustomerId = "not_applicable",
+                Fr8UserId = "not_applicable",
                 Data = "service_start_up",
                 PrimaryCategory = "Operations",
                 SecondaryCategory = "System Startup",

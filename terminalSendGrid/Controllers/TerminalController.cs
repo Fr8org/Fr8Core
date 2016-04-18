@@ -35,7 +35,6 @@ namespace terminalSendGrid.Controllers
                 Name = "SendEmailViaSendGrid",
                 Label = "Send Email",
                 Version = "1",
-                Description = "Send Email: Description",
                 Tags = string.Join(",", Tags.Notifier, Tags.EmailDeliverer),
                 Terminal = terminal,
                 Category = ActivityCategory.Forwarders,
