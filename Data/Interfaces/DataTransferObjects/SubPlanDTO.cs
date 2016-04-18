@@ -13,8 +13,12 @@ namespace Data.Interfaces.DataTransferObjects
 
         public Guid? PlanId { get; set; }
 
+        public Guid? ParentId { get; set; }
+
         public string Name { get; set; }
 
         public string TransitionKey { get; set; }
+
+        public bool Runnable { get; set; }
     }
 }

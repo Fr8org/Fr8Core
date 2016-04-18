@@ -1690,7 +1690,7 @@ Quick Sidebar Content
 
 .page-content {
   background: #eff3f8;
-  padding: 15px 0 15px; }
+  padding: 0px 0 15px; }
 
 @media (max-width: 991px) {
   /* 991px */

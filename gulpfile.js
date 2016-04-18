@@ -33,6 +33,7 @@ gulp.task('concattemplates', function () {
 
 gulp.task('compile_js', function () {
     return gulp.src([
+        'Scripts/app/events/Fr8Events.js',
         'Scripts/app/model/ActionDTO.js',
         'Scripts/app/model/ActivityTemplate.js',
         'Scripts/app/model/Condition.js',
@@ -54,6 +55,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/model/ManageAuthToken.js',
         'Scripts/app/model/SolutionDTO.js',
         'Scripts/app/model/AlertDTO.js',
+        'Scripts/app/model/SubordinateSubplan.js',
         'Scripts/app/services/CrateHelper.js',
         'Scripts/app/services/AuthService.js',
         'Scripts/app/services/ConfigureTrackerService.js',
@@ -88,7 +90,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/PaneSelectAction/PaneSelectAction.js',
         'Scripts/app/directives/DesignerHeader/DesignerHeader.js',
         'Scripts/app/directives/SubplanHeader.js',
-        'Scripts/app/directives/Controls/ActivityChooser.js',
+        'Scripts/app/services/SubordinateSubplanService.js',
         'Scripts/app/directives/Controls/FilePicker.js',
         'Scripts/app/directives/Controls/RadioButtonGroup.js',
         'Scripts/app/directives/Controls/DropDownListBox.js',
@@ -117,6 +119,8 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/ContainerTransition.js',
         'Scripts/app/directives/Controls/MetaControlContainer.js',
         'Scripts/app/directives/Controls/ControlList.js',
+        'Scripts/app/directives/Controls/SelectData.js',
+        'Scripts/app/directives/Controls/ExternalObjectChooser.js',
         'Scripts/app/directives/LongAjaxCursor.js',
         'Scripts/app/directives/Validators/ManifestDescriptionValidators.js',
         'Scripts/app/directives/ActionPicker.js',

@@ -8,17 +8,21 @@
 #
 
 
+$ErrorActionPreference = 'Stop'
+
 
 $rgName = "BuildServers"
-$storageAccName = "buildservers6531"
-$vmName = "fr8BuildServer-1"
-$vmSize = "Standard_DS1"
-$computerName = "BuildServer-1"
+$storageAccName = "kwasabuildsfr8b041107350"
+$number = Read-Host "Enter Build Server number"
+$vmName = "fr8VMBuild-" + $number
+$vmSize = "Standard_DS2"
+$computerName = "fr8VMBuild-" + $number
 $osDiskName = "System"
 $location="West US"
 $pipName = $vmName + '-PIP'
 $nicname = $vmName + '-NIC'
 $vnetName="BuildServers"
+
 
 # Uncomment to use existing network objects
 #$pip = Get-AzureRmPublicIpAddress -Name $pipName -ResourceGroupName $rgName
@@ -48,7 +52,7 @@ $vm = Add-AzureRmVMNetworkInterface -VM $vm -Id $nic.Id
 
 #Create the OS disk URI
 $osDiskUri = '{0}vhds/{1}{2}.vhd' -f $storageAcc.PrimaryEndpoints.Blob.ToString(), $vmName.ToLower(), $osDiskName
-$urlOfCapturedImageVhd = '{0}system/Microsoft.Compute/Images/vhds/templ-osDisk.2397cc9d-e7d8-4b40-b8b0-863cf130d119.vhd' -f $storageAcc.PrimaryEndpoints.Blob.ToString()
+$urlOfCapturedImageVhd = '{0}system/Microsoft.Compute/Images/buildserver/templ-osDisk.3d8c801f-b2a6-4650-a120-92cc88b23f56.vhd' -f $storageAcc.PrimaryEndpoints.Blob.ToString()
 
 #Configure the OS disk to be created from image (-CreateOption fromImage) and give the URL of the captured image VHD for the -SourceImageUri parameter.
 #We found this URL in the local JSON template in the previous sections.
