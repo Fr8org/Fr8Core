@@ -25,6 +25,8 @@ namespace terminalSalesforce.Actions
         {
             public DropDownList SalesforceObjectList { get; set; }
 
+            public TextBlock EventDescription { get; set; }
+
             public CheckBox Created { get; set; }
 
             public CheckBox Updated { get; set; }
@@ -39,6 +41,13 @@ namespace terminalSalesforce.Actions
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
                 Controls.Add(SalesforceObjectList);
+
+                EventDescription = new TextBlock()
+                {
+                    Label = "Detect objects that have been: ",
+                    Name = nameof(EventDescription)
+                };
+                Controls.Add(EventDescription);
 
                 Created = new CheckBox
                 {
@@ -97,8 +106,11 @@ namespace terminalSalesforce.Actions
 
         protected override async Task RunCurrentActivity()
         {
+            //get the event payload from the Salesforce notification event
             var sfEventPayloads = CurrentPayloadStorage.CratesOfType<EventReportCM>().ToList().SelectMany(er => er.Content.EventPayload).ToList();
 
+            //if the payload does not contain Salesforce Event Notificaiton Payload, then it means,
+            //user initially runs this plan. Just acknowledge that the plan is activated successfully and it monitors the Salesforce events
             if (sfEventPayloads == null || 
                 sfEventPayloads.Count == 0 || 
                 !sfEventPayloads.Any(payload => payload.Label.Equals("Salesforce Event Notification Payload")))
@@ -108,20 +120,29 @@ namespace terminalSalesforce.Actions
                 return;
             }
 
+            //if payload contains Salesforce Notification, get it from the payload storage
             var curEventReport = CurrentPayloadStorage.CratesOfType<EventReportCM>().Single(er => er.Content.Manufacturer.Equals("Salesforce")).Content;
             var curEventPayloads = curEventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().Single().PayloadObjects;
 
+            //for each payload,
             curEventPayloads.ForEach(p =>
             {
+                //create SalesforceEventCM with the values. The values are:
+                //Object ID          -> Id of the newly created or updated Salesforce Object
+                //Object Type        -> Type of the newly created or updated Salesforce Object (ex., Lead, Account or Contact
+                //Occured Event      -> Cause of this notification (ex., Create or Updated)
+                //Created Date       -> Date at which the object is created
+                //LastModified Date  -> Date at which the object is last modified
                 var sfEvent = new SalesforceEventCM
                 {
-                    CreatedDate = p.PayloadObject.Single(requiredProperty => requiredProperty.Key.Equals("CreatedDate")).Value,
-                    LastModifiedDate = p.PayloadObject.Single(requiredProperty => requiredProperty.Key.Equals("LastModifiedDate")).Value,
                     ObjectId = p.PayloadObject.Single(requiredProperty => requiredProperty.Key.Equals("ObjectId")).Value,
                     ObjectType = p.PayloadObject.Single(requiredProperty => requiredProperty.Key.Equals("ObjectType")).Value,
-                    OccuredEvent = p.PayloadObject.Single(requiredProperty => requiredProperty.Key.Equals("OccuredEvent")).Value
+                    OccuredEvent = p.PayloadObject.Single(requiredProperty => requiredProperty.Key.Equals("OccuredEvent")).Value,
+                    CreatedDate = p.PayloadObject.Single(requiredProperty => requiredProperty.Key.Equals("CreatedDate")).Value,
+                    LastModifiedDate = p.PayloadObject.Single(requiredProperty => requiredProperty.Key.Equals("LastModifiedDate")).Value                    
                 };
 
+                //store the SalesforceEventCM into the current payload
                 CurrentPayloadStorage.ReplaceByLabel(
                     Crate.FromContent("Salesforce Event", sfEvent, AvailabilityType.RunTime));
             });
