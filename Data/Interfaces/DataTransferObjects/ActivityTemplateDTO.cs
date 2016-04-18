@@ -9,6 +9,11 @@ namespace Data.Interfaces.DataTransferObjects
 {
     public class ActivityTemplateDTO
     {
+        public ActivityTemplateDTO()
+        {
+            Type = ActivityType.Standard;
+        }
+
         //[JsonProperty("id")]
         public Guid Id { get; set; }
 
@@ -38,13 +43,6 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("minPaneWidth")]
         public int MinPaneWidth { get; set; }
-
-        public ActivityTemplateDTO()
-        {
-            Type = ActivityType.Standard;
-        }
-
-        public string Description { get; set; }
 
         public bool NeedsAuthentication { get; set; }
     }
