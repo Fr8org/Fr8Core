@@ -55,8 +55,7 @@ namespace terminalDocuSign.Controllers
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 MinPaneWidth = 380,
-                WebService = webService,
-                ShowDocumentation = ActivityResponseDTO.CreateDocumentationResponse("MenuItem", "Monitor_DocuSign_Envelope_Activity_SampleHelp1")
+                WebService = webService
             };
 
             var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDTO()
