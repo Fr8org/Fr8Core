@@ -3,6 +3,8 @@
 module dockyard.controllers {
     'use strict';
 
+    import filePickerEvents = dockyard.Fr8Events.FilePicker;
+
     export interface ManageFileListScope extends ng.IScope {
         UploadFile: (file: interfaces.IFileVM) => void;
         DeleteFile: (file: interfaces.IFileVM) => void;
@@ -55,7 +57,7 @@ module dockyard.controllers {
             $scope.DetailFile = <(file: interfaces.IFileVM) => void>angular.bind(this, this.DetailFile);
             $scope.AddFile = <(file: interfaces.IFileVM) => void> angular.bind(this, this.AddFile);
 
-            $scope.$on("fp-success", function (event, fileDTO) {
+            $scope.$on(<any>filePickerEvents.FP_SUCCESS, function (event, fileDTO) {
                 $scope.AddFile(fileDTO);
             });
 
