@@ -134,6 +134,7 @@
     <Compile Include="Activities\Get_File_List_v1_Tests.cs" />
     <Compile Include="Fixtures\FixtureData.cs" />
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
+    <Compile Include="Integration\Get_File_List_v1_EndToEnd_Tests.cs" />
     <Compile Include="Integration\Get_File_List_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Authentication_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Discovery_v1Tests.cs" />
@@ -155,6 +156,10 @@
     <ProjectReference Include="..\..\terminalDropbox\terminalDropbox.csproj">
       <Project>{cfba4468-222f-4255-8d94-809acbf7ac47}</Project>
       <Name>terminalDropbox</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalGoogle\terminalGoogle.csproj">
+      <Project>{CDDCCFAB-28B8-446C-8585-72D2BB78F2DC}</Project>
+      <Name>terminalGoogle</Name>
     </ProjectReference>
     <ProjectReference Include="..\HealthMonitorUtility\HealthMonitorUtility.csproj">
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>

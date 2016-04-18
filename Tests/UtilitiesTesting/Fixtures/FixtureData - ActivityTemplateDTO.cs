@@ -100,5 +100,15 @@ namespace UtilitiesTesting.Fixtures
                 Version = "1"
             };
         }
+
+        public static ActivityTemplateDTO GetFileListActivityTemplate()
+        {
+            return new ActivityTemplateDTO
+            {
+                Id = Guid.NewGuid(),
+                Name = "Get_File_List",
+                Version = "1"
+            };
+        }
     }
 }
