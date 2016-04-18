@@ -38,7 +38,6 @@ namespace terminalTwilio.Controllers
                 Tags = "Twillio,Notifier",
                 Category = ActivityCategory.Forwarders,
                 Version = "1",
-                Description = "Send SMS: Description",
                 Terminal = terminal,
                 MinPaneWidth = 330,
                 WebService = webService
