@@ -105,8 +105,11 @@ namespace Data.Constants
         [Display(Name = "Typed Fields")]
         TypedFields = 33,
 
+        [Display(Name = "External Object Handles")]
+        ExternalObjectHandles = 34,
+
         [Display(Name = "Salesforce Event")]
-        SalesforceEvent = 34
+        SalesforceEvent = 35
     }
 }
 

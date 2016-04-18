@@ -213,6 +213,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Service References\Application Insights\ConnectedService.json" />
+    <Content Include="..\Config\log4net.terminals.config">
+      <Link>log4net.terminals.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="ApplicationInsights.Debug.config">
       <DependentUpon>ApplicationInsights.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
@@ -321,4 +325,14 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Log4netConfigFiles Include="..\Config\*.terminals.*"/>
+  </ItemGroup>
+
+  <Target Name="BeforeBuild">
+    <Copy
+        SourceFiles="@(Log4NetConfigFiles)"
+        DestinationFolder="."
+         />
+  </Target>
 </Project>

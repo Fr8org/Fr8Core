@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Utilities;
 
-namespace DockyardTest.Utilities
+namespace HubTests.Utilities
 {
     [TestFixture]
     public class MiscUtilsTest

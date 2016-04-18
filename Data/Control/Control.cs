@@ -54,21 +54,45 @@ namespace Data.Control
         public const string ContainerTransition = "ContainerTransition";
         public const string MetaControlContainer = "MetaControlContainer";
         public const string ControlList = "ControlList";
-        public const string ActivityChooser = "ActivityChooser";
+        public const string SelectData = "SelectData";
+        public const string ExternalObjectChooser = "ExternalObjectChooser";
     }
 
-    public class ActivityChooser : ControlDefinitionDTO
+    public class SelectData : ControlDefinitionDTO
     {
-        public ActivityChooser()
+        public SelectData()
         {
-            Type = ControlTypes.ActivityChooser;
+            Type = ControlTypes.SelectData;
         }
 
-        [JsonProperty("subPlanId")]
-        public Guid? SubPlanId { get; set; }
+        [JsonProperty("activityTemplateId")]
+        public string ActivityTemplateId { get; set; }
 
-        [JsonProperty("activityTemplateLabel")]
-        public string ActivityTemplateLabel { get; set; }
+        [JsonProperty("activityTemplateName")]
+        public string ActivityTemplateName { get; set; }
+
+        [JsonProperty("subPlanId")]
+        public string SubPlanId { get; set; }
+
+        [JsonProperty("externalObjectName")]
+        public string ExternalObjectName { get; set; }
+    }
+
+    public class ExternalObjectChooser : ControlDefinitionDTO
+    {
+        public ExternalObjectChooser()
+        {
+            Type = ControlTypes.ExternalObjectChooser;
+        }
+
+        [JsonProperty("activityTemplateId")]
+        public string ActivityTemplateId { get; set; }
+
+        [JsonProperty("subPlanId")]
+        public string SubPlanId { get; set; }
+
+        [JsonProperty("externalObjectName")]
+        public string ExternalObjectName { get; set; }
     }
 
     public class CheckBox : ControlDefinitionDTO
@@ -224,6 +248,25 @@ namespace Data.Control
             };
         }
     }
+
+    public class SelectDataMetaDescriptionDTO : ControlMetaDescriptionDTO
+    {
+        public SelectDataMetaDescriptionDTO()
+            : base("SelectDataMetaDescriptionDTO", "Select Data")
+        {
+        }
+
+        public override ControlDefinitionDTO CreateControl()
+        {
+            return new ExternalObjectChooser
+            {
+                Label = this.Controls[0].Value,
+                Name = "SelectData",
+                ActivityTemplateId = ((SelectData)this.Controls[1]).ActivityTemplateId
+            };
+        }
+    }
+
 
     [JsonConverter(typeof(ControlMetaDescriptionDTOConverter))]
     public class ControlMetaDescriptionDTO

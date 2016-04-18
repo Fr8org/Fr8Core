@@ -8,7 +8,7 @@ namespace UtilitiesTesting.Fixtures
 {
 	partial class FixtureData
 	{
-		private  const string _xmlPayLoadLocation = "DockyardTest\\Content\\DocusignXmlPayload.xml";
+		private  const string _xmlPayLoadLocation = "HubTests\\Content\\DocusignXmlPayload.xml";
         
         public static ContainerDO TestContainer1()
 		{
@@ -190,7 +190,7 @@ namespace UtilitiesTesting.Fixtures
 		/// </summary>
 		/// <param name="physLocation"></param>
 		/// <returns></returns>
-		public static string FindXmlPayloadFullPath(string physLocation, string filepath="DockyardTest\\Content\\DocusignXmlPayload.xml")
+		public static string FindXmlPayloadFullPath(string physLocation, string filepath="HubTests\\Content\\DocusignXmlPayload.xml")
 		{
 			if (string.IsNullOrEmpty(physLocation))
 				return string.Empty;
