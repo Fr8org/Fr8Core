@@ -84,7 +84,6 @@ namespace terminalSalesforce.Controllers
                 Category = ActivityCategory.Solution,
                 MinPaneWidth = 500,
                 WebService = webService,
-                Description = "Retrieves specified data from Salesforce and process this data using specified email sender",
                 Tags = Tags.UsesReconfigureList
             };
 
