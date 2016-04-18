@@ -77,14 +77,13 @@ namespace terminalSalesforce.Controllers
             var mailMergeFromSalesforce = new ActivityTemplateDTO
             {
                 Version = "1",
-                Name = "MailMergeFromSalesforce",
+                Name = "Mail_Merge_From_Salesforce",
                 Label = "Mail Merge from Salesforce",
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 Category = ActivityCategory.Solution,
                 MinPaneWidth = 500,
                 WebService = webService,
-                Description = "Retrieves specified data from Salesforce and process this data using specified email sender",
                 Tags = Tags.UsesReconfigureList
             };
 

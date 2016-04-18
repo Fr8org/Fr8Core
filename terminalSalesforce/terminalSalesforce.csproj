@@ -238,7 +238,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activities\ActivitiesHelper.cs" />
-    <Compile Include="Activities\MailMergeFromSalesforce_v1.cs" />
+    <Compile Include="Activities\Mail_Merge_From_Salesforce_v1.cs" />
     <Compile Include="Activities\Monitor_Salesforce_Event_v1.cs" />
     <Compile Include="Activities\Save_To_SalesforceDotCom_v1.cs" />
     <Compile Include="Activities\Post_To_Chatter_v1.cs" />
@@ -393,13 +393,9 @@
   </Target>
   -->
   <ItemGroup>
-    <Log4netConfigFiles Include="..\Config\*.terminals.*"/>
+    <Log4netConfigFiles Include="..\Config\*.terminals.*" />
   </ItemGroup>
-
   <Target Name="BeforeBuild">
-    <Copy
-        SourceFiles="@(Log4NetConfigFiles)"
-        DestinationFolder="."
-         />
+    <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
   </Target>
 </Project>

@@ -16,7 +16,7 @@ namespace Data.Helpers
             {
                 return fields;
             }
-            if (obj is IEnumerable)
+            if (obj is IEnumerable && !(obj is string))
             {
 
                 var objList = obj as IEnumerable;

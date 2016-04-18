@@ -21,7 +21,7 @@ namespace terminalSalesforceTests.Integration
         private const string Save_To_SalesforceDotCom_Name = "Save_To_SalesforceDotCom";
         private const string Get_Data_Activity_Name = "Get_Data";
         private const string Post_To_Chatter_Name = "Post_To_Chatter";
-        private const string MailMergeFromSalesforceName = "MailMergeFromSalesforce";
+        private const string MailMergeFromSalesforceName = "Mail_Merge_From_Salesforce";
         private const string Monitor_Salesforce_Event_Name = "Monitor_Salesforce_Event";
 
         public override string TerminalName
