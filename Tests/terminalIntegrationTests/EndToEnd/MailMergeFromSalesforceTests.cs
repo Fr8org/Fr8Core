@@ -96,10 +96,10 @@ namespace terminalIntegrationTests.EndToEnd
             {
                 var caseWasDeleted = await DeleteCase(caseIdAndName.Item1, salesforceAuthToken);
                 Assert.IsTrue(caseWasDeleted, "Case created for test purposes failed to be deleted");
-                if (plan != null)
-                {
-                    await HttpDeleteAsync($"{_baseUrl}plans?id={plan.Plan.Id}");
-                }
+                //if (plan != null)
+                //{
+                //    await HttpDeleteAsync($"{_baseUrl}plans?id={plan.Plan.Id}");
+                //}
             }
         }
 
