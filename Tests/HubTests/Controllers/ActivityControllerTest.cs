@@ -46,7 +46,7 @@ namespace HubTests.Controllers
         [Test]
         public void ActivityController_ShouldHaveHMACOnCreateMethod()
         {
-            var createMethod = typeof(ActivitiesController).GetMethod("Create", new Type[] { typeof(Guid), typeof(string), typeof(int?), typeof(Guid?), typeof(bool), typeof(Guid?) });
+            var createMethod = typeof(ActivitiesController).GetMethod("Create", new Type[] { typeof(Guid), typeof(string), typeof(string), typeof(int?), typeof(Guid?), typeof(bool), typeof(Guid?) });
             ShouldHaveFr8HMACAuthorizeOnFunction(createMethod);
         }
 
