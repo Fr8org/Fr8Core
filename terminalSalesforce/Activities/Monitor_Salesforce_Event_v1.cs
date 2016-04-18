@@ -34,7 +34,7 @@ namespace terminalSalesforce.Actions
                 SalesforceObjectList = new DropDownList
                 {
                     Label = "Which object do you want to save to Salesforce.com?",
-                    Name = "sfObjectType",
+                    Name = nameof(SalesforceObjectList),
                     Required = true,
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
@@ -43,7 +43,7 @@ namespace terminalSalesforce.Actions
                 Created = new CheckBox
                 {
                     Label = "Created",
-                    Name = "Created",
+                    Name = nameof(Created),
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig },
                     Selected = false
                 };
@@ -52,7 +52,7 @@ namespace terminalSalesforce.Actions
                 Updated = new CheckBox
                 {
                     Label = "Updated",
-                    Name = "Updated",
+                    Name = nameof(Updated),
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig },
                     Selected = false
                 };
