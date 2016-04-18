@@ -12,8 +12,7 @@ namespace Data.Interfaces.Manifests
         public class LoopStatus
         {
             public int Index { get; set; }
-            public string CrateManifest { get; set; }
-            public string Label { get; set; }
+            public CrateDescriptionCM CrateManifest { get; set; }
         }
 
         public class BranchStatus
