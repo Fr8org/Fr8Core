@@ -5,7 +5,6 @@ using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-
     [JsonConverter(typeof(FieldConverter))]
     [System.Diagnostics.DebuggerDisplay("Key = '{Key}', Value = '{Value}'")]
     public class FieldDTO : System.ICloneable
