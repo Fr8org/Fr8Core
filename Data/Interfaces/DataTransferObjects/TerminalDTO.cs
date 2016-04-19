@@ -17,11 +17,8 @@ namespace Data.Interfaces.DataTransferObjects
         public string Version { get; set; }
         [JsonProperty("terminalStatus")]
         public int TerminalStatus { get; set; }
-        public _TerminalStatusTemplate TerminalStatusTemplate { get; set; }
         [JsonProperty("endpoint")]
         public string Endpoint { get; set; }
-        [JsonIgnore]
-        public virtual Fr8AccountDO UserDO { get; set; }
         [JsonProperty("description")]
         public string Description { get; set; }
         [JsonProperty("authenticationType")]
