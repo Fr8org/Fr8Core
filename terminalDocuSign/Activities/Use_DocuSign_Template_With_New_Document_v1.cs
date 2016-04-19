@@ -69,6 +69,10 @@ namespace terminalDocuSign.Actions
             {
                 Label = "Use new document",
                 Name = "document_Override_DDLB",
+                Events = new List<ControlEvent>()
+                {
+                     ControlEvent.RequestConfig
+                },
                 Required = true
             };
 
@@ -92,6 +96,7 @@ namespace terminalDocuSign.Actions
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 curActivityDO = await UpdateFilesDD(curActivityDO, crateStorage);
+                await HandleFollowUpConfiguration(curActivityDO, authTokenDO, crateStorage);
             }
 
             return await Task.FromResult(curActivityDO);
@@ -147,16 +152,15 @@ namespace terminalDocuSign.Actions
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                if (crateStorage.All(c => c.ManifestType.Id != (int)MT.FieldDescription))
+                var configurationCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+                if (configurationCrate == null)
                 {
-                    var configurationCrate = await CreateDocusignTemplateConfigurationControls(curActivityDO);
-                    FillDocuSignTemplateSource(configurationCrate, "target_docusign_template", authTokenDO);
-                    crateStorage.Replace(new CrateStorage(configurationCrate));
+                    configurationCrate = (Crate<StandardConfigurationControlsCM>)(await CreateDocusignTemplateConfigurationControls(curActivityDO));
+                    crateStorage.Add(configurationCrate);
                 }
 
+                FillDocuSignTemplateSource(configurationCrate, "target_docusign_template", authTokenDO);
                 await UpdateFilesDD(curActivityDO, crateStorage);
-
-                await UpdateUpstreamCrate(curActivityDO, crateStorage);
             }
 
             return curActivityDO;
