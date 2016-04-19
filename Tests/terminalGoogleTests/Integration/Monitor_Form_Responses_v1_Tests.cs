@@ -15,6 +15,7 @@ using terminalGoogleTests.Unit;
 namespace terminalGoogleTests.Integration
 {
     [Explicit]
+    [Category("terminalGoogleTests.Integration")]
     public class Monitor_Form_Responses_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
