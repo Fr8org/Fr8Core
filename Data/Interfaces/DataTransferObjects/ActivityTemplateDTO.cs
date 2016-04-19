@@ -9,6 +9,11 @@ namespace Data.Interfaces.DataTransferObjects
 {
     public class ActivityTemplateDTO
     {
+        public ActivityTemplateDTO()
+        {
+            Type = ActivityType.Standard;
+        }
+
         //[JsonProperty("id")]
         public Guid Id { get; set; }
 
@@ -27,8 +32,6 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("terminal")]
         public TerminalDTO Terminal { get; set; }
 
-        //public int TerminalId { get; set; }
-
         [JsonProperty("tags")]
         public string Tags { get; set; }
 
@@ -41,19 +44,6 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("minPaneWidth")]
         public int MinPaneWidth { get; set; }
 
-        public ActivityTemplateDTO()
-        {
-            Type = ActivityType.Standard;
-        }
-
-        public string Description { get; set; }
-
         public bool NeedsAuthentication { get; set; }
-      
-        [JsonProperty("showDocumentation")]
-        public ActivityResponseDTO ShowDocumentation { get; set; }
-
-        [JsonProperty("clientVisibility")]
-        public bool ClientVisibility { get; set; } = true;
     }
 }
