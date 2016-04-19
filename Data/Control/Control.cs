@@ -532,6 +532,7 @@ namespace Data.Control
                 //lets search in complete crate
                 searchArea = crate;
 
+                /*
                 //if we have a StandardTableDataCM and we are not in the loop and crate has Headers - we should search next row
                 if (crate.IsOfType<StandardTableDataCM>())
                 {
@@ -543,6 +544,7 @@ namespace Data.Control
                             return row.Row.Where(a => a.Cell.Key == this.selectedKey).FirstOrDefault().Cell;
                     }
                 }
+                */
             }
 
             //we should find first related field and return
