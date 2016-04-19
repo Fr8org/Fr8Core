@@ -188,9 +188,9 @@ namespace Hub.Services
             }
 
             // to avoid null pointer exception while creating parent node if label is null 
-            if (label == null)
+            if (name == null)
             {
-                label = userId + "_" + actionTemplateId.ToString();
+                name = userId + "_" + actionTemplateId.ToString();
             }
 
             PlanNodeDO parentNode;
@@ -198,12 +198,12 @@ namespace Hub.Services
 
             if (createPlan)
             {
-                plan = ObjectFactory.GetInstance<IPlan>().Create(uow, label);
+                plan = ObjectFactory.GetInstance<IPlan>().Create(uow, name);
 
                 plan.ChildNodes.Add(parentNode = new SubPlanDO
                 {
                     StartingSubPlan = true,
-                    Name = label + " #1"
+                    Name = name + " #1"
                 });
             }
             else
@@ -217,7 +217,7 @@ namespace Hub.Services
                         parentNode.ChildNodes.Add(parentNode = new SubPlanDO
                         {
                             StartingSubPlan = true,
-                            Name = label + " #1"
+                            Name = name + " #1"
                         });
                     }
                     else
