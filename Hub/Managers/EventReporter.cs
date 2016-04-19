@@ -513,6 +513,7 @@ namespace Hub.Managers
                 {
                     PrimaryCategory = entityName,
                     SecondaryCategory = stateName,
+                    Fr8UserId = _security.GetCurrentUser(),
                     Activity = "StateChanged",
                     ObjectId = id != null ? id.ToString() : null,
                     CreatedByID = _security.GetCurrentUser(),

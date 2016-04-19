@@ -105,7 +105,7 @@ namespace Data.Infrastructure
         public delegate void EventContainerLaunchedHandler(ContainerDO launchedContainer);
         public static event EventContainerLaunchedHandler EventContainerLaunched;
 
-        public delegate void EventContainerFailedHandler(PlanDO plan, Exception ex);
+        public delegate void EventContainerFailedHandler(PlanDO plan, Exception ex, string containerId);
         public static event EventContainerFailedHandler EventContainerFailed;
 
         public delegate void EventContainerCreatedHandler(ContainerDO containerDO);
@@ -524,10 +524,10 @@ namespace Data.Infrastructure
             if (handler != null) handler(launchedContainer);
         }
 
-        public static void ContainerFailed(PlanDO plan, Exception ex)
+        public static void ContainerFailed(PlanDO plan, Exception ex, string containerId)
         {
             var handler = EventContainerFailed;
-            if (handler != null) handler(plan, ex);
+            if (handler != null) handler(plan, ex, containerId);
         }
 
         public static void CriteriaEvaluationStarted(Guid processId)
