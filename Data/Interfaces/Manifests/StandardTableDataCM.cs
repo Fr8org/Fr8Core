@@ -30,6 +30,7 @@ namespace Data.Interfaces.Manifests
         public List<TableCellDTO> Row;
     }
 
+    [System.Diagnostics.DebuggerDisplay("Key = '{Cell.Key}', Value = '{Cell.Value}'")]
     public class TableCellDTO
     {
         public TableCellDTO()

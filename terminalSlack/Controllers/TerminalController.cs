@@ -58,7 +58,6 @@ namespace terminalSlack.Controllers
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 Version = "1",
-                Description = "Publish To Slack: Description",
                 WebService = webService,
                 MinPaneWidth = 330
             };
