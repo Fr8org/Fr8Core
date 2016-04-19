@@ -25,6 +25,7 @@ namespace UtilitiesTesting.Fixtures
                 {
                     Id = 1,
                     Name = "testTerminal",
+                    Label = "test",
                     Version = "v1",
                     PublicIdentifier = "test",
                     Secret = "test",

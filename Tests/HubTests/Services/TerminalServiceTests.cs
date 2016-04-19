@@ -37,6 +37,7 @@ namespace HubTests.Services
                    a.Endpoint == b.Endpoint &&
                    a.Id == b.Id &&
                    a.Name == b.Name &&
+                   a.Label == b.Label &&
                    a.PublicIdentifier == b.PublicIdentifier &&
                    a.Secret == b.Secret &&
                    a.TerminalStatus == b.TerminalStatus &&
@@ -54,6 +55,7 @@ namespace HubTests.Services
                     Endpoint = prefix+"ep" + i,
                     Description = prefix + "desc" + i,
                     Name = "name" + i,
+                    Label = prefix + "Label" + i,
                     Version = prefix + "Ver" + i,
                     TerminalStatus = 1,
                 };

@@ -89,6 +89,7 @@ namespace HubTests.Repositories
                     Id = 1,
                     Version = "v1",
                     Name = "Test terminal",
+                    Label = "Test",
                     Secret = Guid.NewGuid().ToString()
                 });
 

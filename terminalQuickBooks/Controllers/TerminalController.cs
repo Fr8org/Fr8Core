@@ -25,6 +25,7 @@ namespace terminalQuickBooks.Controllers
             var terminal = new TerminalDTO()
             {
                 Name = "terminalQuickBooks",
+                Label = "QuickBooks",
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("terminalQuickBooks.TerminalEndpoint"),
                 Version = "1",

@@ -26,6 +26,7 @@ namespace terminalSalesforce.Controllers
             var terminal = new TerminalDTO()
             {
                 Name = "terminalSalesforce",
+                Label = "Salesforce",
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("terminalSalesforce.TerminalEndpoint"),
                 Version = "1",

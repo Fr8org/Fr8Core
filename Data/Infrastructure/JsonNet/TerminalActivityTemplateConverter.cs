@@ -30,6 +30,8 @@ namespace Data.Infrastructure.JsonNet
             writer.WriteStartObject();
             writer.WritePropertyName("name");
             writer.WriteValue(item.Name);
+            writer.WritePropertyName("label");
+            writer.WriteValue(item.Label);
             writer.WritePropertyName("version");
             writer.WriteValue(item.Version);
             writer.WritePropertyName("endpoint");

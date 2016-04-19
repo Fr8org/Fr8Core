@@ -6,6 +6,7 @@ namespace Data.Interfaces
     {
         int Id { get; set; }
         string Name { get; set; }
+        string Label { get; set; }
         int TerminalStatus { get; set; }
         string Endpoint { get; set; }
 
