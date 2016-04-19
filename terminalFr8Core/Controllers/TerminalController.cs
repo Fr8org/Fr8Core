@@ -6,6 +6,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Utilities.Configuration.Azure;
 using Data.Interfaces.Manifests;
+using Data.Constants;
 
 namespace terminalFr8Core.Controllers
 {
@@ -79,7 +80,7 @@ namespace terminalFr8Core.Controllers
                 Version = "1",
                 MinPaneWidth = 330,
                 WebService = webService,
-                Tags = "internal"
+                Tags = Tags.Internal
             });
 
             result.Add(new ActivityTemplateDTO
@@ -88,7 +89,7 @@ namespace terminalFr8Core.Controllers
                 Label = "Map Fields",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-                Tags = "AggressiveReload,internal",
+                Tags = $"{Tags.AggressiveReload},{Tags.Internal}",
                 Version = "1",
                 MinPaneWidth = 380,
                 WebService = webService
@@ -124,7 +125,7 @@ namespace terminalFr8Core.Controllers
                 WebService = webService,
                 Version = "1",
                 MinPaneWidth = 330,
-                Tags = "internal"
+                Tags = Tags.Internal
             });
 
             result.Add(new ActivityTemplateDTO
@@ -135,7 +136,7 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1",
-                Tags = "internal"
+                Tags = Tags.Internal
             });
 
             result.Add(new ActivityTemplateDTO
@@ -146,7 +147,7 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1",
-                Tags = "internal"
+                Tags = Tags.Internal
             });
 
             result.Add(new ActivityTemplateDTO
@@ -157,7 +158,7 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1",
-                Tags = "internal"
+                Tags = Tags.Internal
             });
 
             result.Add(new ActivityTemplateDTO
@@ -168,7 +169,7 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1",
-                Tags = "internal"
+                Tags = Tags.Internal
             });
 
             result.Add(new ActivityTemplateDTO()
@@ -191,7 +192,7 @@ namespace terminalFr8Core.Controllers
                 WebService = webService,
                 Version = "1",
                 Type = ActivityType.Loop,
-                Tags = "AggressiveReload"
+                Tags = Tags.AggressiveReload
             });
 
             result.Add(new ActivityTemplateDTO()
@@ -249,7 +250,7 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 MinPaneWidth = 380,
                 WebService = webService,
-                Tags = "internal"
+                Tags = Tags.Internal
             });
 
             result.Add(new ActivityTemplateDTO()
@@ -284,7 +285,7 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 MinPaneWidth = 400,
-                Tags = "HideChildren"
+                Tags = Tags.HideChildren
             });
 
             result.Add(new ActivityTemplateDTO
@@ -297,7 +298,7 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 MinPaneWidth = 350,
-                Tags = "AggressiveReload"
+                Tags = Tags.AggressiveReload
             });
 
             result.Add(new ActivityTemplateDTO
@@ -321,6 +322,18 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 MinPaneWidth = 400
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "KeywordsFilter",
+                Label = "Keywords Filter",
+                Version = "1",
+                Category = ActivityCategory.Processors,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                WebService = webService,
+                MinPaneWidth = 550
             });
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
