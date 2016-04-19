@@ -361,6 +361,7 @@
     <Compile Include="Interfaces\Manifests\OperationalStateCM.CallStack.cs" />
     <Compile Include="Interfaces\Manifests\OperationalStateCM.CallStackConverter.cs" />
     <Compile Include="Interfaces\Manifests\OperationalStateCM.InternalStates.cs" />
+    <Compile Include="Interfaces\Manifests\SalesforceEventCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardAccountingTransactionCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFileListCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFr8PlansCM .cs" />

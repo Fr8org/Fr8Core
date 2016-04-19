@@ -72,7 +72,7 @@ namespace terminalSalesforce.Controllers
                 Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 WebService = webService
-            };
+            }; 
 
             var mailMergeFromSalesforce = new ActivityTemplateDTO
             {
@@ -87,9 +87,21 @@ namespace terminalSalesforce.Controllers
                 Tags = Tags.UsesReconfigureList
             };
 
+            var monitorSalesforceAction = new ActivityTemplateDTO()
+            {
+                Version = "1",
+                Name = "Monitor_Salesforce_Event",
+                Label = "Monitor Salesforce Events",
+                Terminal = terminal,
+                NeedsAuthentication = true,
+                Category = ActivityCategory.Monitors,
+                MinPaneWidth = 330,
+                WebService = webService
+            };
+
             var actionList = new List<ActivityTemplateDTO>()
             {
-                saveToSalesforce, getDataAction, postToChatterAction, mailMergeFromSalesforce
+                saveToSalesforce, getDataAction, postToChatterAction, mailMergeFromSalesforce, monitorSalesforceAction
             };
 
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
