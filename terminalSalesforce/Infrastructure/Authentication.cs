@@ -160,7 +160,7 @@ namespace terminalSalesforce.Infrastructure
                 userName = propertyValue.Value<string>();
             }
 
-            if (jCurUserInfo.TryGetValue("username", out propertyValue))
+            if (jCurUserInfo.TryGetValue("user_id", out propertyValue))
             {
                 userName += string.Format(" [{0}]", propertyValue.Value<string>());
             }

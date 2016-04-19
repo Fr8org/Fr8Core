@@ -96,7 +96,7 @@ namespace Hub.Services
                 {
                     //find the corresponding DockyardAccount
                     var authTokenList = uow.AuthorizationTokenRepository.GetPublicDataQuery()
-                        .Include(x => x.UserDO).Where(x => x.ExternalAccountId == eventReportMS.ExternalAccountId).ToArray();
+                        .Include(x => x.UserDO).Where(x => x.ExternalAccountId.Contains(eventReportMS.ExternalAccountId)).ToArray();
                     var tasks = new List<Task>();
                     foreach (var authToken in authTokenList)
                     {

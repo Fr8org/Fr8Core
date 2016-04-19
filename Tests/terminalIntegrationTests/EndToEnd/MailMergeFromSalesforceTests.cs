@@ -59,7 +59,7 @@ namespace terminalIntegrationTests.EndToEnd
                 //Initial configuration
                 solution = await Configure(solution);
                 //Folowup configuration
-                solution = solution.UpdateControls<MailMergeFromSalesforce_v1.ActivityUi>(x =>
+                solution = solution.UpdateControls<Mail_Merge_From_Salesforce_v1.ActivityUi>(x =>
                 {
                     x.SalesforceObjectSelector.selectedKey = "Case";
                     x.SalesforceObjectSelector.Value = "Case";
@@ -67,7 +67,7 @@ namespace terminalIntegrationTests.EndToEnd
                 //This call will make solution to load specified Salesforce object properties and clear filter
                 solution = await Configure(solution);
                 //This call will run generation of child activities
-                solution = solution.UpdateControls<MailMergeFromSalesforce_v1.ActivityUi>(x =>
+                solution = solution.UpdateControls<Mail_Merge_From_Salesforce_v1.ActivityUi>(x =>
                 {
                     x.SalesforceObjectFilter.Value = $"[{{\"field\":\"SuppliedName\",\"operator\":\"eq\",\"value\":\"{caseIdAndName.Item2}\"}}]";
                     var sendDocuSignItem = x.MailSenderActivitySelector.ListItems.FirstOrDefault(y => y.Key == "Send DocuSign Envelope");
@@ -192,7 +192,7 @@ namespace terminalIntegrationTests.EndToEnd
 
         private async Task<PlanDTO> CreatePlan()
         {
-            var solutionCreateUrl = GetHubApiBaseUrl() + "activities/create?solutionName=MailMergeFromSalesforce";
+            var solutionCreateUrl = GetHubApiBaseUrl() + "activities/create?solutionName=Mail_Merge_From_Salesforce";
             return await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
         }
 
