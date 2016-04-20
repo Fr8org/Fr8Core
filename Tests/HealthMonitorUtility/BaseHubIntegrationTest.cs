@@ -166,6 +166,17 @@ namespace HealthMonitor.Utility
             }
             return result;
         }
+        protected async Task<Guid> ExtractTerminalDefaultToken(string terminalName)
+        {
+            var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(GetHubApiBaseUrl() + "manageauthtoken/");
+            Assert.NotNull(tokens, "No authorization tokens were found for the integration testing user.");
+            var terminal = tokens.FirstOrDefault(x => x.Name == terminalName);
+            Assert.NotNull(terminal, $"No authorization tokens were found for the {terminalName}");
+            var token = terminal.AuthTokens.FirstOrDefault(x => x.IsMain);
+            Assert.NotNull(token, $"Authorization token for {terminalName} is not found for the integration testing user.Please go to the target instance of fr8 and log in with the integration testing user credentials.Then add a Google action to any plan and be sure to set the 'Use for all Activities' checkbox on the Authorize Accounts dialog while authenticating");
+
+            return token.Id;
+        }
 
 
         private async Task Authenticate(string email, string password, string verificationToken, HttpClient httpClient)

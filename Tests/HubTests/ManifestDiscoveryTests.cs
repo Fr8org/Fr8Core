@@ -2,12 +2,13 @@
 using Data.Crates;
 using Data.Interfaces.Manifests;
 using NUnit.Framework;
+using UtilitiesTesting;
 
 namespace HubTests
 {
     [TestFixture]
     [Category("ManifestDiscovery")]
-    public class ManifestDiscoveryTests
+    public class ManifestDiscoveryTests : BaseTest
     {
         public class CustomManifest : Manifest
         {

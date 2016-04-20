@@ -1,18 +1,18 @@
 ﻿<!-- BEGIN MAIN CONTENT -->
-<div ng-controller="PlanBuilderController" class="margin-top-10" block-if="isBusy()">
+<div ng-controller="PlanBuilderController" class="margin-top-25" block-if="isBusy()">
     <designer-header ng-show="current.plan" plan="current.plan" kiosk-mode="true"></designer-header>
     <div ng-if="editingMode=='advanced'" class="col-md-12" style="border-bottom: 1px solid; margin-bottom: 10px;"></div>
     <div class="plan-loading-message" block-if="current.plan"></div>
-    <div ng-repeat="pSubPlan in processedSubPlans">
+    <div ng-repeat="pSubPlan in processedSubPlans | filter: hasAnyActivity">
         <div class="route-builder-container" layout-container>
             <div ng-repeat="group in pSubPlan.actionGroups" layout-action-group class="action-group" ng-style="{left: group.offsetLeft, top: group.offsetTop}">
                 <div ng-if="mode !== 'solution' || $index === 0">
                     <div class="action-arrow-bottom" ng-style="{top: -group.arrowLength - 60, height: group.arrowLength + 35, left: group.arrowOffsetLeft}"></div>
-                    <div dnd-list="group.envelopes" dnd-external-sources="true" dnd-drop="onActionDrop(group, item, index)" style="display: inline-block;">
+                    <div style="display: inline-block;">
                         <div ng-repeat="envelope in group.envelopes track by $index">
                             <div class="action" ng-class="{'solution-action': envelope.activity.activityTemplate.category==='Solution'  && mode !== 'solution'}" layout-action>
                                 <div activity-resize minwidth="{{envelope.activity.activityTemplate.minPaneWidth}}" class="ap-resize">
-                                    <md-toolbar dnd-draggable="envelope.activity.id" class="action-header solution-action-header handle" dropdown transfer-click-configure-pane>
+                                    <md-toolbar class="action-header solution-action-header" dropdown transfer-click-configure-pane>
                                         <div class="md-toolbar-tools">
                                             <div class="action-header-icon" style="display:flex">
                                                 <img ng-src="{{envelope.activity.activityTemplate.webService.iconPath}}" ng-if="envelope.activity.activityTemplate.webService.iconPath" />
@@ -35,6 +35,6 @@
                 </div>
             </div>
         </div>
-        <hr class="transition-seperator" />
+        <hr class="transition-seperator" ng-if="processedSubPlans.length > 1"/>
     </div>
 </div>

@@ -2,6 +2,7 @@ using System.Collections.Generic;
 using Data.Entities;
 using System.Threading.Tasks;
 using System;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Hub.Interfaces
 {
@@ -12,9 +13,11 @@ namespace Hub.Interfaces
         Task<IList<ActivityTemplateDO>> GetAvailableActivities(string uri);
 
         TerminalDO GetByKey(int terminalId);
+        TerminalDO GetByNameAndVersion(string name, string version);
         TerminalDO RegisterOrUpdate(TerminalDO terminalDo);
 
         Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId);
         Task<bool> IsUserSubscribedToTerminal(string terminalId, string userId);
+        Task<List<SolutionPageDTO>> GetSolutionDocumentations(string terminalName);
     }
 }

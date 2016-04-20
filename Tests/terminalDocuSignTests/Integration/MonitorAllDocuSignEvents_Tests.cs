@@ -20,6 +20,7 @@ using terminalDocuSignTests.Fixtures;
 using Newtonsoft.Json;
 using terminalDocuSign.DataTransferObjects;
 using System.Diagnostics;
+using AutoMapper;
 using TerminalBase.Infrastructure;
 using Hub.Managers;
 
@@ -121,7 +122,8 @@ namespace terminalDocuSignTests.Integration
                 }
 
 
-                Assert.IsTrue(mtDataCountBefore < mtDataCountAfter);
+                Assert.IsTrue(mtDataCountBefore < mtDataCountAfter,
+                    $"The number of MtData records for user {UserAccountName} remained unchanged within {MaxAwaitPeriod} miliseconds.");
             }
         }
 
@@ -152,7 +154,7 @@ namespace terminalDocuSignTests.Integration
                 Username = DocuSignEmail,
                 Password = DocuSignApiPassword,
                 IsDemoAccount = true,
-                TerminalId = docuSignTerminal.Id
+                Terminal = Mapper.Map<TerminalDTO>(docuSignTerminal)
             };
 
             var tokenResponse = await HttpPostAsync<CredentialsDTO, JObject>(
@@ -219,7 +221,10 @@ namespace terminalDocuSignTests.Integration
             string endpoint = GetTerminalUrl() + "/authentication/internal";
             var jobject = await HttpPostAsync<CredentialsDTO, JObject>(endpoint, creds);
             var docuSignToken = JsonConvert.DeserializeObject<AuthorizationTokenDTO>(jobject.ToString());
-            Assert.IsTrue(string.IsNullOrEmpty(docuSignToken.Error));
+            Assert.IsTrue(
+                string.IsNullOrEmpty(docuSignToken.Error),
+                $"terminalDocuSign call to /authentication/internal has failed with following error: {docuSignToken.Error}"
+            );
 
             return docuSignToken;
         }

@@ -6,6 +6,7 @@ using Newtonsoft.Json;
 namespace Data.Interfaces.DataTransferObjects
 {
     [JsonConverter(typeof(FieldConverter))]
+    [System.Diagnostics.DebuggerDisplay("Key = '{Key}', Value = '{Value}'")]
     public class FieldDTO : System.ICloneable
     {
         [JsonProperty("key")]
@@ -13,6 +14,12 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("value")]
         public string Value { get; set; }
+
+        [JsonProperty("fieldType")]
+        public string FieldType { get; set; }
+
+        [JsonProperty("isRequired")]
+        public bool IsRequired { get; set; }
 
         [JsonProperty("tags")]
         public string Tags { get; set; }

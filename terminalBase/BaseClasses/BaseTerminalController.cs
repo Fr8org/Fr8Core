@@ -184,6 +184,7 @@ namespace TerminalBase.BaseClasses
                     curTerminal), "curActionDTO");
 
             MethodInfo curMethodInfo = calledType.GetMethod(curActionPath, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+            
             object curObject = Activator.CreateInstance(calledType);
 
             if (_integrationTestMode)
@@ -258,6 +259,10 @@ namespace TerminalBase.BaseClasses
                         }
                     case "documentation":
                     {
+                        if (curMethodInfo == null)
+                        {
+                            return getDefaultDocumentation();
+                        }
                         return await HandleDocumentationRequest(curObject, curMethodInfo, curActivityDO, curDocumentation);
                     }
                     default:
@@ -342,6 +347,17 @@ namespace TerminalBase.BaseClasses
                 return await resultActivityRepsonceDTO;
             }
             return Task.FromResult(new ActivityResponseDTO {Type = ActivityResponse.Error.ToString(), Body = "Unknown display method"});
+        }
+
+        private SolutionPageDTO getDefaultDocumentation()
+        {
+            var curSolutionPage = new SolutionPageDTO
+            {
+                Name = "No Documentation method found",
+                Body = "Please add the Documentation method to the Solution class"
+            };
+
+            return curSolutionPage;
         }
     }
 }

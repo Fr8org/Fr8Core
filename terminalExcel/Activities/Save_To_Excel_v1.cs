@@ -231,10 +231,11 @@ namespace terminalExcel.Actions
 
             var tableToSave = StandardTableDataCMTools
                 .ExtractPayloadCrateDataToStandardTableData(crateToProcess);
-            await AppendOrCreateSpreadsheet(tableToSave);
+            var url = await AppendOrCreateSpreadsheet(tableToSave);
+            await PushLaunchURLNotification(url);
         }
 
-        private async Task AppendOrCreateSpreadsheet(StandardTableDataCM tableToSave)
+        private async Task<string> AppendOrCreateSpreadsheet(StandardTableDataCM tableToSave)
         {
             byte[] fileData;
             string fileName;
@@ -303,6 +304,7 @@ namespace terminalExcel.Actions
                     TextRepresentation = file.OriginalFileName, // another hack
                     Filetype = ".xlsx"
                 }));
+				return file.CloudStorageUrl;
             }
         }
 
@@ -318,5 +320,21 @@ namespace terminalExcel.Actions
             var desiredCrateDescription = ConfigurationControls.UpstreamCrateChooser.CrateDescriptions.Single(x => x.Selected);
             return CurrentPayloadStorage.FirstOrDefault(x => x.Label == desiredCrateDescription.Label && x.ManifestType.Type == desiredCrateDescription.ManifestType);
         }
+
+        private async Task PushLaunchURLNotification(string url)
+        {
+            await PushUserNotification(new TerminalNotificationDTO
+            {
+                Type = "Success",
+                ActivityName = "Save_To_Excel",
+                ActivityVersion = "1",
+                TerminalName = "terminalFr8Core",
+                TerminalVersion = "1",
+                Message = $"The Excel file can be downloaded by navigating to this URL: {url}",
+                //"api/v1/plans/clone?id=" + curActivityDO.RootPlanNodeId,
+                Subject = "Excel File"
+            });
+    }
+
     }
 }

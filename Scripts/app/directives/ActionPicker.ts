@@ -23,8 +23,8 @@ module dockyard.directives {
                     });
                 });
             },
-            controller: ['$scope', 'WebServiceService',
-                ($scope: IActionPickerScope,webServiceService: services.IWebServiceService) => {
+            controller: ['$scope', '$element', 'WebServiceService', '$timeout',
+                ($scope: IActionPickerScope, $element: ng.IRootElementService, webServiceService: services.IWebServiceService, $timeout: ng.ITimeoutService) => {
 
                     $scope.actionCategories = [
                         { id: 1, name: "Monitor", description: "Learn when something happen", icon: "eye" },
@@ -35,6 +35,22 @@ module dockyard.directives {
                     $scope.activeCategory = null;
                     $scope.activeTerminal = null;
 
+                    // when new activity picker is opened, this method provide it to be shown in the viewport, 
+                    // by scrolling to the new opened activity picker element 
+                    var scrollToActivityPicker = () => {
+                        // method is in the timeout since activity picker appears screen animated, in 500 ms
+                        $timeout(() => {
+                            var scrollToElement = $element.find('.action-slider'); // element to be scrolled on
+                            var leftPositionOfElement = scrollToElement.position().left;
+                            var leftPositionOfContainer = parseInt(scrollToElement.closest('.action-group').css('left'), 10);
+                            var windowSize = $(window).width(); // substracted from total width since we want activity to be shown center of the screen
+
+                            $element.closest('.route-builder-container').animate({
+                                scrollLeft: leftPositionOfElement + leftPositionOfContainer - (windowSize/2)
+                            }, 100);
+                        }, 500);
+                    }; 
+
                     $scope.setActive = (actionCategoryId) => {
 
                         if ($scope.activeCategory === actionCategoryId) {
@@ -44,6 +60,7 @@ module dockyard.directives {
                         }
                         $scope.webServiceActionList = webServiceService.getActivities([$scope.activeCategory]);
                         $scope.activeTerminal = null;
+                        scrollToActivityPicker();
                     };
 
                     $scope.setActiveAction = (action, group) => {
@@ -69,6 +86,8 @@ module dockyard.directives {
                     $scope.sortBuiltinServices = (service) => {
                         return (service.webServiceName === 'Built-In Services') ? -1 : 1;
                     };
+
+                  
                 }
             ]
         }
@@ -87,4 +106,4 @@ module dockyard.directives {
     }
 }
 
-app.directive('actionPicker', dockyard.directives.ActionPicker);
+app.directive('actionPicker', [dockyard.directives.ActionPicker]);

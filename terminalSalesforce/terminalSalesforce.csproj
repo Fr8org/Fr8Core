@@ -237,9 +237,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Activities\Create_Account_v1.cs" />
-    <Compile Include="Activities\Create_Contact_v1.cs" />
-    <Compile Include="Activities\Create_Lead_v1.cs" />
+    <Compile Include="Activities\ActivitiesHelper.cs" />
+    <Compile Include="Activities\Mail_Merge_From_Salesforce_v1.cs" />
+    <Compile Include="Activities\Monitor_Salesforce_Event_v1.cs" />
+    <Compile Include="Activities\Save_To_SalesforceDotCom_v1.cs" />
     <Compile Include="Activities\Post_To_Chatter_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
     <Compile Include="Activities\Get_Data_v1.cs" />
@@ -250,33 +251,11 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Infrastructure\Account.cs" />
-    <Compile Include="Infrastructure\AccountDTO.cs" />
     <Compile Include="Infrastructure\Authentication.cs" />
-    <Compile Include="Infrastructure\Case.cs" />
-    <Compile Include="Infrastructure\CaseDTO.cs" />
-    <Compile Include="Infrastructure\Contact.cs" />
-    <Compile Include="Infrastructure\ContactDTO.cs" />
-    <Compile Include="Infrastructure\Contract.cs" />
-    <Compile Include="Infrastructure\ContractDTO.cs" />
-    <Compile Include="Infrastructure\Document.cs" />
-    <Compile Include="Infrastructure\DocumentDTO.cs" />
     <Compile Include="Infrastructure\IEvent.cs" />
     <Compile Include="Infrastructure\ISalesforceManager.cs" />
-    <Compile Include="Infrastructure\Lead.cs" />
-    <Compile Include="Infrastructure\LeadDTO.cs" />
-    <Compile Include="Infrastructure\Opportunity.cs" />
-    <Compile Include="Infrastructure\OpportunityDTO.cs" />
-    <Compile Include="Infrastructure\Order.cs" />
-    <Compile Include="Infrastructure\OrderDTO.cs" />
-    <Compile Include="Infrastructure\Product.cs" />
-    <Compile Include="Infrastructure\ProductDTO.cs" />
     <Compile Include="Infrastructure\SalesforceEnvelopeInformation.cs" />
     <Compile Include="Infrastructure\SalesforceNotificationParser.cs" />
-    <Compile Include="Infrastructure\SalesforceObject.cs" />
-    <Compile Include="Infrastructure\SalesforceObjectFactory.cs" />
-    <Compile Include="Infrastructure\Solution.cs" />
-    <Compile Include="Infrastructure\SolutionDTO.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -295,6 +274,10 @@
     <Content Include="ApplicationInsights.config">
       <TransformOnBuild>true</TransformOnBuild>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Config\log4net.terminals.config">
+      <Link>log4net.terminals.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="ApplicationInsights.Debug.config">
       <DependentUpon>ApplicationInsights.config</DependentUpon>
@@ -331,13 +314,13 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Hub\Hub.csproj">
-      <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
-      <Name>Hub</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Hub\Hub.csproj">
+      <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
+      <Name>Hub</Name>
     </ProjectReference>
     <ProjectReference Include="..\terminalBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
@@ -409,4 +392,10 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Log4netConfigFiles Include="..\Config\*.terminals.*" />
+  </ItemGroup>
+  <Target Name="BeforeBuild">
+    <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
+  </Target>
 </Project>

@@ -1,12 +1,8 @@
 ﻿using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json.Linq;
-using Salesforce.Common.Models;
 using Salesforce.Force;
-using terminalSalesforce.Services;
 using Salesforce.Common;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
 using Utilities.Configuration.Azure;
@@ -164,7 +160,7 @@ namespace terminalSalesforce.Infrastructure
                 userName = propertyValue.Value<string>();
             }
 
-            if (jCurUserInfo.TryGetValue("username", out propertyValue))
+            if (jCurUserInfo.TryGetValue("user_id", out propertyValue))
             {
                 userName += string.Format(" [{0}]", propertyValue.Value<string>());
             }

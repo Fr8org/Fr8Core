@@ -1,17 +1,12 @@
-using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Web.Http;
-using AutoMapper;
-using Newtonsoft.Json;
-using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Hub.Services;
-using TerminalBase.BaseClasses;
+
 using Utilities.Configuration.Azure;
 using System.Web.Http.Description;
 using Data.Interfaces.Manifests;
+using Data.Constants;
 
 namespace terminalDocuSign.Controllers
 {
@@ -60,8 +55,7 @@ namespace terminalDocuSign.Controllers
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 MinPaneWidth = 380,
-                WebService = webService,
-                ShowDocumentation = ActivityResponseDTO.CreateDocumentationResponse("MenuItem", "Monitor_DocuSign_Envelope_Activity_SampleHelp1")
+                WebService = webService
             };
 
             var sendDocuSignEnvelopeActionTemplate = new ActivityTemplateDTO()
@@ -70,7 +64,7 @@ namespace terminalDocuSign.Controllers
                 Name = "Send_DocuSign_Envelope",
                 Label = "Send DocuSign Envelope",
                 Category = ActivityCategory.Forwarders,
-                Tags = "AggressiveReload",
+                Tags = string.Join(",", Tags.AggressiveReload, Tags.EmailDeliverer),
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 WebService = webService,
@@ -83,7 +77,7 @@ namespace terminalDocuSign.Controllers
                 Name = "Use_DocuSign_Template_With_New_Document",
                 Label = "Use DocuSign Template With New Document",
                 Category = ActivityCategory.Forwarders,
-                Tags = "AggressiveReload",
+                Tags = Tags.AggressiveReload,
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 WebService = webService,
@@ -124,7 +118,7 @@ namespace terminalDocuSign.Controllers
                 NeedsAuthentication = true,
                 WebService = webService,
                 MinPaneWidth = 330,
-                Tags = "internal"
+                Tags = Tags.Internal
             };
 
             var mailMergeActionTemplate = new ActivityTemplateDTO
@@ -137,7 +131,7 @@ namespace terminalDocuSign.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 MinPaneWidth = 500,
-                Tags = "UsesReconfigureList"
+                Tags = Tags.UsesReconfigureList
             };
 
             var collectFormDataSolution = new ActivityTemplateDTO
@@ -177,19 +171,6 @@ namespace terminalDocuSign.Controllers
                 MinPaneWidth = 380
             };
 
-            var generateDocusignReport = new ActivityTemplateDTO
-            {
-                Name = "Generate_DocuSign_Report",
-                Label = "Generate a DocuSign Report",
-                Version = "1",
-                Category = ActivityCategory.Solution,
-                NeedsAuthentication = true,
-                Terminal = terminal,
-                WebService = webService,
-                MinPaneWidth = 420,
-                Tags = "HideChildren"
-            };
-
             var searchDocusignHistory = new ActivityTemplateDTO
             {
                 Name = "Search_DocuSign_History",
@@ -200,7 +181,7 @@ namespace terminalDocuSign.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 MinPaneWidth = 380,
-                Tags = "internal"
+                Tags = Tags.Internal
             };
 
             var actionList = new List<ActivityTemplateDTO>()
@@ -214,7 +195,6 @@ namespace terminalDocuSign.Controllers
                 collectFormDataSolution,
                 trackDocuSignRecipientsSolution,
                 queryDocusign,
-                generateDocusignReport,
                 searchDocusignHistory,
                 getDocuSignTemplateActionTemplate,
                 process_personal_report

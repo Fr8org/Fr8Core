@@ -1,6 +1,8 @@
-﻿namespace Data.Repositories.MultiTenant.InMemory
+﻿using Data.Repositories.SqlBased;
+
+namespace Data.Repositories.MultiTenant.InMemory
 {
-    public class DummyConnectionProvider : IMtConnectionProvider
+    public class DummyConnectionProvider : ISqlConnectionProvider
     {
         public object ConnectionInfo
         {

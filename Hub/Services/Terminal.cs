@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.States;
 using Data.Utility;
 using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Restful;
@@ -79,6 +81,7 @@ namespace Hub.Services
             {new TerminalKey("terminalQuickBooks", "1"), new TerminalIdSecretMatch("75ec4967-6113-43b5-bb4c-6b3468696e57", "749f5c59-1bf1-4cb6-9275-eb1d489d9a05")},
             {new TerminalKey("terminalYammer", "1"), new TerminalIdSecretMatch("f2b999be-be3f-42b5-b0d5-611d0606723b", "d14aaa44-22a1-4d2c-b14b-be559c8941b5")},
             {new TerminalKey("terminalAtlassian", "1"), new TerminalIdSecretMatch("d770ec3c-975b-4ca8-910e-a55ac43af383", "f747e49c-63a8-4a1b-8347-dd2e436c3b36")},
+            {new TerminalKey("terminalTest", "1"), new TerminalIdSecretMatch("BFA77F6B-969D-4976-B752-930EEB11A4A3", "F4497516-0134-4523-B93C-EB15EE4D0697")},
             {new TerminalKey("terminalBox", "1"), new TerminalIdSecretMatch("1293c430-818d-4326-896b-dd5c512ca1a4","2eb36a7b-6365-4d8f-ad73-a44cdd1d1ebb")},
         };
 
@@ -174,6 +177,22 @@ namespace Hub.Services
             }
         }
 
+        public TerminalDO GetByNameAndVersion(string name, string version)
+        {
+            Initialize();
+
+            lock (_terminals)
+            {
+                TerminalDO terminal =_terminals.FirstOrDefault(t => t.Value.Name == name && t.Value.Version == version).Value;
+                if (terminal == null)
+                {
+                    throw new KeyNotFoundException($"Unable to find terminal with name {name} and version {version}");
+                }
+
+                return terminal;
+            }
+        }
+
         public TerminalDO RegisterOrUpdate(TerminalDO terminalDo)
         {
             if (terminalDo == null)
@@ -247,7 +266,7 @@ namespace Hub.Services
 
             var restClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
             var standardFr8TerminalCM = await restClient.GetAsync<StandardFr8TerminalCM>(new Uri(uri, UriKind.Absolute));
-            return Mapper.Map<IList<ActivityTemplateDO>>(standardFr8TerminalCM.Activities);
+            return standardFr8TerminalCM.Activities.Select(Mapper.Map<ActivityTemplateDO>).ToList();
         }
 
         public async Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId)
@@ -272,5 +291,27 @@ namespace Hub.Services
             }
 
         }
+
+        public async Task<List<SolutionPageDTO>> GetSolutionDocumentations(string terminalName)
+        {
+            var _activity = ObjectFactory.GetInstance<IActivity>();
+            var solutionNames = _activity.GetSolutionNameList(terminalName);
+            var solutionPages = new List<SolutionPageDTO>();
+            foreach (var solutionName in solutionNames)
+            {
+               var solutionPageDTO = await _activity.GetActivityDocumentation<SolutionPageDTO>(
+                    new ActivityDTO
+                    {
+                        Documentation = "MainPage",
+                        ActivityTemplate = new ActivityTemplateDTO {Name = solutionName }
+                    }, true);
+                if (solutionPageDTO != null)
+                {
+                    solutionPages.Add(solutionPageDTO);
+    }
+            }
+            return solutionPages;
+        }
+       
     }
 }

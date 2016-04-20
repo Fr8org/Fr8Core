@@ -5,6 +5,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Utilities.Configuration.Azure;
+using Data.Constants;
 
 namespace terminalSendGrid.Controllers
 {
@@ -34,8 +35,7 @@ namespace terminalSendGrid.Controllers
                 Name = "SendEmailViaSendGrid",
                 Label = "Send Email",
                 Version = "1",
-                Description = "Send Email: Description",
-                Tags = "Notifier",
+                Tags = string.Join(",", Tags.Notifier, Tags.EmailDeliverer),
                 Terminal = terminal,
                 Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,

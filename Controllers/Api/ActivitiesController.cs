@@ -21,6 +21,7 @@ namespace HubWeb.Controllers
     {
         private readonly IActivity _activity;
         private readonly IActivityTemplate _activityTemplate;
+        private readonly ITerminal _terminal;
         private readonly ISubPlan _subPlan;
 
         public ActivitiesController()
@@ -28,6 +29,7 @@ namespace HubWeb.Controllers
             _activity = ObjectFactory.GetInstance<IActivity>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             _subPlan = ObjectFactory.GetInstance<ISubPlan>();
+            _terminal = ObjectFactory.GetInstance<ITerminal>();
         }
 
         public ActivitiesController(IActivity service)
@@ -43,7 +45,7 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Create(int actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
+        public async Task<IHttpActionResult> Create(Guid actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -156,6 +158,7 @@ namespace HubWeb.Controllers
         /// POST : Saves or updates the given action
         /// </summary>
         [HttpPost]
+        [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> Save(ActivityDTO curActionDTO)
         {
             ActivityDO submittedActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
@@ -173,6 +176,12 @@ namespace HubWeb.Controllers
             //check if the DocumentationSupport comma separated string has the correct form
             if (!ValidateDocumentationSupport(curDocSupport))
                 return BadRequest();
+            if (curDocSupport.StartsWith("Terminal="))
+            {
+                var terminalName = curDocSupport.Split('=')[1];
+                var solutionPages = await _terminal.GetSolutionDocumentations(terminalName);
+                return Ok(solutionPages);
+            }
             if (curDocSupport.Contains("MainPage"))
             {
                 var solutionPageDTO = await _activity.GetActivityDocumentation<SolutionPageDTO>(curActivityDTO, true);
@@ -185,31 +194,24 @@ namespace HubWeb.Controllers
             }
             return BadRequest();
         }
+        /// <summary>
+        /// We currently provide only one substring value, namely 'Terminal=','MainPage' and 'HelpMenu'
+        /// </summary>
+        /// <param name="docSupport"></param>
+        /// <returns></returns>
         private bool ValidateDocumentationSupport(string docSupport)
         {
-            var curStringArray = docSupport.Split(',');
-            if (curStringArray.Contains("MainPage") && curStringArray.Contains("HelpMenu"))
-                throw new Exception("ActionDTO cannot have both MainPage and HelpMenu in the Documentation Support field value");
-            if (curStringArray.Contains("MainPage") || curStringArray.Contains("HelpMenu"))
+            var curStringArray = docSupport.Replace(" ", "").Split(',');
+            var containsOneSubstring = curStringArray.Count() == 1;
+            var hasTerminalName = curStringArray.Any(x => x.StartsWith("Terminal="));
+            var hasMainPage = curStringArray.Contains("MainPage");
+            var hasHelpMenu = curStringArray.Contains("HelpMenu");
+            if ((containsOneSubstring && hasTerminalName) 
+                || (containsOneSubstring && hasMainPage) 
+                || (containsOneSubstring && hasHelpMenu))
                 return true;
-            return false;
-        }
-
-        [HttpGet]
-        [AllowAnonymous]
-        public IHttpActionResult GetTerminalSolutionList(string terminalName)
-        {
-            var solutionNameList = _activity.GetSolutionList(terminalName);
-            return Json(solutionNameList);
-        }
-        [HttpGet]
-        [AllowAnonymous]
-        public IHttpActionResult GetDocuSignSolutionList()
-        {
-            var terminalName = "terminalDocuSign";
-            var solutionNameList = _activity.GetSolutionList(terminalName);
-            return Json(solutionNameList);
+            else
+                throw new Exception("Incorrect documentation support values");
         }
     }
-
 }

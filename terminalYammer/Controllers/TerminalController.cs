@@ -46,7 +46,6 @@ namespace terminalYammer.Controllers
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 Version = "1",
-                Description = "Post To Yammer: Description",
                 MinPaneWidth = 330,
                 WebService = webService
             };
