@@ -76,7 +76,7 @@ namespace terminalIntegrationTests.EndToEnd
 
                 Assert.AreEqual(1, dataRows.Length, "Only one data row is expected to be in crated spreadsheet");
                 var storedData = dataRows[0].Row[0].Cell;
-                Assert.AreEqual("message", storedData.Key, "Saved message header doesn't match the expected data.");
+                Assert.AreEqual("message", storedData.Key, "Saved message header doesn't match the expected data");
                 Assert.AreEqual("Email - fake@fake.com, subject - Fake Subject, body - Fake Body", storedData.Value, "Saved message body doesn't match the expected data");
             }
             finally
