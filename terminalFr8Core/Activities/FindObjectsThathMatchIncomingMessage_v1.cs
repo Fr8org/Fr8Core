@@ -12,29 +12,20 @@ using Data.Crates;
 using Data.Entities;
 using Hub.Managers;
 using Utilities;
-using System.Text;
 
 namespace terminalFr8Core.Actions
 {
-    public class KeywordsFilter_v1 : EnhancedTerminalActivity<KeywordsFilter_v1.ActivityUi>
+    public class FindObjectsThatMatchIncomingMessage_v1 : EnhancedTerminalActivity<FindObjectsThatMatchIncomingMessage_v1.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
-            public TextSource MessageTextSource { get; set; }
+            public DropDownList IncomingTextSelector { get; set; }
 
             public DropDownList DataSourceSelector { get; set; }
-
-            public CheckBox IsCachingDataSourceData { get; set; }
 
             public TextBox KeywordPropertiesSource { get; set; }
 
             public TextBlock KeywordPropertiesSourceDescription { get; set; }
-
-            public CheckBox IsRemovingStopwords { get; set; }
-
-            public TextBox StopwordsSource { get; set; }
-
-            public TextBlock StopwordsSourceDescription { get; set; }
 
             public ActivityUi() : this(new UiBuilder())
             {
@@ -42,56 +33,45 @@ namespace terminalFr8Core.Actions
 
             public ActivityUi(UiBuilder uiBuilder)
             {
-                MessageTextSource = uiBuilder.CreateSpecificOrUpstreamValueChooser("Message", nameof(MessageTextSource), requestUpstream: true, availability: AvailabilityType.RunTime);
                 DataSourceSelector = new DropDownList
                 {
                     Name = nameof(DataSourceSelector),
-                    Label = "Keywords source",
+                    Label = "Build the CheckList of objects",
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
-                IsCachingDataSourceData = new CheckBox
+                IncomingTextSelector = new DropDownList
                 {
-                    Name = nameof(IsCachingDataSourceData),
-                    Label = "Get data on first run only",
+                    Name = nameof(IncomingTextSelector),
+                    Label = "Compare CheckList against which incoming text",
+                    Source = new FieldSourceDTO
+                    {
+                        AvailabilityType = AvailabilityType.RunTime,
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields,
+                        RequestUpstream = true
+                    },
                 };
                 KeywordPropertiesSource = new TextBox
                 {
                     Name = nameof(KeywordPropertiesSource),
-                    Label = "Keywords source properties"
+                    Label = "Build an UpdateList containing CheckList objects where one of the below properties matches a word in the Incoming text"
                 };
                 KeywordPropertiesSourceDescription = new TextBlock
                 {
                     Name = nameof(KeywordPropertiesSourceDescription),
                     Value = "<i class=\"fa fa-info-circle\" />Multiple values should be separated with commas. If no value is specified then first property will be used"
                 };
-                IsRemovingStopwords = new CheckBox
-                {
-                    Name = nameof(IsRemovingStopwords),
-                    Label = "(Optional)Remove following stopwords"
-                };
-                StopwordsSource = new TextBox
-                {
-                    Name = nameof(StopwordsSource),
-                };
-                StopwordsSourceDescription = new TextBlock
-                {
-                    Name = nameof(StopwordsSourceDescription),
-                    Value = "<i class=\"fa fa-info-circle\" />Multiple values should be separated with commas"
-                };
-                Controls.Add(MessageTextSource);
                 Controls.Add(DataSourceSelector);
-                Controls.Add(IsCachingDataSourceData);
+                Controls.Add(IncomingTextSelector);
                 Controls.Add(KeywordPropertiesSource);
                 Controls.Add(KeywordPropertiesSourceDescription);
-                Controls.Add(IsRemovingStopwords);
-                Controls.Add(StopwordsSource);
-                Controls.Add(StopwordsSourceDescription);
             }
         }
 
-        public KeywordsFilter_v1() : base(false)
+        private static readonly string[] StopwordsList = new[] { "the", "company", "co", "inc", "incorporate", "a", "an" };
+
+        public FindObjectsThatMatchIncomingMessage_v1() : base(false)
         {
-            ActivityName = "Keywords Filter";
+            ActivityName = "Find Objects That Match Incoming Message";
         }
 
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
@@ -110,24 +90,18 @@ namespace terminalFr8Core.Actions
             {
                 await HubCommunicator.DeleteExistingChildNodesFromActivity(CurrentActivity.Id, CurrentFr8UserId);
                 CurrentActivity.ChildNodes.Clear();
-                PreviousSelectedActivity = null;
+                PreviousSelectedDataSourceId = null;
                 CachedData = null;
             }
-            else if (string.IsNullOrEmpty(PreviousSelectedActivity) || PreviousSelectedActivity != ConfigurationControls.DataSourceSelector.Value)
+            else if (string.IsNullOrEmpty(PreviousSelectedDataSourceId) || PreviousSelectedDataSourceId != ConfigurationControls.DataSourceSelector.Value)
             {
                 var activityTemplate = await GetActivityTemplate(Guid.Parse(ConfigurationControls.DataSourceSelector.Value));
                 await HubCommunicator.DeleteExistingChildNodesFromActivity(CurrentActivity.Id, CurrentFr8UserId);
                 CurrentActivity.ChildNodes.Clear();
                 await AddAndConfigureChildActivity(CurrentActivity, activityTemplate, order: 1);
-                PreviousSelectedActivity = ConfigurationControls.DataSourceSelector.Value;
+                PreviousSelectedDataSourceId = ConfigurationControls.DataSourceSelector.Value;
                 CachedData = null;
             }
-        }
-
-        private string PreviousSelectedActivity
-        {
-            get { return this[nameof(ActivityUi.DataSourceSelector)]; }
-            set { this[nameof(ActivityUi.DataSourceSelector)] = value; }
         }
 
         protected override async Task RunCurrentActivity()
@@ -135,23 +109,23 @@ namespace terminalFr8Core.Actions
             if (IsInitialRun)
             {
                 ValidateRunPrerequisites();
-                if (!IsUsingCachedData || CachedData == null)
+                //If we don't want to use cached data or it it too old then we let child activity to generate new data
+                if (CachedData == null || CachedDataIsOld)
                 {
-                    //If we don't want to use cached data or we don't have it then we let child activity to generate new data
+                    CachedData = null;
                     return;
                 }
             }
             //Here we come after child activity is executed OR we want to use cached data and we have it
-            var keywordsSource = GetKeywordsSource();
-            if (keywordsSource == null)
+            var dataToFilter = GetData();
+            if (dataToFilter == null)
             {
                 throw new ActivityExecutionException($"Data source activity didn't generated {MT.StandardTableData.GetEnumDisplayName()} crate");
             }
             //If child activity did ran this time we need to remove the data its produced from payload (as it represents unfiltered data)
-            CurrentPayloadStorage.Remove(keywordsSource);
-            var keywordsSourceProperties = GetKeywordsSourceProperties(keywordsSource.Content);
-            var stopwordsToRemove = GetStopwordsToRemove();
-            var result = FilterKeywordsSource(IncomingMessage, keywordsSource, keywordsSourceProperties, stopwordsToRemove);
+            CurrentPayloadStorage.Remove(dataToFilter);
+            var dataProperties = GetDataProperties(dataToFilter.Content);
+            var result = FilterData(IncomingText, dataToFilter, dataProperties);
             CurrentPayloadStorage.Add(result);
             IsInitialRun = true;
             //We don't want to run child activity again as we already used its data
@@ -168,23 +142,20 @@ namespace terminalFr8Core.Actions
 
         #region Implementation details
 
-        private string[] GetStopwordsToRemove()
+        private string PreviousSelectedDataSourceId
         {
-            if (!IsRemovingStopwords || string.IsNullOrWhiteSpace(SpecifiedStopwords))
-            {
-                return null;
-            }
-            return SpecifiedStopwords.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToArray();
+            get { return this[nameof(ActivityUi.DataSourceSelector)]; }
+            set { this[nameof(ActivityUi.DataSourceSelector)] = value; }
         }
 
-        private Crate<StandardTableDataCM> FilterKeywordsSource(string message, Crate<StandardTableDataCM> keywordsSource, HashSet<string> keywordsSourceProperties, string[] stopwordsToRemove)
+        private Crate<StandardTableDataCM> FilterData(string message, Crate<StandardTableDataCM> data, HashSet<string> dataProperties)
         {
             //If there is nothing to filter OR there are no keywords we just return the original data from child activity
-            if (keywordsSourceProperties?.Count == 0 || string.IsNullOrWhiteSpace(message))
+            if (dataProperties?.Count == 0 || string.IsNullOrWhiteSpace(message))
             {
-                return keywordsSource;
+                return data;
             }
-            var sourceTable = keywordsSource.Content;
+            var sourceTable = data.Content;
             var result = new StandardTableDataCM { Table = new List<TableRowDTO>(), FirstRowHeaders = sourceTable.FirstRowHeaders };
             //Copy header row
             if (sourceTable.FirstRowHeaders && sourceTable.Table.Count > 0)
@@ -193,75 +164,65 @@ namespace terminalFr8Core.Actions
             }
             foreach (var dataRow in sourceTable.DataRows)
             {
-                var dataRowKeywords = GetKeywordsFromDataRow(dataRow, keywordsSourceProperties, stopwordsToRemove);
-                var keywordIsFound = false;
-                foreach (var keyword in dataRowKeywords)
+                var dataRowPropertyValues = GetPropertyValuesFromDataRow(dataRow, dataProperties);
+                var propertyValueIsFound = false;
+                foreach (var propertyValue in dataRowPropertyValues)
                 {
-                    if (message.Contains(keyword, StringComparison.InvariantCultureIgnoreCase))
+                    if (message.Contains(propertyValue, StringComparison.InvariantCultureIgnoreCase))
                     {
-                        keywordIsFound = true;
+                        propertyValueIsFound = true;
                         break;
                     }
                 }
-                if (keywordIsFound)
+                if (propertyValueIsFound)
                 {
                     result.Table.Add(dataRow);
                 }
             }
-            return Crate<StandardTableDataCM>.FromContent(keywordsSource.Label, result, keywordsSource.Availability);            
+            return Crate<StandardTableDataCM>.FromContent(data.Label, result, data.Availability);
         }
 
-        private string[] GetKeywordsFromDataRow(TableRowDTO dataRow, HashSet<string> keywordsSourceProperties, string[] stopwordsToRemove)
+        private string[] GetPropertyValuesFromDataRow(TableRowDTO dataRow, HashSet<string> dataProperties)
         {
             var result = dataRow.Row
                                 .Select(x => x.Cell)
-                                .Where(x => keywordsSourceProperties.Contains(x.Key))
+                                .Where(x => dataProperties.Contains(x.Key))
                                 .Select(x => x.Value)
-                                .Where(x => !string.IsNullOrWhiteSpace(x));
-            if (stopwordsToRemove?.Length > 0)
-            {
-                result = result.Select(x => RemoveStopwords(x, stopwordsToRemove));
-            }
+                                .Where(x => !string.IsNullOrWhiteSpace(x))
+                                .Select(RemoveStopwords);
             return result.ToArray();
         }
 
-        private string RemoveStopwords(string value, string[] stopwordsToRemove)
+        private string RemoveStopwords(string value)
         {
             //Currently this is straightforward removal of substrings
-            foreach (var stopword in stopwordsToRemove)
+            foreach (var stopword in StopwordsList)
             {
                 var index = value.IndexOf(stopword, StringComparison.InvariantCultureIgnoreCase);
-                value = value.Remove(index, stopword.Length);
+                if (index != -1)
+                {
+                    value = value.Remove(index, stopword.Length);
+                }                
             }
             return value.Replace("  ", " ").Trim();
         }
 
-        private Crate<StandardTableDataCM> GetKeywordsSource()
+        private Crate<StandardTableDataCM> GetData()
         {
-            var newData = NewData;
-            Crate<StandardTableDataCM> actualData = null;
-            if (IsUsingCachedData)
-            {
-                actualData = CachedData ?? (CachedData = NewData);
-            }
-            else
-            {
-                actualData = newData;
-            }
-            return actualData;
+            return CachedData ?? (CachedData = NewData);
         }
 
-        private HashSet<string> GetKeywordsSourceProperties(StandardTableDataCM keywordsSource)
+        private HashSet<string> GetDataProperties(StandardTableDataCM data)
         {
-            if (!keywordsSource.HasDataRows || keywordsSource.Table[0].Row.Count == 0)
+            if (!data.HasDataRows || data.Table[0].Row.Count == 0)
             {
                 return null;
             }
-            if (!string.IsNullOrWhiteSpace(SpecifiedKeywords))
+            if (!string.IsNullOrWhiteSpace(SpecifiedDataProperties))
             {
-                return new HashSet<string>(SpecifiedKeywords.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()), StringComparer.InvariantCultureIgnoreCase);
+                return new HashSet<string>(SpecifiedDataProperties.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()), StringComparer.InvariantCultureIgnoreCase);
             }
-            return new HashSet<string>(new[] { keywordsSource.Table[0].Row[0].Cell.Key }, StringComparer.InvariantCultureIgnoreCase);            
+            return new HashSet<string>(new[] { data.Table[0].Row[0].Cell.Key }, StringComparer.InvariantCultureIgnoreCase);
         }
 
         private Crate<StandardTableDataCM> NewData
@@ -336,17 +297,14 @@ namespace terminalFr8Core.Actions
             }
         }
         //Wrappers for control properties
-        private string IncomingMessage { get { return ConfigurationControls.MessageTextSource.GetValue(CurrentPayloadStorage); } }
+        private string IncomingText { get { return CurrentPayloadStorage.RetrieveValue(ConfigurationControls.IncomingTextSelector.selectedKey); } }
 
         private string SelectedDataSourceActivityId { get { return ConfigurationControls.DataSourceSelector.Value; } }
+        //Untill we decide on caching strategy we won't use cache
+        public bool CachedDataIsOld { get { return true; } }
 
-        private bool IsUsingCachedData { get { return ConfigurationControls.IsCachingDataSourceData.Selected; } }
+        private string SpecifiedDataProperties { get { return ConfigurationControls.KeywordPropertiesSource.Value; } }
 
-        private string SpecifiedKeywords { get { return ConfigurationControls.KeywordPropertiesSource.Value; } }
-
-        private bool IsRemovingStopwords { get { return ConfigurationControls.IsRemovingStopwords.Selected; } }
-
-        private string SpecifiedStopwords { get { return ConfigurationControls.StopwordsSource.Value; } }
 
         #endregion
     }
