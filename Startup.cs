@@ -1,4 +1,4 @@
-﻿    using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
@@ -48,10 +48,15 @@ namespace HubWeb
 
         public void ConfigureHangfire(IAppBuilder app, string connectionString)
         {
+            var options = new BackgroundJobServerOptions
+            {
+                Queues = new[] { "default" },
+            };
+
             GlobalConfiguration.Configuration
                 .UseSqlServerStorage(connectionString);
             app.UseHangfireDashboard();
-            app.UseHangfireServer();
+            app.UseHangfireServer(options);
         }
 
         //SeedDatabases
@@ -173,5 +178,5 @@ namespace HubWeb
         {
             return WebApp.Start<Startup>(url: url);
         }
-            }
-        }
+    }
+}

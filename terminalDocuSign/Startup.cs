@@ -9,6 +9,7 @@ using terminalDocuSign.Infrastructure.AutoMapper;
 using TerminalBase.BaseClasses;
 using StructureMap;
 using System.Data.Entity;
+using Hangfire;
 
 [assembly: OwinStartup(typeof(Startup))]
 
@@ -36,6 +37,20 @@ namespace terminalDocuSign
             {
                 StartHosting("terminalDocuSign");
             }
+
+            ConfigureHangfire(app, "DockyardDB");
+        }
+
+        public void ConfigureHangfire(IAppBuilder app, string connectionString)
+        {
+            var options = new BackgroundJobServerOptions
+            {
+                Queues = new[] { "terminal_docusign" },
+            };
+
+            GlobalConfiguration.Configuration.UseSqlServerStorage(connectionString);
+            app.UseHangfireDashboard();
+            app.UseHangfireServer(options);
         }
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)

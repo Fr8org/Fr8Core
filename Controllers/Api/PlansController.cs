@@ -29,7 +29,6 @@ using System.Text;
 using Data.Constants;
 using Data.Infrastructure;
 using Hangfire;
-using Nito.AsyncEx;
 using System.Web.Http.Results;
 
 namespace HubWeb.Controllers
@@ -465,26 +464,6 @@ namespace HubWeb.Controllers
             }
         }
 
-        [HttpPost]
-        [ActionName("schedule")]
-        [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Schedule(Guid planId, int minutes)
-        {
-            //hangfire doesn't support async methods
-            RecurringJob.AddOrUpdate(planId.ToString(), () => LaunchScheduledActivity(planId), "*/" + minutes + " * * * *");
-            return Ok();
-        }
-
-
-        public void LaunchScheduledActivity(Guid planId)
-        {
-            //http://stackoverflow.com/questions/9343594/how-to-call-asynchronous-method-from-synchronous-method-in-c
-            var result = AsyncContext.Run(() => Run(planId, null));
-            if (!(result is OkNegotiatedContentResult<ContainerDTO>))
-            {
-                RecurringJob.RemoveIfExists(planId.ToString());
-            }
-        }
 
         private string GetResponseMessage(OperationalStateCM response)
         {

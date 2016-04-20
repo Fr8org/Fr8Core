@@ -698,10 +698,6 @@
     <Compile Include="Migrations\201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.Designer.cs">
       <DependentUpon>201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201604152259367_MMSalesforceSolution.cs" />
-    <Compile Include="Migrations\201604152259367_MMSalesforceSolution.Designer.cs">
-      <DependentUpon>201604152259367_MMSalesforceSolution.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201604160406197_PlanNodeDO_Runnable.cs" />
     <Compile Include="Migrations\201604160406197_PlanNodeDO_Runnable.Designer.cs">
       <DependentUpon>201604160406197_PlanNodeDO_Runnable.cs</DependentUpon>
@@ -1234,9 +1230,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.resx">
       <DependentUpon>201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201604152259367_MMSalesforceSolution.resx">
-      <DependentUpon>201604152259367_MMSalesforceSolution.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604160406197_PlanNodeDO_Runnable.resx">
       <DependentUpon>201604160406197_PlanNodeDO_Runnable.cs</DependentUpon>

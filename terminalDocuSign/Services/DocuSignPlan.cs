@@ -119,18 +119,20 @@ namespace terminalDocuSign.Services
 
         public async void CreateOrUpdatePollingPlan(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
-            var existingPlans = (await _hubCommunicator.GetPlansByName("DocuSignPolling", curFr8UserId, PlanVisibility.Internal)).ToList();
+            DocuSignPolling polling = new DocuSignPolling();
+            polling.SchedulePolling(authTokenDTO.ExternalAccountId, curFr8UserId);
+            //var existingPlans = (await _hubCommunicator.GetPlansByName("DocuSignPolling", curFr8UserId, PlanVisibility.Internal)).ToList();
 
-            string currentPlanId = "";
-            if (existingPlans.Count > 0)
-            {
-                currentPlanId = await FindAndActivateExistingPlan(curFr8UserId, "DocuSignPolling", authTokenDTO);
-            }
+            //string currentPlanId = "";
+            //if (existingPlans.Count > 0)
+            //{
+            //    currentPlanId = await FindAndActivateExistingPlan(curFr8UserId, "DocuSignPolling", authTokenDTO);
+            //}
 
-            if (string.IsNullOrEmpty(currentPlanId))
-                currentPlanId = await CreatePlan_DocuSignPolling(curFr8UserId, authTokenDTO);
+            //if (string.IsNullOrEmpty(currentPlanId))
+            //    currentPlanId = await CreatePlan_DocuSignPolling(curFr8UserId, authTokenDTO);
 
-            await SchedulePlan(curFr8UserId, currentPlanId);
+            //await SchedulePlan(curFr8UserId, currentPlanId);
         }
 
         private async Task SchedulePlan(string curFr8UserID, string planId)

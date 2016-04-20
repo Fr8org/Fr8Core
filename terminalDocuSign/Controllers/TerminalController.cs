@@ -184,19 +184,6 @@ namespace terminalDocuSign.Controllers
                 Tags = Tags.Internal
             };
 
-            var pollingSolution = new ActivityTemplateDTO
-            {
-                Name = "DocuSign_Polling",
-                Label = "DocuSign Polling",
-                Version = "1",
-                Category = ActivityCategory.Receivers,
-                NeedsAuthentication = true,
-                Terminal = terminal,
-                WebService = webService,
-                MinPaneWidth = 380,
-                Tags = "internal"
-            };
-
             var actionList = new List<ActivityTemplateDTO>()
             {
                 waitForDocusignEventActionTemplate,
@@ -211,7 +198,6 @@ namespace terminalDocuSign.Controllers
                 searchDocusignHistory,
                 getDocuSignTemplateActionTemplate,
                 process_personal_report,
-                pollingSolution
             };
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()

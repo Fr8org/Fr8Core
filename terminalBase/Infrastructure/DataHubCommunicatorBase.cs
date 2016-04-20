@@ -289,7 +289,7 @@ namespace TerminalBase.Infrastructure
             throw new NotImplementedException();
         }
 
-        public Task SchedulePlan(string userId, string planId, string minutes)
+        public Task<AuthorizationTokenDTO> GetAuthToken(string authTokenId, string curFr8UserId)
         {
             throw new NotImplementedException();
         }
