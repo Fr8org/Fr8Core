@@ -62,6 +62,7 @@ module dockyard.directives {
                                                     externalObjectName = contents.Handles[0].Description;
                                                 }
                                             }
+
                                             $scope.field.externalObjectName = externalObjectName;
                                         });
                                 });

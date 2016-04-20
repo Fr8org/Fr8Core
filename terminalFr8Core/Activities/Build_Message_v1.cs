@@ -63,11 +63,10 @@ namespace terminalFr8Core.Actions
             return Task.FromResult(0);
         }
 
-        private Crate PackMessageCrate(string actualBody = null)
+        private Crate PackMessageCrate(string body = null)
         {
             return Crate.FromContent(ActivityUi.RuntimeCrateLabel,
-                                     new StandardPayloadDataCM(new FieldDTO(ConfigurationControls.Name.Value,
-                                                                            actualBody ?? ConfigurationControls.Body.Value)));
+                                     new StandardPayloadDataCM(new FieldDTO(ConfigurationControls.Name.Value, body)));
         }
 
         protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
