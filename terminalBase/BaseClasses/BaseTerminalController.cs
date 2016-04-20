@@ -49,7 +49,7 @@ namespace TerminalBase.BaseClasses
         /// Reports Terminal Error incident
         /// </summary>
         [HttpGet]
-        public IHttpActionResult ReportTerminalError(string terminalName, Exception terminalError)
+        public IHttpActionResult ReportTerminalError(string terminalName, Exception terminalError,string userId = null)
         {
             if (_integrationTestMode)
                 return Ok();
@@ -57,7 +57,7 @@ namespace TerminalBase.BaseClasses
             var exceptionMessage = terminalError.GetFullExceptionMessage() + "      \r\n" + terminalError.ToString();//string.Format("{0}\r\n{1}", terminalError.Message, terminalError.StackTrace);
             try
             {
-                return Json(_baseTerminalEvent.SendTerminalErrorIncident(terminalName, exceptionMessage, terminalError.GetType().Name));
+                return Json(_baseTerminalEvent.SendTerminalErrorIncident(terminalName, exceptionMessage, terminalError.GetType().Name,userId));
             }
             catch (Exception ex)
             {
