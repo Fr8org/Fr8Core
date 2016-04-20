@@ -24,7 +24,7 @@ if ($command.ExecuteNonQuery() -ne -1)
 }
 Write-Host "Successfully deleted old target database."
 
-$commandText = "RESTORE DATABASE $($targetDbName)
+$commandText = "RESTORE DATABASE [$($targetDbName)]
 				FROM DISK = 'C:\DbBackups\Dev\4_19_2016.bak'
 				WITH MOVE 'DockyardDB2_data' TO 'D:\MSSQLSERVER\$($targetDbName).mdf',
 				MOVE 'DockyardDB2_log' TO 'D:\MSSQLSERVER\$($targetDbName).ldf'"
