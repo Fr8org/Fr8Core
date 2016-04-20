@@ -109,6 +109,11 @@ namespace terminalExcel.Actions
                     CurrentActivityStorage.ReplaceByLabel(columnHeadersCrate);
                     SelectedFileDescription = selectedFileDescription;
 
+                    //lets publish table manifest
+                    var byteArray = ExcelUtils.GetExcelFileAsByteArray(ConfigurationControls.FilePicker.Value);
+                    var tableData = ExcelUtils.GetExcelFile(byteArray, ConfigurationControls.FilePicker.Value);
+                    CurrentActivityStorage.ReplaceByLabel(Crate.FromContent(RunTimeCrateLabel, tableData, AvailabilityType.Always));
+
                     CurrentActivityStorage.ReplaceByLabel(CreateExternalObjectHandlesCrate());
                 }
             }
