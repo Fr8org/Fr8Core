@@ -333,7 +333,7 @@ namespace terminalFr8Core.Controllers
                 NeedsAuthentication = false,
                 Terminal = terminal,
                 WebService = webService,
-                MinPaneWidth = 550
+                MinPaneWidth = 400
             });
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()

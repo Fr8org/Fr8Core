@@ -12,6 +12,7 @@ using Data.Crates;
 using Data.Entities;
 using Hub.Managers;
 using Utilities;
+using System.Text;
 
 namespace terminalFr8Core.Actions
 {
@@ -80,14 +81,13 @@ namespace terminalFr8Core.Actions
                 Controls.Add(MessageTextSource);
                 Controls.Add(DataSourceSelector);
                 Controls.Add(IsCachingDataSourceData);
+                Controls.Add(KeywordPropertiesSource);
                 Controls.Add(KeywordPropertiesSourceDescription);
                 Controls.Add(IsRemovingStopwords);
                 Controls.Add(StopwordsSource);
                 Controls.Add(StopwordsSourceDescription);
             }
         }
-
-        protected internal const string CachedDataCrateLabelPrefix = "Cached data for ";
 
         public KeywordsFilter_v1() : base(false)
         {
@@ -135,7 +135,7 @@ namespace terminalFr8Core.Actions
             if (IsInitialRun)
             {
                 ValidateRunPrerequisites();
-                if (!UseCachedData || CachedData == null)
+                if (!IsUsingCachedData || CachedData == null)
                 {
                     //If we don't want to use cached data or we don't have it then we let child activity to generate new data
                     return;
@@ -143,27 +143,19 @@ namespace terminalFr8Core.Actions
             }
             //Here we come after child activity is executed OR we want to use cached data and we have it
             var keywordsSource = GetKeywordsSource();
-
-
-        }
-
-        private StandardTableDataCM GetKeywordsSource()
-        {
-            var newData = NewData;
-            StandardTableDataCM actualData = null;
-            if (UseCachedData)
-            {
-                actualData = CachedData ?? (CachedData = NewData);
-            }
-            else
-            {
-                actualData = newData;
-            }
-            if (actualData == null)
+            if (keywordsSource == null)
             {
                 throw new ActivityExecutionException($"Data source activity didn't generated {MT.StandardTableData.GetEnumDisplayName()} crate");
             }
-            return actualData;
+            //If child activity did ran this time we need to remove the data its produced from payload (as it represents unfiltered data)
+            CurrentPayloadStorage.Remove(keywordsSource);
+            var keywordsSourceProperties = GetKeywordsSourceProperties(keywordsSource.Content);
+            var stopwordsToRemove = GetStopwordsToRemove();
+            var result = FilterKeywordsSource(IncomingMessage, keywordsSource, keywordsSourceProperties, stopwordsToRemove);
+            CurrentPayloadStorage.Add(result);
+            IsInitialRun = true;
+            //We don't want to run child activity again as we already used its data
+            RequestSkipChildren();
         }
 
         protected override Task RunChildActivities()
@@ -174,7 +166,105 @@ namespace terminalFr8Core.Actions
             return Task.FromResult(0);
         }
 
-        private StandardTableDataCM NewData
+        #region Implementation details
+
+        private string[] GetStopwordsToRemove()
+        {
+            if (!IsRemovingStopwords || string.IsNullOrWhiteSpace(SpecifiedStopwords))
+            {
+                return null;
+            }
+            return SpecifiedStopwords.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()).ToArray();
+        }
+
+        private Crate<StandardTableDataCM> FilterKeywordsSource(string message, Crate<StandardTableDataCM> keywordsSource, HashSet<string> keywordsSourceProperties, string[] stopwordsToRemove)
+        {
+            //If there is nothing to filter OR there are no keywords we just return the original data from child activity
+            if (keywordsSourceProperties?.Count == 0 || string.IsNullOrWhiteSpace(message))
+            {
+                return keywordsSource;
+            }
+            var sourceTable = keywordsSource.Content;
+            var result = new StandardTableDataCM { Table = new List<TableRowDTO>(), FirstRowHeaders = sourceTable.FirstRowHeaders };
+            //Copy header row
+            if (sourceTable.FirstRowHeaders && sourceTable.Table.Count > 0)
+            {
+                result.Table.Add(sourceTable.Table[0]);
+            }
+            foreach (var dataRow in sourceTable.DataRows)
+            {
+                var dataRowKeywords = GetKeywordsFromDataRow(dataRow, keywordsSourceProperties, stopwordsToRemove);
+                var keywordIsFound = false;
+                foreach (var keyword in dataRowKeywords)
+                {
+                    if (message.Contains(keyword, StringComparison.InvariantCultureIgnoreCase))
+                    {
+                        keywordIsFound = true;
+                        break;
+                    }
+                }
+                if (keywordIsFound)
+                {
+                    result.Table.Add(dataRow);
+                }
+            }
+            return Crate<StandardTableDataCM>.FromContent(keywordsSource.Label, result, keywordsSource.Availability);            
+        }
+
+        private string[] GetKeywordsFromDataRow(TableRowDTO dataRow, HashSet<string> keywordsSourceProperties, string[] stopwordsToRemove)
+        {
+            var result = dataRow.Row
+                                .Select(x => x.Cell)
+                                .Where(x => keywordsSourceProperties.Contains(x.Key))
+                                .Select(x => x.Value)
+                                .Where(x => !string.IsNullOrWhiteSpace(x));
+            if (stopwordsToRemove?.Length > 0)
+            {
+                result = result.Select(x => RemoveStopwords(x, stopwordsToRemove));
+            }
+            return result.ToArray();
+        }
+
+        private string RemoveStopwords(string value, string[] stopwordsToRemove)
+        {
+            //Currently this is straightforward removal of substrings
+            foreach (var stopword in stopwordsToRemove)
+            {
+                var index = value.IndexOf(stopword, StringComparison.InvariantCultureIgnoreCase);
+                value = value.Remove(index, stopword.Length);
+            }
+            return value.Replace("  ", " ").Trim();
+        }
+
+        private Crate<StandardTableDataCM> GetKeywordsSource()
+        {
+            var newData = NewData;
+            Crate<StandardTableDataCM> actualData = null;
+            if (IsUsingCachedData)
+            {
+                actualData = CachedData ?? (CachedData = NewData);
+            }
+            else
+            {
+                actualData = newData;
+            }
+            return actualData;
+        }
+
+        private HashSet<string> GetKeywordsSourceProperties(StandardTableDataCM keywordsSource)
+        {
+            if (!keywordsSource.HasDataRows || keywordsSource.Table[0].Row.Count == 0)
+            {
+                return null;
+            }
+            if (!string.IsNullOrWhiteSpace(SpecifiedKeywords))
+            {
+                return new HashSet<string>(SpecifiedKeywords.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()), StringComparer.InvariantCultureIgnoreCase);
+            }
+            return new HashSet<string>(new[] { keywordsSource.Table[0].Row[0].Cell.Key }, StringComparer.InvariantCultureIgnoreCase);            
+        }
+
+        private Crate<StandardTableDataCM> NewData
         {
             get
             {
@@ -189,46 +279,30 @@ namespace terminalFr8Core.Actions
                 {
                     return null;
                 }
-                var result = CurrentPayloadStorage.FirstCrateOrDefault<StandardTableDataCM>(x => x.Label == dataDescription.Label)?.Content;
-                return result;
+                return CurrentPayloadStorage.FirstCrateOrDefault<StandardTableDataCM>(x => x.Label == dataDescription.Label);
             }
         }
 
-        private bool UseCachedData { get { return ConfigurationControls.IsCachingDataSourceData.Selected; } }
-
-        private StandardTableDataCM CachedData
+        private Crate<StandardTableDataCM> CachedData
         {
             get
             {
-                var cachedData = CurrentActivityStorage.FirstCrateOrDefault<StandardTableDataCM>(x => x.Label.StartsWith(CachedDataCrateLabelPrefix));
-                var cacheDataExists = cachedData != null;
-                var cacheDataIsValid = cacheDataExists && cachedData.Label == CachedDataCrateLabel;
-                if (cacheDataIsValid)
-                {
-                    return cachedData.Content;
-                }
-                CachedData = null;
-                return null;
+                return CurrentActivityStorage.FirstCrateOrDefault<StandardTableDataCM>();
             }
             set
             {
                 if (value == null)
                 {
-                    CurrentActivityStorage.Remove(x => x.Label.StartsWith(CachedDataCrateLabelPrefix));
+                    CurrentActivityStorage.Remove<StandardTableDataCM>();
                 }
                 else
                 {
-                    CurrentActivityStorage.ReplaceByLabel(Crate<StandardTableDataCM>.FromContent(CachedDataCrateLabel, value));
+                    CurrentActivityStorage.Remove<StandardTableDataCM>();
+                    CurrentActivityStorage.Add(value);
                 }
             }
         }
 
-        private string CachedDataCrateLabel
-        {
-            get { return $"{CachedDataCrateLabelPrefix} {ConfigurationControls.DataSourceSelector.Value}"; }
-        }
-
-        //If payload doesn't contain create which labeled with current activity Id then it is the initial run
         private bool IsInitialRun
         {
             get { return !CurrentPayloadStorage.Any(x => x.Label == CurrentActivity.Id.ToString()); }
@@ -247,7 +321,7 @@ namespace terminalFr8Core.Actions
 
         private void ValidateRunPrerequisites()
         {
-            if (string.IsNullOrEmpty(ConfigurationControls.DataSourceSelector.Value))
+            if (string.IsNullOrEmpty(SelectedDataSourceActivityId))
             {
                 throw new ActivityExecutionException("Data source is not specified", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
@@ -256,10 +330,24 @@ namespace terminalFr8Core.Actions
                 throw new ActivityExecutionException("Data source activity is missing");
             }
             var datasourceActivity = (ActivityDO)CurrentActivity.GetOrderedChildren()[0];
-            if (datasourceActivity.ActivityTemplateId != Guid.Parse(ConfigurationControls.DataSourceSelector.Value))
+            if (datasourceActivity.ActivityTemplateId != Guid.Parse(SelectedDataSourceActivityId))
             {
                 throw new ActivityExecutionException("Data source activity is other than specified in data source");
             }
         }
+        //Wrappers for control properties
+        private string IncomingMessage { get { return ConfigurationControls.MessageTextSource.GetValue(CurrentPayloadStorage); } }
+
+        private string SelectedDataSourceActivityId { get { return ConfigurationControls.DataSourceSelector.Value; } }
+
+        private bool IsUsingCachedData { get { return ConfigurationControls.IsCachingDataSourceData.Selected; } }
+
+        private string SpecifiedKeywords { get { return ConfigurationControls.KeywordPropertiesSource.Value; } }
+
+        private bool IsRemovingStopwords { get { return ConfigurationControls.IsRemovingStopwords.Selected; } }
+
+        private string SpecifiedStopwords { get { return ConfigurationControls.StopwordsSource.Value; } }
+
+        #endregion
     }
 }
