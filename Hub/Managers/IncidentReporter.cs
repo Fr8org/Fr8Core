@@ -169,7 +169,8 @@ namespace Hub.Managers
                 Data = string.Join(
                     Environment.NewLine,
                     "Container failure.",
-                    "Plan: " + (plan != null ? plan.Name : "unknown"),
+                    "PlanName: " + (plan != null ? plan.Name : "unknown"),
+                    "PlanId: "+ (plan != null ? plan.Id.ToString() : "unknown"),
                     ex.Message,
                     ex.StackTrace ?? ""
                 ),
