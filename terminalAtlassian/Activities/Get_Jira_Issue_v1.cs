@@ -65,15 +65,22 @@ namespace terminalAtlassian.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            string jiraKey = ExtractJiraKey(curActivityDO);
-            var jiraIssue = _atlassianService.GetJiraIssue(jiraKey, authTokenDO);
-
-            using (var crateStorage = _crateManager.GetUpdatableStorage(payloadCrates))
+            try
             {
-                crateStorage.Add(PackCrate_JiraIssueDetails(jiraIssue));
-            }
+                string jiraKey = ExtractJiraKey(curActivityDO);
+                var jiraIssue = _atlassianService.GetJiraIssue(jiraKey, authTokenDO);
 
-            return Success(payloadCrates);
+                using (var crateStorage = _crateManager.GetUpdatableStorage(payloadCrates))
+                {
+                    crateStorage.Add(PackCrate_JiraIssueDetails(jiraIssue));
+                }
+
+                return Success(payloadCrates);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
 
         private string ExtractJiraKey(ActivityDO curActivityDO)
