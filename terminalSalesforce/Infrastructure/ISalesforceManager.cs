@@ -16,7 +16,7 @@ namespace terminalSalesforce.Infrastructure
 
         T CreateSalesforceDTO<T>(ActivityDO curActivity, PayloadDTO curPayload) where T : new();
 
-        Task<IList<FieldDTO>> GetChatters(AuthorizationTokenDO authTokenDO);
+        Task<IList<FieldDTO>> GetUsersAndGroups(AuthorizationTokenDO authTokenDO);
 
         Task<string> PostFeedTextToChatterObject(string feedText, string parentObjectId, AuthorizationTokenDO authTokenDO);
 
