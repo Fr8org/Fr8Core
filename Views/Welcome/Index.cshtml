@@ -78,60 +78,7 @@
 <body id="top">
 
     <!-- NAVBAR -->
-    <div class="navbar navbar-fixed-top">
-        <div class="container">
-            <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#main-nav">
-                    <span class="sr-only">Menu</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a href="index.html" class="navbar-brand">
-                    <img src="/Content/img/logo-fr8.svg" alt="FR8" />
-                    <h1 class="hide">FR8 Company</h1>
-                </a>
-            </div>
-            <nav class="navbar-collapse collapse" id="main-nav" role="navigation">
-                <ul class="nav navbar-nav navbar-right nav-text-light">
-                    <li><a href="#about">How it Works</a></li>
-                    <li data-scroll="scrolling" class="dropdown">
-                        <a data-target="#" href="#services" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Services">Services <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li><a href="/Services/DocuSign">DocuSign</a></li>
-                            @*<li><a href="/Services/Salesforce">Salesforce.com</a></li>
-                            <li><a href="/Services/GoogleApps">Google Apps</a></li>*@
-                        </ul>
-                    </li>
-                    <li><a href="http://fr8-documentation.azurewebsites.net">Developers</a></li>
-                    <li data-scroll="scrolling" class="dropdown">
-                        <a href="/Company/#team" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-haspopup="true" aria-expanded="false" title="Company">Company <span class="caret"></span></a>
-                        <ul class="dropdown-menu">
-                            <li data-scroll="scrolling"><a href="/Company/#vision">Vision</a></li>
-                            <li data-scroll="scrolling"><a href="/Company/#team">Team</a></li>
-                            <li data-scroll="scrolling"><a href="/Company/#location">Location</a></li>
-                            <li data-scroll="scrolling"><a href="/Company/#company">Jobs</a></li>
-                            <li data-scroll="scrolling"><a href="/Company/#team">About Us</a></li>
-                            <li data-scroll="scrolling"><a href="/Support">Support</a></li>
-                        </ul>
-                    </li>
-                    <li><a href="#contact">Contact</a></li>
-@if (!Request.IsAuthenticated)
-{
-    <li>
-        <button onclick="document.location = '/DockyardAccount';" class="mdl-button mdl-js-button mdl-button--login mdl-js-ripple-effect"><span class="try-now-btn">Login/Register</span></button>
-    </li>
-}
-else
-{
-    <li>
-        <button onclick="document.location = '/dashboard/myaccount';" class="mdl-button mdl-js-button mdl-button--raised mdl-js-ripple-effect"><span class="try-now-btn">My Account</span></button>
-    </li>
-}
-                </ul>
-            </nav>
-        </div>
-    </div>
+    @Html.Partial("../Shared/_HomeNavNew", new HubWeb.ViewModels.NavLinksHome())
     <!-- END NAVBAR -->
     <!-- HERO UNIT -->
     <div id="hero-unit" class="hero-unit hero-light hero-video" data-vide-bg="mp4: Content/videos/motion.mp4, webm: Content/videos/motion.webm, ogv: Content/videos/motion.ogv, poster: Content/videos/motion.png" data-vide-options="loop: true, posterType: png">

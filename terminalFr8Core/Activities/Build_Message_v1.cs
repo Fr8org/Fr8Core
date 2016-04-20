@@ -27,9 +27,7 @@ namespace terminalFr8Core.Actions
             public const string RuntimeCrateLabel = "Build Message";
             public TextBox Name { get; set; }
 
-            public TextArea Body { get; set; }
-
-            public DropDownList AvailableFields { get; set; }
+            public BuildMessageAppender Body { get; set; }
 
             public ActivityUi()
             {
@@ -39,18 +37,12 @@ namespace terminalFr8Core.Actions
                     Name = nameof(Name),
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
-                Body = new TextArea()
+                Body = new BuildMessageAppender
                 {
                     Label = "Body",
                     Name = nameof(Body),
                     IsReadOnly = false,
-                    Required = true
-                };
-                AvailableFields = new DropDownList
-                {
-                    Name = nameof(AvailableFields),
                     Required = true,
-                    Label = "Available Fields",
                     Source = new FieldSourceDTO
                     {
                         ManifestType = CrateManifestTypes.StandardDesignTimeFields,
@@ -58,7 +50,7 @@ namespace terminalFr8Core.Actions
                         AvailabilityType = AvailabilityType.RunTime
                     }
                 };
-                Controls = new List<ControlDefinitionDTO> { Name, Body, AvailableFields };
+                Controls = new List<ControlDefinitionDTO> { Name, Body };
             }
         }
 
@@ -74,11 +66,16 @@ namespace terminalFr8Core.Actions
             CurrentActivityStorage.ReplaceByLabel(PackMessageCrate());
         }
 
-        private Crate<FieldDescriptionsCM> PackMessageCrate(string actualBody = null)
+        private Crate<FieldDescriptionsCM> PackMessageCrate()
         {
             return Crate<FieldDescriptionsCM>.FromContent(ActivityUi.RuntimeCrateLabel,
-                                                          new FieldDescriptionsCM(new FieldDTO(ConfigurationControls.Name.Value,
-                                                                                               actualBody ?? ConfigurationControls.Body.Value)), AvailabilityType.RunTime);
+                                                          new FieldDescriptionsCM(new FieldDTO(ConfigurationControls.Name.Value, ConfigurationControls.Name.Value)), AvailabilityType.RunTime);
+        }
+
+        private Crate<StandardPayloadDataCM> PackMessageCrate(string body)
+        {
+            return Crate<StandardPayloadDataCM>.FromContent(ActivityUi.RuntimeCrateLabel,
+                                                          new StandardPayloadDataCM(new FieldDTO(ConfigurationControls.Name.Value, body)), AvailabilityType.RunTime);
         }
 
         protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
