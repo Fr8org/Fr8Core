@@ -56,6 +56,7 @@ namespace Data.Control
         public const string ControlList = "ControlList";
         public const string SelectData = "SelectData";
         public const string ExternalObjectChooser = "ExternalObjectChooser";
+        public const string BuildMessageAppender = "BuildMessageAppender";
     }
 
     public class SelectData : ControlDefinitionDTO
@@ -878,6 +879,13 @@ namespace Data.Control
                     return "/activites/documentation";
                 return string.Format("/activites/documentation/{0}", ContentPath);
             }
+        }
+    }
+    public class BuildMessageAppender : TextArea
+    {
+        public BuildMessageAppender()
+        {
+            Type = ControlTypes.BuildMessageAppender;
         }
     }
 }

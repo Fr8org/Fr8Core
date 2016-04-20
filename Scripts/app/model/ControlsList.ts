@@ -330,4 +330,10 @@
         subPlanId: string;
         externalObjectName: string;
     }
+
+    export class BuildMessageAppender extends TextArea {
+        constructor() {
+            super();
+        }
+    }
 }
