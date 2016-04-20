@@ -72,11 +72,9 @@ MOVE 'DockyardDB2_log' TO '$($dbPath)\$($targetDbName).ldf'"
 
 Write-Host $commandText
 $command.CommandText = $commandText
-if ($command.ExecuteNonQuery() -ne -1)
-{
-	Write-Host $errorMessage
-	exit 1
-}
+
+$command.ExecuteNonQuery()
+
 Write-Host "Successfully cloned the database."
 
 $connection.Close()
