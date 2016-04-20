@@ -6,8 +6,13 @@
 Write-Host "Deletes the specified database."
 $errorMessage = "An error while executing the query. Please check connection string for the DeleteDatabase action."
 
-$commandText = "DECLARE @kill varchar(8000) = ''; SELECT @kill = @kill + 'kill ' + CONVERT(varchar(5), spid) + ';' FROM master..sysprocesses WHERE dbid = db_id('$dbName') EXEC(@kill); "
-$commandText += "DROP DATABASE IF EXISTS [$dbName]"
+$commandText = "
+IF (EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE ('[' + name + ']' = '[$($dbName)]' OR name = '[$($dbName)]')))
+BEGIN
+	ALTER DATABASE [$($dbName)] SET SINGLE_USER WITH ROLLBACK IMMEDIATE
+	DROP DATABASE [$($dbName)]
+END"
+
 Write-Host $commandText
 
 $connection = new-object system.data.SqlClient.SQLConnection($connectionString)
