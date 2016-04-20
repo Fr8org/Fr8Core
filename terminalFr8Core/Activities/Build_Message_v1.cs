@@ -72,10 +72,10 @@ namespace terminalFr8Core.Actions
                                                           new FieldDescriptionsCM(new FieldDTO(ConfigurationControls.Name.Value, ConfigurationControls.Name.Value)), AvailabilityType.RunTime);
         }
 
-        private Crate<StandardPayloadDataCM> PackMessageCrate(string body)
+        private Crate<FieldDescriptionsCM> PackMessageCrate(string body)
         {
-            return Crate<StandardPayloadDataCM>.FromContent(ActivityUi.RuntimeCrateLabel,
-                                                          new StandardPayloadDataCM(new FieldDTO(ConfigurationControls.Name.Value, body)), AvailabilityType.RunTime);
+            return Crate<FieldDescriptionsCM>.FromContent(ActivityUi.RuntimeCrateLabel,
+                                                          new FieldDescriptionsCM(new FieldDTO(ConfigurationControls.Name.Value, body)), AvailabilityType.RunTime);
         }
 
         protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
