@@ -54,7 +54,7 @@ namespace terminalSalesforceTests.Actions
                 .Returns(() => Task.FromResult((IList<FieldDTO>)new List<FieldDTO> { testField }));
 
             salesforceIntegrationMock.Setup(
-                s => s.QueryObjects("Account", It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationTokenDO>()))
+                s => s.Query("Account", It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationTokenDO>()))
                 .Returns(() => Task.FromResult(new StandardTableDataCM()));
 
             _getData_v1 = new Get_Data_v1();

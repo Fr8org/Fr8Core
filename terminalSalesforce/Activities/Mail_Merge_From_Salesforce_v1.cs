@@ -272,7 +272,7 @@ namespace terminalSalesforce.Actions
 
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
-            ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager.GetObjectDescriptions().Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
+            ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager.GetObjectProperties().Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
             var activityTemplates = await HubCommunicator.GetActivityTemplates(ActivityTemplate.EmailDelivererTag, CurrentFr8UserId);
             activityTemplates.Sort((x, y) => x.Name.CompareTo(y.Name));
             ConfigurationControls.MailSenderActivitySelector.ListItems = activityTemplates

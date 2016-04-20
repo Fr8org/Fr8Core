@@ -103,10 +103,10 @@ namespace terminalSalesforceTests.Intergration
             var resultActionDto = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(terminalConfigureUrl, requestActionDTO);
             resultActionDto.UpdateControls<Post_To_Chatter_v1.ActivityUi>(x =>
             {
-                x.UseUserOrGroupOption.Selected = true;
-                var selectedUser = x.UserOrGroupSelector.ListItems.First(y => y.Key == "Fr8 Admin");
-                x.UserOrGroupSelector.selectedKey = selectedUser.Key;
-                x.UserOrGroupSelector.Value = selectedUser.Value;
+                x.QueryForObjectOption.Selected = true;
+                var selectedUser = x.ChatterObjectsFilter.ListItems.First(y => y.Key == "Fr8 Admin");
+                x.ChatterObjectsFilter.selectedKey = selectedUser.Key;
+                x.ChatterObjectsFilter.Value = selectedUser.Value;
                 x.FeedTextSource.ValueSource = "specific";
                 x.FeedTextSource.TextValue = "IntegrationTestFeed";
             });

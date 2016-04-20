@@ -12,12 +12,12 @@ namespace terminalSalesforceTests.Intergration
         {
             var salesForceManager = new SalesforceManager();
 
-            return await salesForceManager.DeleteObject(objectName, objectId, new Data.Entities.AuthorizationTokenDO { Token = authTokenDTO.Token, AdditionalAttributes = authTokenDTO.AdditionalAttributes });
+            return await salesForceManager.Delete(objectName, objectId, new Data.Entities.AuthorizationTokenDO { Token = authTokenDTO.Token, AdditionalAttributes = authTokenDTO.AdditionalAttributes });
         }
 
         public static async Task<bool> DeleteObject(AuthorizationTokenDO authTokenDO, string objectName, string objectId)
         {
-            return await new SalesforceManager().DeleteObject(objectName, objectId, authTokenDO);
+            return await new SalesforceManager().Delete(objectName, objectId, authTokenDO);
         }
     }
 }

@@ -55,7 +55,7 @@ namespace terminalSalesforceTests.Actions
             Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
             salesforceIntegrationMock.Setup(si => si.GetUsersAndGroups(It.IsAny<AuthorizationTokenDO>())).Returns(
                 () => Task.FromResult<IList<FieldDTO>>(new List<FieldDTO> { new FieldDTO("One", "1")}));
-            salesforceIntegrationMock.Setup(si => si.PostFeedTextToChatterObject(It.IsAny<string>(), It.IsAny<string>(), 
+            salesforceIntegrationMock.Setup(si => si.PostToChatter(It.IsAny<string>(), It.IsAny<string>(), 
                 It.IsAny<AuthorizationTokenDO>())).Returns(() => Task.FromResult("SomeValue"));
 
             postToChatter_v1 = new Post_To_Chatter_v1();
@@ -100,8 +100,8 @@ namespace terminalSalesforceTests.Actions
         {
             curActivityDO.UpdateControls<Post_To_Chatter_v1.ActivityUi>(x =>
             {
-                x.UseUserOrGroupOption.Selected = true;
-                x.UserOrGroupSelector.Value = "1";
+                x.QueryForObjectOption.Selected = true;
+                x.ChatterObjectsFilter.Value = "1";
                 x.FeedTextSource.ValueSource = "specific";
                 x.FeedTextSource.TextValue = "SomeValue";
             });

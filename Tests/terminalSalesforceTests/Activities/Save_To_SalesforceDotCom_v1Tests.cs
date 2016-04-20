@@ -54,7 +54,7 @@ namespace terminalSalesforceTests.Actions
                 .Returns(() => Task.FromResult((IList<FieldDTO>)new List<FieldDTO> { testField }));
 
             salesforceIntegrationMock.Setup(
-                s => s.QueryObjects("Account", It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationTokenDO>()))
+                s => s.Query("Account", It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationTokenDO>()))
                 .Returns(() => Task.FromResult(new StandardTableDataCM()));
 
             _saveToSFDotCom_v1 = new Save_To_SalesforceDotCom_v1();
@@ -147,7 +147,7 @@ namespace terminalSalesforceTests.Actions
             Assert.IsTrue(newlyCreatedLead.Count == 1, "Lead is not saved successfully in Save to SF.com");
             Assert.IsTrue(!string.IsNullOrEmpty(newlyCreatedLead[0].Value), "Lead is not saved successfully in Save to SF.com");
 
-            var isDeleted = await new SalesforceManager().DeleteObject("Lead", newlyCreatedLead[0].Value, authToken);
+            var isDeleted = await new SalesforceManager().Delete("Lead", newlyCreatedLead[0].Value, authToken);
             Assert.IsTrue(isDeleted, "The newly created lead is not deleted upon completion");
         }
 

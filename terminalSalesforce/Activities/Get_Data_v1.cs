@@ -63,7 +63,7 @@ namespace terminalSalesforce.Actions
 
         protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
-            ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager.GetObjectDescriptions().Select(x => new ListItem() { Key = x.Key, Value = x.Key }).ToList();
+            ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager.GetObjectProperties().Select(x => new ListItem() { Key = x.Key, Value = x.Key }).ToList();
             runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
             return Task.FromResult(true);
         }
@@ -125,7 +125,7 @@ namespace terminalSalesforce.Actions
                 parsedCondition = ParseConditionToText(filterDataDTO);
             }
 
-            var resultObjects = await _salesforceManager.QueryObjects(salesforceObject, salesforceObjectFields, parsedCondition, AuthorizationToken);
+            var resultObjects = await _salesforceManager.Query(salesforceObject, salesforceObjectFields, parsedCondition, AuthorizationToken);
             CurrentPayloadStorage.Add(Crate<StandardTableDataCM>.FromContent(RuntimeDataCrateLabel, resultObjects, AvailabilityType.RunTime));
         }
     }

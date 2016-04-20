@@ -8,20 +8,20 @@ namespace terminalSalesforce.Infrastructure
 {
     public interface ISalesforceManager
     {
-        Task<string> CreateObject(IDictionary<string, object> salesforceObject, string salesforceObjectName, AuthorizationTokenDO authTokenDO);
+        Task<string> Create(SalesforceObjectType type, IDictionary<string, object> @object, AuthorizationTokenDO authTokenDO);
 
-        Task<StandardTableDataCM> QueryObjects(string salesforceObjectName, IEnumerable<string> fields, string conditionQuery, AuthorizationTokenDO authTokenDO);
+        Task<StandardTableDataCM> Query(SalesforceObjectType type, IEnumerable<string> propertiesToRetrieve, string filter, AuthorizationTokenDO authTokenDO);
         
-        Task<IList<FieldDTO>> GetFields(string salesforceObjectName, AuthorizationTokenDO authTokenDO, bool onlyUpdatableFields = false);
+        Task<List<FieldDTO>> GetProperties(SalesforceObjectType type, AuthorizationTokenDO authTokenDO, bool updatableOnly = false);
 
-        T CreateSalesforceDTO<T>(ActivityDO curActivity, PayloadDTO curPayload) where T : new();
+        T CreateSalesforceDTO<T>(ActivityDO activity, PayloadDTO payload) where T : new();
 
-        Task<IList<FieldDTO>> GetUsersAndGroups(AuthorizationTokenDO authTokenDO);
+        Task<string> PostToChatter(string message, string parentObjectId, AuthorizationTokenDO authTokenDO);
 
-        Task<string> PostFeedTextToChatterObject(string feedText, string parentObjectId, AuthorizationTokenDO authTokenDO);
+        IEnumerable<FieldDTO> GetSalesforceObjectTypes(SalesforceObjectOperations filterByOperations = SalesforceObjectOperations.All, SalesforceProperties filterByProperties = SalesforceProperties.All);
 
-        IEnumerable<FieldDTO> GetObjectDescriptions();
-
-        Task<bool> DeleteObject(string salesforceObjectName, string objectId, AuthorizationTokenDO authTokenDO);
+        Task<bool> Delete(string salesforceObjectName, string objectId, AuthorizationTokenDO authTokenDO);
     }
+
+
 }
