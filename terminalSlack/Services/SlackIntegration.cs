@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StructureMap;
 using Data.Interfaces.DataTransferObjects;
@@ -55,9 +53,16 @@ namespace terminalSlack.Services
             return jsonObj.Value<string>("user_id");
         }
 
-        public async Task<List<FieldDTO>> GetChannelList(string oauthToken)
+        public async Task<string> GetUserName(string oauthToken)
         {
-            var url = PrepareTokenUrl("SlackChannelsListUrl", oauthToken);
+            var url = PrepareTokenUrl("SlackAuthTestUrl", oauthToken);
+            var jsonObj = await _client.GetAsync<JObject>(new Uri(url));
+            return jsonObj.Value<string>("user");
+        }
+
+        public async Task<List<FieldDTO>> GetChannelList(string oauthToken, bool includeArchived = false)
+        {
+            var url = $"{PrepareTokenUrl("SlackChannelsListUrl", oauthToken)}&exclude_archived={(includeArchived ? 0 : 1)}";
 
             var jsonObj = await _client.GetAsync<JObject>(new Uri(url));
 

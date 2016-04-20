@@ -143,8 +143,8 @@
       <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="RestSharp, Version=105.0.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\RestSharp.105.0.1\lib\net4\RestSharp.dll</HintPath>
+    <Reference Include="RestSharp, Version=105.2.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.105.2.2\lib\net45\RestSharp.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="ServiceStack.Text, Version=4.0.42.0, Culture=neutral, processorArchitecture=MSIL">
@@ -307,6 +307,10 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Service References\Application Insights\ConnectedService.json" />
+    <Content Include="..\Config\log4net.terminals.config">
+      <Link>log4net.terminals.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="ApplicationInsights.Debug.config">
       <DependentUpon>ApplicationInsights.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
@@ -423,4 +427,14 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Log4netConfigFiles Include="..\Config\*.terminals.*"/>
+  </ItemGroup>
+
+  <Target Name="BeforeBuild">
+    <Copy
+        SourceFiles="@(Log4NetConfigFiles)"
+        DestinationFolder="."
+         />
+  </Target>
 </Project>

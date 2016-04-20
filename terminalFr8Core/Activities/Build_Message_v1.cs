@@ -74,11 +74,16 @@ namespace terminalFr8Core.Actions
             CurrentActivityStorage.ReplaceByLabel(PackMessageCrate());
         }
 
-        private Crate<FieldDescriptionsCM> PackMessageCrate(string actualBody = null)
+        private Crate<FieldDescriptionsCM> PackMessageCrate()
         {
             return Crate<FieldDescriptionsCM>.FromContent(ActivityUi.RuntimeCrateLabel,
-                                                          new FieldDescriptionsCM(new FieldDTO(ConfigurationControls.Name.Value,
-                                                                                               actualBody ?? ConfigurationControls.Body.Value)), AvailabilityType.RunTime);
+                                                          new FieldDescriptionsCM(new FieldDTO(ConfigurationControls.Name.Value, ConfigurationControls.Name.Value)), AvailabilityType.RunTime);
+        }
+
+        private Crate<StandardPayloadDataCM> PackMessageCrate(string body)
+        {
+            return Crate<StandardPayloadDataCM>.FromContent(ActivityUi.RuntimeCrateLabel,
+                                                          new StandardPayloadDataCM(new FieldDTO(ConfigurationControls.Name.Value, body)), AvailabilityType.RunTime);
         }
 
         protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
@@ -98,7 +103,7 @@ namespace terminalFr8Core.Actions
         {
             var availableFields = ExtractAvaialbleFieldsFromPayload();
             var message = ConfigurationControls.Body.Value;
-            if (availableFields.Count > 0)
+            if (availableFields.Count > 0 && !string.IsNullOrEmpty(message))
             {
                 var messageBodyBuilder = new StringBuilder(message);
                 //We sort placeholders in reverse order so we can replace them starting from the last that won't break any previous match indices

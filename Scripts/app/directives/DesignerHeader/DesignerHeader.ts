@@ -3,6 +3,8 @@
 module dockyard.directives.designerHeader {
     'use strict';
 
+    import designHeaderEvents = dockyard.Fr8Events.DesignerHeader;
+
     export interface IDesignerHeaderScope extends ng.IScope {
         editing: boolean;
         editTitle(): void;
@@ -72,7 +74,7 @@ module dockyard.directives.designerHeader {
                         // This is required when user Run a plan and immediately navigates(before run completion) to dashboad or view all page in order 
                         // to make sure plans get rendered in desired sections
                         if (location.href.indexOf('/builder') === -1) {
-                            $rootScope.$broadcast("planExecutionCompleted-rearrangePlans", $scope.plan);
+                            $rootScope.$broadcast(<any>designHeaderEvents.PLAN_EXECUTION_COMPLETED_REARRANGE_PLANS, $scope.plan);
                             //$scope.$root.$broadcast("planExecutionCompleted", $scope.plan);
                         }
                     });

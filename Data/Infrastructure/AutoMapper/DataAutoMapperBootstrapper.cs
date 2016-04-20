@@ -66,9 +66,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
                 .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
                 .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
-                .ForMember(x => x.Description, opts => opts.ResolveUsing(x => x.Description))
-                .ForMember(x => x.NeedsAuthentication, opts => opts.ResolveUsing(x => x.NeedsAuthentication))
-                .ForMember(x => x.ShowDocumentation, opts => opts.Ignore());
+                .ForMember(x => x.NeedsAuthentication, opts => opts.ResolveUsing(x => x.NeedsAuthentication));
 
             Mapper.CreateMap<ActivityTemplateDTO, ActivityTemplateDO>()
                 .ConstructUsing((Func<ResolutionContext, ActivityTemplateDO>)(r => new ActivityTemplateDO()))
@@ -83,7 +81,6 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.ActivityTemplateStateTemplate,
                     opts => opts.ResolveUsing((ActivityTemplateDTO x) => null))
                 .ForMember(x => x.WebServiceId, opts => opts.ResolveUsing((ActivityTemplateDTO x) => null))
-                .ForMember(x => x.Description, opts => opts.ResolveUsing(x => x.Description))
                 .ForMember(x => x.ComponentActivities, opts => opts.Ignore())
                 .ForMember(x => x.ActivityTemplateState, opts => opts.Ignore())
                 .ForMember(x => x.TerminalId, opts => opts.Ignore())
@@ -103,7 +100,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.Name, opts => opts.MapFrom(e => e.Name))
                 .ForMember(x => x.NodeTransitions, opts => opts.MapFrom(e => e.TransitionKey))
                 .ForMember(x => x.Id, opts => opts.MapFrom(e => e.SubPlanId ?? Guid.Empty))
-                .ForMember(x => x.ParentPlanNodeId, opts => opts.MapFrom(e => e.PlanId))
+                .ForMember(x => x.ParentPlanNodeId, opts => opts.MapFrom(e => e.ParentId))
                 .ForMember(x => x.RootPlanNodeId, opts => opts.MapFrom(e => e.PlanId))
                 .ForMember(x => x.StartingSubPlan, opts => opts.UseValue(false))
                 .ForMember(x => x.RootPlanNode, opts => opts.Ignore())
@@ -119,10 +116,10 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.Name, opts => opts.ResolveUsing(e => e.Name))
                 .ForMember(x => x.TransitionKey, opts => opts.ResolveUsing(e => e.NodeTransitions))
                 .ForMember(x => x.SubPlanId, opts => opts.ResolveUsing(e => e.Id))
-                .ForMember(x => x.PlanId, opts => opts.ResolveUsing(e => e.ParentPlanNodeId));
+                .ForMember(x => x.PlanId, opts => opts.ResolveUsing(e => e.RootPlanNodeId));
 
             Mapper.CreateMap<SubPlanDO, SubPlanDTO>()
-                .ForMember(x => x.PlanId, opts => opts.ResolveUsing(x => x.ParentPlanNodeId))
+                .ForMember(x => x.ParentId, opts => opts.ResolveUsing(x => x.ParentPlanNodeId))
                 .ForMember(x => x.PlanId, opts => opts.ResolveUsing(x => x.RootPlanNodeId))
                 .ForMember(x => x.SubPlanId, opts => opts.ResolveUsing(x => x.Id));
 

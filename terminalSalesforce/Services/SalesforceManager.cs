@@ -102,7 +102,7 @@ namespace terminalSalesforce.Services
         /// Gets all avaialble chatter persons and chatter objects in the form of FieldDTO
         /// FieldDTO's Key as ObjectName and Value as ObjectId
         /// </summary>
-        public async Task<IList<FieldDTO>> GetChatters(AuthorizationTokenDO authTokenDO)
+        public async Task<IList<FieldDTO>> GetUsersAndGroups(AuthorizationTokenDO authTokenDO)
         {
             var chatterObjectSelectPredicate = new Dictionary<string, Func<JToken, FieldDTO>>();
             chatterObjectSelectPredicate.Add("groups", x => new FieldDTO(x.Value<string>("name"), x.Value<string>("id"), AvailabilityType.Configuration));

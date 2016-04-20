@@ -11,6 +11,7 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting.Fixtures;
+using UtilitiesTesting;
 
 namespace HubTests.Managers
 {
@@ -20,7 +21,7 @@ namespace HubTests.Managers
 
     [TestFixture]
     [Category("CrateManager")]
-    public partial class CrateManagerTests
+    public partial class CrateManagerTests : BaseTest
     {
         private ICrateManager _crateManager;
 
