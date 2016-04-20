@@ -37,7 +37,6 @@ namespace terminalBox.Controllers
                 Name = "SaveToFile",
                 Label = "SaveToFile",
                 Version = "1",
-                Description = "SaveToFile",
                 Category = ActivityCategory.Forwarders,
                 Terminal = terminal,
                 NeedsAuthentication = true,
