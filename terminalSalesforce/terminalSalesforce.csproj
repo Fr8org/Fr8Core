@@ -239,6 +239,7 @@
   <ItemGroup>
     <Compile Include="Activities\ActivitiesHelper.cs" />
     <Compile Include="Activities\Mail_Merge_From_Salesforce_v1.cs" />
+    <Compile Include="Activities\Monitor_Salesforce_Event_v1.cs" />
     <Compile Include="Activities\Save_To_SalesforceDotCom_v1.cs" />
     <Compile Include="Activities\Post_To_Chatter_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
