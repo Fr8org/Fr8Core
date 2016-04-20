@@ -1,0 +1,68 @@
+{
+  "$schema": "http://schema.management.azure.com/schemas/2014-04-01-preview/VM_IP.json",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "vmName": {
+      "type": "string"
+    },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "Standard_DS2"
+    },
+    "adminUserName": {
+      "type": "string"
+    },
+    "adminPassword": {
+      "type": "securestring"
+    },
+    "networkInterfaceId": {
+      "type": "string"
+    }
+  },
+  "resources": [
+    {
+      "apiVersion": "2016-03-30",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "storageProfile": {
+          "osDisk": {
+            "osType": "Windows",
+            "name": "templ-osDisk.3d8c801f-b2a6-4650-a120-92cc88b23f56.vhd",
+            "createOption": "FromImage",
+            "image": {
+              "uri": "https://kwasabuildsfr8b041107350.blob.core.windows.net/system/Microsoft.Compute/Images/buildserver/templ-osDisk.3d8c801f-b2a6-4650-a120-92cc88b23f56.vhd"
+            },
+            "vhd": {
+              "uri": "https://kwasabuildsfr8b041107350.blob.core.windows.net/vmcontainerc3926e44-e4da-4869-a36b-5e326ed524af/osDisk.c3926e44-e4da-4869-a36b-5e326ed524af.vhd"
+            },
+            "caching": "ReadWrite"
+          }
+        },
+        "osProfile": {
+          "computerName": "[parameters('vmName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[parameters('networkInterfaceId')]"
+            }
+          ]
+        },
+        "diagnosticsProfile": {
+          "bootDiagnostics": {
+            "enabled": true,
+            "storageUri": "https://kwasabuildsfr8b041107350.blob.core.windows.net/"
+          }
+        },
+        "provisioningState": 0
+      },
+      "name": "[parameters('vmName')]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "westus"
+    }
+  ]
+}
