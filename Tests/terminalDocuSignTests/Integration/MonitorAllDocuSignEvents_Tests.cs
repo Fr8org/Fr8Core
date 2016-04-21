@@ -31,7 +31,7 @@ namespace terminalDocuSignTests.Integration
     public class MonitorAllDocuSignEvents_Tests : BaseHubIntegrationTest
     {
         // private const string UserAccountName = "y.gnusin@gmail.com";
-        private const string UserAccountName = "IntegrationTestUser1";
+        private const string UserAccountName = "integration_test_runner@fr8.company";
         private const int MaxAwaitPeriod = 300000;
         private const int SingleAwaitPeriod = 10000;
 
