@@ -1,7 +1,6 @@
-﻿    using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Owin;
 using Microsoft.Owin.Hosting;
@@ -12,14 +11,12 @@ using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
 using Hub.Managers;
-using Hub.Services;
 using Utilities;
 using Utilities.Configuration.Azure;
-using Utilities.Logging;
 using Hub.Interfaces;
 using Hangfire;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using System.Web;
+using Hangfire.StructureMap;
+using Hangfire.Dashboard;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
@@ -49,9 +46,24 @@ namespace HubWeb
         public void ConfigureHangfire(IAppBuilder app, string connectionString)
         {
             GlobalConfiguration.Configuration
-                .UseSqlServerStorage(connectionString);
-            app.UseHangfireDashboard();
+                .UseSqlServerStorage(connectionString)
+                .UseStructureMapActivator(ObjectFactory.Container);
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            {
+                AuthorizationFilters = new[] { new MyRestrictiveAuthorizationFilter() }
+            });
             app.UseHangfireServer();
+        }
+
+        public class MyRestrictiveAuthorizationFilter : IAuthorizationFilter
+        {
+            public bool Authorize(IDictionary<string, object> owinEnvironment)
+            {
+                var context = new OwinContext(owinEnvironment);
+                if (context.Authentication.User.Identity.Name == "hangfireuser@fr8.co")
+                    return true;
+                else return false;
+            }
         }
 
         //SeedDatabases
@@ -173,5 +185,5 @@ namespace HubWeb
         {
             return WebApp.Start<Startup>(url: url);
         }
-            }
-        }
+    }
+}

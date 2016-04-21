@@ -135,7 +135,7 @@ namespace Hub.Managers
 
             if (terminal != null)
             {
-                return terminal.Name;
+                return terminal.Label;
             }
 
             return authorizationToken.TerminalID.ToString();

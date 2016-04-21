@@ -60,7 +60,6 @@ namespace terminalSalesforceTests.Intergration
 
                 //Assert
                 Debug.WriteLine("Asserting initial payload.");
-                System.Diagnostics.Debugger.Launch();
                 var payloadList = Crate.GetUpdatableStorage(payload).CratesOfType<StandardPayloadDataCM>().ToList();
                 Assert.AreEqual(1, payloadList.Count, "The payload does not contian all activities payload");
                 Assert.IsTrue(payloadList.Any(pl => pl.Label.Equals("Lead is saved in Salesforce.com")), "Save Data is Failed to save the lead.");

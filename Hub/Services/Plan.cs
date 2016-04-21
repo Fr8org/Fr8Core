@@ -247,7 +247,7 @@ namespace Hub.Services
                     {
                         var operationalState = new OperationalStateCM();
                         operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Error);
-                        operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(control.ErrorMessage, ErrorType.Generic, string.Empty, null, curActivityDTO.ActivityTemplate.Name, curActivityDTO.ActivityTemplate.Terminal.Name));
+                        operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(control.ErrorMessage, ErrorType.Generic, string.Empty, null, curActivityDTO.ActivityTemplate.Name, curActivityDTO.ActivityTemplate.Terminal.Label));
 
                         var operationsCrate = Crate.FromContent("Operational Status", operationalState);
                         tempCrateStorage.Add(operationsCrate);
@@ -503,7 +503,8 @@ namespace Hub.Services
 
         public void Enqueue(Guid curPlanId, params Crate[] curEventReport)
         {
-            _dispatcher.Enqueue(() => LaunchProcess(curPlanId, curEventReport).Wait());
+            var curEventReportDTO = curEventReport.Select(x => CrateStorageSerializer.Default.ConvertToDto(x)).ToArray();
+            _dispatcher.Enqueue(() => LaunchProcessSync(curPlanId, curEventReportDTO));
         }
 
         public void Enqueue(List<PlanDO> curPlans, params Crate[] curEventReport)
@@ -513,12 +514,18 @@ namespace Hub.Services
                 Enqueue(curPlan.Id, curEventReport);
             }
         }
+        //This is for HangFire compatibility reasons
+        public static void LaunchProcessSync(Guid curPlan, params CrateDTO[] curPayload)
+        {
+            LaunchProcess(curPlan, curPayload.Select(x => CrateStorageSerializer.Default.ConvertFromDto(x)).ToArray()).Wait();
+        }
 
         public static async Task LaunchProcess(Guid curPlan, params Crate[] curPayload)
         {
             if (curPlan == default(Guid))
+            {
                 throw new ArgumentException(nameof(curPlan));
-
+            }
             await ObjectFactory.GetInstance<IPlan>().Run(curPlan, curPayload);
         }
 
