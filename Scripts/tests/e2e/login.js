@@ -3,7 +3,6 @@
         var EC = protractor.ExpectedConditions;
         browser.ignoreSynchronization = true;
         browser.get(browser.baseUrl);
-
         var button = element(by.xpath('//*[@id="main-nav"]/ul/li[6]/button'));
         var isClickable = EC.elementToBeClickable(button);
         browser.wait(isClickable, 5000);
