@@ -64,7 +64,7 @@ namespace terminalDocuSign.Controllers
                 Name = "Send_DocuSign_Envelope",
                 Label = "Send DocuSign Envelope",
                 Category = ActivityCategory.Forwarders,
-                Tags = string.Join(",", Tags.EmailDeliverer, Tags.AggressiveReload),
+                Tags = string.Join(",", Tags.EmailDeliverer),
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 WebService = webService,
