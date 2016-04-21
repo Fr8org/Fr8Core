@@ -40,7 +40,7 @@ namespace terminalAtlassian.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex);
+                ReportTerminalError(curTerminal, ex,curCredential.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {
