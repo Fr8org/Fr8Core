@@ -194,6 +194,15 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
+
+            /////////////////////////////////////////////////////////////
+            /////////////////STRESS-TESTING//////////////////////////////
+            var curUpstreamFields = (await GetDesignTimeFields(curActivityDO, CrateDirection.Upstream))
+                 .Fields
+                 .Where(a => a.Availability == AvailabilityType.RunTime)
+                 .ToArray();
+
+
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 // Only do it if no existing MT.FieldDescription crate is present to avoid loss of existing settings
@@ -212,6 +221,15 @@ namespace terminalDocuSign.Actions
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
+
+            /////////////////////////////////////////////////////////////
+            /////////////////STRESS-TESTING//////////////////////////////
+            var curUpstreamFields = (await GetDesignTimeFields(curActivityDO, CrateDirection.Upstream))
+                 .Fields
+                 .Where(a => a.Availability == AvailabilityType.RunTime)
+                 .ToArray();
+
+
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
