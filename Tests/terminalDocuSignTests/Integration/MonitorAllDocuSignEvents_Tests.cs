@@ -31,7 +31,7 @@ namespace terminalDocuSignTests.Integration
     public class MonitorAllDocuSignEvents_Tests : BaseHubIntegrationTest
     {
         // private const string UserAccountName = "y.gnusin@gmail.com";
-        private const string UserAccountName = "IntegrationTestUser1";
+        private const string UserAccountName = "integration_test_runner@fr8.company";
         private const int MaxAwaitPeriod = 300000;
         private const int SingleAwaitPeriod = 10000;
 
@@ -130,6 +130,7 @@ namespace terminalDocuSignTests.Integration
         private async Task RecreateDefaultAuthToken(IUnitOfWork uow,
             Fr8AccountDO account, TerminalDO docuSignTerminal)
         {
+            Debug.WriteLine($"Reauthorizing tokens for {account.EmailAddress.Address}");
             var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
                 _baseUrl + "manageauthtoken/"
             );
