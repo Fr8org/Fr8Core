@@ -61,7 +61,7 @@ namespace HubWeb
             public bool Authorize(IDictionary<string, object> owinEnvironment)
             {
                 var context = new OwinContext(owinEnvironment);
-                if (context.Authentication.User.Identity.Name == "hangfireuser@fr8.co")
+                if (context.Authentication.User.IsInRole("Admin"))
                     return true;
                 else return false;
             }
