@@ -712,6 +712,10 @@
     <Compile Include="Migrations\201604171806555_HistoryItemDO_CustomerId_to_Fr8UserId.Designer.cs">
       <DependentUpon>201604171806555_HistoryItemDO_CustomerId_to_Fr8UserId.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201604191731406_AddLabelToTerminals.cs" />
+    <Compile Include="Migrations\201604191731406_AddLabelToTerminals.Designer.cs">
+      <DependentUpon>201604191731406_AddLabelToTerminals.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -1245,6 +1249,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604171806555_HistoryItemDO_CustomerId_to_Fr8UserId.resx">
       <DependentUpon>201604171806555_HistoryItemDO_CustomerId_to_Fr8UserId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604191731406_AddLabelToTerminals.resx">
+      <DependentUpon>201604191731406_AddLabelToTerminals.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
