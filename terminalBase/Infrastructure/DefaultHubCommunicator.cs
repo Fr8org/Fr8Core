@@ -165,7 +165,7 @@ namespace TerminalBase.Infrastructure
         public async Task<IncomingCratesDTO> GetAvailableData(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/GetAvailableData"
+                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/available_data"
                       + "?id=" + activityDO.Id
                       + "&direction=" + (int) direction
                       + "&availability=" + (int)availability;
