@@ -44,7 +44,7 @@ namespace terminalGoogle.Actions
             _googleAppScript = new GoogleAppScript();
         }
 
-        protected bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
+        public override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
             if (authTokenDO == null) return true;
             if (!base.NeedsAuthentication(authTokenDO))
@@ -67,7 +67,7 @@ namespace terminalGoogle.Actions
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
+             var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
 
             using (var storage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
@@ -143,7 +143,7 @@ namespace terminalGoogle.Actions
         {
             if (curActivityDO.Id != Guid.Empty)
             {
-                var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
+                 var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
                 var configurationCrate = PackCrate_ConfigurationControls();
                 await FillSelectedGoogleFormSource(configurationCrate, "Selected_Google_Form", authDTO);
                 var eventCrate = CreateEventSubscriptionCrate();

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using NUnit.Framework;
 using HealthMonitor.Utility;
 using Data.Interfaces.DataTransferObjects;
@@ -47,9 +48,8 @@ namespace terminalGoogleTests.Integration
             Assert.NotNull(responseActivityDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActivityDTO.CrateStorage);
-            Assert.AreEqual(3, crateStorage.Count);
+            Assert.AreEqual(2, crateStorage.Count);
             Assert.IsNotNull(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault());
-            Assert.IsNotNull(crateStorage.CrateContentsOfType<FieldDescriptionsCM>().SingleOrDefault());
             Assert.IsNotNull(crateStorage.CrateContentsOfType<EventSubscriptionCM>().SingleOrDefault());
         }
 
@@ -75,19 +75,12 @@ namespace terminalGoogleTests.Integration
             var crateStorage = Crate.FromDto(responseActivityDTO.CrateStorage);
 
             var standardConfigurationControlsCM = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
-            var FieldDescriptionsCM = crateStorage.CrateContentsOfType<FieldDescriptionsCM>().SingleOrDefault();
             var eventSubscriptionCM = crateStorage.CrateContentsOfType<EventSubscriptionCM>().SingleOrDefault();
 
             var dropdown = standardConfigurationControlsCM.Controls.Where(s => s.GetType() == typeof(DropDownList)).FirstOrDefault();
 
             Assert.IsNotNull(dropdown);
             Assert.AreEqual("Selected_Google_Form", dropdown.Name);
-            Assert.AreEqual("Available Forms", dropdown.Source.Label);
-            Assert.AreEqual(CrateManifestTypes.StandardDesignTimeFields, dropdown.Source.ManifestType);
-
-            Assert.IsNotNull(FieldDescriptionsCM);
-            Assert.AreEqual(1, crateStorage.Where(s => s.Label == "Available Forms").Count());
-
             Assert.IsNotNull(eventSubscriptionCM);
             Assert.AreEqual(1, crateStorage.Where(s => s.Label == "Standard Event Subscriptions").Count());
         }
@@ -95,7 +88,7 @@ namespace terminalGoogleTests.Integration
         /// <summary>
         /// Validate dropdownlist source contains google forms(pre-installed in users google drive)
         /// </summary>
-        [Test, Category("Integration.terminalGoogle")]
+        [Test, Category("Integration.terminalGoogle"), Ignore]
         public async Task Monitor_Form_Responses_Initial_Configuration_Check_Source_Fields()
         {
             //Arrange
@@ -145,32 +138,27 @@ namespace terminalGoogleTests.Integration
         /// after the initial configuration.
         /// </summary>
         [Test, Category("Integration.terminalGoogle")]
-        public async Task Monitor_Form_Responses_Folloup_Configuration_Updates_DDLB()
+        public async Task Monitor_Form_Responses_Followup_Configuration_Updates_DDLB()
         {
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
-            var emptyActivityDTO = HealthMonitor_FixtureData.Monitor_Form_Responses_v1_InitialConfiguration_Fr8DataDTO();
+            var fixtureData = new HealthMonitor_FixtureData();
+            var dataDTO = fixtureData.Monitor_Form_Responses_v1_Followup_Fr8DataDTO();
+            var initialDDLB = GetDropDownListControl(dataDTO.ActivityDTO);
+            Assert.AreEqual(0, initialDDLB.ListItems.Count());
             //initial configuration call
             var initialConfigurationActivityDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                 configureUrl,
-                emptyActivityDTO
+                dataDTO
             );
-            var ddlb = GetDropDownListControl(initialConfigurationActivityDTO);
-            Assert.AreEqual(0, ddlb.ListItems.Count());
-            //var responseActivityDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
-            //    configureUrl,
-            //    initialActivityDTO
-            //);
-            ////Assert
-            //Assert.IsNotNull(responseActivityDTO);
-
-
+            var afterFollowupDDLB = GetDropDownListControl(initialConfigurationActivityDTO);
+            Assert.IsNotEmpty(afterFollowupDDLB.ListItems);
         }
 
         /// <summary>
         /// Validate google app script is uploaded in users google drive
         /// </summary>
-        [Test, Category("Integration.terminalGoogle")]
+        [Test, Category("Integration.terminalGoogle"), Ignore]
         public async Task Monitor_Form_Responses_Activate_Check_Script_Exist()
         {
             //Arrange
@@ -304,8 +292,8 @@ namespace terminalGoogleTests.Integration
         private DropDownList GetDropDownListControl(ActivityDTO activityDTO)
         {
             var crateStorage = Crate.FromDto(activityDTO.CrateStorage);
-            var controls = crateStorage.CratesOfType<StandardConfigurationControlsCM>();
-            var ddlb = (DropDownList)controls.First(c => c.Label == "Selected_Google_Form").Content.FindByName("Selected_Google_Form");
+            var controls = crateStorage.CratesOfType<StandardConfigurationControlsCM>().Single().Content.Controls;
+            var ddlb = (DropDownList)controls.SingleOrDefault(c => c.Type == ControlTypes.DropDownList);
             return ddlb;
         }
     }

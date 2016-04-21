@@ -256,7 +256,7 @@ namespace TerminalBase.Infrastructure
 
         public Task NotifyUser(TerminalNotificationDTO notificationMessage, string userId)
         {
-            throw new NotImplementedException();
+            return null;
         }
 
         public Task DeletePlan(Guid planId, string userId)
