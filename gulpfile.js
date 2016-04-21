@@ -123,6 +123,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/ControlList.js',
         'Scripts/app/directives/Controls/SelectData.js',
         'Scripts/app/directives/Controls/ExternalObjectChooser.js',
+        'Scripts/app/directives/Controls/BuildMessageAppender.js',
         'Scripts/app/directives/LongAjaxCursor.js',
         'Scripts/app/directives/Validators/ManifestDescriptionValidators.js',
         'Scripts/app/directives/ActionPicker.js',

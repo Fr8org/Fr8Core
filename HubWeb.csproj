@@ -944,6 +944,7 @@
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\BuildMessageAppender.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ControlList.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ExternalObjectChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\MetaControlContainer.ts" />
@@ -1087,6 +1088,7 @@
     <Content Include="Views\Shared\401.cshtml" />
     <Content Include="Views\Services\SolutionListTemplate.cshtml" />
     <Content Include="Views\AngularTemplate\SelectData.cshtml" />
+    <Content Include="Views\AngularTemplate\BuildMessageAppender.cshtml" />
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -27,9 +27,7 @@ namespace terminalFr8Core.Actions
             public const string RuntimeCrateLabel = "Build Message";
             public TextBox Name { get; set; }
 
-            public TextArea Body { get; set; }
-
-            public DropDownList AvailableFields { get; set; }
+            public BuildMessageAppender Body { get; set; }
 
             public ActivityUi()
             {
@@ -39,18 +37,12 @@ namespace terminalFr8Core.Actions
                     Name = nameof(Name),
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
-                Body = new TextArea()
+                Body = new BuildMessageAppender
                 {
                     Label = "Body",
                     Name = nameof(Body),
                     IsReadOnly = false,
-                    Required = true
-                };
-                AvailableFields = new DropDownList
-                {
-                    Name = nameof(AvailableFields),
                     Required = true,
-                    Label = "Available Fields",
                     Source = new FieldSourceDTO
                     {
                         ManifestType = CrateManifestTypes.StandardDesignTimeFields,
@@ -58,7 +50,7 @@ namespace terminalFr8Core.Actions
                         AvailabilityType = AvailabilityType.RunTime
                     }
                 };
-                Controls = new List<ControlDefinitionDTO> { Name, Body, AvailableFields };
+                Controls = new List<ControlDefinitionDTO> { Name, Body };
             }
         }
 
