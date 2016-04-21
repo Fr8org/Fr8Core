@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Crates;
@@ -128,6 +129,8 @@ namespace terminaBaselTests.Tools.Terminals
         /// <returns></returns>
         public GoogleAuthDTO GetGoogleAuthToken(Guid authorizationTokenId)
         {
+            Debug.WriteLine("Getting google auth token for authorizationTokenId: " + authorizationTokenId);
+            Assert.IsNotNull(authorizationTokenId, "The google authorization token is null");
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var validToken = uow.AuthorizationTokenRepository.FindTokenById(authorizationTokenId);
