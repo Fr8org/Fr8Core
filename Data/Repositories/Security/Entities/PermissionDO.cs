@@ -7,10 +7,10 @@ using System.Threading.Tasks;
 namespace Data.Repositories.Security.Entities
 {
     /// <summary>
-    /// Data Object Wrapper for Privileges. Not connected to EF Context and contains only basic data.
+    /// Data Object Wrapper for Permission. Not connected to EF Context and contains only basic data.
     /// Used for Security Objects Manipulation.
     /// </summary>
-    public class PrivilegeDO
+    public class PermissionDO
     {
         public string Name { get; set; }
     }

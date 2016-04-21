@@ -6,7 +6,7 @@ using Data.Repositories.Security.Entities;
 namespace Data.Repositories.Security.StorageImpl.Cache
 {
     /// <summary>
-    /// Cache service for security objects and role privileges. Every CachedObject has expiration strategy 
+    /// Cache service for security objects and role permissions. Every CachedObject has expiration strategy 
     /// and after given period that object is removed from cache. SecurityObjectsCache is defined as Sigleton and it's constructed only on app start.
     /// </summary>
     public class SecurityObjectsCache : ISecurityObjectsCache
@@ -24,17 +24,17 @@ namespace Data.Repositories.Security.StorageImpl.Cache
         private class CachedObject
         {
             /// <summary>
-            /// All RolePrivileges defined for data object
+            /// All RolePermissions defined for data object
             /// </summary>
-            public ObjectRolePrivilegesDO RolePrivileges { get; private set; }
+            public ObjectRolePermissionsDO RolePermissions { get; private set; }
             /// <summary>
             /// Expiration token for removing object from cache
             /// </summary>
             public IExpirationToken Expiration { get; set; }
 
-            public CachedObject(ObjectRolePrivilegesDO rolePrivileges, IExpirationToken expiration)
+            public CachedObject(ObjectRolePermissionsDO rolePermissions, IExpirationToken expiration)
             {
-                RolePrivileges = rolePrivileges;
+                RolePermissions = rolePermissions;
                 Expiration = expiration;
             }
         }
@@ -44,13 +44,13 @@ namespace Data.Repositories.Security.StorageImpl.Cache
             _expirationStrategy = expirationStrategy;
             expirationStrategy.SetExpirationCallback(RemoveExpiredPlans);
         }
-        
+
         /// <summary>
-        /// Get RolePrivileges list from cache. Return empty list when cache is empty
+        /// Get RolePermissions list from cache. Return empty list when cache is empty
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ObjectRolePrivilegesDO Get(string id)
+        public ObjectRolePermissionsDO Get(string id)
         {
             lock (_sync)
             {
@@ -60,16 +60,16 @@ namespace Data.Repositories.Security.StorageImpl.Cache
                     return null;
                 }
 
-                return cachedObject.RolePrivileges;
+                return cachedObject.RolePermissions;
             }
         }
 
         /// <summary>
-        /// Add new role privileges to list, or update rolePrivileg
+        /// Add new role permissions to list, or update role permissions
         /// </summary>
         /// <param name="id"></param>
-        /// <param name="rolePrivileges"></param>
-        public void AddOrUpdate(string id, ObjectRolePrivilegesDO rolePrivileges)
+        /// <param name="rolePermissions"></param>
+        public void AddOrUpdate(string id, ObjectRolePermissionsDO rolePermissions)
         {
             lock (_sync)
             {
@@ -77,14 +77,14 @@ namespace Data.Repositories.Security.StorageImpl.Cache
                 if (!_cachedObjects.TryGetValue(id, out cachedObject))
                 {
                     var expirOn = _expirationStrategy.NewExpirationToken();
-                    cachedObject = new CachedObject(rolePrivileges, expirOn);
+                    cachedObject = new CachedObject(rolePermissions, expirOn);
 
                     _cachedObjects.Add(id, cachedObject);
                 }
                 else
                 {
                     var expirOn = _expirationStrategy.NewExpirationToken();
-                    cachedObject = new CachedObject(rolePrivileges, expirOn);
+                    cachedObject = new CachedObject(rolePermissions, expirOn);
 
                     _cachedObjects[id] = cachedObject;
                 }

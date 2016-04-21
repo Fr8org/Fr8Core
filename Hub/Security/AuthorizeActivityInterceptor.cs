@@ -12,7 +12,7 @@ namespace Hub.Security
 {
     /// <summary>
     /// AOP Interceptor used to invoke some code on all methods/properties that has been decorated with AuthorizeActivitiyAttribute.
-    /// This method will extract needed data from attribute and method/property that is invocation target and will check if user has privileges to do some activity on invocation target.
+    /// This method will extract needed data from attribute and method/property that is invocation target and will check if user has permissions to do some activity on invocation target.
     /// Config: Lifecycle of interceptor is configured inside StructureMap bootstrapper. For new classes that will have security checks add the dynamic proxy generator as decorator:
     /// Example: For<IActivity>().Use<Activity>().DecorateWith(z => dynamicProxy.CreateInterfaceProxyWithTarget(z, new AuthorizeActivityInterceptor()));
     /// </summary>
@@ -24,7 +24,7 @@ namespace Hub.Security
         }
 
         /// <summary>
-        /// On Method call, this functionality is invoked. Get needed data about privilege and secured object target that need to be authorized
+        /// On Method call, this functionality is invoked. Get needed data about permission and secured object target that need to be authorized
         /// </summary>
         /// <param name="invocation"></param>
         private void AuthorizeActivity(IInvocation invocation)
@@ -80,7 +80,7 @@ namespace Hub.Security
                 }
                 
                 ISecurityServices securityServices = ObjectFactory.GetInstance<ISecurityServices>();
-                if (securityServices.AuthorizeActivity(authorizeAttribute.Privilege, objectId))
+                if (securityServices.AuthorizeActivity(authorizeAttribute.Permission, objectId))
                 {
                     invocation.Proceed();
                 }
@@ -113,7 +113,7 @@ namespace Hub.Security
             }
 
             ISecurityServices securityServices = ObjectFactory.GetInstance<ISecurityServices>();
-            if (securityServices.AuthorizeActivity(authorizeAttribute.Privilege, objectId))
+            if (securityServices.AuthorizeActivity(authorizeAttribute.Permission, objectId))
             {
                 invocation.Proceed();
                 return;

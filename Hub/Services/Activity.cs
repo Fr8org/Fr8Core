@@ -168,7 +168,7 @@ namespace Hub.Services
             }
         }
 
-        //[AuthorizeActivity(Privilege = Privilege.ReadObject, ObjectType = typeof(Guid))]
+        //[AuthorizeActivity(Permission = Permission.ReadObject, ObjectType = typeof(Guid))]
         public ActivityDO GetById(IUnitOfWork uow, Guid id)
         {
             return uow.PlanRepository.GetById<ActivityDO>(id);

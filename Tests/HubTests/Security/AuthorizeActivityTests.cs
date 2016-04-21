@@ -28,8 +28,8 @@ namespace HubTests.Security
         private ISecurityServices _securityServices;
         private IActivity _activity;
         private ISecurityObjectsStorageProvider _objectsStorageProvider;
-        private Guid readRolePrivilegeId;
-        private Guid editRolePrivilegeID;
+        private Guid readRolePermissionId;
+        private Guid editRolePermissionId;
 
 
         private CustomDataObject customDataObject { get; set; }
@@ -52,7 +52,7 @@ namespace HubTests.Security
             [Key]
             public Guid Id { get; set; }
 
-            [AuthorizeActivity(Privilege = Privilege.EditObject)]
+            [AuthorizeActivity(Permission = Permission.EditObject)]
             public virtual string Name
             {
                 get; set;
@@ -60,16 +60,16 @@ namespace HubTests.Security
         }
 
         [Test, ExpectedException(typeof(HttpException), ExpectedMessage = "You are not authorized to perform this activity!")]
-        public void AuthorizeActivityByPrivilegeOnProperty()
+        public void AuthorizeActivityByPermissionOnProperty()
         {
             var proxyGenerator = new ProxyGenerator();
             customDataObject = proxyGenerator.CreateClassProxy<CustomDataObject>(new AuthorizeActivityInterceptor());
 
             customDataObject.Id = Guid.NewGuid();
-            //Create rolePrivilegeFor this
-            _objectsStorageProvider.InsertObjectRolePrivilege(customDataObject.Id.ToString(), readRolePrivilegeId,
+            //Create role permission for this
+            _objectsStorageProvider.InsertObjectRolePermission(customDataObject.Id.ToString(), readRolePermissionId,
                 "CustomDataObject", "Name");
-            //set should pass because of editprivilege
+            //set should pass because of edit permission
             customDataObject.Name = "TestValue";
             //get should raise an error
             Assert.AreEqual("TestValue", customDataObject.Name);
@@ -117,12 +117,12 @@ namespace HubTests.Security
             //Delete
             await subPlan.DeleteActivity(null, activityDO.Id, true);
 
-            var objRolePrivilege =_objectsStorageProvider.GetRolePrivilegesForSecuredObject(origActivityDO.Id.ToString());
+            var objRolePermission =_objectsStorageProvider.GetRolePermissionsForSecuredObject(origActivityDO.Id.ToString());
 
-            //check if this object role privileges has all standard role privieles
-            Assert.IsNotNull(objRolePrivilege.RolePrivileges.FirstOrDefault(x=>x.Privilege.Name == Privilege.ReadObject.ToString()));
-            Assert.IsNotNull(objRolePrivilege.RolePrivileges.FirstOrDefault(x => x.Privilege.Name == Privilege.EditObject.ToString()));
-            Assert.IsNotNull(objRolePrivilege.RolePrivileges.FirstOrDefault(x => x.Privilege.Name == Privilege.DeleteObject.ToString()));
+            //check if this object role permission has all standard role privieles
+            Assert.IsNotNull(objRolePermission.RolePermissions.FirstOrDefault(x=>x.Permission.Name == Permission.ReadObject.ToString()));
+            Assert.IsNotNull(objRolePermission.RolePermissions.FirstOrDefault(x => x.Permission.Name == Permission.EditObject.ToString()));
+            Assert.IsNotNull(objRolePermission.RolePermissions.FirstOrDefault(x => x.Permission.Name == Permission.DeleteObject.ToString()));
 
         }
     }

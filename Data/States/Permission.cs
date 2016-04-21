@@ -1,6 +1,6 @@
 ﻿namespace Data.States
 {
-    public enum Privilege
+    public enum Permission
     {
         ReadObject,
         EditObject,

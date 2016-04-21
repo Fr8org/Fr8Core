@@ -9,7 +9,7 @@ namespace Data.Repositories.Security.StorageImpl.Cache
 {
     public interface ISecurityObjectsCache
     {
-        ObjectRolePrivilegesDO Get(string id);
-        void AddOrUpdate(string id, ObjectRolePrivilegesDO rolePrivileges);
+        ObjectRolePermissionsDO Get(string id);
+        void AddOrUpdate(string id, ObjectRolePermissionsDO rolePermissions);
     }
 }

@@ -16,8 +16,8 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
     {
         private readonly string _connectionString;
         private readonly ISqlConnectionProvider _sqlConnectionProvider;
-        private const string InsertRolePrivilegeCommand = "insert into dbo.RolePrivileges(id, privilegeName, roleId, createDate, lastUpdated) values (@id, @privilegeName, @roleId, @createDate, @lastUpdated)";
-        private const string InsertObjectRolePrivilegeCommand = "insert into dbo.ObjectRolePrivileges(objectId, rolePrivilegeId, type, propertyName, createDate, lastUpdated) values (@objectId, @rolePrivilegeId, @type, @propertyName, @createDate, @lastUpdated)";
+        private const string InsertRolePermissionCommand = "insert into dbo.RolePermission(id, permissionName, roleId, createDate, lastUpdated) values (@id, @permissionName, @roleId, @createDate, @lastUpdated)";
+        private const string InsertObjectRolePermissionCommand = "insert into dbo.ObjectRolePermissions(objectId, rolePermissionId, type, propertyName, createDate, lastUpdated) values (@objectId, @rolePermissionId, @type, @propertyName, @createDate, @lastUpdated)";
         
         public SqlSecurityObjectsStorageProvider(ISqlConnectionProvider sqlConnectionProvider)
         {
@@ -33,9 +33,9 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             return connection;
         }
 
-        public int InsertRolePrivilege(RolePrivilege rolePrivilege)
+        public int InsertRolePermission(RolePermission rolePermission)
         {
-            var affectedRows = Upsert(_sqlConnectionProvider, rolePrivilege, false, true);
+            var affectedRows = Upsert(_sqlConnectionProvider, rolePermission, false, true);
 
             if (affectedRows == 0)
             {
@@ -45,12 +45,12 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             return affectedRows;
         }
 
-        public int UpdateRolePrivilege(RolePrivilege rolePrivilege)
+        public int UpdateRolePermission(RolePermission rolePermission)
         {
-            return Upsert(_sqlConnectionProvider, rolePrivilege, true, false);
+            return Upsert(_sqlConnectionProvider, rolePermission, true, false);
         }
 
-        private int Upsert(ISqlConnectionProvider sqlConnectionProvider, RolePrivilege rolePrivilege, bool allowUpdate, bool allowInsert)
+        private int Upsert(ISqlConnectionProvider sqlConnectionProvider, RolePermission rolePermission, bool allowUpdate, bool allowInsert)
         {
             using (var connection = OpenConnection(sqlConnectionProvider))
             {
@@ -58,26 +58,26 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                 {
                     command.Connection = connection;
 
-                    if (rolePrivilege.Id == Guid.Empty)
+                    if (rolePermission.Id == Guid.Empty)
                     {
-                        rolePrivilege.Id = Guid.NewGuid();
+                        rolePermission.Id = Guid.NewGuid();
                         command.Parameters.AddWithValue("@createDate", DateTimeOffset.UtcNow);
                     }
                     
-                    command.Parameters.AddWithValue("@id", rolePrivilege.Id);
-                    command.Parameters.AddWithValue("@privilegeName", rolePrivilege.Privilege.Name);
-                    command.Parameters.AddWithValue("@roleId", rolePrivilege.Role.RoleId);
+                    command.Parameters.AddWithValue("@id", rolePermission.Id);
+                    command.Parameters.AddWithValue("@permissionName", rolePermission.Permission.Name);
+                    command.Parameters.AddWithValue("@roleId", rolePermission.Role.RoleId);
                     command.Parameters.AddWithValue("@lastUpdated", DateTimeOffset.UtcNow);
 
                     var cmdText = String.Empty;
                     if (allowInsert)
                     {
-                        cmdText = InsertRolePrivilegeCommand;
+                        cmdText = InsertRolePermissionCommand;
                     }
 
                     if (allowUpdate)
                     {
-                        cmdText = "update dbo.RolePrivileges set privilegeName = @privilegeName, roleId = @roleId, lastUpdated = @lastUpdated";
+                        cmdText = "update dbo.RolePermissions set permissionName = @permissionName, roleId = @roleId, lastUpdated = @lastUpdated";
                     }
 
                     command.CommandText = cmdText;
@@ -88,7 +88,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
-        public ObjectRolePrivilegesDO GetRolePrivilegesForSecuredObject(string dataObjectId)
+        public ObjectRolePermissionsDO GetRolePermissionsForSecuredObject(string dataObjectId)
         {
             using (var connection = OpenConnection(_sqlConnectionProvider))
             {
@@ -96,22 +96,22 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                 {
                     command.Connection = connection;
 
-                    const string cmd = "select rp.Id, rp.privilegeName, orp.PropertyName, orp.ObjectId as ObjectId, orp.Type, anr.Id as roleId, anr.Name as roleName, rp.lastUpdated, rp.createDate " +
-                                 "from dbo.RolePrivileges rp                                                                            " +
-                                 "inner join dbo.ObjectRolePrivileges orp on rp.Id = orp.RolePrivilegeId                                " +
+                    const string cmd = "select rp.Id, rp.permissionName, orp.PropertyName, orp.ObjectId as ObjectId, orp.Type, anr.Id as roleId, anr.Name as roleName, rp.lastUpdated, rp.createDate " +
+                                 "from dbo.RolePermissions rp                                                                            " +
+                                 "inner join dbo.ObjectRolePermissions orp on rp.Id = orp.RolePermissionId                                " +
                                  "inner join dbo.AspNetRoles anr on rp.RoleId = anr.Id                                                  " +
                                  "where orp.ObjectId = @objectId";
 
                     command.Parameters.AddWithValue("@objectId", dataObjectId);
                     command.CommandText = cmd;
 
-                    var result = new ObjectRolePrivilegesDO();
+                    var result = new ObjectRolePermissionsDO();
 
                     using (var reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            ReadObjectRolePrivilegeFromSql(reader, result);
+                            ReadObjectRolePermissionFromSql(reader, result);
                         }
                     }
 
@@ -120,7 +120,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
-        public List<RolePrivilege> GetRolePrivilegesForFr8Account(Guid fr8AccountId)
+        public List<RolePermission> GetRolePermissionsForFr8Account(Guid fr8AccountId)
         {
             using (var connection = OpenConnection(_sqlConnectionProvider))
             {
@@ -128,8 +128,8 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                 {
                     command.Connection = connection;
 
-                    const string cmd = "select rp.id, rp.privilegeName, anr.Id as roleId, anr.Name as roleName, rp.lastUpdated, rp.createDate " +
-                                 "from dbo.RolePrivileges rp                                                                            " +
+                    const string cmd = "select rp.id, rp.permissionName, anr.Id as roleId, anr.Name as roleName, rp.lastUpdated, rp.createDate " +
+                                 "from dbo.RolePermissions rp                                                                            " +
                                  "inner join dbo.AspNetRoles anr on rp.RoleId = anr.Id                                                  " +
                                  "inner join dbo.AspNetUserRoles anur on anr.Id = anur.RoleId                                           " +
                                  "where anur.UserId = @fr8AccountId";
@@ -137,13 +137,13 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                     command.Parameters.AddWithValue("@fr8AccountId", fr8AccountId);
                     command.CommandText = cmd;
 
-                    var result = new List<RolePrivilege>();
+                    var result = new List<RolePermission>();
 
                     using (var reader = command.ExecuteReader())
                     {
                         while (reader.Read())
                         {
-                            result.Add(ReadRolePrivilegeFromSql(reader));
+                            result.Add(ReadRolePermissionFromSql(reader));
                         }
                     }
 
@@ -158,22 +158,22 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             {
                 using (var transaction = connection.BeginTransaction())
                 {
-                    var rolePrivilegeIds = new List<Guid>();
+                    var rolePermissionIds = new List<Guid>();
 
                     using (var selectCommand = new SqlCommand())
                     {
                         selectCommand.Connection = connection;
                         selectCommand.Transaction = transaction;
 
-                        //select all rolePrivileges for roleName OwnerOfCurrentObject
+                        //select all role permission for roleName OwnerOfCurrentObject
                         selectCommand.Parameters.AddWithValue("@roleName", Roles.OwnerOfCurrentObject);
-                        selectCommand.CommandText = "select rp.Id from dbo.RolePrivileges rp inner join dbo.AspNetRoles anr on rp.RoleId = anr.Id where anr.Name = @roleName";
+                        selectCommand.CommandText = "select rp.Id from dbo.RolePermissions rp inner join dbo.AspNetRoles anr on rp.RoleId = anr.Id where anr.Name = @roleName";
 
                         using (var reader = selectCommand.ExecuteReader())
                         {
                             while (reader.Read())
                             {
-                                rolePrivilegeIds.Add((Guid)reader["Id"]);
+                                rolePermissionIds.Add((Guid)reader["Id"]);
                             }
                         }
                     }
@@ -183,24 +183,24 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                         insertCommand.Connection = connection;
                         insertCommand.Transaction = transaction;
 
-                        foreach (var rolePrivilegeId in rolePrivilegeIds)
+                        foreach (var rolePermissionId in rolePermissionIds)
                         {
                             insertCommand.Parameters.Clear();
                             insertCommand.Parameters.AddWithValue("@objectId", dataObjectId);
-                            insertCommand.Parameters.AddWithValue("@rolePrivilegeId", rolePrivilegeId);
+                            insertCommand.Parameters.AddWithValue("@rolePermissionIds", rolePermissionId);
                             insertCommand.Parameters.AddWithValue("@type", dataObjectType);
                             insertCommand.Parameters.AddWithValue("@propertyName", DBNull.Value);
                             insertCommand.Parameters.AddWithValue("@createDate", DateTimeOffset.UtcNow);
                             insertCommand.Parameters.AddWithValue("@lastUpdated", DateTimeOffset.UtcNow);
 
-                            var cmdText = InsertObjectRolePrivilegeCommand;
+                            var cmdText = InsertObjectRolePermissionCommand;
 
                             insertCommand.CommandText = cmdText;
                             var affectedRows = insertCommand.ExecuteNonQuery();
 
                             if (affectedRows == 0)
                             {
-                                throw new Exception("Problem with Inserting new ObjectRolePrivilege");
+                                throw new Exception("Problem with Inserting new ObjectRolePermission");
                             }
                         }
                     }
@@ -210,7 +210,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
-        public int InsertObjectRolePrivilege(string dataObjectId, Guid rolePrivilegeId, string dataObjectType, string propertyName = null)
+        public int InsertObjectRolePermission(string dataObjectId, Guid rolePermissionId, string dataObjectType, string propertyName = null)
         {
             using (var connection = OpenConnection(_sqlConnectionProvider))
             {
@@ -219,20 +219,20 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                     command.Connection = connection;
 
                     command.Parameters.AddWithValue("@objectId", dataObjectId);
-                    command.Parameters.AddWithValue("@rolePrivilegeId", rolePrivilegeId);
+                    command.Parameters.AddWithValue("@rolePermissionId", rolePermissionId);
                     command.Parameters.AddWithValue("@type", dataObjectType);
                     command.Parameters.AddWithValue("@propertyName", propertyName != null ? (object) propertyName : DBNull.Value);
                     command.Parameters.AddWithValue("@createDate", DateTimeOffset.UtcNow);
                     command.Parameters.AddWithValue("@lastUpdated", DateTimeOffset.UtcNow);
 
-                    var cmdText = InsertObjectRolePrivilegeCommand;
+                    var cmdText = InsertObjectRolePermissionCommand;
                     
                     command.CommandText = cmdText;
                     var affectedRows = command.ExecuteNonQuery();
 
                     if (affectedRows == 0)
                     {
-                        throw new Exception("Problem with Inserting new ObjectRole Privilege");
+                        throw new Exception("Problem with Inserting new ObjectRole Permission");
                     }
 
                     return affectedRows;
@@ -240,23 +240,23 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
-        public int RemoveObjectRolePrivilege(string dataObjectId, Guid rolePrivilegeId, string propertyName = null)
+        public int RemoveObjectRolePermission(string dataObjectId, Guid rolePermissionId, string propertyName = null)
         {
             throw new NotImplementedException();
         }
 
-        private RolePrivilege ReadRolePrivilegeFromSql(SqlDataReader reader)
+        private RolePermission ReadRolePermissionFromSql(SqlDataReader reader)
         {
-            var obj = new RolePrivilege
+            var obj = new RolePermission
             {
                 Id = reader["Id"] != DBNull.Value ? (Guid)reader["Id"] : Guid.Empty,
             };
 
-            var privilege = reader["PrivilegeName"] != DBNull.Value ? (string) reader["PrivilegeName"] : string.Empty;
+            var permission = reader["PermissionName"] != DBNull.Value ? (string) reader["PermissionName"] : string.Empty;
 
-            obj.Privilege = new PrivilegeDO()
+            obj.Permission = new PermissionDO()
             {
-                Name = privilege
+                Name = permission
             };
 
             var objRoleId = reader["roleId"] != DBNull.Value ? (string)reader["roleId"] : string.Empty;
@@ -271,29 +271,29 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             return obj;
         }
 
-        private void ReadObjectRolePrivilegeFromSql(SqlDataReader reader, ObjectRolePrivilegesDO objectRolePrivilegesDO)
+        private void ReadObjectRolePermissionFromSql(SqlDataReader reader, ObjectRolePermissionsDO objectRolePermissionDO)
         {
-            var obj = ReadRolePrivilegeFromSql(reader);
+            var obj = ReadRolePermissionFromSql(reader);
 
-            objectRolePrivilegesDO.ObjectId = reader["ObjectId"] != DBNull.Value ? (string) reader["ObjectId"] : string.Empty;
-            objectRolePrivilegesDO.Type = reader["Type"] != DBNull.Value ? (string)reader["Type"] : string.Empty;
+            objectRolePermissionDO.ObjectId = reader["ObjectId"] != DBNull.Value ? (string) reader["ObjectId"] : string.Empty;
+            objectRolePermissionDO.Type = reader["Type"] != DBNull.Value ? (string)reader["Type"] : string.Empty;
             //read property name and check for values
             var propertyName = reader["PropertyName"] != DBNull.Value ? (string) reader["PropertyName"] : string.Empty;
 
             if (string.IsNullOrEmpty(propertyName))
             {
-                objectRolePrivilegesDO.RolePrivileges.Add(obj);
+                objectRolePermissionDO.RolePermissions.Add(obj);
             }
             else
             {
                 //check if the same property is already added to this list
-                if (objectRolePrivilegesDO.Properties.ContainsKey(propertyName))
+                if (objectRolePermissionDO.Properties.ContainsKey(propertyName))
                 {
-                    objectRolePrivilegesDO.Properties[propertyName].Add(obj);
+                    objectRolePermissionDO.Properties[propertyName].Add(obj);
                 }
                 else
                 {
-                    objectRolePrivilegesDO.Properties[propertyName] = new List<RolePrivilege>() {obj};
+                    objectRolePermissionDO.Properties[propertyName] = new List<RolePermission>() {obj};
                 }
             }
         }

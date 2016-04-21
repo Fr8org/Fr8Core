@@ -710,6 +710,10 @@
     <Compile Include="Migrations\201604171806555_HistoryItemDO_CustomerId_to_Fr8UserId.Designer.cs">
       <DependentUpon>201604171806555_HistoryItemDO_CustomerId_to_Fr8UserId.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201604211556495_RenamePrivilegesToPermission.cs" />
+    <Compile Include="Migrations\201604211556495_RenamePrivilegesToPermission.Designer.cs">
+      <DependentUpon>201604211556495_RenamePrivilegesToPermission.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -777,10 +781,10 @@
     <Compile Include="Repositories\Plan\Internal\PlanNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\Cache\SlidingExpirationStrategy.cs" />
-    <Compile Include="Repositories\Security\Entities\ObjectRolePrivilegesDO.cs" />
-    <Compile Include="Repositories\Security\Entities\PrivilegeDO.cs" />
+    <Compile Include="Repositories\Security\Entities\ObjectRolePermissionsDO.cs" />
+    <Compile Include="Repositories\Security\Entities\PermissionDO.cs" />
     <Compile Include="Repositories\Security\Entities\RoleDO.cs" />
-    <Compile Include="Repositories\Security\Entities\RolePrivilegePOCO.cs" />
+    <Compile Include="Repositories\Security\Entities\RolePermission.cs" />
     <Compile Include="Repositories\Security\ISecurityObjectsStorageProvider.cs" />
     <Compile Include="Repositories\Security\StorageImpl\InMemorySecurityObjectsStorageProvider.cs" />
     <Compile Include="Repositories\SqlBased\ISqlConnectionProvider.cs" />
@@ -854,7 +858,7 @@
     <Compile Include="Repositories\UserStatusRepository.cs" />
     <Compile Include="States\AccessLevel.cs" />
     <Compile Include="States\PlanVisibility.cs" />
-    <Compile Include="States\Privileges.cs" />
+    <Compile Include="States\Permission.cs" />
     <Compile Include="States\SubscriptionState.cs" />
     <Compile Include="States\Templates\_SubscriptionStateTemplate.cs" />
     <Compile Include="States\TerminalStatus.cs" />
@@ -1243,6 +1247,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604171806555_HistoryItemDO_CustomerId_to_Fr8UserId.resx">
       <DependentUpon>201604171806555_HistoryItemDO_CustomerId_to_Fr8UserId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604211556495_RenamePrivilegesToPermission.resx">
+      <DependentUpon>201604211556495_RenamePrivilegesToPermission.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

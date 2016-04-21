@@ -14,7 +14,7 @@ namespace Data.Repositories.Security.StorageImpl
 {
     class InMemorySecurityObjectsStorageProvider : ISecurityObjectsStorageProvider
     {
-        private static readonly List<ObjectRolePrivilegesDO> ObjectRolePrivileges = new List<ObjectRolePrivilegesDO>();
+        private static readonly List<ObjectRolePermissionsDO> ObjectRolePermissions = new List<ObjectRolePermissionsDO>();
         private string roleName;
         private Guid readRolePrivilegeId;
         private Guid editRolePrivilegeID;
@@ -27,40 +27,40 @@ namespace Data.Repositories.Security.StorageImpl
             editRolePrivilegeID = Guid.Parse("7cb466dc-8fed-4791-a1ba-09f9135416db");
         }
 
-        public List<RolePrivilege> GetRolePrivilegesForFr8Account(Guid fr8AccountId)
+        public List<RolePermission> GetRolePermissionsForFr8Account(Guid fr8AccountId)
         {
             throw new NotImplementedException();
         }
 
-        public ObjectRolePrivilegesDO GetRolePrivilegesForSecuredObject(string dataObjectId)
+        public ObjectRolePermissionsDO GetRolePermissionsForSecuredObject(string dataObjectId)
         {
-            lock (ObjectRolePrivileges)
+            lock (ObjectRolePermissions)
             {
-                return ObjectRolePrivileges.FirstOrDefault(x => x.ObjectId == dataObjectId);
+                return ObjectRolePermissions.FirstOrDefault(x => x.ObjectId == dataObjectId);
             }
         }
 
-        public int InsertObjectRolePrivilege(string dataObjectId, Guid rolePrivilegeId, string dataObjectType,
+        public int InsertObjectRolePermission(string dataObjectId, Guid rolePrivilegeId, string dataObjectType,
             string propertyName = null)
         {
-            lock (ObjectRolePrivileges)
+            lock (ObjectRolePermissions)
             {
                 if (string.IsNullOrEmpty(propertyName))
                 {
-                    ObjectRolePrivileges.Add(new ObjectRolePrivilegesDO() { ObjectId = dataObjectId,
-                        RolePrivileges = new List<RolePrivilege>() { new RolePrivilege { Id = rolePrivilegeId,
-                            Privilege = new PrivilegeDO() {Name = Privilege.ReadObject.ToString() }
+                    ObjectRolePermissions.Add(new ObjectRolePermissionsDO() { ObjectId = dataObjectId,
+                        RolePermissions = new List<RolePermission>() { new RolePermission { Id = rolePrivilegeId,
+                            Permission = new PermissionDO() {Name = Permission.ReadObject.ToString() }
                         ,Role = new RoleDO() { RoleName = roleName, } } } });
                 }
                 else
                 {
-                    var objectRolePrivileges = new ObjectRolePrivilegesDO()
+                    var objectRolePermissions = new ObjectRolePermissionsDO()
                     {
                         ObjectId = dataObjectId,
-                        Properties = new Dictionary<string, List<RolePrivilege>>()
+                        Properties = new Dictionary<string, List<RolePermission>>()
                     };
-                    objectRolePrivileges.Properties.Add(propertyName, new List<RolePrivilege>() { new RolePrivilege { Id = rolePrivilegeId,
-                        Privilege = new PrivilegeDO() {Name = Privilege.ReadObject.ToString() },
+                    objectRolePermissions.Properties.Add(propertyName, new List<RolePermission>() { new RolePermission { Id = rolePrivilegeId,
+                        Permission = new PermissionDO() {Name = Permission.ReadObject.ToString() },
                         Role = new RoleDO() { RoleName = roleName } } });
                 }
                     
@@ -68,44 +68,44 @@ namespace Data.Repositories.Security.StorageImpl
             }
         }
 
-        public int InsertRolePrivilege(RolePrivilege rolePrivilege)
+        public int InsertRolePermission(RolePermission rolePrivilege)
         {
             throw new NotImplementedException();
         }
 
-        public int RemoveObjectRolePrivilege(string dataObjectId, Guid rolePrivilegeId, string propertyName = null)
+        public int RemoveObjectRolePermission(string dataObjectId, Guid rolePrivilegeId, string propertyName = null)
         {
             throw new NotImplementedException();
         }
 
         public void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType)
         {
-            lock (ObjectRolePrivileges)
+            lock (ObjectRolePermissions)
             {
-                var objectRolePrivilege = new ObjectRolePrivilegesDO()
+                var objectRolePrivilege = new ObjectRolePermissionsDO()
                 {
                     ObjectId = dataObjectId,
-                    RolePrivileges = new List<RolePrivilege>()
+                    RolePermissions = new List<RolePermission>()
                     {
-                        new RolePrivilege()
+                        new RolePermission()
                         {
-                            Privilege = new PrivilegeDO() { Name = Privilege.ReadObject.ToString()},
+                            Permission = new PermissionDO() { Name = Permission.ReadObject.ToString()},
                             Role = new RoleDO()
                             {
                                 RoleName = roleName,
                             }
                         },
-                        new RolePrivilege()
+                        new RolePermission()
                         {
-                            Privilege = new PrivilegeDO() { Name = Privilege.EditObject.ToString()},
+                            Permission = new PermissionDO() { Name = Permission.EditObject.ToString()},
                             Role = new RoleDO()
                             {
                                 RoleName = roleName
                             } 
                         },
-                        new RolePrivilege()
+                        new RolePermission()
                         {
-                            Privilege = new PrivilegeDO() { Name = Privilege.DeleteObject.ToString()},
+                            Permission = new PermissionDO() { Name = Permission.DeleteObject.ToString()},
                             Role = new RoleDO()
                             {
                                 RoleName = roleName
@@ -113,11 +113,11 @@ namespace Data.Repositories.Security.StorageImpl
                         }
                     }
                 };
-                ObjectRolePrivileges.Add(objectRolePrivilege);
+                ObjectRolePermissions.Add(objectRolePrivilege);
             }
         }
 
-        public int UpdateRolePrivilege(RolePrivilege rolePrivilege)
+        public int UpdateRolePermission(RolePermission rolePermissions)
         {
             throw new NotImplementedException();
         }

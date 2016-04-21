@@ -79,30 +79,30 @@ namespace Data.Infrastructure.StructureMap
             securityStorageProvider.SetDefaultObjectSecurity(dataObjectId.ToString(), dataObjectType);
         }
 
-        public bool AuthorizeActivity(Privilege privilegeName, string curObjectId, string propertyName = null)
+        public bool AuthorizeActivity(Permission permissionName, string curObjectId, string propertyName = null)
         {
             //get all current roles for current user
             var roles = GetRoleNames().ToList();
 
-            //get all role privileges for object
+            //get all role permissions for object
             var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
-            var objRolePrivilegeWrapper = securityStorageProvider.GetRolePrivilegesForSecuredObject(curObjectId);
+            var objRolePermissionWrapper = securityStorageProvider.GetRolePermissionsForSecuredObject(curObjectId);
 
-            if (objRolePrivilegeWrapper == null)
+            if (objRolePermissionWrapper == null)
                 return false;
 
             if (string.IsNullOrEmpty(propertyName))
             {
-                var authorizedRoles = objRolePrivilegeWrapper.RolePrivileges.Where(x => roles.Contains(x.Role.RoleName));
+                var authorizedRoles = objRolePermissionWrapper.RolePermissions.Where(x => roles.Contains(x.Role.RoleName));
                 return authorizedRoles.Any();
             }
             else
             {
-                //find property inside object properties collection with privileges
-                if (!objRolePrivilegeWrapper.Properties.ContainsKey(propertyName)) return false;
+                //find property inside object properties collection with permissions
+                if (!objRolePermissionWrapper.Properties.ContainsKey(propertyName)) return false;
 
-                var propertyRolePrivileges = objRolePrivilegeWrapper.Properties[propertyName];
-                var authorizedRoles = propertyRolePrivileges.Where(x => roles.Contains(x.Role.RoleName));
+                var propertyRolePermissions = objRolePermissionWrapper.Properties[propertyName];
+                var authorizedRoles = propertyRolePermissions.Where(x => roles.Contains(x.Role.RoleName));
                 return authorizedRoles.Any();
             }
         }
