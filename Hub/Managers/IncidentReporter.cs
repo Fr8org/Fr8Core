@@ -161,7 +161,7 @@ namespace Hub.Managers
             SaveAndLogIncident(incident);
         }
 
-        private void ContainerFailed(PlanDO plan, Exception ex)
+        private void ContainerFailed(PlanDO plan, Exception ex, string containerId)
         {
             var incident = new IncidentDO
             {
@@ -169,10 +169,12 @@ namespace Hub.Managers
                 Data = string.Join(
                     Environment.NewLine,
                     "Container failure.",
-                    "Plan: " + (plan != null ? plan.Name : "unknown"),
+                    "PlanName: " + (plan != null ? plan.Name : "unknown"),
+                    "PlanId: "+ (plan != null ? plan.Id.ToString() : "unknown"),
                     ex.Message,
                     ex.StackTrace ?? ""
                 ),
+                ObjectId = containerId,
                 PrimaryCategory = "Container",
                 SecondaryCategory = "Execution",
                 Component = "Hub",

@@ -50,9 +50,10 @@ namespace HubWeb
                 .UseStructureMapActivator(ObjectFactory.Container);
             app.UseHangfireDashboard("/hangfire", new DashboardOptions
             {
-                AuthorizationFilters = new[] { new MyRestrictiveAuthorizationFilter() }
+                AuthorizationFilters = new[] { new MyRestrictiveAuthorizationFilter() },
             });
             app.UseHangfireServer();
+            GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
         }
 
         public class MyRestrictiveAuthorizationFilter : IAuthorizationFilter
@@ -60,7 +61,7 @@ namespace HubWeb
             public bool Authorize(IDictionary<string, object> owinEnvironment)
             {
                 var context = new OwinContext(owinEnvironment);
-                if (context.Authentication.User.Identity.Name == "hangfireuser@fr8.co")
+                if (context.Authentication.User.IsInRole("Admin"))
                     return true;
                 else return false;
             }
