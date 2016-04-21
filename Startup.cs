@@ -50,9 +50,10 @@ namespace HubWeb
                 .UseStructureMapActivator(ObjectFactory.Container);
             app.UseHangfireDashboard("/hangfire", new DashboardOptions
             {
-                AuthorizationFilters = new[] { new MyRestrictiveAuthorizationFilter() }
+                AuthorizationFilters = new[] { new MyRestrictiveAuthorizationFilter() },
             });
             app.UseHangfireServer();
+            GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
         }
 
         public class MyRestrictiveAuthorizationFilter : IAuthorizationFilter
