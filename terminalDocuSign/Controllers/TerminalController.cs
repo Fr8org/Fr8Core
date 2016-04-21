@@ -21,6 +21,7 @@ namespace terminalDocuSign.Controllers
             var terminal = new TerminalDTO()
             {
                 Name = "terminalDocuSign",
+                Label = "DocuSign",
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint"),
                 Version = "1",

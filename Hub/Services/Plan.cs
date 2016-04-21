@@ -247,7 +247,7 @@ namespace Hub.Services
                     {
                         var operationalState = new OperationalStateCM();
                         operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Error);
-                        operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(control.ErrorMessage, ErrorType.Generic, string.Empty, null, curActivityDTO.ActivityTemplate.Name, curActivityDTO.ActivityTemplate.Terminal.Name));
+                        operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(control.ErrorMessage, ErrorType.Generic, string.Empty, null, curActivityDTO.ActivityTemplate.Name, curActivityDTO.ActivityTemplate.Terminal.Label));
 
                         var operationsCrate = Crate.FromContent("Operational Status", operationalState);
                         tempCrateStorage.Add(operationsCrate);
