@@ -27,6 +27,7 @@ namespace terminalSlack.Controllers
                 Endpoint = CloudConfigurationManager.GetSetting("terminalSlack.TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
                 Name = "terminalSlack",
+                Label = "Slack",
                 Version = "1",
                 AuthenticationType = AuthenticationType.External
             };

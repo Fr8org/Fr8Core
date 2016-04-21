@@ -178,6 +178,11 @@ namespace HubTests.Services
             throw new NotImplementedException();
         }
 
+        public IncomingCratesDTO GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability)
+        {
+            throw new NotImplementedException();
+        }
+
         public List<PlanNodeDO> GetUpstreamActivities(IUnitOfWork uow, PlanNodeDO curActivityDO)
         {
             throw new NotImplementedException();

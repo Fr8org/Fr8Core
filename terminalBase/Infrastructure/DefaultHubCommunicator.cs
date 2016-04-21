@@ -30,7 +30,6 @@ namespace TerminalBase.Infrastructure
 {
     public class DefaultHubCommunicator : IHubCommunicator
     {
-        private readonly IPlanNode _planNode;
         private readonly IRestfulServiceClient _restfulServiceClient;
         protected string TerminalSecret { get; set; }
         protected string TerminalId { get; set; }
@@ -41,7 +40,6 @@ namespace TerminalBase.Infrastructure
 
         public DefaultHubCommunicator()
         {
-            _planNode = ObjectFactory.GetInstance<IPlanNode>();
             _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
             _crate = ObjectFactory.GetInstance<ICrateManager>();
@@ -164,21 +162,27 @@ namespace TerminalBase.Infrastructure
             return curCrates;
         }
 
-        public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability, string userId)
+        public async Task<IncomingCratesDTO> GetAvailableData(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/designtime_fields_dir"
-                + "?id=" + activityId
-                + "&direction=" + (int)direction
-                + "&availability=" + (int)availability;
+                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/available_data"
+                      + "?id=" + activityDO.Id
+                      + "&direction=" + (int) direction
+                      + "&availability=" + (int)availability;
             var uri = new Uri(url, UriKind.Absolute);
-            var curFields = await _restfulServiceClient.GetAsync<FieldDescriptionsCM>(uri, null, await GetHMACHeader(uri, userId));
-            return curFields;
+
+            var availableData = await _restfulServiceClient.GetAsync<IncomingCratesDTO>(uri, null, await GetHMACHeader(uri, userId));
+            return availableData;
         }
 
         public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
         {
-            return await GetDesignTimeFieldsByDirection(activityDO.Id, direction, availability, userId);
+            var mergedFields = new FieldDescriptionsCM();
+            var availableData = await GetAvailableData(activityDO, direction, availability, userId);
+
+            mergedFields.Fields.AddRange(availableData.AvailableFields);
+
+            return mergedFields;
         }
 
         public async Task CreateAlarm(AlarmDTO alarmDTO, string userId)

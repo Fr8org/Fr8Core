@@ -2,7 +2,7 @@ namespace Data.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class AddNameToActivity : DbMigration
     {
         public override void Up()
@@ -18,7 +18,7 @@ namespace Data.Migrations
                   SET Label = NULL
                 ");
         }
-        
+
         public override void Down()
         {
             Sql(@"

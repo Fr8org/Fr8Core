@@ -12,6 +12,8 @@ namespace Data.Interfaces.Manifests
         }
 
         public List<TableRowDTO> Table { get; set; }
+
+        [ManifestField(IsHidden = true)]
         public bool FirstRowHeaders { get; set; }
 
         public TableRowDTO GetHeaderRow()

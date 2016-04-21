@@ -29,6 +29,7 @@ namespace terminalExcel.Controllers
                 Endpoint = CloudConfigurationManager.GetSetting("terminalExcel.TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
                 Name = "terminalExcel",
+                Label = "Excel",
                 Version = "1"
             };
 
