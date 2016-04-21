@@ -208,7 +208,7 @@ namespace terminalGoogle.Actions
                 throw new ArgumentNullException("Google Form selected is empty. Please select google form to receive.");
 
             var scriptUrl = await _googleDrive.CreateFr8TriggerForDocument(googleAuthDTO, formId);
-            await HubCommunicator.NotifyUser(new TerminalNotificationDTO
+             await HubCommunicator.NotifyUser(new TerminalNotificationDTO
             {
                 Type = "Success",
                 ActivityName = "Monitor_Form_Responses",

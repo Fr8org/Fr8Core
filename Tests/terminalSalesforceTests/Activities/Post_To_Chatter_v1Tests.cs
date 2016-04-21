@@ -93,7 +93,7 @@ namespace terminalSalesforceTests.Actions
 
             //Assert
             var storage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(resultPayload);
-            Assert.IsNotNull(storage.FirstCrateOrDefault<StandardPayloadDataCM>(), "Paylod doesn't contain crate with posted feed Id");
+            Assert.IsNotNull(storage.FirstCrateOrDefault<StandardPayloadDataCM>(), "Payload doesn't contain crate with posted feed Id");
         }
 
         private ActivityDO SetValues(ActivityDO curActivityDO)

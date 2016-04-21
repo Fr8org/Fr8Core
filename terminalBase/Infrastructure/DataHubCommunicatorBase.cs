@@ -263,7 +263,7 @@ namespace TerminalBase.Infrastructure
 
         public Task NotifyUser(TerminalNotificationDTO notificationMessage, string userId)
         {
-            return null;
+            return Task.FromResult(0);
         }
 
         public Task DeletePlan(Guid planId, string userId)

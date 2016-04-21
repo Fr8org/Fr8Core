@@ -46,7 +46,7 @@ namespace TerminalBase.BaseClasses
         public IHubCommunicator HubCommunicator { get; set; }
         #endregion
 
-        public static readonly HashSet<CrateManifestType>  ExcludedManifestTypes = new HashSet<CrateManifestType>()
+        public static readonly HashSet<CrateManifestType> ExcludedManifestTypes = new HashSet<CrateManifestType>()
         {
             ManifestDiscovery.Default.GetManifestType<StandardConfigurationControlsCM>(),
             ManifestDiscovery.Default.GetManifestType<EventSubscriptionCM>()
@@ -96,7 +96,9 @@ namespace TerminalBase.BaseClasses
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().SingleOrDefault();
+                if (operationalState == null)
+                    throw new Exception("No Operational State Crate found.");
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestTerminate);
                 operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Message = message });
             }
@@ -171,14 +173,16 @@ namespace TerminalBase.BaseClasses
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Success); 
+                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().SingleOrDefault();
+                if (operationalState == null)
+                    throw new Exception("No Operational State Crate found.");
+                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Success);
                 operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Message = message });
             }
 
             return payload;
         }
-        
+
         protected void Success(IUpdatableCrateStorage crateStorage, string message = "")
         {
             var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
@@ -205,9 +209,9 @@ namespace TerminalBase.BaseClasses
         /// <returns></returns>
         protected void SkipChildren(IUpdatableCrateStorage crateStorage)
         {
-                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.SkipChildren);
-            }
+            var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+            operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.SkipChildren);
+        }
 
         /// <summary>
         /// returns error to hub
@@ -254,7 +258,7 @@ namespace TerminalBase.BaseClasses
         /// <param name="payload"></param>
         /// <returns></returns>
         protected PayloadDTO NeedsAuthenticationError(PayloadDTO payload)
-            {
+        {
             return Error(payload, "No AuthToken provided.", ActivityErrorCode.NO_AUTH_TOKEN_PROVIDED);
         }
 
@@ -472,8 +476,8 @@ namespace TerminalBase.BaseClasses
             return await Task.FromResult<ActivityDO>(curActivityDO);
         }
 
-      
-        
+
+
         protected void UpdateDesignTimeCrateValue(ICrateStorage storage, string label, params FieldDTO[] fields)
         {
             var crate = storage.CratesOfType<FieldDescriptionsCM>().FirstOrDefault(x => x.Label == label);
@@ -498,7 +502,8 @@ namespace TerminalBase.BaseClasses
             var foundActivity = allActivityTemplates.FirstOrDefault(a => a.Id == activityTemplateId);
 
 
-            if (foundActivity == null) { 
+            if (foundActivity == null)
+            {
                 throw new Exception($"ActivityTemplate was not found. Id: {activityTemplateId}");
             }
 
@@ -516,13 +521,14 @@ namespace TerminalBase.BaseClasses
                         a.Name == activityTemplateName && a.Version == activityTemplateVersion);
 
 
-            if (foundActivity == null) {
+            if (foundActivity == null)
+            {
                 throw new Exception($"ActivityTemplate was not found. TerminalName: {terminalName}\nTerminalVersion: {terminalVersion}\nActivitiyTemplateName: {activityTemplateName}\nActivityTemplateVersion: {activityTemplateVersion}");
             }
 
             return foundActivity;
         }
-        
+
         /// <summary>
         /// DON'T USE THIS FUNCTION THIS IS JUST FOR BACKWARD COMPABILITY !!
         /// </summary>
@@ -557,7 +563,7 @@ namespace TerminalBase.BaseClasses
             //If Plan is specified as a parent, then a new subPlan will be created
             //Guid parentId = (parent.ChildNodes.Count > 0) ? parent.ChildNodes[0].ParentPlanNodeId.Value : parent.RootPlanNodeId.Value;
 
-             var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, CurrentFr8UserId, label, order, parentActivityId);
+            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, CurrentFr8UserId, label, order, parentActivityId);
             var resultDO = Mapper.Map<ActivityDO>(result);
             return resultDO;
         }
@@ -706,7 +712,7 @@ namespace TerminalBase.BaseClasses
         {
             return await HubCommunicator.GetCratesByDirection(activityDO, direction, CurrentFr8UserId);
         }
-        
+
         public virtual async Task<FieldDescriptionsCM> GetDesignTimeFields(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
         {
             var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(activityDO, direction, availability, CurrentFr8UserId);
@@ -808,7 +814,7 @@ namespace TerminalBase.BaseClasses
 
             return null;
         }
-        
+
         /// <summary>
         /// Extract upstream data based on Upstream Crate Chooser Control's selected manifest and label 
         /// </summary>
@@ -856,7 +862,7 @@ namespace TerminalBase.BaseClasses
 
             return resultTable;
         }
-      
+
         /*******************************************************************************************/
         // Working with controls
         /*******************************************************************************************/
@@ -994,7 +1000,7 @@ namespace TerminalBase.BaseClasses
                 CssClass = curCssClass
             };
         }
-       
+
         /*******************************************************************************************/
         // Deprecated methods
         // Can be refactored if necessary

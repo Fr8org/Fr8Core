@@ -33,13 +33,13 @@ namespace terminalGoogleTests.Integration
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActivityDTO = HealthMonitor_FixtureData.Monitor_Form_Responses_v1_InitialConfiguration_Fr8DataDTO();
+            var dataDTO = HealthMonitor_FixtureData.Monitor_Form_Responses_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActivityDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActivityDTO
+                    dataDTO
                 );
 
             //Assert
@@ -94,13 +94,13 @@ namespace terminalGoogleTests.Integration
             //Arrange
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActivityDTO = HealthMonitor_FixtureData.Monitor_Form_Responses_v1_InitialConfiguration_Fr8DataDTO();
+            var dataDTO = HealthMonitor_FixtureData.Monitor_Form_Responses_v1_InitialConfiguration_Fr8DataDTO();
 
             //Act
             var responseActivityDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActivityDTO
+                    dataDTO
                 );
 
             //Assert
@@ -115,21 +115,22 @@ namespace terminalGoogleTests.Integration
         /// <summary>
         /// Wait for HTTP-500 exception when Auth-Token is not passed to initial configuration.
         /// </summary>
-        [Test, Category("Integration.terminalGoogle")]
+        [Test, Category("Integration.terminalGoogle"), Ignore]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}"
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""One or more errors occurred.""}",
+            MatchType = MessageMatch.Contains
         )]
         public async Task Monitor_Form_Responses_Initial_Configuration_NoAuth()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
-            var requestActivityDTO = HealthMonitor_FixtureData.Monitor_Form_Responses_v1_InitialConfiguration_Fr8DataDTO();
-            requestActivityDTO.ActivityDTO.AuthToken = null;
+            var dataDTO = HealthMonitor_FixtureData.Monitor_Form_Responses_v1_InitialConfiguration_Fr8DataDTO();
+            dataDTO.ActivityDTO.AuthToken = null;
 
             await HttpPostAsync<Fr8DataDTO, JToken>(
                 configureUrl,
-                requestActivityDTO
+                dataDTO
             );
         }
         /// <summary>
@@ -190,13 +191,13 @@ namespace terminalGoogleTests.Integration
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActivityDTO = fixture.Monitor_Form_Responses_v1_ActivateDeactivate_Fr8DataDTO();
+            var dataDTO = fixture.Monitor_Form_Responses_v1_ActivateDeactivate_Fr8DataDTO();
 
             //Act
             var responseActivityDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActivityDTO
+                    dataDTO
                 );
 
             //Assert
@@ -211,13 +212,13 @@ namespace terminalGoogleTests.Integration
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActivityDTO = fixture.Monitor_Form_Responses_v1_ActivateDeactivate_Fr8DataDTO();
+            var dataDTO = fixture.Monitor_Form_Responses_v1_ActivateDeactivate_Fr8DataDTO();
 
             //Act
             var responseActivityDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActivityDTO
+                    dataDTO
                 );
 
             //Assert
@@ -231,7 +232,8 @@ namespace terminalGoogleTests.Integration
         [Test, Category("Integration.terminalGoogle")]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""EventReportCrate is empty.""}"
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No Operational State Crate found.""}",
+            MatchType = MessageMatch.Contains
             )]
         public async Task Monitor_Form_Responses_Run_WithInvalidPapertrailUrl_ShouldThrowException()
         {
@@ -275,6 +277,7 @@ namespace terminalGoogleTests.Integration
                    }
                }
             );
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
             //Act
             var responsePayloadDTO =
                 await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
