@@ -4,7 +4,7 @@
         'browserName': 'chrome'
     },
     framework: 'jasmine',
-    specs: ['login.js'],
+    specs: ['**/*.spec.js'],
     jasmineNodeOpts: {
         defaultTimeoutInterval: 30000
     },
