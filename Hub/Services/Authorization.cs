@@ -119,7 +119,7 @@ namespace Hub.Services
                 Username = username,
                 Password = password,
                 IsDemoAccount = isDemoAccount,
-                Fr8UserId = account.Id
+                Fr8UserId = (account != null ? account.Id : null)
             };
 
             var terminalResponse = await restClient.PostAsync<CredentialsDTO>(
