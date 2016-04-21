@@ -534,16 +534,18 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curPlan = uow.PlanRepository.GetById<PlanDO>(planId);
+                string containerId="";
                 if (curPlan == null)
                     throw new ArgumentNullException("planId");
                 try
                 {
                     var curContainerDO = Create(uow, curPlan, curPayload);
+                    containerId = curContainerDO.Id.ToString();
                     return await Run(uow, curContainerDO);
                 }
                 catch (Exception ex)
                 {
-                    EventManager.ContainerFailed(curPlan, ex);
+                    EventManager.ContainerFailed(curPlan, ex, containerId);
                     throw;
                 }
             }

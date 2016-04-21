@@ -39,7 +39,7 @@ namespace terminalSalesforce.Controllers
                 Logger.GetLogger().Error("Terminal SalesForce Authentication error happened. The error message is " + ex.Message);
 
                 //Report the terminal error in the standard Fr8 Event Reporting mechanism
-                ReportTerminalError(curTerminal, ex);
+                ReportTerminalError(curTerminal, ex,externalAuthDTO.Fr8UserId);
 
                 return Task.FromResult(
                     new AuthorizationTokenDTO()
