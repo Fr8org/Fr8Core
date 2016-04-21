@@ -1,4 +1,6 @@
-﻿using Newtonsoft.Json;
+﻿using System.Collections.Generic;
+using Data.States;
+using Newtonsoft.Json;
 
 namespace Data.Interfaces.DataTransferObjects
 {
@@ -19,8 +21,16 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("selected")]
         public bool Selected { get; set; }
 
+        [JsonProperty("availability")]
+        public AvailabilityType Availability { get; set; }
+
+        [JsonProperty("fields")]
+        public List<FieldDTO> Fields { get; set; }
+
         public CrateDescriptionDTO()
         {
+            Availability = AvailabilityType.RunTime;
+            Fields = new List<FieldDTO>();
             Selected = false;
         }
     }
