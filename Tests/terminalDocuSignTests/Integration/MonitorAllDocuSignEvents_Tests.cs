@@ -130,6 +130,7 @@ namespace terminalDocuSignTests.Integration
         private async Task RecreateDefaultAuthToken(IUnitOfWork uow,
             Fr8AccountDO account, TerminalDO docuSignTerminal)
         {
+            Debug.WriteLine($"Reauthorizing tokens for {account.EmailAddress.Address}");
             var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
                 _baseUrl + "manageauthtoken/"
             );
