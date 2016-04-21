@@ -64,11 +64,11 @@ namespace terminalDocuSign.Controllers
                 Name = "Send_DocuSign_Envelope",
                 Label = "Send DocuSign Envelope",
                 Category = ActivityCategory.Forwarders,
-                Tags = string.Join(",", Tags.EmailDeliverer),
+                Tags = string.Join(",", Tags.EmailDeliverer, Tags.AggressiveReload),
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 WebService = webService,
-                MinPaneWidth = 330
+                MinPaneWidth = 330,
             };
 
             var useDocuSignTemplateWithNewDocument = new ActivityTemplateDTO()
