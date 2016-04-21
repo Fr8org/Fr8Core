@@ -129,7 +129,7 @@ namespace terminaBaselTests.Tools.Terminals
         /// <returns></returns>
         public GoogleAuthDTO GetGoogleAuthToken(Guid authorizationTokenId)
         {
-            Debug.WriteLine("Getting google auth token for authorizationTokenId: " + authorizationTokenId);
+            Debug.WriteLine($"Getting google auth token for authorizationTokenId: {authorizationTokenId}");
             Assert.IsNotNull(authorizationTokenId, "The google authorization token is null");
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
