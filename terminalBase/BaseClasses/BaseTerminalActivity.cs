@@ -1140,12 +1140,15 @@ namespace TerminalBase.BaseClasses
                         {
                             case "TextBlock":
                             case "TextBox":
+                            case "BuildMessageAppender":
                             case ControlTypes.TextArea:
                                 control.Value = (string)value;
                                 break;
+
                             case "CheckBox":
                                 control.Selected = true;
                                 break;
+
                             case "DropDownList":
                                 var ddlb = control as DropDownList;
                                 var val = value as ListItem;
@@ -1153,6 +1156,7 @@ namespace TerminalBase.BaseClasses
                                 ddlb.Value = val.Value;
                                 //ddlb.ListItems are not loaded yet
                                 break;
+
                             case "Duration":
                                 var duration = control as Duration;
                                 var timespan = (TimeSpan)value;
@@ -1160,8 +1164,9 @@ namespace TerminalBase.BaseClasses
                                 duration.Hours = timespan.Hours;
                                 duration.Minutes = timespan.Minutes;
                                 break;
+
                             default:
-                                throw new NotImplementedException();
+                                throw new NotSupportedException($"Unsupported control type {control.Type}");
                         }
                     }
                 }
