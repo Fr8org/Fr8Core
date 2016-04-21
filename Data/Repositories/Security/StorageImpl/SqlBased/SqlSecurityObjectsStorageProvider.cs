@@ -187,7 +187,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                         {
                             insertCommand.Parameters.Clear();
                             insertCommand.Parameters.AddWithValue("@objectId", dataObjectId);
-                            insertCommand.Parameters.AddWithValue("@rolePermissionIds", rolePermissionId);
+                            insertCommand.Parameters.AddWithValue("@rolePermissionId", rolePermissionId);
                             insertCommand.Parameters.AddWithValue("@type", dataObjectType);
                             insertCommand.Parameters.AddWithValue("@propertyName", DBNull.Value);
                             insertCommand.Parameters.AddWithValue("@createDate", DateTimeOffset.UtcNow);
