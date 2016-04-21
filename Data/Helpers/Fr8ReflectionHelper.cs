@@ -54,6 +54,19 @@ namespace Data.Helpers
             return fields;
         }
 
+        public static bool CheckAttributeOrTrue<T>(IMemberAccessor memberAccessor, Predicate<T> predicate)
+            where T:Attribute
+        {
+            var attribute = memberAccessor.GetCustomAttribute<T>();
+
+            if (attribute == null)
+            {
+                return true;
+            }
+
+            return predicate(attribute);
+        }
+
         public static object[] FindFirstArray(Object obj, int maxSearchDepth = 0)
         {
             return FindFirstArrayRecursive(obj, maxSearchDepth, 0);
@@ -91,5 +104,19 @@ namespace Data.Helpers
             return null;
         }
 
+        public static IEnumerable<IMemberAccessor> GetMembers(Type type)
+        {
+            return type.GetProperties(BindingFlags.Instance | BindingFlags.Public).Select(x => (IMemberAccessor)new PropertyMemberAccessor(x))
+                       .Concat(type.GetFields(BindingFlags.Instance | BindingFlags.Public).Select(x => (IMemberAccessor)new FieldMemberAccessor(x)));
+        }
+
+        public static bool IsPrimitiveType(Type type)
+        {
+            return type.IsPrimitive
+                   || type == typeof (string)
+                   || type == typeof (Guid)
+                   || type == typeof (DateTime)
+                   || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Nullable<>) && IsPrimitiveType(type.GetGenericArguments()[0]));
+        }
     }
 }

@@ -7,7 +7,9 @@ module dockyard.directives.textBlock {
         buttonSet: Array<Array<String>>;
         style:string;
         isDisabled: boolean;
-        toolbars:string;
+        toolbars: string;
+        blur: () => void;
+        onBlur: (field: model.ControlDefinitionDTO) => void;
     }
 
     //More detail on creating directives in TypeScript: 
@@ -19,7 +21,11 @@ module dockyard.directives.textBlock {
         var _buttonSet = [_availableButtons, _disabledButtons];
 
         var controller = ['$scope', ($scope: ITextAreaScope) => {
-            
+            $scope.blur = () => {
+                if ($scope.onBlur && angular.isFunction($scope.onBlur)) {
+                    $scope.onBlur($scope.field);
+                }
+            }
             $scope.buttonSet = _buttonSet;
             $scope.style = $scope.field.isReadOnly ? "readOnlyTextArea" : null;
             $scope.isDisabled = $scope.field.isReadOnly;
@@ -33,7 +39,8 @@ module dockyard.directives.textBlock {
             templateUrl: '/AngularTemplate/TextArea',
             controller: controller,
             scope: {
-                field: '='
+                field: '=',
+                onBlur: '&'
             }
         };
     }

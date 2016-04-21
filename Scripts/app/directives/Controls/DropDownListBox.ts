@@ -62,14 +62,11 @@ module dockyard.directives.dropDownListBox {
                     }
 
                     return UpstreamExtractor
-                        .extractUpstreamData($scope.currentAction.id, 'Field Description', availabilityType)
-                        .then((data: any) => {
+                        .getAvailableData($scope.currentAction.id, availabilityType)
+                        .then((data: model.IncomingCratesDTO) => {
                             var listItems: Array<model.DropDownListItem> = [];
 
-                            angular.forEach(<Array<any>>data, cm => {
-                                var fields = <Array<model.FieldDTO>>cm.fields;
-
-                                angular.forEach(fields, (it) => {
+                                angular.forEach(data.availableFields, (it) => {
                                     var i, j;
                                     var found = false;
                                     for (i = 0; i < listItems.length; ++i) {
@@ -81,7 +78,6 @@ module dockyard.directives.dropDownListBox {
                                     if (!found) {
                                         listItems.push(<model.DropDownListItem>it);
                                     }
-                                });
                             });
 
                             listItems.sort((x, y) => {
