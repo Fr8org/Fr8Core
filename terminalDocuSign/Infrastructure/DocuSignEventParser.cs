@@ -41,6 +41,8 @@ namespace terminalDocuSign.Infrastructure
             result.StatusChangedDateTime = DateTime.UtcNow;
             result.Subject = curDocuSignEnvelopeInfo.EnvelopeStatus.Subject;
             result.ExternalAccountId = curDocuSignEnvelopeInfo.EnvelopeStatus.Email;
+            result.SentDate = curDocuSignEnvelopeInfo.EnvelopeStatus.Sent;
+            result.CreateDate = curDocuSignEnvelopeInfo.EnvelopeStatus.Created;
             //Recipients
             foreach (var recipient in curDocuSignEnvelopeInfo.EnvelopeStatus.RecipientStatuses)
             {

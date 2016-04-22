@@ -185,7 +185,7 @@ namespace terminalDocuSign.Actions
                 {
                     case "template":
                         //filter the incoming envelope by template value selected by the user                  
-                        var incomingTemplate = string.Join(",", envelopeStatus.Templates.SelectMany(t => t.Name));
+                        var incomingTemplate = string.Join(",", envelopeStatus.Templates.Select(t => t.Name).ToArray());
 
                         //Dirty quick fix for FR-2858
                         if (string.IsNullOrEmpty(incomingTemplate))
