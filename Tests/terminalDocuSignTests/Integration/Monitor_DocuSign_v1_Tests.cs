@@ -129,7 +129,7 @@ namespace terminalDocuSignTests.Integration
                 radioGroup.Radios[1].Selected = false;
 
                 var recipientTextBox = (TextBox)radioGroup.Radios[0].Controls[0];
-                recipientTextBox.Value = "foo@bar.com";
+                recipientTextBox.Value = "hal9000@discovery.com";
             }
 
             return responseActionDTO;
