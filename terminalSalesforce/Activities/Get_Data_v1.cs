@@ -11,6 +11,7 @@ using TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
 using Data.Constants;
+using ServiceStack;
 
 namespace terminalSalesforce.Actions
 {
@@ -18,22 +19,22 @@ namespace terminalSalesforce.Actions
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
-            public DropDownList SalesforceObjectSelector { get; set; }
+            public DropDownList ObjectSelector { get; set; }
 
-            public QueryBuilder SalesforceObjectFilter { get; set; }
+            public QueryBuilder ObjectFilter { get; set; }
 
             public ActivityUi()
             {
-                SalesforceObjectSelector = new DropDownList
+                ObjectSelector = new DropDownList
                 {
-                    Name = nameof(SalesforceObjectSelector),
+                    Name = nameof(ObjectSelector),
                     Label = "Get Which Object?",
                     Required = true,
                     Events = new List<ControlEvent> {  ControlEvent.RequestConfig }
                 };
-                SalesforceObjectFilter = new QueryBuilder
+                ObjectFilter = new QueryBuilder
                 {
-                    Name = nameof(SalesforceObjectFilter),
+                    Name = nameof(ObjectFilter),
                     Label = "Meeting Which Conditions?",
                     Required = true,
                     Source = new FieldSourceDTO
@@ -42,8 +43,8 @@ namespace terminalSalesforce.Actions
                         ManifestType = CrateManifestTypes.StandardQueryFields
                     }
                 };
-                Controls.Add(SalesforceObjectSelector);
-                Controls.Add(SalesforceObjectFilter);
+                Controls.Add(ObjectSelector);
+                Controls.Add(ObjectFilter);
             }
         }
         //NOTE: this label must be the same as the one expected in QueryBuilder.ts
@@ -63,7 +64,9 @@ namespace terminalSalesforce.Actions
 
         protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
-            ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager.GetObjectProperties().Select(x => new ListItem() { Key = x.Key, Value = x.Key }).ToList();
+            ConfigurationControls.ObjectSelector.ListItems = _salesforceManager.GetSalesforceObjectTypes()
+                                                                                .Select(x => new ListItem() { Key = x.Key, Value = x.Key })
+                                                                                .ToList();
             runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
             return Task.FromResult(true);
         }
@@ -71,21 +74,21 @@ namespace terminalSalesforce.Actions
         protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
         {
             //If Salesforce object is empty then we should clear filters as they are no longer applicable
-            var selectedObject = ConfigurationControls.SalesforceObjectSelector.selectedKey;
+            var selectedObject = ConfigurationControls.ObjectSelector.selectedKey;
             if (string.IsNullOrEmpty(selectedObject))
             {
                 CurrentActivityStorage.RemoveByLabel(QueryFilterCrateLabel);
                 CurrentActivityStorage.RemoveByLabel(SalesforceObjectFieldsCrateLabel);
-                this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
+                this[nameof(ActivityUi.ObjectSelector)] = selectedObject;
                 return;
             }
             //If the same object is selected we shouldn't do anything
-            if (selectedObject == this[nameof(ActivityUi.SalesforceObjectSelector)])
+            if (selectedObject == this[nameof(ActivityUi.ObjectSelector)])
             {
                 return;
             }
             //Prepare new query filters from selected object properties
-            var selectedObjectProperties = await _salesforceManager.GetFields(selectedObject, AuthorizationToken);
+            var selectedObjectProperties = await _salesforceManager.GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
             var queryFilterCrate = Crate<TypedFieldsCM>.FromContent(
                 QueryFilterCrateLabel,
                 new TypedFieldsCM(selectedObjectProperties.OrderBy(x => x.Key)
@@ -98,14 +101,14 @@ namespace terminalSalesforce.Actions
                 new FieldDescriptionsCM(selectedObjectProperties),            
                 AvailabilityType.RunTime);
             CurrentActivityStorage.ReplaceByLabel(objectPropertiesCrate);
-            this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
+            this[nameof(ActivityUi.ObjectSelector)] = selectedObject;
             //Publish information for downstream activities
             runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
         }
 
         protected override async Task RunCurrentActivity()
         {
-            var salesforceObject = ConfigurationControls.SalesforceObjectSelector.selectedKey;
+            var salesforceObject = ConfigurationControls.ObjectSelector.selectedKey;
             if (string.IsNullOrEmpty(salesforceObject))
             {
                 throw new ActivityExecutionException("No Salesforce object is selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
@@ -115,7 +118,7 @@ namespace terminalSalesforce.Actions
                                             .Content
                                             .Fields
                                             .Select(x => x.Name);
-            var filterValue = ConfigurationControls.SalesforceObjectFilter.Value;
+            var filterValue = ConfigurationControls.ObjectFilter.Value;
             var filterDataDTO = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(filterValue);
             //If without filter, just get all selected objects
             //else prepare SOQL query to filter the objects based on the filter conditions
@@ -125,7 +128,7 @@ namespace terminalSalesforce.Actions
                 parsedCondition = ParseConditionToText(filterDataDTO);
             }
 
-            var resultObjects = await _salesforceManager.Query(salesforceObject, salesforceObjectFields, parsedCondition, AuthorizationToken);
+            var resultObjects = await _salesforceManager.Query(salesforceObject.ToEnum<SalesforceObjectType>(), salesforceObjectFields, parsedCondition, AuthorizationToken);
             CurrentPayloadStorage.Add(Crate<StandardTableDataCM>.FromContent(RuntimeDataCrateLabel, resultObjects, AvailabilityType.RunTime));
         }
     }

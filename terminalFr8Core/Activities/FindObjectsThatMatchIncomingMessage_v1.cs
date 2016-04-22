@@ -195,16 +195,7 @@ namespace terminalFr8Core.Actions
 
         private string RemoveStopwords(string value)
         {
-            //Currently this is straightforward removal of substrings
-            foreach (var stopword in StopwordsList)
-            {
-                var index = value.IndexOf(stopword, StringComparison.InvariantCultureIgnoreCase);
-                if (index != -1)
-                {
-                    value = value.Remove(index, stopword.Length);
-                }                
-            }
-            return value.Replace("  ", " ").Trim();
+            return value.RemoveStopwords(StopwordsList);
         }
 
         private Crate<StandardTableDataCM> GetData()

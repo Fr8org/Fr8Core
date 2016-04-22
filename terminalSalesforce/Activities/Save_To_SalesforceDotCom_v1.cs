@@ -15,6 +15,7 @@ using Data.Interfaces.Manifests;
 using Data.States;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
+using ServiceStack;
 
 namespace terminalSalesforce.Actions
 {
@@ -76,7 +77,7 @@ namespace terminalSalesforce.Actions
             }
                 
 
-            var chosenObjectFieldsList = await _salesforce.GetFields(chosenObject, authTokenDO, true);
+            var chosenObjectFieldsList = await _salesforce.GetProperties(chosenObject.ToEnum<SalesforceObjectType>(), authTokenDO, true);
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
@@ -147,7 +148,7 @@ namespace terminalSalesforce.Actions
                 //get <Field> <Value> key value pair for the non empty field
                 var jsonInputObject = ActivitiesHelper.GenerateSalesforceObjectDictionary(fieldsList, fieldControlsList, payloadStorage);
 
-                var result = await _salesforce.Create(jsonInputObject, chosenObject, authTokenDO);
+                var result = await _salesforce.Create(chosenObject.ToEnum<SalesforceObjectType>(), jsonInputObject, authTokenDO);
 
                 if (!string.IsNullOrEmpty(result))
                 {

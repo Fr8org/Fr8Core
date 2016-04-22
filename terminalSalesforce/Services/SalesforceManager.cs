@@ -18,7 +18,6 @@ using Newtonsoft.Json.Linq;
 using Salesforce.Chatter.Models;
 using StructureMap;
 using Data.States;
-using System.Linq.Expressions;
 
 namespace terminalSalesforce.Services
 {
@@ -168,12 +167,16 @@ namespace terminalSalesforce.Services
             return feedItem?.Id ?? string.Empty;
         }
 
-        public IEnumerable<FieldDTO> GetSalesforceObjectTypes(SalesforceObjectOperations filterByOperations = SalesforceObjectOperations.All, SalesforceProperties filterByProperties = SalesforceProperties.All)
+        public IEnumerable<FieldDTO> GetSalesforceObjectTypes(SalesforceObjectOperations filterByOperations = SalesforceObjectOperations.None, SalesforceObjectProperties filterByProperties = SalesforceObjectProperties.None)
         {
             var salesforceTypes = Enum.GetValues(typeof(SalesforceObjectType));
             foreach (var salesforceType in salesforceTypes)
             {
-                var attribute = salesforceType.GetType().GetField(salesforceType.ToString()).GetCustomAttributes<SalesforceObjectDescriptionAttribute>().FirstOrDefault();
+                var sourceValues = salesforceType.GetType().GetField(salesforceType.ToString()).GetCustomAttributes<SalesforceObjectDescriptionAttribute>().FirstOrDefault();
+                if (sourceValues.AvailableProperties.HasFlag(filterByProperties) && sourceValues.AvailableOperations.HasFlag(filterByOperations))
+                {
+                    yield return new FieldDTO(salesforceType.ToString(), salesforceType.ToString());
+                }
             }
         }
 
@@ -196,9 +199,29 @@ namespace terminalSalesforce.Services
                                                 });
         }
 
-        public async Task<bool> Delete(string salesforceObjectName, string objectId, AuthorizationTokenDO authTokenDO)
+        public async Task<bool> Delete(SalesforceObjectType objectType, string objectId, AuthorizationTokenDO authTokenDO)
         {
-            return await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.DeleteAsync(salesforceObjectName, objectId), authTokenDO);
+            return await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.DeleteAsync(objectType.ToString(), objectId), authTokenDO);
+        }
+        [Obsolete("Use Task<StandardTableDataCM> Query(SalesforceObjectType, IEnumerable<string>, string, AuthorizationTokenDO) instead")]
+        public async Task<IList<FieldDTO>> GetUsersAndGroups(AuthorizationTokenDO authTokenDO)
+        {
+            var chatterObjectSelectPredicate = new Dictionary<string, Func<JToken, FieldDTO>>();
+            chatterObjectSelectPredicate.Add("groups", x => new FieldDTO(x.Value<string>("name"), x.Value<string>("id"), AvailabilityType.Configuration));
+            chatterObjectSelectPredicate.Add("users", x => new FieldDTO(x.Value<string>("displayName"), x.Value<string>("id"), AvailabilityType.Configuration));
+            var chatterNamesList = new List<FieldDTO>();
+            //get chatter groups and persons
+            var chatterObjects = (JObject)await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.GetGroupsAsync<object>(), authTokenDO);
+            chatterObjects.Merge((JObject)await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.GetUsersAsync<object>(), authTokenDO));
+            foreach (var predicatePair in chatterObjectSelectPredicate)
+            {
+                JToken requiredChatterObjects;
+                if (chatterObjects.TryGetValue(predicatePair.Key, out requiredChatterObjects) && requiredChatterObjects is JArray)
+                {
+                    chatterNamesList.AddRange(requiredChatterObjects.Select(a => predicatePair.Value(a)));
+                }
+            }
+            return chatterNamesList;
         }
 
         #region Implemetation details

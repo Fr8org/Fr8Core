@@ -11,6 +11,9 @@ using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
 using terminalSalesforceTests.Fixtures;
 using terminalSalesforce.Actions;
+using terminalSalesforce.Services;
+using terminalSalesforce.Infrastructure;
+using Data.Entities;
 
 namespace terminalSalesforceTests.Intergration
 {
@@ -88,7 +91,8 @@ namespace terminalSalesforceTests.Intergration
                                          .CratesOfType<StandardPayloadDataCM>()
                                          .SingleOrDefault();
             Assert.IsNotNull(newFeedIdCrate, "Feed is not created");
-            Assert.IsTrue(await SalesforceTestHelper.DeleteObject(authToken, "FeedItem", newFeedIdCrate.Content.PayloadObjects[0].PayloadObject[0].Value), "Test feed created is not deleted");
+            Assert.IsTrue(await new SalesforceManager().Delete(SalesforceObjectType.FeedItem, 
+                newFeedIdCrate.Content.PayloadObjects[0].PayloadObject[0].Value, new AuthorizationTokenDO { Token = authToken.Token, AdditionalAttributes = authToken.AdditionalAttributes }), "Test feed created is not deleted");
         }
 
         private async Task<ActivityDTO> PerformInitialConfiguration()
@@ -103,10 +107,10 @@ namespace terminalSalesforceTests.Intergration
             var resultActionDto = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(terminalConfigureUrl, requestActionDTO);
             resultActionDto.UpdateControls<Post_To_Chatter_v1.ActivityUi>(x =>
             {
-                x.QueryForObjectOption.Selected = true;
-                var selectedUser = x.ChatterObjectsFilter.ListItems.First(y => y.Key == "Fr8 Admin");
-                x.ChatterObjectsFilter.selectedKey = selectedUser.Key;
-                x.ChatterObjectsFilter.Value = selectedUser.Value;
+                x.UseUserOrGroupOption.Selected = true;
+                var selectedUser = x.UserOrGroupSelector.ListItems.First(y => y.Key == "Fr8 Admin");
+                x.UserOrGroupSelector.selectedKey = selectedUser.Key;
+                x.UserOrGroupSelector.Value = selectedUser.Value;
                 x.FeedTextSource.ValueSource = "specific";
                 x.FeedTextSource.TextValue = "IntegrationTestFeed";
             });

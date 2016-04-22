@@ -100,8 +100,8 @@ namespace terminalSalesforceTests.Actions
         {
             curActivityDO.UpdateControls<Post_To_Chatter_v1.ActivityUi>(x =>
             {
-                x.QueryForObjectOption.Selected = true;
-                x.ChatterObjectsFilter.Value = "1";
+                x.UseUserOrGroupOption.Selected = true;
+                x.UserOrGroupSelector.Value = "1";
                 x.FeedTextSource.ValueSource = "specific";
                 x.FeedTextSource.TextValue = "SomeValue";
             });

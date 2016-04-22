@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
 
 namespace terminalSalesforceTests.Intergration
@@ -73,7 +74,7 @@ namespace terminalSalesforceTests.Intergration
                 Debug.WriteLine("Newly created Lead ID is " + newLeadId);
 
                 Debug.WriteLine("Deleting newly created lead with " + newLeadId);
-                var isDeleted = await SalesforceTestHelper.DeleteObject(authTokenDO, "Lead", newLeadId);
+                var isDeleted = await new SalesforceManager().Delete(SalesforceObjectType.Lead, newLeadId, authTokenDO);
                 Assert.IsTrue(isDeleted, "The newly created Lead for integration test purpose is not deleted.");
                 newLeadId = string.Empty;
 
@@ -133,7 +134,7 @@ namespace terminalSalesforceTests.Intergration
         {
             if(!string.IsNullOrEmpty(newLeadId))
             {
-                var isDeleted = await SalesforceTestHelper.DeleteObject(authTokenDO, "Lead", newLeadId);
+                var isDeleted = await new SalesforceManager().Delete(SalesforceObjectType.Lead, newLeadId, authTokenDO);
                 Assert.IsTrue(isDeleted, "The newly created Lead for integration test purpose is not deleted.");
             }
 

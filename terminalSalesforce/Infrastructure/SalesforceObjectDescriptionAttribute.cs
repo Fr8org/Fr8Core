@@ -7,12 +7,12 @@ namespace terminalSalesforce.Infrastructure
     {
         public SalesforceObjectOperations AvailableOperations { get; set; }
 
-        public SalesforceProperties Properties { get; set; }
+        public SalesforceObjectProperties AvailableProperties { get; set; }
 
-        public SalesforceObjectDescriptionAttribute(SalesforceObjectOperations availableOperations, SalesforceProperties properties)
+        public SalesforceObjectDescriptionAttribute(SalesforceObjectOperations availableOperations, SalesforceObjectProperties availableProperties)
         {
             AvailableOperations = availableOperations;
-            Properties = properties;
+            AvailableProperties = availableProperties;
         }
 
         public SalesforceObjectDescriptionAttribute()

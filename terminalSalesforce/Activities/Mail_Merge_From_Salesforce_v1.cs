@@ -18,6 +18,7 @@ using Data.Interfaces;
 using Utilities.Configuration.Azure;
 using Hub.Managers;
 using Data.Constants;
+using ServiceStack;
 
 namespace terminalSalesforce.Actions
 {
@@ -238,9 +239,9 @@ namespace terminalSalesforce.Actions
                 var controlsCrate = storage.FirstCrate<StandardConfigurationControlsCM>();
                 var activityUi = new Get_Data_v1.ActivityUi().ClonePropertiesFrom(controlsCrate.Content) as Get_Data_v1.ActivityUi;
                 var solutionActivityUi = new ActivityUi().ClonePropertiesFrom(CrateManager.GetStorage(solutionActivity).FirstCrate<StandardConfigurationControlsCM>().Content) as ActivityUi;
-                activityUi.SalesforceObjectSelector.selectedKey = solutionActivityUi.SalesforceObjectSelector.selectedKey;
-                activityUi.SalesforceObjectSelector.Value = solutionActivityUi.SalesforceObjectSelector.Value;
-                activityUi.SalesforceObjectFilter.Value = solutionActivityUi.SalesforceObjectFilter.Value;
+                activityUi.ObjectSelector.selectedKey = solutionActivityUi.SalesforceObjectSelector.selectedKey;
+                activityUi.ObjectSelector.Value = solutionActivityUi.SalesforceObjectSelector.Value;
+                activityUi.ObjectFilter.Value = solutionActivityUi.SalesforceObjectFilter.Value;
                 storage.ReplaceByLabel(Crate.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
             }
         }
@@ -260,7 +261,7 @@ namespace terminalSalesforce.Actions
                 return;
             }
             //Prepare new query filters from selected object properties
-            var selectedObjectProperties = await _salesforceManager.GetFields(selectedObject, AuthorizationToken);
+            var selectedObjectProperties = await _salesforceManager.GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
             var queryFilterCrate = Crate<TypedFieldsCM>.FromContent(
                 QueryFilterCrateLabel,
                 new TypedFieldsCM(selectedObjectProperties.OrderBy(x => x.Key)
@@ -272,7 +273,7 @@ namespace terminalSalesforce.Actions
 
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
-            ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager.GetObjectProperties().Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
+            ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager.GetSalesforceObjectTypes().Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
             var activityTemplates = await HubCommunicator.GetActivityTemplates(ActivityTemplate.EmailDelivererTag, CurrentFr8UserId);
             activityTemplates.Sort((x, y) => x.Name.CompareTo(y.Name));
             ConfigurationControls.MailSenderActivitySelector.ListItems = activityTemplates

@@ -123,7 +123,6 @@
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
     <Compile Include="Intergration\GetSalesforceData_Into_SendEmail_EndToEnd_Tests.cs" />
     <Compile Include="Intergration\Post_To_Chatter_v1Tests.cs" />
-    <Compile Include="Intergration\SalesforceTestHelper.cs" />
     <Compile Include="Intergration\SaveToSalesforce_And_GetSalesforceData_EndToEnd_Tests.cs" />
     <Compile Include="Intergration\Terminal_Authentication_v1_Tests.cs" />
     <Compile Include="Intergration\Terminal_Discover_v1Tests.cs" />

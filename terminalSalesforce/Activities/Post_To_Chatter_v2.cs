@@ -10,6 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Data.States;
 using Newtonsoft.Json;
+using ServiceStack;
 
 namespace terminalSalesforce.Actions
 {
@@ -94,6 +95,10 @@ namespace terminalSalesforce.Actions
 
         public const string SalesforceObjectFieldsCrateLabel = "Salesforce Object Fields";
 
+        public const string PostedFeedPropertiesCrateLabel = "Posted Feeds";
+
+        public const string FeedIdKeyName = "FeedId";
+
         private readonly ISalesforceManager _salesforceManager;
 
         public Post_To_Chatter_v2() : base(true)
@@ -105,8 +110,11 @@ namespace terminalSalesforce.Actions
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
             IsPostingToQueryiedChatter = true;
-            AvailableChatters = _salesforceManager.GetObjectProperties().Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
+            AvailableChatters = _salesforceManager.GetSalesforceObjectTypes(filterByProperties: SalesforceObjectProperties.HasChatter).Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
             runtimeCrateManager.MarkAvailableAtRuntime<StandardPayloadDataCM>(PostedFeedCrateLabel);
+            CurrentActivityStorage.Add(Crate<FieldDescriptionsCM>.FromContent(PostedFeedPropertiesCrateLabel,
+                                                                              new FieldDescriptionsCM(new FieldDTO(FeedIdKeyName, FeedIdKeyName, AvailabilityType.RunTime)),
+                                                                              AvailabilityType.RunTime));
         }
 
         protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
@@ -125,7 +133,7 @@ namespace terminalSalesforce.Actions
                 return;
             }
             //Prepare new query filters from selected object properties
-            var selectedObjectProperties = await _salesforceManager.GetFields(SelectedChatter, AuthorizationToken);
+            var selectedObjectProperties = await _salesforceManager.GetProperties(SelectedChatter.ToEnum<SalesforceObjectType>(), AuthorizationToken);
             var queryFilterCrate = Crate<TypedFieldsCM>.FromContent(
                 QueryFilterCrateLabel,
                 new TypedFieldsCM(selectedObjectProperties.OrderBy(x => x.Key)
@@ -138,7 +146,7 @@ namespace terminalSalesforce.Actions
                 new FieldDescriptionsCM(selectedObjectProperties),
                 AvailabilityType.RunTime);
             CurrentActivityStorage.ReplaceByLabel(objectPropertiesCrate);
-            this[nameof(SelectedChatter] = SelectedChatter;
+            this[nameof(SelectedChatter)] = SelectedChatter;
             //Publish information for downstream activities
             runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(PostedFeedCrateLabel);
         }
@@ -156,31 +164,36 @@ namespace terminalSalesforce.Actions
             }
             if (IsPostingToQueryiedChatter)
             {
-                var chatters = await _salesforceManager.Query(SelectedChatter,
-                                                                     new[] { "Id" },
-                                                                     ParseConditionToText(JsonConvert.DeserializeObject<List<FilterConditionDTO>>(ChatterFilter)),
-                                                                     AuthorizationToken);
-                foreach (var chatter in  )
-                feedParentId = ConfigurationControls.ChatterFilter.Value;
-                if (string.IsNullOrEmpty(feedParentId))
+                var chatters = await _salesforceManager.Query(SelectedChatter.ToEnum<SalesforceObjectType>(),
+                                                              new[] { "Id" },
+                                                              ParseConditionToText(JsonConvert.DeserializeObject<List<FilterConditionDTO>>(ChatterFilter)),
+                                                              AuthorizationToken);
+              
+                var tasks = new List<Task<string>>(chatters.Table.Count);
+                foreach (var chatterId in chatters.DataRows.Select(x => x.Row[0].Cell.Value))
                 {
-                    throw new ActivityExecutionException("User or group is not specified");
+                    tasks.Add(_salesforceManager.PostToChatter(feedText, chatterId, AuthorizationToken));
                 }
+                await Task.WhenAll(tasks);
+                //If we did not find any chatter object we don't fail activity execution but rather returns empty list and inform caller about it 
+                if (!chatters.HasDataRows)
+                {
+                    Success($"No {SelectedChatter} that satisfies specified conditions were found. No message were posted");
+                }
+                var resultPayload = new StandardPayloadDataCM();
+                resultPayload.PayloadObjects.AddRange(tasks.Select(x => new PayloadObjectDTO(new FieldDTO(FeedIdKeyName, x.Result))));
+                CurrentPayloadStorage.Add(Crate<StandardPayloadDataCM>.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM()));
             }
-            if (ConfigurationControls.UseIncomingChatterIdOption.Selected)
+            else
             {
-                feedParentId = ConfigurationControls.IncomingChatterIdSelector.GetValue(CurrentPayloadStorage);
-                if (string.IsNullOrEmpty(feedParentId))
+                var incomingChatterId = IncomingChatterId;
+                if (string.IsNullOrWhiteSpace(incomingChatterId))
                 {
                     throw new ActivityExecutionException("Upstream crates doesn't contain value for feed parent Id");
                 }
+                var feedId = await _salesforceManager.PostToChatter(feedText, incomingChatterId, AuthorizationToken);
+                CurrentPayloadStorage.Add(Crate.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM(new FieldDTO(FeedIdKeyName, feedId))));
             }
-            var result = await _salesforceManager.PostFeedTextToChatterObject(feedText, feedParentId, AuthorizationToken);
-            if (string.IsNullOrEmpty(result))
-            {
-                throw new ActivityExecutionException("Failed to post to chatter due to Salesforce API error");
-            }
-            CurrentPayloadStorage.Add(Crate.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM(new FieldDTO("FeedID", result))));
         }
 
         #region Controls properties wrappers
@@ -209,6 +222,7 @@ namespace terminalSalesforce.Actions
 
         private string ChatterFilter { get { return ConfigurationControls.ChatterFilter.Value; } }
 
+        private string IncomingChatterId { get { return CurrentPayloadStorage.RetrieveValue(ConfigurationControls.IncomingChatterIdSelector.selectedKey); } }
 
         #endregion
     }

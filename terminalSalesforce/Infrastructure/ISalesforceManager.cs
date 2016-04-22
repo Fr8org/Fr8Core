@@ -3,6 +3,7 @@ using Data.Interfaces.DataTransferObjects;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Interfaces.Manifests;
+using System;
 
 namespace terminalSalesforce.Infrastructure
 {
@@ -18,10 +19,11 @@ namespace terminalSalesforce.Infrastructure
 
         Task<string> PostToChatter(string message, string parentObjectId, AuthorizationTokenDO authTokenDO);
 
-        IEnumerable<FieldDTO> GetSalesforceObjectTypes(SalesforceObjectOperations filterByOperations = SalesforceObjectOperations.All, SalesforceProperties filterByProperties = SalesforceProperties.All);
+        IEnumerable<FieldDTO> GetSalesforceObjectTypes(SalesforceObjectOperations filterByOperations = SalesforceObjectOperations.None, SalesforceObjectProperties filterByProperties = SalesforceObjectProperties.None);
 
-        Task<bool> Delete(string salesforceObjectName, string objectId, AuthorizationTokenDO authTokenDO);
+        Task<bool> Delete(SalesforceObjectType objectType, string objectId, AuthorizationTokenDO authTokenDO);
+
+        [Obsolete("Use Task<StandardTableDataCM> Query(SalesforceObjectType, IEnumerable<string>, string, AuthorizationTokenDO) instead")]
+        Task<IList<FieldDTO>> GetUsersAndGroups(AuthorizationTokenDO authTokenDO);
     }
-
-
 }

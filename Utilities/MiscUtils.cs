@@ -1,4 +1,7 @@
-﻿namespace Utilities
+﻿using System;
+using System.Text;
+
+namespace Utilities
 {
     public static class MiscUtils
     {
@@ -22,6 +25,35 @@
             }
             var group = match.Groups[1];
             return cs.Substring(0, group.Index) + "*****" + cs.Substring(group.Index + group.Length + 1);
+        }
+
+        public static StringBuilder Trim(this StringBuilder source)
+        {
+            if (source == null)
+            {
+                throw new ArgumentNullException(nameof(source));
+            }
+            if (source.Length == 0)
+            {
+                return source;
+            }
+            var index = source.Length - 1;
+            while (index >= 0 && char.IsWhiteSpace(source[index]))
+            {
+                index--;
+            }
+            index = index == -1 ? 0 : index;
+            source.Remove(index, source.Length - index);
+            if (source.Length == 0)
+            {
+                return source;
+            }
+            index = 0;
+            while (index < source.Length && char.IsWhiteSpace(source[index]))
+            {
+                index++;
+            }
+            return source.Remove(0, index);            
         }
     }
 }

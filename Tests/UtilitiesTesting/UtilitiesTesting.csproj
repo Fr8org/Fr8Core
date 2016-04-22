@@ -198,6 +198,7 @@
     <Compile Include="ManageUserVM.cs" />
     <Compile Include="MiscUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StopwordsRemoverTests.cs" />
     <Compile Include="UserVM.cs" />
   </ItemGroup>
   <ItemGroup>
