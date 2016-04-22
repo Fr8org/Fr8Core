@@ -19,5 +19,6 @@ namespace terminalGoogle.Interfaces
         string CreateOAuth2AuthorizationUrl(string state = null);
         GoogleAuthDTO GetToken(string code);
         Task<string> GetExternalUserId(GoogleAuthDTO authDTO);
+        Task<bool> IsTokenInfoValid(GoogleAuthDTO googleAuthDTO);
     }
 }

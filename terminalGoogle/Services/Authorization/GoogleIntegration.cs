@@ -1,20 +1,14 @@
-﻿using Google.Apis.Auth.OAuth2;
+﻿using System;
+using System.Threading.Tasks;
 using Google.GData.Client;
 using Hub.Managers.APIManagers.Transmitters.Restful;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StructureMap;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
-using System.Web;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
 using Utilities.Configuration.Azure;
 
-namespace terminalGoogle.Services
+namespace terminalGoogle.Services.Authorization
 {
     public class GoogleIntegration : IGoogleIntegration
     {
@@ -79,6 +73,26 @@ namespace terminalGoogle.Services
 
             var jsonObj = await _client.GetAsync<JObject>(new Uri(url));
             return jsonObj.Value<string>("email");
+        }
+
+        /// <summary>
+        /// Checks google token validity
+        /// </summary>
+        /// <param name="googleAuthDTO"></param>
+        /// <returns></returns>
+        public async Task<bool> IsTokenInfoValid(GoogleAuthDTO googleAuthDTO)
+        {
+            try
+            {
+                var url = CloudConfigurationManager.GetSetting("GoogleTokenInfo");
+                url = url.Replace("%TOKEN%", googleAuthDTO.AccessToken);
+                await _client.GetAsync(new Uri(url));
+                return true;
+            }
+            catch (RestfulServiceException)
+            {
+                return false;
+            }
         }
     }
 }
