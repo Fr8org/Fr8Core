@@ -16,6 +16,7 @@ using Utilities.Configuration.Azure;
 using Hub.Interfaces;
 using Hangfire;
 using Hangfire.StructureMap;
+using Hangfire.Dashboard;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
@@ -47,8 +48,23 @@ namespace HubWeb
             GlobalConfiguration.Configuration
                 .UseSqlServerStorage(connectionString)
                 .UseStructureMapActivator(ObjectFactory.Container);
-            app.UseHangfireDashboard();
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            {
+                AuthorizationFilters = new[] { new MyRestrictiveAuthorizationFilter() },
+            });
             app.UseHangfireServer();
+            GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
+        }
+
+        public class MyRestrictiveAuthorizationFilter : IAuthorizationFilter
+        {
+            public bool Authorize(IDictionary<string, object> owinEnvironment)
+            {
+                var context = new OwinContext(owinEnvironment);
+                if (context.Authentication.User.IsInRole("Admin"))
+                    return true;
+                else return false;
+            }
         }
 
         //SeedDatabases
@@ -170,5 +186,5 @@ namespace HubWeb
         {
             return WebApp.Start<Startup>(url: url);
         }
-            }
-        }
+    }
+}

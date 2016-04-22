@@ -13,7 +13,7 @@ namespace terminalGoogle.Controllers
     [RoutePrefix("authentication")]
     public class AuthenticationController : BaseTerminalController
     {
-        private const string curTerinal = "terminalGoogle";
+        private const string curTerminal = "terminalGoogle";
 
         private readonly IGoogleIntegration _google;
 
@@ -66,7 +66,7 @@ namespace terminalGoogle.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerinal, ex);
+                ReportTerminalError(curTerminal, ex,externalAuthDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

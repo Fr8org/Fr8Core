@@ -21,6 +21,7 @@ namespace terminalDocuSign.Controllers
             var terminal = new TerminalDTO()
             {
                 Name = "terminalDocuSign",
+                Label = "DocuSign",
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint"),
                 Version = "1",
@@ -64,11 +65,11 @@ namespace terminalDocuSign.Controllers
                 Name = "Send_DocuSign_Envelope",
                 Label = "Send DocuSign Envelope",
                 Category = ActivityCategory.Forwarders,
-                Tags = string.Join(",", Tags.AggressiveReload, Tags.EmailDeliverer),
+                Tags = string.Join(",", Tags.EmailDeliverer),
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 WebService = webService,
-                MinPaneWidth = 330
+                MinPaneWidth = 330,
             };
 
             var useDocuSignTemplateWithNewDocument = new ActivityTemplateDTO()
@@ -77,7 +78,7 @@ namespace terminalDocuSign.Controllers
                 Name = "Use_DocuSign_Template_With_New_Document",
                 Label = "Use DocuSign Template With New Document",
                 Category = ActivityCategory.Forwarders,
-                Tags = Tags.AggressiveReload,
+                Tags = Tags.EmailDeliverer,
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 WebService = webService,

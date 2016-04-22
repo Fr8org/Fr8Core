@@ -31,7 +31,7 @@ namespace terminalDropbox.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex);
+                ReportTerminalError(curTerminal, ex,externalAuthDTO.Fr8UserId);
                 return await Task.FromResult(
                     new AuthorizationTokenDTO()
                     {
