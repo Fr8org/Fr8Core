@@ -20,6 +20,8 @@ namespace terminalSalesforce.Actions
     {
         private const string CreatedEventname = "Created";
         private const string UpdatedEventname = "Updated";
+        private const string SalesforceObjectFieldsCrateLabel = "Salesforce Object Fields";
+        private const string RuntimeDataCrateLabel = "Table from Salesforce Get Data";
 
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -35,7 +37,7 @@ namespace terminalSalesforce.Actions
             {
                 SalesforceObjectList = new DropDownList
                 {
-                    Label = "Which object do you want to save to Salesforce.com?",
+                    Label = "Which object do you want to monitor?",
                     Name = nameof(SalesforceObjectList),
                     Required = true,
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
@@ -101,7 +103,22 @@ namespace terminalSalesforce.Actions
                                             MT.SalesforceEvent.ToString(),
                                             ((int)MT.SalesforceEvent).ToString(CultureInfo.InvariantCulture),
                                             AvailabilityType.RunTime);
-            CurrentActivityStorage.ReplaceByLabel(eventCrate);
+
+            var tableDataCrate = CrateManager.CreateManifestDescriptionCrate(
+                                            "Available Run-Time Objects",
+                                            MT.StandardTableData.ToString(),
+                                            ((int)MT.StandardTableData).ToString(CultureInfo.InvariantCulture),
+                                            AvailabilityType.RunTime);
+
+            CurrentActivityStorage.RemoveByLabel("Available Run-Time Objects");
+            CurrentActivityStorage.AddRange(new List<Crate> { eventCrate, tableDataCrate });
+
+            var selectedObjectProperties = await _salesforceManager.GetFields(curSfChosenObject, AuthorizationToken);
+            var objectPropertiesCrate = Crate<FieldDescriptionsCM>.FromContent(
+                SalesforceObjectFieldsCrateLabel,
+                new FieldDescriptionsCM(selectedObjectProperties),
+                AvailabilityType.RunTime);
+            CurrentActivityStorage.ReplaceByLabel(objectPropertiesCrate);
         }
 
         protected override async Task RunCurrentActivity()
@@ -146,6 +163,26 @@ namespace terminalSalesforce.Actions
                 CurrentPayloadStorage.ReplaceByLabel(
                     Crate.FromContent("Salesforce Event", sfEvent, AvailabilityType.RunTime));
             });
+
+            //get the currently selected object fields
+            var salesforceObjectFields = CurrentActivityStorage
+                                            .FirstCrate<FieldDescriptionsCM>(x => x.Label == SalesforceObjectFieldsCrateLabel)
+                                            .Content
+                                            .Fields
+                                            .Select(x => x.Key);
+
+            //for each Salesforce event notification
+            var sfEventsList = CurrentPayloadStorage.CrateContentsOfType<SalesforceEventCM>().ToList();
+            foreach (var sfEvent in sfEventsList)
+            {
+                //get the object fields as Standard Table Data
+                var resultObjects = await _salesforceManager.QueryObjects(
+                                                sfEvent.ObjectType,
+                                                salesforceObjectFields, 
+                                                string.Format("ID = '{0}'", sfEvent.ObjectId), 
+                                                AuthorizationToken);
+                CurrentPayloadStorage.Add(Crate<StandardTableDataCM>.FromContent(RuntimeDataCrateLabel, resultObjects, AvailabilityType.RunTime));
+            }
         }
 
         private Crate PackEventSubscriptionsCrate(ActivityUi curSfActivityUi)
