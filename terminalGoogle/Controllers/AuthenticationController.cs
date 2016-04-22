@@ -6,6 +6,7 @@ using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using terminalGoogle.Interfaces;
 using terminalGoogle.Services;
+using terminalGoogle.Services.Authorization;
 using TerminalBase.BaseClasses;
 
 namespace terminalGoogle.Controllers
@@ -13,7 +14,7 @@ namespace terminalGoogle.Controllers
     [RoutePrefix("authentication")]
     public class AuthenticationController : BaseTerminalController
     {
-        private const string curTerinal = "terminalGoogle";
+        private const string CurTerminal = "terminalGoogle";
 
         private readonly IGoogleIntegration _google;
 
@@ -66,7 +67,7 @@ namespace terminalGoogle.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerinal, ex);
+                ReportTerminalError(CurTerminal, ex);
 
                 return new AuthorizationTokenDTO()
                 {
