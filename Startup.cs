@@ -48,7 +48,7 @@ namespace HubWeb
         {
             var options = new BackgroundJobServerOptions
             {
-                Queues = new[] { "default" },
+                Queues = new[] { "hub" },
             };
 
             GlobalConfiguration.Configuration
@@ -58,7 +58,7 @@ namespace HubWeb
             {
                 AuthorizationFilters = new[] { new HangFireAuthorizationFilter() },
             });
-            app.UseHangfireServer();
+            app.UseHangfireServer(options);
             GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
         }
 

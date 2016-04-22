@@ -365,6 +365,7 @@ namespace Data.Migrations
             CreateAdmin("mvcdeveloper@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("maki.gjuroski@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("fr8system_monitor@fr8.company", "123qwe", unitOfWork);
+            CreateAdmin("teh.netaholic@gmail.com", "123qwe", unitOfWork);
 
             //CreateAdmin("eschebenyuk@gmail.com", "kate235", unitOfWork);
             //CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);
