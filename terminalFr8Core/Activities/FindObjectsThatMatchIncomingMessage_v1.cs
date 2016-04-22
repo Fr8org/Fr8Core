@@ -296,8 +296,7 @@ namespace terminalFr8Core.Actions
         public bool CachedDataIsOld { get { return true; } }
 
         private string SpecifiedDataProperties { get { return ConfigurationControls.KeywordPropertiesSource.Value; } }
-
-
+        
         #endregion
     }
 }

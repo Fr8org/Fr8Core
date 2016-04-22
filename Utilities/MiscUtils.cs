@@ -37,23 +37,25 @@ namespace Utilities
             {
                 return source;
             }
-            var index = source.Length - 1;
-            while (index >= 0 && char.IsWhiteSpace(source[index]))
+            var index = source.Length;
+            while (index > 0 && char.IsWhiteSpace(source[index - 1]))
             {
                 index--;
             }
-            index = index == -1 ? 0 : index;
-            source.Remove(index, source.Length - index);
+            if (index != source.Length)
+            {
+                source.Remove(index, source.Length - index);
+            }
             if (source.Length == 0)
             {
                 return source;
             }
-            index = 0;
-            while (index < source.Length && char.IsWhiteSpace(source[index]))
+            var trimLength = 0;
+            while (trimLength < source.Length && char.IsWhiteSpace(source[trimLength]))
             {
-                index++;
+                trimLength++;
             }
-            return source.Remove(0, index);            
+            return source.Remove(0, trimLength);            
         }
     }
 }
