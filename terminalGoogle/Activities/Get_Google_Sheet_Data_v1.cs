@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
-using terminalGoogle.Services;
+using terminalGoogle.Services.Authorization;
 using TerminalBase.BaseClasses;
 
 namespace terminalGoogle.Actions
@@ -77,11 +77,13 @@ namespace terminalGoogle.Actions
         private const string ColumnHeadersCrateLabel = "Spreadsheet Column Headers";
 
         private readonly IGoogleSheet _googleApi;
+        private readonly IGoogleIntegration _googleIntegration;
 
         public Get_Google_Sheet_Data_v1()
            : base(true)
         {
             _googleApi = ObjectFactory.GetInstance<IGoogleSheet>();
+            _googleIntegration = ObjectFactory.GetInstance<IGoogleIntegration>();
         }
         //This property is used to store and retrieve user-selected spreadsheet and worksheet between configuration responses 
         //to avoid extra fetch from Google
@@ -117,8 +119,16 @@ namespace terminalGoogle.Actions
                 return true;
             }
             var token = GetGoogleAuthToken(authTokenDO);
-            // we may also post token to google api to check its validity
-            return token.Expires - DateTime.Now < TimeSpan.FromMinutes(5) && string.IsNullOrEmpty(token.RefreshToken);
+
+            if (token.Expires - DateTime.Now < TimeSpan.FromMinutes(5) && string.IsNullOrEmpty(token.RefreshToken))
+            {
+                return true;
+            }
+
+            // Post token to google api to check its validity
+            // Variable needs for more readability.
+            var result = Task.Run(async () => await _googleIntegration.IsTokenInfoValid(token)).Result;
+            return !result;
         }
 
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
