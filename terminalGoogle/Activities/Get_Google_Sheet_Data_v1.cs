@@ -130,8 +130,24 @@ namespace terminalGoogle.Actions
 
         protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
         {
-            CurrentActivityStorage.RemoveByLabel(ColumnHeadersCrateLabel);
             var googleAuth = GetGoogleAuthToken();
+            var spreadsheets = await _googleApi.GetSpreadsheets(googleAuth);
+            ConfigurationControls.SpreadsheetList.ListItems = spreadsheets
+                .Select(x => new ListItem { Key = x.Value, Value = x.Key })
+                .ToList();
+
+            var selectedSpreadsheet = ConfigurationControls.SpreadsheetList.selectedKey;
+            if (!string.IsNullOrEmpty(selectedSpreadsheet))
+            {
+                if (!ConfigurationControls.SpreadsheetList.ListItems.Any(x => x.Key == selectedSpreadsheet))
+                {
+                    ConfigurationControls.SpreadsheetList.selectedKey = null;
+                    ConfigurationControls.SpreadsheetList.Value = null;
+                }
+            }
+
+
+            CurrentActivityStorage.RemoveByLabel(ColumnHeadersCrateLabel);
             //If spreadsheet selection is cleared we hide worksheet DDLB
             if (string.IsNullOrEmpty(ConfigurationControls.SpreadsheetList.selectedKey))
             {
