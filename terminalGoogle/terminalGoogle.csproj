@@ -271,6 +271,7 @@
     <Content Include="index.html" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Activities\BaseGoogleTerminalActivity.cs" />
     <Compile Include="Activities\Get_Google_Sheet_Data_v1.cs" />
     <Compile Include="Activities\Monitor_Form_Responses_v1.cs" />
     <Compile Include="Activities\Save_To_Google_Sheet_v1.cs" />
@@ -293,6 +294,7 @@
     <Compile Include="Services\Authorization\GoogleAuthorizer.cs" />
     <Compile Include="Services\Event.cs" />
     <Compile Include="Services\GoogleAppScript.cs" />
+    <Compile Include="Services\GoogleAuthHelper.cs" />
     <Compile Include="Services\GoogleDrive.cs" />
     <Compile Include="Services\Authorization\GoogleIntegration.cs" />
     <Compile Include="Services\GoogleSheet.cs" />
@@ -422,10 +424,9 @@
   </Target>
   <Target Name="AfterBuild">
   </Target> -->
-   <ItemGroup>
-    <Log4netConfigFiles Include="..\Config\*.terminals.*"/>
+  <ItemGroup>
+    <Log4netConfigFiles Include="..\Config\*.terminals.*" />
   </ItemGroup>
-  
   <Target Name="BeforeBuild">
     <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
   </Target>

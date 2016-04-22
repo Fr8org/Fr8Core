@@ -14,10 +14,11 @@ using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
 using TerminalBase.BaseClasses;
+using Google.GData.Client;
 
 namespace terminalGoogle.Activities
 {
-    public class Get_Google_Sheet_Data_v1 : EnhancedTerminalActivity<Get_Google_Sheet_Data_v1.ActivityUi>
+    public class Get_Google_Sheet_Data_v1 : BaseGoogleTerminalActivity<Get_Google_Sheet_Data_v1.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -78,7 +79,6 @@ namespace terminalGoogle.Activities
         private readonly IGoogleSheet _googleApi;
 
         public Get_Google_Sheet_Data_v1()
-           : base(true)
         {
             _googleApi = ObjectFactory.GetInstance<IGoogleSheet>();
         }
