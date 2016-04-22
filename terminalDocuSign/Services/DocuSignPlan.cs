@@ -123,7 +123,7 @@ namespace terminalDocuSign.Services
             polling.SchedulePolling(authTokenDTO.ExternalAccountId, curFr8UserId);
         }
 
-  
+
         private bool CheckIfSaveToFr8WarehouseConfiguredWithOldManifest(PlanDTO val)
         {
             return (_crateManager.GetStorage(val.Plan.SubPlans.ElementAt(0).Activities[1]).CrateContentsOfType<StandardConfigurationControlsCM>()
@@ -138,7 +138,7 @@ namespace terminalDocuSign.Services
                 if (existingPlans.Count > 0)
                 {
                     //search for existing MADSE plan for this DS account and updating it
-                    
+
                     //1 Split existing plans in obsolete/malformed and new
                     var plans = existingPlans.GroupBy
                         (val =>
@@ -157,6 +157,7 @@ namespace terminalDocuSign.Services
                     if (plans.ContainsKey(false))
                     {
                         List<PlanDTO> obsoletePlans = plans[false];
+                        Console.WriteLine("#### Found " + obsoletePlans.Count + " obsolete MADSE plans");
                         foreach (var obsoletePlan in obsoletePlans)
                         {
                             await _hubCommunicator.DeletePlan(obsoletePlan.Plan.Id, curFr8UserId);
@@ -187,6 +188,7 @@ namespace terminalDocuSign.Services
                                 await _hubCommunicator.ApplyNewToken(firstActivity.Id, Guid.Parse(authTokenDTO.Id), curFr8UserId);
                                 var existingPlanDO = Mapper.Map<PlanDO>(existingPlan.Plan);
                                 await _hubCommunicator.ActivatePlan(existingPlanDO, curFr8UserId);
+                                Console.WriteLine("#### Existing MADSE plan activated with planId: " + existingPlanDO.RootPlanNodeId);
                                 return existingPlan.Plan.Id.to_S();
                             }
                         }
@@ -222,6 +224,8 @@ namespace terminalDocuSign.Services
             await _hubCommunicator.ConfigureActivity(storeMTDataActivity, curFr8UserId);
             var planDO = Mapper.Map<PlanDO>(monitorDocusignPlan.Plan);
             await _hubCommunicator.ActivatePlan(planDO, curFr8UserId);
+
+            Console.WriteLine("#### New MADSE plan activated with planId: " + planDO.RootPlanNodeId);
         }
 
         private void SetSelectedCrates(ActivityDTO storeMTDataActivity)

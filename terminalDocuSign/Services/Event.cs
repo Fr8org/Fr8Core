@@ -38,6 +38,7 @@ namespace terminalDocuSign.Services
 
         public async Task<Crate> Process(string curExternalEventPayload)
         {
+
             //if the event payload is Fr8 User ID, it is DocuSign Authentication Completed event
             if (curExternalEventPayload.Contains("fr8_user_id"))
             {
@@ -62,6 +63,7 @@ namespace terminalDocuSign.Services
             //If this is a connect event
             if (curExternalEventPayload.Contains("DocuSignEnvelopeInformation"))
             {
+                Console.WriteLine("Connect event received by DocuSign terminal");
                 return ProcessConnectEvent(curExternalEventPayload);
             }
 
