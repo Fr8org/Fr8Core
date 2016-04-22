@@ -104,11 +104,16 @@ namespace Hub.Services
                 {
                     if (_callStack.Count > MaxStackSize)
                     {
-                        throw new Exception("Container execution stack overflow");
+                        throw new Exception($"Container execution stack overflow. Container: {_container.Id}. PlanId: {_container.PlanId}.");
                     }
 
                     var topFrame = _callStack.TopFrame;
                     var currentNode = _uow.PlanRepository.GetById<PlanNodeDO>(topFrame.NodeId);
+
+                    if (currentNode == null)
+                    {
+                        throw new Exception($"PlanNode with id: {topFrame.NodeId} was not found. Container: {_container.Id}. PlanId: {_container.PlanId}.");
+                    }
 
                     try
                     {
@@ -200,6 +205,11 @@ namespace Hub.Services
             {
                 // get the currently processing child
                 var currentChild = topFrame.CurrentChildId != null ? _uow.PlanRepository.GetById<PlanNodeDO>(topFrame.CurrentChildId.Value) : null;
+
+                if (currentNode.ChildNodes == null)
+                {
+                    throw new NullReferenceException($"ChildNodes is null for node: {currentNode.Id}.");
+                }
 
                 // If we are already processing children of the currentNode, selecte the next one
                 if (currentChild != null)

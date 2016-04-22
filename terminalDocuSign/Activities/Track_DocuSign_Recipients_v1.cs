@@ -270,6 +270,11 @@ namespace terminalDocuSign.Actions
                 using (var updater = CrateManager.GetUpdatableStorage(notifierActivity))
                 {
                     var configControls = GetConfigurationControls(updater);
+                    if (configControls == null)
+                    {
+                        //user is not authenticated yet - there is nothing we can do now
+                        return;
+                    }
                     var messageField = (TextSource)GetControl(configControls, "Select_Message_Field", ControlTypes.TextSource);
                     if (messageField == null)
                     {

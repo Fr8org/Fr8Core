@@ -52,7 +52,7 @@ namespace terminalSlack.Actions
             }
             catch (ApplicationException ex)
             {
-                return Error(payloadCrates, "Cannot get selected filed value from TextSource control in activity. Detailed information: " + ex.Message);
+                return Error(payloadCrates, "Cannot get selected field value from TextSource control in activity. Detailed information: " + ex.Message);
             }
 
 

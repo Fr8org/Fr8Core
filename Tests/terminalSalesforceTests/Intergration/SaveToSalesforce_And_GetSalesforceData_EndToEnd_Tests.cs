@@ -28,7 +28,7 @@ namespace terminalSalesforceTests.Intergration
             get { return "terminalSalesforce"; }
         }
 
-        [Test, Ignore("This test is ignored since the activity is not available in dev database.")]
+        [Test]
         public async Task SaveToSalesforce_And_GetSalesforceData_EndToEnd()
         {
             AuthorizationTokenDO authTokenDO = null;
@@ -61,9 +61,8 @@ namespace terminalSalesforceTests.Intergration
                 //Assert
                 Debug.WriteLine("Asserting initial payload.");
                 var payloadList = Crate.GetUpdatableStorage(payload).CratesOfType<StandardPayloadDataCM>().ToList();
-                Assert.AreEqual(2, payloadList.Count, "The payload does not contian all activities payload");
+                Assert.AreEqual(1, payloadList.Count, "The payload does not contian all activities payload");
                 Assert.IsTrue(payloadList.Any(pl => pl.Label.Equals("Lead is saved in Salesforce.com")), "Save Data is Failed to save the lead.");
-                Assert.IsTrue(payloadList.Any(pl => pl.Label.Equals("Salesforce Objects")), "Get Data is Failed to get the lead.");
 
                 Debug.WriteLine("Asserting Save To Salesforce payload.");
                 var savePayload = payloadList[0].Content.PayloadObjects[0].PayloadObject;
@@ -72,18 +71,6 @@ namespace terminalSalesforceTests.Intergration
 
                 newLeadId = savePayload.Single(f => f.Key.Equals("LeadID")).Value;
                 Debug.WriteLine("Newly created Lead ID is " + newLeadId);
-
-                var getPayLoad = payloadList[1].Content.PayloadObjects[0].PayloadObject;
-                Assert.IsTrue(getPayLoad.Count > 1, "Get SF Data did not get all properies of newly created lead.");
-
-                var retrievedLeadId = getPayLoad.Single(s => s.Key.Equals("Id")).Value;
-                var retrievedLeadLastName = getPayLoad.Single(s => s.Key.Equals("LastName")).Value;
-                var retrievedLeadCompanyName = getPayLoad.Single(s => s.Key.Equals("Company")).Value;
-
-                Debug.WriteLine("Asserting Get Data payload");
-                Assert.AreEqual(newLeadId, retrievedLeadId, "The retieved lead ID is not as expected.");
-                Assert.AreEqual("Unit", retrievedLeadLastName, "The retieved lead Last Name is not as expected.");
-                Assert.AreEqual("Test", retrievedLeadCompanyName, "The retieved lead Company is not as expected.");
 
                 Debug.WriteLine("Deleting newly created lead with " + newLeadId);
                 var isDeleted = await SalesforceTestHelper.DeleteObject(authTokenDO, "Lead", newLeadId);
@@ -202,7 +189,7 @@ namespace terminalSalesforceTests.Intergration
             {
                 //select Lead
                 var configControls = updatableStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
-                (configControls.Content.Controls.Single(c => c.Name.Equals("WhatKindOfData")) as DropDownList).selectedKey = "Lead";
+                (configControls.Content.Controls.Single(c => c.Name.Equals("SalesforceObjectSelector")) as DropDownList).selectedKey = "Lead";
             }
             getDataActivity = await ConfigureActivity(getDataActivity);
             Debug.WriteLine("Get Data Follow up config is successfull with Lead selected");
@@ -213,7 +200,7 @@ namespace terminalSalesforceTests.Intergration
                 //give condition
                 var configControls = updatableStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
                 var conditionQuery = new List<FilterConditionDTO>() { new FilterConditionDTO { Field = "LastName", Operator = "eq", Value = "Unit" } };
-                (configControls.Content.Controls.Single(c => c.Name.Equals("SelectedQuery")) as QueryBuilder).Value = JsonConvert.SerializeObject(conditionQuery);
+                (configControls.Content.Controls.Single(c => c.Name.Equals("SalesforceObjectFilter")) as QueryBuilder).Value = JsonConvert.SerializeObject(conditionQuery);
             }
             getDataActivity = await ConfigureActivity(getDataActivity);
             Debug.WriteLine("Get Data Follow up config is successfull with selection query fields set.");

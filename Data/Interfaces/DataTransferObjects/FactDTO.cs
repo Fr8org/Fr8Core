@@ -10,7 +10,7 @@ namespace Data.Interfaces.DataTransferObjects
     {
         public string Activity { get; set; }
         public DateTimeOffset CreateDate { get; set; }
-        public string CustomerId { get; set; }
+        public string Fr8UserId { get; set; }
         public string Data { get; set; }
         public DateTimeOffset LastUpdated { get; set; }
         public string ObjectId { get; set; }

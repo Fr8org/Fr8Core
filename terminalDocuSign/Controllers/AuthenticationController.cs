@@ -68,7 +68,7 @@ namespace terminalDocuSign.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex);
+                ReportTerminalError(curTerminal, ex,curCredentials.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

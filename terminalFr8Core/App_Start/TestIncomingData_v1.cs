@@ -366,7 +366,7 @@ namespace terminalFr8Core.Actions
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var curUpstreamFields =
-                (await GetDesignTimeFields(curActivityDO.Id, CrateDirection.Upstream))
+                (await GetDesignTimeFields(curActivityDO, CrateDirection.Upstream))
                 .Fields
                 .ToArray();
 

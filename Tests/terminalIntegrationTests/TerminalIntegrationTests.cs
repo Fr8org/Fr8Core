@@ -242,7 +242,7 @@ namespace terminalIntegrationTests
             Assert.AreEqual(result.Content.ActivityTemplate.Name, curActivityDTO.ActivityTemplate.Name);
             Assert.AreEqual(result.Content.ActivityTemplate.Version, curActivityDTO.ActivityTemplate.Version);
             Assert.AreEqual(result.Content.ActivityTemplate.Terminal.Name, curActivityDTO.ActivityTemplate.Terminal.Name);
-
+            Assert.AreEqual(result.Content.ActivityTemplate.Terminal.Label, curActivityDTO.ActivityTemplate.Terminal.Label);
             return result.Content;
         }
 
