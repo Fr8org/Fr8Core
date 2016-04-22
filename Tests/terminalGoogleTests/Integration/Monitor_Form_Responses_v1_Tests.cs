@@ -10,16 +10,14 @@ using System.Threading.Tasks;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Newtonsoft.Json.Linq;
+using terminalGoogleTests.Integration;
 
 namespace terminalGoogleTests.Unit
 {
     [Explicit]
     public class Monitor_Form_Responses_v1_Tests : BaseTerminalIntegrationTest
     {
-        public override string TerminalName
-        {
-            get { return "terminalGoogle"; }
-        }
+        public override string TerminalName => "terminalGoogle";
 
         /// <summary>
         /// Validate correct crate-storage structure in initial configuration response.
