@@ -161,8 +161,8 @@
     
     export class FilePickerMetaDescriptionDTO extends ControlMetaDescriptionDTO
     {
-
         static fileExtensions: Array<DropDownListItem> = [new DropDownListItem("Excel Files", ".xlsx")];
+
         constructor() {
             super("FilePickerMetaDescriptionDTO", "File Uploader");
             var tb = new model.TextBox();
@@ -180,6 +180,21 @@
             this.controls.push(allowedExtensions);
         }
 
+    }
+
+    export class SelectDataMetaDescriptionDTO extends ControlMetaDescriptionDTO {
+        constructor() {
+            super('SelectDataMetaDescriptionDTO', 'Select Data');
+
+            var tb = new model.TextBox();
+            tb.label = "Label :";
+            this.controls.push(tb);
+
+            var sd = new model.SelectData();
+            sd.label = 'Template Activity';
+            sd.name = 'SelectData';
+            this.controls.push(sd);
+        }
     }
 
     export class ListTemplate {
@@ -292,8 +307,33 @@
         textValue: string;
     }
 
-    export class ActivityChooser extends ControlDefinitionDTO {
+    export class SelectData extends ControlDefinitionDTO {
+        constructor() {
+            super();
+            this.type = 'SelectData';
+        }
+
+        activityTemplateId: string;
+        activityTemplateName: string;
+
         subPlanId: string;
-        activityTemplateLabel: string;
+        externalObjectName: string;
+    }
+
+    export class ExternalObjectChooser extends ControlDefinitionDTO {
+        constructor() {
+            super();
+            this.type = 'ExternalObjectChooser';
+        }
+
+        activityTemplateId: string;
+        subPlanId: string;
+        externalObjectName: string;
+    }
+
+    export class BuildMessageAppender extends TextArea {
+        constructor() {
+            super();
+        }
     }
 }

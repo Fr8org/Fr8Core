@@ -135,6 +135,8 @@ namespace HubWeb.App_Start
                 .Include("~/bower_components/angular-ivh-treeview/dist/ivh-treeview-theme-basic.css", new CssRewriteUrlTransform())
                 .Include("~/bower_components/angular-resizable/angular-resizable.min.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/dockyard.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/dockyard/container-transition.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/dockyard/query-builder.css", new CssRewriteUrlTransform())
             );
 
             bundles.Add(new ScriptBundle("~/bundles/jsunittests")
@@ -168,7 +170,7 @@ namespace HubWeb.App_Start
                 .Include("~/Scripts/homejs/plugins/scrollto/jquery.localscroll-1.2.7-min.js")
                 .Include("~/Scripts/homejs/plugins/easing/jquery.easing.min.js")
                 .Include("~/Scripts/homejs/plugins/parallax/jquery.parallax-1.1.3.js")
-                .Include("~/Scripts/homejs/plugins/twitter/twitter-fetcher.js")
+                //.Include("~/Scripts/homejs/plugins/twitter/twitter-fetcher.js")
                 .Include("~/Scripts/homejs/plugins/jpreloader/jpreloader.min.js")
                 .Include("~/Scripts/homejs/plugins/isotope/imagesloaded.pkgd.js")
                 .Include("~/Scripts/homejs/plugins/isotope/isotope.pkgd.min.js")

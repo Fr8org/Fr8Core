@@ -260,7 +260,14 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
+    <Content Include="log4net.terminals.Dev.config" />
+    <Content Include="log4net.terminals.config" />
+    <Content Include="log4net.terminals.Demo.config" />
+    <Content Include="log4net.terminals.Release.config" />
     <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Demo.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.Dev.config">
@@ -278,13 +285,13 @@
     <Folder Include="Tests\Services\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Hub\Hub.csproj">
-      <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
-      <Name>Hub</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Hub\Hub.csproj">
+      <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
+      <Name>Hub</Name>
     </ProjectReference>
     <ProjectReference Include="..\terminalBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
@@ -314,6 +321,15 @@
     </StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Demo|AnyCPU'">
     <OutputPath>bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
@@ -363,4 +379,14 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <ItemGroup>
+    <Log4netConfigFiles Include="..\Config\*.terminals.*"/>
+  </ItemGroup>
+
+  <Target Name="BeforeBuild">
+    <Copy
+        SourceFiles="@(Log4NetConfigFiles)"
+        DestinationFolder="."
+         />
+  </Target>
 </Project>

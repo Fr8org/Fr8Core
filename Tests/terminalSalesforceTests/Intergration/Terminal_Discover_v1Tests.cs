@@ -17,11 +17,12 @@ namespace terminalSalesforceTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
-        private const int ActivityCount = 3;
+        private const int ActivityCount = 5;
         private const string Save_To_SalesforceDotCom_Name = "Save_To_SalesforceDotCom";
         private const string Get_Data_Activity_Name = "Get_Data";
         private const string Post_To_Chatter_Name = "Post_To_Chatter";
-
+        private const string MailMergeFromSalesforceName = "Mail_Merge_From_Salesforce";
+        private const string Monitor_Salesforce_Event_Name = "Monitor_Salesforce_Event";
 
         public override string TerminalName
         {
@@ -48,6 +49,10 @@ namespace terminalSalesforceTests.Integration
                 "Action " + Get_Data_Activity_Name + " was not loaded");
             Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == Post_To_Chatter_Name), true,
                 "Action " + Post_To_Chatter_Name + " was not loaded");
+            Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == MailMergeFromSalesforceName), true,
+               "Action " + MailMergeFromSalesforceName + " was not loaded");
+            Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == Monitor_Salesforce_Event_Name), true,
+                "Action " + Monitor_Salesforce_Event_Name + " was not loaded");
         }
     }
 }

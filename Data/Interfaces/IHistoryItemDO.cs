@@ -14,6 +14,6 @@ namespace Data.Interfaces
         String Data { get; set; }
         String Status { get; set; }
         string ObjectId { get; set; }       
-        string CustomerId { get; set; }
+        string Fr8UserId { get; set; }
     }
 }

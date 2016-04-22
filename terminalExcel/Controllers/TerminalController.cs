@@ -29,6 +29,7 @@ namespace terminalExcel.Controllers
                 Endpoint = CloudConfigurationManager.GetSetting("terminalExcel.TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
                 Name = "terminalExcel",
+                Label = "Excel",
                 Version = "1"
             };
 
@@ -42,10 +43,9 @@ namespace terminalExcel.Controllers
                 Name = "Load_Excel_File",
                 Label = "Load Excel File",
                 Version = "1",
-                Description = "",
                 Category = ActivityCategory.Receivers,
                 Terminal = terminal,
-                Tags = "Table Data Generator",
+                Tags = "Table Data Generator,Getter",
                 MinPaneWidth = 300,
 				WebService = webService
             });
@@ -55,7 +55,6 @@ namespace terminalExcel.Controllers
                 Name = "Save_To_Excel",
                 Label = "Save to Excel",
                 Version = "1",
-                Description = "",
                 Category = ActivityCategory.Forwarders,
                 Terminal = terminal,
                 MinPaneWidth = 300,
@@ -67,7 +66,6 @@ namespace terminalExcel.Controllers
                 Name = "SetExcelTemplate",
                 Label = "Set Excel Template",
                 Version = "1",
-                Description = "",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 Tags = "Table Data Generator,Skip At Run-Time",

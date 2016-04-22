@@ -40,7 +40,20 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Demo|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Demo\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
+    <Reference Include="AutoMapper, Version=4.0.4.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\AutoMapper.4.0.4\lib\net45\AutoMapper.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="DocuSign.eSign, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\Utilities\DocuSign.eSign.dll</HintPath>
@@ -108,6 +121,7 @@
     <Compile Include="Integration\Extract_Data_From_Envelopes_v1_EndToEnd_Tests.cs" />
     <Compile Include="Integration\Extract_Data_From_Envelopes_v1_Tests.cs" />
     <Compile Include="Integration\Generate_DocuSign_Report_v1_EndToEnd_Tests.cs" />
+    <Compile Include="Integration\MonitorAllDocuSignEventsLocal_Tests.cs" />
     <Compile Include="Integration\MonitorAllDocuSignEvents_Tests.cs" />
     <Compile Include="Integration\Track_DocuSign_Recipients_v1_EndToEnd_Tests.cs" />
     <Compile Include="Integration\Mail_Merge_Into_DocuSign_v1_EndToEnd_Tests.cs" />

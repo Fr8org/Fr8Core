@@ -69,7 +69,7 @@ namespace terminalDocuSign.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex);
+                ReportTerminalError(curTerminal, ex,curCredentials.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {
@@ -95,7 +95,7 @@ namespace terminalDocuSign.Controllers
             }
 
             //Here we make a call to API with X-DocuSign-Authentication to retrieve both oAuth token and AccountID
-            string integratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey");
+            string integratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey" + (curCredentials.IsDemoAccount ? "_DEMO" : ""));
             ApiClient apiClient = new ApiClient(endpoint);
             string authHeader = "{\"Username\":\"" + curCredentials.Username + "\", \"Password\":\"" + curCredentials.Password + "\", \"IntegratorKey\":\"" + integratorKey + "\"}";
             Configuration conf = new Configuration(apiClient);

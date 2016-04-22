@@ -13,6 +13,7 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using terminalDocuSign.Infrastructure;
 using terminalDocuSignTests.Fixtures;
 
 namespace terminalDocuSignTests.Integration
@@ -28,11 +29,11 @@ namespace terminalDocuSignTests.Integration
         private void AssertCrateTypes(ICrateStorage crateStorage)
         {
 
-            Assert.AreEqual(6, crateStorage.Count);
+            Assert.AreEqual(4, crateStorage.Count);
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<EventSubscriptionCM>().Count());
-            Assert.AreEqual(3, crateStorage.CratesOfType<ManifestDescriptionCM>().Count(x => x.Label == "Available Run-Time Objects"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<ManifestDescriptionCM>().Count(x => x.Label == "Available Run-Time Objects"));
             Assert.IsNotNullOrEmpty(crateStorage.CratesOfType<StandardPayloadDataCM>()
                 .FirstOrDefault(a => a.Label == "DocuSignUserCrate").Content.GetValueOrDefault("DocuSignUserEmail"));
         }
@@ -134,28 +135,14 @@ namespace terminalDocuSignTests.Integration
             var eventId = Guid.NewGuid().ToString();
             var recipientId = Guid.NewGuid().ToString();
 
+            var envelopePayload = HealthMonitor_FixtureData.GetEnvelopePayload();
+
+
             AddPayloadCrate(
                dataDTO,
                new EventReportCM()
                {
-                   EventPayload = new CrateStorage()
-                   {
-                        Data.Crates.Crate.FromContent(
-                            "EventReport",
-                            new StandardPayloadDataCM(
-                                new FieldDTO("CompletedDate", date),
-                                new FieldDTO("CreateDate", date),
-                                new FieldDTO("DeliveredDate", date),
-                                new FieldDTO("EnvelopeId", envelopeId),
-                                new FieldDTO("Email", accountId),
-                                new FieldDTO("SentDate", date),
-                                new FieldDTO("Status", "test_status"),
-                                new FieldDTO("EventId", eventId),
-                                new FieldDTO("Object", "test_object"),
-                                new FieldDTO("RecipientId", recipientId)
-                            )
-                        )
-                   },
+                   EventPayload = envelopePayload,
                    EventNames = "Receive Envelope"
                }
            );
@@ -166,8 +153,7 @@ namespace terminalDocuSignTests.Integration
                 await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
             var crateStorage = Crate.GetStorage(responsePayloadDTO);
-            Assert.AreEqual(1, crateStorage.CrateContentsOfType<DocuSignEnvelopeCM>(x => x.Label == "DocuSign Envelope").Count());
-            Assert.AreEqual(1, crateStorage.CrateContentsOfType<DocuSignEventCM>(x => x.Label == "DocuSign Event").Count());
+            Assert.AreEqual(1, crateStorage.CrateContentsOfType<DocuSignEnvelopeCM_v2>(x => x.Label == "DocuSign Envelope").Count());
         }
 
         [Test]

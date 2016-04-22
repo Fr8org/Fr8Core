@@ -15,7 +15,6 @@ using System.Data.Entity.Infrastructure;
 
 namespace HubTests.Integration
 {
-    [TestFixture]
     public class ReportControllerTest : BaseTerminalIntegrationTest
     {
 

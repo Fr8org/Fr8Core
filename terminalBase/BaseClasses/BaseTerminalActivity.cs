@@ -30,6 +30,7 @@ namespace TerminalBase.BaseClasses
     //standard ProcessConfigurationRequest
     public delegate ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO);
 
+
     public class BaseTerminalActivity
     {
         #region Fields
@@ -178,6 +179,13 @@ namespace TerminalBase.BaseClasses
             return payload;
         }
         
+        protected void Success(IUpdatableCrateStorage crateStorage, string message = "")
+        {
+            var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+            operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Success);
+            operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Message = message });
+        }
+
         protected PayloadDTO ExecuteClientActivity(PayloadDTO payload, string clientActionName)
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
@@ -195,16 +203,11 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         /// <param name="payload"></param>
         /// <returns></returns>
-        protected PayloadDTO SkipChildren(PayloadDTO payload)
+        protected void SkipChildren(IUpdatableCrateStorage crateStorage)
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
-            {
                 var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.SkipChildren);
             }
-
-            return payload;
-        }
 
         /// <summary>
         /// returns error to hub
@@ -229,29 +232,30 @@ namespace TerminalBase.BaseClasses
         }
 
         /// <summary>
+        /// returns error to hub
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <param name="errorMessage"></param>
+        /// <param name="errorCode"></param>
+        /// <param name="currentActivity">Activity where the error occured</param>
+        /// <param name="currentTerminal">Terminal where the error occured</param>
+        /// <returns></returns>
+        protected void Error(IUpdatableCrateStorage crateStorage, string errorMessage = null, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
+        {
+            var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+            operationalState.CurrentActivityErrorCode = errorCode;
+            operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Error);
+            operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, ErrorType.Generic, errorCode.ToString(), null, currentActivity, currentTerminal));
+        }
+
+        /// <summary>
         /// returns Needs authentication error to hub
         /// </summary>
         /// <param name="payload"></param>
         /// <returns></returns>
         protected PayloadDTO NeedsAuthenticationError(PayloadDTO payload)
-        {
-            return Error(payload, "No AuthToken provided.", ActivityErrorCode.NO_AUTH_TOKEN_PROVIDED);
-        }
-
-        /// <summary>
-        /// Creates a reprocess child actions request
-        /// </summary>
-        /// <param name="payload"></param>
-        /// <returns></returns>
-        protected PayloadDTO ReProcessChildActivities(PayloadDTO payload)
-        {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
-                operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.ReprocessChildren);
-            }
-
-            return payload;
+            return Error(payload, "No AuthToken provided.", ActivityErrorCode.NO_AUTH_TOKEN_PROVIDED);
         }
 
         protected async Task PushUserNotification(TerminalNotificationDTO notificationMessage)
@@ -384,6 +388,13 @@ namespace TerminalBase.BaseClasses
                     }
                     return curActivityDO;
                 }
+                
+                //clean any existing crates with "Validation Errors" that can be present from previous
+                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+                {
+                    crateStorage.RemoveByLabel("Validation Errors");
+                }
+                
                 var result = await FollowupConfigurationResponse(curActivityDO, authToken);
                 UpdateRuntimeAvailableCrates(result);
                 return result;
@@ -486,17 +497,63 @@ namespace TerminalBase.BaseClasses
                 crate.Content.Fields.AddRange(fields);
             }
         }
-        
-        protected async Task<ActivityDO> AddAndConfigureChildActivity(Guid parentActivityId, string templateName_Or_templateID, string name = null, string label = null, int? order = null)
-        {
-            //search activity template by name or id
-            var allActivityTemplates = _activityTemplateCache ?? (_activityTemplateCache = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId));
-            int templateId;
-            var activityTemplate = Int32.TryParse(templateName_Or_templateID, out templateId) ?
-                allActivityTemplates.FirstOrDefault(a => a.Id == templateId)
-                : allActivityTemplates.FirstOrDefault(a => a.Name == templateName_Or_templateID);
 
-            if (activityTemplate == null) throw new Exception(string.Format("ActivityTemplate {0} was not found", templateName_Or_templateID));
+        protected async Task<ActivityTemplateDTO> GetActivityTemplate(Guid activityTemplateId)
+        {
+            var allActivityTemplates = _activityTemplateCache ?? (_activityTemplateCache = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId));
+
+            var foundActivity = allActivityTemplates.FirstOrDefault(a => a.Id == activityTemplateId);
+
+
+            if (foundActivity == null) { 
+                throw new Exception($"ActivityTemplate was not found. Id: {activityTemplateId}");
+            }
+
+            return foundActivity;
+        }
+
+        protected async Task<ActivityTemplateDTO> GetActivityTemplate(string terminalName, string activityTemplateName, string activityTemplateVersion = "1", string terminalVersion = "1")
+        {
+            var allActivityTemplates = _activityTemplateCache ?? (_activityTemplateCache = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId));
+
+            var foundActivity =
+                allActivityTemplates.FirstOrDefault(
+                    a =>
+                        a.Terminal.Name == terminalName && a.Terminal.Version == terminalVersion &&
+                        a.Name == activityTemplateName && a.Version == activityTemplateVersion);
+
+
+            if (foundActivity == null) {
+                throw new Exception($"ActivityTemplate was not found. TerminalName: {terminalName}\nTerminalVersion: {terminalVersion}\nActivitiyTemplateName: {activityTemplateName}\nActivityTemplateVersion: {activityTemplateVersion}");
+            }
+
+            return foundActivity;
+        }
+        
+        /// <summary>
+        /// DON'T USE THIS FUNCTION THIS IS JUST FOR BACKWARD COMPABILITY !!
+        /// </summary>
+        /// <param name="terminalName"></param>
+        /// <param name="activityTemplateName"></param>
+        /// <param name="activityTemplateVersion"></param>
+        /// <param name="terminalVersion"></param>
+        /// <returns></returns>
+        [Obsolete("This function is for backward comatibility only. Please use Task<ActivityTemplateDTO> GetActivityTemplate(string, string, string, string)")]
+        protected async Task<ActivityTemplateDTO> GetActivityTemplateByName(string activityTemplateName)
+        {
+            var allActivityTemplates = _activityTemplateCache ?? (_activityTemplateCache = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId));
+            var foundActivity = allActivityTemplates.FirstOrDefault(a => a.Name == activityTemplateName);
+
+            if (foundActivity == null)
+            {
+                throw new Exception($"ActivityTemplate was not found. ActivitiyTemplateName: {activityTemplateName}");
+            }
+
+            return foundActivity;
+        }
+
+        protected async Task<ActivityDO> AddAndConfigureChildActivity(Guid parentActivityId, ActivityTemplateDTO activityTemplate, string name = null, string label = null, int? order = null)
+        {
 
             //assign missing properties
             label = string.IsNullOrEmpty(label) ? activityTemplate.Label : label;
@@ -512,10 +569,10 @@ namespace TerminalBase.BaseClasses
             return resultDO;
         }
 
-        protected async Task<ActivityDO> AddAndConfigureChildActivity(ActivityDO parent, string templateName_Or_templateID, string name = null, string label = null, int? order = null)
+        protected async Task<ActivityDO> AddAndConfigureChildActivity(ActivityDO parent, ActivityTemplateDTO activityTemplate, string name = null, string label = null, int? order = null)
         {
 
-            var resultDO = await AddAndConfigureChildActivity(parent.Id, templateName_Or_templateID, name, label, order);
+            var resultDO = await AddAndConfigureChildActivity(parent.Id, activityTemplate, name, label, order);
 
             if (resultDO != null)
             {
@@ -635,10 +692,6 @@ namespace TerminalBase.BaseClasses
             throw new ApplicationException(exceptionMessage);
         }
 
-
-
-
-
         /*******************************************************************************************/
         // Working with upstream
         /*******************************************************************************************/
@@ -650,18 +703,17 @@ namespace TerminalBase.BaseClasses
             // return await Activity.GetCratesByDirection<TManifest>(activityId, direction);
         }
 
+        public Task<IncomingCratesDTO> GetAvailableData(ActivityDO activity, CrateDirection direction = CrateDirection.Upstream, AvailabilityType availability = AvailabilityType.RunTime)
+        {
+            return HubCommunicator.GetAvailableData(activity, direction, availability, CurrentFr8UserId);
+        }
+
         //wrapper for support test method
         public virtual async Task<List<Crate>> GetCratesByDirection(ActivityDO activityDO, CrateDirection direction)
         {
             return await HubCommunicator.GetCratesByDirection(activityDO, direction, CurrentFr8UserId);
         }
-
-        public virtual async Task<FieldDescriptionsCM> GetDesignTimeFields(Guid activityId, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
-        {
-            var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(activityId, direction, availability, CurrentFr8UserId);
-            return mergedFields;
-        }
-
+        
         public virtual async Task<FieldDescriptionsCM> GetDesignTimeFields(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
         {
             var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(activityDO, direction, availability, CurrentFr8UserId);
@@ -716,7 +768,7 @@ namespace TerminalBase.BaseClasses
 
         protected async Task<Crate<FieldDescriptionsCM>> MergeUpstreamFields(ActivityDO activityDO, string label)
         {
-            var curUpstreamFields = (await GetDesignTimeFields(activityDO.Id, CrateDirection.Upstream)).Fields.ToArray();
+            var curUpstreamFields = (await GetDesignTimeFields(activityDO, CrateDirection.Upstream)).Fields.ToArray();
             var upstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
 
             return upstreamFieldsCrate;
@@ -1095,12 +1147,15 @@ namespace TerminalBase.BaseClasses
                         {
                             case "TextBlock":
                             case "TextBox":
+                            case "BuildMessageAppender":
                             case ControlTypes.TextArea:
                                 control.Value = (string)value;
                                 break;
+
                             case "CheckBox":
                                 control.Selected = true;
                                 break;
+
                             case "DropDownList":
                                 var ddlb = control as DropDownList;
                                 var val = value as ListItem;
@@ -1108,6 +1163,7 @@ namespace TerminalBase.BaseClasses
                                 ddlb.Value = val.Value;
                                 //ddlb.ListItems are not loaded yet
                                 break;
+
                             case "Duration":
                                 var duration = control as Duration;
                                 var timespan = (TimeSpan)value;
@@ -1115,8 +1171,9 @@ namespace TerminalBase.BaseClasses
                                 duration.Hours = timespan.Hours;
                                 duration.Minutes = timespan.Minutes;
                                 break;
+
                             default:
-                                throw new NotImplementedException();
+                                throw new NotSupportedException($"Unsupported control type {control.Type}");
                         }
                     }
                 }
@@ -1251,17 +1308,17 @@ namespace TerminalBase.BaseClasses
         /// Is a helper method to decouple some of the GetCurrentElement Functionality
         /// </summary>
         /// <param name="operationalCrate">Crate of the OperationalStateCM</param>
-        /// <param name="loopId">Integer that is equal to the Action.Id</param>
         /// <returns>Index or pointer of the current IEnumerable Object</returns>
-        protected int GetLoopIndex(OperationalStateCM operationalCrate, string loopId)
+        protected int GetLoopIndex(OperationalStateCM operationalState)
         {
-            var curLoop = operationalCrate.Loops.FirstOrDefault(l => l.Id.Equals(loopId.ToString()));
-            if (curLoop == null)
+            var loopState = operationalState.CallStack.FirstOrDefault(x => x.LocalData?.Type == "Loop");
+
+            if (loopState != null) //this is a loop related data request
             {
-                throw new NullReferenceException("No Loop with the specified LoopId inside the provided OperationalStateCM crate");
+                return loopState.LocalData.ReadAs<OperationalStateCM.LoopStatus>().Index;
             }
-            var curIndex = curLoop.Index;
-            return curIndex;
+
+            throw new NullReferenceException("No Loop was found inside the provided OperationalStateCM crate");
         }
 
         // do not use after EnhancedTerminalActivity is introduced

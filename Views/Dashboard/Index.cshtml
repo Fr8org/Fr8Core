@@ -68,9 +68,11 @@
 
     <!-- END CONTAINER -->
     <!-- BEGIN FOOTER -->
-    <div ui-view="footer" style="position:relative">
-        <div data-ng-include="'/AngularTemplate/Footer'" sticky-footer=".main-wrapper" data-ng-controller="FooterController"></div>
-    </div>
+    <footer id="footer" class="section">
+        <div class="container">
+            <p class="copyright">@DateTime.Now.Year © The Fr8 Company. All Rights Reserved.</p>
+        </div>
+    </footer>
     <!-- END FOOTER -->
             
     <!-- BEGIN JAVASCRIPTS(Load javascripts at bottom, this will reduce page load time) -->

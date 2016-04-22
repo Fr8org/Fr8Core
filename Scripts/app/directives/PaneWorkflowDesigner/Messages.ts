@@ -157,9 +157,9 @@ module dockyard.directives.paneWorkflowDesigner {
 
     export class UpdateActivityTemplateIdEventArgs {
         public id: string;
-        public activityTemplateId: number;
+        public activityTemplateId: string;
 
-        constructor(id: string, activityTemplateId: number) {
+        constructor(id: string, activityTemplateId: string) {
             this.id = id;
             this.activityTemplateId = activityTemplateId;
         }

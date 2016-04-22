@@ -21,6 +21,7 @@ namespace Hub.Services
 {
     public class Email
     {
+
         public const string DateStandardFormat = @"yyyy-MM-ddTHH\:mm\:ss.fffffff"; //This allows javascript to parse the date properly
         //private EventValidator _curEventValidator;
         private readonly EmailAddress _emailAddress;

@@ -5,6 +5,12 @@
 #>
 
 param(
+	[Parameter(Mandatory = $true)]
+	[string]$github_username,
+
+	[Parameter(Mandatory = $true)]
+	[string]$github_password,
+
 	[string]$mainBranchName = "dev",
     [string]$sourceBranchName = $env:BUILD_SOURCEBRANCHNAME,
     [string]$tempDirectory = $env:BUILD_STAGINGDIRECTORY
@@ -23,14 +29,7 @@ Function DeleteBranchIfExists($buildBranchName)
 
 }
 
-$tempFileName = $tempDirectory + "\gitCommandsOutput.txt"
-
-if (Test-Path $tempFileName) {
-  Remove-Item $tempFileName
-}
-
-$github_username = "fr8admin"
-$github_password = "ulysses3"
+$tempFileName = $tempDirectory + "\gitCommandsOutput+$sourceBranchName.txt"
 
 $giturl = "https://{0}:{1}@github.com/alexed1/fr8company" -f $github_username, $github_password
 

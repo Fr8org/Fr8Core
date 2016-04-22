@@ -31,9 +31,9 @@ module dockyard.controllers {
             SolutionDocumentationService.getSolutionDocumentationList({ terminalName: $scope.terminalName }).$promise.then(function (data) {
                 $scope.solutionNameList = data;
 
-                $scope.solutionNameList.forEach(function (solutionName) {
+                $scope.solutionNameList.forEach( (solutionName: string) => {
 
-                    var activityTemplate = new model.ActivityTemplate(-1, solutionName, "", "", "", "", "");
+                    var activityTemplate = new model.ActivityTemplate("", solutionName, "", "", "");
 
                     var activityDTO = new model.ActivityDTO("", "", "");
                     activityDTO.toActionVM();

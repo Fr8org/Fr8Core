@@ -7,7 +7,7 @@
                     <span class="caption-subject font-green-haze bold uppercase">All INCIDENTS</span>
                 </div>
             </div>
-            <div class="portlet-body">
+            <div class="portlet-body table-responsive">
                 <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-routes">
                     <thead>
                         <tr>
@@ -31,7 +31,7 @@
                             <td>{{ incident.component}}</td>
                             <td ng-if="isSelectedRow(incident)" style="white-space: pre-wrap; word-wrap: break-word;">{{incident.data}}</td>
                             <td ng-if="!isSelectedRow(incident)" style="white-space: pre-wrap; word-wrap: break-word;">{{shrinkData(incident.data)}}</td>
-                            <td>{{ incident.customerId}}</td>
+                            <td>{{ incident.fr8UserId}}</td>
                             <td>{{ incident.objectId}}</td>
                             <td>{{ incident.priority}}</td>
                         </tr>

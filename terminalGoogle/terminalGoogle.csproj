@@ -271,6 +271,7 @@
     <Content Include="index.html" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Activities\BaseGoogleTerminalActivity.cs" />
     <Compile Include="Activities\Get_Google_Sheet_Data_v1.cs" />
     <Compile Include="Activities\Monitor_Form_Responses_v1.cs" />
     <Compile Include="Activities\Save_To_Google_Sheet_v1.cs" />
@@ -293,6 +294,7 @@
     <Compile Include="Services\Authorization\GoogleAuthorizer.cs" />
     <Compile Include="Services\Event.cs" />
     <Compile Include="Services\GoogleAppScript.cs" />
+    <Compile Include="Services\GoogleAuthHelper.cs" />
     <Compile Include="Services\GoogleDrive.cs" />
     <Compile Include="Services\Authorization\GoogleIntegration.cs" />
     <Compile Include="Services\GoogleSheet.cs" />
@@ -300,13 +302,13 @@
     <Compile Include="TerminalGoogleBootstrapper.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Hub\Hub.csproj">
-      <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
-      <Name>Hub</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Hub\Hub.csproj">
+      <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
+      <Name>Hub</Name>
     </ProjectReference>
     <ProjectReference Include="..\terminalBase\TerminalBase.csproj">
       <Project>{D6A0A493-E926-439A-9CE2-E093E75132CD}</Project>
@@ -346,7 +348,14 @@
     </None>
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
     <EmbeddedResource Include="Template\googleAppScriptFormResponse.json" />
+    <Content Include="log4net.terminals.config" />
+    <Content Include="log4net.terminals.Demo.config" />
+    <Content Include="log4net.terminals.Dev.config" />
+    <Content Include="log4net.terminals.Release.config" />
     <None Include="Web.Debug.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
+    <None Include="Web.Demo.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
     <None Include="Web.Release.config">
@@ -368,6 +377,15 @@
     <SlowCheetah_EnableImportFromNuGet Condition=" '$(SlowCheetah_EnableImportFromNuGet)'=='' ">true</SlowCheetah_EnableImportFromNuGet>
     <SlowCheetah_NuGetImportPath Condition=" '$(SlowCheetah_NuGetImportPath)'=='' ">$([System.IO.Path]::GetFullPath( $(MSBuildProjectDirectory)\Properties\SlowCheetah\SlowCheetah.Transforms.targets ))</SlowCheetah_NuGetImportPath>
     <SlowCheetahTargets Condition=" '$(SlowCheetah_EnableImportFromNuGet)'=='true' and Exists('$(SlowCheetah_NuGetImportPath)') ">$(SlowCheetah_NuGetImportPath)</SlowCheetahTargets>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Demo|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
@@ -406,4 +424,10 @@
   </Target>
   <Target Name="AfterBuild">
   </Target> -->
+  <ItemGroup>
+    <Log4netConfigFiles Include="..\Config\*.terminals.*" />
+  </ItemGroup>
+  <Target Name="BeforeBuild">
+    <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
+  </Target>
 </Project>

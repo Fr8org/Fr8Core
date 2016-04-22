@@ -10,33 +10,9 @@
         <div id="logotext" class="text">
             <img class="solution-docusion" src="/Content/img/welcome/DocuSign_Logo_Purple_Yellow.png">
             @*<img class="solution-docusion" src="/Content/img/welcome/docusign.png">*@
-            <p class="descr"><span>Cloud Freight Services for DocuSign</span></p>
+            <p class="descr"><span>Cloud Fr8 Services for DocuSign</span></p>
         </div>
     </div>
 </section>
 <h2 class="container" style="margin-bottom:30px">Fr8 Solutions for DocuSign</h2>
-<div class='solution-fr8 container'>
-    @foreach (var solutionDTO in Model)
-    {
-        <div class="row">
-            <div class="col-md-1">
-                <a href="~/dashboard/solution/@solutionDTO.Name.Replace(" ","_")" class="btn btn-md btn-sln-turquoise">Create</a>
-            </div>
-            <div class="col-md-11 h2" style="margin-top:0px">@solutionDTO.Name</div>
-        </div>
-        <div class="row solution-body">
-            <div class="panel-body col-md-12 h4" ng-bind-html="solutionDTO.body">@Html.Raw(solutionDTO.Body)</div>
-        </div>
-        <div class="base-block-white content-block row">
-            <p class="col-md-2">
-                Version: @solutionDTO.Version
-            </p>
-            <p class="col-md-3">
-                Host Terminal: <strong>@solutionDTO.Terminal</strong>
-            </p>
-        </div>
-            <div class="row">
-                <hr />
-            </div>
-    }
-</div>
+@Html.Partial("SolutionListTemplate",Model)

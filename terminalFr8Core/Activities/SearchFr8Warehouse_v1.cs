@@ -206,9 +206,9 @@ namespace terminalFr8Core.Actions
 
         protected async Task<ActivityDO> GenerateSolutionActivities(ActivityDO activityDO, string fr8ObjectID)
         {
+            var queryFr8WarehouseAT = await GetActivityTemplate("terminalFr8Core", "QueryFr8Warehouse");
             var queryFr8WarehouseAction = await AddAndConfigureChildActivity(
-                activityDO,
-                "QueryFr8Warehouse"
+                activityDO, queryFr8WarehouseAT
             );
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(queryFr8WarehouseAction))

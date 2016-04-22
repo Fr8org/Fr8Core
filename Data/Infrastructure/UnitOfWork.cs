@@ -447,16 +447,6 @@ namespace Data.Infrastructure
 		  }
 	  }
 
-		private ProcessNodeRepository _proeProcessNodeRepository;
-
-        public ProcessNodeRepository ProcessNodeRepository
-        {
-            get
-            {
-                return _proeProcessNodeRepository ?? (_proeProcessNodeRepository = new ProcessNodeRepository(this));
-            }
-        }
-
         private SubPlanRepository _subPlanRepository;
 
         public ISubPlanRepository SubPlanRepository

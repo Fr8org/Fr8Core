@@ -96,7 +96,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                 {
                     command.Connection = connection;
 
-                    const string cmd = "select rp.id, rp.privilegeName, orp.PropertyName, orp.ObjectId as ObjectId, orp.Type, anr.Id as roleId, anr.Name as roleName, rp.lastUpdated, rp.createDate " +
+                    const string cmd = "select rp.Id, rp.privilegeName, orp.PropertyName, orp.ObjectId as ObjectId, orp.Type, anr.Id as roleId, anr.Name as roleName, rp.lastUpdated, rp.createDate " +
                                  "from dbo.RolePrivileges rp                                                                            " +
                                  "inner join dbo.ObjectRolePrivileges orp on rp.Id = orp.RolePrivilegeId                                " +
                                  "inner join dbo.AspNetRoles anr on rp.RoleId = anr.Id                                                  " +
@@ -167,7 +167,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
 
                         //select all rolePrivileges for roleName OwnerOfCurrentObject
                         selectCommand.Parameters.AddWithValue("@roleName", Roles.OwnerOfCurrentObject);
-                        selectCommand.CommandText = "select rp.id from dbo.RolePrivileges rp inner join dbo.AspNetRoles anr on rp.RoleId = anr.Id where anr.Name = @roleName";
+                        selectCommand.CommandText = "select rp.Id from dbo.RolePrivileges rp inner join dbo.AspNetRoles anr on rp.RoleId = anr.Id where anr.Name = @roleName";
 
                         using (var reader = selectCommand.ExecuteReader())
                         {

@@ -1,8 +1,6 @@
 ﻿using System.Collections.Generic;
-using Data.Constants;
 using Data.Interfaces.DataTransferObjects;
-using Newtonsoft.Json;
-using Data.Infrastructure.JsonNet;
+using System.Linq;
 
 namespace Data.Interfaces.Manifests
 {
@@ -25,5 +23,18 @@ namespace Data.Interfaces.Manifests
         }
 
         public List<FieldDTO> Fields { get; set; }
+
+        public string this[string key]
+        {
+            get { return Fields?.FirstOrDefault(x => x.Key == key)?.Value; }
+            set
+            {
+                var field = Fields.FirstOrDefault();
+                if (field != null)
+                {
+                    field.Value = value;
+                }
+            }
+        }
     }
 }

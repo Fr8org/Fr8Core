@@ -11,6 +11,12 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("name")]
         public string Name { get; set; }
+        [JsonProperty("version")]
+
+        public string Version { get; set; }
+
+        [JsonProperty("label")]
+        public string Label { get; set; }
 
         [JsonProperty("authenticationType")]
         public int AuthenticationType { get; set; }

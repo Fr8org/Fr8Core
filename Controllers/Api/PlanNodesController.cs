@@ -39,7 +39,7 @@ namespace HubWeb.Controllers
         [HttpGet]
         [ResponseType(typeof(ActivityTemplateDTO))]
         [Fr8ApiAuthorize]
-        public IHttpActionResult Get(int id)
+        public IHttpActionResult Get(Guid id)
         {
             var curActivityTemplateDO = _activityTemplate.GetByKey(id);
             var curActivityTemplateDTO = Mapper.Map<ActivityTemplateDTO>(curActivityTemplateDO);
@@ -109,48 +109,15 @@ namespace HubWeb.Controllers
                 return Ok(downstreamActions);
             }
         }
-
+        
         [HttpGet]
-        [ActionName("upstream_fields")]
-        [Fr8ApiAuthorize]
-        public IHttpActionResult ExtractUpstream(
-            Guid id,
-            string manifestType,
-            AvailabilityType availability = AvailabilityType.NotSet)
-        {
-            CrateManifestType cmt;
-            if (!ManifestDiscovery.Default.TryResolveManifestType(manifestType, out cmt))
-            {
-                return BadRequest();
-            }
-
-            Type type;
-            if (!ManifestDiscovery.Default.TryResolveType(cmt, out type))
-            {
-                return BadRequest();
-            }
-
-            var method = typeof(IPlanNode)
-                .GetMethod("GetCrateManifestsByDirection")
-                .MakeGenericMethod(type);
-
-            var data = method.Invoke(_activity, new object[] { id, CrateDirection.Upstream, availability, false });
-
-            return Ok(data);
-        }
-
-        [ActionName("designtime_fields_dir")]
-        [ResponseType(typeof(FieldDescriptionsCM))]
+        [ActionName("available_data")]
         [Fr8HubWebHMACAuthenticate]
-        public IHttpActionResult GetDesignTimeFieldsByDirection(
-            Guid id,
-            CrateDirection direction,
-            AvailabilityType availability = AvailabilityType.NotSet)
+        public IHttpActionResult GetAvailableData(Guid id, CrateDirection direction = CrateDirection.Upstream, AvailabilityType availability = AvailabilityType.RunTime)
         {
-            var downstreamActions = _activity.GetDesignTimeFieldsByDirection(id, direction, availability);
-            return Ok(downstreamActions);
+            return Ok(_activity.GetAvailableData(id, direction, availability));
         }
-
+        
         [ActionName("available")]
         [ResponseType(typeof(IEnumerable<ActivityTemplateCategoryDTO>))]
         [AllowAnonymous]

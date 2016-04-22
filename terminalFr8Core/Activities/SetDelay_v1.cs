@@ -27,29 +27,36 @@ namespace terminalFr8Core.Actions
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var curPayloadDTO = await GetPayload(curActivityDO, containerId);
-            var payloadStorage = CrateManager.GetStorage(curPayloadDTO);
-            var operationsCrate = payloadStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
-            //check for operations crate
-            if (operationsCrate == null)
+            using (var payloadStorage = CrateManager.UpdateStorage(() => curPayloadDTO.CrateStorage))
             {
-                return Error(curPayloadDTO, "This Action can't run without OperationalStateCM crate", ActivityErrorCode.PAYLOAD_DATA_MISSING);
-            }
-            
-            //find our action state in operations crate
-            var myPreviousResponseDTO = operationsCrate.CurrentActivityResponse;
-            
-            //extract ActivityResponse type from result
-            if (myPreviousResponseDTO != null && myPreviousResponseDTO.Type == ActivityResponse.RequestSuspend.ToString())
-            {
-                //this is second time we are being called. this means alarm has triggered
-                return Success(curPayloadDTO);
-            }
 
-            //get user selected design time duration
-            var delayDuration = GetUserDefinedDelayDuration(curActivityDO);
-            var alarmDTO = CreateAlarm(curActivityDO, containerId, delayDuration);
-            //post to hub to create an alarm
-            await HubCommunicator.CreateAlarm(alarmDTO, CurrentFr8UserId);
+                var operationsCrate = payloadStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
+                //check for operations crate
+                if (operationsCrate == null)
+                {
+                    Error(payloadStorage, "This Action can't run without OperationalStateCM crate", ActivityErrorCode.PAYLOAD_DATA_MISSING);
+                    return curPayloadDTO;
+                }
+
+                //find our action state in operations crate
+                var delayState = operationsCrate.CallStack.GetLocalData<string>("Delay");
+
+                //extract ActivityResponse type from result
+                if (delayState == "suspended")
+                {
+                    //this is second time we are being called. this means alarm has triggered
+                    Success(payloadStorage);
+                    return curPayloadDTO;
+                }
+
+                //get user selected design time duration
+                var delayDuration = GetUserDefinedDelayDuration(curActivityDO);
+                var alarmDTO = CreateAlarm(curActivityDO, containerId, delayDuration);
+                //post to hub to create an alarm
+                await HubCommunicator.CreateAlarm(alarmDTO, CurrentFr8UserId);
+
+                operationsCrate.CallStack.StoreLocalData("Delay", "suspended");
+            }
 
             return SuspendHubExecution(curPayloadDTO);
             

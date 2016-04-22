@@ -16,7 +16,7 @@ namespace Data.Entities
         [Key]
         public int Id { get; set; }
         public string ObjectId { get; set; }      
-        public string CustomerId { get; set; }
+        public string Fr8UserId { get; set; }
         public string PrimaryCategory { get; set; }
         public string SecondaryCategory { get; set; }
         public string Component { get; set; }
@@ -32,29 +32,20 @@ namespace Data.Entities
                 var configRepo = ObjectFactory.GetInstance<IConfigRepository>();
                 string customerAddress = null;
 
-                Fr8AccountDO acct = uow.UserRepository.GetByKey(CustomerId);
+                Fr8AccountDO acct = uow.UserRepository.GetByKey(Fr8UserId);
                 if(acct != null && acct.EmailAddress != null)
                 {
                     customerAddress = acct.EmailAddress.Address;
                 }
 
-                string dataHeader;
+                string dataHeader="";
                 if (!string.IsNullOrEmpty(customerAddress))
                 {
                     dataHeader = string.Format(
-                        "{0} ID: {1}, EmailAddress: {2} ",
+                        "EmailAddress: {1} ",
                         PrimaryCategory,
-                        ObjectId,
                         customerAddress
                     );    
-                }
-                else
-                {
-                    dataHeader = string.Format(
-                        "{0} ID: {1} ",
-                        PrimaryCategory,
-                        ObjectId
-                    );
                 }
 
                 Data = dataHeader + "\r\n" + Data;

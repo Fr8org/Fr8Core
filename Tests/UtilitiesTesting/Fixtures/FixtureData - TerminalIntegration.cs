@@ -60,6 +60,7 @@ namespace UtilitiesTesting.Fixtures
             return new TerminalDO
             {
                 Name = "terminalDocuSign",
+                Label = "DocuSign",
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = TestTerminal_DocuSign_EndPoint,
                 Version = "1",
@@ -73,6 +74,7 @@ namespace UtilitiesTesting.Fixtures
             return new TerminalDTO
             {
                 Name = "terminalDockyardCore",
+                Label = "DockyardCore",
                 Endpoint = TestTerminal_Core_EndPoint2,
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
@@ -85,6 +87,7 @@ namespace UtilitiesTesting.Fixtures
             return new TerminalDO
             {
                 Name = "terminalDockyardCore",
+                Label = "DockyardCore",
                 Endpoint = TestTerminal_Core_EndPoint,
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
@@ -98,6 +101,7 @@ namespace UtilitiesTesting.Fixtures
             return new TerminalDO
             {
                 Name = "terminalAzureSqlServer",
+                Label = "AzureSqlServer",
                 Endpoint = TestTerminal_AzureSqlServer_EndPoint,
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
@@ -119,6 +123,7 @@ namespace UtilitiesTesting.Fixtures
             return new TerminalDO
             {
                 Name = "terminalExcel",
+                Label = "Excel",
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
                 AuthenticationType = AuthenticationType.None,
@@ -156,6 +161,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityTemplateDO()
             {
+                Id = Guid.NewGuid(),
                 Name = "SaveToFr8Warehouse",
                 Label = "Save To Fr8 Warehouse",
                 Category = ActivityCategory.Processors,
@@ -216,6 +222,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityTemplateDO()
             {
+                Id = Guid.NewGuid(),
                 Name = "Monitor_Fr8_Events",
                 Label = "Monitor Fr8 Events",
                 Version = "1",

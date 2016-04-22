@@ -1,30 +1,16 @@
 ﻿@{
-    Layout = "~/Views/Shared/_HomePage.cshtml";
+    Layout = "~/Views/Shared/_HomePageNew.cshtml";
 }
 @{
     ViewBag.Title = "Google Apps";
 }
-<section id="welcome" class="top-banner home-welcome text-block full-height-block" data-section="welcome">
-    <div class="inner-bg full-size-bg"></div>
-    <div class="container full-height-block">
-        <div class="inner-wrap cetered">
-            <div class="landing-welcome-area">
-                <div id="logotext" class="text">
-                    <h2><span class="bordered-top-green">fr8 </span></h2>
-                    <p class="descr"><span class="bordered-bottom-grey">Cloud Freight Services for DocuSign</span></p>
-                </div>
-                <div class="next-page-bnt">
-                    <img src="~/Content/img/icons/next-page-bnt.png" alt="Next" title="Next">
-                </div>
-            </div>
+@model List<Data.Interfaces.DataTransferObjects.SolutionPageDTO>
+<section id="solution" data-section="welcome">
+    <div class="solution-header jumbotron">
+        <div id="logotext" class="text">
+            <img class="solution-docusion" src="/Content/img/google.png">
+            <p class="descr"><span>Cloud Fr8 Services for GoogleApps</span></p>
         </div>
     </div>
 </section>
-<section class="text-block full-height-block">
-    <div class="container">
-        <div class="center-block">
-            <h1 class="text-primary text-center">Coming Soon</h1>
-        </div>
-    </div>
-</section>
-
+<h2 class="container" style="margin-bottom:30px">Fr8 Solutions for GoogleApps</h2>
