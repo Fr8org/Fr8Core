@@ -1,4 +1,4 @@
-﻿    using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -17,6 +17,7 @@ using Hub.Interfaces;
 using Hangfire;
 using Hangfire.StructureMap;
 using Hangfire.Dashboard;
+using Hub.Security;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
@@ -55,22 +56,13 @@ namespace HubWeb
                 .UseStructureMapActivator(ObjectFactory.Container);
             app.UseHangfireDashboard("/hangfire", new DashboardOptions
             {
-                AuthorizationFilters = new[] { new MyRestrictiveAuthorizationFilter() },
+                AuthorizationFilters = new[] { new HangFireAuthorizationFilter() },
             });
             app.UseHangfireServer();
             GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
         }
 
-        public class MyRestrictiveAuthorizationFilter : IAuthorizationFilter
-        {
-            public bool Authorize(IDictionary<string, object> owinEnvironment)
-            {
-                var context = new OwinContext(owinEnvironment);
-                if (context.Authentication.User.IsInRole("Admin"))
-                    return true;
-                else return false;
-            }
-        }
+
 
         //SeedDatabases
         //Ensure that critical configuration information is present in the database
@@ -191,5 +183,5 @@ namespace HubWeb
         {
             return WebApp.Start<Startup>(url: url);
         }
-            }
-        }
+    }
+}

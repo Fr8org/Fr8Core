@@ -138,7 +138,7 @@ namespace terminalDocuSign.Services
         private async Task SchedulePlan(string curFr8UserID, string planId)
         {
             string pollingInterval = CloudConfigurationManager.GetSetting("terminalDocuSign.PollingInterval");
-            await _hubCommunicator.SchedulePlan(curFr8UserID, planId, pollingInterval);
+         //   await _hubCommunicator.SchedulePlan(curFr8UserID, planId, pollingInterval);
         }
 
         private async Task<string> CreatePlan_DocuSignPolling(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)

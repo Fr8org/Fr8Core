@@ -10,6 +10,7 @@ using TerminalBase.BaseClasses;
 using StructureMap;
 using System.Data.Entity;
 using Hangfire;
+using Hub.Security;
 
 [assembly: OwinStartup(typeof(Startup))]
 
@@ -49,8 +50,12 @@ namespace terminalDocuSign
             };
 
             GlobalConfiguration.Configuration.UseSqlServerStorage(connectionString);
-            app.UseHangfireDashboard();
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            {
+                AuthorizationFilters = new[] { new HangFireAuthorizationFilter() },
+            });
             app.UseHangfireServer(options);
+            GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
         }
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
