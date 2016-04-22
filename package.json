@@ -13,7 +13,7 @@
     "gulp-concat": "^2.6.0",
     "gulp-sourcemaps": "^1.6.0",
     "gulp-util": "^3.0.7",
-    "protractor": "^3.2.2",
+    "protractor": "^2.5.1",
     "selenium-standalone": "^5.1.0",
     "yargs": "^4.6.0"
   }
