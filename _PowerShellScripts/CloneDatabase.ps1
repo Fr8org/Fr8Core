@@ -8,7 +8,7 @@
 Write-Host "Deletes old target database if exists and creates a new one from the specified database."
 $errorMessage = "An error while executing the query. Possibly cannot connect to the database to clone it. Please check connection string for CloneDatabase action."
 
-$commandText = "IF (EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE ('[' + name + ']' = [$($targetDbName)] OR name = [$($targetDbName)])))
+$commandText = "IF (EXISTS (SELECT name FROM master.dbo.sysdatabases WHERE ('[' + name + ']' = '[$($targetDbName)]' OR name = '[$($targetDbName)]')))
 					DROP DATABASE [$($targetDbName)]"
 
 Write-Host $commandText
