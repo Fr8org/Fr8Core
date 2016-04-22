@@ -11,6 +11,7 @@ using System.Linq;
 using Data.States;
 using Newtonsoft.Json;
 using ServiceStack;
+using Data.Helpers;
 
 namespace terminalSalesforce.Actions
 {
@@ -222,7 +223,7 @@ namespace terminalSalesforce.Actions
 
         private string ChatterFilter { get { return ConfigurationControls.ChatterFilter.Value; } }
 
-        private string IncomingChatterId { get { return CurrentPayloadStorage.RetrieveValue(ConfigurationControls.IncomingChatterIdSelector.selectedKey); } }
+        private string IncomingChatterId { get { return CurrentPayloadStorage.FindField(ConfigurationControls.IncomingChatterIdSelector.selectedKey); } }
 
         #endregion
     }

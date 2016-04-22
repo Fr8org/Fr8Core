@@ -32,6 +32,7 @@ namespace terminalFr8Core.Controllers
                 Endpoint = CloudConfigurationManager.GetSetting("terminalFr8Core.TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
                 Name = "terminalFr8Core",
+                Label = "Fr8Core",
                 Version = "1"
             };
 
