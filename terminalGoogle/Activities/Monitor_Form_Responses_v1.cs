@@ -18,6 +18,8 @@ using Data.States;
 using Hub.Exceptions;
 using Utilities.Configuration.Azure;
 using Newtonsoft.Json.Linq;
+using StructureMap;
+using terminalGoogle.Interfaces;
 
 namespace terminalGoogle.Actions
 {
@@ -36,23 +38,31 @@ namespace terminalGoogle.Actions
     public class Monitor_Form_Responses_v1 : BaseTerminalActivity
     {
         private readonly GoogleDrive _googleDrive;
-        private readonly GoogleAppScript _googleAppScript;
+        private readonly IGoogleIntegration _googleIntegration;
 
         public Monitor_Form_Responses_v1()
         {
             _googleDrive = new GoogleDrive();
-            _googleAppScript = new GoogleAppScript();
+            _googleIntegration = ObjectFactory.GetInstance<IGoogleIntegration>();
         }
 
         protected bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
-            if (authTokenDO == null) return true;
-            if (!base.NeedsAuthentication(authTokenDO))
-                return false;
+            if (base.NeedsAuthentication(authTokenDO))
+            {
+                return true;
+            }
             var token = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
-            // we may also post token to google api to check its validity
-            return (token.Expires - DateTime.Now > TimeSpan.FromMinutes(5) ||
-                    !string.IsNullOrEmpty(token.RefreshToken));
+
+            if (token.Expires - DateTime.Now < TimeSpan.FromMinutes(5) && string.IsNullOrEmpty(token.RefreshToken))
+            {
+                return true;
+            }
+
+            // Post token to google api to check its validity
+            // Variable needs for more readability.
+            var result = Task.Run(async () => await _googleIntegration.IsTokenInfoValid(token)).Result;
+            return !result;
         }
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)

@@ -132,10 +132,12 @@ namespace terminalGoogle.Actions
         private const string SelectedSpreadsheetCrateLabel = "Selected Spreadsheet";
 
         private readonly IGoogleSheet _googleSheet;
+        private readonly IGoogleIntegration _googleIntegration;
 
         public Save_To_Google_Sheet_v1() : base(true)
         {
             _googleSheet = ObjectFactory.GetInstance<IGoogleSheet>();
+            _googleIntegration = ObjectFactory.GetInstance<IGoogleIntegration>();
             ActivityName = "Save To Google Sheet";
         }
 
@@ -151,8 +153,15 @@ namespace terminalGoogle.Actions
                 return true;
             }
             var token = GetGoogleAuthToken(authTokenDO);
-            // we may also post token to google api to check its validity
-            return token.Expires - DateTime.Now < TimeSpan.FromMinutes(5) && string.IsNullOrEmpty(token.RefreshToken);
+            if (token.Expires - DateTime.Now < TimeSpan.FromMinutes(5) && string.IsNullOrEmpty(token.RefreshToken))
+            {
+                return true;
+            }
+
+            // Post token to google api to check its validity
+            // Variable needs for more readability.
+            var result = Task.Run(async () => await _googleIntegration.IsTokenInfoValid(token)).Result;
+            return !result;
         }
 
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
