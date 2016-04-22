@@ -153,17 +153,6 @@ namespace terminalDocuSign.Services
 
                       ).ToDictionary(g => g.Key, g => g.ToList());
 
-                    //removing obsolete/malformed plans
-                    if (plans.ContainsKey(false))
-                    {
-                        List<PlanDTO> obsoletePlans = plans[false];
-                        Console.WriteLine("#### Found " + obsoletePlans.Count + " obsolete MADSE plans");
-                        foreach (var obsoletePlan in obsoletePlans)
-                        {
-                            await _hubCommunicator.DeletePlan(obsoletePlan.Plan.Id, curFr8UserId);
-                        }
-                    }
-
                     //trying to find an existing plan for this DS account
                     if (plans.ContainsKey(true))
                     {
@@ -191,6 +180,17 @@ namespace terminalDocuSign.Services
                                 Console.WriteLine("#### Existing MADSE plan activated with planId: " + existingPlanDO.RootPlanNodeId);
                                 return existingPlan.Plan.Id.to_S();
                             }
+                        }
+                    }
+
+                    //removing obsolete/malformed plans
+                    if (plans.ContainsKey(false))
+                    {
+                        List<PlanDTO> obsoletePlans = plans[false];
+                        Console.WriteLine("#### Found " + obsoletePlans.Count + " obsolete MADSE plans");
+                        foreach (var obsoletePlan in obsoletePlans)
+                        {
+                            await _hubCommunicator.DeletePlan(obsoletePlan.Plan.Id, curFr8UserId);
                         }
                     }
                 }

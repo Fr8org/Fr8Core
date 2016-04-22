@@ -75,12 +75,12 @@ namespace terminalDocuSignTests.Integration
         private const int SingleAwaitPeriod = 10000;
         private const string DocuSignEmail = "fr8.madse.testing@gmail.com"; // "freight.testing@gmail.com";
         private const string DocuSignApiPassword = "I6HmXEbCxN";
-        
+
         public override string TerminalName
         {
             get { return "terminalDocuSign"; }
         }
-        
+
         [Test]
         public async void Test_MonitorAllDocuSignEventsLocal_Plan()
         {
@@ -113,6 +113,10 @@ namespace terminalDocuSignTests.Integration
                 var mtDataCountBefore = unitOfWork.MultiTenantObjectRepository
                     .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id)
                     .Count();
+
+
+                //let's wait 10 seconds to ensure that MADSE plan was created/activated by re-authentication
+                await Task.Delay(SingleAwaitPeriod);
 
                 await HttpPostAsync<string>(GetTerminalEventsUrl(), new StringContent(string.Format(EnvelopeToSend, Guid.NewGuid())));
 
@@ -187,7 +191,7 @@ namespace terminalDocuSignTests.Integration
         private void AssignAuthTokens(IUnitOfWork uow, Fr8AccountDO account, Guid tokenId)
         {
             var plans = uow.PlanRepository.GetPlanQueryUncached().Where(x => x.Fr8AccountId == account.Id && x.Name == "MonitorAllDocuSignEvents" && x.PlanState == PlanState.Active).Select(x => x.Id).ToArray();
-            
+
             if (plans.Length == 0)
             {
                 throw new ApplicationException("Could not find MonitorAllDocuSignEvents plan.");

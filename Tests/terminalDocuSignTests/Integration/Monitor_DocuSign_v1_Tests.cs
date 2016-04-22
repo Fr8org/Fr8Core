@@ -12,6 +12,7 @@ using HealthMonitor.Utility;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using terminalDocuSignTests.Fixtures;
+using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -294,7 +295,7 @@ namespace terminalDocuSignTests.Integration
         /// the value of that field should be equal to what was set to "UpstreamCrate" drop-down-list.
         /// </summary>
         [Test]
-        public async Task 
+        public async Task
             Monitor_DocuSign_FollowUp_Configuration_TemplateValue()
         {
             var configureUrl = GetTerminalConfigureUrl();
@@ -335,7 +336,7 @@ namespace terminalDocuSignTests.Integration
                     configureUrl,
                     requestDataDTO
                 );
-            
+
             requestDataDTO.ActivityDTO = responseActionDTO;
 
             var response = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
@@ -363,13 +364,14 @@ namespace terminalDocuSignTests.Integration
 
             var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
 
-           var payload =  HealthMonitor_FixtureData.GetEnvelopePayload();
+            var payload = HealthMonitor_FixtureData.GetEnvelopePayload();
 
             AddPayloadCrate(
                 dataDTO,
                 new EventReportCM()
                 {
-                    EventPayload = payload
+                    EventPayload = payload,
+                    EventNames = string.Join(",", DocuSignEventNames.GetAllEventNames())
                 }
             );
 
@@ -379,7 +381,7 @@ namespace terminalDocuSignTests.Integration
                 await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
             var crateStorage = Crate.GetStorage(responsePayloadDTO);
-                Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Envelope Payload Data").Count());
+            Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Envelope Payload Data").Count());
 
             var docuSignPayload = crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Envelope Payload Data").Single();
             Assert.AreEqual(1, docuSignPayload.AllValues().Count(x => x.Key == "CurrentRecipientEmail"));

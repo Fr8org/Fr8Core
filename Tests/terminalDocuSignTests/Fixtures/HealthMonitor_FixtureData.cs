@@ -284,7 +284,7 @@ namespace terminalDocuSignTests.Fixtures
                   <RecipientStatuses>
                      <RecipientStatus>
                         <Type>CertifiedDelivery</Type>
-                        <Email>hal9000@discovery.com</Email>
+                        <Email>foo@bar.com</Email>
                         <UserName>HAL-9000</UserName>
                         <RoutingOrder>1</RoutingOrder>
                         <Sent>2015-09-29T07:38:22.653</Sent>

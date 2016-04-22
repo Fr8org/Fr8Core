@@ -100,6 +100,9 @@ namespace terminalDocuSignTests.Integration
                 var docuSignManager = new DocuSignManager();
                 var loginInfo = docuSignManager.SetUp(authTokenDO);
 
+                //let's wait 10 seconds to ensure that MADSE plan was created/activated by re-authentication
+                await Task.Delay(SingleAwaitPeriod);
+
                 //send envelope
                 await SendDocuSignTestEnvelope(docuSignManager, loginInfo, authTokenDO);
 
