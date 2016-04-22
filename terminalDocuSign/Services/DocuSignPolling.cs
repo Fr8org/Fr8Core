@@ -85,7 +85,7 @@ namespace terminalDocuSign.Services
             // 1. Poll changes
 
             var changed_envelopes_info = api.ListStatusChanges(config.AccountId, new EnvelopesApi.ListStatusChangesOptions()
-            { fromDate = DateTime.UtcNow.AddMinutes(-Convert.ToInt32(pollingInterval) - 1).ToString("o") });
+            { fromDate = DateTime.UtcNow.AddMinutes(-Convert.ToInt32(pollingInterval)).ToString("o") });
             foreach (var envelope in changed_envelopes_info.Envelopes)
             {
                 var envelopeCM = new DocuSignEnvelopeCM_v2()
