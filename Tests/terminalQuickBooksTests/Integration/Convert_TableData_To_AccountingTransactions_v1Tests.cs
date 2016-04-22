@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
@@ -23,10 +21,7 @@ namespace terminalQuickBooksTests.Integration
     [Explicit]
     internal class Convert_TableData_To_AccountingTransactions_v1_Tests : BaseTerminalIntegrationTest
     {
-        public override string TerminalName
-        {
-            get { return "terminalQuickBooks"; }
-        }
+        public override string TerminalName => "terminalQuickBooks";
 
         [Test, Category("Integration.terminalQuickBooks")]
         public async Task Convert_TableData_To_AccountingTransactions()

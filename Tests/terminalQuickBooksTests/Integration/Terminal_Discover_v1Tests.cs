@@ -19,10 +19,7 @@ namespace terminalQuickBooksTests.Integration
 
         private const string Convert_TableData_To_AccountingTransactions_Action_Name =
             "Convert_TableData_To_AccountingTransactions";
-        public override string TerminalName
-        {
-            get { return "terminalQuickBooks"; }
-        }
+        public override string TerminalName => "terminalQuickBooks";
 
         /// <summary>
         /// Validate correct crate-storage structure in initial configuration response.

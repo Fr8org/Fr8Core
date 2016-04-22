@@ -18,10 +18,8 @@ namespace terminalQuickBooksTests.Integration
     [Explicit]
     internal class Create_Journal_Entry_v1_Tests : BaseTerminalIntegrationTest
     {
-        public override string TerminalName
-        {
-            get { return "terminalQuickBooks"; }
-        }
+        public override string TerminalName => "terminalQuickBooks";
+
         [Test, Category("Integration.terminalQuickBooks")]
         public async Task Create_Journal_Entry_Configuration_Check_With_No_Upstream_Crate()
         {
