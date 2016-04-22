@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using Data.Constants;
 using Data.Control;
 using Data.Crates;
@@ -11,14 +10,12 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
-using Intuit.Ipp.Data;
-using terminalQuickBooks.Infrastructure;
-using terminalQuickBooks.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using Utilities;
 using Task = System.Threading.Tasks.Task;
 using System.Globalization;
+using StructureMap;
+using terminalQuickBooks.Interfaces;
 
 namespace terminalQuickBooks.Actions
 {
@@ -29,14 +26,16 @@ namespace terminalQuickBooks.Actions
         //HealthMonitor authomatically changes the crate label by adding the prefix.
         private const string HealthMonitorPrefix = "HealthMonitor_UpstreamCrate_";
         private const string ButtonGroupNamePrefix = "Line";
-        private ChartOfAccounts _chartOfAccounts;
+        private readonly IChartOfAccounts _chartOfAccounts;
         private ChartOfAccountsCM ChartOfAccountsCrate;
         private string MemoText;
         private AccountDTO DebitAccount;
+
         public Convert_TableData_To_AccountingTransactions_v1()
         {
-            _chartOfAccounts = new ChartOfAccounts();
+            _chartOfAccounts = ObjectFactory.GetInstance<IChartOfAccounts>();
         }
+
         public async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             if (CheckAuthentication(curActivityDO, authTokenDO))
@@ -46,10 +45,12 @@ namespace terminalQuickBooks.Actions
 
             return await ProcessConfigurationRequest(curActivityDO, dto => ConfigurationRequestType.Initial, authTokenDO);
         }
+
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
             return CrateManager.IsStorageEmpty(curActivityDO) ? ConfigurationRequestType.Initial : ConfigurationRequestType.Followup;
         }
+
         protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             //Grasp the user data from the controls in the follow up configuration
@@ -60,6 +61,7 @@ namespace terminalQuickBooks.Actions
             }
             return Task.FromResult(curActivityDO);
         }
+
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             if (curActivityDO.Id != Guid.Empty)
@@ -110,6 +112,7 @@ namespace terminalQuickBooks.Actions
             }
             return curActivityDO;
         }
+
         /// <summary>
         ///It is supposed to obtain StandardTableDataCM and user input in the form of
         /// debit line account and (optionaly) memo. The debit account is all for all transactions.
@@ -119,10 +122,10 @@ namespace terminalQuickBooks.Actions
         /// </returns>
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            
-            //CheckAuthentication(authTokenDO);
+            CheckAuthentication(curActivityDO, authTokenDO);
+
             AccountDTO curDebitAccount = null;
-            string memoText="Unspecified";
+            string memoText = "Unspecified";
             var payloadCrates = await GetPayload(curActivityDO, containerId);
             //Obtain the crate of type StandardTableDataCM and label "DocuSignTableDataMappedToQuickbooks" that holds the required information in the tabular format
             var curStandardTableDataCM = GetCratesByDirection<StandardTableDataCM>(curActivityDO, CrateDirection.Upstream).Result.Single(x => x.Label == UpsteamCrateLabel || x.Label == HealthMonitorPrefix + UpsteamCrateLabel).Content;
@@ -158,6 +161,7 @@ namespace terminalQuickBooks.Actions
             }
             return Error(payloadCrates, "No Debit Line Account data provided", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
         }
+
         private StandardConfigurationControlsCM ActivityUI()
         {
             var controls = new StandardConfigurationControlsCM();
@@ -270,6 +274,7 @@ namespace terminalQuickBooks.Actions
             controls.Controls = accountNamePicker;
             return controls;
         }
+
         private async Task<IEnumerable<Crate>> PackSources(AuthorizationTokenDO authTokenDO)
         {
             var sources = new List<Crate>();
@@ -282,12 +287,13 @@ namespace terminalQuickBooks.Actions
             sources.Add(
                 CrateManager.CreateDesignTimeFieldsCrate(
                     "Available ChartOfAccounts",
-                //Labda function maps AccountDTO to FieldDTO: Id->Key, Name->Value
+                    //Labda function maps AccountDTO to FieldDTO: Id->Key, Name->Value
                     chartOfAccounts.Accounts.Select(x => new FieldDTO(x.Name, x.Id)).ToArray()
                 )
             );
             return sources;
         }
+
         private void ValidateControls(ICrateStorage storage)
         {
             var controls = GetConfigurationControls(storage);
@@ -296,6 +302,7 @@ namespace terminalQuickBooks.Actions
             if (!curDebitCreditButtonGroup.Radios[0].Selected && !curDebitCreditButtonGroup.Radios[1].Selected)
                 throw new Exception("No debit/credit type of the first account is provided");
         }
+
         /// <summary>
         /// This method should update controls data
         /// This action should be called from Crate.GetUpdatableStorage(curActivityDO)
@@ -309,6 +316,7 @@ namespace terminalQuickBooks.Actions
             var curMemoControl = (TextBox)GetControl(controls, "Transaction_Memo", ControlTypes.TextBox);
             return curMemoControl.Value;
         }
+
         /// <summary>
         /// This method has two purposes:
         /// 1)It extracts the Name or Name & Id from the control crate;
@@ -328,6 +336,7 @@ namespace terminalQuickBooks.Actions
                 debitAccount.Id = accountsCrate.Accounts.First(a => a.Name == debitAccount.Name).Id;
             return debitAccount;
         }
+
         /// <summary>
         /// This method extracts account data
         /// assuming that the account exists in QuickBooks
@@ -370,6 +379,7 @@ namespace terminalQuickBooks.Actions
             if (headerRow.Row.All(x => x.Cell.Value != "Date") || headerRow.Row.All(x => x.Cell.Value != "Description"))
                 throw new Exception("The StandardTableDataCM does not contain Date or/and Description column");
         }
+
         /// <summary>
         /// Maps StandardTableDataCM manifest crate to the StandardAccountingTransactionCM manifest crate
         /// </summary>

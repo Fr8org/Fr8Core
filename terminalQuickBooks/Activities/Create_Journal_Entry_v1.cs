@@ -69,6 +69,7 @@ namespace terminalQuickBooks.Actions
             }
             return curActivityDO;
         }
+
         //It is assumed that Action is the child of the Loop action.
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
