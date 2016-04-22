@@ -1,6 +1,4 @@
-﻿'use strict';
-
-var LoginPage = function () {
+﻿var LoginPage = function () {
     var emailInput = element(by.id('Email'));
     var passwordInput = element(by.id('Password'));
     var loginButton = element(by.xpath('//*[@id="loginform"]/form/div[2]/div/div/button'));
