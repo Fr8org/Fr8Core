@@ -285,7 +285,6 @@
     <Compile Include="Infrastructure\JsonNet\ActivityTemplateActivityConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\AvailabilityConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\CreateTimeConverter.cs" />
-    <Compile Include="Infrastructure\JsonNet\FieldConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\TerminalActivityTemplateConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\WebServiceConverter.cs" />
     <Compile Include="Infrastructure\Security\AuthorizeActivityAttribute.cs" />
@@ -361,6 +360,7 @@
     <Compile Include="Helpers\FieldMemberAccessor.cs" />
     <Compile Include="Helpers\IMemberAccessor.cs" />
     <Compile Include="Interfaces\Manifests\ExternalObjectHandlesCM.cs" />
+	 <Compile Include="Interfaces\Manifests\DocuSignEnvelopeCM_v2.cs" />
     <Compile Include="Interfaces\Manifests\Helpers\StandardTableDataCMTools.cs" />
     <Compile Include="Interfaces\Manifests\ManifestDescriptionCM.cs" />
     <Compile Include="Interfaces\Manifests\ChartOfAccountsCM.cs" />
@@ -708,10 +708,6 @@
     <Compile Include="Migrations\201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.cs" />
     <Compile Include="Migrations\201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.Designer.cs">
       <DependentUpon>201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201604152259367_MMSalesforceSolution.cs" />
-    <Compile Include="Migrations\201604152259367_MMSalesforceSolution.Designer.cs">
-      <DependentUpon>201604152259367_MMSalesforceSolution.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201604160406197_PlanNodeDO_Runnable.cs" />
     <Compile Include="Migrations\201604160406197_PlanNodeDO_Runnable.Designer.cs">
@@ -1249,9 +1245,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.resx">
       <DependentUpon>201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201604152259367_MMSalesforceSolution.resx">
-      <DependentUpon>201604152259367_MMSalesforceSolution.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604160406197_PlanNodeDO_Runnable.resx">
       <DependentUpon>201604160406197_PlanNodeDO_Runnable.cs</DependentUpon>

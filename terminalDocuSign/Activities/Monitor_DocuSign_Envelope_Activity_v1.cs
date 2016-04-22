@@ -27,20 +27,9 @@ namespace terminalDocuSign.Actions
     public class Monitor_DocuSign_Envelope_Activity_v1 : BaseDocuSignActivity
     {
 
-        private const string DocuSignConnectName = "fr8DocuSignConnectConfiguration";
-
-        private const string DocuSignOnEnvelopeSentEvent = "Sent";
-
-        private const string DocuSignOnEnvelopeReceivedEvent = "Delivered";
-
-        private const string DocuSignOnEnvelopeSignedEvent = "Completed";
-
         private const string RecipientSignedEventName = "RecipientSigned";
-
         private const string RecipientCompletedEventName = "RecipientCompleted";
-
         private const string EnvelopeSentEventname = "EnvelopeSent";
-
         private const string EnvelopeRecievedEventName = "EnvelopeReceived";
 
         private const string AllFieldsCrateName = "DocuSign Envelope Fields";
@@ -159,27 +148,6 @@ namespace terminalDocuSign.Actions
         {
             return activityUi.SentToRecipientOption.Selected || activityUi.BasedOnTemplateOption.Selected;
         }
-        /// <summary>
-        /// Creates or Updates a Docusign connect configuration named "DocuSignConnectName" for current user
-        /// </summary>
-        private void CreateOrUpdateDocuSignConnectConfiguration(DocuSignEvents events)
-        {
-            //prepare envelope events based on the input parameters
-            var envelopeEvents = new List<string>(3);
-            if (events.EnvelopeSent)
-            {
-                envelopeEvents.Add(DocuSignOnEnvelopeSentEvent);
-            }
-            if (events.EnvelopRecieved)
-            {
-                envelopeEvents.Add(DocuSignOnEnvelopeReceivedEvent);
-            }
-            if (events.EnvelopeSigned)
-            {
-                envelopeEvents.Add(DocuSignOnEnvelopeSignedEvent);
-            }
-
-        }
 
         public override Task<ActivityDO> Deactivate(ActivityDO curActivityDO)
         {
@@ -188,11 +156,28 @@ namespace terminalDocuSign.Actions
 
         protected internal override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
-            var payloadCrates = await GetPayload(curActivityDO, containerId);
+            var payload = await GetPayload(curActivityDO, containerId);
+
+            DocuSignEnvelopeCM_v2 envelopeStatus = null;
+
+            var eventCrate = CrateManager.FromDto(payload.CrateStorage).CratesOfType<EventReportCM>().FirstOrDefault()?.Get<EventReportCM>()?.EventPayload;
+            if (eventCrate != null)
+                envelopeStatus = eventCrate.CrateContentsOfType<DocuSignEnvelopeCM_v2>().SingleOrDefault();
+
+            if (envelopeStatus == null)
+            {
+                await Activate(curActivityDO, authTokenDO);
+                return TerminateHubExecution(payload, "Plan successfully activated. It will wait and respond to specified DocuSign Event messages");
+            }
+
+            //Create run-time fields
+            var eventFields = CreateDocuSignEventFields(envelopeStatus);
+
             //get currently selected option and its value
             string curSelectedOption, curSelectedValue, curSelectedTemplate;
             GetTemplateRecipientPickerValue(curActivityDO, out curSelectedOption, out curSelectedValue, out curSelectedTemplate);
             var envelopeId = string.Empty;
+
             //retrieve envelope ID based on the selected option and its value
             if (!string.IsNullOrEmpty(curSelectedOption))
             {
@@ -200,7 +185,7 @@ namespace terminalDocuSign.Actions
                 {
                     case "template":
                         //filter the incoming envelope by template value selected by the user                  
-                        var incomingTemplate = GetValueForEventKey(payloadCrates, "TemplateName");
+                        var incomingTemplate = string.Join(",", envelopeStatus.Templates.Select(t => t.Name).ToArray());
 
                         //Dirty quick fix for FR-2858
                         if (string.IsNullOrEmpty(incomingTemplate))
@@ -216,48 +201,39 @@ namespace terminalDocuSign.Actions
 
                         if (incomingTemplate.Contains(curSelectedTemplate, StringComparison.InvariantCultureIgnoreCase))
                         {
-                            envelopeId = GetValueForEventKey(payloadCrates, "EnvelopeId");
+                            envelopeId = envelopeStatus.EnvelopeId;
                         }
                         else
                         {
                             //this event isn't about us let's stop execution
-                            return TerminateHubExecution(payloadCrates);
+                            return TerminateHubExecution(payload);
                         }
 
                         break;
                     case "recipient":
+
+                        string envelopeCurentRecipientEmail = eventFields.Where(a => a.Key == "CurrentRecipientEmail").FirstOrDefault().Value;
                         //filter incoming envelope by recipient email address specified by the user
-                        var curRecipientEmail = GetValueForEventKey(payloadCrates, "RecipientEmail");
-                        if (curRecipientEmail != null)
+                        if (envelopeCurentRecipientEmail != null)
                         {
                             //if the incoming envelope's recipient is user specified one, get the envelope ID
-                            if (curRecipientEmail.Equals(curSelectedValue))
+                            if (envelopeCurentRecipientEmail.Contains(curSelectedValue, StringComparison.InvariantCultureIgnoreCase))
                             {
-                                envelopeId = GetValueForEventKey(payloadCrates, "EnvelopeId");
+                                envelopeId = envelopeStatus.EnvelopeId;
                             }
                             else
                             {
                                 //this event isn't about us let's stop execution
-                                return TerminateHubExecution(payloadCrates);
+                                return TerminateHubExecution(payload);
                             }
                         }
                         break;
                 }
             }
 
-            // Make sure that it exists
-            if (string.IsNullOrEmpty(envelopeId))
-            {
-                await Activate(curActivityDO, authTokenDO);
-                return TerminateHubExecution(payloadCrates, "Plan successfully activated. It will wait and respond to specified DocuSign Event messages");
-            }
 
-            //Create run-time fields
-            var fields = CreateDocuSignEventFields();
-            foreach (var field in fields)
-            {
-                field.Value = GetValueForEventKey(payloadCrates, field.Key);
-            }
+
+
 
             //Create log message
             var logMessages = new StandardLoggingCM
@@ -272,30 +248,27 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-            using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
                 List<FieldDTO> allFields = new List<FieldDTO>();
-                allFields.AddRange(fields);
+                allFields.AddRange(eventFields);
 
                 //crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
                 crateStorage.Add(Data.Crates.Crate.FromContent("Log Messages", logMessages));
                 if (curSelectedOption == "template")
                 {
-                    allFields.AddRange(GetEnvelopeUserDefinedFields(authTokenDO, envelopeId, null));
-                    //var userDefinedFieldsPayload = CreateActivityPayload(curActivityDO, authTokenDO, envelopeId);
-                    //crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", userDefinedFieldsPayload));
-                    //allFields.AddRange(userDefinedFieldsPayload.PayloadObjects.FirstOrDefault().PayloadObject);
+                    allFields.AddRange(GetEnvelopeData(authTokenDO, envelopeId, null));
                 }
 
                 // TODO: This is probably obsolete crate, however lookup of that particular crate is hardcoded in QueryFr8Warehouse_v1#GetCurrentEnvelopeId.
                 //          This was possibly required by Generate_DocuSign_Report.
-                crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
+                crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(eventFields)));
 
                 // Crate that should be used, since it is base on CrateDescriptionCM.
                 crateStorage.Add(Crate.CreateDesignTimeFieldsCrate(AllFieldsCrateName, AvailabilityType.RunTime, allFields.ToArray()));
             }
 
-            return Success(payloadCrates);
+            return Success(payload);
         }
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
@@ -326,14 +299,14 @@ namespace terminalDocuSign.Actions
             //just update the user selected envelope events in the follow up configuration
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                var allFields = CreateDocuSignEventFields();
+                var allFields = CreateDocuSignEventFields(null);
                 UpdateSelectedEvents(crateStorage);
                 string selectedOption, selectedValue, selectedTemplate;
                 GetTemplateRecipientPickerValue(curActivityDO, out selectedOption, out selectedValue, out selectedTemplate);
                 if (selectedOption == "template")
                 {
                     allFields.AddRange(GetTemplateUserDefinedFields(authTokenDO, selectedValue, null));
-                }   
+                }
 
                 // Update all fields crate
                 crateStorage.RemoveByLabel(AllFieldsCrateName);

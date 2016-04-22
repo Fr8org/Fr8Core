@@ -179,6 +179,7 @@
       <HintPath>packages\Microsoft.AspNet.Identity.Owin.2.0.0\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -383,6 +384,7 @@
     <Compile Include="Controllers\Api\SubPlansController.cs" />
     <Compile Include="Controllers\Api\PlansController.cs" />
     <Compile Include="Controllers\Api\TerminalsController.cs" />
+    <Compile Include="Controllers\Api\WarehouseController.cs" />
     <Compile Include="Controllers\CompanyController.cs" />
     <Compile Include="Controllers\Helpers\PlanMappingHelper.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
