@@ -9,7 +9,7 @@ using Hub.Managers;
 using System.Linq;
 using System.Runtime.InteropServices;
 using Data.States;
-using terminalGoogle.Actions;
+using terminalGoogle.Activities;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogleTests.Integration;
 

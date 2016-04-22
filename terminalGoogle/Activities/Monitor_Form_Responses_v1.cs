@@ -1,25 +1,21 @@
-﻿using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Newtonsoft.Json;
-using System;
-using System.CodeDom;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TerminalBase.BaseClasses;
-using terminalGoogle.DataTransferObjects;
-using Hub.Managers;
-using terminalGoogle.Services;
-using TerminalBase.Infrastructure;
 using Data.Control;
+using Data.Crates;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Data.States;
-using Hub.Exceptions;
-using Utilities.Configuration.Azure;
-using Newtonsoft.Json.Linq;
+using Hub.Managers;
+using Newtonsoft.Json;
+using terminalGoogle.DataTransferObjects;
+using terminalGoogle.Services;
+using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
-namespace terminalGoogle.Actions
+namespace terminalGoogle.Activities
 {
 
     public class EnumerateFormFieldsResponseItem
@@ -33,17 +29,35 @@ namespace terminalGoogle.Actions
     }
 
 
-    public class Monitor_Form_Responses_v1 : BaseTerminalActivity
+    public class Monitor_Form_Responses_v1 : EnhancedTerminalActivity<Monitor_Form_Responses_v1.ActivityUi>
     {
         private readonly GoogleDrive _googleDrive;
         private readonly GoogleAppScript _googleAppScript;
+        public DropDownList ExistingSpreadsheetsList { get; set; }
 
-        public Monitor_Form_Responses_v1()
+        public Monitor_Form_Responses_v1() : base(true)
         {
             _googleDrive = new GoogleDrive();
             _googleAppScript = new GoogleAppScript();
         }
+        public class ActivityUi : StandardConfigurationControlsCM
+        {
 
+        }
+        protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
+        {
+            throw new NotImplementedException();
+        }
+
+        protected override Task RunCurrentActivity()
+        {
+            throw new NotImplementedException();
+        }
         public override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
             if (authTokenDO == null) return true;
@@ -67,7 +81,7 @@ namespace terminalGoogle.Actions
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-             var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
+            var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
 
             using (var storage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
@@ -143,7 +157,7 @@ namespace terminalGoogle.Actions
         {
             if (curActivityDO.Id != Guid.Empty)
             {
-                 var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
+                var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
                 var configurationCrate = PackCrate_ConfigurationControls();
                 await FillSelectedGoogleFormSource(configurationCrate, "Selected_Google_Form", authDTO);
                 var eventCrate = CreateEventSubscriptionCrate();
@@ -157,7 +171,7 @@ namespace terminalGoogle.Actions
             else
             {
                 throw new ArgumentException(
-                    "Configuration requires the submission of an Action that has a real ActionId");
+                    "Configuration requires the submission of an Activity that has a real ActivityId");
             }
             return await Task.FromResult(curActivityDO);
         }
@@ -208,7 +222,7 @@ namespace terminalGoogle.Actions
                 throw new ArgumentNullException("Google Form selected is empty. Please select google form to receive.");
 
             var scriptUrl = await _googleDrive.CreateFr8TriggerForDocument(googleAuthDTO, formId);
-             await HubCommunicator.NotifyUser(new TerminalNotificationDTO
+            await HubCommunicator.NotifyUser(new TerminalNotificationDTO
             {
                 Type = "Success",
                 ActivityName = "Monitor_Form_Responses",
@@ -272,6 +286,8 @@ namespace terminalGoogle.Actions
 
             return Success(payloadCrates);
         }
+
+
 
         private List<FieldDTO> CreatePayloadFormResponseFields(List<FieldDTO> payloadfields)
         {

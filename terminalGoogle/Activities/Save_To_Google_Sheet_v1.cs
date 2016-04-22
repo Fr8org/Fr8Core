@@ -1,22 +1,22 @@
-﻿using Data.Entities;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Constants;
-using TerminalBase.BaseClasses;
+using Data.Control;
+using Data.Crates;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
+using Data.Interfaces.Manifests.Helpers;
+using Data.States;
+using Newtonsoft.Json;
+using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
-using Data.Interfaces.Manifests;
-using Data.Interfaces.DataTransferObjects;
-using Data.Crates;
-using Data.States;
-using Data.Control;
-using Data.Interfaces.Manifests.Helpers;
-using StructureMap;
+using TerminalBase.BaseClasses;
 
-namespace terminalGoogle.Actions
+namespace terminalGoogle.Activities
 {
     public class Save_To_Google_Sheet_v1 : EnhancedTerminalActivity<Save_To_Google_Sheet_v1.ActivityUi>
     {

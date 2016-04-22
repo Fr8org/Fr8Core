@@ -13,10 +13,9 @@ using Newtonsoft.Json;
 using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
-using terminalGoogle.Services;
 using TerminalBase.BaseClasses;
 
-namespace terminalGoogle.Actions
+namespace terminalGoogle.Activities
 {
     public class Get_Google_Sheet_Data_v1 : EnhancedTerminalActivity<Get_Google_Sheet_Data_v1.ActivityUi>
     {

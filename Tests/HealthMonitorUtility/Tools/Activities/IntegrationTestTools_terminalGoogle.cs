@@ -9,7 +9,7 @@ using HealthMonitor.Utility;
 using Hub.Managers;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using terminalGoogle.Actions;
+using terminalGoogle.Activities;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services;
 using UtilitiesTesting.Fixtures;
