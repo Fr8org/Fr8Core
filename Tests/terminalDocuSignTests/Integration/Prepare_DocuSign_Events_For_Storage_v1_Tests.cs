@@ -136,7 +136,7 @@ namespace terminalDocuSignTests.Integration
             var recipientId = Guid.NewGuid().ToString();
 
             var envelopePayload = HealthMonitor_FixtureData.GetEnvelopePayload();
-      
+
 
             AddPayloadCrate(
                dataDTO,
@@ -153,7 +153,7 @@ namespace terminalDocuSignTests.Integration
                 await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
             var crateStorage = Crate.GetStorage(responsePayloadDTO);
-            Assert.AreEqual(1, crateStorage.CrateContentsOfType<DocuSignEnvelopeCM>(x => x.Label == "DocuSign Envelope").Count());
+            Assert.AreEqual(1, crateStorage.CrateContentsOfType<DocuSignEnvelopeCM_v2>(x => x.Label == "DocuSign Envelope").Count());
         }
 
         [Test]
