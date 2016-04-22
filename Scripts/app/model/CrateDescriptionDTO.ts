@@ -5,5 +5,6 @@
         label: string;
         producedBy: string;
         selected: boolean;
+        fields: FieldDTO[];
 	}
 }
