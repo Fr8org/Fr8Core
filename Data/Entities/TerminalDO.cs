@@ -30,6 +30,9 @@ namespace Data.Entities
         [Required]
         public string Version { get; set; }
 
+        [Required]
+        public string Label { get; set; }
+
         [ForeignKey("TerminalStatusTemplate")]
         public int TerminalStatus { get; set; }
         public _TerminalStatusTemplate TerminalStatusTemplate { get; set; }

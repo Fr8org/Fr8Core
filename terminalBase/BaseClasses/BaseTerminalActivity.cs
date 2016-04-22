@@ -388,6 +388,13 @@ namespace TerminalBase.BaseClasses
                     }
                     return curActivityDO;
                 }
+                
+                //clean any existing crates with "Validation Errors" that can be present from previous
+                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+                {
+                    crateStorage.RemoveByLabel("Validation Errors");
+                }
+                
                 var result = await FollowupConfigurationResponse(curActivityDO, authToken);
                 UpdateRuntimeAvailableCrates(result);
                 return result;

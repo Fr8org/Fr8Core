@@ -3,7 +3,7 @@
         id: number;
         activity: string;       
         createDate: Date;
-        customerId: string;
+        fr8UserId: string;
         data: string;       
         is_high_priority: boolean;
         lastUpdated: Date;       

@@ -247,7 +247,7 @@ namespace Hub.Services
                     {
                         var operationalState = new OperationalStateCM();
                         operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Error);
-                        operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(control.ErrorMessage, ErrorType.Generic, string.Empty, null, curActivityDTO.ActivityTemplate.Name, curActivityDTO.ActivityTemplate.Terminal.Name));
+                        operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(control.ErrorMessage, ErrorType.Generic, string.Empty, null, curActivityDTO.ActivityTemplate.Name, curActivityDTO.ActivityTemplate.Terminal.Label));
 
                         var operationsCrate = Crate.FromContent("Operational Status", operationalState);
                         tempCrateStorage.Add(operationsCrate);
@@ -534,16 +534,18 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curPlan = uow.PlanRepository.GetById<PlanDO>(planId);
+                string containerId="";
                 if (curPlan == null)
                     throw new ArgumentNullException("planId");
                 try
                 {
                     var curContainerDO = Create(uow, curPlan, curPayload);
+                    containerId = curContainerDO.Id.ToString();
                     return await Run(uow, curContainerDO);
                 }
                 catch (Exception ex)
                 {
-                    EventManager.ContainerFailed(curPlan, ex);
+                    EventManager.ContainerFailed(curPlan, ex, containerId);
                     throw;
                 }
             }
