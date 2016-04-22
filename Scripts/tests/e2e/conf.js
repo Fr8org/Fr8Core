@@ -18,5 +18,6 @@
     jasmineNodeOpts: {
         defaultTimeoutInterval: 30000
     },
-    baseUrl: 'http://dev.fr8.co'
+    baseUrl: 'http://dev.fr8.co',
+    chromeOnly: true
 }; 

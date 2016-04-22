@@ -394,13 +394,13 @@ function getProtractorBinary(binaryName){
 }
 
 gulp.task('update-web-driver', function(done){
-    child_process.spawnSync(getProtractorBinary('webdriver-manager'), ['update'], {
+    return child_process.spawnSync(getProtractorBinary('webdriver-manager'), ['update'], {
         stdio: 'inherit'
     });
 });
 
 gulp.task('protractor-run', function (done) {
-    child_process.spawnSync(getProtractorBinary('protractor'),  ['--baseUrl='+argv.baseUrl+'', 'Scripts\\tests\\e2e\\conf.js'] ,{
+    return child_process.spawnSync(getProtractorBinary('protractor'),  ['--baseUrl='+argv.baseUrl+'', 'Scripts\\tests\\e2e\\conf.js'] ,{
         stdio: 'inherit'
     });
 });
