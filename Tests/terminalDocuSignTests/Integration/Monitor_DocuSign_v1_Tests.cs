@@ -363,20 +363,13 @@ namespace terminalDocuSignTests.Integration
 
             var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
 
+           var payload =  HealthMonitor_FixtureData.GetEnvelopePayload();
+
             AddPayloadCrate(
                 dataDTO,
                 new EventReportCM()
                 {
-                    EventPayload = new CrateStorage()
-                    {
-                        Data.Crates.Crate.FromContent(
-                            "EventReport",
-                            new StandardPayloadDataCM(
-                                new FieldDTO("CurrentRecipientEmail", "foo@bar.com"),
-                                new FieldDTO("EnvelopeId", envelopeId)
-                            )
-                        )
-                    }
+                    EventPayload = payload
                 }
             );
 
@@ -390,7 +383,7 @@ namespace terminalDocuSignTests.Integration
 
             var docuSignPayload = crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Envelope Payload Data").Single();
             Assert.AreEqual(1, docuSignPayload.AllValues().Count(x => x.Key == "CurrentRecipientEmail"));
-            Assert.IsTrue(docuSignPayload.AllValues().Any(x => x.Key == "CurrentRecipientEmail" && x.Value == "foo@bar.com"));
+            Assert.IsTrue(docuSignPayload.AllValues().Any(x => x.Key == "CurrentRecipientEmail" && x.Value == "hal9000@discovery.com"));
         }
 
         /// <summary>

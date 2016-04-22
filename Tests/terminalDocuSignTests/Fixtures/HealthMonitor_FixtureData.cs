@@ -6,6 +6,8 @@ using NUnit.Framework;
 using HealthMonitor.Utility;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using Data.Crates;
+using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSignTests.Fixtures
 {
@@ -268,7 +270,14 @@ namespace terminalDocuSignTests.Fixtures
             return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public static string GetEnvelopePayload() { return string.Format(EnvelopePayload, Guid.NewGuid()); }
+        public static ICrateStorage GetEnvelopePayload()
+        {
+            string payload = string.Format(EnvelopePayload, Guid.NewGuid());
+
+            var curDocuSignEnvelopeInfo = DocuSignEventParser.GetEnvelopeInformation(EnvelopePayload);
+            var content = DocuSignEventParser.ParseXMLintoCM(curDocuSignEnvelopeInfo);
+            return new CrateStorage(Data.Crates.Crate.FromContent("DocuSign Connect Event", content));
+        }
         private static string EnvelopePayload = @"<?xml version=""1.0"" encoding=""UTF-8"" ?>
             <DocuSignEnvelopeInformation xmlns = ""http://www.docusign.net/API/3.0"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
                <EnvelopeStatus>

@@ -135,15 +135,14 @@ namespace terminalDocuSignTests.Integration
             var eventId = Guid.NewGuid().ToString();
             var recipientId = Guid.NewGuid().ToString();
 
-            string envelopePayload = HealthMonitor_FixtureData.GetEnvelopePayload();
-            var curDocuSignEnvelopeInfo = DocuSignEventParser.GetEnvelopeInformation(envelopePayload);
-            var content = DocuSignEventParser.ParseXMLintoCM(curDocuSignEnvelopeInfo);
+            var envelopePayload = HealthMonitor_FixtureData.GetEnvelopePayload();
+      
 
             AddPayloadCrate(
                dataDTO,
                new EventReportCM()
                {
-                   EventPayload = new CrateStorage(Data.Crates.Crate.FromContent("DocuSign Connect Event", content)),
+                   EventPayload = envelopePayload,
                    EventNames = "Receive Envelope"
                }
            );
