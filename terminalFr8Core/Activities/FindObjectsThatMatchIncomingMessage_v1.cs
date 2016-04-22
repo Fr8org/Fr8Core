@@ -12,6 +12,7 @@ using Data.Crates;
 using Data.Entities;
 using Hub.Managers;
 using Utilities;
+using Data.Helpers;
 
 namespace terminalFr8Core.Actions
 {
@@ -288,7 +289,7 @@ namespace terminalFr8Core.Actions
             }
         }
         //Wrappers for control properties
-        private string IncomingText { get { return CurrentPayloadStorage.RetrieveValue(ConfigurationControls.IncomingTextSelector.selectedKey); } }
+        private string IncomingText { get { return CurrentPayloadStorage.FindField(ConfigurationControls.IncomingTextSelector.selectedKey); } }
 
         private string SelectedDataSourceActivityId { get { return ConfigurationControls.DataSourceSelector.Value; } }
         //Untill we decide on caching strategy we won't use cache
