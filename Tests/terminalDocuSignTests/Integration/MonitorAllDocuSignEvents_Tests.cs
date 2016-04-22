@@ -50,10 +50,10 @@ namespace terminalDocuSignTests.Integration
             get { return UserAccountName; }
         }
 
-        protected override string TestUserPassword
+        /*protected override string TestUserPassword
         {
             get { return "123qwe"; }
-        }
+        }*/
 
 
         public override string TerminalName
