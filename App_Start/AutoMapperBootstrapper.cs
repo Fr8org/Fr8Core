@@ -45,8 +45,6 @@ namespace HubWeb.App_Start
                .ForMember(x => x.Id, opts => opts.ResolveUsing(x => x.Id))
                .ForMember(x => x.Name, opts => opts.ResolveUsing(x => x.Name))
                .ForMember(x => x.Version, opts => opts.ResolveUsing(x => x.Version))
-               .ForMember(x => x.Description, opts => opts.ResolveUsing(x => x.Description))
-               .ForMember(x => x.TerminalId, opts => opts.ResolveUsing(x => x.TerminalId))
                .ForMember(x => x.Terminal, opts => opts.ResolveUsing(GetTerminal))
                .ForMember(x => x.NeedsAuthentication, opts => opts.ResolveUsing(x => x.NeedsAuthentication));
 
@@ -93,12 +91,12 @@ namespace HubWeb.App_Start
 
         private TerminalDTO GetTerminal(ActivityTemplateDO t)
         {
-            if (t == null)
+            if (t?.Terminal == null)
             {
                 return null;
             }
 
-            return Mapper.Map<TerminalDTO>(_terminal.GetByKey(t.TerminalId));
+            return Mapper.Map<TerminalDTO>(t.Terminal);
         }
 
         private ActivityTemplateDTO GetActivityTemplate(ActivityDO ad)
@@ -108,7 +106,7 @@ namespace HubWeb.App_Start
                 return Mapper.Map<ActivityTemplateDTO>(ad.ActivityTemplate);
             }
 
-            if (ad.ActivityTemplateId == 0)
+            if (ad.ActivityTemplateId == Guid.Empty)
             {
                 return null;                
             }

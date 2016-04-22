@@ -10,13 +10,9 @@ namespace terminalSalesforceTests.Intergration
     {
         public static async Task<bool> DeleteObject(AuthorizationTokenDTO authTokenDTO, string objectName, string objectId)
         {
-            string instanceUrl, apiVersion;
-
             var salesForceManager = new SalesforceManager();
 
-            salesForceManager.ParseAuthToken(authTokenDTO.AdditionalAttributes, out instanceUrl, out apiVersion);
-
-            return await new ForceClient(instanceUrl, authTokenDTO.Token, apiVersion).DeleteAsync(objectName, objectId);
+            return await salesForceManager.DeleteObject(objectName, objectId, new Data.Entities.AuthorizationTokenDO { Token = authTokenDTO.Token, AdditionalAttributes = authTokenDTO.AdditionalAttributes });
         }
 
         public static async Task<bool> DeleteObject(AuthorizationTokenDO authTokenDO, string objectName, string objectId)

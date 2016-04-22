@@ -54,21 +54,46 @@ namespace Data.Control
         public const string ContainerTransition = "ContainerTransition";
         public const string MetaControlContainer = "MetaControlContainer";
         public const string ControlList = "ControlList";
-        public const string ActivityChooser = "ActivityChooser";
+        public const string SelectData = "SelectData";
+        public const string ExternalObjectChooser = "ExternalObjectChooser";
+        public const string BuildMessageAppender = "BuildMessageAppender";
     }
 
-    public class ActivityChooser : ControlDefinitionDTO
+    public class SelectData : ControlDefinitionDTO
     {
-        public ActivityChooser()
+        public SelectData()
         {
-            Type = ControlTypes.ActivityChooser;
+            Type = ControlTypes.SelectData;
         }
 
-        [JsonProperty("subPlanId")]
-        public Guid? SubPlanId { get; set; }
+        [JsonProperty("activityTemplateId")]
+        public string ActivityTemplateId { get; set; }
 
-        [JsonProperty("activityTemplateLabel")]
-        public string ActivityTemplateLabel { get; set; }
+        [JsonProperty("activityTemplateName")]
+        public string ActivityTemplateName { get; set; }
+
+        [JsonProperty("subPlanId")]
+        public string SubPlanId { get; set; }
+
+        [JsonProperty("externalObjectName")]
+        public string ExternalObjectName { get; set; }
+    }
+
+    public class ExternalObjectChooser : ControlDefinitionDTO
+    {
+        public ExternalObjectChooser()
+        {
+            Type = ControlTypes.ExternalObjectChooser;
+        }
+
+        [JsonProperty("activityTemplateId")]
+        public string ActivityTemplateId { get; set; }
+
+        [JsonProperty("subPlanId")]
+        public string SubPlanId { get; set; }
+
+        [JsonProperty("externalObjectName")]
+        public string ExternalObjectName { get; set; }
     }
 
     public class CheckBox : ControlDefinitionDTO
@@ -224,6 +249,25 @@ namespace Data.Control
             };
         }
     }
+
+    public class SelectDataMetaDescriptionDTO : ControlMetaDescriptionDTO
+    {
+        public SelectDataMetaDescriptionDTO()
+            : base("SelectDataMetaDescriptionDTO", "Select Data")
+        {
+        }
+
+        public override ControlDefinitionDTO CreateControl()
+        {
+            return new ExternalObjectChooser
+            {
+                Label = this.Controls[0].Value,
+                Name = "SelectData",
+                ActivityTemplateId = ((SelectData)this.Controls[1]).ActivityTemplateId
+            };
+        }
+    }
+
 
     [JsonConverter(typeof(ControlMetaDescriptionDTOConverter))]
     public class ControlMetaDescriptionDTO
@@ -409,101 +453,11 @@ namespace Data.Control
                     return TextValue;
 
                 case "upstream":
-                    return GetPayloadValue(payloadCrateStorage, ignoreCase, manifestType, label);
+                    return Fr8ApiHelper.FindField(payloadCrateStorage, this.selectedKey, ignoreCase, manifestType, label);
 
                 default:
                     return null;
             }
-        }
-
-        public string GetPayloadValue(ICrateStorage payloadStorage, bool ignoreCase = false, MT? manifestType = null, string label = null)
-        {
-            //search through every crate except operational state crate
-            Expression<Func<Crate, bool>> defaultSearchArguments = (c) => c.ManifestType.Id != (int)MT.OperationalStatus;
-
-            //apply label criteria if not null
-            if (label != null)
-            {
-                Expression<Func<Crate, bool>> andLabel = (c) => c.Label == label;
-                defaultSearchArguments = Expression.Lambda<Func<Crate, bool>>(Expression.AndAlso(defaultSearchArguments, andLabel), defaultSearchArguments.Parameters);
-            }
-
-            //apply manifest criteria if not null
-            if (manifestType != null)
-            {
-                Expression<Func<Crate, bool>> andManifestType = (c) => c.ManifestType.Id == (int)manifestType;
-                defaultSearchArguments = Expression.Lambda<Func<Crate, bool>>(Expression.AndAlso(defaultSearchArguments, andManifestType), defaultSearchArguments.Parameters);
-            }
-
-            //find user requested crate
-            var foundCrates = payloadStorage.Where(defaultSearchArguments.Compile()).ToList();
-            if (!foundCrates.Any())
-            {
-                return null;
-            }
-
-            //get operational state crate to check for loops
-            var operationalState = payloadStorage.CrateContentsOfType<OperationalStateCM>().Single();
-            //iterate through found crates to find the payload
-            foreach (var foundCrate in foundCrates)
-            {
-                var foundField = FindField(operationalState, foundCrate);
-                if (foundField != null)
-                {
-                    return foundField.Value;
-                }
-            }
-
-            return null;
-        }
-
-
-        private FieldDTO FindField(OperationalStateCM operationalState, Crate crate)
-        {
-            object searchArea = null;
-            //let's check if we are in a loop
-            //and this is a loop data?
-            //check if this crate is loop related
-            var deepestLoop = operationalState.Loops.OrderByDescending(l => l.Level).FirstOrDefault(l => !l.BreakSignalReceived && l.Label == crate.Label && l.CrateManifest == crate.ManifestType.Type);
-            if (deepestLoop != null) //this is a loop related data request
-            {
-                //we will search requested field in current element
-                searchArea = GetDataListItem(crate, deepestLoop.Index);
-            }
-            else
-            {
-                //hmmm this is a regular data request
-                //lets search in complete crate
-                searchArea = crate;
-
-                //if we have a StandardTableDataCM and we are not in the loop and crate has Headers - we should search next row
-                if (crate.IsOfType<StandardTableDataCM>())
-                {
-                    var table_crate = crate.Get<StandardTableDataCM>();
-                    if (table_crate.FirstRowHeaders && table_crate.Table.Count > 1)
-                    {
-                        TableRowDTO row = GetDataListItem(crate, 0) as TableRowDTO;
-                        if (row != null)
-                            return row.Row.Where(a => a.Cell.Key == this.selectedKey).FirstOrDefault().Cell;
-                    }
-                }
-            }
-
-            //we should find first related field and return
-            var fields = Fr8ReflectionHelper.FindFieldsRecursive(searchArea);
-            var fieldMatch = fields.FirstOrDefault(f => f.Key == this.selectedKey);
-            //let's return first match
-            return fieldMatch;
-        }
-
-        private object GetDataListItem(Crate crate, int index)
-        {
-            var tableData = crate.ManifestType.Id == (int)MT.StandardTableData ? crate.Get<StandardTableDataCM>() : null;
-            if (tableData != null)
-            {
-                return tableData.FirstRowHeaders ? tableData.Table[index + 1] : tableData.Table[index];
-            }
-            return Fr8ReflectionHelper.FindFirstArray(crate.Get())[index];
         }
     }
 
@@ -822,6 +776,13 @@ namespace Data.Control
                     return "/activites/documentation";
                 return string.Format("/activites/documentation/{0}", ContentPath);
             }
+        }
+    }
+    public class BuildMessageAppender : TextArea
+    {
+        public BuildMessageAppender()
+        {
+            Type = ControlTypes.BuildMessageAppender;
         }
     }
 }

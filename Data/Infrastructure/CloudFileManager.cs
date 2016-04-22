@@ -44,7 +44,7 @@ namespace Data.Infrastructure
             CloudBlockBlob blockBlob = blobContainer.GetBlockBlobReference(curFileName);
             blockBlob.UploadFromStream(curRemoteFile);
 
-            return blockBlob.Uri.AbsoluteUri;
+            return Uri.UnescapeDataString(blockBlob.Uri.AbsoluteUri);
         }
 
         /// <summary>

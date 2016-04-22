@@ -204,9 +204,10 @@ namespace Data.Interfaces.Manifests
             }
         }
         // Sync controls properties from configuration controls crate with the current instance of StandardConfigurationControlsCM
-        public void ClonePropertiesFrom(StandardConfigurationControlsCM configurationControls)
+        public StandardConfigurationControlsCM ClonePropertiesFrom(StandardConfigurationControlsCM configurationControls)
         {
             SyncWith(configurationControls);
+            return this;
         }
 
         private static bool CheckIfTypeIsControlsCollection(Type type)

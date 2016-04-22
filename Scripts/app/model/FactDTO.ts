@@ -2,7 +2,7 @@
     export class FactDTO{
         id: number;
         objectId: string;       
-        customerId: string;
+        fr8UserId: string;
         primaryCategory: string;
         secondaryCategory: string;
         activity: string;

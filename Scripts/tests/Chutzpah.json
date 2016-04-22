@@ -130,6 +130,11 @@
       "Excludes": [ "*.ts" ]
     },
     {
+      "Path": "../app/events/",
+      "Includes": [ "*.js" ],
+      "Excludes": [ "*.ts" ]
+    },
+    {
       "Path": "../app/services/",
       "Includes": [ "*.js" ],
       "Excludes": [ "*.ts" ]

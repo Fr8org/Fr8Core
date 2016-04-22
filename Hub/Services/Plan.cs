@@ -36,18 +36,16 @@ namespace Hub.Services
         private readonly IActivity _activity;
         private readonly ICrateManager _crate;
         private readonly ISecurityServices _security;
-        private readonly IProcessNode _processNode;
         private readonly IJobDispatcher _dispatcher;
 
         public Plan(InternalInterface.IContainer container, Fr8Account dockyardAccount, IActivity activity,
-            ICrateManager crate, ISecurityServices security, IProcessNode processNode, IJobDispatcher dispatcher)
+            ICrateManager crate, ISecurityServices security,  IJobDispatcher dispatcher)
         {
             _container = container;
             _dockyardAccount = dockyardAccount;
             _activity = activity;
             _crate = crate;
             _security = security;
-            _processNode = processNode;
             _dispatcher = dispatcher;
         }
 
@@ -249,7 +247,7 @@ namespace Hub.Services
                     {
                         var operationalState = new OperationalStateCM();
                         operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Error);
-                        operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(control.ErrorMessage, ErrorType.Generic, string.Empty, null, curActivityDTO.ActivityTemplate.Name, curActivityDTO.ActivityTemplate.Terminal.Name));
+                        operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(control.ErrorMessage, ErrorType.Generic, string.Empty, null, curActivityDTO.ActivityTemplate.Name, curActivityDTO.ActivityTemplate.Terminal.Label));
 
                         var operationsCrate = Crate.FromContent("Operational Status", operationalState);
                         tempCrateStorage.Add(operationsCrate);
@@ -371,7 +369,7 @@ namespace Hub.Services
 
             }
         }
-        
+
         public PlanDO GetPlanByActivityId(IUnitOfWork uow, Guid id)
         {
             return (PlanDO)uow.PlanRepository.GetById<PlanNodeDO>(id).GetTreeRoot();
@@ -433,23 +431,29 @@ namespace Hub.Services
             containerDO.Name = curPlan.Name;
             containerDO.State = State.Unstarted;
 
-            if (curPayload.Length > 0)
-            {
                 using (var crateStorage = _crate.UpdateStorage(() => containerDO.CrateStorage))
                 {
+                if (curPayload.Length > 0)
+                {
                     crateStorage.AddRange(curPayload);
+                    crateStorage.Remove<OperationalStateCM>();
                 }
-            }
+                
+                var operationalState = new OperationalStateCM();
+                
+                operationalState.CallStack.PushFrame(new OperationalStateCM.StackFrame
+                {
+                    NodeName = "Starting subplan",
+                    NodeId = curPlan.StartingSubPlanId,
+                });
 
-            containerDO.CurrentActivityId = curPlan.StartingSubPlanId;
+                crateStorage.Add(Crate.FromContent("Operational state", operationalState));
+            }
 
             uow.ContainerRepository.Add(containerDO);
 
-            //then create process node
-            var curProcessNode = _processNode.Create(uow, containerDO.Id, curPlan.StartingSubPlanId, "process node");
-            containerDO.ProcessNodes.Add(curProcessNode);
-
             uow.SaveChanges();
+
             EventManager.ContainerCreated(containerDO);
 
             return containerDO;
@@ -499,7 +503,8 @@ namespace Hub.Services
 
         public void Enqueue(Guid curPlanId, params Crate[] curEventReport)
         {
-            _dispatcher.Enqueue(() => LaunchProcess(curPlanId, curEventReport).Wait());
+            var curEventReportDTO = curEventReport.Select(x => CrateStorageSerializer.Default.ConvertToDto(x)).ToArray();
+            _dispatcher.Enqueue(() => LaunchProcessSync(curPlanId, curEventReportDTO));
         }
 
         public void Enqueue(List<PlanDO> curPlans, params Crate[] curEventReport)
@@ -509,12 +514,18 @@ namespace Hub.Services
                 Enqueue(curPlan.Id, curEventReport);
             }
         }
+        //This is for HangFire compatibility reasons
+        public static void LaunchProcessSync(Guid curPlan, params CrateDTO[] curPayload)
+        {
+            LaunchProcess(curPlan, curPayload.Select(x => CrateStorageSerializer.Default.ConvertFromDto(x)).ToArray()).Wait();
+        }
 
         public static async Task LaunchProcess(Guid curPlan, params Crate[] curPayload)
         {
             if (curPlan == default(Guid))
+            {
                 throw new ArgumentException(nameof(curPlan));
-
+            }
             await ObjectFactory.GetInstance<IPlan>().Run(curPlan, curPayload);
         }
 
@@ -523,16 +534,18 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curPlan = uow.PlanRepository.GetById<PlanDO>(planId);
+                string containerId="";
                 if (curPlan == null)
                     throw new ArgumentNullException("planId");
                 try
                 {
                     var curContainerDO = Create(uow, curPlan, curPayload);
-                return await Run(uow, curContainerDO);
-            }
+                    containerId = curContainerDO.Id.ToString();
+                    return await Run(uow, curContainerDO);
+                }
                 catch (Exception ex)
                 {
-                    EventManager.ContainerFailed(curPlan, ex);
+                    EventManager.ContainerFailed(curPlan, ex, containerId);
                     throw;
                 }
             }
@@ -560,6 +573,7 @@ namespace Hub.Services
         public async Task<PlanDO> Clone(Guid planId)
         {
 
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var currentUser = _security.GetCurrentAccount(uow);
@@ -571,9 +585,14 @@ namespace Hub.Services
                 }
 
                 var cloneTag = "Cloned From " + planId;
+
+                /*
                 //let's check if we have cloned this plan before
                 var existingPlan = await uow.PlanRepository.GetPlanQueryUncached()
-                    .Where(p => p.Fr8AccountId == currentUser.Id && p.Tag.Contains(cloneTag)).FirstOrDefaultAsync();
+                    .Where(p => p.Fr8AccountId == currentUser.Id 
+                    && p.Tag.Contains(cloneTag) 
+                    && p.PlanState != PlanState.Deleted)
+                    .FirstOrDefaultAsync();
 
 
                 if (existingPlan != null)
@@ -581,11 +600,13 @@ namespace Hub.Services
                     //we already have cloned this plan before
                     return existingPlan;
                 }
+                */
 
                 //we should clone this plan for current user
                 //let's clone the plan entirely
                 var clonedPlan = (PlanDO)PlanTreeHelper.CloneWithStructure(targetPlan);
                 clonedPlan.Name = clonedPlan.Name + " - " + "Customized for User " + currentUser.UserName;
+                clonedPlan.Description = clonedPlan.Name + " - " + "Customized for User " + currentUser.UserName + " on " + DateTime.Now;
                 clonedPlan.PlanState = PlanState.Inactive;
                 clonedPlan.Tag = cloneTag;
 

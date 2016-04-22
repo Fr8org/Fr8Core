@@ -25,6 +25,7 @@ namespace UtilitiesTesting.Fixtures
                 {
                     Id = 1,
                     Name = "testTerminal",
+                    Label = "test",
                     Version = "v1",
                     PublicIdentifier = "test",
                     Secret = "test",
@@ -40,7 +41,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityTemplateDO("Test", "test", "v1", "test", 1)
             {
-                Id = 1
+                Id = FixtureData.GetTestGuidById(1)
             };
         }
 

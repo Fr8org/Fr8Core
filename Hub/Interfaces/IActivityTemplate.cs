@@ -9,9 +9,9 @@ namespace Hub.Interfaces
     {
         IEnumerable<ActivityTemplateDO> GetQuery();
         ActivityTemplateDO[] GetAll();
-        ActivityTemplateDO GetByKey(int curActivityTemplateDOId);
+        ActivityTemplateDO GetByKey(Guid curActivityTemplateDOId);
         //ActivityTemplateDO GetByActivityKey(Guid curActivityId);
-        string GetTerminalUrl(int? curActivityTemplateDOId);
+        string GetTerminalUrl(Guid? curActivityTemplateDOId);
         void RegisterOrUpdate(ActivityTemplateDO activityTemplateDo);
         ActivityTemplateDO GetByName(IUnitOfWork uow, string name);
         ActivityTemplateDO GetByNameAndVersion(string name, string version);

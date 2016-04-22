@@ -328,7 +328,10 @@ namespace UtilitiesTesting.Fixtures
 
             var curImmediateActionList = FixtureData.TestActivityList_ImmediateActivities();
 
-            curSubPlanDO.ChildNodes.AddRange(curImmediateActionList);
+            foreach (var node in curImmediateActionList)
+            {
+                curSubPlanDO.ChildNodes.Add(node);
+            }
 
             return curPlanDO;
         }

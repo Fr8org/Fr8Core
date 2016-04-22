@@ -251,6 +251,12 @@ namespace terminalDocuSign.Actions
             return Task.FromResult(activityExists);
         }
 
+        /// <summary>
+        /// TODO this part is ugly - why do we load those activities from hub in activity
+        /// we already have a code in base class that does this operation with caching
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         private async Task<ActivityDO> CreateFirstChildActivity(ReconfigurationContext context)
         {
             var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
@@ -259,9 +265,12 @@ namespace terminalDocuSign.Actions
 
             // Let's check if activity template generates table data
             var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
+
+            var selectedReceiverTemplate = await GetActivityTemplate(selectedReceiver.Id);
+
             var dataSourceActivity = await AddAndConfigureChildActivity(
                 context.SolutionActivity,
-                selectedReceiver.Id.ToString(),
+                selectedReceiverTemplate,
                 order: 1
             );
 
@@ -345,7 +354,8 @@ namespace terminalDocuSign.Actions
 
             if (DoesActivityTemplateGenerateTableData(selectedReceiver))
             {
-                var loopActivity = await AddAndConfigureChildActivity(context.SolutionActivity, "Loop", "Loop", "Loop", 2);
+                var loopAT = await GetActivityTemplate("terminalFr8Core", "Loop");
+                var loopActivity = await AddAndConfigureChildActivity(context.SolutionActivity, loopAT, "Loop", "Loop", 2);
 
                 using (var crateStorage = CrateManager.GetUpdatableStorage(loopActivity))
                 {
@@ -366,7 +376,8 @@ namespace terminalDocuSign.Actions
                 activityIndex = 2;
             }
 
-            var sendDocuSignActivity = await AddAndConfigureChildActivity(parentActivity, "Send_DocuSign_Envelope", order: activityIndex);
+            var sendDocusignEnvelopeAT = await GetActivityTemplate("terminalDocuSign", "Send_DocuSign_Envelope");
+            var sendDocuSignActivity = await AddAndConfigureChildActivity(parentActivity, sendDocusignEnvelopeAT, order: activityIndex);
             // Set docusign template
             SetControlValue(
                 sendDocuSignActivity,

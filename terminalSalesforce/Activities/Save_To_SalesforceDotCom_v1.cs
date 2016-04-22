@@ -147,7 +147,7 @@ namespace terminalSalesforce.Actions
                 //get <Field> <Value> key value pair for the non empty field
                 var jsonInputObject = ActivitiesHelper.GenerateSalesforceObjectDictionary(fieldsList, fieldControlsList, payloadStorage);
 
-                var result = await _salesforce.CreateObject<IDictionary<string, object>>(jsonInputObject, chosenObject, authTokenDO);
+                var result = await _salesforce.CreateObject(jsonInputObject, chosenObject, authTokenDO);
 
                 if (!string.IsNullOrEmpty(result))
                 {

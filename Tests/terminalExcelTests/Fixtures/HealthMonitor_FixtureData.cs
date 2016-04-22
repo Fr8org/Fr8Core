@@ -22,7 +22,7 @@ namespace terminalExcelTests.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Load_Excel_File_TEST",
                 Version = "1"
             };

@@ -1,8 +1,4 @@
 ﻿using System.Threading.Tasks;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using System.Xml;
-using System.Xml.Linq;
 using Data.Crates;
 
 namespace terminalSalesforce.Infrastructure

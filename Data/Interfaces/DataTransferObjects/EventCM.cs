@@ -25,7 +25,7 @@ namespace Data.Interfaces.DataTransferObjects
     {
         public string ObjectId { get; set; }
 
-        public string CustomerId { get; set; }
+        public string Fr8UserId { get; set; }
 
         public string Data { get; set; }
 

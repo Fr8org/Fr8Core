@@ -11,7 +11,7 @@ namespace terminalYammerTests.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Post_To_Yammer_TEST",
                 Version = "1"
             };

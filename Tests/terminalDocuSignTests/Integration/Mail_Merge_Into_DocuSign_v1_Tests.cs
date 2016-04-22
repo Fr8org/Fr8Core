@@ -42,7 +42,7 @@ namespace terminalDocuSignTests.Integration
               dataDTO,
               new ActivityTemplateDTO()
               {
-                  Id = 1,
+                  Id = Guid.NewGuid(),
                   Name = "Load Excel File",
                   Label = "Load Excel File",
                   Tags = "Table Data Generator"
@@ -53,7 +53,7 @@ namespace terminalDocuSignTests.Integration
                 dataDTO,
                 new ActivityTemplateDTO()
                 {
-                    Id = 2,
+                    Id = Guid.NewGuid(),
                     Name = "Extract Spreadsheet Data",
                     Label = "Extract Spreadsheet Data",
                     Tags = "Table Data Generator"
@@ -64,7 +64,7 @@ namespace terminalDocuSignTests.Integration
                dataDTO,
                new ActivityTemplateDTO()
                {
-                   Id = 3,
+                   Id = Guid.NewGuid(),
                    Name = "Get Google Sheet Data",
                    Label = "Get Google Sheet Data",
                    Tags = "Table Data Generator",

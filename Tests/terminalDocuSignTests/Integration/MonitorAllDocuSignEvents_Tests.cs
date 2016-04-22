@@ -20,6 +20,7 @@ using terminalDocuSignTests.Fixtures;
 using Newtonsoft.Json;
 using terminalDocuSign.DataTransferObjects;
 using System.Diagnostics;
+using AutoMapper;
 using TerminalBase.Infrastructure;
 using Hub.Managers;
 
@@ -30,7 +31,7 @@ namespace terminalDocuSignTests.Integration
     public class MonitorAllDocuSignEvents_Tests : BaseHubIntegrationTest
     {
         // private const string UserAccountName = "y.gnusin@gmail.com";
-        private const string UserAccountName = "IntegrationTestUser1";
+        private const string UserAccountName = "integration_test_runner@fr8.company";
         private const int MaxAwaitPeriod = 300000;
         private const int SingleAwaitPeriod = 10000;
 
@@ -49,10 +50,10 @@ namespace terminalDocuSignTests.Integration
             get { return UserAccountName; }
         }
 
-        protected override string TestUserPassword
+        /*protected override string TestUserPassword
         {
             get { return "123qwe"; }
-        }
+        }*/
 
 
         public override string TerminalName
@@ -129,6 +130,7 @@ namespace terminalDocuSignTests.Integration
         private async Task RecreateDefaultAuthToken(IUnitOfWork uow,
             Fr8AccountDO account, TerminalDO docuSignTerminal)
         {
+            Debug.WriteLine($"Reauthorizing tokens for {account.EmailAddress.Address}");
             var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
                 _baseUrl + "manageauthtoken/"
             );
@@ -153,7 +155,7 @@ namespace terminalDocuSignTests.Integration
                 Username = DocuSignEmail,
                 Password = DocuSignApiPassword,
                 IsDemoAccount = true,
-                TerminalId = docuSignTerminal.Id
+                Terminal = Mapper.Map<TerminalDTO>(docuSignTerminal)
             };
 
             var tokenResponse = await HttpPostAsync<CredentialsDTO, JObject>(
@@ -173,36 +175,19 @@ namespace terminalDocuSignTests.Integration
 
         private void AssignAuthTokens(IUnitOfWork uow, Fr8AccountDO account, Guid tokenId)
         {
-            var plan = uow.PlanRepository.GetPlanQueryUncached()
-                .SingleOrDefault(x => x.Fr8AccountId == account.Id
-                    && x.Name == "MonitorAllDocuSignEvents"
-                    && x.PlanState == PlanState.Active);
-            if (plan == null)
+            var plans = uow.PlanRepository.GetPlanQueryUncached().Where(x => x.Fr8AccountId == account.Id && x.Name == "MonitorAllDocuSignEvents" && x.PlanState == PlanState.Active).Select(x => x.Id).ToArray();
+
+            if (plans.Length == 0)
             {
                 throw new ApplicationException("Could not find MonitorAllDocuSignEvents plan.");
             }
 
-            var queue = new Queue<PlanNodeDO>();
-            queue.Enqueue(plan);
-
-            while (queue.Count > 0)
+            foreach (var planId in plans)
             {
-                var planNode = queue.Dequeue();
-
-                var activity = planNode as ActivityDO;
-                if (activity != null)
+                foreach (var activity in uow.PlanRepository.GetById<PlanNodeDO>(planId).GetDescendants().OfType<ActivityDO>())
                 {
-                    if (activity.ActivityTemplate.Terminal.Name == TerminalName
-                        && !activity.AuthorizationTokenId.HasValue)
-                    {
-                        activity.AuthorizationTokenId = tokenId;
-                    }
+                    activity.AuthorizationTokenId = tokenId;
                 }
-
-                uow.PlanRepository.GetNodesQueryUncached()
-                    .Where(x => x.ParentPlanNodeId == planNode.Id)
-                    .ToList()
-                    .ForEach(x => queue.Enqueue(x));
             }
 
             uow.SaveChanges();

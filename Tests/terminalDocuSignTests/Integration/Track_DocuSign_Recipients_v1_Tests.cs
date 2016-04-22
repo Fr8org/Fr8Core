@@ -57,6 +57,7 @@ namespace terminalDocuSignTests.Integration
             var terminal = new TerminalDTO()
             {
                 Name = "terminalDocuSign",
+                Label = "DocuSign",
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
                 Endpoint = TerminalUrl,
@@ -131,7 +132,7 @@ namespace terminalDocuSignTests.Integration
                 dataDTO,
                 new ActivityTemplateDTO()
                 {
-                    Id = 9,
+                    Id = Guid.NewGuid(),
                     Name = "Send Email_Via_Send_Grid",
                     Label = "Send Email",
                     Tags = "Notifier",

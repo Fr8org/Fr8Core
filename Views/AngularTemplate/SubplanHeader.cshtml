@@ -1,9 +1,9 @@
 ﻿<div class="page-head designer-header container">
     <div class="designer-header-title col-md-4 page-title" ng-class="{'design-header-title-editing': editing}">
         <h4>
-            <div class="route-name" ng-click="editTitle()">{{subplan.name}}</div>
-            <input class="design-header-title-editField" type="text" ng-model="subplan.name" ng-blur="onTitleChange()" input-focus="editing"/>
-            <span class="glyphicon glyphicon-pencil" style="cursor: pointer;" aria-hidden="true" ng-click="editTitle()"></span>
+            <span class="route-name" ng-click="editTitle()">{{subplan.name}}</span>
+            <input class="design-header-title-editField" type="text" style="width:90%" ng-model="subplan.name" ng-blur="onTitleChange()" input-focus="editing"/>
+            <span class="glyphicon glyphicon-pencil" style="cursor: pointer; margin-left:5px;" aria-hidden="true" ng-click="editTitle()"></span>
         </h4>
     </div>
 </div>
