@@ -111,7 +111,7 @@ namespace terminalDocuSignTests.Integration
                 await RecreateDefaultAuthToken(unitOfWork, testAccount, docuSignTerminal);
 
                 var mtDataCountBefore = unitOfWork.MultiTenantObjectRepository
-                    .AsQueryable<DocuSignEnvelopeCM>(testAccount.Id)
+                    .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id)
                     .Count();
 
                 await HttpPostAsync<string>(GetTerminalEventsUrl(), new StringContent(string.Format(EnvelopeToSend, Guid.NewGuid())));
@@ -125,7 +125,7 @@ namespace terminalDocuSignTests.Integration
                     await Task.Delay(SingleAwaitPeriod);
 
                     mtDataCountAfter = unitOfWork.MultiTenantObjectRepository
-                        .AsQueryable<DocuSignEnvelopeCM>(testAccount.Id)
+                        .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id)
                         .Count();
 
                     if (mtDataCountBefore < mtDataCountAfter)

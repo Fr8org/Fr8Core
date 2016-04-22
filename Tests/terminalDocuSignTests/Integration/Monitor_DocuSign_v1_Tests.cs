@@ -282,7 +282,7 @@ namespace terminalDocuSignTests.Integration
                 .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "DocuSign Envelope Fields")
                 .Single();
 
-            Assert.AreEqual(12, fieldsCrate.Fields.Count);
+            Assert.AreEqual(7, fieldsCrate.Fields.Count);
         }
 
         /// <summary>
@@ -312,7 +312,7 @@ namespace terminalDocuSignTests.Integration
                 .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "DocuSign Envelope Fields")
                 .Single();
 
-            Assert.AreEqual(20, fieldsCrate.Fields.Count);
+            Assert.AreEqual(15, fieldsCrate.Fields.Count);
         }
 
         /// <summary>
@@ -372,7 +372,7 @@ namespace terminalDocuSignTests.Integration
                         Data.Crates.Crate.FromContent(
                             "EventReport",
                             new StandardPayloadDataCM(
-                                new FieldDTO("RecipientEmail", "foo@bar.com"),
+                                new FieldDTO("CurrentRecipientEmail", "foo@bar.com"),
                                 new FieldDTO("EnvelopeId", envelopeId)
                             )
                         )
@@ -389,8 +389,8 @@ namespace terminalDocuSignTests.Integration
                 Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Envelope Payload Data").Count());
 
             var docuSignPayload = crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Envelope Payload Data").Single();
-            Assert.AreEqual(1, docuSignPayload.AllValues().Count(x => x.Key == "RecipientEmail"));
-            Assert.IsTrue(docuSignPayload.AllValues().Any(x => x.Key == "RecipientEmail" && x.Value == "foo@bar.com"));
+            Assert.AreEqual(1, docuSignPayload.AllValues().Count(x => x.Key == "CurrentRecipientEmail"));
+            Assert.IsTrue(docuSignPayload.AllValues().Any(x => x.Key == "CurrentRecipientEmail" && x.Value == "foo@bar.com"));
         }
 
         /// <summary>

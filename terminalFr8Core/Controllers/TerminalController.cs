@@ -323,18 +323,6 @@ namespace terminalFr8Core.Controllers
                 WebService = webService,
                 MinPaneWidth = 400
             });
-            
-            result.Add(new ActivityTemplateDTO
-            {
-                Name = "GetFromFr8Warehouse",
-                Label = "Get From Fr8 Warehouse",
-                Version = "1",
-                Category = ActivityCategory.Receivers,
-                NeedsAuthentication = false,
-                Terminal = terminal,
-                WebService = webService
-            });
-
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
