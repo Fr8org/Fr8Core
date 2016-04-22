@@ -57,6 +57,7 @@ namespace terminalDocuSignTests.Integration
             var terminal = new TerminalDTO()
             {
                 Name = "terminalDocuSign",
+                Label = "DocuSign",
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
                 Endpoint = TerminalUrl,

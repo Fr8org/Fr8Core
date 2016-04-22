@@ -1,22 +1,14 @@
 ﻿using Data.Crates;
-using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using Newtonsoft.Json;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using Hub.Managers;
 using Data.Interfaces.Manifests;
 using Data.Control;
 using Data.States;
 using System.Text.RegularExpressions;
-using Data.Constants;
-using Utilities;
 
 namespace terminalFr8Core.Actions
 {
@@ -58,30 +50,23 @@ namespace terminalFr8Core.Actions
         {
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
-            //var upstreamFields = await ExtractUpstreamFields();
-            //ConfigurationControls.AvailableFields.ListItems = upstreamFields.OrderBy(x => x.Key).Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
-            runtimeCrateManager.MarkAvailableAtRuntime<FieldDescriptionsCM>(ActivityUi.RuntimeCrateLabel);
-            CurrentActivityStorage.ReplaceByLabel(PackMessageCrate());
+            return Task.FromResult(0);
         }
 
-        private Crate<FieldDescriptionsCM> PackMessageCrate()
+        private Crate PackMessageCrate(string body = null)
         {
-            return Crate<FieldDescriptionsCM>.FromContent(ActivityUi.RuntimeCrateLabel,
-                                                          new FieldDescriptionsCM(new FieldDTO(ConfigurationControls.Name.Value, ConfigurationControls.Name.Value)), AvailabilityType.RunTime);
+            return Crate.FromContent(ActivityUi.RuntimeCrateLabel,
+                                     new StandardPayloadDataCM(new FieldDTO(ConfigurationControls.Name.Value, body)));
         }
 
-        private Crate<StandardPayloadDataCM> PackMessageCrate(string body)
+        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
         {
-            return Crate<StandardPayloadDataCM>.FromContent(ActivityUi.RuntimeCrateLabel,
-                                                          new StandardPayloadDataCM(new FieldDTO(ConfigurationControls.Name.Value, body)), AvailabilityType.RunTime);
-        }
+            runtimeCrateManager.MarkAvailableAtRuntime<StandardPayloadDataCM>(ActivityUi.RuntimeCrateLabel)
+                               .AddField(ConfigurationControls.Name.Value);
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
-        {
-            runtimeCrateManager.MarkAvailableAtRuntime<FieldDescriptionsCM>(ActivityUi.RuntimeCrateLabel);
-            CurrentActivityStorage.ReplaceByLabel(PackMessageCrate());
+            return Task.FromResult(0);
         }
 
         private static readonly Regex FieldPlaceholdersRegex = new Regex(@"\[.*?\]");
@@ -116,8 +101,9 @@ namespace terminalFr8Core.Actions
         private List<FieldDTO> ExtractAvaialbleFieldsFromPayload()
         {
             var result = new List<FieldDTO>();
+
             result.AddRange(CurrentPayloadStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.AllValues()));
-            result.AddRange(CurrentPayloadStorage.CratesOfType<FieldDescriptionsCM>().SelectMany(x => x.Content.Fields));
+
             foreach (var tableCrate in CurrentPayloadStorage.CratesOfType<StandardTableDataCM>().Select(x => x.Content))
             {
                 //We should take first row of data only if there is at least one data row. We never take header row if it exists
