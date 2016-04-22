@@ -285,7 +285,6 @@
     <Compile Include="Infrastructure\JsonNet\ActivityTemplateActivityConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\AvailabilityConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\CreateTimeConverter.cs" />
-    <Compile Include="Infrastructure\JsonNet\FieldConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\TerminalActivityTemplateConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\WebServiceConverter.cs" />
     <Compile Include="Infrastructure\Security\AuthorizeActivityAttribute.cs" />
