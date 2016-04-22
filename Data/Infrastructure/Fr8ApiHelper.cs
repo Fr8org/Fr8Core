@@ -67,7 +67,7 @@ namespace Data.Helpers
                 {
                     var loopStatus = x.LocalData.ReadAs<OperationalStateCM.LoopStatus>();
 
-                    if (loopStatus != null && loopStatus.Label == crate.Label && loopStatus.CrateManifest == crate.ManifestType.Type)
+                    if (loopStatus != null && loopStatus.CrateManifest.CrateDescriptions[0].Label == crate.Label && loopStatus.CrateManifest.CrateDescriptions[0].ManifestType == crate.ManifestType.Type)
                     {
                         return true;
                     }
