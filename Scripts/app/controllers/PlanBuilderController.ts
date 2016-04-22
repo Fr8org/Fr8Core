@@ -541,7 +541,6 @@ module dockyard.controllers {
         }
 
         private chooseAuthToken(action: model.ActivityDTO) {
-
             var self = this;
 
             var modalScope = <any>self.$scope.$new(true);
@@ -553,10 +552,13 @@ module dockyard.controllers {
                 controller: 'AuthenticationDialogController',
                 scope: modalScope
             })
-                .result
-                .then(() => {
-
-                });
+            .result
+            .then(() => {
+                self.$scope.$broadcast(
+                    dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthCompleted],
+                    new dockyard.directives.paneConfigureAction.AuthenticationCompletedEventArgs(<interfaces.IActivityDTO>({ id: action.id }))
+                );
+            });
         }
 
         private deleteAction(action: model.ActivityDTO) {
@@ -585,7 +587,6 @@ module dockyard.controllers {
         }
 
         private PaneSelectAction_ActivityTypeSelected(eventArgs: psa.ActivityTypeSelectedEventArgs) {
-            debugger;
             var activityTemplate = eventArgs.activityTemplate;
             // Generate next Id.
             var id = this.LocalIdentityGenerator.getNextId();

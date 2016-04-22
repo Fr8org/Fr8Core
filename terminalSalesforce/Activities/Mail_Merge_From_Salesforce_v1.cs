@@ -21,8 +21,14 @@ using Data.Constants;
 
 namespace terminalSalesforce.Actions
 {
-    public class MailMergeFromSalesforce_v1 : EnhancedTerminalActivity<MailMergeFromSalesforce_v1.ActivityUi>
+    public class Mail_Merge_From_Salesforce_v1 : EnhancedTerminalActivity<Mail_Merge_From_Salesforce_v1.ActivityUi>
     {
+
+        private const string SolutionName = "Mail Merge From Salesforce";
+        private const double SolutionVersion = 1.0;
+        private const string SolutionBody = @"<p>Pull data from a variety of sources, including Excel files, 
+                                            Google Sheets, and databases, and merge the data into your Salesforce template. 
+                                            You can link specific fields from your source data to Salesforce fields</p>";
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public DropDownList SalesforceObjectSelector { get; set; }
@@ -78,7 +84,7 @@ namespace terminalSalesforce.Actions
 
         private readonly ISalesforceManager _salesforceManager;
 
-        public MailMergeFromSalesforce_v1() : base(true)
+        public Mail_Merge_From_Salesforce_v1() : base(true)
         {
             ActivityName = "Mail Merge from Salesforce";
             _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
@@ -277,6 +283,39 @@ namespace terminalSalesforce.Actions
         protected override Task RunCurrentActivity()
         {
             return Task.FromResult(0);
+        }
+
+        /// <summary>
+        /// This method provides documentation in two forms:
+        /// SolutionPageDTO for general information and 
+        /// ActivityResponseDTO for specific Help on minicon
+        /// </summary>
+        /// <param name="activityDO"></param>
+        /// <param name="curDocumentation"></param>
+        /// <returns></returns>
+        public dynamic Documentation(ActivityDO activityDO, string curDocumentation)
+        {
+            if (curDocumentation.Contains("MainPage"))
+            {
+                var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
+                return Task.FromResult(curSolutionPage);
+
+            }
+            if (curDocumentation.Contains("HelpMenu"))
+            {
+                if (curDocumentation.Contains("ExplainMailMerge"))
+                {
+                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution helps you to work with email and move data from them to DocuSign service"));
+                }
+                if (curDocumentation.Contains("ExplainService"))
+                {
+                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                }
+                return Task.FromResult(GenerateErrorRepsonse("Unknown contentPath"));
+            }
+            return
+                Task.FromResult(
+                    GenerateErrorRepsonse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }

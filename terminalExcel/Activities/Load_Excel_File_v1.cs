@@ -109,6 +109,11 @@ namespace terminalExcel.Actions
                     CurrentActivityStorage.ReplaceByLabel(columnHeadersCrate);
                     SelectedFileDescription = selectedFileDescription;
 
+                    //lets publish table manifest
+                    var byteArray = ExcelUtils.GetExcelFileAsByteArray(ConfigurationControls.FilePicker.Value);
+                    var tableData = ExcelUtils.GetExcelFile(byteArray, ConfigurationControls.FilePicker.Value);
+                    CurrentActivityStorage.ReplaceByLabel(Crate.FromContent(RunTimeCrateLabel, tableData, AvailabilityType.Always));
+
                     CurrentActivityStorage.ReplaceByLabel(CreateExternalObjectHandlesCrate());
                 }
             }
@@ -138,9 +143,12 @@ namespace terminalExcel.Actions
 
         private Crate CreateExternalObjectHandlesCrate()
         {
+            var fileName = ExtractFileName(ConfigurationControls.FilePicker.Value);
+
             var externalObjectHandle = new ExternalObjectHandleDTO()
             {
-                Name = ExtractFileName(ConfigurationControls.FilePicker.Value),
+                Name = fileName,
+                Description = $"Table Data from Excel File '{fileName}'",
                 DirectUrl = ConfigurationControls.FilePicker.Value,
                 ManifestType = ManifestDiscovery.Default.GetManifestType<StandardTableDataCM>().Type
             };

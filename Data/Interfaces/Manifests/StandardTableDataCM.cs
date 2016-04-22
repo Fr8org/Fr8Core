@@ -12,6 +12,8 @@ namespace Data.Interfaces.Manifests
         }
 
         public List<TableRowDTO> Table { get; set; }
+
+        [ManifestField(IsHidden = true)]
         public bool FirstRowHeaders { get; set; }
 
         public TableRowDTO GetHeaderRow()
@@ -30,6 +32,7 @@ namespace Data.Interfaces.Manifests
         public List<TableCellDTO> Row;
     }
 
+    [System.Diagnostics.DebuggerDisplay("Key = '{Cell.Key}', Value = '{Cell.Value}'")]
     public class TableCellDTO
     {
         public TableCellDTO()

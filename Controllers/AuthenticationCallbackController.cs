@@ -12,6 +12,7 @@ using Hub.Interfaces;
 using Hub.Services;
 using HubWeb.ViewModels;
 using Data.Infrastructure;
+using Data.Infrastructure.StructureMap;
 
 namespace HubWeb.Controllers
 {
@@ -20,12 +21,14 @@ namespace HubWeb.Controllers
         private readonly IActivity _activity;
         private readonly IAuthorization _authorization;
         private readonly ITerminal _terminal;
+        private readonly ISecurityServices _security;
 
         public AuthenticationCallbackController()
         {
             _terminal = ObjectFactory.GetInstance<ITerminal>();
             _activity = ObjectFactory.GetInstance<IActivity>();
             _authorization = ObjectFactory.GetInstance<IAuthorization>();
+            _security = ObjectFactory.GetInstance<ISecurityServices>();
         }
 
         [HttpGet]
@@ -50,10 +53,15 @@ namespace HubWeb.Controllers
             {
                 throw new ApplicationException("Could not find terminal.");
             }
-            
+            string userId=null;
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                userId = _security.GetCurrentAccount(uow).Id;
+            }
             var externalAuthenticationDTO = new ExternalAuthenticationDTO()
             {
-                RequestQueryString = requestQueryString
+                RequestQueryString = requestQueryString,
+                Fr8UserId = userId
             };
 
             var response = await _authorization.GetOAuthToken(terminal, externalAuthenticationDTO);
