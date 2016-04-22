@@ -15,7 +15,7 @@ namespace terminalDocuSign.Interfaces
 
         void CreateConnect(string curFr8UserId, AuthorizationTokenDTO authTokenDTO);
 
-        void CreateOrUpdatePollingPlan(string curFr8UserId, AuthorizationTokenDTO authTokenDTO);
+        void CreateOrUpdatePolling(string curFr8UserId, AuthorizationTokenDTO authTokenDTO);
 
     }
 }

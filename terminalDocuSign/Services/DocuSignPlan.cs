@@ -117,52 +117,13 @@ namespace terminalDocuSign.Services
             }
         }
 
-        public async void CreateOrUpdatePollingPlan(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
+        public async void CreateOrUpdatePolling(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
             DocuSignPolling polling = new DocuSignPolling();
             polling.SchedulePolling(authTokenDTO.ExternalAccountId, curFr8UserId);
-            //var existingPlans = (await _hubCommunicator.GetPlansByName("DocuSignPolling", curFr8UserId, PlanVisibility.Internal)).ToList();
-
-            //string currentPlanId = "";
-            //if (existingPlans.Count > 0)
-            //{
-            //    currentPlanId = await FindAndActivateExistingPlan(curFr8UserId, "DocuSignPolling", authTokenDTO);
-            //}
-
-            //if (string.IsNullOrEmpty(currentPlanId))
-            //    currentPlanId = await CreatePlan_DocuSignPolling(curFr8UserId, authTokenDTO);
-
-            //await SchedulePlan(curFr8UserId, currentPlanId);
         }
 
-        private async Task SchedulePlan(string curFr8UserID, string planId)
-        {
-            string pollingInterval = CloudConfigurationManager.GetSetting("terminalDocuSign.PollingInterval");
-         //   await _hubCommunicator.SchedulePlan(curFr8UserID, planId, pollingInterval);
-        }
-
-        private async Task<string> CreatePlan_DocuSignPolling(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
-        {
-            var emptyMonitorPlan = new PlanEmptyDTO
-            {
-                Name = "DocuSignPolling",
-                Description = "DocuSignPolling",
-                PlanState = PlanState.Active,
-                Visibility = PlanVisibility.Internal
-            };
-
-            var docusignPolling = await _hubCommunicator.CreatePlan(emptyMonitorPlan, curFr8UserId);
-            var activityTemplates = await _hubCommunicator.GetActivityTemplates(null, curFr8UserId);
-            var pollingActivity = GetActivityTemplate(activityTemplates, "DocuSign_Polling");
-            await _hubCommunicator.CreateAndConfigureActivity(pollingActivity.Id,
-                curFr8UserId, "Polling DocuSign", 1, docusignPolling.Plan.StartingSubPlanId, false, new Guid(authTokenDTO.Id));
-
-            var planDO = Mapper.Map<PlanDO>(docusignPolling.Plan);
-            await _hubCommunicator.ActivatePlan(planDO, curFr8UserId);
-
-            return planDO.Id.ToStr();
-        }
-
+  
         private bool CheckIfSaveToFr8WarehouseConfiguredWithOldManifest(PlanDTO val)
         {
             return (_crateManager.GetStorage(val.Plan.SubPlans.ElementAt(0).Activities[1]).CrateContentsOfType<StandardConfigurationControlsCM>()
@@ -176,12 +137,8 @@ namespace terminalDocuSign.Services
                 var existingPlans = (await _hubCommunicator.GetPlansByName(plan_name, curFr8UserId, PlanVisibility.Internal)).ToList();
                 if (existingPlans.Count > 0)
                 {
-
                     //search for existing MADSE plan for this DS account and updating it
-
-
-                    // 27 march 2016 (Sergey P.)
-                    // Logic for removing obsolete plans might be removed a few weeks after this code end up in production
+                    
                     //1 Split existing plans in obsolete/malformed and new
                     var plans = existingPlans.GroupBy
                         (val =>

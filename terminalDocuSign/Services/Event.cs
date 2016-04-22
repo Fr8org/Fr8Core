@@ -43,20 +43,20 @@ namespace terminalDocuSign.Services
             {
                 var curFr8UserAndToken = ConfirmAuthentication(curExternalEventPayload);
 
-                //try
-                //{
-                //    _docuSignPlan.CreateConnect(curFr8UserAndToken.Item1, curFr8UserAndToken.Item2);
-                //}
-                //catch
-                //{
-                //create polling
-                _docuSignPlan.CreateOrUpdatePollingPlan(curFr8UserAndToken.Item1, curFr8UserAndToken.Item2);
-                //}
-                //finally
-                //{
-                //    // create MonitorAllDocuSignEvents plan
-                //    await _docuSignPlan.CreatePlan_MonitorAllDocuSignEvents(curFr8UserAndToken.Item1, curFr8UserAndToken.Item2);
-                //}
+                try
+                {
+                    _docuSignPlan.CreateConnect(curFr8UserAndToken.Item1, curFr8UserAndToken.Item2);
+                }
+                catch
+                {
+                    //create polling
+                    _docuSignPlan.CreateOrUpdatePolling(curFr8UserAndToken.Item1, curFr8UserAndToken.Item2);
+                }
+                finally
+                {
+                    // create MonitorAllDocuSignEvents plan
+                    await _docuSignPlan.CreatePlan_MonitorAllDocuSignEvents(curFr8UserAndToken.Item1, curFr8UserAndToken.Item2);
+                }
             }
 
             //If this is a connect event
