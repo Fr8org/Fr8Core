@@ -459,7 +459,7 @@ namespace Data.Control
                     return null;
             }
         }
-    }
+            }
 
     public class Button : ControlDefinitionDTO
     {
