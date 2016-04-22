@@ -15,6 +15,7 @@ using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Utilities.Configuration;
 using Utilities.Interfaces;
 
 namespace HubWeb.Controllers
@@ -30,14 +31,13 @@ namespace HubWeb.Controllers
 
             //TODO what happens to AlarmsController? does it stay in memory all this time?
             //TODO inspect this and change callback function to a static function if necessary
-            Expression<Action> action = () => ExecuteTerminalWithLogging(alarmDTO);
 
             //put Hubs job in "hub" queue to avoid processing of terminalDocuSign jobs
 
 #if DEBUG
-            BackgroundJob.Schedule(action, DateTime.Now.AddSeconds(10));
+            BackgroundJob.Schedule(() => Execute(alarmDTO), DateTime.Now.AddSeconds(10));
 #else
-            BackgroundJob.Schedule(action, alarmDTO.StartTime);
+            BackgroundJob.Schedule(()=>Execute(alarmDTO), alarmDTO.StartTime);
 #endif
 
             //TODO: Commented as part of DO - 1520. Need to rethink about this.
@@ -46,12 +46,8 @@ namespace HubWeb.Controllers
             return Ok();
         }
 
-        //TODO is this method called from somewhere else?
-        [HttpPost]
-        // as for now it seems that this is the only way to specify queue when you are schedulig the job
-        //https://discuss.hangfire.io/t/how-schedule-a-delayed-job-to-a-specific-queue/911
-        [Queue("hub")]
-        public void ExecuteTerminalWithLogging(AlarmDTO alarmDTO)
+        [Queue("hub"), MoveToTheHubQueueAttribute]
+        public void Execute(AlarmDTO alarmDTO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -78,6 +74,16 @@ namespace HubWeb.Controllers
                 }
                  * */
             }
+        }
+
+        //TODO is this method called from somewhere else?
+        [HttpPost]
+        // as for now it seems that this is the only way to specify queue when you are schedulig the job
+        //https://discuss.hangfire.io/t/how-schedule-a-delayed-job-to-a-specific-queue/911
+        [Queue("hub")]
+        public void ExecuteTerminalWithLogging(AlarmDTO alarmDTO)
+        {
+            Execute(alarmDTO);
         }
     }
 }

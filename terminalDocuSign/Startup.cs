@@ -11,6 +11,10 @@ using StructureMap;
 using System.Data.Entity;
 using Hangfire;
 using Hub.Security;
+using Hangfire.States;
+using Hangfire.Common;
+using System.Linq;
+using Utilities.Configuration;
 
 [assembly: OwinStartup(typeof(Startup))]
 
@@ -55,8 +59,11 @@ namespace terminalDocuSign
                 AuthorizationFilters = new[] { new HangFireAuthorizationFilter() },
             });
             app.UseHangfireServer(options);
+            GlobalJobFilters.Filters.Add(new MoveToTheHubQueueAttribute());
             GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
         }
+
+
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
         {

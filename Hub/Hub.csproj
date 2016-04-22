@@ -285,6 +285,7 @@
     <Compile Include="Infrastructure\fr8HMACAuthenticateAttribute.cs" />
     <Compile Include="Managers\HangfireJobDispatcher.cs" />
     <Compile Include="Interfaces\IJobDispatcher.cs" />
+    <Compile Include="Managers\HangFireJobFilter.cs" />
     <Compile Include="Managers\PlanManager.cs" />
     <Compile Include="Interfaces\IFact.cs" />
     <Compile Include="Interfaces\IOrganization.cs" />
