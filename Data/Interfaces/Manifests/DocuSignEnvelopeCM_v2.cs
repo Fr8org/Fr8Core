@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.States;
 
 namespace Data.Interfaces.Manifests
 {
@@ -11,14 +12,23 @@ namespace Data.Interfaces.Manifests
         [MtPrimaryKey]
         public string EnvelopeId { get; set; }
         public string Status { get; set; }
+        public string Subject { get; set; }
         public DateTime? StatusChangedDateTime { get; set; }
         public string CurrentRoutingOrderId { get; set; }
         public List<DocuSignRecipientStatus> Recipients { get; set; } = new List<DocuSignRecipientStatus>();
         public List<DocuSignTemplate> Templates { get; set; } = new List<DocuSignTemplate>();
         public string ExternalAccountId { get; set; }
+        public DateTime? CreateDate { get; set; }
+        public DateTime? SentDate { get; set; }
+
         public DocuSignEnvelopeCM_v2()
               : base(Constants.MT.DocuSignEnvelope_v2)
         {
+        }
+
+        public DocuSignRecipientStatus GetCurrentRecipient()
+        {
+            return this.Recipients?.OrderByDescending(a => a.RoutingOrderId).Where(a => a.RoutingOrderId == this.CurrentRoutingOrderId).FirstOrDefault();
         }
     }
 
@@ -46,6 +56,7 @@ namespace Data.Interfaces.Manifests
 
     public class DocuSignTemplate
     {
+        /// <summary>If event comes from connect - templateId will be empty </summary>
         public string TemplateId { get; set; }
         public string Name { get; set; }
         public string DocumentId { get; set; }

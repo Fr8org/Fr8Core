@@ -39,6 +39,7 @@ namespace terminalDocuSign.Infrastructure
             result.EnvelopeId = curDocuSignEnvelopeInfo.EnvelopeStatus.EnvelopeID;
             result.Status = Enum.GetName(typeof(EnvelopeStatusCode), curDocuSignEnvelopeInfo.EnvelopeStatus.Status);
             result.StatusChangedDateTime = DateTime.UtcNow;
+            result.Subject = curDocuSignEnvelopeInfo.EnvelopeStatus.Subject;
             result.ExternalAccountId = curDocuSignEnvelopeInfo.EnvelopeStatus.Email;
             //Recipients
             foreach (var recipient in curDocuSignEnvelopeInfo.EnvelopeStatus.RecipientStatuses)

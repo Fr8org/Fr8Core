@@ -28,6 +28,7 @@ using System.Web.Http.Results;
 using Nito.AsyncEx;
 using Hangfire.States;
 using Hangfire.Common;
+using Hangfire.Server;
 
 namespace terminalDocuSign.Services
 {
@@ -50,7 +51,6 @@ namespace terminalDocuSign.Services
         public void SchedulePolling(string externalAccountId, string curFr8UserId)
         {
             string pollingInterval = CloudConfigurationManager.GetSetting("terminalDocuSign.PollingInterval");
-            pollingInterval = "2";
             var jobId = GetSchedulledJobId(externalAccountId);
             RecurringJob.AddOrUpdate(jobId, () => LaunchScheduledActivity(externalAccountId, curFr8UserId, pollingInterval), "*/" + pollingInterval + " * * * *", null, "terminal_docusign");
         }
@@ -98,6 +98,8 @@ namespace terminalDocuSign.Services
             }
 
             // 2. Check if we processed these envelopes before and if so - retrieve them
+
+            //TODO: add overlapping minute handling 
             var recorded_crates = new List<DocuSignEnvelopeCM_v2>();
             //    var recorded_crates = await _hubCommunicator.GetStoredManifests(curFr8UserId, changed_envelopes);
             // 3. Fill polled envelopes with data 
@@ -173,6 +175,11 @@ namespace terminalDocuSign.Services
                 var recipients = api.ListRecipients(config.AccountId, envelope.EnvelopeId);
 
                 var filled_envelope = DocuSignEventParser.ParseAPIresponsesIntoCM(envelope, templates, recipients);
+
+                var envelopestatus = api.GetEnvelope(config.AccountId, envelope.EnvelopeId);
+                filled_envelope.CreateDate = DateTime.Parse(envelopestatus.CreatedDateTime);
+                filled_envelope.SentDate = DateTime.Parse(envelopestatus.SentDateTime);
+
                 result.Add(filled_envelope);
             }
 
