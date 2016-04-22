@@ -316,7 +316,7 @@ namespace terminalDocuSignTests.Integration
                         token = terminalDocuSign.AuthTokens.FirstOrDefault();
                     }
 
-                    Assert.NotNull(token);
+                    Assert.NotNull(token, "Failed to get the auth token for Docusign terminal. Token is null.");
                     tokenGuid = token.Id;
                 }
 
