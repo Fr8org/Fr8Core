@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using terminalSalesforce.Actions;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
 
@@ -184,28 +185,20 @@ namespace terminalSalesforceTests.Intergration
         private async Task PrepareGetData(PlanDTO plan)
         {
             var getDataActivity = plan.Plan.SubPlans.First().Activities.Last();
-
             //set lead and do the follow up config
-            using (var updatableStorage = Crate.GetUpdatableStorage(getDataActivity))
+            getDataActivity.UpdateControls<Get_Data_v1.ActivityUi>(x =>
             {
-                //select Lead
-                var configControls = updatableStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
-                (configControls.Content.Controls.Single(c => c.Name.Equals("SalesforceObjectSelector")) as DropDownList).selectedKey = "Lead";
-            }
+                x.SalesforceObjectSelector.selectedKey = SalesforceObjectType.Lead.ToString();
+            });
             getDataActivity = await ConfigureActivity(getDataActivity);
             Debug.WriteLine("Get Data Follow up config is successfull with Lead selected");
-
             //set the lead required fields.
-            using (var updatableStorage = Crate.GetUpdatableStorage(getDataActivity))
+            getDataActivity.UpdateControls<Get_Data_v1.ActivityUi>(x =>
             {
-                //give condition
-                var configControls = updatableStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
-                var conditionQuery = new List<FilterConditionDTO>() { new FilterConditionDTO { Field = "LastName", Operator = "eq", Value = "Unit" } };
-                (configControls.Content.Controls.Single(c => c.Name.Equals("SalesforceObjectFilter")) as QueryBuilder).Value = JsonConvert.SerializeObject(conditionQuery);
-            }
+                x.SalesforceObjectFilter.Value = JsonConvert.SerializeObject(new List <FilterConditionDTO> { new FilterConditionDTO { Field = "LastName", Operator = "eq", Value = "Unit" } });
+            });
             getDataActivity = await ConfigureActivity(getDataActivity);
             Debug.WriteLine("Get Data Follow up config is successfull with selection query fields set.");
-
             plan.Plan.SubPlans.First().Activities[1] = getDataActivity;
         }
     }

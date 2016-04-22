@@ -19,22 +19,22 @@ namespace terminalSalesforce.Actions
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
-            public DropDownList ObjectSelector { get; set; }
+            public DropDownList SalesforceObjectSelector { get; set; }
 
-            public QueryBuilder ObjectFilter { get; set; }
+            public QueryBuilder SalesforceObjectFilter { get; set; }
 
             public ActivityUi()
             {
-                ObjectSelector = new DropDownList
+                SalesforceObjectSelector = new DropDownList
                 {
-                    Name = nameof(ObjectSelector),
+                    Name = nameof(SalesforceObjectSelector),
                     Label = "Get Which Object?",
                     Required = true,
                     Events = new List<ControlEvent> {  ControlEvent.RequestConfig }
                 };
-                ObjectFilter = new QueryBuilder
+                SalesforceObjectFilter = new QueryBuilder
                 {
-                    Name = nameof(ObjectFilter),
+                    Name = nameof(SalesforceObjectFilter),
                     Label = "Meeting Which Conditions?",
                     Required = true,
                     Source = new FieldSourceDTO
@@ -43,8 +43,8 @@ namespace terminalSalesforce.Actions
                         ManifestType = CrateManifestTypes.StandardQueryFields
                     }
                 };
-                Controls.Add(ObjectSelector);
-                Controls.Add(ObjectFilter);
+                Controls.Add(SalesforceObjectSelector);
+                Controls.Add(SalesforceObjectFilter);
             }
         }
         //NOTE: this label must be the same as the one expected in QueryBuilder.ts
@@ -64,7 +64,7 @@ namespace terminalSalesforce.Actions
 
         protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
-            ConfigurationControls.ObjectSelector.ListItems = _salesforceManager.GetSalesforceObjectTypes()
+            ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager.GetSalesforceObjectTypes()
                                                                                 .Select(x => new ListItem() { Key = x.Key, Value = x.Key })
                                                                                 .ToList();
             runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
@@ -74,16 +74,16 @@ namespace terminalSalesforce.Actions
         protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
         {
             //If Salesforce object is empty then we should clear filters as they are no longer applicable
-            var selectedObject = ConfigurationControls.ObjectSelector.selectedKey;
+            var selectedObject = ConfigurationControls.SalesforceObjectSelector.selectedKey;
             if (string.IsNullOrEmpty(selectedObject))
             {
                 CurrentActivityStorage.RemoveByLabel(QueryFilterCrateLabel);
                 CurrentActivityStorage.RemoveByLabel(SalesforceObjectFieldsCrateLabel);
-                this[nameof(ActivityUi.ObjectSelector)] = selectedObject;
+                this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
                 return;
             }
             //If the same object is selected we shouldn't do anything
-            if (selectedObject == this[nameof(ActivityUi.ObjectSelector)])
+            if (selectedObject == this[nameof(ActivityUi.SalesforceObjectSelector)])
             {
                 return;
             }
@@ -101,14 +101,14 @@ namespace terminalSalesforce.Actions
                 new FieldDescriptionsCM(selectedObjectProperties),            
                 AvailabilityType.RunTime);
             CurrentActivityStorage.ReplaceByLabel(objectPropertiesCrate);
-            this[nameof(ActivityUi.ObjectSelector)] = selectedObject;
+            this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
             //Publish information for downstream activities
             runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
         }
 
         protected override async Task RunCurrentActivity()
         {
-            var salesforceObject = ConfigurationControls.ObjectSelector.selectedKey;
+            var salesforceObject = ConfigurationControls.SalesforceObjectSelector.selectedKey;
             if (string.IsNullOrEmpty(salesforceObject))
             {
                 throw new ActivityExecutionException("No Salesforce object is selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
@@ -118,7 +118,7 @@ namespace terminalSalesforce.Actions
                                             .Content
                                             .Fields
                                             .Select(x => x.Name);
-            var filterValue = ConfigurationControls.ObjectFilter.Value;
+            var filterValue = ConfigurationControls.SalesforceObjectFilter.Value;
             var filterDataDTO = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(filterValue);
             //If without filter, just get all selected objects
             //else prepare SOQL query to filter the objects based on the filter conditions

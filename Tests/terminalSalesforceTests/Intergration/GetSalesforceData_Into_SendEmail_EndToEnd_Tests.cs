@@ -47,11 +47,11 @@ namespace terminalSalesforceTests.Intergration
                 {
                     //select Lead
                     var configControls = updatableStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
-                (configControls.Content.Controls.Single(c => c.Name.Equals(nameof(Get_Data_v1.ActivityUi.ObjectSelector))) as DropDownList).selectedKey = "Lead";
+                (configControls.Content.Controls.Single(c => c.Name.Equals(nameof(Get_Data_v1.ActivityUi.SalesforceObjectSelector))) as DropDownList).selectedKey = "Lead";
 
                     //give condition
                     var conditionQuery = new List<FilterConditionDTO>() { new FilterConditionDTO { Field = "LastName", Operator = "eq", Value = "McSorely" } };
-                (configControls.Content.Controls.Single(c => c.Name.Equals(nameof(Get_Data_v1.ActivityUi.ObjectFilter))) as QueryBuilder).Value = JsonConvert.SerializeObject(conditionQuery);
+                (configControls.Content.Controls.Single(c => c.Name.Equals(nameof(Get_Data_v1.ActivityUi.SalesforceObjectFilter))) as QueryBuilder).Value = JsonConvert.SerializeObject(conditionQuery);
                 }
                 getData = await ConfigureActivity(getData);
             Assert.IsTrue(getData.CrateStorage.Crates.Any(c => c.Label.Equals(Get_Data_v1.SalesforceObjectFieldsCrateLabel)), 

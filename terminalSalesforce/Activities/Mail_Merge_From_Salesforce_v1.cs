@@ -239,9 +239,9 @@ namespace terminalSalesforce.Actions
                 var controlsCrate = storage.FirstCrate<StandardConfigurationControlsCM>();
                 var activityUi = new Get_Data_v1.ActivityUi().ClonePropertiesFrom(controlsCrate.Content) as Get_Data_v1.ActivityUi;
                 var solutionActivityUi = new ActivityUi().ClonePropertiesFrom(CrateManager.GetStorage(solutionActivity).FirstCrate<StandardConfigurationControlsCM>().Content) as ActivityUi;
-                activityUi.ObjectSelector.selectedKey = solutionActivityUi.SalesforceObjectSelector.selectedKey;
-                activityUi.ObjectSelector.Value = solutionActivityUi.SalesforceObjectSelector.Value;
-                activityUi.ObjectFilter.Value = solutionActivityUi.SalesforceObjectFilter.Value;
+                activityUi.SalesforceObjectSelector.selectedKey = solutionActivityUi.SalesforceObjectSelector.selectedKey;
+                activityUi.SalesforceObjectSelector.Value = solutionActivityUi.SalesforceObjectSelector.Value;
+                activityUi.SalesforceObjectFilter.Value = solutionActivityUi.SalesforceObjectFilter.Value;
                 storage.ReplaceByLabel(Crate.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
             }
         }

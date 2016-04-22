@@ -142,7 +142,7 @@ namespace terminalSalesforceTests.Actions
             {
                 var controlsCrate = crateStorage.FirstCrate<StandardConfigurationControlsCM>();
                 var activityUi = new Get_Data_v1.ActivityUi().ClonePropertiesFrom(controlsCrate.Content) as Get_Data_v1.ActivityUi;
-                activityUi.ObjectSelector.selectedKey = "Account";
+                activityUi.SalesforceObjectSelector.selectedKey = "Account";
                 controlsCrate.Content.ClonePropertiesFrom(activityUi);
             }
             return curActivityDO;
