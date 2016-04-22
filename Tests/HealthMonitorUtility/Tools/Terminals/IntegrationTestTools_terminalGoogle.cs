@@ -13,6 +13,7 @@ using NUnit.Framework;
 using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services;
+using terminalGoogle.Services.Authorization;
 
 namespace terminaBaselTests.Tools.Terminals
 {
