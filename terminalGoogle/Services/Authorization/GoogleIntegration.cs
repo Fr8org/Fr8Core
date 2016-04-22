@@ -84,6 +84,13 @@ namespace terminalGoogle.Services.Authorization
         {
             try
             {
+                // Checks token for expiration local
+                if (googleAuthDTO.Expires - DateTime.Now < TimeSpan.FromMinutes(5) 
+                    && string.IsNullOrEmpty(googleAuthDTO.RefreshToken))
+                {
+                    return false;
+                }
+
                 var url = CloudConfigurationManager.GetSetting("GoogleTokenInfo");
                 url = url.Replace("%TOKEN%", googleAuthDTO.AccessToken);
                 await _client.GetAsync(new Uri(url));

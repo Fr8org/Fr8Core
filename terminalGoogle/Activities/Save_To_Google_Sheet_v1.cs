@@ -153,10 +153,6 @@ namespace terminalGoogle.Actions
                 return true;
             }
             var token = GetGoogleAuthToken(authTokenDO);
-            if (token.Expires - DateTime.Now < TimeSpan.FromMinutes(5) && string.IsNullOrEmpty(token.RefreshToken))
-            {
-                return true;
-            }
 
             // Post token to google api to check its validity
             // Variable needs for more readability.

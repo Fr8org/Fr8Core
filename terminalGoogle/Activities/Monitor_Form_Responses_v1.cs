@@ -4,7 +4,6 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -15,9 +14,6 @@ using terminalGoogle.Services;
 using TerminalBase.Infrastructure;
 using Data.Control;
 using Data.States;
-using Hub.Exceptions;
-using Utilities.Configuration.Azure;
-using Newtonsoft.Json.Linq;
 using StructureMap;
 using terminalGoogle.Interfaces;
 
@@ -53,12 +49,7 @@ namespace terminalGoogle.Actions
                 return true;
             }
             var token = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
-
-            if (token.Expires - DateTime.Now < TimeSpan.FromMinutes(5) && string.IsNullOrEmpty(token.RefreshToken))
-            {
-                return true;
-            }
-
+           
             // Post token to google api to check its validity
             // Variable needs for more readability.
             var result = Task.Run(async () => await _googleIntegration.IsTokenInfoValid(token)).Result;

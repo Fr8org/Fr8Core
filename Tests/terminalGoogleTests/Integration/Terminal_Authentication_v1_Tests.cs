@@ -41,13 +41,16 @@ namespace terminalGoogleTests.Integration
         }
 
         [Test]
-        public async Task ShouldReturnFalse_WhenTokenInvalid()
+        [TestCase("foo", "bar", "12/31/9999")]
+        [TestCase("valid_token", "", "01/20/2001")]
+        public async Task ShouldReturnFalse_WhenTokenInvalid(string accessToken, string refreshToken, DateTime expires)
         {
             // Arrange
             var invalidToken = new GoogleAuthDTO
             {
-                 AccessToken= "foo",
-                 RefreshToken = "bar"
+                 AccessToken= accessToken,
+                 RefreshToken = refreshToken,
+                 Expires = expires
             };
             var sut = new GoogleIntegration();
             
