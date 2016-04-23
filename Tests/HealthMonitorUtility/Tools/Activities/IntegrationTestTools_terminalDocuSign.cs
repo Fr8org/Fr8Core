@@ -152,7 +152,8 @@ namespace terminaBaselTests.Tools.Activities
             //if (!defaultDocuSignAuthTokenExists)
             //{
             var terminalDocuSignTools = new Terminals.IntegrationTestTools_terminalDocuSign(_baseHubITest);
-            queryDocuSignActivity.AuthToken = await terminalDocuSignTools.GenerateAuthToken("fr8test@gmail.com", "fr8mesomething", queryDocuSignActivity.ActivityTemplate.Terminal);
+            // queryDocuSignActivity.AuthToken = await terminalDocuSignTools.GenerateAuthToken("fr8test@gmail.com", "fr8mesomething", queryDocuSignActivity.ActivityTemplate.Terminal);
+            queryDocuSignActivity.AuthToken = await terminalDocuSignTools.GenerateAuthToken("freight.testing@gmail.com", "I6HmXEbCxN", queryDocuSignActivity.ActivityTemplate.Terminal);
 
             var applyToken = new ManageAuthToken_Apply()
             {
