@@ -266,15 +266,17 @@
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
+    <Compile Include="Infrastructure\Authenticator.cs" />
     <Compile Include="Infrastructure\QuickbooksAccount.cs" />
+    <Compile Include="Interfaces\IAuthenticator.cs" />
     <Compile Include="Interfaces\IChartOfAccounts.cs" />
     <Compile Include="Interfaces\IJournalEntry.cs" />
-    <Compile Include="Interfaces\IConnectivity.cs" />
+    <Compile Include="Interfaces\IServiceWorker.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Services\ChartOfAccounts.cs" />
     <Compile Include="Services\JournalEntry.cs" />
-    <Compile Include="Services\Connectivity.cs" />
+    <Compile Include="Services\ServiceWorker.cs" />
     <Compile Include="Tests\Fixtures\Fixtures.cs" />
     <Compile Include="Tests\Services\JournalEntryTests.cs" />
     <Compile Include="Startup.cs" />
@@ -357,13 +359,9 @@
   </Target>
   -->
   <ItemGroup>
-    <Log4netConfigFiles Include="..\Config\*.terminals.*"/>
+    <Log4netConfigFiles Include="..\Config\*.terminals.*" />
   </ItemGroup>
-
   <Target Name="BeforeBuild">
-    <Copy
-        SourceFiles="@(Log4NetConfigFiles)"
-        DestinationFolder="."
-         />
+    <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
   </Target>
 </Project>

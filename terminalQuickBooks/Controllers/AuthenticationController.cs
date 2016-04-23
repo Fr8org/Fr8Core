@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
+using StructureMap;
 using TerminalBase.BaseClasses;
 using terminalQuickBooks.Interfaces;
 using terminalQuickBooks.Services;
@@ -12,20 +13,19 @@ namespace terminalQuickBooks.Controllers
     public class AuthenticationController : BaseTerminalController
     {
         private const string curTerminal = "terminalQuickBooks";
-
-        private readonly IConnectivity _connectivity;
-
+        
+        private readonly IAuthenticator _authenticator;
 
         public AuthenticationController()
         {
-            _connectivity = new Connectivity();
+            _authenticator = ObjectFactory.GetInstance<IAuthenticator>();
         }
 
         [HttpPost]
         [Route("initial_url")]
         public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
         {
-            var url = _connectivity.CreateAuthUrl();
+            var url = _authenticator.CreateAuthUrl();
 
             var externalAuthUrlDTO = new ExternalAuthUrlDTO()
             {
@@ -52,14 +52,9 @@ namespace terminalQuickBooks.Controllers
                     throw new ApplicationException("OAuth Token or OAuth Verifier or Realm ID or Data Source is empty.");
                 }
 
-                var oauthToken = await _connectivity.GetOAuthToken(oauth_token, oauth_verifier, realm_id);
-
-                return new AuthorizationTokenDTO()
-                {
-                    Token = oauthToken,
-                    ExternalAccountId = realm_id,
-                    ExternalStateToken = null
-                };
+                var authToken = await _authenticator.GetAuthToken(oauth_token, oauth_verifier, realm_id);
+                return authToken;
+               
             }
             catch (Exception ex)
             {

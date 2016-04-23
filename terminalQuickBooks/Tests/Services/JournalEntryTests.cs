@@ -9,6 +9,7 @@ using Intuit.Ipp.Data;
 using NUnit.Framework;
 using StructureMap;
 using terminalQuickBooks.Actions;
+using terminalQuickBooks.Interfaces;
 using terminalQuickBooks.Services;
 using TerminalBase.Infrastructure;
 using UtilitiesTesting;
@@ -20,14 +21,15 @@ namespace terminalQuickBooks.Tests.Services
     public class JournalEntryTests : BaseTest
     {
         private JournalEntry _journalEntry;
-        private Connectivity _connectivity;
+        private IServiceWorker _serviceWorker;
         public override void SetUp()
         {
             base.SetUp();
             TerminalBootstrapper.ConfigureTest();
             _journalEntry = new JournalEntry();
-            _connectivity = new Connectivity();
+            _serviceWorker = ObjectFactory.GetInstance<IServiceWorker>();
         }
+        
         [Test]
         public void JournalEntryService_ConvertsCrate_To_JouralEntry()
         {
@@ -56,6 +58,7 @@ namespace terminalQuickBooks.Tests.Services
             Assert.AreEqual(DateTime.Parse("2015-12-15"), journalEntry.TxnDate);
             Assert.AreEqual("That is the test crate", journalEntry.PrivateNote);
         }
+
         [Test]
         public void JournalEntryService_ConvertJournalEntry_To_Crate()
         {
@@ -91,10 +94,11 @@ namespace terminalQuickBooks.Tests.Services
         /// <param name="StandardAccountingTransactionDTO"></param>
         /// <param name="authTokenDO"></param>
         /// <returns></returns>
+        /// 
         public StandardAccountingTransactionDTO Find(StandardAccountingTransactionDTO curAccountingTransactionDto, AuthorizationTokenDO authTokenDO)
         {
             var curJournalEntry = _journalEntry.CreateQbJournalEntry(curAccountingTransactionDto);
-            var curDataService = _connectivity.GetDataService(authTokenDO);
+            var curDataService = _serviceWorker.GetDataService(authTokenDO);
             Intuit.Ipp.Data.JournalEntry resultJournalEntry;
             try
             {

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using Data.Entities;
 using Data.Interfaces.Manifests;
+using StructureMap;
 using terminalQuickBooks.Infrastructure;
 using terminalQuickBooks.Interfaces;
 
@@ -11,6 +12,7 @@ namespace terminalQuickBooks.Services
 {
     public class ChartOfAccounts: IChartOfAccounts
     {
+
         /// <summary>
         /// Obtains list of accounts from Quick
         /// </summary>
@@ -18,8 +20,8 @@ namespace terminalQuickBooks.Services
         /// <returns>List of Accounts of Intuit type</returns>
         public List<Intuit.Ipp.Data.Account> GetAccountList(AuthorizationTokenDO authTokenDO)
         {
-            var _qbConnectivity = new Connectivity();
-            var curDataService = _qbConnectivity.GetDataService(authTokenDO);
+            var _serviceWorker = ObjectFactory.GetInstance<IServiceWorker>();
+            var curDataService = _serviceWorker.GetDataService(authTokenDO);
             var curAccountList = curDataService.FindAll(new Intuit.Ipp.Data.Account()).ToList();
             return curAccountList;
         }

@@ -6,6 +6,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Intuit.Ipp.Data;
 using Intuit.Ipp.DataService;
+using StructureMap;
 using terminalQuickBooks.Interfaces;
 
 namespace terminalQuickBooks.Services
@@ -16,11 +17,11 @@ namespace terminalQuickBooks.Services
     /// </summary>
     public class JournalEntry : IJournalEntry
     {
-        private Connectivity _qbConnectivity;
+        private IServiceWorker _serviceWorker;
         private DataService _dataService;
         public JournalEntry()
         {
-            _qbConnectivity = new Connectivity();
+            _serviceWorker = ObjectFactory.GetInstance<IServiceWorker>();
         }
         /// <summary>
         /// Converts JournalEntry to StandardAccountingTransactionDTO object
@@ -107,7 +108,7 @@ namespace terminalQuickBooks.Services
         public void Create(StandardAccountingTransactionDTO curAccountingTransactionDto, AuthorizationTokenDO authTokenDO)
         {
             var curJournalEntry = CreateQbJournalEntry(curAccountingTransactionDto);
-            var curDataService = _qbConnectivity.GetDataService(authTokenDO);
+            var curDataService = _serviceWorker.GetDataService(authTokenDO);
             try
             {
                 curDataService.Add(curJournalEntry);

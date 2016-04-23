@@ -10,11 +10,9 @@ using Intuit.Ipp.DataService;
 
 namespace terminalQuickBooks.Interfaces
 {
-    public interface IConnectivity
+    public interface IServiceWorker
     {
-        string CreateAuthUrl();
         DataService GetDataService(AuthorizationTokenDO authTokenDO);
-        Task<string> GetOAuthToken(string oauthToken, string oauthVerifier, string realmId);
         ServiceContext CreateServiceContext(string oauthToken);
     }
 }
