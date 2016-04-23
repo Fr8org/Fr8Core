@@ -108,7 +108,7 @@ catch
 }
 
 $tasks = $vsoResponse.records | where {$_.type -eq "Task"}
-$succeededBuildSteps = $tasks | where {$_.name -notlike "Update GitHub status*" -and $_.state -eq "completed" -and $_.result -eq "succeeded"}
+$succeededBuildSteps = $tasks | where {$_.name -notlike "Update GitHub status*" -and $_.state -eq "completed" -and $_.result -eq "succeeded" -and $_.state -eq 'Disabled'}
 
 if ($succeededBuildSteps.Count -eq $tasks.Count - 1)
 {
