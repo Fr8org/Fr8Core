@@ -103,23 +103,7 @@ namespace terminalGoogle.Activities
                 var newValues = Crate.FromContent(ConfigurationCrateLabel, new FieldDescriptionsCM(value), AvailabilityType.Configuration);
                 CurrentActivityStorage.ReplaceByLabel(newValues);
             }
-        }
-
-        private GoogleAuthDTO GetGoogleAuthToken(AuthorizationTokenDO authTokenDO = null)
-        {
-            return JsonConvert.DeserializeObject<GoogleAuthDTO>((authTokenDO ?? AuthorizationToken).Token);
-        }
-
-        public override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
-        {
-            if (base.NeedsAuthentication(authTokenDO))
-            {
-                return true;
-            }
-            var token = GetGoogleAuthToken(authTokenDO);
-            // we may also post token to google api to check its validity
-            return token.Expires - DateTime.Now < TimeSpan.FromMinutes(5) && string.IsNullOrEmpty(token.RefreshToken);
-        }
+        }    
 
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
@@ -146,7 +130,6 @@ namespace terminalGoogle.Activities
                     ConfigurationControls.SpreadsheetList.Value = null;
                 }
             }
-
 
             CurrentActivityStorage.RemoveByLabel(ColumnHeadersCrateLabel);
             //If spreadsheet selection is cleared we hide worksheet DDLB

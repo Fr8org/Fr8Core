@@ -10,6 +10,7 @@ using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
 using Newtonsoft.Json;
+using terminalGoogle.Actions;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services;
 using TerminalBase.BaseClasses;
@@ -29,35 +30,62 @@ namespace terminalGoogle.Activities
     }
 
 
-    public class Monitor_Form_Responses_v1 : EnhancedTerminalActivity<Monitor_Form_Responses_v1.ActivityUi>
-    {
+    public class Monitor_Form_Responses_v1 : BaseGoogleTerminalActivity<Monitor_Form_Responses_v1.ActivityUi>
+    {  
+        public class ActivityUi : StandardConfigurationControlsCM
+        {
+            public DropDownList ExistingFormsList { get; set; }
+
+            public ActivityUi()
+            {
+                ExistingFormsList = new DropDownList()
+                {
+                    Label = "Select Google Form",
+                    Name = "Selected_Google_Form",
+                    Required = true,
+                    Source = null,
+                    Events = new List<ControlEvent>() {new ControlEvent("onChange", "requestConfig")}
+                };
+                Controls.Add(ExistingFormsList);
+            }
+        }
         private readonly GoogleDrive _googleDrive;
         private readonly GoogleAppScript _googleAppScript;
-        public DropDownList ExistingSpreadsheetsList { get; set; }
-
-        public Monitor_Form_Responses_v1() : base(true)
+        private const string ConfigurationCrateLabel = "Selected Form";
+        private const string RunTimeCrateLabel = "Google Form Payload Data";
+        public Monitor_Form_Responses_v1()
         {
             _googleDrive = new GoogleDrive();
             _googleAppScript = new GoogleAppScript();
         }
-        public class ActivityUi : StandardConfigurationControlsCM
+        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
-            var fieldSelectTemplate = new DropDownList()
-            {
-                Label = "Select Google Form",
-                Name = "Selected_Google_Form",
-                Required = true,
-                Source = null,
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
-            };
+            var formList = await _googleDrive.GetGoogleForms(GetGoogleAuthToken());
+            ConfigurationControls.ExistingFormsList.ListItems = formList.Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
+            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+        }
+        //protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        //{
+        //    if (curActivityDO.Id != Guid.Empty)
+        //    {
+        //        var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
+        //        var configurationCrate = PackCrate_ConfigurationControls();
+        //        await FillSelectedGoogleFormSource(configurationCrate, "Selected_Google_Form", authDTO);
+        //        var eventCrate = CreateEventSubscriptionCrate();
 
-            var controls = PackControlsCrate(fieldSelectTemplate);
-            return controls;
-        }
-        protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
-        {
-            throw new NotImplementedException();
-        }
+        //        using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+        //        {
+        //            crateStorage.Add(configurationCrate);
+        //            crateStorage.Add(eventCrate);
+        //        }
+        //    }
+        //    else
+        //    {
+        //        throw new ArgumentException(
+        //            "Configuration requires the submission of an Activity that has a real ActivityId");
+        //    }
+        //    return await Task.FromResult(curActivityDO);
+        //}
 
         protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
         {
@@ -79,130 +107,106 @@ namespace terminalGoogle.Activities
                     !string.IsNullOrEmpty(token.RefreshToken));
         }
 
-        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            try
-            {
-                if (CheckAuthentication(curActivityDO, authTokenDO))
-                {
-                    return curActivityDO;
-                }
+        //public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        //{
+        //    try
+        //    {
+        //        if (CheckAuthentication(curActivityDO, authTokenDO))
+        //        {
+        //            return curActivityDO;
+        //        }
 
-                return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
-            }
-            catch (Exception ex)
-            {
-                if (GoogleAuthHelper.IsTokenInvalidation(ex))
-                {
-                    AddAuthenticationCrate(curActivityDO, true);
-                    return curActivityDO;
-                }
+        //        return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        if (GoogleAuthHelper.IsTokenInvalidation(ex))
+        //        {
+        //            AddAuthenticationCrate(curActivityDO, true);
+        //            return curActivityDO;
+        //        }
 
-                throw;
-            }
-        }
+        //        throw;
+        //    }
+        //}
 
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
 
-            using (var storage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                var ccCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
-                var control = ccCrate.FindByNameNested<DropDownList>("Selected_Google_Form");
-                //If no Google Form is selected, reload the available forms from Google Drive Account
-                if (string.IsNullOrWhiteSpace(control?.Value))
-                {
-                    await FillSelectedGoogleFormSource(storage.CratesOfType<StandardConfigurationControlsCM>().First(), "Selected_Google_Form", authDTO);
-                    return curActivityDO;
-                }
-                /*var result = await _googleAppScript.RunScript("M_snhqvaPfe7gMc5XhGu52ZK7araUiK37", "getFoldersUnderRoot", authDTO, control.Value);
-                    object response;
+
+        //protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        //{
+        //    var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
+
+        //    using (var storage = CrateManager.GetUpdatableStorage(curActivityDO))
+        //    {
+        //        var ccCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
+        //        var control = ccCrate.FindByNameNested<DropDownList>("Selected_Google_Form");
+        //        //If no Google Form is selected, reload the available forms from Google Drive Account
+        //        if (string.IsNullOrWhiteSpace(control?.Value))
+        //        {
+        //            await FillSelectedGoogleFormSource(storage.CratesOfType<StandardConfigurationControlsCM>().First(), "Selected_Google_Form", authDTO);
+        //            return curActivityDO;
+        //        }
+        //        /*var result = await _googleAppScript.RunScript("M_snhqvaPfe7gMc5XhGu52ZK7araUiK37", "getFoldersUnderRoot", authDTO, control.Value);
+        //            object response;
                     
-                    if (result.TryGetValue("result", out response))
-                    {
-                        var items = ((JToken) response).ToObject<EnumerateFormFieldsResponseItem[]>();
+        //            if (result.TryGetValue("result", out response))
+        //            {
+        //                var items = ((JToken) response).ToObject<EnumerateFormFieldsResponseItem[]>();
 
-                        storage.RemoveByLabel("Google Form Payload Data");
-                        storage.Add(CrateManager.CreateDesignTimeFieldsCrate("Google Form Payload Data", AvailabilityType.RunTime, items.Select(x => new FieldDTO(x.Title, x.Title)
-                        {
-                            Availability = AvailabilityType.RunTime,
-                            SourceCrateLabel = "Google Form Payload Data",
-                            SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
-                        }).ToArray()));
-                    }*/
+        //                storage.RemoveByLabel("Google Form Payload Data");
+        //                storage.Add(CrateManager.CreateDesignTimeFieldsCrate("Google Form Payload Data", AvailabilityType.RunTime, items.Select(x => new FieldDTO(x.Title, x.Title)
+        //                {
+        //                    Availability = AvailabilityType.RunTime,
+        //                    SourceCrateLabel = "Google Form Payload Data",
+        //                    SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
+        //                }).ToArray()));
+        //            }*/
 
 
-                storage.RemoveByLabel("Google Form Payload Data");
-                storage.Add(CrateManager.CreateDesignTimeFieldsCrate("Google Form Payload Data", AvailabilityType.RunTime, new[]
-                {
-                    new FieldDTO("Full Name", "Full Name")
-                    {
-                        Availability = AvailabilityType.RunTime,
-                        SourceCrateLabel = "Google Form Payload Data",
-                        SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
-                    },
-                    new FieldDTO("TR ID", "TR ID")
-                    {
-                        Availability = AvailabilityType.RunTime,
-                        SourceCrateLabel = "Google Form Payload Data",
-                        SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
-                    },
-                    new FieldDTO("Email Address", "Email Address")
-                    {
-                        Availability = AvailabilityType.RunTime,
-                        SourceCrateLabel = "Google Form Payload Data",
-                        SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
-                    },
-                    new FieldDTO("Period of Availability", "Period of Availability")
-                    {
-                        Availability = AvailabilityType.RunTime,
-                        SourceCrateLabel = "Google Form Payload Data",
-                        SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
-                    }
-                }));
-            }
+        //        storage.RemoveByLabel("Google Form Payload Data");
+        //        storage.Add(CrateManager.CreateDesignTimeFieldsCrate("Google Form Payload Data", AvailabilityType.RunTime, new[]
+        //        {
+        //            new FieldDTO("Full Name", "Full Name")
+        //            {
+        //                Availability = AvailabilityType.RunTime,
+        //                SourceCrateLabel = "Google Form Payload Data",
+        //                SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
+        //            },
+        //            new FieldDTO("TR ID", "TR ID")
+        //            {
+        //                Availability = AvailabilityType.RunTime,
+        //                SourceCrateLabel = "Google Form Payload Data",
+        //                SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
+        //            },
+        //            new FieldDTO("Email Address", "Email Address")
+        //            {
+        //                Availability = AvailabilityType.RunTime,
+        //                SourceCrateLabel = "Google Form Payload Data",
+        //                SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
+        //            },
+        //            new FieldDTO("Period of Availability", "Period of Availability")
+        //            {
+        //                Availability = AvailabilityType.RunTime,
+        //                SourceCrateLabel = "Google Form Payload Data",
+        //                SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
+        //            }
+        //        }));
+        //    }
 
-            return curActivityDO;
-        }
+        //    return curActivityDO;
+        //}
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
-        {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
+        //public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        //{
+        //    if (CrateManager.IsStorageEmpty(curActivityDO))
+        //    {
+        //        return ConfigurationRequestType.Initial;
+        //    }
 
-            return ConfigurationRequestType.Followup;
-        }
+        //    return ConfigurationRequestType.Followup;
+        //}
 
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            if (curActivityDO.Id != Guid.Empty)
-            {
-                var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
-                var configurationCrate = PackCrate_ConfigurationControls();
-                await FillSelectedGoogleFormSource(configurationCrate, "Selected_Google_Form", authDTO);
-                var eventCrate = CreateEventSubscriptionCrate();
 
-                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-                {
-                    crateStorage.Add(configurationCrate);
-                    crateStorage.Add(eventCrate);
-                }
-            }
-            else
-            {
-                throw new ArgumentException(
-                    "Configuration requires the submission of an Activity that has a real ActivityId");
-            }
-            return await Task.FromResult(curActivityDO);
-        }
-
-        private Crate PackCrate_ConfigurationControls()
-        {
-          
-        }
 
 
 
@@ -219,50 +223,50 @@ namespace terminalGoogle.Activities
                 );
         }
 
-        public override async Task<ActivityDO> Activate(ActivityDO curActionDTO, AuthorizationTokenDO authTokenDO)
-        {
-            var googleAuthDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
+        //public override async Task<ActivityDO> Activate(ActivityDO curActionDTO, AuthorizationTokenDO authTokenDO)
+        //{
+        //    var googleAuthDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
 
-            //get form id
-            var controlsCrate = CrateManager.GetStorage(curActionDTO).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-            var standardControls = controlsCrate.Get<StandardConfigurationControlsCM>();
+        //    //get form id
+        //    var controlsCrate = CrateManager.GetStorage(curActionDTO).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+        //    var standardControls = controlsCrate.Get<StandardConfigurationControlsCM>();
 
-            var googleFormControl = standardControls.FindByName("Selected_Google_Form");
+        //    var googleFormControl = standardControls.FindByName("Selected_Google_Form");
 
-            var formId = googleFormControl.Value;
+        //    var formId = googleFormControl.Value;
 
-            if (string.IsNullOrEmpty(formId))
-                throw new ArgumentNullException("Google Form selected is empty. Please select google form to receive.");
+        //    if (string.IsNullOrEmpty(formId))
+        //        throw new ArgumentNullException("Google Form selected is empty. Please select google form to receive.");
 
-            var scriptUrl = await _googleDrive.CreateFr8TriggerForDocument(googleAuthDTO, formId);
-            await HubCommunicator.NotifyUser(new TerminalNotificationDTO
-            {
-                Type = "Success",
-                ActivityName = "Monitor_Form_Responses",
-                ActivityVersion = "1",
-                TerminalName = "terminalGoogle",
-                TerminalVersion = "1",
-                Message = "You need to create fr8 trigger on current form please go to this url and run Initialize function manually. Ignore this message if you completed this step before. " + scriptUrl,
-                Subject = "Trigger creation URL"
-            }, CurrentFr8UserId);
+        //    var scriptUrl = await _googleDrive.CreateFr8TriggerForDocument(googleAuthDTO, formId);
+        //    await HubCommunicator.NotifyUser(new TerminalNotificationDTO
+        //    {
+        //        Type = "Success",
+        //        ActivityName = "Monitor_Form_Responses",
+        //        ActivityVersion = "1",
+        //        TerminalName = "terminalGoogle",
+        //        TerminalVersion = "1",
+        //        Message = "You need to create fr8 trigger on current form please go to this url and run Initialize function manually. Ignore this message if you completed this step before. " + scriptUrl,
+        //        Subject = "Trigger creation URL"
+        //    }, CurrentFr8UserId);
 
-            /*
-            var fieldResult = new List<FieldDTO>() { new FieldDTO() { Key = result, Value = result } };
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActionDTO))
-            {
-                crateStorage.Add(Data.Crates.Crate.FromContent("Google Form Payload Data", new StandardPayloadDataCM(fieldResult)));
-            }
-            */
-            return await Task.FromResult(curActionDTO);
-        }
-
-
+        //    /*
+        //    var fieldResult = new List<FieldDTO>() { new FieldDTO() { Key = result, Value = result } };
+        //    using (var crateStorage = CrateManager.GetUpdatableStorage(curActionDTO))
+        //    {
+        //        crateStorage.Add(Data.Crates.Crate.FromContent("Google Form Payload Data", new StandardPayloadDataCM(fieldResult)));
+        //    }
+        //    */
+        //    return await Task.FromResult(curActionDTO);
+        //}
 
 
-        public override async Task<ActivityDO> Deactivate(ActivityDO curActionDTO)
-        {
-            return await Task.FromResult(curActionDTO);
-        }
+
+
+        //public override async Task<ActivityDO> Deactivate(ActivityDO curActionDTO)
+        //{
+        //    return await Task.FromResult(curActionDTO);
+        //}
 
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
@@ -348,15 +352,15 @@ namespace terminalGoogle.Activities
 
         #region Fill Source
 
-        private async Task FillSelectedGoogleFormSource(Crate configurationCrate, string controlName, GoogleAuthDTO authDTO)
-        {
-            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
-            if (control != null)
-            {
-                control.ListItems = await GetGoogleForms(authDTO);
-            }
-        }
+        //private async Task FillSelectedGoogleFormSource(GoogleAuthDTO authDTO)
+        //{
+            
+        //    var control = configurationControl.FindByNameNested<DropDownList>(controlName);
+        //    if (control != null)
+        //    {
+        //        control.ListItems = await GetGoogleForms(authDTO);
+        //    }
+        //}
 
         private async Task<List<ListItem>> GetGoogleForms(GoogleAuthDTO authDTO)
         {
