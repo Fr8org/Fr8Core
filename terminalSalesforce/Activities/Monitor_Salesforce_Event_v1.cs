@@ -93,32 +93,13 @@ namespace terminalSalesforce.Actions
             }
 
             var eventSubscriptionCrate = PackEventSubscriptionsCrate(ConfigurationControls);
+
             CurrentActivityStorage.ReplaceByLabel(eventSubscriptionCrate);
-
-            CurrentActivityStorage.ReplaceByLabel(
-                CrateManager.CreateDesignTimeFieldsCrate("Monitor Salesforce Fields", CreateSfMonitorDesignTimeFields().ToList(), AvailabilityType.RunTime));
-
-            var eventCrate = CrateManager.CreateManifestDescriptionCrate(
-                                            "Available Run-Time Objects",
-                                            MT.SalesforceEvent.ToString(),
-                                            ((int)MT.SalesforceEvent).ToString(CultureInfo.InvariantCulture),
-                                            AvailabilityType.RunTime);
-
-            var tableDataCrate = CrateManager.CreateManifestDescriptionCrate(
-                                            "Available Run-Time Objects",
-                                            MT.StandardTableData.ToString(),
-                                            ((int)MT.StandardTableData).ToString(CultureInfo.InvariantCulture),
-                                            AvailabilityType.RunTime);
-
-            CurrentActivityStorage.RemoveByLabel("Available Run-Time Objects");
-            CurrentActivityStorage.AddRange(new List<Crate> { eventCrate, tableDataCrate });
+            
+            runtimeCrateManager.MarkAvailableAtRuntime<SalesforceEventCM>("Salesforce Event").AddFields(CreateSfMonitorDesignTimeFields());
 
             var selectedObjectProperties = await _salesforceManager.GetFields(curSfChosenObject, AuthorizationToken);
-            var objectPropertiesCrate = Crate<FieldDescriptionsCM>.FromContent(
-                SalesforceObjectFieldsCrateLabel,
-                new FieldDescriptionsCM(selectedObjectProperties),
-                AvailabilityType.RunTime);
-            CurrentActivityStorage.ReplaceByLabel(objectPropertiesCrate);
+            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel).AddFields(selectedObjectProperties);
         }
 
         protected override async Task RunCurrentActivity()
@@ -128,8 +109,7 @@ namespace terminalSalesforce.Actions
 
             //if the payload does not contain Salesforce Event Notificaiton Payload, then it means,
             //user initially runs this plan. Just acknowledge that the plan is activated successfully and it monitors the Salesforce events
-            if (sfEventPayloads == null || 
-                sfEventPayloads.Count == 0 || 
+            if (sfEventPayloads.Count == 0 || 
                 !sfEventPayloads.Any(payload => payload.Label.Equals("Salesforce Event Notification Payload")))
             {
                 await Activate(CurrentActivity, AuthorizationToken);
@@ -160,8 +140,7 @@ namespace terminalSalesforce.Actions
                 };
 
                 //store the SalesforceEventCM into the current payload
-                CurrentPayloadStorage.ReplaceByLabel(
-                    Crate.FromContent("Salesforce Event", sfEvent, AvailabilityType.RunTime));
+                CurrentPayloadStorage.ReplaceByLabel(Crate.FromContent("Salesforce Event", sfEvent));
             });
 
             //get the currently selected object fields
@@ -181,7 +160,7 @@ namespace terminalSalesforce.Actions
                                                 salesforceObjectFields, 
                                                 string.Format("ID = '{0}'", sfEvent.ObjectId), 
                                                 AuthorizationToken);
-                CurrentPayloadStorage.Add(Crate<StandardTableDataCM>.FromContent(RuntimeDataCrateLabel, resultObjects, AvailabilityType.RunTime));
+                CurrentPayloadStorage.Add(Crate<StandardTableDataCM>.FromContent(RuntimeDataCrateLabel, resultObjects));
             }
         }
 

@@ -23,6 +23,16 @@ namespace TerminalBase.BaseClasses
                 _manifestType = manifestType;
             }
 
+            public FieldConfigurator AddFields(IEnumerable<FieldDTO> fields)
+            {
+                foreach (var fieldDto in fields)
+                {
+                    AddField(fieldDto);
+                }
+
+                return this;
+            }
+
             public FieldConfigurator AddField(FieldDTO field)
             {
                 field.SourceCrateLabel = _label;
