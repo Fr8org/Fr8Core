@@ -42,7 +42,17 @@ namespace terminalGoogle.Activities
         }
         public class ActivityUi : StandardConfigurationControlsCM
         {
+            var fieldSelectTemplate = new DropDownList()
+            {
+                Label = "Select Google Form",
+                Name = "Selected_Google_Form",
+                Required = true,
+                Source = null,
+                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
+            };
 
+            var controls = PackControlsCrate(fieldSelectTemplate);
+            return controls;
         }
         protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
@@ -191,17 +201,7 @@ namespace terminalGoogle.Activities
 
         private Crate PackCrate_ConfigurationControls()
         {
-            var fieldSelectTemplate = new DropDownList()
-            {
-                Label = "Select Google Form",
-                Name = "Selected_Google_Form",
-                Required = true,
-                Source = null,
-                Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
-            };
-
-            var controls = PackControlsCrate(fieldSelectTemplate);
-            return controls;
+          
         }
 
 
