@@ -156,7 +156,6 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual("9a4d2154-5b18-4316-9824-09432e62f458", docuSignTemplate.Value, "Selected DocuSign Template did not save on Send DocuSign Envelope activity.");
             Assert.AreEqual("Medical_Form_v1", docuSignTemplate.selectedKey, "Selected DocuSign Template did not save on Send DocuSign Envelope activity.");
 
-            Assert.True(false);
             //
             // Configure Send DocuSign Envelope action
             //
