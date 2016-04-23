@@ -28,7 +28,7 @@ namespace HubTests.Services
         }
 
         [Test]
-        public void GetDesignTimeFieldsByDirection_ShouldReturnDesignTimeFieldsCrate()
+        public void GetAvailableData_ShouldReturnFields()
         {
             var plan = new PlanDO();
             plan.Name = "sdfasdfasdf";
@@ -42,12 +42,12 @@ namespace HubTests.Services
                 uow.PlanRepository.Add(plan);
                 uow.SaveChanges();
             }
-            
-            var fieldsCrate = _planNode.GetDesignTimeFieldsByDirection(testActionTree.ChildNodes.Last().Id, CrateDirection.Upstream, AvailabilityType.NotSet);
+
+            IPlanNode planNodeService = ObjectFactory.GetInstance<IPlanNode>();
+            var fieldsCrate = planNodeService.GetAvailableData(testActionTree.ChildNodes.Last().Id, CrateDirection.Upstream, AvailabilityType.NotSet);
             Assert.NotNull(fieldsCrate);
-            Assert.NotNull(fieldsCrate.Fields);
-            Assert.IsInstanceOfType(typeof(FieldDescriptionsCM), fieldsCrate);
-            Assert.AreEqual(66, fieldsCrate.Fields.Count());
+            Assert.NotNull(fieldsCrate.AvailableFields);
+            Assert.AreEqual(66, fieldsCrate.AvailableFields.Count);
         }
 
         [Test]

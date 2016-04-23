@@ -30,6 +30,7 @@ namespace TerminalBase.BaseClasses
     //standard ProcessConfigurationRequest
     public delegate ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO);
 
+
     public class BaseTerminalActivity
     {
         #region Fields
@@ -387,6 +388,13 @@ namespace TerminalBase.BaseClasses
                     }
                     return curActivityDO;
                 }
+                
+                //clean any existing crates with "Validation Errors" that can be present from previous
+                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+                {
+                    crateStorage.RemoveByLabel("Validation Errors");
+                }
+                
                 var result = await FollowupConfigurationResponse(curActivityDO, authToken);
                 UpdateRuntimeAvailableCrates(result);
                 return result;
@@ -521,7 +529,7 @@ namespace TerminalBase.BaseClasses
 
             return foundActivity;
         }
-
+        
         /// <summary>
         /// DON'T USE THIS FUNCTION THIS IS JUST FOR BACKWARD COMPABILITY !!
         /// </summary>
@@ -695,18 +703,17 @@ namespace TerminalBase.BaseClasses
             // return await Activity.GetCratesByDirection<TManifest>(activityId, direction);
         }
 
+        public Task<IncomingCratesDTO> GetAvailableData(ActivityDO activity, CrateDirection direction = CrateDirection.Upstream, AvailabilityType availability = AvailabilityType.RunTime)
+        {
+            return HubCommunicator.GetAvailableData(activity, direction, availability, CurrentFr8UserId);
+        }
+
         //wrapper for support test method
         public virtual async Task<List<Crate>> GetCratesByDirection(ActivityDO activityDO, CrateDirection direction)
         {
             return await HubCommunicator.GetCratesByDirection(activityDO, direction, CurrentFr8UserId);
         }
-
-        public virtual async Task<FieldDescriptionsCM> GetDesignTimeFields(Guid activityId, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
-        {
-            var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(activityId, direction, availability, CurrentFr8UserId);
-            return mergedFields;
-        }
-
+        
         public virtual async Task<FieldDescriptionsCM> GetDesignTimeFields(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
         {
             var mergedFields = await HubCommunicator.GetDesignTimeFieldsByDirection(activityDO, direction, availability, CurrentFr8UserId);
@@ -761,7 +768,7 @@ namespace TerminalBase.BaseClasses
 
         protected async Task<Crate<FieldDescriptionsCM>> MergeUpstreamFields(ActivityDO activityDO, string label)
         {
-            var curUpstreamFields = (await GetDesignTimeFields(activityDO.Id, CrateDirection.Upstream)).Fields.ToArray();
+            var curUpstreamFields = (await GetDesignTimeFields(activityDO, CrateDirection.Upstream)).Fields.ToArray();
             var upstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
 
             return upstreamFieldsCrate;
@@ -1140,12 +1147,15 @@ namespace TerminalBase.BaseClasses
                         {
                             case "TextBlock":
                             case "TextBox":
+                            case "BuildMessageAppender":
                             case ControlTypes.TextArea:
                                 control.Value = (string)value;
                                 break;
+
                             case "CheckBox":
                                 control.Selected = true;
                                 break;
+
                             case "DropDownList":
                                 var ddlb = control as DropDownList;
                                 var val = value as ListItem;
@@ -1153,6 +1163,7 @@ namespace TerminalBase.BaseClasses
                                 ddlb.Value = val.Value;
                                 //ddlb.ListItems are not loaded yet
                                 break;
+
                             case "Duration":
                                 var duration = control as Duration;
                                 var timespan = (TimeSpan)value;
@@ -1160,8 +1171,9 @@ namespace TerminalBase.BaseClasses
                                 duration.Hours = timespan.Hours;
                                 duration.Minutes = timespan.Minutes;
                                 break;
+
                             default:
-                                throw new NotImplementedException();
+                                throw new NotSupportedException($"Unsupported control type {control.Type}");
                         }
                     }
                 }

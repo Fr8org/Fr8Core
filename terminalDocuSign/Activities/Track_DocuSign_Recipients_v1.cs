@@ -334,11 +334,11 @@ namespace terminalDocuSign.Actions
 
                 if (string.IsNullOrEmpty(recipientEmail))
                 {
-                    selectedObject = GetMtType(typeof(DocuSignEventCM));
+                    selectedObject = GetMtType(typeof(DocuSignEnvelopeCM_v2));
                 }
                 else
                 {
-                    selectedObject = GetMtType(typeof(DocuSignRecipientCM));
+                    selectedObject = GetMtType(typeof(DocuSignRecipientStatus));
                 }
 
                 if (selectedObject == null)
@@ -358,7 +358,7 @@ namespace terminalDocuSign.Actions
 
                 if (recipientEmail != null)
                 {
-                    conditions.Add(new FilterConditionDTO { Field = "RecipientEmail", Operator = "eq", Value = recipientEmail });
+                    conditions.Add(new FilterConditionDTO { Field = "Email", Operator = "eq", Value = recipientEmail });
                 }
 
                 filterPane.Value = JsonConvert.SerializeObject(new FilterDataDTO

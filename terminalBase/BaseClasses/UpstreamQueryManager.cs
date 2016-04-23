@@ -40,12 +40,12 @@ namespace TerminalBase.BaseClasses
 
         public async Task<FieldDescriptionsCM> GetFieldDescriptions(CrateDirection direction, AvailabilityType availability)
         {
-            return await _hubCommunicator.GetDesignTimeFieldsByDirection(_activity.Id, direction, availability, _userId);
+            return await _hubCommunicator.GetDesignTimeFieldsByDirection(_activity, direction, availability, _userId);
         }
 
         public async Task<Crate<FieldDescriptionsCM>> GetFieldDescriptionsCrate(string label, AvailabilityType availability)
         {
-            var curUpstreamFields = await _hubCommunicator.GetDesignTimeFieldsByDirection(_activity.Id, CrateDirection.Upstream, availability, _userId);
+            var curUpstreamFields = await _hubCommunicator.GetDesignTimeFieldsByDirection(_activity, CrateDirection.Upstream, availability, _userId);
             return Crate<FieldDescriptionsCM>.FromContent(label, curUpstreamFields);
         }
 

@@ -1,7 +1,6 @@
-﻿    using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Owin;
 using Microsoft.Owin.Hosting;
@@ -12,14 +11,13 @@ using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
 using Hub.Managers;
-using Hub.Services;
 using Utilities;
 using Utilities.Configuration.Azure;
-using Utilities.Logging;
 using Hub.Interfaces;
 using Hangfire;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using System.Web;
+using Hangfire.StructureMap;
+using Hangfire.Dashboard;
+using Hub.Security;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
@@ -48,11 +46,23 @@ namespace HubWeb
 
         public void ConfigureHangfire(IAppBuilder app, string connectionString)
         {
+            var options = new BackgroundJobServerOptions
+            {
+                Queues = new[] { "hub" },
+            };
+
             GlobalConfiguration.Configuration
-                .UseSqlServerStorage(connectionString);
-            app.UseHangfireDashboard();
-            app.UseHangfireServer();
+                .UseSqlServerStorage(connectionString)
+                .UseStructureMapActivator(ObjectFactory.Container);
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            {
+                AuthorizationFilters = new[] { new HangFireAuthorizationFilter() },
+            });
+            app.UseHangfireServer(options);
+            GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
         }
+
+
 
         //SeedDatabases
         //Ensure that critical configuration information is present in the database
@@ -173,5 +183,5 @@ namespace HubWeb
         {
             return WebApp.Start<Startup>(url: url);
         }
-            }
-        }
+    }
+}
