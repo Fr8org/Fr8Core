@@ -127,6 +127,7 @@
   <ItemGroup>
     <Compile Include="Activities\Get_Data_v1Tests.cs" />
     <Compile Include="Activities\Post_To_Chatter_v1Tests.cs" />
+    <Compile Include="Activities\Post_To_Chatter_v2Tests.cs" />
     <Compile Include="Activities\Save_To_SalesforceDotCom_v1Tests.cs" />
     <Compile Include="Fixtures\FixtureData.cs" />
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />

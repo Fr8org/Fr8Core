@@ -13,6 +13,7 @@ using Data.Entities;
 using Hub.Managers;
 using Utilities;
 using Data.Helpers;
+using System.Globalization;
 
 namespace terminalFr8Core.Actions
 {
@@ -69,6 +70,12 @@ namespace terminalFr8Core.Actions
         }
 
         private static readonly string[] StopwordsList = new[] { "the", "company", "co", "inc", "incorporate", "a", "an" };
+
+        private const string CacheCratedAt = "Cache Created At";
+
+        private const string CacheDateFormat = "yyyyMMddHHmmss";
+
+        private static readonly TimeSpan CacheExpirationTime = TimeSpan.FromHours(1.0);
 
         public FindObjectsThatMatchIncomingMessage_v1() : base(false)
         {
@@ -247,11 +254,13 @@ namespace terminalFr8Core.Actions
                 if (value == null)
                 {
                     CurrentActivityStorage.Remove<StandardTableDataCM>();
+                    this[CacheCratedAt] = null;
                 }
                 else
                 {
                     CurrentActivityStorage.Remove<StandardTableDataCM>();
                     CurrentActivityStorage.Add(value);
+                    this[CacheCratedAt] = DateTime.UtcNow.ToString(CacheDateFormat); 
                 }
             }
         }
@@ -292,8 +301,21 @@ namespace terminalFr8Core.Actions
         private string IncomingText { get { return CurrentPayloadStorage.FindField(ConfigurationControls.IncomingTextSelector.selectedKey); } }
 
         private string SelectedDataSourceActivityId { get { return ConfigurationControls.DataSourceSelector.Value; } }
-        //Untill we decide on caching strategy we won't use cache
-        public bool CachedDataIsOld { get { return true; } }
+        
+        public bool CachedDataIsOld
+        {
+            get
+            {
+                DateTime cacheCratedAt;
+                if (!DateTime.TryParseExact(this[CacheCratedAt], CacheDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out cacheCratedAt))
+                {
+                    return true;
+                }
+                var cacheAge = DateTime.UtcNow.Subtract(cacheCratedAt);
+                //For now we use just constant value
+                return cacheAge > CacheExpirationTime;
+            }
+        }
 
         private string SpecifiedDataProperties { get { return ConfigurationControls.KeywordPropertiesSource.Value; } }
         

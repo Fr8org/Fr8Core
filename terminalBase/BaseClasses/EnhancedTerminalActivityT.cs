@@ -14,6 +14,7 @@ using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
 using TerminalBase.Infrastructure;
+using Newtonsoft.Json.Linq;
 
 namespace TerminalBase.BaseClasses
 {
@@ -266,6 +267,7 @@ namespace TerminalBase.BaseClasses
 
             _isRunTime = true;
 
+            var activityStorageContents = CurrentActivity.CrateStorage;
             using (var payloadstorage = CrateManager.GetUpdatableStorage(processPayload))
             using (var activityStorage = CrateManager.GetUpdatableStorage(CurrentActivity))
             {
@@ -310,7 +312,19 @@ namespace TerminalBase.BaseClasses
                     Error(ex.Message);
                 }
             }
-
+            try
+            {
+                var previousActivityStorage = JToken.Parse(activityStorageContents);
+                var currentActivityStorage = JToken.Parse(CurrentActivity.CrateStorage);
+                if (!JToken.DeepEquals(previousActivityStorage, currentActivityStorage))
+                {
+                    await HubCommunicator.SaveActivity(CurrentActivity, CurrentFr8UserId);
+                }
+            }
+            catch (Exception ex)
+            {
+                Error(ex.Message);
+            }
             return processPayload;
         }
         
