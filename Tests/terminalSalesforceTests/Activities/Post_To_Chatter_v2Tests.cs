@@ -15,7 +15,7 @@ using UtilitiesTesting;
 
 namespace terminalSalesforceTests.Activities
 {
-    [TestFixture]
+    [TestFixture, Ignore]
     [Category("terminalSalesforceTests")]
     public class Post_To_Chatter_v2Tests : BaseTest
     {
