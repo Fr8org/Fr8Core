@@ -174,11 +174,11 @@ namespace TerminalBase.BaseClasses
                     .Substring(0, activityTemplateName.Length - "_TEST".Length);
             }
 
-            string curAssemblyName = string.Format("{0}.Actions.{1}_v{2}", curTerminal, activityTemplateName, curActionDTO.ActivityTemplate.Version);
+            string curAssemblyName = string.Format("{0}.Activities.{1}_v{2}", curTerminal, activityTemplateName, curActionDTO.ActivityTemplate.Version);
 
             Type calledType = Type.GetType(curAssemblyName + ", " + curTerminal);
             if (calledType == null)
-                throw new ArgumentException(string.Format("Action {0}_v{1} doesn't exist in {2} terminal.",
+                throw new ArgumentException(string.Format("Activity {0}_v{1} doesn't exist in {2} terminal.",
                     curActionDTO.ActivityTemplate.Name,
                     curActionDTO.ActivityTemplate.Version,
                     curTerminal), "curActionDTO");
