@@ -40,11 +40,11 @@ namespace Data.Helpers
 
                 var objProperties = objType.GetProperties(BindingFlags.NonPublic | BindingFlags.Public| BindingFlags.Instance | BindingFlags.Static);
                 var objFields = objType.GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
-                foreach (var prop in objProperties)
+                //We skip indexer properties as we won't be able to supply arguments
+                foreach (var prop in objProperties.Where(x => x.GetIndexParameters().Length == 0))
                 {
                     fields.AddRange(FindFieldsRecursive(prop.GetValue(obj)));
                 }
-
                 foreach (var prop in objFields)
                 {
                     fields.AddRange(FindFieldsRecursive(prop.GetValue(obj)));
@@ -90,7 +90,7 @@ namespace Data.Helpers
             if (!isPrimitiveType)
             {
                 var objProperties = objType.GetProperties();
-                foreach (var prop in objProperties)
+                foreach (var prop in objProperties.Where(x => x.GetIndexParameters().Length == 0))
                 {
                     var result = FindFirstArrayRecursive(prop.GetValue(obj), maxSearchDepth, depth + 1);
 
