@@ -18,20 +18,8 @@ using TerminalBase.Infrastructure;
 
 namespace terminalGoogle.Activities
 {
-
-    public class EnumerateFormFieldsResponseItem
-    {
-        [JsonProperty("type")]
-        public string Type { get; set; }
-        [JsonProperty("id")]
-        public object Id { get; set; }
-        [JsonProperty("title")]
-        public string Title { get; set; }
-    }
-
-
     public class Monitor_Form_Responses_v1 : BaseGoogleTerminalActivity<Monitor_Form_Responses_v1.ActivityUi>
-    {  
+    {
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public DropDownList ExistingFormsList { get; set; }
@@ -44,7 +32,7 @@ namespace terminalGoogle.Activities
                     Name = "Selected_Google_Form",
                     Required = true,
                     Source = null,
-                    Events = new List<ControlEvent>() {new ControlEvent("onChange", "requestConfig")}
+                    Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
                 };
                 Controls.Add(ExistingFormsList);
             }
@@ -148,7 +136,7 @@ namespace terminalGoogle.Activities
         //        }
         //        /*var result = await _googleAppScript.RunScript("M_snhqvaPfe7gMc5XhGu52ZK7araUiK37", "getFoldersUnderRoot", authDTO, control.Value);
         //            object response;
-                    
+
         //            if (result.TryGetValue("result", out response))
         //            {
         //                var items = ((JToken) response).ToObject<EnumerateFormFieldsResponseItem[]>();
@@ -303,9 +291,6 @@ namespace terminalGoogle.Activities
 
             return Success(payloadCrates);
         }
-
-
-
         private List<FieldDTO> CreatePayloadFormResponseFields(List<FieldDTO> payloadfields)
         {
             List<FieldDTO> formFieldResponse = new List<FieldDTO>();
@@ -354,7 +339,7 @@ namespace terminalGoogle.Activities
 
         //private async Task FillSelectedGoogleFormSource(GoogleAuthDTO authDTO)
         //{
-            
+
         //    var control = configurationControl.FindByNameNested<DropDownList>(controlName);
         //    if (control != null)
         //    {
@@ -371,5 +356,14 @@ namespace terminalGoogle.Activities
             return files.Select(file => new ListItem() { Key = file.Value, Value = file.Key }).ToList();
         }
         #endregion
+    }
+    public class EnumerateFormFieldsResponseItem
+    {
+        [JsonProperty("type")]
+        public string Type { get; set; }
+        [JsonProperty("id")]
+        public object Id { get; set; }
+        [JsonProperty("title")]
+        public string Title { get; set; }
     }
 }

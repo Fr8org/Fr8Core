@@ -89,7 +89,7 @@ namespace terminalGoogleTests.Unit
             return new ActivityTemplateDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "Monitor_Form_Responses_TEST",
+                Name = "Monitor_Form_Responses",
                 Version = "1",
                 Terminal = new TerminalDTO()
                 {
