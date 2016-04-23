@@ -6,7 +6,7 @@ using Data.States;
 using System.Collections.Generic;
 using System.Linq;
 
-namespace terminalSalesforce.Actions
+namespace terminalSalesforce.Activities
 {
     public static class ActivitiesHelper
     {

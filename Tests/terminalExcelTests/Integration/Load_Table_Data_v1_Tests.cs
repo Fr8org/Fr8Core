@@ -16,7 +16,7 @@ using Hub.StructureMap;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
-using terminalExcel.Actions;
+using terminalExcel.Activities;
 using terminalExcelTests.Fixtures;
 using TerminalBase.BaseClasses;
 using Utilities.Configuration;

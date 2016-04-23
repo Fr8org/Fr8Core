@@ -19,7 +19,7 @@ using Data.Repositories.MultiTenant;
 using terminalDocuSign.Activities;
 using terminalDocuSign.Services.New_Api;
 
-namespace terminalDocuSign.Actions
+namespace terminalDocuSign.Activities
 {
     public class Track_DocuSign_Recipients_v1 : BaseDocuSignActivity
     {

@@ -10,7 +10,7 @@ using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
 using terminalSalesforceTests.Fixtures;
-using terminalSalesforce.Actions;
+using terminalSalesforce.Activities;
 
 namespace terminalSalesforceTests.Intergration
 {

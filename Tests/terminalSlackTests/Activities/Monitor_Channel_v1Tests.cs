@@ -10,7 +10,7 @@ using HealthMonitor.Utility;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using terminalSlackTests.Fixtures;
-using terminalSlack.Actions;
+using terminalSlack.Activities;
 using TerminalBase.BaseClasses;
 
 namespace terminalSlackTests.Integration

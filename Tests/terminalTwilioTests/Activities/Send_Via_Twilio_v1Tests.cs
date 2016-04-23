@@ -12,7 +12,6 @@ using Hub.StructureMap;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
-using terminalTwilio.Actions;
 using terminalTwilio.Services;
 using terminalTwilio.Tests.Fixtures;
 using TerminalBase.BaseClasses;
@@ -21,6 +20,7 @@ using System;
 using Data.Crates;
 using UtilitiesTesting;
 using terminalTwilio;
+using terminalTwilio.Activities;
 
 namespace terminalTwilioTests.Activities
 {

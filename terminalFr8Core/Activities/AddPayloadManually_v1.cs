@@ -17,7 +17,7 @@ using Data.Control;
 using Data.States;
 using Utilities;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class AddPayloadManually_v1 : BaseTerminalActivity
     {

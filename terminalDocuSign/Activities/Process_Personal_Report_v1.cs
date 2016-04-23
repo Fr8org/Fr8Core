@@ -10,7 +10,7 @@ using Data.Interfaces.Manifests;
 using DocuSign.eSign.Api;
 using DocuSign.eSign.Model;
 using Newtonsoft.Json;
-using terminalDocuSign.Actions;
+using terminalDocuSign.Activities;
 using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Activities

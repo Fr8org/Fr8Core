@@ -1,13 +1,12 @@
 ﻿using System;
 using Data.Entities;
-using Google.GData.Client;
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using terminalGoogle.DataTransferObjects;
-using TerminalBase.BaseClasses;
 using terminalGoogle.Services;
+using TerminalBase.BaseClasses;
 
-namespace terminalGoogle.Actions
+namespace terminalGoogle.Activities
 {
     public abstract class BaseGoogleTerminalActivity<T> : EnhancedTerminalActivity<T>
         where T : StandardConfigurationControlsCM

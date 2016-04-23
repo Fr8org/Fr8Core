@@ -4,7 +4,8 @@ using Data.Interfaces.DataTransferObjects;
 using HealthMonitor.Utility;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
-using terminalDocuSign.Actions;
+using terminalDocuSign.Activities;
+using terminalDocuSign.Activities;
 using terminalDocuSignTests.Fixtures;
 
 namespace terminalDocuSignTests.Integration

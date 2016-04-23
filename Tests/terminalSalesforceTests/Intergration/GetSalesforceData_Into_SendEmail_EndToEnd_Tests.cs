@@ -11,7 +11,7 @@ using Data.Crates;
 using Data.Control;
 using Newtonsoft.Json;
 using System.Diagnostics;
-using terminalSalesforce.Actions;
+using terminalSalesforce.Activities;
 using Data.Entities;
 
 namespace terminalSalesforceTests.Intergration

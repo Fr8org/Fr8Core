@@ -16,7 +16,7 @@ using terminalDocuSign.DataTransferObjects;
 using TerminalBase.Infrastructure;
 using terminalDocuSign.Services;
 
-namespace terminalDocuSign.Actions
+namespace terminalDocuSign.Activities
 {
     public class Search_DocuSign_History_v1  : BaseDocuSignActivity
     {

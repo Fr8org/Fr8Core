@@ -19,7 +19,7 @@ using TerminalBase.Infrastructure;
 using TerminalBase.Infrastructure.Behaviors;
 using terminalDocuSign.Services.New_Api;
 
-namespace terminalDocuSign.Actions
+namespace terminalDocuSign.Activities
 {
     public class Send_DocuSign_Envelope_v1 : BaseDocuSignActivity
     {

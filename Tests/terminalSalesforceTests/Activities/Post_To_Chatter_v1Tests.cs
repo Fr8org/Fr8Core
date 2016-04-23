@@ -11,7 +11,7 @@ using Moq;
 using NUnit.Framework;
 using StructureMap;
 using terminalSalesforce;
-using terminalSalesforce.Actions;
+using terminalSalesforce.Activities;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforceTests.Fixtures;
 using TerminalBase.Infrastructure;

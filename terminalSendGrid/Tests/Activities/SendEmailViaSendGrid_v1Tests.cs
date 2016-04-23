@@ -19,7 +19,7 @@ using Moq;
 using NUnit.Framework;
 using SendGrid;
 using StructureMap;
-using terminalSendGrid.Actions;
+using terminalSendGrid.Activities;
 using terminalSendGrid.Infrastructure;
 using terminalSendGrid.Services;
 using terminalSendGrid.Tests.Fixtures;

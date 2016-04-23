@@ -11,7 +11,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Crates;
 using Data.Control;
 using Data.Interfaces.Manifests;
-namespace terminalBaseTests.Actions
+namespace terminalBaseTests.Activities
 {
     public class terminalActivityMock_v1 : BaseTerminalActivity
     {

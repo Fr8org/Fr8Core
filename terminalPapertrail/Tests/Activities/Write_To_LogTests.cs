@@ -14,7 +14,7 @@ using Hub.StructureMap;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
-using terminalPapertrail.Actions;
+using terminalPapertrail.Activities;
 using terminalPapertrail.Interfaces;
 using terminalPapertrail.Tests.Infrastructure;
 using TerminalBase.Infrastructure;
