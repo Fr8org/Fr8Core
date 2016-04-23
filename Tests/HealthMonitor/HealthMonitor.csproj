@@ -206,6 +206,22 @@
     <Compile Include="TestReportNotifier.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Config\log4net.tests.healthMonitor.config">
+      <Link>log4net.tests.healthMonitor.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Config\log4net.tests.healthMonitor.Demo.config">
+      <Link>log4net.tests.healthMonitor.Demo.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Config\log4net.tests.healthMonitor.Dev.config">
+      <Link>log4net.tests.healthMonitor.Dev.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="..\..\Config\log4net.tests.healthMonitor.Release.config">
+      <Link>log4net.tests.healthMonitor.Release.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="App.config">
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -401,15 +417,4 @@
   <Target Name="AfterBuild">
   </Target>
   -->
-  <ItemGroup>
-    <Log4netConfigFiles Include="..\..\Config\*.tests.healthMonitor.*"/>
-  </ItemGroup>
-
-  <Target Name="BeforeBuild">
-    <Copy
-        SourceFiles="@(Log4NetConfigFiles)"
-        DestinationFolder="."
-         />
-  </Target>
-
 </Project>
