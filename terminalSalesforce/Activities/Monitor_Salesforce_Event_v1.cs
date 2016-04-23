@@ -13,6 +13,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Data.Constants;
 using System.Globalization;
+using ServiceStack;
 
 namespace terminalSalesforce.Actions
 {
@@ -113,7 +114,7 @@ namespace terminalSalesforce.Actions
             CurrentActivityStorage.RemoveByLabel("Available Run-Time Objects");
             CurrentActivityStorage.AddRange(new List<Crate> { eventCrate, tableDataCrate });
 
-            var selectedObjectProperties = await _salesforceManager.GetFields(curSfChosenObject, AuthorizationToken);
+            var selectedObjectProperties = await _salesforceManager.GetProperties(curSfChosenObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
             var objectPropertiesCrate = Crate<FieldDescriptionsCM>.FromContent(
                 SalesforceObjectFieldsCrateLabel,
                 new FieldDescriptionsCM(selectedObjectProperties),
@@ -176,8 +177,8 @@ namespace terminalSalesforce.Actions
             foreach (var sfEvent in sfEventsList)
             {
                 //get the object fields as Standard Table Data
-                var resultObjects = await _salesforceManager.QueryObjects(
-                                                sfEvent.ObjectType,
+                var resultObjects = await _salesforceManager.Query(
+                                                sfEvent.ObjectType.ToEnum<SalesforceObjectType>(),
                                                 salesforceObjectFields, 
                                                 string.Format("ID = '{0}'", sfEvent.ObjectId), 
                                                 AuthorizationToken);
