@@ -25,7 +25,7 @@ using StructureMap;
 using Hub.Interfaces;
 using System.IO;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class ExtractTableField_v1 : BaseTerminalActivity
     {

@@ -6,6 +6,7 @@ using Moq;
 using NUnit.Framework;
 using StructureMap;
 using terminalDocuSign.Actions;
+using terminalDocuSign.Activities;
 using terminalDocuSign.Services.New_Api;
 using terminalDocuSignTests.Fixtures;
 using UtilitiesTesting.Asserts;

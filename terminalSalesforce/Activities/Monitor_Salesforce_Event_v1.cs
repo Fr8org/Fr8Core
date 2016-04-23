@@ -14,7 +14,7 @@ using Data.States;
 using Data.Constants;
 using System.Globalization;
 
-namespace terminalSalesforce.Actions
+namespace terminalSalesforce.Activities
 {
     public class Monitor_Salesforce_Event_v1 : EnhancedTerminalActivity<Monitor_Salesforce_Event_v1.ActivityUi>
     {

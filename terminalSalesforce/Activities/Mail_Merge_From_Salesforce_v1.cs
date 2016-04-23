@@ -19,7 +19,7 @@ using Utilities.Configuration.Azure;
 using Hub.Managers;
 using Data.Constants;
 
-namespace terminalSalesforce.Actions
+namespace terminalSalesforce.Activities
 {
     public class Mail_Merge_From_Salesforce_v1 : EnhancedTerminalActivity<Mail_Merge_From_Salesforce_v1.ActivityUi>
     {

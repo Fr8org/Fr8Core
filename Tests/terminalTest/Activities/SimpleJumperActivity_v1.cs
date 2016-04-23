@@ -5,7 +5,7 @@ using Data.Control;
 using Data.Interfaces.Manifests;
 using TerminalBase.BaseClasses;
 
-namespace terminalTest.Actions
+namespace terminalTest.Activities
 {
     public class SimpleJumperActivity_v1 : TestActivityBase<SimpleJumperActivity_v1.ActivityUi>
     {

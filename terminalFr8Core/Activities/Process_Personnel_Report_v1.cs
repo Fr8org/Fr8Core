@@ -17,7 +17,7 @@ using TerminalBase.Infrastructure.Behaviors;
 using TerminalBase.BaseClasses;
 using Utilities;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class Process_Personnel_Report_v1 : BaseTerminalActivity
     {

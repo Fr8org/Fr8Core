@@ -2,38 +2,28 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Web;
 using AutoMapper;
-using Hub.Managers;
-using Newtonsoft.Json;
-using StructureMap;
 using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
-using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Data.Repositories;
 using Data.States;
-using Utilities;
+using Hub.Interfaces;
+using Hub.Managers;
+using Newtonsoft.Json;
+using StructureMap;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
-using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
+using terminalDocuSign.Services.New_Api;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using TerminalBase.Services;
-using Hub.Infrastructure;
-using Hub.Interfaces;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using Utilities.Configuration.Azure;
-using terminalDocuSign.Services.New_Api;
+using Utilities;
 
-namespace terminalDocuSign.Actions
+namespace terminalDocuSign.Activities
 {
     public class Generate_DocuSign_Report_v1 : BaseTerminalActivity
     {

@@ -17,7 +17,7 @@ using Data.Entities;
 using Data.States;
 using Data.Control;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class BuildQuery_v1 : BaseTerminalActivity
     {

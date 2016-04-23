@@ -11,7 +11,7 @@ using Data.States;
 using HealthMonitor.Utility;
 using Hub.Managers;
 using NUnit.Framework;
-using terminalFr8Core.Actions;
+using terminalFr8Core.Activities;
 using UtilitiesTesting.Fixtures;
 
 namespace terminaBaselTests.Tools.Activities

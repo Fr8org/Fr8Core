@@ -4,7 +4,6 @@ using StructureMap;
 using System.Threading.Tasks;
 using Data.Interfaces.DataTransferObjects;
 using NUnit.Framework;
-using terminalAtlassian.Actions;
 using terminalAtlassianTests.Fixtures;
 using Data.Interfaces.Manifests;
 using UtilitiesTesting;
@@ -13,6 +12,7 @@ using Hub.Managers.APIManagers.Transmitters.Restful;
 using Moq;
 using Newtonsoft.Json;
 using System.Collections.Generic;
+using terminalAtlassian.Activities;
 
 namespace terminalDropboxTests.Actions
 {

@@ -1,4 +1,6 @@
-﻿using Data.Control;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
@@ -8,18 +10,14 @@ using Hub.Managers;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using TerminalBase.Infrastructure;
 using terminalSalesforce;
 using terminalSalesforce.Actions;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforceTests.Fixtures;
+using TerminalBase.Infrastructure;
 using UtilitiesTesting;
 
-namespace terminalSalesforceTests.Actions
+namespace terminalSalesforceTests.Activities
 {
     [TestFixture]
     [Category("terminalSalesforceTests")]

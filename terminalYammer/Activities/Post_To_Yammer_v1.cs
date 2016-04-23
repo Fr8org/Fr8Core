@@ -4,18 +4,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.States;
 using Hub.Managers;
-using TerminalBase.Infrastructure;
+using Newtonsoft.Json;
 using terminalYammer.Interfaces;
 using terminalYammer.Services;
 using TerminalBase.BaseClasses;
-using Data.Entities;
-using Data.States;
-using Newtonsoft.Json;
+using TerminalBase.Infrastructure;
 
-namespace terminalYammer.Actions
+namespace terminalYammer.Activities
 {
 
     public class Post_To_Yammer_v1 : BaseTerminalActivity

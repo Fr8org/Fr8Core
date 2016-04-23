@@ -21,7 +21,7 @@ using Data.Repositories;
 using System.Reflection;
 using Data.States;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class SaveToFr8Warehouse_v1 : BaseTerminalActivity
     {

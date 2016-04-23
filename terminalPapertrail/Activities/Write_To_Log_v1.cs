@@ -1,23 +1,19 @@
-﻿
-using System;
+﻿using System;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
+using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
 using StructureMap;
+using terminalPapertrail.Interfaces;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using terminalPapertrail.Interfaces;
 using Utilities.Configuration.Azure;
-using System.Collections.Generic;
-using Data.Control;
-using Utilities.Logging;
 
-namespace terminalPapertrail.Actions
+namespace terminalPapertrail.Activities
 {
     /// <summary>
     /// Write To Log action which writes Log Messages to Papertrail at run time

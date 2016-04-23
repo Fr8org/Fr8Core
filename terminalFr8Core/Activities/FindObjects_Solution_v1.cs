@@ -17,7 +17,7 @@ using TerminalSqlUtilities;
 using Utilities.Configuration.Azure;
 using terminalFr8Core.Infrastructure;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class FindObjects_Solution_v1 : BaseTerminalActivity
     {

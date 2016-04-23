@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Data.States;
 
-namespace terminalSalesforce.Actions
+namespace terminalSalesforce.Activities
 {
     public class Post_To_Chatter_v1 : EnhancedTerminalActivity<Post_To_Chatter_v1.ActivityUi>
     {

@@ -1,23 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
-using System.Web.UI.WebControls;
+using System.Threading.Tasks;
 using Data.Control;
-using StructureMap;
 using Data.Crates;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Data.Infrastructure;
 using Hub.Managers;
+using PhoneNumbers;
+using StructureMap;
+using terminalTwilio.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using terminalTwilio.Services;
 using Twilio;
-using PhoneNumbers;
 
-namespace terminalTwilio.Actions
+namespace terminalTwilio.Activities
 {
     public class Send_Via_Twilio_v1 : BaseTerminalActivity
     {

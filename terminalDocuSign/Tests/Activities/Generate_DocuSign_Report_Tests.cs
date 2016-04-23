@@ -16,6 +16,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
 using terminalDocuSign.Actions;
+using terminalDocuSign.Activities;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Infrastructure.AutoMapper;
 using terminalDocuSign.Infrastructure.StructureMap;

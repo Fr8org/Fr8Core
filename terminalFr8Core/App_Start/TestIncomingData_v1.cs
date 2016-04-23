@@ -20,7 +20,7 @@ using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class TestIncomingData_v1 : BaseTerminalActivity
     {

@@ -8,11 +8,11 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
-using Newtonsoft.Json;
 using Hub.Managers;
+using Newtonsoft.Json;
 using TerminalBase.Infrastructure;
 
-namespace terminalDocuSign.Actions
+namespace terminalDocuSign.Activities
 {
     public class Extract_Data_From_Envelopes_v1 : BaseDocuSignActivity
     {

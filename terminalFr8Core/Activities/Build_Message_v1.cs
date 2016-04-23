@@ -10,7 +10,7 @@ using Data.Control;
 using Data.States;
 using System.Text.RegularExpressions;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class Build_Message_v1 : EnhancedTerminalActivity<Build_Message_v1.ActivityUi>
     {

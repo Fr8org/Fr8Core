@@ -5,12 +5,12 @@ using Data.Control;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.States;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 using TerminalBase.BaseClasses;
-using Data.States;
 
-namespace terminalSlack.Actions
+namespace terminalSlack.Activities
 {
     public class Monitor_Channel_v1 : EnhancedTerminalActivity<Monitor_Channel_v1.ActivityUi>
     {

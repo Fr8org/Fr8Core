@@ -9,7 +9,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalFr8Core.Infrastructure;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
 
     public class ManagePlan_v1 : BaseTerminalActivity

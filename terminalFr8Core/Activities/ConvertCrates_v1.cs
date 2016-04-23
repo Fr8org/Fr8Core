@@ -23,7 +23,7 @@ using TerminalBase.Infrastructure;
 using terminalFr8Core.Converters;
 using Utilities;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class ConvertCrates_v1 : BaseTerminalActivity
     {

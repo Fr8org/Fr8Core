@@ -15,7 +15,7 @@ using Hub.Managers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using TerminalBase.Infrastructure;
-using terminalFr8Core.Actions;
+using terminalFr8Core.Activities;
 using Moq;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using System.Threading.Tasks;

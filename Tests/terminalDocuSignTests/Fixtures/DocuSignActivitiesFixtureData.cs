@@ -4,6 +4,7 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Moq;
 using terminalDocuSign.Actions;
+using terminalDocuSign.Activities;
 using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSignTests.Fixtures

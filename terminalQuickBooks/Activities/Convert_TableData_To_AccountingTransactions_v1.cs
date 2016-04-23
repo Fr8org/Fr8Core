@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using Data.Constants;
 using Data.Control;
 using Data.Crates;
@@ -11,16 +11,12 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
-using Intuit.Ipp.Data;
-using terminalQuickBooks.Infrastructure;
 using terminalQuickBooks.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using Utilities;
 using Task = System.Threading.Tasks.Task;
-using System.Globalization;
 
-namespace terminalQuickBooks.Actions
+namespace terminalQuickBooks.Activities
 {
     public class Convert_TableData_To_AccountingTransactions_v1 : BaseTerminalActivity
     {

@@ -5,22 +5,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
-using Newtonsoft.Json;
-using StructureMap;
 using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.Manifests;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Hub.Managers;
+using StructureMap;
+using terminalAzure.Infrastructure;
+using terminalAzure.Services;
 using TerminalBase;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using TerminalSqlUtilities;
-using terminalAzure.Infrastructure;
-using terminalAzure.Services;
-using Utilities;
 
-namespace terminalAzure.Actions
+namespace terminalAzure.Activities
 {
 
     public class Write_To_Sql_Server_v1 : BaseTerminalActivity

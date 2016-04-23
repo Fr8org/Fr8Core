@@ -17,7 +17,7 @@ using Data.Control;
 using Data.States;
 using System.Globalization;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class Monitor_Fr8_Events_v1 : BaseTerminalActivity
     {

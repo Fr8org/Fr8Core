@@ -11,7 +11,7 @@ using Data.Interfaces.Manifests;
 using Hub.Managers;
 using TerminalBase.Infrastructure;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class TestAndBranch_v1 : TestIncomingData_v1
     {

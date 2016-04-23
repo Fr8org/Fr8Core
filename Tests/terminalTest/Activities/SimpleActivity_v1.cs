@@ -1,10 +1,9 @@
-﻿using System.IO;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using Data.Control;
 using Data.Interfaces.Manifests;
 using TerminalBase.BaseClasses;
 
-namespace terminalTest.Actions
+namespace terminalTest.Activities
 {
     public class SimpleActivity_v1 : TestActivityBase<SimpleActivity_v1.ActivityUi>
     {

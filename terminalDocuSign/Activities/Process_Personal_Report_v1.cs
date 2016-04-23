@@ -1,27 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Data.States;
-using Hub.Managers;
-using terminalDocuSign.DataTransferObjects;
-using terminalDocuSign.Services;
-using TerminalBase.Infrastructure;
-using TerminalBase.Infrastructure.Behaviors;
-using terminalDocuSign.Services.New_Api;
-using terminalDocuSign.Actions;
 using DocuSign.eSign.Api;
 using DocuSign.eSign.Model;
+using Newtonsoft.Json;
+using terminalDocuSign.Actions;
+using terminalDocuSign.Services.New_Api;
 
-namespace terminalDocuSign.Actions
+namespace terminalDocuSign.Activities
 {
     public class Process_Personal_Report_v1 : Send_DocuSign_Envelope_v1
     {

@@ -1,17 +1,17 @@
-﻿using Data.Crates;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
+using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Managers;
 using Newtonsoft.Json;
 using StructureMap;
-using System;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using terminalDropbox.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using terminalDropbox.Services;
 
-namespace terminalDropbox.Actions
+namespace terminalDropbox.Activities
 {
     public class Get_File_List_v1 : BaseTerminalActivity
     {

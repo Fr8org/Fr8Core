@@ -1,28 +1,23 @@
-using Data.Entities;
-using TerminalBase.Infrastructure;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Net.Mail;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Control;
 using Data.Crates;
-using Hub.Managers;
-using Newtonsoft.Json;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using terminalDocuSign.DataTransferObjects;
-using terminalDocuSign.Infrastructure;
-using terminalDocuSign.Services;
 using Data.States;
 using Data.Validations;
-using terminalDocuSign.Services.New_Api;
 using DocuSign.eSign.Api;
+using Hub.Managers;
+using terminalDocuSign.Services.New_Api;
+using TerminalBase.Infrastructure;
 using Utilities;
-using Data.Constants;
 
-namespace terminalDocuSign.Actions
+namespace terminalDocuSign.Activities
 {
     public class Monitor_DocuSign_Envelope_Activity_v1 : BaseDocuSignActivity
     {

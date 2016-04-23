@@ -1,19 +1,19 @@
-﻿using Data.Control;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
 using StructureMap;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using terminalAtlassian.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
-namespace terminalAtlassian.Actions
+namespace terminalAtlassian.Activities
 {
     public class Get_Jira_Issue_v1 : BaseTerminalActivity
     {

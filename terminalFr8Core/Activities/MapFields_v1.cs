@@ -17,7 +17,7 @@ using StructureMap;
 using TerminalBase.Infrastructure;
 using TerminalBase.BaseClasses;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class MapFields_v1 : BaseTerminalActivity
     {
