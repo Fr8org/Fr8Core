@@ -59,9 +59,10 @@ module dockyard.directives {
                                             if (eoHandles && eoHandles.contents) {
                                                 var contents = <any>eoHandles.contents;
                                                 if (contents.Handles && contents.Handles.length > 0) {
-                                                    externalObjectName = contents.Handles[0].Name;
+                                                    externalObjectName = contents.Handles[0].Description;
                                                 }
                                             }
+
                                             $scope.field.externalObjectName = externalObjectName;
                                         });
                                 });

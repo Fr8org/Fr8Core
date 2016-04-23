@@ -136,7 +136,7 @@ namespace terminalSalesforceTests.Intergration
         {
             if (initialPlanId != Guid.Empty)
             {
-                await HttpDeleteAsync(_baseUrl + "Plans/Delete?id=" + initialPlanId.ToString());
+               // await HttpDeleteAsync(_baseUrl + "Plans/Delete?id=" + initialPlanId.ToString());
             }
 
             if (authTokenDO != null)

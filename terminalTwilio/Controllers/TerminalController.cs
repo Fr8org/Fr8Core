@@ -19,6 +19,7 @@ namespace terminalTwilio.Controllers
             var terminal = new TerminalDTO
             {
                 Name = "terminalTwilio",
+                Label = "Twilio",
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("terminalTwilio.TerminalEndpoint"),
                 Version = "1",
@@ -38,7 +39,6 @@ namespace terminalTwilio.Controllers
                 Tags = "Twillio,Notifier",
                 Category = ActivityCategory.Forwarders,
                 Version = "1",
-                Description = "Send SMS: Description",
                 Terminal = terminal,
                 MinPaneWidth = 330,
                 WebService = webService

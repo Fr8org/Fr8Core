@@ -1,4 +1,5 @@
-﻿using System.Xml.Serialization;
+﻿using System;
+using System.Xml.Serialization;
 
 namespace terminalSalesforce.Infrastructure
 {
@@ -14,6 +15,10 @@ namespace terminalSalesforce.Infrastructure
         public string LastName { get; set; }
         [XmlElement(ElementName = "OwnerId", Namespace = "urn:sobject.enterprise.soap.sforce.com")]
         public string OwnerId { get; set; }
+        [XmlElement(ElementName = "CreatedDate", Namespace = "urn:sobject.enterprise.soap.sforce.com")]
+        public DateTime CreatedDate { get; set; }
+        [XmlElement(ElementName = "LastModifiedDate", Namespace = "urn:sobject.enterprise.soap.sforce.com")]
+        public DateTime LastModifiedDate { get; set; }
         [XmlAttribute(AttributeName = "type", Namespace = "http://www.w3.org/2001/XMLSchema-instance")]
         public string Type { get; set; }
         [XmlAttribute(AttributeName = "sf", Namespace = "http://www.w3.org/2000/xmlns/")]
@@ -43,7 +48,7 @@ namespace terminalSalesforce.Infrastructure
         [XmlElement(ElementName = "PartnerUrl", Namespace = "http://soap.sforce.com/2005/09/outbound")]
         public string PartnerUrl { get; set; }
         [XmlElement(ElementName = "Notification", Namespace = "http://soap.sforce.com/2005/09/outbound")]
-        public Notification Notification { get; set; }
+        public Notification[] NotificationList { get; set; }
         [XmlAttribute(AttributeName = "xmlns")]
         public string Xmlns { get; set; }
     }

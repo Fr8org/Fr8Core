@@ -4,7 +4,6 @@
         name: string;
         label: string;
         version: string;
-        description: string;
         defaultEndPoint: string;
         category: string;
         type: string;
@@ -18,7 +17,6 @@
             id: string,
             name: string,
             version: string,
-            description: string,
             category: string,
             label?: string,
             minPaneWidth?: number,
@@ -29,7 +27,6 @@
             this.name = name;
             this.label = label;
             this.version = version;
-            this.description = description;
             this.category = category;
             this.type = type;
             this.webService = webService;
@@ -42,7 +39,6 @@
                 this.name,
                 this.label,
                 this.version,
-                this.description,
                 this.category,
                 this.minPaneWidth,
                 this.type,

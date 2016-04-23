@@ -26,6 +26,7 @@ namespace terminalSalesforce.Controllers
             var terminal = new TerminalDTO()
             {
                 Name = "terminalSalesforce",
+                Label = "Salesforce",
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("terminalSalesforce.TerminalEndpoint"),
                 Version = "1",
@@ -72,25 +73,36 @@ namespace terminalSalesforce.Controllers
                 Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 WebService = webService
-            };
+            }; 
 
             var mailMergeFromSalesforce = new ActivityTemplateDTO
             {
                 Version = "1",
-                Name = "MailMergeFromSalesforce",
+                Name = "Mail_Merge_From_Salesforce",
                 Label = "Mail Merge from Salesforce",
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 Category = ActivityCategory.Solution,
                 MinPaneWidth = 500,
                 WebService = webService,
-                Description = "Retrieves specified data from Salesforce and process this data using specified email sender",
                 Tags = Tags.UsesReconfigureList
+            };
+
+            var monitorSalesforceAction = new ActivityTemplateDTO()
+            {
+                Version = "1",
+                Name = "Monitor_Salesforce_Event",
+                Label = "Monitor Salesforce Events",
+                Terminal = terminal,
+                NeedsAuthentication = true,
+                Category = ActivityCategory.Monitors,
+                MinPaneWidth = 330,
+                WebService = webService
             };
 
             var actionList = new List<ActivityTemplateDTO>()
             {
-                saveToSalesforce, getDataAction, postToChatterAction, mailMergeFromSalesforce
+                saveToSalesforce, getDataAction, postToChatterAction, mailMergeFromSalesforce, monitorSalesforceAction
             };
 
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()

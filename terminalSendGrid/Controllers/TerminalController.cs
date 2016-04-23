@@ -20,6 +20,7 @@ namespace terminalSendGrid.Controllers
             var terminal = new TerminalDTO()
             {
                 Name = "terminalSendGrid",
+                Label = "SendGrid",
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("terminalSendGrid.TerminalEndpoint"),
                 Version = "1"
@@ -35,7 +36,6 @@ namespace terminalSendGrid.Controllers
                 Name = "SendEmailViaSendGrid",
                 Label = "Send Email",
                 Version = "1",
-                Description = "Send Email: Description",
                 Tags = string.Join(",", Tags.Notifier, Tags.EmailDeliverer),
                 Terminal = terminal,
                 Category = ActivityCategory.Forwarders,

@@ -287,7 +287,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Delete plan
             //
-            await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
+            //await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
         }
 
         private async Task<Guid> ResolveAuth(ActivityDTO solution, ICrateStorage crateStorage)

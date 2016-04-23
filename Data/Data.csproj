@@ -40,6 +40,15 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Demo|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Demo\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Analytics.NET, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Analytics.2.0.0\lib\Analytics.NET.dll</HintPath>
@@ -264,6 +273,7 @@
     <Compile Include="Expressions\ExpressionTransformation.cs" />
     <Compile Include="Expressions\ExpressionTransformation.PropertyInfo.cs" />
     <Compile Include="Expressions\ExpressionTransformation.TransformationVisitor.cs" />
+    <Compile Include="Infrastructure\Fr8ApiHelper.cs" />
     <Compile Include="Helpers\Fr8ReflectionHelper.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
@@ -275,7 +285,6 @@
     <Compile Include="Infrastructure\JsonNet\ActivityTemplateActivityConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\AvailabilityConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\CreateTimeConverter.cs" />
-    <Compile Include="Infrastructure\JsonNet\FieldConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\TerminalActivityTemplateConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\WebServiceConverter.cs" />
     <Compile Include="Infrastructure\Security\AuthorizeActivityAttribute.cs" />
@@ -283,6 +292,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ActivateActivitiesDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityResponseDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ExternalObjectHandleDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\IncomingCratesDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalNotificationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AlarmDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AuthenticateResponse.cs" />
@@ -350,17 +360,20 @@
     <Compile Include="Helpers\FieldMemberAccessor.cs" />
     <Compile Include="Helpers\IMemberAccessor.cs" />
     <Compile Include="Interfaces\Manifests\ExternalObjectHandlesCM.cs" />
+	 <Compile Include="Interfaces\Manifests\DocuSignEnvelopeCM_v2.cs" />
     <Compile Include="Interfaces\Manifests\Helpers\StandardTableDataCMTools.cs" />
     <Compile Include="Interfaces\Manifests\ManifestDescriptionCM.cs" />
     <Compile Include="Interfaces\Manifests\ChartOfAccountsCM.cs" />
     <Compile Include="Interfaces\Manifests\CrateManifestTypes.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignTemplateCM.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignRecipientCM.cs" />
+    <Compile Include="Interfaces\Manifests\ManifestFieldAttribute.cs" />
     <Compile Include="Interfaces\Manifests\MtPrimaryKeyAttribute.cs" />
     <Compile Include="Helpers\PropertyMemberAccessor.cs" />
     <Compile Include="Interfaces\Manifests\OperationalStateCM.CallStack.cs" />
     <Compile Include="Interfaces\Manifests\OperationalStateCM.CallStackConverter.cs" />
     <Compile Include="Interfaces\Manifests\OperationalStateCM.InternalStates.cs" />
+    <Compile Include="Interfaces\Manifests\SalesforceEventCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardAccountingTransactionCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFileListCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFr8PlansCM .cs" />
@@ -696,13 +709,17 @@
     <Compile Include="Migrations\201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.Designer.cs">
       <DependentUpon>201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201604152259367_MMSalesforceSolution.cs" />
-    <Compile Include="Migrations\201604152259367_MMSalesforceSolution.Designer.cs">
-      <DependentUpon>201604152259367_MMSalesforceSolution.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201604160406197_PlanNodeDO_Runnable.cs" />
     <Compile Include="Migrations\201604160406197_PlanNodeDO_Runnable.Designer.cs">
       <DependentUpon>201604160406197_PlanNodeDO_Runnable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201604171806555_HistoryItemDO_CustomerId_to_Fr8UserId.cs" />
+    <Compile Include="Migrations\201604171806555_HistoryItemDO_CustomerId_to_Fr8UserId.Designer.cs">
+      <DependentUpon>201604171806555_HistoryItemDO_CustomerId_to_Fr8UserId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201604191731406_AddLabelToTerminals.cs" />
+    <Compile Include="Migrations\201604191731406_AddLabelToTerminals.Designer.cs">
+      <DependentUpon>201604191731406_AddLabelToTerminals.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1229,11 +1246,14 @@
     <EmbeddedResource Include="Migrations\201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.resx">
       <DependentUpon>201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201604152259367_MMSalesforceSolution.resx">
-      <DependentUpon>201604152259367_MMSalesforceSolution.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604160406197_PlanNodeDO_Runnable.resx">
       <DependentUpon>201604160406197_PlanNodeDO_Runnable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604171806555_HistoryItemDO_CustomerId_to_Fr8UserId.resx">
+      <DependentUpon>201604171806555_HistoryItemDO_CustomerId_to_Fr8UserId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604191731406_AddLabelToTerminals.resx">
+      <DependentUpon>201604191731406_AddLabelToTerminals.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

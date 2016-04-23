@@ -31,6 +31,7 @@ namespace terminalFr8Core.Controllers
                 Endpoint = CloudConfigurationManager.GetSetting("terminalFr8Core.TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
                 Name = "terminalFr8Core",
+                Label = "Fr8Core",
                 Version = "1"
             };
 
@@ -319,7 +320,8 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 NeedsAuthentication = false,
                 Terminal = terminal,
-                WebService = webService
+                WebService = webService,
+                MinPaneWidth = 400
             });
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()

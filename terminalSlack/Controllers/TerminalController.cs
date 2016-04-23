@@ -27,6 +27,7 @@ namespace terminalSlack.Controllers
                 Endpoint = CloudConfigurationManager.GetSetting("terminalSlack.TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
                 Name = "terminalSlack",
+                Label = "Slack",
                 Version = "1",
                 AuthenticationType = AuthenticationType.External
             };
@@ -58,7 +59,6 @@ namespace terminalSlack.Controllers
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 Version = "1",
-                Description = "Publish To Slack: Description",
                 WebService = webService,
                 MinPaneWidth = 330
             };
