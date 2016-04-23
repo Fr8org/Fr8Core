@@ -225,6 +225,11 @@
         <external-object-chooser field="field" current-action="currentAction" plan="plan"></external-object-chooser>
     </div>
 
+    <!-- Build Message Appender -->
+    <div ng-if='field.type == "BuildMessageAppender"'>
+        <build-message-appender current-action="currentAction" field='field' click='onClick' change='onChange' data-field-name='{{::field.name}}'></build-message-appender>
+    </div>
+
 
     <!-- Add more configuration field templates below -->
 </div>

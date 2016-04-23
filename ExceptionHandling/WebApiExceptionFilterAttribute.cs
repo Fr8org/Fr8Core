@@ -16,6 +16,7 @@ using Microsoft.ApplicationInsights;
 using System.Collections.Generic;
 using System.Linq;
 using Data.Infrastructure;
+using Utilities.Configuration.Azure;
 
 namespace HubWeb.ExceptionHandling
 {
@@ -81,7 +82,7 @@ namespace HubWeb.ExceptionHandling
             errorDto.Message = "Sorry, an unexpected error has occurred while serving your request. Please try again in a few minutes.";
            
             // if debugging enabled send back the details of exception as well
-            if (HttpContext.Current.IsDebuggingEnabled)
+            if (HttpContext.Current.IsDebuggingEnabled || string.Equals(CloudConfigurationManager.GetSetting("ForceExtendedDebuggingInfo"), "true", StringComparison.InvariantCultureIgnoreCase))
             {
                 if (ex is TerminalCodedException) 
                 {

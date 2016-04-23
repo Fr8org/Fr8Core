@@ -4,7 +4,7 @@
 <div class="modal-body" block-if="isLoading()">
     <div class="panel panel-default" ng-repeat="terminal in terminals">
         <div class="panel-heading">
-            Terminal: {{terminal.name}}
+            Terminal: {{terminal.label}}
         </div>
         <div class="panel-body">
             <div ng-if="terminal.authTokens.length" style="margin: 5px 0 5px 0;">
@@ -20,7 +20,7 @@
                 </label>
             </div>
             <div ng-if="!terminal.authTokens.length" style="margin: 5px 0 5px 0;">
-                Please click on the <strong>Add Authorization</strong> button to enable &laquo;{{terminal.name}}&raquo; to access the external service.
+                Please click on the <strong>Add Authorization</strong> button to enable &laquo;{{terminal.label}}&raquo; to access the external service.
             </div>
             <div ng-show="terminal.authTokens.length" style="margin-top: 10px;margin-bottom:5px;">
                 <label>
