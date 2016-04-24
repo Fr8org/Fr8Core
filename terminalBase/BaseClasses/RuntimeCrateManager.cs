@@ -87,24 +87,28 @@ namespace TerminalBase.BaseClasses
             }
         }
 
-        public FieldConfigurator MarkAvailableAtRuntime<TManifest>(string label)
+        public FieldConfigurator MarkAvailableAtRuntime<TManifest>(string label, bool suppressFieldDiscovery = false)
             where TManifest : Manifest
         {
             EnsureRuntimeDataCrate();
 
             var manifestType = ManifestDiscovery.Default.GetManifestType<TManifest>();
             var fields = new List<FieldDTO>();
-            var members = Fr8ReflectionHelper.GetMembers(typeof (TManifest))
-                .Where(x => Fr8ReflectionHelper.IsPrimitiveType(x.MemberType))
-                .Where(x => Fr8ReflectionHelper.CheckAttributeOrTrue<ManifestFieldAttribute>(x, y => !y.IsHidden));
 
-            foreach (var memberAccessor in members)
+            if (!suppressFieldDiscovery)
             {
-                fields.Add(new FieldDTO(memberAccessor.Name, AvailabilityType.RunTime)
+                var members = Fr8ReflectionHelper.GetMembers(typeof (TManifest))
+                    .Where(x => Fr8ReflectionHelper.IsPrimitiveType(x.MemberType))
+                    .Where(x => Fr8ReflectionHelper.CheckAttributeOrTrue<ManifestFieldAttribute>(x, y => !y.IsHidden));
+
+                foreach (var memberAccessor in members)
                 {
-                    SourceCrateLabel = label,
-                    SourceCrateManifest = manifestType
-                });
+                    fields.Add(new FieldDTO(memberAccessor.Name, AvailabilityType.RunTime)
+                    {
+                        SourceCrateLabel = label,
+                        SourceCrateManifest = manifestType
+                    });
+                }
             }
 
             _runtimeAvailableData.AddOrUpdate(new CrateDescriptionDTO
