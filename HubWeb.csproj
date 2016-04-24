@@ -488,6 +488,7 @@
   <ItemGroup>
     <Content Include="Api\EventResponse.aspx" />
     <Content Include="Api\GetEmailHTML.aspx" />
+    <Content Include="Content\css\dockyard\authentication-dialog.css" />
     <Content Include="Content\css\dockyard\container-transition.css" />
     <Content Include="Content\css\dockyard\query-builder.css" />
     <Content Include="Content\css\fonts\brankic.svg" />
