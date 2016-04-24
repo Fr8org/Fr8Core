@@ -277,6 +277,7 @@
     <Compile Include="Services\ChartOfAccounts.cs" />
     <Compile Include="Services\JournalEntry.cs" />
     <Compile Include="Services\ServiceWorker.cs" />
+    <Compile Include="TerminalQuickbooksBootstrapper.cs" />
     <Compile Include="Tests\Fixtures\Fixtures.cs" />
     <Compile Include="Tests\Services\JournalEntryTests.cs" />
     <Compile Include="Startup.cs" />
