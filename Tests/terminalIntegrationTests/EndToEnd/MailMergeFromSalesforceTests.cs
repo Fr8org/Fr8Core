@@ -198,7 +198,7 @@ namespace terminalIntegrationTests.EndToEnd
 
         private async Task<bool> DeleteCase(string caseId, AuthorizationTokenDO authToken)
         {
-            return await new SalesforceManager().DeleteObject("Case", caseId, authToken);
+            return await new SalesforceManager().Delete(SalesforceObjectType.Case, caseId, authToken);
         }
 
         private async Task<Tuple<string, string>> CreateCase(AuthorizationTokenDO authToken)
@@ -206,7 +206,7 @@ namespace terminalIntegrationTests.EndToEnd
             var manager = new SalesforceManager();
             var name = Guid.NewGuid().ToString();
             var data = new Dictionary<string, object> { { "SuppliedEmail", TestEmail }, { "SuppliedName", name } };
-            return new Tuple<string, string>(await manager.CreateObject(data, "Case", authToken), name);
+            return new Tuple<string, string>(await manager.Create(SalesforceObjectType.Case, data, authToken), name);
         }
     }
 }

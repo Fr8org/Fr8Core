@@ -10,6 +10,9 @@ using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
 using terminalSalesforceTests.Fixtures;
+using terminalSalesforce.Services;
+using terminalSalesforce.Infrastructure;
+using Data.Entities;
 using terminalSalesforce.Activities;
 
 namespace terminalSalesforceTests.Intergration
@@ -88,7 +91,8 @@ namespace terminalSalesforceTests.Intergration
                                          .CratesOfType<StandardPayloadDataCM>()
                                          .SingleOrDefault();
             Assert.IsNotNull(newFeedIdCrate, "Feed is not created");
-            Assert.IsTrue(await SalesforceTestHelper.DeleteObject(authToken, "FeedItem", newFeedIdCrate.Content.PayloadObjects[0].PayloadObject[0].Value), "Test feed created is not deleted");
+            Assert.IsTrue(await new SalesforceManager().Delete(SalesforceObjectType.FeedItem, 
+                newFeedIdCrate.Content.PayloadObjects[0].PayloadObject[0].Value, new AuthorizationTokenDO { Token = authToken.Token, AdditionalAttributes = authToken.AdditionalAttributes }), "Test feed created is not deleted");
         }
 
         private async Task<ActivityDTO> PerformInitialConfiguration()

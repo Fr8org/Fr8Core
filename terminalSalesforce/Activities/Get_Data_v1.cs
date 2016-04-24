@@ -11,6 +11,7 @@ using TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
 using Data.Constants;
+using ServiceStack;
 
 namespace terminalSalesforce.Activities
 {
@@ -63,7 +64,9 @@ namespace terminalSalesforce.Activities
 
         protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
-            ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager.GetObjectDescriptions().Select(x => new ListItem() { Key = x.Key, Value = x.Key }).ToList();
+            ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager.GetSalesforceObjectTypes()
+                                                                                .Select(x => new ListItem() { Key = x.Key, Value = x.Key })
+                                                                                .ToList();
             runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
             return Task.FromResult(true);
         }
@@ -85,7 +88,7 @@ namespace terminalSalesforce.Activities
                 return;
             }
             //Prepare new query filters from selected object properties
-            var selectedObjectProperties = await _salesforceManager.GetFields(selectedObject, AuthorizationToken);
+            var selectedObjectProperties = await _salesforceManager.GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
             var queryFilterCrate = Crate<TypedFieldsCM>.FromContent(
                 QueryFilterCrateLabel,
                 new TypedFieldsCM(selectedObjectProperties.OrderBy(x => x.Key)
@@ -125,7 +128,7 @@ namespace terminalSalesforce.Activities
                 parsedCondition = ParseConditionToText(filterDataDTO);
             }
 
-            var resultObjects = await _salesforceManager.QueryObjects(salesforceObject, salesforceObjectFields, parsedCondition, AuthorizationToken);
+            var resultObjects = await _salesforceManager.Query(salesforceObject.ToEnum<SalesforceObjectType>(), salesforceObjectFields, parsedCondition, AuthorizationToken);
             CurrentPayloadStorage.Add(Crate<StandardTableDataCM>.FromContent(RuntimeDataCrateLabel, resultObjects, AvailabilityType.RunTime));
         }
     }

@@ -18,6 +18,7 @@ using Data.Interfaces;
 using Utilities.Configuration.Azure;
 using Hub.Managers;
 using Data.Constants;
+using ServiceStack;
 
 namespace terminalSalesforce.Activities
 {
@@ -260,7 +261,7 @@ namespace terminalSalesforce.Activities
                 return;
             }
             //Prepare new query filters from selected object properties
-            var selectedObjectProperties = await _salesforceManager.GetFields(selectedObject, AuthorizationToken);
+            var selectedObjectProperties = await _salesforceManager.GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
             var queryFilterCrate = Crate<TypedFieldsCM>.FromContent(
                 QueryFilterCrateLabel,
                 new TypedFieldsCM(selectedObjectProperties.OrderBy(x => x.Key)
@@ -272,7 +273,7 @@ namespace terminalSalesforce.Activities
 
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
-            ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager.GetObjectDescriptions().Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
+            ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager.GetSalesforceObjectTypes().Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
             var activityTemplates = await HubCommunicator.GetActivityTemplates(ActivityTemplate.EmailDelivererTag, CurrentFr8UserId);
             activityTemplates.Sort((x, y) => x.Name.CompareTo(y.Name));
             ConfigurationControls.MailSenderActivitySelector.ListItems = activityTemplates
