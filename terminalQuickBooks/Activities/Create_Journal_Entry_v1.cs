@@ -10,16 +10,18 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
+using StructureMap;
+using terminalQuickBooks.Interfaces;
 using JournalEntry = terminalQuickBooks.Services.JournalEntry;
 
 namespace terminalQuickBooks.Actions
 {
     public class Create_Journal_Entry_v1 : BaseTerminalActivity
     {
-        private JournalEntry _journalEntry;
+        private readonly IJournalEntry _journalEntry;
         public Create_Journal_Entry_v1()
         {
-            _journalEntry = new JournalEntry();
+            _journalEntry = ObjectFactory.GetInstance<IJournalEntry>();
         }
 
         public async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)

@@ -3,6 +3,7 @@ using Hub.StructureMap;
 using StructureMap;
 using terminalQuickBooks.Infrastructure;
 using terminalQuickBooks.Interfaces;
+using terminalQuickBooks.Services;
 
 namespace terminalQuickBooks
 {
@@ -25,6 +26,9 @@ namespace terminalQuickBooks
         public static void ConfigureLive(ConfigurationExpression configurationExpression)
         {
             configurationExpression.For<IAuthenticator>().Use<Authenticator>();
+            configurationExpression.For<IServiceWorker>().Use<ServiceWorker>();
+            configurationExpression.For<IJournalEntry>().Use<JournalEntry>();
+            configurationExpression.For<IChartOfAccounts>().Use<ChartOfAccounts>();
             configurationExpression.For<ICrateManager>().Use<CrateManager>();
         }
     }

@@ -26,7 +26,10 @@ namespace terminalQuickBooks.Infrastructure
         public const string TokenSeparator = ";;;;;;;";
 
         public static readonly string AccessToken =
-          CloudConfigurationManager.GetSetting("QuickBooksRequestTokenUrl").ToString(CultureInfo.InvariantCulture);
+          CloudConfigurationManager.GetSetting("QuickBooksAppToken").ToString(CultureInfo.InvariantCulture);
+
+        public static readonly string RequestUrl =
+            CloudConfigurationManager.GetSetting("QuickBooksRequestTokenUrl").ToString(CultureInfo.InvariantCulture);
 
         public static readonly ConcurrentDictionary<string, string> TokenSecrets =
            new ConcurrentDictionary<string, string>();
@@ -62,7 +65,7 @@ namespace terminalQuickBooks.Infrastructure
             };
             return new OAuthSession(
                 consumerContext,
-                AccessToken,
+                RequestUrl,
                 CloudConfigurationManager.GetSetting("QuickBooksOAuthAuthorizeUrl")
                     .ToString(CultureInfo.InvariantCulture),
                 CloudConfigurationManager.GetSetting("QuickBooksOAuthAccessUrl").ToString(CultureInfo.InvariantCulture));
@@ -93,9 +96,12 @@ namespace terminalQuickBooks.Infrastructure
 
         public Task<AuthorizationTokenDO> RefreshAuthToken(AuthorizationTokenDO authorizationToken)
         {
-            var tokenSecret = authorizationToken.Token.Split(new[] {TokenSeparator}, StringSplitOptions.RemoveEmptyEntries)[1];
+            var tokenArray = authorizationToken.Token.Split(new[] {TokenSeparator},
+                StringSplitOptions.RemoveEmptyEntries);
+            var accessToken = tokenArray[0];
+            var tokenSecret = tokenArray[1];
            
-            var reconnectResult = ReconnectRealm(ConsumerKey, ConsumerSecret, AccessToken, tokenSecret);
+            var reconnectResult = ReconnectRealm(ConsumerKey, ConsumerSecret, accessToken, tokenSecret);
             XmlDocument xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(reconnectResult);
 

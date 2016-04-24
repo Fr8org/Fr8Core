@@ -13,6 +13,5 @@ namespace terminalQuickBooks.Interfaces
     public interface IServiceWorker
     {
         DataService GetDataService(AuthorizationTokenDO authTokenDO);
-        ServiceContext CreateServiceContext(string oauthToken);
     }
 }

@@ -14,6 +14,7 @@ using Intuit.Ipp.Data;
 using Intuit.Ipp.DataService;
 using Intuit.Ipp.Diagnostics;
 using Intuit.Ipp.Security;
+using StructureMap;
 using terminalQuickBooks.Infrastructure;
 using terminalQuickBooks.Interfaces;
 using Utilities.Configuration.Azure;
@@ -25,23 +26,35 @@ namespace terminalQuickBooks.Services
     {
         private static readonly string AppToken =
             CloudConfigurationManager.GetSetting("QuickBooksAppToken").ToString(CultureInfo.InvariantCulture);
-      
+
+        private readonly IAuthenticator _authenticator;
+
+        public ServiceWorker()
+        {
+            _authenticator = ObjectFactory.GetInstance<IAuthenticator>();
+        }
+
         public ServiceContext CreateServiceContext(string accessToken)
         {
-            var tokens = accessToken.Split(new[] {Authenticator.TokenSeparator}, StringSplitOptions.None);
+            var tokens = accessToken.Split(new[] { Authenticator.TokenSeparator }, StringSplitOptions.None);
             var accToken = tokens[0];
             var accTokenSecret = tokens[1];
             var companyId = tokens[2];
             var oauthValidator = new OAuthRequestValidator(
-                accToken, 
-                accTokenSecret, 
-                Authenticator.ConsumerKey, 
+                accToken,
+                accTokenSecret,
+                Authenticator.ConsumerKey,
                 Authenticator.ConsumerSecret);
             return new ServiceContext(AppToken, companyId, IntuitServicesType.QBO, oauthValidator);
         }
 
         public DataService GetDataService(AuthorizationTokenDO authTokenDO)
         {
+            // Check token refresh.
+            var isTokenNeedsRefresh = DateTime.Now.Date - authTokenDO.ExpiresAt.Date < TimeSpan.FromDays(5);
+            if (isTokenNeedsRefresh)
+                authTokenDO = _authenticator.RefreshAuthToken(authTokenDO).Result;
+
             var curServiceContext = CreateServiceContext(authTokenDO.Token);
             //Modify required settings for the Service Context
             curServiceContext.IppConfiguration.BaseUrl.Qbo = "https://sandbox-quickbooks.api.intuit.com/";
