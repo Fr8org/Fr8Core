@@ -11,6 +11,7 @@ namespace Data.Repositories.Security.Entities
     {
         public ObjectRolePermissionsWrapper()
         {
+            RolePermissions = new List<RolePermission>();
             Properties = new Dictionary<string, List<RolePermission>> ();
         }
 
