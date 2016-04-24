@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 using System.Collections.Generic;
 using terminalAtlassian.Activities;
 
-namespace terminalDropboxTests.Actions
+namespace terminalDropboxTests.Activities
 {
     [TestFixture]
     [Category("terminalAtlassianTests1")]

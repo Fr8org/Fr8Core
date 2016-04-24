@@ -16,7 +16,6 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
 using terminalDocuSign.Activities;
-using terminalDocuSign.Activities;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Infrastructure.AutoMapper;
 using terminalDocuSign.Infrastructure.StructureMap;
@@ -26,7 +25,7 @@ using TerminalBase.Infrastructure;
 using Utilities.Configuration.Azure;
 using UtilitiesTesting;
 
-namespace terminalDocuSign.Tests.Actions
+namespace terminalDocuSign.Tests.Activities
 {
     [TestFixture]
     [Category("terminalDocuSign")]

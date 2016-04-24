@@ -9,7 +9,7 @@ using System.Text;
 using System.Threading.Tasks;
 using TerminalBase.Infrastructure;
 using terminalSalesforce;
-using terminalSalesforce.Actions;
+using terminalSalesforce.Activities;
 using terminalSalesforce.Infrastructure;
 using UtilitiesTesting;
 

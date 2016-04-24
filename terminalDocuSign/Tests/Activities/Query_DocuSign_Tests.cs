@@ -25,7 +25,7 @@ using TerminalBase.Infrastructure;
 using Utilities.Configuration.Azure;
 using UtilitiesTesting;
 
-namespace terminalDocuSign.Tests.Actions
+namespace terminalDocuSign.Tests.Activities
 {
     [TestFixture]
     [Category("terminalDocuSign")]

@@ -1,5 +1,4 @@
-﻿
-using Data.Control;
+﻿using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
@@ -15,7 +14,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using terminalSalesforce.Actions;
+using terminalSalesforce.Activities;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
 

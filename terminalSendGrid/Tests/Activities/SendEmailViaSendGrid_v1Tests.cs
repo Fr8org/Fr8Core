@@ -26,7 +26,7 @@ using terminalSendGrid.Tests.Fixtures;
 using TerminalBase.Infrastructure;
 using Utilities;
 
-namespace terminalSendGrid.Tests.Actions
+namespace terminalSendGrid.Tests.Activities
 {
     [TestFixture]
     [Category("terminalSendGrid")]

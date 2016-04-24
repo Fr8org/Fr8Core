@@ -22,7 +22,7 @@ using Utilities.Logging;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
-namespace terminalPapertrail.Tests.Actions
+namespace terminalPapertrail.Tests.Activities
 {
     [TestFixture]
     [Category("terminalPapertrailActions")]

@@ -15,7 +15,7 @@ using Utilities;
 using Data.Helpers;
 using System.Globalization;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class FindObjectsThatMatchIncomingMessage_v1 : EnhancedTerminalActivity<FindObjectsThatMatchIncomingMessage_v1.ActivityUi>
     {

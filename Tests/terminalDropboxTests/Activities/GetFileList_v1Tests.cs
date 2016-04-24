@@ -15,7 +15,7 @@ using terminalDropboxTests.Fixtures;
 using TerminalBase.Infrastructure;
 using UtilitiesTesting;
 
-namespace terminalDropboxTests.Actions
+namespace terminalDropboxTests.Activities
 {
     [TestFixture]
     [Category("terminalDropboxTests")]
