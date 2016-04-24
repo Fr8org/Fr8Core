@@ -4,15 +4,10 @@ using Data.Crates;
 using Data.Interfaces.Manifests;
 using System.Collections.Generic;
 using TerminalBase.BaseClasses;
-using System;
 using System.Threading.Tasks;
 using terminalSalesforce.Infrastructure;
 using StructureMap;
 using System.Linq;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
-using Data.Constants;
-using System.Globalization;
 
 namespace terminalSalesforce.Actions
 {
@@ -20,8 +15,6 @@ namespace terminalSalesforce.Actions
     {
         private const string CreatedEventname = "Created";
         private const string UpdatedEventname = "Updated";
-        private const string SalesforceObjectFieldsCrateLabel = "Salesforce Object Fields";
-        private const string RuntimeDataCrateLabel = "Table from Salesforce Get Data";
 
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -71,16 +64,18 @@ namespace terminalSalesforce.Actions
             }
         }
 
-        ISalesforceManager _salesforceManager;
+        readonly ISalesforceManager _salesforceManager;
 
         public Monitor_Salesforce_Event_v1() : base(true)
         {
             _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
             ActivitiesHelper.GetAvailableFields(ConfigurationControls.SalesforceObjectList);
+
+            return Task.FromResult(0);
         }
 
         protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
@@ -92,14 +87,16 @@ namespace terminalSalesforce.Actions
                 return;
             }
 
-            var eventSubscriptionCrate = PackEventSubscriptionsCrate(ConfigurationControls);
+            var eventSubscriptionCrate = PackEventSubscriptionsCrate();
 
             CurrentActivityStorage.ReplaceByLabel(eventSubscriptionCrate);
             
-            runtimeCrateManager.MarkAvailableAtRuntime<SalesforceEventCM>("Salesforce Event").AddFields(CreateSfMonitorDesignTimeFields());
+            runtimeCrateManager.ClearAvailableCrates();
+            runtimeCrateManager.MarkAvailableAtRuntime<SalesforceEventCM>("Salesforce Event");
 
             var selectedObjectProperties = await _salesforceManager.GetFields(curSfChosenObject, AuthorizationToken);
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel).AddFields(selectedObjectProperties);
+
+            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(GenerateRuntimeDataLabel()).AddFields(selectedObjectProperties);
         }
 
         protected override async Task RunCurrentActivity()
@@ -143,12 +140,9 @@ namespace terminalSalesforce.Actions
                 CurrentPayloadStorage.ReplaceByLabel(Crate.FromContent("Salesforce Event", sfEvent));
             });
 
-            //get the currently selected object fields
-            var salesforceObjectFields = CurrentActivityStorage
-                                            .FirstCrate<FieldDescriptionsCM>(x => x.Label == SalesforceObjectFieldsCrateLabel)
-                                            .Content
-                                            .Fields
-                                            .Select(x => x.Key);
+            var runtimeCrateLabel = GenerateRuntimeDataLabel();
+
+            var salesforceObjectFields = CurrentActivityStorage.FirstCrate<CrateDescriptionCM>().Content.CrateDescriptions.First(x => x.Label == runtimeCrateLabel).Fields.Select(x => x.Key).ToArray();
 
             //for each Salesforce event notification
             var sfEventsList = CurrentPayloadStorage.CrateContentsOfType<SalesforceEventCM>().ToList();
@@ -157,46 +151,53 @@ namespace terminalSalesforce.Actions
                 //get the object fields as Standard Table Data
                 var resultObjects = await _salesforceManager.QueryObjects(
                                                 sfEvent.ObjectType,
-                                                salesforceObjectFields, 
-                                                string.Format("ID = '{0}'", sfEvent.ObjectId), 
+                                                salesforceObjectFields,
+                                                $"ID = '{sfEvent.ObjectId}'", 
                                                 AuthorizationToken);
-                CurrentPayloadStorage.Add(Crate<StandardTableDataCM>.FromContent(RuntimeDataCrateLabel, resultObjects));
+
+                CurrentPayloadStorage.Add(Crate<StandardTableDataCM>.FromContent(runtimeCrateLabel, resultObjects));
             }
         }
 
-        private Crate PackEventSubscriptionsCrate(ActivityUi curSfActivityUi)
+        private string GenerateRuntimeDataLabel()
         {
-            var curSfChosenObject = curSfActivityUi.SalesforceObjectList.selectedKey;
+            var curSfChosenObject = ConfigurationControls.SalesforceObjectList.selectedKey;
+
+            var eventSubscriptions = new List<string>();
+
+            if (ConfigurationControls.Created.Selected)
+            {
+                eventSubscriptions.Add(CreatedEventname);
+            }
+            if (ConfigurationControls.Updated.Selected)
+            {
+                eventSubscriptions.Add(UpdatedEventname);
+            }
+
+            var modifiers = string.Join("/", eventSubscriptions);
+
+            return $"{curSfChosenObject} {modifiers} on Salesforce.com";
+        }
+
+        private Crate PackEventSubscriptionsCrate()
+        {
+            var curSfChosenObject = ConfigurationControls.SalesforceObjectList.selectedKey;
 
             var eventSubscriptions = new List<string>();
             
-            if (curSfActivityUi.Created.Selected)
+            if (ConfigurationControls.Created.Selected)
             {
-                eventSubscriptions.Add(string.Format("{0}{1}", curSfChosenObject, CreatedEventname));
+                eventSubscriptions.Add($"{curSfChosenObject}{CreatedEventname}");
             }
-            if (curSfActivityUi.Updated.Selected)
+            if (ConfigurationControls.Updated.Selected)
             {
-                eventSubscriptions.Add(string.Format("{0}{1}", curSfChosenObject, UpdatedEventname));
+                eventSubscriptions.Add($"{curSfChosenObject}{UpdatedEventname}");
             }
 
             return CrateManager.CreateStandardEventSubscriptionsCrate(
                 "Standard Event Subscriptions",
                 "Salesforce",
                 eventSubscriptions.ToArray());
-        }
-
-        private List<FieldDTO> CreateSfMonitorDesignTimeFields()
-        {
-            var monitorEventFields = new List<FieldDTO> {
-
-                new FieldDTO("ObjectType", "ObjectType", AvailabilityType.RunTime),
-                new FieldDTO("ObjectId", "ObjectId", AvailabilityType.RunTime),
-                new FieldDTO("CreatedDate", "CreatedDate", AvailabilityType.RunTime),
-                new FieldDTO("LastModifiedDate", "LastModifiedDate", AvailabilityType.RunTime),
-                new FieldDTO("OccuredEvent", "OccuredEvent", AvailabilityType.RunTime)
-            };
-
-            return monitorEventFields;
         }
     }
 }

@@ -77,7 +77,16 @@ namespace TerminalBase.BaseClasses
                 }
             }
         }
-        
+
+        public void ClearAvailableCrates()
+        {
+            if (_runtimeAvailableData == null)
+            {
+                _runtimeAvailableData = _crateStorage.CrateContentsOfType<CrateDescriptionCM>(x => x.Label == RuntimeCrateDescriptionsCrateLabel).FirstOrDefault();
+                _runtimeAvailableData?.CrateDescriptions?.Clear();
+            }
+        }
+
         public FieldConfigurator MarkAvailableAtRuntime<TManifest>(string label)
             where TManifest : Manifest
         {
@@ -98,7 +107,7 @@ namespace TerminalBase.BaseClasses
                 });
             }
 
-            _runtimeAvailableData.AddIfMissing(new CrateDescriptionDTO
+            _runtimeAvailableData.AddOrUpdate(new CrateDescriptionDTO
             {
                 Label = label,
                 ManifestId = manifestType.Id,
