@@ -63,7 +63,7 @@ namespace terminalQuickBooks.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex);
+                ReportTerminalError(curTerminal, ex,externalAuthDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

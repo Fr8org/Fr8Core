@@ -21,6 +21,7 @@ namespace terminalDocuSign.Controllers
             var terminal = new TerminalDTO()
             {
                 Name = "terminalDocuSign",
+                Label = "DocuSign",
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint"),
                 Version = "1",
@@ -197,7 +198,7 @@ namespace terminalDocuSign.Controllers
                 queryDocusign,
                 searchDocusignHistory,
                 getDocuSignTemplateActionTemplate,
-                process_personal_report
+                process_personal_report,
             };
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()

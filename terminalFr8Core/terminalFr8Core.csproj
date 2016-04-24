@@ -200,6 +200,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activities\CollectData_v1.cs" />
+    <Compile Include="Activities\FindObjectsThatMatchIncomingMessage_v1.cs" />
     <Compile Include="Activities\Monitor_Fr8_Events_v1.cs" />
     <Compile Include="Activities\Process_Personnel_Report_v1.cs" />
     <Compile Include="Activities\QueryFr8Warehouse_v1.cs" />
@@ -295,6 +296,9 @@
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+    <None Include="Web.Demo.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -311,6 +315,15 @@
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <Optimize>true</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Demo|AnyCPU'">
     <OutputPath>bin\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <Optimize>true</Optimize>
@@ -349,13 +362,9 @@
   </PropertyGroup>
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
   <ItemGroup>
-    <Log4netConfigFiles Include="..\Config\*.terminals.*"/>
+    <Log4netConfigFiles Include="..\Config\*.terminals.*" />
   </ItemGroup>
-
   <Target Name="BeforeBuild">
-    <Copy
-        SourceFiles="@(Log4NetConfigFiles)"
-        DestinationFolder="."
-         />
+    <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
   </Target>
 </Project>

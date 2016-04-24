@@ -20,6 +20,8 @@ namespace Hub.Services
 
         private readonly ICrateManager _crate;
         private readonly IActivityTemplate _activityTemplate;
+        private const string ValidationErrorsLabel = "Validation Errors";
+
         #endregion
 
         public PlanNode()
@@ -75,6 +77,7 @@ namespace Hub.Services
         public IncomingCratesDTO GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability)
         {
             var fields = GetCrateManifestsByDirection<FieldDescriptionsCM>(activityId, direction, AvailabilityType.NotSet);
+
             var crates = GetCrateManifestsByDirection<CrateDescriptionCM>(activityId, direction, AvailabilityType.NotSet);
             var availableData = new IncomingCratesDTO();
 
@@ -96,7 +99,8 @@ namespace Hub.Services
 
             if (availability == AvailabilityType.NotSet)
             {
-                cratePredicate = f => true;
+                //validation errors don't need to be present as available data, so remove Validation Errors
+                cratePredicate = f => f.Label != ValidationErrorsLabel;
             }
             else
             {

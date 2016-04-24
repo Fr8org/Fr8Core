@@ -179,6 +179,7 @@
       <HintPath>packages\Microsoft.AspNet.Identity.Owin.2.0.0\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Build" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.Owin, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -383,6 +384,7 @@
     <Compile Include="Controllers\Api\SubPlansController.cs" />
     <Compile Include="Controllers\Api\PlansController.cs" />
     <Compile Include="Controllers\Api\TerminalsController.cs" />
+    <Compile Include="Controllers\Api\WarehouseController.cs" />
     <Compile Include="Controllers\CompanyController.cs" />
     <Compile Include="Controllers\Helpers\PlanMappingHelper.cs" />
     <Compile Include="Controllers\RedirectController.cs" />
@@ -484,6 +486,7 @@
   <ItemGroup>
     <Content Include="Api\EventResponse.aspx" />
     <Content Include="Api\GetEmailHTML.aspx" />
+    <Content Include="Content\css\dockyard\authentication-dialog.css" />
     <Content Include="Content\css\dockyard\container-transition.css" />
     <Content Include="Content\css\dockyard\query-builder.css" />
     <Content Include="Content\css\fonts\brankic.svg" />
@@ -866,15 +869,31 @@
       <TransformOnBuild>true</TransformOnBuild>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <None Include="ApplicationInsights.alexlocal.config">
+      <DependentUpon>ApplicationInsights.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
     <None Include="ApplicationInsights.Debug.config">
       <DependentUpon>ApplicationInsights.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="ApplicationInsights.Demo.config">
+      <DependentUpon>ApplicationInsights.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
     <None Include="ApplicationInsights.Dev.config">
       <DependentUpon>ApplicationInsights.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="ApplicationInsights.fr8dev - FTP.config">
+      <DependentUpon>ApplicationInsights.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
+    </None>
+    <None Include="ApplicationInsights.fr8dev - Web Deploy.config">
+      <DependentUpon>ApplicationInsights.config</DependentUpon>
+      <IsTransformFile>True</IsTransformFile>
     </None>
     <None Include="ApplicationInsights.Release.config">
       <DependentUpon>ApplicationInsights.config</DependentUpon>
@@ -1091,6 +1110,9 @@
     <Content Include="Views\Services\SolutionListTemplate.cshtml" />
     <Content Include="Views\AngularTemplate\SelectData.cshtml" />
     <Content Include="Views\AngularTemplate\BuildMessageAppender.cshtml" />
+    <None Include="Web.Demo.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -4505,6 +4527,15 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;DEV</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Demo|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\</OutputPath>
     <DefineConstants>TRACE;DEBUG;DEV</DefineConstants>

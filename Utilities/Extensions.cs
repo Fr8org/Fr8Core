@@ -20,6 +20,17 @@ namespace Utilities
 
     public static class StringExtension
     {
+        public static string UppercaseFirst(this string s)
+        {
+            // Check for empty string.
+            if (string.IsNullOrEmpty(s))
+            {
+                return s;
+            }
+            // Return char and concat substring.
+            return char.ToUpper(s[0]) + s.Substring(1);
+        }
+
         public static Uri AsUri(this string value)
         {
             return new Uri(value);

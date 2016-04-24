@@ -40,6 +40,15 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Demo|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Demo\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Analytics.NET, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Analytics.2.0.0\lib\Analytics.NET.dll</HintPath>
@@ -276,7 +285,6 @@
     <Compile Include="Infrastructure\JsonNet\ActivityTemplateActivityConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\AvailabilityConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\CreateTimeConverter.cs" />
-    <Compile Include="Infrastructure\JsonNet\FieldConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\TerminalActivityTemplateConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\WebServiceConverter.cs" />
     <Compile Include="Infrastructure\Security\AuthorizeActivityAttribute.cs" />
@@ -352,6 +360,7 @@
     <Compile Include="Helpers\FieldMemberAccessor.cs" />
     <Compile Include="Helpers\IMemberAccessor.cs" />
     <Compile Include="Interfaces\Manifests\ExternalObjectHandlesCM.cs" />
+    <Compile Include="Interfaces\Manifests\DocuSignEnvelopeCM_v2.cs" />
     <Compile Include="Interfaces\Manifests\Helpers\StandardTableDataCMTools.cs" />
     <Compile Include="Interfaces\Manifests\ManifestDescriptionCM.cs" />
     <Compile Include="Interfaces\Manifests\ChartOfAccountsCM.cs" />
@@ -700,10 +709,6 @@
     <Compile Include="Migrations\201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.Designer.cs">
       <DependentUpon>201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201604152259367_MMSalesforceSolution.cs" />
-    <Compile Include="Migrations\201604152259367_MMSalesforceSolution.Designer.cs">
-      <DependentUpon>201604152259367_MMSalesforceSolution.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\201604160406197_PlanNodeDO_Runnable.cs" />
     <Compile Include="Migrations\201604160406197_PlanNodeDO_Runnable.Designer.cs">
       <DependentUpon>201604160406197_PlanNodeDO_Runnable.cs</DependentUpon>
@@ -711,6 +716,10 @@
     <Compile Include="Migrations\201604171806555_HistoryItemDO_CustomerId_to_Fr8UserId.cs" />
     <Compile Include="Migrations\201604171806555_HistoryItemDO_CustomerId_to_Fr8UserId.Designer.cs">
       <DependentUpon>201604171806555_HistoryItemDO_CustomerId_to_Fr8UserId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201604191731406_AddLabelToTerminals.cs" />
+    <Compile Include="Migrations\201604191731406_AddLabelToTerminals.Designer.cs">
+      <DependentUpon>201604191731406_AddLabelToTerminals.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201604211556495_RenamePrivilegesToPermission.cs" />
     <Compile Include="Migrations\201604211556495_RenamePrivilegesToPermission.Designer.cs">
@@ -1244,14 +1253,14 @@
     <EmbeddedResource Include="Migrations\201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.resx">
       <DependentUpon>201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201604152259367_MMSalesforceSolution.resx">
-      <DependentUpon>201604152259367_MMSalesforceSolution.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604160406197_PlanNodeDO_Runnable.resx">
       <DependentUpon>201604160406197_PlanNodeDO_Runnable.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604171806555_HistoryItemDO_CustomerId_to_Fr8UserId.resx">
       <DependentUpon>201604171806555_HistoryItemDO_CustomerId_to_Fr8UserId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604191731406_AddLabelToTerminals.resx">
+      <DependentUpon>201604191731406_AddLabelToTerminals.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604211556495_RenamePrivilegesToPermission.resx">
       <DependentUpon>201604211556495_RenamePrivilegesToPermission.cs</DependentUpon>

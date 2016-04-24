@@ -5,6 +5,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Security;
 using System.Web;
 using Data.Crates;
 using Data.Repositories;
@@ -62,7 +63,7 @@ namespace Data.Migrations
                 UpdateRootPlanNodeId(uow);
 
                 SeedIntoMockDb(uow);
-
+                AddDefaultProfiles(uow);
                 AddRoles(uow);
                 AddAdmins(uow);
                 AddDockyardAccounts(uow);
@@ -348,6 +349,76 @@ namespace Data.Migrations
             }
         }
 
+        public static void AddDefaultProfiles(IUnitOfWork uow)
+        {
+            //create 'System Administrator' Profile 
+            var profile = uow.ProfileRepository.GetQuery().FirstOrDefault(x => x.Name == "System Administrator");
+            if (profile == null)
+            {
+                profile = new ProfileDO()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "System Administrator",
+                    Permissions = new List<PermissionDO>()
+                    {
+                        AddPermission("PlanNodeDO", true, true, true, true, true, true, uow),
+                        AddPermission("ContainerDO", true, true, true, true, true, true, uow),
+                        AddPermission("TerminalDO", true, true, true, true, true, true, uow),
+                        AddPermission("Fr8AccountDO", true, true, true, true, true, true, uow),
+                    }
+                };
+                uow.ProfileRepository.Add(profile);
+            }
+
+            //update existing roles to have sys admin profile //todo: check this when Standard User profile start using in system
+            var roles = uow.AspNetRolesRepository.GetQuery().Where(x => x.ProfileId == null).ToList();
+            foreach (var role in roles)
+            {
+                role.ProfileId = profile.Id;
+            }
+
+            //create 'Standard User' profile
+            var standardProfile = uow.ProfileRepository.GetQuery().FirstOrDefault(x => x.Name == "Standard User");
+            if (standardProfile != null) return;
+
+            profile = new ProfileDO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Standard User",
+                Permissions = new List<PermissionDO>()
+                {
+                    AddPermission("PlanNodeDO", true, true, true, true, false, false, uow),
+                    AddPermission("ContainerDO", true, true, true, true, false, false, uow),
+                    AddPermission("TerminalDO", true, true, true, true, false, false, uow),
+                    AddPermission("Fr8AccountDO", true, true, true, true, false, false, uow),
+                }
+            };
+            uow.ProfileRepository.Add(profile);
+        }
+
+        private static PermissionDO AddPermission(string type, bool read, bool edit, bool create, bool delete, bool viewAll,
+            bool modifyAll, IUnitOfWork uow)
+        {
+            var permission = new PermissionDO()
+            {
+                Id = Guid.NewGuid(),
+                Type = type,
+                CreateObject = create,
+                ReadObject = read,
+                EditObject = edit,
+                DeleteObject = delete,
+                ViewAllObjects = viewAll,
+                ModifyAllObjects = modifyAll,
+                CreateDate = DateTimeOffset.Now,
+                LastUpdated = DateTimeOffset.Now,
+            };
+            uow.PermissionRepository.Add(permission);
+
+            return permission;
+        }
+            
+
+
         /// <summary>
         /// Add users with 'Admin' role.
         /// </summary>
@@ -364,6 +435,7 @@ namespace Data.Migrations
             CreateAdmin("mvcdeveloper@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("maki.gjuroski@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("fr8system_monitor@fr8.company", "123qwe", unitOfWork);
+            CreateAdmin("teh.netaholic@gmail.com", "123qwe", unitOfWork);
 
             //CreateAdmin("eschebenyuk@gmail.com", "kate235", unitOfWork);
             //CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);
@@ -466,9 +538,9 @@ namespace Data.Migrations
             // AddTerminals(uow, "terminalDocuSign", "localhost:53234", "1", true);
             // AddTerminals(uow, "terminalExcel", "localhost:47011", "1", false);
             // AddTerminals(uow, "terminalSalesforce", "localhost:51234", "1", true);
-            AddTerminals(uow, "terminalDocuSign", "localhost:53234", "1");
-            AddTerminals(uow, "terminalExcel", "localhost:47011", "1");
-            AddTerminals(uow, "terminalSalesforce", "localhost:51234", "1");
+            AddTerminals(uow, "terminalDocuSign", "DocuSign", "localhost:53234", "1");
+            AddTerminals(uow, "terminalExcel", "Excel", "localhost:47011", "1");
+            AddTerminals(uow, "terminalSalesforce", "Salesforce", "localhost:51234", "1");
 
             uow.SaveChanges();
         }
@@ -477,8 +549,8 @@ namespace Data.Migrations
 
         // private static void AddTerminals(IUnitOfWork uow, string terminalName, string endPoint,
         //     string version, bool requiresAuthentication)
-        private static void AddTerminals(IUnitOfWork uow, string terminalName, string endPoint,
-            string version)
+        private static void AddTerminals(IUnitOfWork uow, string terminalName, string terminalLabel, 
+            string endPoint, string version)
         {
             // Check that terminal does not exist yet.
             var terminalExists = uow.TerminalRepository.GetQuery().Any(x => x.Name == terminalName);
@@ -490,6 +562,7 @@ namespace Data.Migrations
                 var terminalDO = new TerminalDO()
                 {
                     Name = terminalName,
+                    Label = terminalLabel,
                     TerminalStatus = TerminalStatus.Active,
                     Endpoint = endPoint,
                     Version = version,
@@ -525,7 +598,7 @@ namespace Data.Migrations
                 return;
 
             var curActivityTemplateDO = new ActivityTemplateDO(
-                name, version, endPoint, endPoint);
+                name, version, endPoint, endPoint, endPoint);
             uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
         }
 

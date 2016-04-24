@@ -9,10 +9,12 @@ namespace Data.Interfaces.Manifests
 {
     public class StandardPayloadDataCM : Manifest
     {
+        [ManifestField(IsHidden = true)]
         public string Name { get; set; }
 
         public List<PayloadObjectDTO> PayloadObjects { get; set; }
 
+        [ManifestField(IsHidden = true)]
         public string ObjectType { get; set; }
         
         
@@ -136,6 +138,10 @@ namespace Data.Interfaces.Manifests
         public PayloadObjectDTO(IEnumerable<FieldDTO> fieldData)
         {
             PayloadObject = new List<FieldDTO>(fieldData);
+        }
+
+        public PayloadObjectDTO(params FieldDTO[] fieldData) : this(fieldData as IEnumerable<FieldDTO>)
+        {
         }
 
         public bool TryGetValue(string key, bool skipNull, bool ignoreCase, out string value)

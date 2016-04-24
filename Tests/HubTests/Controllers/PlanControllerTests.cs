@@ -318,6 +318,7 @@ namespace HubTests.Controllers
                     Id = 1,
                     TerminalStatus = TerminalStatus.Active,
                     Name = "terminal",
+                    Label = "term",
                     Version = "1"
 
                 });

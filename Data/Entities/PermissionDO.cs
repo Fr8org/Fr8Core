@@ -8,10 +8,6 @@ using Data.Entities;
 
 namespace Data.Entities
 {
-    /// <summary>
-    /// Data Object Wrapper for Permission. Not connected to EF Context and contains only basic data.
-    /// Used for Security Objects Manipulation.
-    /// </summary>
     public class PermissionDO : BaseObject
     {
         public PermissionDO()

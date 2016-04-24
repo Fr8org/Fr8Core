@@ -20,6 +20,7 @@ namespace terminalPapertrail.Controllers
             var terminal = new TerminalDTO()
             {
                 Name = "terminalPapertrail",
+                Label = "Papertrail",
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("terminalPapertrail.TerminalEndpoint"),
                 Version = "1"
