@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
+using System.Threading;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories.Security;
@@ -79,32 +80,32 @@ namespace Data.Infrastructure.StructureMap
             securityStorageProvider.SetDefaultObjectSecurity(dataObjectId.ToString(), dataObjectType);
         }
 
-        public bool AuthorizeActivity(int permissionName, string curObjectId, string propertyName = null)
+        public bool AuthorizeActivity(int permissionName, string curObjectId, string curObjectType, string propertyName = null)
         {
+            //check if user is authenticated. Unauthenticated users cannot pass security and come up to here, which means this is internal fr8 event, that need to be passed 
+            if (!IsAuthenticated())
+                return true;
+
             //get all current roles for current user
             var roles = GetRoleNames().ToList();
+            if (!roles.Any())
+                return true;
 
-            //get all role permissions for object
+            //Object Based permission set checks
+
             var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
-            var objRolePermissionWrapper = securityStorageProvider.GetRolePermissionsForSecuredObject(curObjectId);
+            var permissionSets = securityStorageProvider.GetObjectBasedPermissionSetForObject(curObjectId, curObjectType, roles);
 
-            if (objRolePermissionWrapper == null)
-                return false;
+            var modifyAllData = permissionSets.FirstOrDefault(x => x == PermissionType.ModifyAllObjects);
+            var viewAllData = permissionSets.FirstOrDefault(x => x == PermissionType.ViewAllObjects);
 
-            if (string.IsNullOrEmpty(propertyName))
-            {
-                var authorizedRoles = objRolePermissionWrapper.RolePermissions.Where(x => roles.Contains(x.Role.RoleName));
-                return authorizedRoles.Any();
-            }
-            else
-            {
-                //find property inside object properties collection with permissions
-                if (!objRolePermissionWrapper.Properties.ContainsKey(propertyName)) return false;
+            if (viewAllData != default(int) && permissionName == PermissionType.ReadObject) return true;
+            if (modifyAllData != default(int)) return true;
 
-                var propertyRolePermissions = objRolePermissionWrapper.Properties[propertyName];
-                var authorizedRoles = propertyRolePermissions.Where(x => roles.Contains(x.Role.RoleName));
-                return authorizedRoles.Any();
-            }
+            var currentPermission = permissionSets.FirstOrDefault(x => x == permissionName);
+            if (currentPermission != default(int)) return true;
+
+            return false;
         }
     }
 }

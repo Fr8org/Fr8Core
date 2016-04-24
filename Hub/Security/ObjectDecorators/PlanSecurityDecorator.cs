@@ -28,7 +28,7 @@ namespace Hub.Security.ObjectDecorators
 
         public Task<ActivateActivitiesDTO> Activate(Guid planId, bool planBuilderActivate)
         {
-            if (_securityServices.AuthorizeActivity(PermissionType.EditObject, planId.ToString()))
+            if (_securityServices.AuthorizeActivity(PermissionType.EditObject, planId.ToString(), typeof(PlanNodeDO).Name))
             {
                 return _target.Activate(planId, planBuilderActivate);
             }
@@ -40,7 +40,7 @@ namespace Hub.Security.ObjectDecorators
 
         public Task<PlanDO> Clone(Guid planId)
         {
-            if (_securityServices.AuthorizeActivity(PermissionType.ReadObject, planId.ToString()))
+            if (_securityServices.AuthorizeActivity(PermissionType.ReadObject, planId.ToString(), typeof(PlanNodeDO).Name))
             {
                 return _target.Clone(planId);
             }
@@ -52,7 +52,7 @@ namespace Hub.Security.ObjectDecorators
 
         public Task<ContainerDO> Continue(Guid containerId)
         {
-            if (_securityServices.AuthorizeActivity(PermissionType.EditObject, containerId.ToString()))
+            if (_securityServices.AuthorizeActivity(PermissionType.EditObject, containerId.ToString(), typeof(PlanNodeDO).Name))
             {
                 return _target.Continue(containerId);
             }
@@ -64,7 +64,7 @@ namespace Hub.Security.ObjectDecorators
 
         public PlanDO Copy(IUnitOfWork uow, PlanDO curPlanDO, string name)
         {
-            if (_securityServices.AuthorizeActivity(PermissionType.ReadObject, curPlanDO.Id.ToString()))
+            if (_securityServices.AuthorizeActivity(PermissionType.ReadObject, curPlanDO.Id.ToString(), typeof(PlanNodeDO).Name))
             {
                 return _target.Copy(uow, curPlanDO, name);
             }
@@ -76,7 +76,7 @@ namespace Hub.Security.ObjectDecorators
 
         public ContainerDO Create(IUnitOfWork uow, Guid planId, params Crate[] curPayload)
         {
-            if (_securityServices.AuthorizeActivity(PermissionType.EditObject, planId.ToString()))
+            if (_securityServices.AuthorizeActivity(PermissionType.EditObject, planId.ToString(), typeof(PlanNodeDO).Name))
             {
                 return _target.Create(uow, planId, curPayload);
             }
@@ -98,7 +98,7 @@ namespace Hub.Security.ObjectDecorators
 
         public Task<string> Deactivate(Guid curPlanId)
         {
-            if (_securityServices.AuthorizeActivity(PermissionType.EditObject, curPlanId.ToString()))
+            if (_securityServices.AuthorizeActivity(PermissionType.EditObject, curPlanId.ToString(), typeof(PlanNodeDO).Name))
             {
                 return _target.Deactivate(curPlanId);
             }
@@ -110,7 +110,7 @@ namespace Hub.Security.ObjectDecorators
 
         public void Delete(IUnitOfWork uow, Guid id)
         {
-            if (_securityServices.AuthorizeActivity(PermissionType.DeleteObject, id.ToString()))
+            if (_securityServices.AuthorizeActivity(PermissionType.DeleteObject, id.ToString(), typeof(PlanNodeDO).Name))
             {
                 _target.Delete(uow, id);
             }
@@ -127,7 +127,7 @@ namespace Hub.Security.ObjectDecorators
 
         public void Enqueue(Guid curPlanId, params Crate[] curEventReport)
         {
-            if (_securityServices.AuthorizeActivity(PermissionType.EditObject, curPlanId.ToString()))
+            if (_securityServices.AuthorizeActivity(PermissionType.EditObject, curPlanId.ToString(), typeof(PlanNodeDO).Name))
             {
                 _target.Enqueue(curPlanId, curEventReport);
             }
@@ -154,7 +154,7 @@ namespace Hub.Security.ObjectDecorators
 
         public PlanDO GetPlanByActivityId(IUnitOfWork uow, Guid planActivityId)
         {
-            if (_securityServices.AuthorizeActivity(PermissionType.ReadObject, planActivityId.ToString()))
+            if (_securityServices.AuthorizeActivity(PermissionType.ReadObject, planActivityId.ToString(), typeof(PlanNodeDO).Name))
             {
                 return _target.GetPlanByActivityId(uow, planActivityId);
             }
@@ -171,7 +171,7 @@ namespace Hub.Security.ObjectDecorators
 
         public Task<ContainerDO> Run(Guid planId, params Crate[] curPayload)
         {
-            if (_securityServices.AuthorizeActivity(PermissionType.EditObject, planId.ToString()))
+            if (_securityServices.AuthorizeActivity(PermissionType.EditObject, planId.ToString(), typeof(PlanNodeDO).Name))
             {
                 return _target.Run(planId, curPayload);
             }
@@ -183,7 +183,7 @@ namespace Hub.Security.ObjectDecorators
 
         public Task<ContainerDO> Run(PlanDO curPlan, params Crate[] curPayload)
         {
-            if (_securityServices.AuthorizeActivity(PermissionType.EditObject, curPlan.Id.ToString()))
+            if (_securityServices.AuthorizeActivity(PermissionType.EditObject, curPlan.Id.ToString(), typeof(PlanNodeDO).Name))
             {
                 return _target.Run(curPlan, curPayload);
             }
@@ -195,7 +195,7 @@ namespace Hub.Security.ObjectDecorators
 
         public Task<ContainerDO> Run(IUnitOfWork uow, PlanDO curPlan, params Crate[] curPayload)
         {
-            if (_securityServices.AuthorizeActivity(PermissionType.EditObject, curPlan.Id.ToString()))
+            if (_securityServices.AuthorizeActivity(PermissionType.EditObject, curPlan.Id.ToString(), typeof(PlanNodeDO).Name))
             {
                 return _target.Run(uow, curPlan, curPayload);
             }

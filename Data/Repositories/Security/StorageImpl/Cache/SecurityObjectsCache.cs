@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
+using Data.Entities;
 using Data.Repositories.Cache;
 using Data.Repositories.Security.Entities;
 
@@ -14,27 +15,54 @@ namespace Data.Repositories.Security.StorageImpl.Cache
         /// <summary>
         /// Main data structure that holds all cached objects. Key is Guid value and holds all Object Identifiers and Object primary keys.
         /// </summary>
-        private readonly Dictionary<string, CachedObject> _cachedObjects = new Dictionary<string, CachedObject>();
+        private readonly Dictionary<string, CachedPermissionSetObject> _cachedPermissionSetObjects = new Dictionary<string, CachedPermissionSetObject>();
+        /// <summary>
+        /// Main data structure that hold all cached profiles.
+        /// </summary>
+        private readonly Dictionary<string, CachedProfileObject> _cachedProfileObjects = new Dictionary<string, CachedProfileObject>();
+
         private readonly object _sync = new object();
+        private readonly object _syncProfiles = new object();
         private readonly ISecurityCacheExpirationStrategy _expirationStrategy;
 
         /// <summary>
-        /// Wrapper for security cache object 
+        /// Wrapper for security cache object for one permission set. Used for Record Based Security
         /// </summary>
-        private class CachedObject
+        private class CachedPermissionSetObject
         {
             /// <summary>
             /// All RolePermissions defined for data object
             /// </summary>
-            public ObjectRolePermissionsDO RolePermissions { get; private set; }
+            public ObjectRolePermissionsWrapper ObjectRolePermissionsWrapper { get; private set; }
             /// <summary>
             /// Expiration token for removing object from cache
             /// </summary>
             public IExpirationToken Expiration { get; set; }
 
-            public CachedObject(ObjectRolePermissionsDO rolePermissions, IExpirationToken expiration)
+            public CachedPermissionSetObject(ObjectRolePermissionsWrapper rolePermissions, IExpirationToken expiration)
             {
-                RolePermissions = rolePermissions;
+                ObjectRolePermissionsWrapper = rolePermissions;
+                Expiration = expiration;
+            }
+        }
+
+        /// <summary>
+        /// Wrapper for security cache object for Profiles. Used for Object Based Security
+        /// </summary>
+        private class CachedProfileObject
+        {
+            /// <summary>
+            /// All RolePermissions defined for data object
+            /// </summary>
+            public List<PermissionSetDO> PermissionSets { get; private set; }
+            /// <summary>
+            /// Expiration token for removing object from cache
+            /// </summary>
+            public IExpirationToken Expiration { get; set; }
+
+            public CachedProfileObject(List<PermissionSetDO> permissions, IExpirationToken expiration)
+            {
+                PermissionSets = permissions;
                 Expiration = expiration;
             }
         }
@@ -42,25 +70,45 @@ namespace Data.Repositories.Security.StorageImpl.Cache
         public SecurityObjectsCache(ISecurityCacheExpirationStrategy expirationStrategy)
         {
             _expirationStrategy = expirationStrategy;
-            expirationStrategy.SetExpirationCallback(RemoveExpiredPlans);
+            expirationStrategy.SetExpirationCallback(RemoveExpiredPermissionSets);
         }
 
         /// <summary>
-        /// Get RolePermissions list from cache. Return empty list when cache is empty
+        /// Get PermissionSet for a objectfrom cache. Return null object when cache is empty
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        public ObjectRolePermissionsDO Get(string id)
+        public ObjectRolePermissionsWrapper GetRecordBasedPermissionSet(string id)
         {
             lock (_sync)
             {
-                CachedObject cachedObject;
-                if (!_cachedObjects.TryGetValue(id, out cachedObject))
+                CachedPermissionSetObject cachedObject;
+                if (!_cachedPermissionSetObjects.TryGetValue(id, out cachedObject))
                 {
                     return null;
                 }
 
-                return cachedObject.RolePermissions;
+                return cachedObject.ObjectRolePermissionsWrapper;
+            }
+        }
+
+
+        /// <summary>
+        /// Get All  PermissionSets for a profile cache. Return null object when cache is empty
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
+        public List<PermissionSetDO> GetProfilePermissionSets(string id)
+        {
+            lock (_syncProfiles)
+            {
+                CachedProfileObject cachedObject;
+                if (!_cachedProfileObjects.TryGetValue(id, out cachedObject))
+                {
+                    return new List<PermissionSetDO>();
+                }
+
+                return cachedObject.PermissionSets;
             }
         }
 
@@ -69,45 +117,91 @@ namespace Data.Repositories.Security.StorageImpl.Cache
         /// </summary>
         /// <param name="id"></param>
         /// <param name="rolePermissions"></param>
-        public void AddOrUpdate(string id, ObjectRolePermissionsDO rolePermissions)
+        public void AddOrUpdateRecordBasedPermissionSet(string id, ObjectRolePermissionsWrapper rolePermissions)
         {
             lock (_sync)
             {
-                CachedObject cachedObject;
-                if (!_cachedObjects.TryGetValue(id, out cachedObject))
+                CachedPermissionSetObject cachedObject;
+                if (!_cachedPermissionSetObjects.TryGetValue(id, out cachedObject))
                 {
                     var expirOn = _expirationStrategy.NewExpirationToken();
-                    cachedObject = new CachedObject(rolePermissions, expirOn);
+                    cachedObject = new CachedPermissionSetObject(rolePermissions, expirOn);
 
-                    _cachedObjects.Add(id, cachedObject);
+                    _cachedPermissionSetObjects.Add(id, cachedObject);
                 }
                 else
                 {
                     var expirOn = _expirationStrategy.NewExpirationToken();
-                    cachedObject = new CachedObject(rolePermissions, expirOn);
+                    cachedObject = new CachedPermissionSetObject(rolePermissions, expirOn);
 
-                    _cachedObjects[id] = cachedObject;
+                    _cachedPermissionSetObjects[id] = cachedObject;
                 }
             }
         }
 
-        private void DropCachedObject(string id)
+        /// <summary>
+        /// Add new permissions for profile, or update permissions
+        /// </summary>
+        /// <param name="id"></param>
+        /// <param name="rolePermissions"></param>
+        public void AddOrUpdateProfile(string id, List<PermissionSetDO> rolePermissions)
         {
             lock (_sync)
             {
-                _cachedObjects.Remove(id);
+                CachedProfileObject cachedObject;
+                if (!_cachedProfileObjects.TryGetValue(id, out cachedObject))
+                {
+                    var expirOn = _expirationStrategy.NewExpirationToken();
+                    cachedObject = new CachedProfileObject(rolePermissions, expirOn);
+
+                    _cachedProfileObjects.Add(id, cachedObject);
+                }
+                else
+                {
+                    var expirOn = _expirationStrategy.NewExpirationToken();
+                    cachedObject = new CachedProfileObject(rolePermissions, expirOn);
+
+                    _cachedProfileObjects[id] = cachedObject;
+                }
             }
         }
 
-        private void RemoveExpiredPlans()
+        private void DropCachedPermissionSetObject(string id)
         {
             lock (_sync)
             {
-                foreach (var objectExpiration in _cachedObjects.ToArray())
+                _cachedPermissionSetObjects.Remove(id);
+            }
+        }
+
+        private void DropCachedProfileObject(string id)
+        {
+            lock (_sync)
+            {
+                _cachedProfileObjects.Remove(id);
+            }
+        }
+
+        private void RemoveExpiredPermissionSets()
+        {
+            lock (_sync)
+            {
+                foreach (var objectExpiration in _cachedPermissionSetObjects.ToArray())
                 {
                     if (objectExpiration.Value.Expiration.IsExpired())
                     {
-                        _cachedObjects.Remove(objectExpiration.Key);
+                        _cachedPermissionSetObjects.Remove(objectExpiration.Key);
+                    }
+                }
+            }
+
+            lock (_syncProfiles)
+            {
+                foreach (var objectExpiration in _cachedProfileObjects.ToArray())
+                {
+                    if (objectExpiration.Value.Expiration.IsExpired())
+                    {
+                        _cachedProfileObjects.Remove(objectExpiration.Key);
                     }
                 }
             }

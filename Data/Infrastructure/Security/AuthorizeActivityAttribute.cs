@@ -35,6 +35,8 @@ namespace Data.Infrastructure.Security
         /// </summary>
         public Type ObjectType { get; set; }
 
+        public Type TargetType { get; set; }
+
         /// <summary>
         /// Attribute is set on a property
         /// </summary>

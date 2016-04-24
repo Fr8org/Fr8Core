@@ -6,6 +6,7 @@ using Data.Entities;
 using Data.Repositories.Security.Entities;
 using Data.Repositories.SqlBased;
 using Data.States;
+using Data.States.Templates;
 
 namespace Data.Repositories.Security.StorageImpl.SqlBased
 {
@@ -17,7 +18,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
     {
         private readonly string _connectionString;
         private readonly ISqlConnectionProvider _sqlConnectionProvider;
-        private const string InsertRolePermissionCommand = "insert into dbo.RolePermission(id, permissionId, roleId, createDate, lastUpdated) values (@id, @permissionId, @roleId, @createDate, @lastUpdated)";
+        private const string InsertRolePermissionCommand = "insert into dbo.RolePermission(id, permissionSetId, roleId, createDate, lastUpdated) values (@id, @permissionSetId, @roleId, @createDate, @lastUpdated)";
         private const string InsertObjectRolePermissionCommand = "insert into dbo.ObjectRolePermissions(objectId, rolePermissionId, type, propertyName, createDate, lastUpdated) values (@objectId, @rolePermissionId, @type, @propertyName, @createDate, @lastUpdated)";
         
         public SqlSecurityObjectsStorageProvider(ISqlConnectionProvider sqlConnectionProvider)
@@ -66,7 +67,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                     }
                     
                     command.Parameters.AddWithValue("@id", rolePermission.Id);
-                    command.Parameters.AddWithValue("@permissionId", rolePermission.PermissionSet.Id);
+                    command.Parameters.AddWithValue("@permissionSetId", rolePermission.PermissionSet.Id);
                     command.Parameters.AddWithValue("@roleId", rolePermission.Role.RoleId);
                     command.Parameters.AddWithValue("@lastUpdated", DateTimeOffset.UtcNow);
 
@@ -78,7 +79,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
 
                     if (allowUpdate)
                     {
-                        cmdText = "update dbo.RolePermissions set PermissionId = @permissionId, roleId = @roleId, lastUpdated = @lastUpdated";
+                        cmdText = "update dbo.RolePermissions set PermissionSetId = @permissionSetId, roleId = @roleId, lastUpdated = @lastUpdated";
                     }
 
                     command.CommandText = cmdText;
@@ -89,7 +90,8 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
-        public ObjectRolePermissionsDO GetRolePermissionsForSecuredObject(string dataObjectId)
+
+        public ObjectRolePermissionsWrapper GetRecordBasedPermissionSetForObject(string dataObjectId)
         {
             using (var connection = OpenConnection(_sqlConnectionProvider))
             {
@@ -99,17 +101,16 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
 
                     const string cmd =
                         @"select rp.Id, orp.PropertyName, orp.ObjectId as ObjectId, orp.Type, anr.Id as roleId, anr.Name as roleName, rp.lastUpdated, rp.createDate,
-                            p.Id as PermissionId, p.Type as PermissionType, p.ReadObject, p.EditObject, p.CreateObject, p.DeleteObject, p.ViewAllObjects,p.ModifyAllObjects, p.LastUpdated, p.CreateDate
+                            p.Id as PermissionSetId, p.ObjectType
                           from dbo.RolePermissions rp          
-                            inner join dbo.Permissions p on rp.PermissionId = p.Id                                                                  
-                            inner join dbo.ObjectRolePermissions orp on rp.Id = orp.RolePermissionId                               
-                            inner join dbo.AspNetRoles anr on rp.RoleId = anr.Id                                                  
-                          where orp.ObjectId = @objectId";
+                          inner join dbo.PermissionSets p on rp.PermissionSetId = p.Id                                                                  
+                          inner join dbo.ObjectRolePermissions orp on rp.Id = orp.RolePermissionId                               
+                          inner join dbo.AspNetRoles anr on rp.RoleId = anr.Id   ";
 
                     command.Parameters.AddWithValue("@objectId", dataObjectId);
                     command.CommandText = cmd;
 
-                    var result = new ObjectRolePermissionsDO();
+                    var result = new ObjectRolePermissionsWrapper();
 
                     using (var reader = command.ExecuteReader())
                     {
@@ -119,35 +120,25 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                         }
                     }
 
-                    return result;
-                }
-            }
-        }
-
-        public List<RolePermission> GetRolePermissionsForFr8Account(Guid fr8AccountId)
-        {
-            using (var connection = OpenConnection(_sqlConnectionProvider))
-            {
-                using (var command = new SqlCommand())
-                {
-                    command.Connection = connection;
-
-                    const string cmd = "select rp.id, rp.permissionName, anr.Id as roleId, anr.Name as roleName, rp.lastUpdated, rp.createDate " +
-                                 "from dbo.RolePermissions rp                                                                            " +
-                                 "inner join dbo.AspNetRoles anr on rp.RoleId = anr.Id                                                  " +
-                                 "inner join dbo.AspNetUserRoles anur on anr.Id = anur.RoleId                                           " +
-                                 "where anur.UserId = @fr8AccountId";
-
-                    command.Parameters.AddWithValue("@fr8AccountId", fr8AccountId);
-                    command.CommandText = cmd;
-
-                    var result = new List<RolePermission>();
-
-                    using (var reader = command.ExecuteReader())
+                    //fetch all permissions for ObjectRolePermission Sets
+                    foreach (var item in result.RolePermissions)
                     {
-                        while (reader.Read())
+                        var selectPermissionSetSql = "select Id from dbo.PermissionSetPermissions where PermissionSetId = @permissionSetId";
+
+                        command.Parameters.Clear();
+                        command.Parameters.AddWithValue("@permissionSetId", item.PermissionSet.Id);
+                        command.CommandText = selectPermissionSetSql;
+
+                        using (var reader = command.ExecuteReader())
                         {
-                            result.Add(ReadRolePermissionFromSql(reader));
+                            while (reader.Read())
+                            {
+                                //this data is only for internal logic, cannot be saved
+                                item.PermissionSet.Permissions.Add(new _PermissionTypeTemplate()
+                                {
+                                    Id = reader["Id"] != DBNull.Value ? (int) reader["Id"] : 0
+                                });
+                            }
                         }
                     }
 
@@ -247,6 +238,11 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             throw new NotImplementedException();
         }
 
+        public List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, List<string> roleNames)
+        {
+            return new List<int>();
+        }
+        
         private RolePermission ReadRolePermissionFromSql(SqlDataReader reader)
         {
             var obj = new RolePermission
@@ -254,11 +250,10 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                 Id = reader["Id"] != DBNull.Value ? (Guid)reader["Id"] : Guid.Empty,
             };
 
-            //todo: revise this
             obj.PermissionSet = new PermissionSetDO()
             {
-                Id = reader["PermissionId"] != DBNull.Value ? (Guid)reader["PermissionId"] : Guid.Empty,
-                ObjectType = reader["PermissionType"] != DBNull.Value ? (string)reader["PermissionType"] : string.Empty,
+                Id = reader["PermissionSetId"] != DBNull.Value ? (Guid)reader["PermissionSetId"] : Guid.Empty,
+                ObjectType = reader["ObjectType"] != DBNull.Value ? (string)reader["ObjectType"] : string.Empty,
             };
 
             var objRoleId = reader["roleId"] != DBNull.Value ? (string)reader["roleId"] : string.Empty;
@@ -273,29 +268,29 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             return obj;
         }
 
-        private void ReadObjectRolePermissionFromSql(SqlDataReader reader, ObjectRolePermissionsDO objectRolePermissionDO)
+        private void ReadObjectRolePermissionFromSql(SqlDataReader reader, ObjectRolePermissionsWrapper objectRolePermissionsWrapper)
         {
             var obj = ReadRolePermissionFromSql(reader);
 
-            objectRolePermissionDO.ObjectId = reader["ObjectId"] != DBNull.Value ? (string) reader["ObjectId"] : string.Empty;
-            objectRolePermissionDO.Type = reader["Type"] != DBNull.Value ? (string)reader["Type"] : string.Empty;
+            objectRolePermissionsWrapper.ObjectId = reader["ObjectId"] != DBNull.Value ? (string) reader["ObjectId"] : string.Empty;
+            objectRolePermissionsWrapper.Type = reader["Type"] != DBNull.Value ? (string)reader["Type"] : string.Empty;
             //read property name and check for values
             var propertyName = reader["PropertyName"] != DBNull.Value ? (string) reader["PropertyName"] : string.Empty;
 
             if (string.IsNullOrEmpty(propertyName))
             {
-                objectRolePermissionDO.RolePermissions.Add(obj);
+                objectRolePermissionsWrapper.RolePermissions.Add(obj);
             }
             else
             {
                 //check if the same property is already added to this list
-                if (objectRolePermissionDO.Properties.ContainsKey(propertyName))
+                if (objectRolePermissionsWrapper.Properties.ContainsKey(propertyName))
                 {
-                    objectRolePermissionDO.Properties[propertyName].Add(obj);
+                    objectRolePermissionsWrapper.Properties[propertyName].Add(obj);
                 }
                 else
                 {
-                    objectRolePermissionDO.Properties[propertyName] = new List<RolePermission>() {obj};
+                    objectRolePermissionsWrapper.Properties[propertyName] = new List<RolePermission> {obj};
                 }
             }
         }

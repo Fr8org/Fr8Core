@@ -15,7 +15,7 @@ namespace Data.Repositories.Security.StorageImpl
 {
     class InMemorySecurityObjectsStorageProvider : ISecurityObjectsStorageProvider
     {
-        private static readonly List<ObjectRolePermissionsDO> ObjectRolePermissions = new List<ObjectRolePermissionsDO>();
+        private static readonly List<ObjectRolePermissionsWrapper> ObjectRolePermissions = new List<ObjectRolePermissionsWrapper>();
         private string roleName;
         private Guid readRolePrivilegeId;
         private Guid editRolePrivilegeID;
@@ -28,19 +28,6 @@ namespace Data.Repositories.Security.StorageImpl
             editRolePrivilegeID = Guid.Parse("7cb466dc-8fed-4791-a1ba-09f9135416db");
         }
 
-        public List<RolePermission> GetRolePermissionsForFr8Account(Guid fr8AccountId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ObjectRolePermissionsDO GetRolePermissionsForSecuredObject(string dataObjectId)
-        {
-            lock (ObjectRolePermissions)
-            {
-                return ObjectRolePermissions.FirstOrDefault(x => x.ObjectId == dataObjectId);
-            }
-        }
-
         public int InsertObjectRolePermission(string dataObjectId, Guid rolePrivilegeId, string dataObjectType,
             string propertyName = null)
         {
@@ -48,21 +35,21 @@ namespace Data.Repositories.Security.StorageImpl
             {
                 if (string.IsNullOrEmpty(propertyName))
                 {
-                    ObjectRolePermissions.Add(new ObjectRolePermissionsDO() { ObjectId = dataObjectId,
-                        RolePermissions = new List<RolePermission>() { new RolePermission { Id = rolePrivilegeId,
-                            PermissionSet = new PermissionSetDO() {}
-                        ,Role = new RoleDO() { RoleName = roleName, } } } });
+                    //ObjectRolePermissions.Add(new ObjectRolePermissionsWrapper() { ObjectId = dataObjectId,
+                    //    RolePermissions = new List<RolePermission>() { new RolePermission { Id = rolePrivilegeId,
+                    //        PermissionSet = new PermissionSetDO() {}
+                    //    ,Role = new RoleDO() { RoleName = roleName, } } } });
                 }
                 else
                 {
-                    var objectRolePermissions = new ObjectRolePermissionsDO()
-                    {
-                        ObjectId = dataObjectId,
-                        Properties = new Dictionary<string, List<RolePermission>>()
-                    };
-                    objectRolePermissions.Properties.Add(propertyName, new List<RolePermission>() { new RolePermission { Id = rolePrivilegeId,
-                            PermissionSet = new PermissionSetDO() {},
-                        Role = new RoleDO() { RoleName = roleName } } });
+                    //var objectRolePermissions = new ObjectRolePermissionsDO()
+                    //{
+                    //    ObjectId = dataObjectId,
+                    //    Properties = new Dictionary<string, List<RolePermission>>()
+                    //};
+                    //objectRolePermissions.Properties.Add(propertyName, new List<RolePermission>() { new RolePermission { Id = rolePrivilegeId,
+                    //        PermissionSet = new PermissionSetDO() {},
+                    //    Role = new RoleDO() { RoleName = roleName } } });
                 }
                     
                 return 1;
@@ -83,44 +70,57 @@ namespace Data.Repositories.Security.StorageImpl
         {
             lock (ObjectRolePermissions)
             {
-                var objectRolePrivilege = new ObjectRolePermissionsDO()
-                {
-                    ObjectId = dataObjectId,
-                    RolePermissions = new List<RolePermission>()
-                    {
-                        new RolePermission()
-                        {
-                            PermissionSet = new PermissionSetDO() {},
-                            Role = new RoleDO()
-                            {
-                                RoleName = roleName,
-                            }
-                        },
-                        new RolePermission()
-                        {
-                            PermissionSet = new PermissionSetDO() {},
-                            Role = new RoleDO()
-                            {
-                                RoleName = roleName
-                            } 
-                        },
-                        new RolePermission()
-                        {
-                            PermissionSet = new PermissionSetDO() {},
-                            Role = new RoleDO()
-                            {
-                                RoleName = roleName
-                            }
-                        }
-                    }
-                };
-                ObjectRolePermissions.Add(objectRolePrivilege);
+                //var objectRolePrivilege = new ObjectRolePermissionsDO()
+                //{
+                //    ObjectId = dataObjectId,
+                //    RolePermissions = new List<RolePermission>()
+                //    {
+                //        new RolePermission()
+                //        {
+                //            PermissionSet = new PermissionSetDO() {},
+                //            Role = new RoleDO()
+                //            {
+                //                RoleName = roleName,
+                //            }
+                //        },
+                //        new RolePermission()
+                //        {
+                //            PermissionSet = new PermissionSetDO() {},
+                //            Role = new RoleDO()
+                //            {
+                //                RoleName = roleName
+                //            } 
+                //        },
+                //        new RolePermission()
+                //        {
+                //            PermissionSet = new PermissionSetDO() {},
+                //            Role = new RoleDO()
+                //            {
+                //                RoleName = roleName
+                //            }
+                //        }
+                //    }
+                //};
+                //ObjectRolePermissions.Add(objectRolePrivilege);
             }
         }
 
         public int UpdateRolePermission(RolePermission rolePermissions)
         {
             throw new NotImplementedException();
+        }
+
+        public List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, List<string> roleNames)
+        {
+            return new List<int>();
+        }
+
+        public ObjectRolePermissionsWrapper GetRecordBasedPermissionSetForObject(string dataObjectId)
+        {
+            lock (ObjectRolePermissions)
+            {
+                return ObjectRolePermissions.FirstOrDefault(x => x.ObjectId == dataObjectId);
+            }
         }
     }
 }

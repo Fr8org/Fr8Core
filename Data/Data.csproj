@@ -803,7 +803,7 @@
     <Compile Include="Repositories\Plan\Internal\PlanNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\Cache\SlidingExpirationStrategy.cs" />
-    <Compile Include="Repositories\Security\Entities\ObjectRolePermissionsDO.cs" />
+    <Compile Include="Repositories\Security\Entities\ObjectRolePermissionsWrapper.cs" />
     <Compile Include="Entities\ProfileDO.cs" />
     <Compile Include="Repositories\Security\Entities\RoleDO.cs" />
     <Compile Include="Repositories\Security\Entities\RolePermission.cs" />

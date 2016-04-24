@@ -80,7 +80,7 @@ namespace Hub.Security
                 }
                 
                 ISecurityServices securityServices = ObjectFactory.GetInstance<ISecurityServices>();
-                if (securityServices.AuthorizeActivity(authorizeAttribute.Permission, objectId))
+                if (securityServices.AuthorizeActivity(authorizeAttribute.Permission, objectId, authorizeAttribute.ObjectType.Name))
                 {
                     invocation.Proceed();
                 }
@@ -113,7 +113,7 @@ namespace Hub.Security
             }
 
             ISecurityServices securityServices = ObjectFactory.GetInstance<ISecurityServices>();
-            if (securityServices.AuthorizeActivity(authorizeAttribute.Permission, objectId))
+            if (securityServices.AuthorizeActivity(authorizeAttribute.Permission, objectId, authorizeAttribute.ObjectType.Name))
             {
                 invocation.Proceed();
                 return;

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using Data.Entities;
 
 namespace Data.Repositories.Security.Entities
 {
@@ -6,12 +7,11 @@ namespace Data.Repositories.Security.Entities
     /// Data Object Wrapper for Secured Object and his Role Permission. Not connected to EF context. Used in Security Logic.
     /// Contains also possible role permissions for properties of SecuredObject
     /// </summary>
-    public class ObjectRolePermissionsDO
+    public class ObjectRolePermissionsWrapper
     {
-        public ObjectRolePermissionsDO()
+        public ObjectRolePermissionsWrapper()
         {
-            RolePermissions = new List<RolePermission>();
-            Properties = new Dictionary<string, List<RolePermission>>();
+            Properties = new Dictionary<string, List<RolePermission>> ();
         }
 
         /// <summary>
