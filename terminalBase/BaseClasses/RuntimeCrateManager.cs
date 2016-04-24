@@ -23,6 +23,16 @@ namespace TerminalBase.BaseClasses
                 _manifestType = manifestType;
             }
 
+            public FieldConfigurator AddFields(IEnumerable<FieldDTO> fields)
+            {
+                foreach (var fieldDto in fields)
+                {
+                    AddField(fieldDto);
+                }
+
+                return this;
+            }
+
             public FieldConfigurator AddField(FieldDTO field)
             {
                 field.SourceCrateLabel = _label;
@@ -67,7 +77,16 @@ namespace TerminalBase.BaseClasses
                 }
             }
         }
-        
+
+        public void ClearAvailableCrates()
+        {
+            if (_runtimeAvailableData == null)
+            {
+                _runtimeAvailableData = _crateStorage.CrateContentsOfType<CrateDescriptionCM>(x => x.Label == RuntimeCrateDescriptionsCrateLabel).FirstOrDefault();
+                _runtimeAvailableData?.CrateDescriptions?.Clear();
+            }
+        }
+
         public FieldConfigurator MarkAvailableAtRuntime<TManifest>(string label)
             where TManifest : Manifest
         {
@@ -88,7 +107,7 @@ namespace TerminalBase.BaseClasses
                 });
             }
 
-            _runtimeAvailableData.AddIfMissing(new CrateDescriptionDTO
+            _runtimeAvailableData.AddOrUpdate(new CrateDescriptionDTO
             {
                 Label = label,
                 ManifestId = manifestType.Id,

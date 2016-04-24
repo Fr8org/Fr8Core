@@ -9,10 +9,12 @@ namespace Data.Interfaces.Manifests
 {
     public class StandardPayloadDataCM : Manifest
     {
+        [ManifestField(IsHidden = true)]
         public string Name { get; set; }
 
         public List<PayloadObjectDTO> PayloadObjects { get; set; }
 
+        [ManifestField(IsHidden = true)]
         public string ObjectType { get; set; }
         
         
