@@ -81,6 +81,15 @@
   outline: none;
 }
 
+.navbar-nav > li a.btn {
+  text-transform: uppercase;
+}
+
+.navbar-btn {
+  margin-top: -1px;
+  margin-bottom: -1px;
+}
+
 .navbar.navbar-light {
   color: #444C58;
   background-color: #f7f7f7;
