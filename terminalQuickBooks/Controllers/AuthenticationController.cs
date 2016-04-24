@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using System.Web;
 using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
 using StructureMap;
@@ -13,7 +14,7 @@ namespace terminalQuickBooks.Controllers
     public class AuthenticationController : BaseTerminalController
     {
         private const string curTerminal = "terminalQuickBooks";
-        
+
         private readonly IAuthenticator _authenticator;
 
         public AuthenticationController()
@@ -43,66 +44,32 @@ namespace terminalQuickBooks.Controllers
         {
             try
             {
-                string oauth_token, oauth_verifier, realm_id, data_source;
+                var query = HttpUtility.ParseQueryString(externalAuthDTO.RequestQueryString);
+                var oAuthToken = query["oauth_token"];
+                var oAuthVerifier = query["oauth_verifier"];
+                var realmId = query["realmId"];
+                var dataSource = query["dataSource"];
 
-                ParseCodeAndState(externalAuthDTO.RequestQueryString, out oauth_token, out oauth_verifier, out realm_id, out data_source);
-
-                if (string.IsNullOrEmpty(oauth_token) || string.IsNullOrEmpty(oauth_verifier) || string.IsNullOrEmpty(realm_id) || string.IsNullOrEmpty(data_source))
+                if (string.IsNullOrEmpty(oAuthToken) 
+                    || string.IsNullOrEmpty(oAuthVerifier) 
+                    || string.IsNullOrEmpty(realmId) 
+                    || string.IsNullOrEmpty(dataSource))
                 {
                     throw new ApplicationException("OAuth Token or OAuth Verifier or Realm ID or Data Source is empty.");
                 }
 
-                var authToken = await _authenticator.GetAuthToken(oauth_token, oauth_verifier, realm_id);
+                var authToken = await _authenticator.GetAuthToken(oAuthToken, oAuthVerifier, realmId);
                 return authToken;
-               
+
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex,externalAuthDTO.Fr8UserId);
+                ReportTerminalError(curTerminal, ex, externalAuthDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {
                     Error = "An error occurred while trying to authorize, please try again later."
                 };
-            }
-        }
-
-        private void ParseCodeAndState(string queryString, out string oauth_token, out string oauth_verifier, out string realm_id, out string data_source)
-        {
-            if (string.IsNullOrEmpty(queryString))
-            {
-                throw new ApplicationException("QueryString is empty.");
-            }
-
-            oauth_token = null;
-            oauth_verifier = null;
-            realm_id = null;
-            data_source = null;
-            var tokens = queryString.Split(new[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var token in tokens)
-            {
-                var nameValueTokens = token.Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
-                if (nameValueTokens.Length < 2)
-                {
-                    continue;
-                }
-
-                if (nameValueTokens[0] == "oauth_token")
-                {
-                    oauth_token = nameValueTokens[1];
-                }
-                else if (nameValueTokens[0] == "oauth_verifier")
-                {
-                    oauth_verifier = nameValueTokens[1];
-                }
-                else if (nameValueTokens[0] == "realmId")
-                {
-                    realm_id = nameValueTokens[1];
-                }
-                else if (nameValueTokens[0] == "dataSource")
-                {
-                    data_source = nameValueTokens[1];
-                }
             }
         }
     }
