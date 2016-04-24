@@ -140,6 +140,10 @@ namespace Data.Interfaces.Manifests
             PayloadObject = new List<FieldDTO>(fieldData);
         }
 
+        public PayloadObjectDTO(params FieldDTO[] fieldData) : this(fieldData as IEnumerable<FieldDTO>)
+        {
+        }
+
         public bool TryGetValue(string key, bool skipNull, bool ignoreCase, out string value)
         {
             if (PayloadObject == null)

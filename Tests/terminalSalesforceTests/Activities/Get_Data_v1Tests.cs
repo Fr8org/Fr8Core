@@ -50,11 +50,11 @@ namespace terminalSalesforceTests.Actions
             Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
             FieldDTO testField = new FieldDTO("Account", "TestAccount");
             salesforceIntegrationMock.Setup(
-                s => s.GetFields("Account", It.IsAny<AuthorizationTokenDO>(), false))
-                .Returns(() => Task.FromResult((IList<FieldDTO>)new List<FieldDTO> { testField }));
+                s => s.GetProperties(SalesforceObjectType.Account, It.IsAny<AuthorizationTokenDO>(), false))
+                .Returns(() => Task.FromResult(new List<FieldDTO> { testField }));
 
             salesforceIntegrationMock.Setup(
-                s => s.QueryObjects("Account", It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationTokenDO>()))
+                s => s.Query(SalesforceObjectType.Account, It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationTokenDO>()))
                 .Returns(() => Task.FromResult(new StandardTableDataCM()));
 
             _getData_v1 = new Get_Data_v1();
@@ -101,7 +101,7 @@ namespace terminalSalesforceTests.Actions
             Assert.IsNotNull(storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == Get_Data_v1.SalesforceObjectFieldsCrateLabel ),
                              "There is no crate with field descriptions of selected Salesforce object in activity storage");
 
-            salesforceIntegrationMock.Verify(s => s.GetFields("Account", It.IsAny<AuthorizationTokenDO>(), false), Times.Exactly(1));
+            salesforceIntegrationMock.Verify(s => s.GetProperties(SalesforceObjectType.Account, It.IsAny<AuthorizationTokenDO>(), false), Times.Exactly(1));
         }
 
         [Test, Category("terminalSalesforceTests.Get_Data.Run")]

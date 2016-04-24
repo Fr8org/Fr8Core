@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using terminalSalesforce.Infrastructure;
 using StructureMap;
 using System.Linq;
+using ServiceStack;
 
 namespace terminalSalesforce.Actions
 {
@@ -90,11 +91,11 @@ namespace terminalSalesforce.Actions
             var eventSubscriptionCrate = PackEventSubscriptionsCrate();
 
             CurrentActivityStorage.ReplaceByLabel(eventSubscriptionCrate);
-            
+
             runtimeCrateManager.ClearAvailableCrates();
             runtimeCrateManager.MarkAvailableAtRuntime<SalesforceEventCM>("Salesforce Event");
 
-            var selectedObjectProperties = await _salesforceManager.GetFields(curSfChosenObject, AuthorizationToken);
+            var selectedObjectProperties = await _salesforceManager.GetProperties(curSfChosenObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
 
             runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(GenerateRuntimeDataLabel()).AddFields(selectedObjectProperties);
         }
@@ -149,9 +150,9 @@ namespace terminalSalesforce.Actions
             foreach (var sfEvent in sfEventsList)
             {
                 //get the object fields as Standard Table Data
-                var resultObjects = await _salesforceManager.QueryObjects(
-                                                sfEvent.ObjectType,
-                                                salesforceObjectFields,
+                var resultObjects = await _salesforceManager.Query(
+                                                sfEvent.ObjectType.ToEnum<SalesforceObjectType>(),
+                                                salesforceObjectFields, 
                                                 $"ID = '{sfEvent.ObjectId}'", 
                                                 AuthorizationToken);
 
@@ -164,7 +165,7 @@ namespace terminalSalesforce.Actions
             var curSfChosenObject = ConfigurationControls.SalesforceObjectList.selectedKey;
 
             var eventSubscriptions = new List<string>();
-
+            
             if (ConfigurationControls.Created.Selected)
             {
                 eventSubscriptions.Add(CreatedEventname);
@@ -184,7 +185,7 @@ namespace terminalSalesforce.Actions
             var curSfChosenObject = ConfigurationControls.SalesforceObjectList.selectedKey;
 
             var eventSubscriptions = new List<string>();
-            
+
             if (ConfigurationControls.Created.Selected)
             {
                 eventSubscriptions.Add($"{curSfChosenObject}{CreatedEventname}");
