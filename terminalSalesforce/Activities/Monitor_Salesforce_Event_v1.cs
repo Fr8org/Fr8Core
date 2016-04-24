@@ -1,5 +1,4 @@
-﻿
-using Data.Control;
+﻿using Data.Control;
 using Data.Crates;
 using Data.Interfaces.Manifests;
 using System.Collections.Generic;
