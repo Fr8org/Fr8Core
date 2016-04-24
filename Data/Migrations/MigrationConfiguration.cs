@@ -66,7 +66,6 @@ namespace Data.Migrations
                 AddRoles(uow);
                 AddAdmins(uow);
                 AddDockyardAccounts(uow);
-                AddProfiles(uow);
                 AddTestAccounts(uow);
                 //Addterminals(uow);
 
@@ -442,13 +441,6 @@ namespace Data.Migrations
             user.TestAccount = true;
 
             return user;
-        }
-
-        private void AddProfiles(IUnitOfWork uow)
-        {
-            var users = uow.UserRepository.GetAll().ToList();
-            foreach (var user in users)
-                uow.UserRepository.AddDefaultProfile(user);
         }
 
         private void AddSubscription(IUnitOfWork uow, Fr8AccountDO curAccount, TerminalDO curTerminal, int curAccessLevel)

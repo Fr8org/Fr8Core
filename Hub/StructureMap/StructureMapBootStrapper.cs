@@ -106,7 +106,6 @@ namespace Hub.StructureMap
 
                 For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
 
-                For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchy>();
                 For<IImapClient>().Use<ImapClientWrapper>();
                 
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
@@ -170,7 +169,6 @@ namespace Hub.StructureMap
                 var restfulServiceClientMock = new Mock<RestfulServiceClient>(MockBehavior.Default);
                 For<IRestfulServiceClient>().Use(restfulServiceClientMock.Object).Singleton();
 
-                For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();
                 For<ITracker>().Use(mockSegment.Object);
                 For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();

@@ -1,4 +1,5 @@
 ﻿using System;
+using Data.Entities;
 
 namespace Data.Repositories.Security.Entities
 {

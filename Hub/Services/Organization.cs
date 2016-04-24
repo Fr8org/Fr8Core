@@ -62,11 +62,12 @@ namespace Hub.Services
 
             //link adminRole with ManageInternalUsers Permission, used for add/edit users that belong to this organization
             var securityObjectStorage = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
-            securityObjectStorage.InsertRolePermission(new RolePermission()
-                {
-                    Permission = new PermissionDO() { Name = Permission.ManageInternalUsers.ToString()},
-                    Role = new RoleDO() { RoleId = adminRole.Id, }
-                });
+            //todo: check this
+            //securityObjectStorage.InsertRolePermission(new RolePermission()
+            //    {
+            //        Permission = new PermissionDO() {  = Permission.ManageInternalUsers.ToString()},
+            //        Role = new RoleDO() { RoleId = adminRole.Id, }
+            //    });
 
             return organization;
         }

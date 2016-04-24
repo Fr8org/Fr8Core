@@ -120,10 +120,9 @@ namespace HubTests.Security
             var objRolePermission =_objectsStorageProvider.GetRolePermissionsForSecuredObject(origActivityDO.Id.ToString());
 
             //check if this object role permission has all standard role privieles
-            Assert.IsNotNull(objRolePermission.RolePermissions.FirstOrDefault(x=>x.Permission.Name == Permission.ReadObject.ToString()));
-            Assert.IsNotNull(objRolePermission.RolePermissions.FirstOrDefault(x => x.Permission.Name == Permission.EditObject.ToString()));
-            Assert.IsNotNull(objRolePermission.RolePermissions.FirstOrDefault(x => x.Permission.Name == Permission.DeleteObject.ToString()));
-
+            Assert.IsNotNull(objRolePermission.RolePermissions.FirstOrDefault(x=>x.Permission.ReadObject));
+            Assert.IsNotNull(objRolePermission.RolePermissions.FirstOrDefault(x => x.Permission.EditObject));
+            Assert.IsNotNull(objRolePermission.RolePermissions.FirstOrDefault(x => x.Permission.DeleteObject));
         }
     }
 }
