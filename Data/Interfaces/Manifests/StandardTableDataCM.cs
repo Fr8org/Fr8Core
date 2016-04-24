@@ -16,6 +16,8 @@ namespace Data.Interfaces.Manifests
 
         [ManifestField(IsHidden = true)]
         public bool FirstRowHeaders { get; set; }
+
+        [ManifestField(IsHidden = true)]
         public bool HasDataRows
         {
             get
