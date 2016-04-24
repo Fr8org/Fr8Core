@@ -137,6 +137,7 @@ namespace HubWeb.App_Start
                 .Include("~/Content/css/dockyard.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/dockyard/container-transition.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/dockyard/query-builder.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/dockyard/authentication-dialog.css", new CssRewriteUrlTransform())
             );
 
             bundles.Add(new ScriptBundle("~/bundles/jsunittests")

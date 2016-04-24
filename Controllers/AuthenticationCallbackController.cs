@@ -54,10 +54,14 @@ namespace HubWeb.Controllers
                 throw new ApplicationException("Could not find terminal.");
             }
             string userId=null;
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+
+            // It is unlikely that ASP cookies/headers/other stuff that is used to track current session will be send within auth callback from external service
+            // We need a smarter approach
+            /*using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 userId = _security.GetCurrentAccount(uow).Id;
-            }
+            }*/
+
             var externalAuthenticationDTO = new ExternalAuthenticationDTO()
             {
                 RequestQueryString = requestQueryString,

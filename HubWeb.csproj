@@ -488,6 +488,7 @@
   <ItemGroup>
     <Content Include="Api\EventResponse.aspx" />
     <Content Include="Api\GetEmailHTML.aspx" />
+    <Content Include="Content\css\dockyard\authentication-dialog.css" />
     <Content Include="Content\css\dockyard\container-transition.css" />
     <Content Include="Content\css\dockyard\query-builder.css" />
     <Content Include="Content\css\fonts\brankic.svg" />
@@ -1111,6 +1112,9 @@
     <Content Include="Views\Services\SolutionListTemplate.cshtml" />
     <Content Include="Views\AngularTemplate\SelectData.cshtml" />
     <Content Include="Views\AngularTemplate\BuildMessageAppender.cshtml" />
+    <None Include="Web.Demo.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
