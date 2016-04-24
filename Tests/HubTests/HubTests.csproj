@@ -369,6 +369,10 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <None Include="..\..\Config\log4net.tests.config">
+      <Link>log4net.tests.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="app.config">
       <SubType>Designer</SubType>
     </None>
@@ -416,4 +420,7 @@
   <Target Name="AfterBuild">
   </Target>
   -->
+  <Target Name="BeforeBuild">
+    <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
+  </Target>
 </Project>
