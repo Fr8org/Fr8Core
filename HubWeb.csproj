@@ -498,6 +498,7 @@
     <Content Include="Content\css\homecss\font-awesome.min.css" />
     <Content Include="Content\css\homecss\ie.css" />
     <Content Include="Content\css\homecss\main.css" />
+    <Content Include="Content\css\shared\main.css" />
     <Content Include="Content\css\shared\navbar.css" />
     <Content Include="Content\img\background-7.png" />
     <Content Include="Content\img\background-cta-3.jpg" />
