@@ -52,7 +52,7 @@ namespace Data.Interfaces
 
         IFileRepository FileRepository { get; }
         IProfileRepository ProfileRepository { get; }
-        IPermissionRepository PermissionRepository { get; }
+        IPermissionSetRepository PermissionSetRepository { get; }
 
 
         IPlanRepository PlanRepository { get; }

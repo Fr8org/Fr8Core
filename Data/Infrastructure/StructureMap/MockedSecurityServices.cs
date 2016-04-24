@@ -79,7 +79,7 @@ namespace Data.Infrastructure.StructureMap
             securityStorageProvider.SetDefaultObjectSecurity(dataObjectId.ToString(), dataObjectType);
         }
 
-        public bool AuthorizeActivity(Permission permissionName, string curObjectId, string propertyName = null)
+        public bool AuthorizeActivity(int permissionName, string curObjectId, string propertyName = null)
         {
             //get all current roles for current user
             var roles = GetRoleNames().ToList();

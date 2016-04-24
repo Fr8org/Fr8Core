@@ -7,11 +7,11 @@ namespace Data.Repositories.Security.Entities
     {
         public RolePermission()
         {
-            Permission = new PermissionDO();
+            PermissionSet = new PermissionSetDO();
             Role = new RoleDO();
         }
         public Guid Id { get; set; }
-        public PermissionDO Permission { get; set; }
+        public PermissionSetDO PermissionSet { get; set; }
         public RoleDO Role { get; set; }
         public DateTimeOffset LastUpdated { get; set; }
         public DateTimeOffset CreateDate { get; set; }

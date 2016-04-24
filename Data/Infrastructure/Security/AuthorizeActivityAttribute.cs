@@ -21,13 +21,13 @@ namespace Data.Infrastructure.Security
         public AuthorizeActivityAttribute()
         {
             ObjectType = typeof(Guid);
-            Permission = Permission.ReadObject;
+            Permission = PermissionType.ReadObject;
         }
 
         /// <summary>
-        /// Permission name that must be checked for authorization
+        /// Permission name that must be checked for authorization 
         /// </summary>
-        public Permission Permission { get; set; }
+        public int Permission { get; set; }
 
         /// <summary>
         /// Type of the argument/parameter where dataObjectId is located. 

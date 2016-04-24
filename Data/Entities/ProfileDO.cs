@@ -8,12 +8,12 @@ namespace Data.Entities
     {
         public ProfileDO()
         {
-            Permissions = new List<PermissionDO>();
+            PermissionSets = new List<PermissionSetDO>();
         }
 
         public Guid Id { get; set; }
         public string Name { get; set; }
 
-        public ICollection<PermissionDO> Permissions { get; set; } 
+        public ICollection<PermissionSetDO> PermissionSets { get; set; } 
     }
 }

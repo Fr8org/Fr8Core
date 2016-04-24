@@ -120,11 +120,11 @@ namespace Hub.Security
         /// Authorize current activity by a permission name for some data object. Get role permission for a compare them with all roles that current uses has.
         /// When at least one role is found for this user, he is authorized to perform some activity.
         /// </summary>
-        /// <param name="permissionName"></param>
+        /// <param name="permissionType"></param>
         /// <param name="curObjectId"></param>
         /// <param name="propertyName"></param>
         /// <returns></returns>
-        public bool AuthorizeActivity(Permission permissionName, string curObjectId, string propertyName = null)
+        public bool AuthorizeActivity(int permissionType, string curObjectId, string propertyName = null)
         {
             //get all current roles for current user
             var roles = GetRoleNames().ToList();

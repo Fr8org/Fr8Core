@@ -76,10 +76,9 @@ namespace Data.Infrastructure
         private IProfileRepository _profileRepository;
         public IProfileRepository ProfileRepository => _profileRepository ?? (_profileRepository = new ProfileRepository(this));
 
-        private IPermissionRepository _permissionRepository;
-        public IPermissionRepository PermissionRepository => _permissionRepository ?? (_permissionRepository = new PermissionRepository(this));
-
-
+        private IPermissionSetRepository _permissionSetRepository;
+        public IPermissionSetRepository PermissionSetRepository => _permissionSetRepository ?? (_permissionSetRepository = new PermissionSetRepository(this));
+        
         private SlipRepository _SlipRepository;
 
         public SlipRepository SlipRepository

@@ -66,7 +66,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                     }
                     
                     command.Parameters.AddWithValue("@id", rolePermission.Id);
-                    command.Parameters.AddWithValue("@permissionId", rolePermission.Permission.Id);
+                    command.Parameters.AddWithValue("@permissionId", rolePermission.PermissionSet.Id);
                     command.Parameters.AddWithValue("@roleId", rolePermission.Role.RoleId);
                     command.Parameters.AddWithValue("@lastUpdated", DateTimeOffset.UtcNow);
 
@@ -254,16 +254,11 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                 Id = reader["Id"] != DBNull.Value ? (Guid)reader["Id"] : Guid.Empty,
             };
 
-            obj.Permission = new PermissionDO()
+            //todo: revise this
+            obj.PermissionSet = new PermissionSetDO()
             {
                 Id = reader["PermissionId"] != DBNull.Value ? (Guid)reader["PermissionId"] : Guid.Empty,
-                Type = reader["PermissionType"] != DBNull.Value ? (string)reader["PermissionType"] : string.Empty,
-                ReadObject = reader["Id"] != DBNull.Value && (bool)reader["Id"],
-                EditObject = reader["Id"] != DBNull.Value && (bool)reader["Id"],
-                DeleteObject = reader["Id"] != DBNull.Value && (bool)reader["Id"],
-                CreateObject = reader["Id"] != DBNull.Value && (bool)reader["Id"],
-                ViewAllObjects = reader["Id"] != DBNull.Value && (bool)reader["Id"],
-                ModifyAllObjects = reader["Id"] != DBNull.Value && (bool)reader["Id"]
+                ObjectType = reader["PermissionType"] != DBNull.Value ? (string)reader["PermissionType"] : string.Empty,
             };
 
             var objRoleId = reader["roleId"] != DBNull.Value ? (string)reader["roleId"] : string.Empty;

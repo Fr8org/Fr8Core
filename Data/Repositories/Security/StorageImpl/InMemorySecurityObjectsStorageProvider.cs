@@ -50,7 +50,7 @@ namespace Data.Repositories.Security.StorageImpl
                 {
                     ObjectRolePermissions.Add(new ObjectRolePermissionsDO() { ObjectId = dataObjectId,
                         RolePermissions = new List<RolePermission>() { new RolePermission { Id = rolePrivilegeId,
-                            Permission = new PermissionDO() {ReadObject = true }
+                            PermissionSet = new PermissionSetDO() {}
                         ,Role = new RoleDO() { RoleName = roleName, } } } });
                 }
                 else
@@ -61,7 +61,7 @@ namespace Data.Repositories.Security.StorageImpl
                         Properties = new Dictionary<string, List<RolePermission>>()
                     };
                     objectRolePermissions.Properties.Add(propertyName, new List<RolePermission>() { new RolePermission { Id = rolePrivilegeId,
-                        Permission = new PermissionDO() {ReadObject = true },
+                            PermissionSet = new PermissionSetDO() {},
                         Role = new RoleDO() { RoleName = roleName } } });
                 }
                     
@@ -90,7 +90,7 @@ namespace Data.Repositories.Security.StorageImpl
                     {
                         new RolePermission()
                         {
-                            Permission = new PermissionDO() { ReadObject = true},
+                            PermissionSet = new PermissionSetDO() {},
                             Role = new RoleDO()
                             {
                                 RoleName = roleName,
@@ -98,7 +98,7 @@ namespace Data.Repositories.Security.StorageImpl
                         },
                         new RolePermission()
                         {
-                            Permission = new PermissionDO() { EditObject = true},
+                            PermissionSet = new PermissionSetDO() {},
                             Role = new RoleDO()
                             {
                                 RoleName = roleName
@@ -106,7 +106,7 @@ namespace Data.Repositories.Security.StorageImpl
                         },
                         new RolePermission()
                         {
-                            Permission = new PermissionDO() { DeleteObject = true},
+                            PermissionSet = new PermissionSetDO() {},
                             Role = new RoleDO()
                             {
                                 RoleName = roleName

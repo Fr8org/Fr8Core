@@ -291,10 +291,20 @@ namespace Data.Infrastructure
             modelBuilder.Entity<TagDO>().ToTable("Tags");
             modelBuilder.Entity<FileTags>().ToTable("FileTags");
 
-            modelBuilder.Entity<PermissionDO>().ToTable("Permissions");
-            modelBuilder.Entity<ProfileDO>().ToTable("Profiles")
-                .HasMany(x=>x.Permissions).WithMany();
+            modelBuilder.Entity<PermissionSetDO>().ToTable("PermissionSets")
+                .HasOptional(x=>x.Profile).WithMany(x=>x.PermissionSets).HasForeignKey(x=>x.ProfileId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<PermissionSetDO>().ToTable("PermissionSets")
+                .HasMany(x => x.Permissions).WithMany()
+                .Map(c =>
+                {
+                    c.MapLeftKey("PermissionSetId");
+                    c.MapRightKey("PermissionTypeTemplateId");
+                    c.ToTable("PermissionSetPermissions");
+                });
 
+            modelBuilder.Entity<ProfileDO>().ToTable("Profiles")
+                .HasMany(x=>x.PermissionSets).WithOptional(x=>x.Profile).HasForeignKey(x=>x.ProfileId).WillCascadeOnDelete(false);
+ 
             modelBuilder.Entity<FileTags>().ToTable("FileTags");
 
             modelBuilder.Entity<EmailDO>()

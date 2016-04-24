@@ -265,6 +265,7 @@
     <Compile Include="Entities\AspNetUserClaimDO.cs" />
     <Compile Include="Entities\EncryptedAuthorizationData.cs" />
     <Compile Include="Entities\OrganizationDO.cs" />
+    <Compile Include="Entities\PermissionSetDO.cs" />
     <Compile Include="Entities\PlanNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
     <Compile Include="Entities\TerminalSubscriptionDO.cs" />
@@ -729,9 +730,9 @@
     <Compile Include="Migrations\201604221404010_Drop_Old_Profile_Tables.Designer.cs">
       <DependentUpon>201604221404010_Drop_Old_Profile_Tables.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201604222147471_Security_Infrastructure.cs" />
-    <Compile Include="Migrations\201604222147471_Security_Infrastructure.Designer.cs">
-      <DependentUpon>201604222147471_Security_Infrastructure.cs</DependentUpon>
+    <Compile Include="Migrations\201604241356070_Security_Infrastructure.cs" />
+    <Compile Include="Migrations\201604241356070_Security_Infrastructure.Designer.cs">
+      <DependentUpon>201604241356070_Security_Infrastructure.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -787,7 +788,7 @@
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\AstToSqlConverter.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtObjectsStorage.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtTypeStorageProvider.cs" />
-    <Compile Include="Repositories\PermissionsRepository.cs" />
+    <Compile Include="Repositories\PermissionSetRepository.cs" />
     <Compile Include="Repositories\Plan\Expiration.cs" />
     <Compile Include="Repositories\Plan\IPlanCache.cs" />
     <Compile Include="Repositories\Plan\PlanStorage.cs" />
@@ -803,7 +804,6 @@
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\Cache\SlidingExpirationStrategy.cs" />
     <Compile Include="Repositories\Security\Entities\ObjectRolePermissionsDO.cs" />
-    <Compile Include="Entities\PermissionDO.cs" />
     <Compile Include="Entities\ProfileDO.cs" />
     <Compile Include="Repositories\Security\Entities\RoleDO.cs" />
     <Compile Include="Repositories\Security\Entities\RolePermission.cs" />
@@ -872,8 +872,9 @@
     <Compile Include="Repositories\UserStatusRepository.cs" />
     <Compile Include="States\AccessLevel.cs" />
     <Compile Include="States\PlanVisibility.cs" />
-    <Compile Include="States\Permission.cs" />
+    <Compile Include="States\PermissionType.cs" />
     <Compile Include="States\SubscriptionState.cs" />
+    <Compile Include="States\Templates\_PermissionTypeTemplate.cs" />
     <Compile Include="States\Templates\_SubscriptionStateTemplate.cs" />
     <Compile Include="States\TerminalStatus.cs" />
     <Compile Include="States\ContainerState.cs" />
@@ -1268,8 +1269,8 @@
     <EmbeddedResource Include="Migrations\201604221404010_Drop_Old_Profile_Tables.resx">
       <DependentUpon>201604221404010_Drop_Old_Profile_Tables.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201604222147471_Security_Infrastructure.resx">
-      <DependentUpon>201604222147471_Security_Infrastructure.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201604241356070_Security_Infrastructure.resx">
+      <DependentUpon>201604241356070_Security_Infrastructure.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -52,7 +52,7 @@ namespace HubTests.Security
             [Key]
             public Guid Id { get; set; }
 
-            [AuthorizeActivity(Permission = Permission.EditObject)]
+            [AuthorizeActivity(Permission = PermissionType.EditObject)]
             public virtual string Name
             {
                 get; set;
@@ -120,9 +120,10 @@ namespace HubTests.Security
             var objRolePermission =_objectsStorageProvider.GetRolePermissionsForSecuredObject(origActivityDO.Id.ToString());
 
             //check if this object role permission has all standard role privieles
-            Assert.IsNotNull(objRolePermission.RolePermissions.FirstOrDefault(x=>x.Permission.ReadObject));
-            Assert.IsNotNull(objRolePermission.RolePermissions.FirstOrDefault(x => x.Permission.EditObject));
-            Assert.IsNotNull(objRolePermission.RolePermissions.FirstOrDefault(x => x.Permission.DeleteObject));
+
+            Assert.IsNotNull(null);
+            Assert.IsNotNull(null);
+            Assert.IsNotNull(null);
         }
     }
 }
