@@ -27,18 +27,12 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Post(AlarmDTO alarmDTO)
         {
-
-
             //TODO what happens to AlarmsController? does it stay in memory all this time?
             //TODO inspect this and change callback function to a static function if necessary
 
             //put Hubs job in "hub" queue to avoid processing of terminalDocuSign jobs
 
-#if DEBUG
-            BackgroundJob.Schedule(() => Execute(alarmDTO), DateTime.Now.AddSeconds(10));
-#else
-            BackgroundJob.Schedule(()=>Execute(alarmDTO), alarmDTO.StartTime);
-#endif
+            BackgroundJob.Schedule(() => Execute(alarmDTO), alarmDTO.StartTime);
 
             //TODO: Commented as part of DO - 1520. Need to rethink about this.
             //var eventController = new EventController();
@@ -49,14 +43,13 @@ namespace HubWeb.Controllers
         [Queue("hub"), MoveToTheHubQueueAttribute]
         public void Execute(AlarmDTO alarmDTO)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var _plan = ObjectFactory.GetInstance<IPlan>();
-                var continueTask = _plan.Continue(alarmDTO.ContainerId);
-                Task.WaitAll(continueTask);
-                //TODO report output to somewhere to pusher service maybe
+            var plan = ObjectFactory.GetInstance<IPlan>();
+            var continueTask = plan.Continue(alarmDTO.ContainerId);
+            Task.WaitAll(continueTask);
+            
+            //TODO report output to somewhere to pusher service maybe
 
-                /*
+            /*
                 var container = uow.ContainerRepository.GetByKey(alarmDTO.ContainerId);
                 if (container != null && container.ContainerState == ContainerState.Pending)
                 {
@@ -73,7 +66,7 @@ namespace HubWeb.Controllers
                     
                 }
                  * */
-            }
+
         }
 
         //TODO is this method called from somewhere else?
