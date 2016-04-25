@@ -51,18 +51,18 @@ namespace terminalDropbox.Actions
         {
             var fileNames = await _dropboxService.GetFileList(GetDropboxAuthToken());
             ConfigurationControls.FileList.ListItems = fileNames
-                .Select(x => new ListItem { Key = x.Key, Value = x.Key }).ToList();
+                .Select(filePath => new ListItem { Key = filePath, Value = filePath }).ToList();
             runtimeCrateManager.MarkAvailableAtRuntime<StandardFileListCM>(RuntimeCrateLabel);
             CurrentActivityStorage.ReplaceByLabel(PackDropboxFileListCrate(fileNames));
         }
 
         protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
         {
-            var fileNames = await _dropboxService.GetFileList(GetDropboxAuthToken());
-            ConfigurationControls.FileList.ListItems = fileNames
-                .Select(x => new ListItem { Key = x.Key, Value = x.Key }).ToList();
+            var fileList = await _dropboxService.GetFileList(GetDropboxAuthToken());
+            ConfigurationControls.FileList.ListItems = fileList
+                .Select(filePath => new ListItem { Key = filePath, Value = filePath }).ToList();
             runtimeCrateManager.MarkAvailableAtRuntime<StandardFileListCM>(RuntimeCrateLabel);
-            CurrentActivityStorage.ReplaceByLabel(PackDropboxFileListCrate(fileNames));
+            CurrentActivityStorage.ReplaceByLabel(PackDropboxFileListCrate(fileList));
         }
 
         private AuthorizationTokenDO GetDropboxAuthToken(AuthorizationTokenDO authTokenDO = null)
@@ -77,17 +77,17 @@ namespace terminalDropbox.Actions
             CurrentPayloadStorage.Add(dropboxFileList);
         }
 
-        private Crate<StandardFileListCM> PackDropboxFileListCrate(IDictionary<string, string> fileNames)
+        private Crate<StandardFileListCM> PackDropboxFileListCrate(IEnumerable<string> fileList)
         {
             var descriptionList = new List<StandardFileDescriptionCM>();
-            foreach (var fileName in fileNames)
+            foreach (var filePath in fileList)
             {
                 var fileDesc = new StandardFileDescriptionCM()
                 {
-                    Filename = Path.GetFileName(fileName.Key),
-                    Filetype = Path.GetExtension(fileName.Key)
+                    Filename = Path.GetFileName(filePath),
+                    Filetype = Path.GetExtension(filePath)
                 };
-                var fileSharedUrl = _dropboxService.GetFileSharedUrl(GetDropboxAuthToken(), fileName.Value).Result;
+                var fileSharedUrl = _dropboxService.GetFileSharedUrl(GetDropboxAuthToken(), filePath);
 
                 fileDesc.DirectUrl = fileSharedUrl;
                 descriptionList.Add(fileDesc);
