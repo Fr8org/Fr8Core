@@ -64,10 +64,10 @@ namespace terminalDocuSignTests.Integration
             dataSource.Value = "Send_DocuSign_Envelope";
             dataSource.selectedKey = "Send DocuSign Envelope";
 
-            using (var updater1 = Crate.GetUpdatableStorage(_solution))
+            using (var updater = Crate.GetUpdatableStorage(_solution))
             {
-                updater1.Remove<StandardConfigurationControlsCM>();
-                updater1.Add(controlsCrate);
+                updater.Remove<StandardConfigurationControlsCM>();
+                updater.Add(controlsCrate);
             }
 
             _solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "activities/configure?id=" + _solution.Id, _solution);
@@ -316,7 +316,7 @@ namespace terminalDocuSignTests.Integration
                         token = terminalDocuSign.AuthTokens.FirstOrDefault();
                     }
 
-                    Assert.NotNull(token, "Failed to get the auth token for Docusign terminal. Token is null.");
+                    Assert.NotNull(token, "Failed to get the auth token for Docusign terminal. ");
                     tokenGuid = token.Id;
                 }
 
