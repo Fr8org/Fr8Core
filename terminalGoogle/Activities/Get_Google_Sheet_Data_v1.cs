@@ -102,7 +102,7 @@ namespace terminalGoogle.Activities
                 var newValues = Crate.FromContent(ConfigurationCrateLabel, new FieldDescriptionsCM(value), AvailabilityType.Configuration);
                 CurrentActivityStorage.ReplaceByLabel(newValues);
             }
-        }    
+        }
 
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
@@ -200,6 +200,16 @@ namespace terminalGoogle.Activities
             }
             CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel,
                 new StandardTableDataCM { Table = data, FirstRowHeaders = hasHeaderRow }));
+        }
+        public override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
+        {
+            if (base.NeedsAuthentication(authTokenDO))
+            {
+                return true;
+            }
+            var token = GetGoogleAuthToken(authTokenDO);
+            // we may also post token to google api to check its validity
+            return token.Expires - DateTime.Now < TimeSpan.FromMinutes(5) && string.IsNullOrEmpty(token.RefreshToken);
         }
     }
 }

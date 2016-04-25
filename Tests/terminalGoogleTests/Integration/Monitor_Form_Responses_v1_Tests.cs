@@ -12,6 +12,7 @@ using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Newtonsoft.Json.Linq;
 using terminalGoogleTests.Unit;
+using TerminalBase.BaseClasses;
 
 namespace terminalGoogleTests.Integration
 {
@@ -48,7 +49,8 @@ namespace terminalGoogleTests.Integration
             Assert.NotNull(responseActivityDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActivityDTO.CrateStorage);
-            Assert.AreEqual(2, crateStorage.Count);
+            Assert.AreEqual(3, crateStorage.Count);
+            Assert.IsNotNull(crateStorage.FirstCrateOrDefault<CrateDescriptionCM>(x => x.Label == RuntimeCrateManager.RuntimeCrateDescriptionsCrateLabel), "Activity storage doesn't contain crate with runtime crates descriptions");
             Assert.IsNotNull(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault());
             Assert.IsNotNull(crateStorage.CrateContentsOfType<EventSubscriptionCM>().SingleOrDefault());
         }
