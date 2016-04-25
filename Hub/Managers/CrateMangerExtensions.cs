@@ -111,5 +111,32 @@ namespace Hub.Managers
             }
             return activityDo != null ? (object)activityDo : activityDto;
         }
+        /// <summary>
+        /// Returns a copy of AcvitityUI for the given activity
+        /// </summary>
+        public static TActivityUi GetReadonlyActivityUi<TActivityUi>(this ActivityDO activity) where TActivityUi : StandardConfigurationControlsCM, new()
+        {
+            return GetReadonlyActivityUi<TActivityUi>((object)activity);
+        }
+        /// <summary>
+        /// Returns a copy of AcvitityUI for the given activity
+        /// </summary>
+        public static TActivityUi GetReadonlyActivityUi<TActivityUi>(this ActivityDTO activity) where TActivityUi : StandardConfigurationControlsCM, new()
+        {
+            return GetReadonlyActivityUi<TActivityUi>((object)activity);
+        }
+
+        private static TActivityUi GetReadonlyActivityUi<TActivityUi>(object activity) where TActivityUi : StandardConfigurationControlsCM, new()
+        {
+            if (activity == null)
+            {
+                throw new ArgumentNullException(nameof(activity));
+            }
+            var crateManager = new CrateManager();
+            var activityDo = activity as ActivityDO;
+            var activityDto = activity as ActivityDTO;
+            var storage = activityDo != null ? crateManager.GetStorage(activityDo) : crateManager.GetStorage(activityDto);
+            return new TActivityUi().ClonePropertiesFrom(storage.FirstCrateOrDefault<StandardConfigurationControlsCM>()?.Content) as TActivityUi;
+        }
     }
 }
