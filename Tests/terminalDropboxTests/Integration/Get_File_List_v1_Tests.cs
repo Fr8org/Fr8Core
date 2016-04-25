@@ -20,6 +20,7 @@ namespace terminalDropboxTests.Integration
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
+    [Category("Integration.terminalDropbox")]
     public class Get_File_List_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName => "terminalDropbox";
@@ -49,7 +50,8 @@ namespace terminalDropboxTests.Integration
         {
             _app?.Dispose();
         }
-        [Test, Category("Integration.terminalDropbox")]
+
+        [Test]
         public async Task GetFileList_InitialConfig_ReturnsActivity()
         {
             //Arrange
@@ -68,7 +70,7 @@ namespace terminalDropboxTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage.Crates);
         }
 
-        [Test, Category("Integration.terminalDropbox")]
+        [Test]
         public async Task Activate_Returns_ActivityDTO()
         {
             //Arrange
@@ -93,7 +95,7 @@ namespace terminalDropboxTests.Integration
             Assert.IsNotNull(Crate.FromDto(responseActionDTO.CrateStorage));
         }
 
-        [Test, Category("Integration.terminalDropbox")]
+        [Test]
         public async Task Run_Returns_ActivityDTO()
         {
             //Arrange

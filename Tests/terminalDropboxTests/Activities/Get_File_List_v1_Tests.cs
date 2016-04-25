@@ -1,24 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Data.Crates;
 using Data.Entities;
-using Hub.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Hub.Managers.APIManagers.Transmitters.Restful;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
-using Data.Interfaces.DataTransferObjects;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using Ploeh.AutoFixture;
 using terminalDropbox.Actions;
-using terminalDropbox.Interfaces;
-using terminalDropbox.Services;
 using terminalDropboxTests.Fixtures;
 using TerminalBase.Infrastructure;
 using UtilitiesTesting;
 
-namespace terminalDropboxTests.Actions
+namespace terminalDropboxTests.Activities
 {
     [TestFixture]
     [Category("terminalDropboxTests")]

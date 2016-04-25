@@ -16,16 +16,31 @@ namespace terminalDropbox.Services
     {
         private const string Path = "";
         private const string UserAgent = "DockyardApp";
-        private const int ReadWriteTimeout = 10*1000;
+        private const int ReadWriteTimeout = 10 * 1000;
         private const int Timeout = 20;
 
-        public async Task<List<string>> GetFileList(AuthorizationTokenDO authorizationTokenDO)
+        public async Task<Dictionary<string, string>> GetFileList(AuthorizationTokenDO authorizationTokenDO)
         {
             var client = new DropboxClient(authorizationTokenDO.Token, CreateDropboxClientConfig(UserAgent));
 
             var result = await client.Files.ListFolderAsync(Path);
 
-            return result.Entries.Select(x => x.Name).ToList();
+            return result.Entries.Select(x => new { x.Name, x.PathLower }).ToDictionary(f => f.Name, f => f.PathLower);
+        }
+
+        public async Task<string> GetFileSharedUrl(AuthorizationTokenDO authorizationTokenDO, string path)
+        {
+            var client = new DropboxClient(authorizationTokenDO.Token, CreateDropboxClientConfig(UserAgent));
+            try
+            {
+                var result = await client.Sharing.CreateSharedLinkWithSettingsAsync(path);
+
+                return result.Url;
+            }
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         private static DropboxClientConfig CreateDropboxClientConfig(string userAgent)
