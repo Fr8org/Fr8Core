@@ -120,10 +120,14 @@ namespace Data.Control
         [JsonProperty("selectedKey")]
         public string selectedKey { get; set; }
 
+        [JsonProperty("hasRefreshButton")]
+        public bool HasRefreshButton { get; set; }
+
         public DropDownList() : base()
         {
             ListItems = new List<ListItem>();
             Type = "DropDownList";
+            HasRefreshButton = false;
         }
 
         public void SelectByKey(string key)
