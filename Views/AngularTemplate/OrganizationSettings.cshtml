@@ -1,0 +1,20 @@
+﻿<div ng-controller="OrganizationSettingsController">
+    <md-button ng-click="editMode=true">Edit</md-button>
+    <md-content ng-if="editMode" layout-padding>
+        <div>
+            <form name="organizationForm">
+                <div layout-gt-sm="row">
+                    <md-input-container class="md-block" flex-gt-sm>
+                        <label>Organization Name</label>
+                        <input ng-model="organization.name">
+                    </md-input-container>
+                    <md-input-container class="md-block" flex-gt-sm>
+                        <label>Theme Name</label>
+                        <input ng-model="theMax">
+                    </md-input-container>
+                </div>
+            </form>
+        </div>
+        <md-button ng-click="addOrganization()">Save</md-button>
+    </md-content>
+</div>

@@ -40,6 +40,10 @@ module dockyard.services {
         add: (curProcessNodeTemplate: model.SubPlanDTO) => interfaces.ISubPlanVM;
         update: (curProcessNodeTemplate: model.SubPlanDTO) => interfaces.ISubPlanVM;
     }
+    export interface IOrganizationSettingsService extends ng.resource.IResourceClass<interfaces.IOrganizationSettingsVM> {
+        add: (organizationSettings: model.OrganizationDTO) => interfaces.IOrganizationSettingsVM;
+        update: (organizationSettings: model.OrganizationDTO) => interfaces.IOrganizationSettingsVM;
+    }
 
     interface __ICriteriaService extends ng.resource.IResourceClass<interfaces.ICriteriaVM> {
         update: (curCriteria: model.CriteriaDTO) => interfaces.ICriteriaVM;
@@ -252,6 +256,7 @@ module dockyard.services {
             })
     ]);
 
+    
     /* 
         ActivityDTO CRUD service.
     */
@@ -309,6 +314,21 @@ module dockyard.services {
                 }
             })
     ]);
+
+    /* 
+        Organization Settings Service.
+    */
+    app.factory('OrganizationSettingsService', ['$resource', ($resource: ng.resource.IResourceService): IOrganizationSettingsService =>
+        <IOrganizationSettingsService>$resource('/api/organizationsettings')  , 
+        {
+            'add': {
+                method: 'POST'
+            },
+            'update': {
+                method: 'PUT'
+            }
+        })
+     ]);
 
     /* 
         CriteriaDTO CRUD service.
