@@ -20,7 +20,7 @@ namespace Data.Infrastructure.Security
     {
         public AuthorizeActivityAttribute()
         {
-            ObjectType = typeof(Guid);
+            ParamType = typeof(Guid);
             Permission = PermissionType.ReadObject;
         }
 
@@ -33,8 +33,11 @@ namespace Data.Infrastructure.Security
         /// Type of the argument/parameter where dataObjectId is located. 
         /// Default values is Guid, and could be used with BaseObjects that contains key as Id 
         /// </summary>
-        public Type ObjectType { get; set; }
+        public Type ParamType { get; set; }
 
+        /// <summary>
+        /// Global Object type for whom we are checking granted permissions
+        /// </summary>
         public Type TargetType { get; set; }
 
         /// <summary>

@@ -62,15 +62,13 @@ namespace Data.Repositories.Security.StorageImpl.Cache
             lock (_cache)
             {
                 var permissionSet = _cache.GetRecordBasedPermissionSet(dataObjectId);
-                if (permissionSet == null)
-                {
-                    permissionSet = _securityObjectStorageProvider.GetRecordBasedPermissionSetForObject(dataObjectId);
-                    if (permissionSet == null) return null; 
-                    _cache.AddOrUpdateRecordBasedPermissionSet(dataObjectId, permissionSet);
+                if (permissionSet != null) return permissionSet;
 
-                    return permissionSet;
-                }
+                permissionSet = _securityObjectStorageProvider.GetRecordBasedPermissionSetForObject(dataObjectId);
+                if (!permissionSet.RolePermissions.Any() && !permissionSet.Properties.Any())
+                    return new ObjectRolePermissionsWrapper();
 
+                _cache.AddOrUpdateRecordBasedPermissionSet(dataObjectId, permissionSet);
                 return permissionSet;
             }
         }

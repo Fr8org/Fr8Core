@@ -65,7 +65,7 @@ namespace Hub.Security
         /// <param name="authorizeAttribute"></param>
         private void AuthorizeMethodInvocation(IInvocation invocation, AuthorizeActivityAttribute authorizeAttribute)
         {
-            foreach (var parameter in MapParameters(invocation.Arguments, invocation.Method.GetParameters(), authorizeAttribute.ObjectType))
+            foreach (var parameter in MapParameters(invocation.Arguments, invocation.Method.GetParameters(), authorizeAttribute.ParamType))
             {
                 string objectId;
                 if (parameter is Guid || parameter is string)
@@ -80,7 +80,7 @@ namespace Hub.Security
                 }
                 
                 ISecurityServices securityServices = ObjectFactory.GetInstance<ISecurityServices>();
-                if (securityServices.AuthorizeActivity(authorizeAttribute.Permission, objectId, authorizeAttribute.ObjectType.Name))
+                if (securityServices.AuthorizeActivity(authorizeAttribute.Permission, objectId, authorizeAttribute.TargetType.Name))
                 {
                     invocation.Proceed();
                 }
@@ -113,7 +113,7 @@ namespace Hub.Security
             }
 
             ISecurityServices securityServices = ObjectFactory.GetInstance<ISecurityServices>();
-            if (securityServices.AuthorizeActivity(authorizeAttribute.Permission, objectId, authorizeAttribute.ObjectType.Name))
+            if (securityServices.AuthorizeActivity(authorizeAttribute.Permission, objectId, authorizeAttribute.TargetType.Name))
             {
                 invocation.Proceed();
                 return;
