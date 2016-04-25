@@ -561,10 +561,17 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curContainerDO = uow.ContainerRepository.GetByKey(containerId);
+
+                if (curContainerDO == null)
+                {
+                    throw new Exception($"Can't continue container execution. Container {containerId} was not found.");
+                }
+
                 if (curContainerDO.State != State.Suspended)
                 {
-                    throw new ApplicationException("Attempted to Continue a Process that wasn't pending");
+                    throw new ApplicationException($"Attempted to Continue a Container {containerId} that wasn't in pending state. Container state is {curContainerDO.State}.");
                 }
+
                 //continue from where we left
                 return await Run(uow, curContainerDO);
             }
