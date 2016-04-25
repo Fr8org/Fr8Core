@@ -18,12 +18,34 @@ namespace terminalAtlassian
 {
     public class Startup : BaseConfiguration
     {
+        // TODO: FR-3077, remove this.
+        // public void Configuration(IAppBuilder app)
+        // {
+        //     TerminalAtlassianStructureMapBootstrapper.ConfigureDependencies(TerminalAtlassianStructureMapBootstrapper.DependencyType.LIVE);
+        //     WebApiConfig.Register(new HttpConfiguration());
+        //     TerminalBootstrapper.ConfigureLive();
+        //     StartHosting("terminal_Atlassian");
+        // }
+
         public void Configuration(IAppBuilder app)
         {
+            Configuration(app, false);
+        }
+
+        public void Configuration(IAppBuilder app, bool selfHost)
+        {
             TerminalAtlassianStructureMapBootstrapper.ConfigureDependencies(TerminalAtlassianStructureMapBootstrapper.DependencyType.LIVE);
-            WebApiConfig.Register(new HttpConfiguration());
-            TerminalBootstrapper.ConfigureLive();
-            StartHosting("terminal_Atlassian");
+
+            ConfigureProject(selfHost, null);
+            RoutesConfig.Register(_configuration);
+            ConfigureFormatters();
+
+            app.UseWebApi(_configuration);
+
+            if (!selfHost)
+            {
+                StartHosting("terminalAtlassian");
+            }
         }
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
