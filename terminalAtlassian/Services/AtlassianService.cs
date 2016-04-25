@@ -25,6 +25,7 @@ namespace terminalAtlassian.Services
         {
             _client = ObjectFactory.GetInstance<IRestfulServiceClient>();
         }
+
         public bool IsValidUser(CredentialsDTO curCredential)
         {
             /*
