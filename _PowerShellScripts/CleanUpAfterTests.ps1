@@ -23,10 +23,13 @@ update p set p.ParentPlanNodeId = null, p.RootPlanNodeId = null from PlanNodes p
 delete derived from ObjectRolePrivileges derived 
 	inner join #Nodes cp on cp.Id = derived.ObjectId
 
+delete m from History m
+	inner join Containers as derived on convert(nvarchar(50), derived.Id) = m.ObjectId
+	inner join #Nodes cp on cp.Id = derived.PlanId
+	
 -- list of Containers
 delete derived from Containers derived 
 	inner join #Nodes cp on cp.Id = derived.PlanId
-
 
 -- list of Plans
 delete derived from Plans derived 
@@ -53,6 +56,9 @@ delete m from MTData m
 delete m from History m
 	inner join [AspNetUsers] on AspNetUsers.Id = m.Fr8UserId 
 	where UserName = 'integration_test_runner@fr8.company' 	
+	
+delete m from History m
+	inner join #Nodes cp on  convert(nvarchar(50),cp.Id) = m.ObjectId
 
 drop table #Nodes
 "
