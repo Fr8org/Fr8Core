@@ -22,7 +22,7 @@ using UtilitiesTesting;
 using terminalTwilio;
 using terminalTwilio.Actions;
 
-namespace terminalTwilioTests.Activities
+namespace terminalTwilioTests.Actions
 {
     [TestFixture]
     public class Send_Via_Twilio_v1Tests : BaseTest

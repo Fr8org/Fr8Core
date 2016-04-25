@@ -17,7 +17,7 @@ using terminalSalesforceTests.Fixtures;
 using TerminalBase.Infrastructure;
 using UtilitiesTesting;
 
-namespace terminalSalesforceTests.Activities
+namespace terminalSalesforceTests.Actions
 {
     [TestFixture]
     [Category("terminalSalesforceTests")]

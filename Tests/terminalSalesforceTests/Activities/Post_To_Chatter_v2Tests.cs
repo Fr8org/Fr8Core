@@ -13,7 +13,7 @@ using terminalSalesforce.Actions;
 using terminalSalesforce.Infrastructure;
 using UtilitiesTesting;
 
-namespace terminalSalesforceTests.Activities
+namespace terminalSalesforceTests.Actions
 {
     [TestFixture, Ignore]
     [Category("terminalSalesforceTests")]

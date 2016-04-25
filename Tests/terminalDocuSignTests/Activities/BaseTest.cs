@@ -7,7 +7,7 @@ using StructureMap;
 using TerminalBase.Infrastructure;
 using UtilitiesTesting.Fixtures;
 
-namespace terminalDocuSignTests.Activities
+namespace terminalDocuSignTests.Actions
 {
     public class BaseTest : UtilitiesTesting.BaseTest
     {

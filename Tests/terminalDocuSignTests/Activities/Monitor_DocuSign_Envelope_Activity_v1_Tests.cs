@@ -13,7 +13,7 @@ using terminalDocuSign.Services.New_Api;
 using terminalDocuSignTests.Fixtures;
 using UtilitiesTesting.Fixtures;
 
-namespace terminalDocuSignTests.Activities
+namespace terminalDocuSignTests.Actions
 {
     [TestFixture]
     [Category("Monitor_DocuSign_Envelope_Activity_v1")]
