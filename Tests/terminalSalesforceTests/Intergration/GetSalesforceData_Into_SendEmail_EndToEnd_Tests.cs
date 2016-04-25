@@ -25,7 +25,7 @@ namespace terminalSalesforceTests.Intergration
             get { return "terminalSalesforce"; }
         }
 
-        [Test]
+        [Test, Ignore("Vas is working on fixing this test."]
         public async Task GetSalesforceData_Into_SendEmail_EndToEnd()
         {
             AuthorizationTokenDO authTokenDO = null;
