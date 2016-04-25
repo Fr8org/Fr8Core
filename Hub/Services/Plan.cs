@@ -64,6 +64,7 @@ namespace Hub.Services
             else
                 planQuery = planQuery.Where(c => string.IsNullOrEmpty(c.Category));
 
+
             return (status == null
                 ? planQuery.Where(pt => pt.PlanState != PlanState.Deleted)
                 : planQuery.Where(pt => pt.PlanState == status)).ToList();
