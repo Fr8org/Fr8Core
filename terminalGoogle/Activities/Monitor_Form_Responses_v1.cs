@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.DataTransferObjects.Helpers;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
@@ -13,7 +15,6 @@ using Newtonsoft.Json;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services;
 using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalGoogle.Actions
 {
@@ -150,7 +151,25 @@ namespace terminalGoogle.Actions
 
         protected override Task RunCurrentActivity()
         {
-            throw new NotImplementedException();
+            var selectedForm = ConfigurationControls.FormsList.Value;
+            if (string.IsNullOrEmpty(selectedForm))
+                throw new ActivityExecutionException("Form is not selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+            var payloadFields = ExtractPayloadFields(CurrentPayloadStorage);
+
+            // once we activate the plan we run it. When we run the plan manualy there is no payload with event data. 
+            // Just return Success as a quick fix to avoid "Plan Failed" message.
+            if (payloadFields == null)
+                RequestHubExecutionTermination();
+            var formResponseFields = CreatePayloadFormResponseFields(payloadFields);
+
+            // once we activate the plan we run it. When we run the plan manualy there is no payload with event data. 
+            // Just return Success as a quick fix to avoid "Plan Failed" message.
+            if (formResponseFields == null)
+                RequestHubExecutionTermination();
+
+            CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(formResponseFields)));
+            Success();
+            return Task.FromResult(0);
         }
         public override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
@@ -163,38 +182,6 @@ namespace terminalGoogle.Actions
                     !string.IsNullOrEmpty(token.RefreshToken));
         }
 
-        //public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        //{
-        //    try
-        //    {
-        //        if (CheckAuthentication(curActivityDO, authTokenDO))
-        //        {
-        //            return curActivityDO;
-        //        }
-
-        //        return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        if (GoogleAuthHelper.IsTokenInvalidation(ex))
-        //        {
-        //            AddAuthenticationCrate(curActivityDO, true);
-        //            return curActivityDO;
-        //        }
-
-        //        throw;
-        //    }
-        //}
-
-        //public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
-        //{
-        //    if (CrateManager.IsStorageEmpty(curActivityDO))
-        //    {
-        //        return ConfigurationRequestType.Initial;
-        //    }
-
-        //    return ConfigurationRequestType.Followup;
-        //}
         private Crate CreateEventSubscriptionCrate()
         {
             var subscriptions = new string[] {
@@ -252,41 +239,40 @@ namespace terminalGoogle.Actions
         //    return await Task.FromResult(curActionDTO);
         //}
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-        {
-            var payloadCrates = await GetPayload(curActivityDO, containerId);
+        //public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        //{
+        //    var payloadCrates = await GetPayload(curActivityDO, containerId);
 
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(payloadCrates);
-            }
+        //    if (NeedsAuthentication(authTokenDO))
+        //    {
+        //        return NeedsAuthenticationError(payloadCrates);
+        //    }
 
+        //    var payloadFields = ExtractPayloadFields(payloadCrates);
 
-            var payloadFields = ExtractPayloadFields(payloadCrates);
+        //    // once we activate the plan we run it. When we run the plan manualy there is no payload with event data. 
+        //    // Just return Success as a quick fix to avoid "Plan Failed" message.
+        //    if (payloadFields == null)
+        //    {
+        //        return TerminateHubExecution(payloadCrates);
+        //    }
 
-            // once we activate the plan we run it. When we run the plan manualy there is no payload with event data. 
-            // Just return Success as a quick fix to avoid "Plan Failed" message.
-            if (payloadFields == null)
-            {
-                return TerminateHubExecution(payloadCrates);
-            }
+        //    var formResponseFields = CreatePayloadFormResponseFields(payloadFields);
 
-            var formResponseFields = CreatePayloadFormResponseFields(payloadFields);
+        //    // once we activate the plan we run it. When we run the plan manualy there is no payload with event data. 
+        //    // Just return Success as a quick fix to avoid "Plan Failed" message.
+        //    if (formResponseFields == null)
+        //    {
+        //        return TerminateHubExecution(payloadCrates);
+        //    }
 
-            // once we activate the plan we run it. When we run the plan manualy there is no payload with event data. 
-            // Just return Success as a quick fix to avoid "Plan Failed" message.
-            if (formResponseFields == null)
-            {
-                return TerminateHubExecution(payloadCrates);
-            }
+        //    using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
+        //    {
+        //        crateStorage.Add(Crate.FromContent("Google Form Payload Data", new StandardPayloadDataCM(formResponseFields)));
+        //    }
 
-            using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
-            {
-                crateStorage.Add(Crate.FromContent("Google Form Payload Data", new StandardPayloadDataCM(formResponseFields)));
-            }
-
-            return Success(payloadCrates);
-        }
+        //    return Success(payloadCrates);
+        //}
         private List<FieldDTO> CreatePayloadFormResponseFields(List<FieldDTO> payloadfields)
         {
             List<FieldDTO> formFieldResponse = new List<FieldDTO>();
@@ -314,44 +300,20 @@ namespace terminalGoogle.Actions
             return formFieldResponse;
         }
 
-        private List<FieldDTO> ExtractPayloadFields(PayloadDTO payloadCrates)
+        private List<FieldDTO> ExtractPayloadFields(ICrateStorage currentPayload)
         {
-            var eventReportMS = CrateManager.GetStorage(payloadCrates).CrateContentsOfType<EventReportCM>().SingleOrDefault();
+            var eventReportMS = currentPayload.CrateContentsOfType<EventReportCM>().SingleOrDefault();
             if (eventReportMS == null)
-            {
                 return null;
-            }
 
             var eventFieldsCrate = eventReportMS.EventPayload.SingleOrDefault();
             if (eventFieldsCrate == null)
-            {
                 return null;
-            }
 
             return eventReportMS.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()).ToList();
         }
-        #region Fill Source
-
-        //private async Task FillSelectedGoogleFormSource(GoogleAuthDTO authDTO)
-        //{
-
-        //    var control = configurationControl.FindByNameNested<DropDownList>(controlName);
-        //    if (control != null)
-        //    {
-        //        control.ListItems = await GetGoogleForms(authDTO);
-        //    }
-        //}
-
-        //private async Task<List<ListItem>> GetGoogleForms(GoogleAuthDTO authDTO)
-        //{
-        //    if (string.IsNullOrEmpty(authDTO.RefreshToken))
-        //        throw new ArgumentNullException("Token is empty");
-
-        //    var files = await _googleDrive.GetGoogleForms(authDTO);
-        //    return files.Select(file => new ListItem() { Key = file.Value, Value = file.Key }).ToList();
-        //}
-        #endregion
     }
+
     public class EnumerateFormFieldsResponseItem
     {
         [JsonProperty("type")]

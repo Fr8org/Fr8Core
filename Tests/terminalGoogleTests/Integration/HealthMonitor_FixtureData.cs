@@ -246,6 +246,7 @@ namespace terminalGoogleTests.Unit
                 AuthToken = Google_AuthToken(),
                 ActivityTemplate = activityTemplate
             };
+            ActivateCrateStorage(activity, PackCrate_ConfigurationControls());
             using (var crateStorage = CrateManager.GetUpdatableStorage(activity))
             {
                 crateStorage.Add(PayloadRaw());
@@ -264,6 +265,7 @@ namespace terminalGoogleTests.Unit
                 AuthToken = Google_AuthToken(),
                 ActivityTemplate = activityTemplate
             };
+            ActivateCrateStorage(activity, PackCrate_ConfigurationControls());
             using (var crateStorage = CrateManager.GetUpdatableStorage(activity))
             {
                 crateStorage.Add(PayloadEmptyRaw());
