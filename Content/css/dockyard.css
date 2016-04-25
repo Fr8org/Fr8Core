@@ -758,9 +758,9 @@ input[type=radio]:checked ~ label .control-label-hidden {
 
 .drop-down-list-box-container {
     height: 26px;
-    width: 100%;
     margin-bottom: 5px;
 }
+
 
 
 /* Fixing for the angular ui-select bug. Remove after the fix is pushed and library is updated (reference: https://github.com/angular-ui/ui-select/issues/453) */
