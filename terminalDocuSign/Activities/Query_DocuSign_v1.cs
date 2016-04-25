@@ -18,7 +18,7 @@ using Utilities;
 using FolderItem = DocuSign.eSign.Model.FolderItem;
 using ListItem = Data.Control.ListItem;
 
-namespace terminalDocuSign.Activities
+namespace terminalDocuSign.Actions
 {
     public class Query_DocuSign_v1 : BaseDocuSignActivity
     {

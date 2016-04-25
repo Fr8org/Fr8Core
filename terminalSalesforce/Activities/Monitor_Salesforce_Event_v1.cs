@@ -9,7 +9,7 @@ using StructureMap;
 using System.Linq;
 using ServiceStack;
 
-namespace terminalSalesforce.Activities
+namespace terminalSalesforce.Actions
 {
     public class Monitor_Salesforce_Event_v1 : EnhancedTerminalActivity<Monitor_Salesforce_Event_v1.ActivityUi>
     {

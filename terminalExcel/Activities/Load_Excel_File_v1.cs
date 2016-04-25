@@ -12,7 +12,7 @@ using Data.States;
 using terminalUtilities.Excel;
 using TerminalBase.BaseClasses;
 
-namespace terminalExcel.Activities
+namespace terminalExcel.Actions
 {
     public class Load_Excel_File_v1 : EnhancedTerminalActivity<Load_Excel_File_v1.ActivityUi>
     {

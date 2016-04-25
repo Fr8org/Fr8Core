@@ -22,7 +22,7 @@ using TerminalBase.Infrastructure;
 using Utilities;
 using Utilities.Configuration.Azure;
 
-namespace terminalFr8Core.Activities
+namespace terminalFr8Core.Actions
 {
     public class CollectData_v1 : BaseTerminalActivity
     {

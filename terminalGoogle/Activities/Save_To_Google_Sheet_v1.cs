@@ -16,7 +16,7 @@ using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
 using TerminalBase.BaseClasses;
 
-namespace terminalGoogle.Activities
+namespace terminalGoogle.Actions
 {
     public class Save_To_Google_Sheet_v1 : BaseGoogleTerminalActivity<Save_To_Google_Sheet_v1.ActivityUi>
     {

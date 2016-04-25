@@ -14,7 +14,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using TerminalBase.Infrastructure;
 
-namespace terminalDocuSign.Activities
+namespace terminalDocuSign.Actions
 {
     public class Get_DocuSign_Template_v1 : BaseDocuSignActivity
     {

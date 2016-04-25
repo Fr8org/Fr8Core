@@ -17,7 +17,7 @@ using terminalFr8Core.Infrastructure;
 using Data.Entities;
 using Data.States;
 
-namespace terminalFr8Core.Activities
+namespace terminalFr8Core.Actions
 {
     public class ExecuteSql_v1 : BaseTerminalActivity
     {

@@ -13,7 +13,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Constants;
 using ServiceStack;
 
-namespace terminalSalesforce.Activities
+namespace terminalSalesforce.Actions
 {
     public class Get_Data_v1 : EnhancedTerminalActivity<Get_Data_v1.ActivityUi>
     {

@@ -10,7 +10,7 @@ using terminalSlack.Interfaces;
 using terminalSlack.Services;
 using TerminalBase.BaseClasses;
 
-namespace terminalSlack.Activities
+namespace terminalSlack.Actions
 {
     public class Monitor_Channel_v1 : EnhancedTerminalActivity<Monitor_Channel_v1.ActivityUi>
     {

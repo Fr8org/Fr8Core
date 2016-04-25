@@ -14,7 +14,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Utilities;
 
-namespace terminalSendGrid.Activities
+namespace terminalSendGrid.Actions
 {
     public class SendEmailViaSendGrid_v1 : BaseTerminalActivity
     {

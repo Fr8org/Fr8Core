@@ -16,10 +16,10 @@ using terminalDocuSign.Services;
 using TerminalBase.Infrastructure;
 using Data.States;
 using Data.Repositories.MultiTenant;
-using terminalDocuSign.Activities;
+using terminalDocuSign.Actions;
 using terminalDocuSign.Services.New_Api;
 
-namespace terminalDocuSign.Activities
+namespace terminalDocuSign.Actions
 {
     public class Track_DocuSign_Recipients_v1 : BaseDocuSignActivity
     {

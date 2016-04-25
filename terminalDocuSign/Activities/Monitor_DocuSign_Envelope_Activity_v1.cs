@@ -17,7 +17,7 @@ using terminalDocuSign.Services.New_Api;
 using TerminalBase.Infrastructure;
 using Utilities;
 
-namespace terminalDocuSign.Activities
+namespace terminalDocuSign.Actions
 {
     public class Monitor_DocuSign_Envelope_Activity_v1 : BaseDocuSignActivity
     {

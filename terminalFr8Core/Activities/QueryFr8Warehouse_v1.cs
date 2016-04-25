@@ -22,7 +22,7 @@ using Data.States;
 using terminalFr8Core.Infrastructure;
 using TerminalBase.Services;
 
-namespace terminalFr8Core.Activities
+namespace terminalFr8Core.Actions
 {
     public class QueryFr8Warehouse_v1 : BaseTerminalActivity
     {

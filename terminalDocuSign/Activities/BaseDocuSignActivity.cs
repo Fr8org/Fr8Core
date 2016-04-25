@@ -15,7 +15,7 @@ using StructureMap;
 using terminalDocuSign.Services.New_Api;
 using TerminalBase.BaseClasses;
 
-namespace terminalDocuSign.Activities
+namespace terminalDocuSign.Actions
 {
     public abstract class BaseDocuSignActivity : BaseTerminalActivity
     {

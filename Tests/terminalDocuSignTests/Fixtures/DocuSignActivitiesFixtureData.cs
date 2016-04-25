@@ -3,8 +3,7 @@ using System.ComponentModel.DataAnnotations;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Moq;
-using terminalDocuSign.Activities;
-using terminalDocuSign.Activities;
+using terminalDocuSign.Actions;
 using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSignTests.Fixtures

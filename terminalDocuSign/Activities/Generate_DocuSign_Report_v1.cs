@@ -23,7 +23,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Utilities;
 
-namespace terminalDocuSign.Activities
+namespace terminalDocuSign.Actions
 {
     public class Generate_DocuSign_Report_v1 : BaseTerminalActivity
     {

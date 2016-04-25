@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
-namespace terminalFr8Core.Activities
+namespace terminalFr8Core.Actions
 {
     public class Show_Report_Onscreen_v1 : BaseTerminalActivity
     {

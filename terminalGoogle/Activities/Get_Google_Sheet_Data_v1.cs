@@ -16,7 +16,7 @@ using terminalGoogle.Interfaces;
 using TerminalBase.BaseClasses;
 using Google.GData.Client;
 
-namespace terminalGoogle.Activities
+namespace terminalGoogle.Actions
 {
     public class Get_Google_Sheet_Data_v1 : BaseGoogleTerminalActivity<Get_Google_Sheet_Data_v1.ActivityUi>
     {

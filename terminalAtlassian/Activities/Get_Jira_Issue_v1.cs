@@ -13,7 +13,7 @@ using terminalAtlassian.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
-namespace terminalAtlassian.Activities
+namespace terminalAtlassian.Actions
 {
     public class Get_Jira_Issue_v1 : BaseTerminalActivity
     {

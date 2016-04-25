@@ -19,7 +19,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Utilities;
 
-namespace terminalFr8Core.Activities
+namespace terminalFr8Core.Actions
 {
     public class SetDelay_v1 : BaseTerminalActivity
     {

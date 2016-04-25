@@ -10,7 +10,7 @@ using NUnit.Framework;
 using StructureMap;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Managers.APIManagers.Transmitters.Restful;
-using terminalDropbox.Activities;
+using terminalDropbox.Actions;
 using terminalDropboxTests.Fixtures;
 using TerminalBase.Infrastructure;
 using UtilitiesTesting;

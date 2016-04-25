@@ -1,7 +1,7 @@
 ﻿using Data.Interfaces.Manifests;
 using TerminalBase.BaseClasses;
 
-namespace terminalTest.Activities
+namespace terminalTest.Actions
 {
     public abstract class TestActivityBase<T> : EnhancedTerminalActivity<T>
         where T: StandardConfigurationControlsCM

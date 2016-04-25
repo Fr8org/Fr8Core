@@ -14,7 +14,7 @@ using terminalSlack.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
-namespace terminalSlack.Activities
+namespace terminalSlack.Actions
 {
 
     public class Publish_To_Slack_v1 : BaseTerminalActivity

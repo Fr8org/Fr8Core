@@ -13,7 +13,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Utilities.Configuration.Azure;
 
-namespace terminalPapertrail.Activities
+namespace terminalPapertrail.Actions
 {
     /// <summary>
     /// Write To Log action which writes Log Messages to Papertrail at run time

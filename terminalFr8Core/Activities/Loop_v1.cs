@@ -16,7 +16,7 @@ using TerminalBase;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
-namespace terminalFr8Core.Activities
+namespace terminalFr8Core.Actions
 {
     public class Loop_v1 : BaseTerminalActivity
     {

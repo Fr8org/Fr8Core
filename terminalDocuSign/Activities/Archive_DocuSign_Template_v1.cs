@@ -10,11 +10,11 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
-using terminalDocuSign.Activities;
+using terminalDocuSign.Actions;
 using TerminalBase.Infrastructure;
 using Utilities;
 
-namespace terminalDocuSign.Activities
+namespace terminalDocuSign.Actions
 {
     public class Archive_DocuSign_Template_v1 : BaseDocuSignActivity
     {

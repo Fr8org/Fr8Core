@@ -14,7 +14,7 @@ using Hub.Managers;
 using TerminalBase.Infrastructure;
 using TerminalBase.Infrastructure.Behaviors;
 
-namespace terminalDocuSign.Activities
+namespace terminalDocuSign.Actions
 {
     public class Mail_Merge_Into_DocuSign_v1 : BaseDocuSignActivity
     {

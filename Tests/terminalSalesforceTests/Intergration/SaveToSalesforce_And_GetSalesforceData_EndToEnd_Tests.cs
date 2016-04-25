@@ -14,7 +14,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using terminalSalesforce.Activities;
+using terminalSalesforce.Actions;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
 

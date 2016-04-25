@@ -11,7 +11,7 @@ using terminalDropbox.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
-namespace terminalDropbox.Activities
+namespace terminalDropbox.Actions
 {
     public class Get_File_List_v1 : BaseTerminalActivity
     {

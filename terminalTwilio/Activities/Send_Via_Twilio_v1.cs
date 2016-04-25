@@ -16,7 +16,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Twilio;
 
-namespace terminalTwilio.Activities
+namespace terminalTwilio.Actions
 {
     public class Send_Via_Twilio_v1 : BaseTerminalActivity
     {

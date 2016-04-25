@@ -17,9 +17,9 @@ using terminalDocuSign.Services;
 using TerminalBase.Infrastructure;
 using TerminalBase.Infrastructure.Behaviors;
 using terminalDocuSign.Services.New_Api;
-using terminalDocuSign.Activities;
+using terminalDocuSign.Actions;
 
-namespace terminalDocuSign.Activities
+namespace terminalDocuSign.Actions
 {
     public class Use_DocuSign_Template_With_New_Document_v1 : Send_DocuSign_Envelope_v1
     {

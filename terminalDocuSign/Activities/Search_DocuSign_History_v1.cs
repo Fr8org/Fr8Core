@@ -11,12 +11,12 @@ using Data.Interfaces.Manifests;
 using Hub.Managers;
 using Newtonsoft.Json;
 using StructureMap;
-using terminalDocuSign.Activities;
+using terminalDocuSign.Actions;
 using terminalDocuSign.DataTransferObjects;
 using TerminalBase.Infrastructure;
 using terminalDocuSign.Services;
 
-namespace terminalDocuSign.Activities
+namespace terminalDocuSign.Actions
 {
     public class Search_DocuSign_History_v1  : BaseDocuSignActivity
     {

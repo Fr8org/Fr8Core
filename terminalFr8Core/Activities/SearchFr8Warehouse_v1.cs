@@ -30,7 +30,7 @@ using System.Text.RegularExpressions;
 using Hub.Infrastructure;
 using Utilities.Logging;
 
-namespace terminalFr8Core.Activities
+namespace terminalFr8Core.Actions
 {
     public class SearchFr8Warehouse_v1 : BaseTerminalActivity
     {

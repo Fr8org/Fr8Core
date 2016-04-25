@@ -17,7 +17,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using TerminalSqlUtilities;
 
-namespace terminalAzure.Activities
+namespace terminalAzure.Actions
 {
 
     public class Write_To_Sql_Server_v1 : BaseTerminalActivity

@@ -26,7 +26,7 @@ using Hub.Interfaces;
 using System.IO;
 using System.Text;
 
-namespace terminalFr8Core.Activities
+namespace terminalFr8Core.Actions
 {
     public class GetFileFromFr8Store_v1 : BaseTerminalActivity
     {

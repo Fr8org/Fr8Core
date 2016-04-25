@@ -6,7 +6,7 @@ using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services;
 using TerminalBase.BaseClasses;
 
-namespace terminalGoogle.Activities
+namespace terminalGoogle.Actions
 {
     public abstract class BaseGoogleTerminalActivity<T> : EnhancedTerminalActivity<T>
         where T : StandardConfigurationControlsCM

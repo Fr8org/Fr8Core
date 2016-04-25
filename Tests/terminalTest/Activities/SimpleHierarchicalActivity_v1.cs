@@ -7,7 +7,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using TerminalBase.BaseClasses;
 
-namespace terminalTest.Activities
+namespace terminalTest.Actions
 {
     public class SimpleHierarchicalActivity_v1 : TestActivityBase<SimpleActivity_v1.ActivityUi>
     {

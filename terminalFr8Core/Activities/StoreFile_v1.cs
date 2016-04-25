@@ -25,7 +25,7 @@ using StructureMap;
 using Hub.Interfaces;
 using System.IO;
 
-namespace terminalFr8Core.Activities
+namespace terminalFr8Core.Actions
 {
     public class StoreFile_v1 : BaseTerminalActivity
     {

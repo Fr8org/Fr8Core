@@ -12,7 +12,7 @@ using Hub.Managers.APIManagers.Transmitters.Restful;
 using Moq;
 using Newtonsoft.Json;
 using System.Collections.Generic;
-using terminalAtlassian.Activities;
+using terminalAtlassian.Actions;
 
 namespace terminalDropboxTests.Activities
 {

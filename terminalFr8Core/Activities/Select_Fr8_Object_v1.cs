@@ -17,7 +17,7 @@ using Data.Entities;
 using StructureMap;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 
-namespace terminalFr8Core.Activities
+namespace terminalFr8Core.Actions
 {
     // The generic interface inheritance.
     public class Select_Fr8_Object_v1 : BaseTerminalActivity

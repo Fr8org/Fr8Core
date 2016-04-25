@@ -15,7 +15,7 @@ using terminalDocuSign.Infrastructure;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
-namespace terminalDocuSign.Activities
+namespace terminalDocuSign.Actions
 {
     public class Prepare_DocuSign_Events_For_Storage_v1 : BaseTerminalActivity
     {

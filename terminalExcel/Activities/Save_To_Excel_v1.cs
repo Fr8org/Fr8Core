@@ -15,7 +15,7 @@ using Data.States;
 using terminalUtilities.Excel;
 using TerminalBase.BaseClasses;
 
-namespace terminalExcel.Activities
+namespace terminalExcel.Actions
 {
     public class Save_To_Excel_v1 : EnhancedTerminalActivity<Save_To_Excel_v1.ActivityUi>
     {

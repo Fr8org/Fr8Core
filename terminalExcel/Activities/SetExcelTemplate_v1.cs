@@ -20,7 +20,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Utilities;
 
-namespace terminalExcel.Activities
+namespace terminalExcel.Actions
 {
     public class SetExcelTemplate_v1 : BaseTerminalActivity
     {

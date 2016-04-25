@@ -5,7 +5,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using TerminalBase.BaseClasses;
 
-namespace terminalTest.Activities
+namespace terminalTest.Actions
 {
     public class GenerateTableActivity_v1 : TestActivityBase<GenerateTableActivity_v1.ActivityUi>
     {

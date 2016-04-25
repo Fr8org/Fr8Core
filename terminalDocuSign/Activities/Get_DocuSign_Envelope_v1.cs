@@ -14,7 +14,7 @@ using terminalDocuSign.DataTransferObjects;
 using TerminalBase.Infrastructure;
 using Utilities;
 
-namespace terminalDocuSign.Activities
+namespace terminalDocuSign.Actions
 {
     public class Get_DocuSign_Envelope_v1 : BaseDocuSignActivity
     {

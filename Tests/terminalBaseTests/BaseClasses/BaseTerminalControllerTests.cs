@@ -10,7 +10,7 @@ using Data.Crates;
 using Hub.Managers;
 using Data.Interfaces.Manifests;
 using System.Linq;
-using terminalBaseTests.Activities;
+using terminalBaseTests.Actions;
 using Hub.StructureMap;
 using StructureMap;
 using TerminalBase.Infrastructure;

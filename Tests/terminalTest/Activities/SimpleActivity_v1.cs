@@ -3,7 +3,7 @@ using Data.Control;
 using Data.Interfaces.Manifests;
 using TerminalBase.BaseClasses;
 
-namespace terminalTest.Activities
+namespace terminalTest.Actions
 {
     public class SimpleActivity_v1 : TestActivityBase<SimpleActivity_v1.ActivityUi>
     {

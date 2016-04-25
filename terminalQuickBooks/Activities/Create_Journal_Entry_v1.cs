@@ -10,7 +10,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using JournalEntry = terminalQuickBooks.Services.JournalEntry;
 
-namespace terminalQuickBooks.Activities
+namespace terminalQuickBooks.Actions
 {
     public class Create_Journal_Entry_v1 : BaseTerminalActivity
     {

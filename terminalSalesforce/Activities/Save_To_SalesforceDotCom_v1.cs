@@ -17,7 +17,7 @@ using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 using ServiceStack;
 
-namespace terminalSalesforce.Activities
+namespace terminalSalesforce.Actions
 {
     /// <summary>
     /// A general activity which is used to save any Salesforce object dynamically.

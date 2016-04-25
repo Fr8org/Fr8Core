@@ -3,7 +3,7 @@ using Data.Crates;
 using Data.Interfaces.Manifests;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using terminalFr8Core.Activities;
+using terminalFr8Core.Actions;
 
 namespace terminalTests.Unit
 {

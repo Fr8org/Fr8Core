@@ -15,9 +15,8 @@ using terminalYammer.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
-namespace terminalYammer.Activities
+namespace terminalYammer.Actions
 {
-
     public class Post_To_Yammer_v1 : BaseTerminalActivity
     {
         private readonly IYammer _yammer;

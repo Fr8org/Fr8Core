@@ -17,7 +17,7 @@ using TerminalBase.Infrastructure;
 using TerminalSqlUtilities;
 using terminalFr8Core.Infrastructure;
 
-namespace terminalFr8Core.Activities
+namespace terminalFr8Core.Actions
 {
     public class ConnectToSql_v1 : BaseTerminalActivity
     {

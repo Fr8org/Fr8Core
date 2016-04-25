@@ -13,7 +13,7 @@ using terminalSalesforceTests.Fixtures;
 using terminalSalesforce.Services;
 using terminalSalesforce.Infrastructure;
 using Data.Entities;
-using terminalSalesforce.Activities;
+using terminalSalesforce.Actions;
 
 namespace terminalSalesforceTests.Intergration
 {

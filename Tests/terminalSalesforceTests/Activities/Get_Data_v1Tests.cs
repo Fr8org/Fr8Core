@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
 using terminalSalesforce;
-using terminalSalesforce.Activities;
+using terminalSalesforce.Actions;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforceTests.Fixtures;
 using TerminalBase.Infrastructure;

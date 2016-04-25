@@ -15,7 +15,7 @@ using terminalGoogle.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
-namespace terminalGoogle.Activities
+namespace terminalGoogle.Actions
 {
     public class Monitor_Form_Responses_v1 : BaseGoogleTerminalActivity<Monitor_Form_Responses_v1.ActivityUi>
     {

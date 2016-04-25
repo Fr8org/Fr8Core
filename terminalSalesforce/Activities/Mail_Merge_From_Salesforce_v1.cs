@@ -20,7 +20,7 @@ using Hub.Managers;
 using Data.Constants;
 using ServiceStack;
 
-namespace terminalSalesforce.Activities
+namespace terminalSalesforce.Actions
 {
     public class Mail_Merge_From_Salesforce_v1 : EnhancedTerminalActivity<Mail_Merge_From_Salesforce_v1.ActivityUi>
     {

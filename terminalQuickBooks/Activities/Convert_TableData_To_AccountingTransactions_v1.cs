@@ -16,7 +16,7 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Task = System.Threading.Tasks.Task;
 
-namespace terminalQuickBooks.Activities
+namespace terminalQuickBooks.Actions
 {
     public class Convert_TableData_To_AccountingTransactions_v1 : BaseTerminalActivity
     {

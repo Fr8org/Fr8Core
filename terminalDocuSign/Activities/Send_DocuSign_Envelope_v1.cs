@@ -12,14 +12,14 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
-using terminalDocuSign.Activities;
+using terminalDocuSign.Actions;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
 using TerminalBase.Infrastructure;
 using TerminalBase.Infrastructure.Behaviors;
 using terminalDocuSign.Services.New_Api;
 
-namespace terminalDocuSign.Activities
+namespace terminalDocuSign.Actions
 {
     public class Send_DocuSign_Envelope_v1 : BaseDocuSignActivity
     {

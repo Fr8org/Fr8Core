@@ -12,7 +12,7 @@ using Hub.Managers;
 using Newtonsoft.Json;
 using TerminalBase.Infrastructure;
 
-namespace terminalDocuSign.Activities
+namespace terminalDocuSign.Actions
 {
     public class Extract_Data_From_Envelopes_v1 : BaseDocuSignActivity
     {

@@ -21,7 +21,7 @@ using Hub.Managers.APIManagers.Transmitters.Restful;
 using Utilities;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using terminalExcel.Activities;
+using terminalExcel.Actions;
 using terminalExcel.Fixtures;
 using TerminalBase.Infrastructure;
 

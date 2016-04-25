@@ -13,7 +13,7 @@ using Newtonsoft.Json;
 using ServiceStack;
 using Data.Helpers;
 
-namespace terminalSalesforce.Activities
+namespace terminalSalesforce.Actions
 {
     public class Post_To_Chatter_v2 : EnhancedTerminalActivity<Post_To_Chatter_v2.ActivityUi>
     {
