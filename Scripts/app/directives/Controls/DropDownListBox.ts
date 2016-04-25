@@ -19,6 +19,7 @@ module dockyard.directives.dropDownListBox {
         toggle: boolean;
         toggleDropDown: (select) => void;
         focusOutSet: (focusElem: any) => void;
+        reconfigure: () => void;
     }
 
     export function DropDownListBox(): ng.IDirective {
@@ -28,7 +29,9 @@ module dockyard.directives.dropDownListBox {
                 UpstreamExtractor: services.UpstreamExtractor
             ) {
 
-               
+                $scope.reconfigure = () => {
+                    $scope.$emit(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure], new pca.ActionReconfigureEventArgs($scope.currentAction));
+                };
 
                 $scope.setSelectedItem = (item: model.DropDownListItem) => {
                     $scope.field.value = item.value;
