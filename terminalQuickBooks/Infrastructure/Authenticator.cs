@@ -122,7 +122,6 @@ namespace terminalQuickBooks.Infrastructure
             HttpWebRequest httpWebRequest = WebRequest.Create("https://appcenter.intuit.com/api/v1/Connection/Reconnect") as HttpWebRequest;
             httpWebRequest.Method = "GET";
             httpWebRequest.Headers.Add("Authorization", GetDevDefinedOAuthHeader(httpWebRequest, consumerKey, consumerSecret, accessToken, accessTokenSecret));
-            UTF8Encoding encoding = new UTF8Encoding();
             HttpWebResponse httpWebResponse = httpWebRequest.GetResponse() as HttpWebResponse;
             using (Stream data = httpWebResponse.GetResponseStream())
             {
@@ -133,7 +132,6 @@ namespace terminalQuickBooks.Infrastructure
 
         private string GetDevDefinedOAuthHeader(HttpWebRequest webRequest, string consumerKey, string consumerSecret, string accessToken, string accessTokenSecret)
         {
-
             OAuthConsumerContext consumerContext = new OAuthConsumerContext
             {
                 ConsumerKey = consumerKey,
@@ -148,7 +146,6 @@ namespace terminalQuickBooks.Infrastructure
             OAuthSession oSession = new OAuthSession(consumerContext, "https://www.example.com",
                                     "https://www.example.com",
                                     "https://www.example.com");
-
 
             oSession.AccessToken = new TokenBase
             {
