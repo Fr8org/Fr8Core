@@ -124,8 +124,6 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
-    <Compile Include="Activities\Get_Jira_Issue_v1Tests.cs" />
-    <Compile Include="Fixtures\FixtureData.cs" />
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
     <Compile Include="Integration\Get_Jira_Issue_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Authentication_v1_Tests.cs" />
@@ -164,6 +162,9 @@
   <ItemGroup>
     <None Include="app.config" />
     <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Activities\" />
   </ItemGroup>
   <Choose>
     <When Condition="'$(VisualStudioVersion)' == '10.0' And '$(IsCodedUITest)' == 'True'">
