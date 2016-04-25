@@ -9,6 +9,7 @@ using Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.StructureMap;
+using terminalTwilio.Actions;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
@@ -20,9 +21,8 @@ using System;
 using Data.Crates;
 using UtilitiesTesting;
 using terminalTwilio;
-using terminalTwilio.Actions;
 
-namespace terminalTwilioTests.Actions
+namespace terminalTwilioTests.Activities
 {
     [TestFixture]
     public class Send_Via_Twilio_v1Tests : BaseTest

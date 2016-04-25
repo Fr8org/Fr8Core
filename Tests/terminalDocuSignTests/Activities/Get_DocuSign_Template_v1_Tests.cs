@@ -13,7 +13,7 @@ using terminalDocuSign.Services.New_Api;
 using terminalDocuSignTests.Fixtures;
 using UtilitiesTesting.Fixtures;
 
-namespace terminalDocuSignTests.Actions
+namespace terminalDocuSignTests.Activities
 {
     [TestFixture]
     [Category("Get_DocuSign_Template_v1")]

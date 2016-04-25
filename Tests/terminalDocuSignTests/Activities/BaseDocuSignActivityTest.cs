@@ -11,7 +11,7 @@ using terminalDocuSignTests.Fixtures;
 using UtilitiesTesting.Asserts;
 using UtilitiesTesting.Fixtures;
 
-namespace terminalDocuSignTests.Actions
+namespace terminalDocuSignTests.Activities
 {
     [TestFixture]
     [Category("BaseDocuSignActivity")]
