@@ -82,7 +82,7 @@ namespace Data.Repositories.Security.StorageImpl.Cache
                 foreach (var role in roleCollection)
                 {
                     //todo: use cache for profile permission sets
-                    result.AddRange(uow.PermissionSetRepository.GetQuery().Where(x => x.ProfileId == role.ProfileId).SelectMany(l => l.Permissions.Select(m => m.Id)).ToList());
+                    result.AddRange(uow.PermissionSetRepository.GetQuery().Where(x => x.ProfileId == role.ProfileId && x.ObjectType == dataObjectType).SelectMany(l => l.Permissions.Select(m => m.Id)).ToList());
                 }
 
                 return result;

@@ -327,7 +327,7 @@ namespace Hub.Services
             return curActivityDO;
         }
 
-        [AuthorizeActivity(Permission = PermissionType.EditObject, ParamType = typeof(PlanNodeDO), TargetType = typeof(PlanNodeDO))]
+        [AuthorizeActivity(Permission = PermissionType.EditObject, ParamType = typeof(ActivityDO), TargetType = typeof(PlanNodeDO))]
         public async Task<ActivityDTO> Configure(IUnitOfWork uow,
             string userId, ActivityDO curActivityDO, bool saveResult = true)
         {
@@ -409,7 +409,7 @@ namespace Hub.Services
             }
         }
 
-        [AuthorizeActivity(Permission = PermissionType.RunObject, ParamType = typeof(PlanNodeDO), TargetType = typeof(PlanNodeDO))]
+        [AuthorizeActivity(Permission = PermissionType.RunObject, ParamType = typeof(ActivityDO), TargetType = typeof(PlanNodeDO))]
         public async Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActivityExecutionMode curActionExecutionMode, ContainerDO curContainerDO)
         {
             if (curActivityDO == null)
@@ -460,7 +460,7 @@ namespace Hub.Services
             }
         }
 
-        [AuthorizeActivity(Permission = PermissionType.EditObject, ParamType = typeof(PlanNodeDO), TargetType = typeof(PlanNodeDO))]
+        [AuthorizeActivity(Permission = PermissionType.EditObject, ParamType = typeof(ActivityDO), TargetType = typeof(PlanNodeDO))]
         public async Task<ActivityDTO> Activate(ActivityDO curActivityDO)
         {
             try

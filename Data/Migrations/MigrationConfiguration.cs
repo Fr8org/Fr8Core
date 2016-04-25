@@ -767,19 +767,23 @@ namespace Data.Migrations
 
         private static void AddPermissionSet(string objectType, bool isFullSet, Guid profileId, string name, IUnitOfWork uow)
         {
-            var permissionSet = new PermissionSetDO()
+            var permissionSet = uow.PermissionSetRepository.GetQuery().FirstOrDefault(x => x.Name == name);
+            if (permissionSet == null)
             {
-                Id = Guid.NewGuid(),
-                Name = name,
-                ProfileId = profileId,
-                ObjectType = objectType,
-                CreateDate = DateTimeOffset.Now,
-                LastUpdated = DateTimeOffset.Now,
-                HasFullAccess = isFullSet
-            };
-
+                permissionSet = new PermissionSetDO()
+                {
+                    Name = name,
+                    ProfileId = profileId,
+                    ObjectType = objectType,
+                    CreateDate = DateTimeOffset.Now,
+                    LastUpdated = DateTimeOffset.Now,
+                    HasFullAccess = isFullSet
+                };
+            }
+        
             var repo = new GenericRepository<_PermissionTypeTemplate>(uow);
 
+            permissionSet.Permissions.Clear();
             permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x=>x.Id == PermissionType.CreateObject));
             permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == PermissionType.ReadObject));
             permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == PermissionType.EditObject));
@@ -790,8 +794,12 @@ namespace Data.Migrations
                 permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == PermissionType.ViewAllObjects));
                 permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == PermissionType.ModifyAllObjects));
             }
-            
-            uow.PermissionSetRepository.Add(permissionSet);
+
+            if (permissionSet.Id == Guid.Empty)
+            {
+                permissionSet.Id = Guid.NewGuid();
+                uow.PermissionSetRepository.Add(permissionSet);
+            }
         }
 
     }

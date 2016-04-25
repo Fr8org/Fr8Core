@@ -76,7 +76,7 @@ namespace Hub.Security
                 {
                     //todo: in case of requirement for objects not inherited from BaseObject, create a new property inside AuthorizeActivityAttribute that will set object inner propertyName in case of this "Id"  
                     var property = parameter.GetType().GetProperty("Id");
-                    objectId = property.GetValue(invocation.Proxy).ToString();
+                    objectId = property.GetValue(parameter).ToString();
                 }
                 
                 ISecurityServices securityServices = ObjectFactory.GetInstance<ISecurityServices>();
@@ -86,7 +86,7 @@ namespace Hub.Security
                 }
                 else
                 {
-                    throw new HttpException(401, "You are not authorized to perform this activity!");
+                    throw new HttpException(403, "You are not authorized to perform this activity!");
                 }
             }
         }
@@ -120,7 +120,7 @@ namespace Hub.Security
             }
             else
             {
-                throw new HttpException(401, "You are not authorized to perform this activity!");
+                throw new HttpException(403, "You are not authorized to perform this activity!");
             }
         }
 
