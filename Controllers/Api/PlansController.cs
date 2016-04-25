@@ -123,29 +123,21 @@ namespace HubWeb.Controllers
         }
 
         [Fr8ApiAuthorize]
-        [ActionName("status")]
+        [ActionName("getByQuery")]
         [HttpGet]
-        public IHttpActionResult GetByStatus(Guid? id = null, int? status = null, string category = "")
+        public IHttpActionResult GetByQuery([FromUri] PlanQueryDTO planQuery)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curPlans = _plan.GetForUser(
+                var planResult = _plan.GetForUser(
                     uow,
                     _security.GetCurrentAccount(uow),
-                    _security.IsCurrentUserHasRole(Roles.Admin),
-                    id,
-                    status,
-                    category
+                    planQuery,
+                    _security.IsCurrentUserHasRole(Roles.Admin)
                 );
 
-                if (curPlans.Any())
-                {
-                    var queryableRepoOrdered = curPlans.OrderByDescending(x => x.LastUpdated);
-                    return Ok(queryableRepoOrdered.Select(Mapper.Map<PlanEmptyDTO>).ToArray());
-                }
+                return Ok(planResult);
             }
-
-            return Ok();
         }
 
         [Fr8ApiAuthorize]
@@ -185,29 +177,36 @@ namespace HubWeb.Controllers
         }
 
         // GET api/<controller>
+        /// <summary>
+        /// TODO this function shouldn't exist
+        /// inspect it's usage and remove this from project
+        /// Get should use PlanQueryDTO
+        /// </summary>
+        /// <param name="id"></param>
+        /// <returns></returns>
         [Fr8ApiAuthorize]
         public IHttpActionResult Get(Guid? id = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curPlans = _plan.GetForUser(
+                var planResult = _plan.GetForUser(
                     uow,
                     _security.GetCurrentAccount(uow),
-                    _security.IsCurrentUserHasRole(Roles.Admin),
-                    id
+                    new PlanQueryDTO() {Id = id}, 
+                    _security.IsCurrentUserHasRole(Roles.Admin)
                 );
 
-                if (curPlans.Any())
+                if (planResult.Plans.Any())
                 {
                     // Return first record from curPlans, in case id parameter was provided.
                     // User intentionally wants to receive a single JSON object in response.
                     if (id.HasValue)
                     {
-                        return Ok(Mapper.Map<PlanEmptyDTO>(curPlans.First()));
+                        return Ok(planResult.Plans.First());
                     }
 
                     // Return JSON array of objects, in case no id parameter was provided.
-                    return Ok(curPlans.Select(Mapper.Map<PlanEmptyDTO>).ToArray());
+                    return Ok(planResult.Plans);
                 }
             }
 

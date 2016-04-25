@@ -19,6 +19,7 @@ using Hub.Interfaces;
 using InternalInterface = Hub.Interfaces;
 using Hub.Managers;
 using System.Threading.Tasks;
+using AutoMapper.QueryableExtensions;
 using Data.Constants;
 using Data.Crates;
 using Data.Infrastructure;
@@ -30,6 +31,8 @@ namespace Hub.Services
 {
     public class Plan : IPlan
     {
+        private const int DEFAULT_PLAN_PAGE_SIZE = 10;
+        private const int MIN_PLAN_PAGE_SIZE = 5;
         // private readonly IProcess _process;
         private readonly InternalInterface.IContainer _container;
         private readonly Fr8Account _dockyardAccount;
@@ -49,24 +52,56 @@ namespace Hub.Services
             _dispatcher = dispatcher;
         }
 
-        public IList<PlanDO> GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false,
-            Guid? id = null, int? status = null, string category = "")
+        public PlanResultDTO GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, PlanQueryDTO planQueryDTO, bool isAdmin = false)
         {
+            //lets make sure our inputs are correct
+            planQueryDTO = planQueryDTO ?? new PlanQueryDTO();
+            planQueryDTO.Page = planQueryDTO.Page ?? 1;
+            planQueryDTO.Page = planQueryDTO.Page < 1 ? 1 : planQueryDTO.Page;
+            planQueryDTO.PlanPerPage = planQueryDTO.PlanPerPage ?? DEFAULT_PLAN_PAGE_SIZE;
+            planQueryDTO.PlanPerPage = planQueryDTO.PlanPerPage < MIN_PLAN_PAGE_SIZE ? MIN_PLAN_PAGE_SIZE : planQueryDTO.PlanPerPage;
+            planQueryDTO.IsDescending = planQueryDTO.IsDescending ?? true;
+
             var planQuery = unitOfWork.PlanRepository.GetPlanQueryUncached()
                 .Where(x => x.Visibility == PlanVisibility.Standard);
 
-            planQuery = (id == null
+            planQuery = planQueryDTO.Id == null
                 ? planQuery.Where(pt => pt.Fr8Account.Id == account.Id)
-                : planQuery.Where(pt => pt.Id == id && pt.Fr8Account.Id == account.Id));
+                : planQuery.Where(pt => pt.Id == planQueryDTO.Id && pt.Fr8Account.Id == account.Id);
 
-            if (!string.IsNullOrEmpty(category))
-                planQuery = planQuery.Where(c => c.Category == category);
-            else
-                planQuery = planQuery.Where(c => string.IsNullOrEmpty(c.Category));
+            planQuery = !string.IsNullOrEmpty(planQueryDTO.Category) 
+                ? planQuery.Where(c => c.Category == planQueryDTO.Category) 
+                : planQuery.Where(c => string.IsNullOrEmpty(c.Category));
 
-            return (status == null
+            planQuery = planQueryDTO.Status == null
                 ? planQuery.Where(pt => pt.PlanState != PlanState.Deleted)
-                : planQuery.Where(pt => pt.PlanState == status)).ToList();
+                : planQuery.Where(pt => pt.PlanState == planQueryDTO.Status);
+
+            //lets allow ordering with just name for now
+            if (planQueryDTO.OrderBy == "name")
+            {
+                planQuery = planQueryDTO.IsDescending.Value
+                    ? planQuery.OrderByDescending(p => p.Name)
+                    : planQuery.OrderBy(p => p.Name);
+            }
+            else
+            {
+                planQuery = planQueryDTO.IsDescending.Value
+                    ? planQuery.OrderByDescending(p => p.LastUpdated)
+                    : planQuery.OrderBy(p => p.LastUpdated);
+            }
+
+            var totalPlanCountForCurrentCriterias = planQuery.Count();
+
+            planQuery = planQuery.Skip(planQueryDTO.PlanPerPage.Value * (planQueryDTO.Page.Value-1))
+                    .Take(planQueryDTO.PlanPerPage.Value);
+
+            return new PlanResultDTO
+            {
+                Plans = planQuery.ToList().Select(Mapper.Map<PlanEmptyDTO>).ToList(),
+                CurrentPage = planQueryDTO.Page.Value,
+                TotalPlanCount = totalPlanCountForCurrentCriterias
+            };
 
         }
 

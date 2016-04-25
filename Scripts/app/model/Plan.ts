@@ -28,4 +28,20 @@
     export class PlanFullDTO {
         plan: PlanDTO
     }
+
+    export class PlanQueryDTO {
+        id: string;
+        page: number;
+        planPerPage: number;
+        status:number;
+        category: string;
+        orderBy: string;
+        isDescending: boolean;
+    }
+
+    export class PlanResultDTO {
+        plans: Array<interfaces.IPlanVM>;
+        currentPage: number;
+        totalPlanCount: number;
+    }
 }
