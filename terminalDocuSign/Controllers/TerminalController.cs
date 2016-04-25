@@ -198,7 +198,7 @@ namespace terminalDocuSign.Controllers
                 queryDocusign,
                 searchDocusignHistory,
                 getDocuSignTemplateActionTemplate,
-                process_personal_report
+                process_personal_report,
             };
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()

@@ -200,6 +200,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activities\CollectData_v1.cs" />
+    <Compile Include="Activities\FindObjectsThatMatchIncomingMessage_v1.cs" />
     <Compile Include="Activities\Monitor_Fr8_Events_v1.cs" />
     <Compile Include="Activities\Process_Personnel_Report_v1.cs" />
     <Compile Include="Activities\QueryFr8Warehouse_v1.cs" />
@@ -361,13 +362,9 @@
   </PropertyGroup>
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
   <ItemGroup>
-    <Log4netConfigFiles Include="..\Config\*.terminals.*"/>
+    <Log4netConfigFiles Include="..\Config\*.terminals.*" />
   </ItemGroup>
-
   <Target Name="BeforeBuild">
-    <Copy
-        SourceFiles="@(Log4NetConfigFiles)"
-        DestinationFolder="."
-         />
+    <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
   </Target>
 </Project>

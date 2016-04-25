@@ -88,6 +88,7 @@
         QueryBuilder template
         -->
     <div ng-if='field.type == "QueryBuilder"'>
+        <label class='control-label'>{{::field.label}}</label>
         <query-builder current-action='currentAction' field='field'></query-builder>
     </div>
 

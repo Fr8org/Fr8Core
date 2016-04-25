@@ -59,6 +59,14 @@
       <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Hangfire.Core, Version=1.5.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Hangfire.Core.1.5.3\lib\net45\Hangfire.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Hangfire.SqlServer, Version=1.5.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Hangfire.SqlServer.1.5.3\lib\net45\Hangfire.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
       <Private>True</Private>
@@ -136,6 +144,18 @@
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Nito.AsyncEx, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nito.AsyncEx.3.0.1\lib\net45\Nito.AsyncEx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nito.AsyncEx.Concurrent, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nito.AsyncEx.3.0.1\lib\net45\Nito.AsyncEx.Concurrent.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nito.AsyncEx.Enlightenment, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nito.AsyncEx.3.0.1\lib\net45\Nito.AsyncEx.Enlightenment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
@@ -166,6 +186,7 @@
     </Reference>
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -259,14 +280,9 @@
     <Compile Include="Infrastructure\DataContracts\FolderListResponse.cs" />
     <Compile Include="Infrastructure\DataContracts\FolderSearchResults.cs" />
     <Compile Include="Infrastructure\DateTimeHelper.cs" />
-    <Compile Include="Infrastructure\DocuSignConnectParser.cs" />
+    <Compile Include="Infrastructure\DocuSignEventParser.cs" />
     <Compile Include="Infrastructure\DataContracts\DocusignFolderInfo.cs" />
-    <Compile Include="Infrastructure\DocuSignParserModels\DocumentStatus.cs" />
-    <Compile Include="Infrastructure\DocuSignParserModels\DocumentStatuses.cs" />
-    <Compile Include="Infrastructure\DocuSignParserModels\DocuSignEnvelopeInformation.cs" />
-    <Compile Include="Infrastructure\DocuSignParserModels\EnvelopeStatus.cs" />
-    <Compile Include="Infrastructure\DocuSignParserModels\RecipientStatus.cs" />
-    <Compile Include="Infrastructure\DocuSignParserModels\RecipientStatuses.cs" />
+    <Compile Include="Infrastructure\DocuSignParserModels\DocuSignConnectEventModel.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -277,6 +293,7 @@
     <Compile Include="Interfaces\IDocuSignPlan.cs" />
     <Compile Include="Services\DocuSignConnect.cs" />
     <Compile Include="Services\DocuSignFolders.cs" />
+    <Compile Include="Services\DocuSignPolling.cs" />
     <Compile Include="Services\DocuSignQuery.cs" />
     <Compile Include="Services\DocuSignPlan.cs" />
     <Compile Include="Services\Event.cs" />
@@ -442,13 +459,9 @@
   </Target>
   -->
   <ItemGroup>
-    <Log4netConfigFiles Include="..\Config\*.terminals.*"/>
+    <Log4netConfigFiles Include="..\Config\*.terminals.*" />
   </ItemGroup>
-
   <Target Name="BeforeBuild">
-    <Copy
-        SourceFiles="@(Log4NetConfigFiles)"
-        DestinationFolder="."
-         />
+    <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
   </Target>
 </Project>

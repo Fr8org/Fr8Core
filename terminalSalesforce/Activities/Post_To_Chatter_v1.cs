@@ -113,7 +113,7 @@ namespace terminalSalesforce.Actions
                     throw new ActivityExecutionException("Upstream crates doesn't contain value for feed parent Id");
                 }
             }
-            var result = await _salesforceManager.PostFeedTextToChatterObject(feedText, feedParentId, AuthorizationToken);
+            var result = await _salesforceManager.PostToChatter(feedText, feedParentId, AuthorizationToken);
             if (string.IsNullOrEmpty(result))
             {
                 throw new ActivityExecutionException("Failed to post to chatter due to Salesforce API error");

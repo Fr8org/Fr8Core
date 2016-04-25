@@ -115,7 +115,7 @@ namespace terminalDocuSign.Actions
 
                 // This has to be re-thinked. TemplateId is neccessary to retrieve fields but is unknown atm
                 // Perhaps it can be received by EnvelopeId
-                allFields.AddRange(GetEnvelopeUserDefinedFields(authTokenDO, envelopeId, null));
+                allFields.AddRange(GetEnvelopeData(authTokenDO, envelopeId, null));
 
                 // Update all fields crate
                 crateStorage.Add(Crate.CreateDesignTimeFieldsCrate(AllFieldsCrateName, AvailabilityType.RunTime, allFields.ToArray()));
