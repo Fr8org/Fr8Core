@@ -1,4 +1,13 @@
-﻿query-builder .add-condition span {
+﻿query-builder .delete-btn {
+    color: red;
+    cursor: pointer;
+}
+
+query-builder .filter-pane{
+    padding-left: 8px
+}
+
+query-builder .add-condition span {
     vertical-align: middle;
 }
 

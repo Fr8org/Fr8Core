@@ -488,6 +488,7 @@
   <ItemGroup>
     <Content Include="Api\EventResponse.aspx" />
     <Content Include="Api\GetEmailHTML.aspx" />
+    <Content Include="Content\css\dockyard\authentication-dialog.css" />
     <Content Include="Content\css\dockyard\container-transition.css" />
     <Content Include="Content\css\dockyard\query-builder.css" />
     <Content Include="Content\css\fonts\brankic.svg" />
@@ -497,6 +498,7 @@
     <Content Include="Content\css\homecss\font-awesome.min.css" />
     <Content Include="Content\css\homecss\ie.css" />
     <Content Include="Content\css\homecss\main.css" />
+    <Content Include="Content\css\shared\main.css" />
     <Content Include="Content\css\shared\navbar.css" />
     <Content Include="Content\img\background-7.png" />
     <Content Include="Content\img\background-cta-3.jpg" />
@@ -1006,6 +1008,7 @@
     <TypeScriptCompile Include="Scripts\app\services\SubordinateSubplanService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UpstreamExtractor.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\ActionPicker.spec.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\QueryBuilder.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamFieldChooser.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalFormController.ts" />
@@ -1111,6 +1114,9 @@
     <Content Include="Views\Services\SolutionListTemplate.cshtml" />
     <Content Include="Views\AngularTemplate\SelectData.cshtml" />
     <Content Include="Views\AngularTemplate\BuildMessageAppender.cshtml" />
+    <None Include="Web.Demo.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -1,16 +1,17 @@
-﻿using Atlassian.Jira;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using Newtonsoft.Json;
-using StructureMap;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
-using System.Threading.Tasks;
+using Atlassian.Jira;
+using Newtonsoft.Json;
+using StructureMap;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using Hub.Managers.APIManagers.Transmitters.Restful;
+
 using terminalAtlassian.Interfaces;
 
 namespace terminalAtlassian.Services
@@ -24,6 +25,7 @@ namespace terminalAtlassian.Services
         {
             _client = ObjectFactory.GetInstance<IRestfulServiceClient>();
         }
+
         public bool IsValidUser(CredentialsDTO curCredential)
         {
             /*
@@ -72,7 +74,6 @@ namespace terminalAtlassian.Services
 
         public List<FieldDTO> GetJiraIssue(string jiraKey, AuthorizationTokenDO authorizationTokenDO)
         {
-
             Jira jira = CreateRestClient(authorizationTokenDO.Token);
             var issue = jira.GetIssue(jiraKey);
             return CreateKeyValuePairList(issue);
@@ -90,9 +91,9 @@ namespace terminalAtlassian.Services
         private Jira CreateRestClient(string token)
         {
             var credentialsDTO = JsonConvert.DeserializeObject<CredentialsDTO>(token);
+            // credentialsDTO.Domain = credentialsDTO.Domain.Replace("http://", "https://");
+
             return Jira.CreateRestClient(credentialsDTO.Domain, credentialsDTO.Username, credentialsDTO.Password);
         }
-
-
     }
 }

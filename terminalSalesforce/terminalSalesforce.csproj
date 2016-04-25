@@ -240,6 +240,7 @@
     <Compile Include="Activities\ActivitiesHelper.cs" />
     <Compile Include="Activities\Mail_Merge_From_Salesforce_v1.cs" />
     <Compile Include="Activities\Monitor_Salesforce_Event_v1.cs" />
+    <Compile Include="Activities\Post_To_Chatter_v2.cs" />
     <Compile Include="Activities\Save_To_SalesforceDotCom_v1.cs" />
     <Compile Include="Activities\Post_To_Chatter_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
@@ -256,6 +257,10 @@
     <Compile Include="Infrastructure\ISalesforceManager.cs" />
     <Compile Include="Infrastructure\SalesforceEnvelopeInformation.cs" />
     <Compile Include="Infrastructure\SalesforceNotificationParser.cs" />
+    <Compile Include="Infrastructure\SalesforceObjectDescriptionAttribute.cs" />
+    <Compile Include="Infrastructure\SalesforceObjectOperations.cs" />
+    <Compile Include="Infrastructure\SalesforceObjectType.cs" />
+    <Compile Include="Infrastructure\SalesforceObjectProperties.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>

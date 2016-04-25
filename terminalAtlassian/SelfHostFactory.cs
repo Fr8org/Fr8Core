@@ -14,21 +14,8 @@ namespace terminalAtlassian
         {
             public void Configuration(IAppBuilder app)
             {
-                var config = new HttpConfiguration();
-                BaseTerminalWebApiConfig.Register("Atlassian", config);
-                app.UseWebApi(config);
-            }
-        }
-
-        public class DropboxControllerTypeResolver : IHttpControllerTypeResolver
-        {
-            public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
-            {
-                return new Type[] {
-                    typeof(Controllers.ActivityController),
-                    typeof(Controllers.TerminalController),
-                    typeof(Controllers.AuthenticationController)
-                };
+                var startup = new Startup();
+                startup.Configuration(app, selfHost: true);
             }
         }
 
