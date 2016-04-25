@@ -55,39 +55,6 @@ namespace terminalSalesforceTests.Fixtures
             }
         }
 
-        public static ActivityTemplateDTO Create_Account_v1_ActivityTemplate()
-        {
-            return new ActivityTemplateDTO()
-            {
-                Version = "1",
-                Name = "Create_Account_TEST",
-                Label = "Create Account",
-                NeedsAuthentication = true
-            };
-        }
-
-        public static ActivityTemplateDTO Create_Contact_v1_ActivityTemplate()
-        {
-            return new ActivityTemplateDTO()
-            {
-                Version = "1",
-                Name = "Create_Contact_TEST",
-                Label = "Create Contact",
-                NeedsAuthentication = true
-            };
-        }
-
-        public static ActivityTemplateDTO Create_Lead_v1_ActivityTemplate()
-        {
-            return new ActivityTemplateDTO()
-            {
-                Version = "1",
-                Name = "Create_Lead_TEST",
-                Label = "Create Lead",
-                NeedsAuthentication = true
-            };
-        }
-
         public static ActivityTemplateDTO Get_Data_v1_ActivityTemplate()
         {
             return new ActivityTemplateDTO()
@@ -108,50 +75,6 @@ namespace terminalSalesforceTests.Fixtures
                 Label = "Post To Chatter",
                 NeedsAuthentication = true
             };
-        }
-
-        public static Fr8DataDTO Create_Account_v1_InitialConfiguration_Fr8DataDTO()
-        {
-            var activityTemplate = Create_Account_v1_ActivityTemplate();
-
-            var activityDTO = new ActivityDTO()
-            {
-                Id = Guid.NewGuid(),
-                Label = "Create Account",
-                AuthToken = Salesforce_AuthToken().Result,
-                ActivityTemplate = activityTemplate
-            };
-
-            return new Fr8DataDTO { ActivityDTO = activityDTO };
-        }
-
-        public static Fr8DataDTO Create_Contact_v1_InitialConfiguration_Fr8DataDTO()
-        {
-            var activityTemplate = Create_Contact_v1_ActivityTemplate();
-
-            var activityDTO = new ActivityDTO()
-            {
-                Id = Guid.NewGuid(),
-                Label = "Create Contact",
-                AuthToken = Salesforce_AuthToken().Result,
-                ActivityTemplate = activityTemplate
-            };
-
-            return new Fr8DataDTO { ActivityDTO = activityDTO };
-        }
-
-        public static Fr8DataDTO Create_Lead_v1_InitialConfiguration_Fr8DataDTO()
-        {
-            var activityTemplate = Create_Lead_v1_ActivityTemplate();
-
-            var activityDTO = new ActivityDTO()
-            {
-                Id = Guid.NewGuid(),
-                Label = "Create Lead",
-                AuthToken = Salesforce_AuthToken().Result,
-                ActivityTemplate = activityTemplate
-            };
-            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
         public static Fr8DataDTO Get_Data_v1_InitialConfiguration_ActivityDTO()

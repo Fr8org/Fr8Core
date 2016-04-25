@@ -17,7 +17,7 @@ using System.Globalization;
 
 namespace terminalFr8Core.Actions
 {
-    public class FindObjectsThatMatchIncomingMessage_v1 : EnhancedTerminalActivity<FindObjectsThatMatchIncomingMessage_v1.ActivityUi>
+    public class FilterObjectListByIncomingMessage_v1 : EnhancedTerminalActivity<FilterObjectListByIncomingMessage_v1.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -60,7 +60,7 @@ namespace terminalFr8Core.Actions
                 KeywordPropertiesSourceDescription = new TextBlock
                 {
                     Name = nameof(KeywordPropertiesSourceDescription),
-                    Value = "<i class=\"fa fa-info-circle\" />Multiple values should be separated with commas. If no value is specified then first property will be used"
+                    Value = "Multiple values should be separated with commas"
                 };
                 Controls.Add(DataSourceSelector);
                 Controls.Add(IncomingTextSelector);
@@ -77,9 +77,9 @@ namespace terminalFr8Core.Actions
 
         private static readonly TimeSpan CacheExpirationTime = TimeSpan.FromHours(1.0);
 
-        public FindObjectsThatMatchIncomingMessage_v1() : base(false)
+        public FilterObjectListByIncomingMessage_v1() : base(false)
         {
-            ActivityName = "Find Objects That Match Incoming Message";
+            ActivityName = "Match Incoming Text and Build Object List";
         }
 
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
@@ -158,8 +158,8 @@ namespace terminalFr8Core.Actions
 
         private Crate<StandardTableDataCM> FilterData(string message, Crate<StandardTableDataCM> data, HashSet<string> dataProperties)
         {
-            //If there is nothing to filter OR there are no keywords we just return the original data from child activity
-            if (dataProperties?.Count == 0 || string.IsNullOrWhiteSpace(message))
+            //If there is nothing to filter we just return the original data from child activity
+            if (string.IsNullOrWhiteSpace(message))
             {
                 return data;
             }
@@ -194,7 +194,7 @@ namespace terminalFr8Core.Actions
         {
             var result = dataRow.Row
                                 .Select(x => x.Cell)
-                                .Where(x => dataProperties.Contains(x.Key))
+                                .Where(x => dataProperties == null || dataProperties.Count == 0 || dataProperties.Contains(x.Key))
                                 .Select(x => x.Value)
                                 .Where(x => !string.IsNullOrWhiteSpace(x))
                                 .Select(RemoveStopwords);
@@ -217,11 +217,11 @@ namespace terminalFr8Core.Actions
             {
                 return null;
             }
-            if (!string.IsNullOrWhiteSpace(SpecifiedDataProperties))
+            if (string.IsNullOrWhiteSpace(SpecifiedDataProperties))
             {
-                return new HashSet<string>(SpecifiedDataProperties.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()), StringComparer.InvariantCultureIgnoreCase);
+                return null;
             }
-            return new HashSet<string>(new[] { data.Table[0].Row[0].Cell.Key }, StringComparer.InvariantCultureIgnoreCase);
+            return new HashSet<string>(SpecifiedDataProperties.Split(new[] { "," }, StringSplitOptions.RemoveEmptyEntries).Select(x => x.Trim()), StringComparer.InvariantCultureIgnoreCase);
         }
 
         private Crate<StandardTableDataCM> NewData
