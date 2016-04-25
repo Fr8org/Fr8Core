@@ -14,6 +14,7 @@ using Newtonsoft.Json.Linq;
 using StructureMap;
 using Utilities.AutoMapper;
 using Data.Interfaces.Manifests;
+using Data.Interfaces.DataTransferObjects.PlanDescription;
 
 namespace Data.Infrastructure.AutoMapper
 {
@@ -161,7 +162,7 @@ namespace Data.Infrastructure.AutoMapper
                     x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentClientActivityName))
                 );
             Mapper.CreateMap<AuthorizationTokenDTO, AuthorizationTokenDO>()
-                .ForMember(x => x.UserID,    x => x.ResolveUsing(y => y.UserId))
+                .ForMember(x => x.UserID, x => x.ResolveUsing(y => y.UserId))
                 .ForMember(x => x.Id, x => x.ResolveUsing(y => y.Id != null ? new Guid(y.Id) : (Guid?)null));
             Mapper.CreateMap<AuthorizationTokenDO, AuthorizationTokenDTO>()
                 .ForMember(x => x.UserId, x => x.ResolveUsing(y => y.UserID))
@@ -181,8 +182,17 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.AuthenticationTypeTemplate, opts => opts.Ignore());
 
 
+            Mapper.CreateMap<PlanDescriptionDO, PlanDescriptionDTO>();
+            Mapper.CreateMap<PlanDescriptionDTO, PlanDescriptionDTO>();
 
+            Mapper.CreateMap<PlanNodeDescriptionDO, PlanNodeDescriptionDTO>();
+            Mapper.CreateMap<PlanNodeDescriptionDTO, PlanNodeDescriptionDO>();
 
+            Mapper.CreateMap<ActivityDescriptionDO, ActivityDescriptionDTO>();
+            Mapper.CreateMap<ActivityDescriptionDTO, ActivityDescriptionDO>();
+
+            Mapper.CreateMap<ActivityTransitionDO, ActivityTransitionDTO>();
+            Mapper.CreateMap<ActivityTransitionDTO, ActivityTransitionDO>();
         }
 
         private static List<PlanNodeDO> MapActivities(IEnumerable<ActivityDTO> actions)

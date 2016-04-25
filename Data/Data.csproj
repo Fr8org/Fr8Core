@@ -265,6 +265,10 @@
     <Compile Include="Entities\AspNetUserClaimDO.cs" />
     <Compile Include="Entities\EncryptedAuthorizationData.cs" />
     <Compile Include="Entities\OrganizationDO.cs" />
+    <Compile Include="Entities\PlanDescriptions\ActivityDescriptionDO.cs" />
+    <Compile Include="Entities\PlanDescriptions\ActivityTransitionDO.cs" />
+    <Compile Include="Entities\PlanDescriptions\PlanDescriptionDO.cs" />
+    <Compile Include="Entities\PlanDescriptions\PlanNodeDescriptionDO.cs" />
     <Compile Include="Entities\PlanNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
     <Compile Include="Entities\TerminalSubscriptionDO.cs" />
@@ -293,6 +297,10 @@
     <Compile Include="Interfaces\DataTransferObjects\ActivityResponseDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ExternalObjectHandleDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\IncomingCratesDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\PlanDescription\ActivityDescriptionDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\PlanDescription\ActivityTransitionDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\PlanDescription\PlanDescriptionDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\PlanDescription\PlanNodeDescriptionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalNotificationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AlarmDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AuthenticateResponse.cs" />
@@ -360,7 +368,7 @@
     <Compile Include="Helpers\FieldMemberAccessor.cs" />
     <Compile Include="Helpers\IMemberAccessor.cs" />
     <Compile Include="Interfaces\Manifests\ExternalObjectHandlesCM.cs" />
-	 <Compile Include="Interfaces\Manifests\DocuSignEnvelopeCM_v2.cs" />
+    <Compile Include="Interfaces\Manifests\DocuSignEnvelopeCM_v2.cs" />
     <Compile Include="Interfaces\Manifests\Helpers\StandardTableDataCMTools.cs" />
     <Compile Include="Interfaces\Manifests\ManifestDescriptionCM.cs" />
     <Compile Include="Interfaces\Manifests\ChartOfAccountsCM.cs" />
@@ -400,6 +408,14 @@
     <Compile Include="Interfaces\Manifests\EventReportCM.cs" />
     <Compile Include="Interfaces\Manifests\EventSubscriptionCM.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PlanDTO.cs" />
+    <Compile Include="Migrations\201604251402589_PlanDescription.cs" />
+    <Compile Include="Migrations\201604251402589_PlanDescription.Designer.cs">
+      <DependentUpon>201604251402589_PlanDescription.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Repositories\PlanDescriptions\ActivityDescriptionRepository.cs" />
+    <Compile Include="Repositories\PlanDescriptions\ActivityTransitionRepository.cs" />
+    <Compile Include="Repositories\PlanDescriptions\PlanDescriptionsRepository.cs" />
+    <Compile Include="Repositories\PlanDescriptions\PlanNodeDescriptionsRepository.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.Designer.cs">
       <DependentUpon>201510120408332_InitialMigration.cs</DependentUpon>
@@ -1254,6 +1270,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604191731406_AddLabelToTerminals.resx">
       <DependentUpon>201604191731406_AddLabelToTerminals.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604251402589_PlanDescription.resx">
+      <DependentUpon>201604251402589_PlanDescription.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

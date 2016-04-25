@@ -79,6 +79,7 @@ namespace HubWeb
                     typeof(ManageAuthTokenController),
                     typeof(ManifestsController),
                     typeof(ReportController),
+                    typeof(PlanDescriptionController),
                     typeof(PlanNodesController),
                     typeof(PlansController),
                     typeof(TerminalsController),

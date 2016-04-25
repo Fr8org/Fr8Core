@@ -381,6 +381,7 @@
     <Compile Include="Controllers\Api\ConfigurationController.cs" />
     <Compile Include="Controllers\Api\ManifestRegistryController.cs" />
     <Compile Include="Controllers\Api\ManifestsController.cs" />
+    <Compile Include="Controllers\Api\PlanDescriptionController.cs" />
     <Compile Include="Controllers\Api\SubPlansController.cs" />
     <Compile Include="Controllers\Api\PlansController.cs" />
     <Compile Include="Controllers\Api\TerminalsController.cs" />

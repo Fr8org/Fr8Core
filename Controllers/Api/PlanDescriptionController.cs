@@ -1,0 +1,38 @@
+﻿using System;
+using System.Data.Entity;
+using System.Linq;
+using System.Threading.Tasks;
+using System.Web.Http;
+using StructureMap;
+using Data.Entities;
+using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
+using Data.Infrastructure.StructureMap;
+using Hub.Interfaces;
+using System.Net.Http;
+using System.Security.Claims;
+using Microsoft.Owin.Security;
+using Microsoft.AspNet.Identity;
+using HubWeb.Infrastructure;
+
+namespace HubWeb.Controllers
+{
+    [Fr8ApiAuthorize]
+    [RoutePrefix("plan_descriptions")]
+    public class PlanDescriptionController : Fr8BaseApiController
+    {
+        private IPlanDescription _planDescription;
+
+        public PlanDescriptionController()
+        {
+            _planDescription = ObjectFactory.GetInstance<IPlanDescription>();
+        }
+
+        [HttpPost]
+        public async Task<IHttpActionResult> Post(Guid planId, string userId)
+        {
+            var result = _planDescription.Save(planId, userId);
+            return Ok(result);
+        }
+    }
+}
