@@ -32,6 +32,7 @@ namespace HealthMonitor.Utility
         HttpClient _httpClient;
         protected string _baseUrl;
         protected int currentTerminalVersion = 1;
+        protected string _terminalUrl;
 
         protected string TerminalSecret
         {
@@ -55,8 +56,11 @@ namespace HealthMonitor.Utility
             }
         }
 
-        protected string _terminalUrl;
-
+        public string GetTerminalEventsUrl()
+        {
+            return TerminalUrl + $"/terminals/{TerminalName}/events";
+        }
+        
         public BaseIntegrationTest()
         {
             RestfulServiceClient = new RestfulServiceClient();

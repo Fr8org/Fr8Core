@@ -19,6 +19,7 @@ module dockyard.directives.dropDownListBox {
         toggle: boolean;
         toggleDropDown: (select) => void;
         focusOutSet: (focusElem: any) => void;
+        reconfigure: () => void;
     }
 
     export function DropDownListBox(): ng.IDirective {
@@ -28,7 +29,9 @@ module dockyard.directives.dropDownListBox {
                 UpstreamExtractor: services.UpstreamExtractor
             ) {
 
-               
+                $scope.reconfigure = () => {
+                    $scope.$emit(pca.MessageType[pca.MessageType.PaneConfigureAction_Reconfigure], new pca.ActionReconfigureEventArgs($scope.currentAction));
+                };
 
                 $scope.setSelectedItem = (item: model.DropDownListItem) => {
                     $scope.field.value = item.value;
@@ -41,7 +44,8 @@ module dockyard.directives.dropDownListBox {
                     }
                 };
 
-                var loadUpstreamFields = () => {
+                // parameter isSilent is for to show the error messages or not
+                var loadUpstreamFields = (isSilent: boolean) => {
 
                     var availabilityType = 'NotSet';
                     if ($scope.field.source) {
@@ -62,14 +66,11 @@ module dockyard.directives.dropDownListBox {
                     }
 
                     return UpstreamExtractor
-                        .extractUpstreamData($scope.currentAction.id, 'Field Description', availabilityType)
-                        .then((data: any) => {
+                        .getAvailableData($scope.currentAction.id, availabilityType)
+                        .then((data: model.IncomingCratesDTO) => {
                             var listItems: Array<model.DropDownListItem> = [];
 
-                            angular.forEach(<Array<any>>data, cm => {
-                                var fields = <Array<model.FieldDTO>>cm.fields;
-
-                                angular.forEach(fields, (it) => {
+                                angular.forEach(data.availableFields, (it) => {
                                     var i, j;
                                     var found = false;
                                     for (i = 0; i < listItems.length; ++i) {
@@ -81,7 +82,6 @@ module dockyard.directives.dropDownListBox {
                                     if (!found) {
                                         listItems.push(<model.DropDownListItem>it);
                                     }
-                                });
                             });
 
                             listItems.sort((x, y) => {
@@ -98,7 +98,7 @@ module dockyard.directives.dropDownListBox {
 
                             $scope.field.listItems = listItems;
 
-                            triggerNoRecords();
+                            triggerNoRecords(isSilent);
 
                         });
                 };
@@ -119,7 +119,7 @@ module dockyard.directives.dropDownListBox {
                         // Only "Field Description" manifestType currently supported for DDLs.
                         && $scope.field.source.manifestType === 'Field Description') {
 
-                        loadUpstreamFields().then(() => {
+                        loadUpstreamFields(false).then(() => { //parameter isSilent false, since we want to see error messages
                             $select.open = !$scope.toggle;   
                             $scope.toggle = !$scope.toggle;
                         });
@@ -127,7 +127,7 @@ module dockyard.directives.dropDownListBox {
                     else {
                         $select.open = !$scope.toggle;
                         $scope.toggle = !$scope.toggle;
-                        triggerNoRecords();
+                        triggerNoRecords(false);
                     }
                 }
 
@@ -137,8 +137,8 @@ module dockyard.directives.dropDownListBox {
                     });
                 }
 
-                var triggerNoRecords = () => {
-                    if ($scope.field.listItems.length === 0) {
+                var triggerNoRecords = (isSilent: boolean) => {
+                    if ($scope.field.listItems.length === 0 && !isSilent) {
                         $scope.$emit(MessageType[MessageType.DropDownListBox_NoRecords], new AlertEventArgs());
                     } else {
                         findAndSetSelectedItem();
@@ -172,9 +172,9 @@ module dockyard.directives.dropDownListBox {
                 if (!$scope.toggle
                     && $scope.field.source
                     && $scope.field.source.requestUpstream
-                // Only "Field Description" manifestType currently supported for DDLs.
+                    // Only "Field Description" manifestType currently supported for DDLs.
                     && $scope.field.source.manifestType === 'Field Description') {
-                    loadUpstreamFields();
+                    loadUpstreamFields(true);  //parameter isSilent true, to prevent showing error messages everytime ddlb is initialized. 
                 }
 
             }

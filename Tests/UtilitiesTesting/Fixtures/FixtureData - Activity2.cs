@@ -41,6 +41,7 @@ namespace UtilitiesTesting.Fixtures
                 Terminal = new TerminalDO
                 {
                     Name = "Send an Email",
+                    Label = "Send an Email",
                     Version = "1",
                     Endpoint = "",
                     TerminalStatus = TerminalStatus.Active,
@@ -60,6 +61,7 @@ namespace UtilitiesTesting.Fixtures
                 Terminal = new TerminalDO
                 {
                     Name = "Send a Text (SMS) Message",
+                    Label = "Send a Text (SMS) Message",
                     Version = "1",
                     Endpoint = "",
                     TerminalStatus = TerminalStatus.Active,
@@ -382,6 +384,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "AzureSqlServer",
+                Label = "AzureSqlServer",
                 TerminalStatus = 1,
                 Version = "1",
                 AuthenticationType = AuthenticationType.None,

@@ -89,9 +89,8 @@ namespace terminalGoogleTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            Assert.AreEqual(4, crateStorage.Count);
+            Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(2, crateStorage.CratesOfType<FieldDescriptionsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
             
             // Due to performance issue, remove functionalilty to load table contents
@@ -126,9 +125,8 @@ namespace terminalGoogleTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            Assert.AreEqual(4, crateStorage.Count);
+            Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(2, crateStorage.CratesOfType<FieldDescriptionsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
 
             // Due to performance issue, remove functionalilty to load table contents
@@ -162,10 +160,9 @@ namespace terminalGoogleTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            Assert.AreEqual(4, crateStorage.Count);
+            Assert.AreEqual(2, crateStorage.Count);
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
             Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
-            Assert.AreEqual(2, crateStorage.CratesOfType<FieldDescriptionsCM>().Count());
         }
         /////////////
         /// Followup Configuration End
