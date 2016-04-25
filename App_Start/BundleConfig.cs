@@ -103,6 +103,7 @@ namespace HubWeb.App_Start
             
             bundles.Add(new StyleBundle("~/bundles/css/frontpage-new")
                 .Include("~/Content/css/homecss/bootstrap.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/shared/main.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/frontcss/main_new.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/shared/navbar.css", new CssRewriteUrlTransform()));
 
@@ -137,6 +138,7 @@ namespace HubWeb.App_Start
                 .Include("~/Content/css/dockyard.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/dockyard/container-transition.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/dockyard/query-builder.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/dockyard/authentication-dialog.css", new CssRewriteUrlTransform())
             );
 
             bundles.Add(new ScriptBundle("~/bundles/jsunittests")
@@ -191,6 +193,7 @@ namespace HubWeb.App_Start
             bundles.Add(new StyleBundle("~/bundles/css/home")
                 .Include("~/Content/css/homecss/bootstrap.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/homecss/font-awesome.min.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/shared/main.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/homecss/main.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/shared/navbar.css", new CssRewriteUrlTransform())
             );
