@@ -73,12 +73,14 @@ module dockyard.controllers {
             $scope.inActiveQuery.status = 1;
             $scope.inActiveQuery.planPerPage = 10;
             $scope.inActiveQuery.page = 1;
+            $scope.inActiveQuery.orderBy = "-lastUpdated";
             this.getInactivePlans();
 
             $scope.activeQuery = new model.PlanQueryDTO();
             $scope.activeQuery.status = 2;
             $scope.activeQuery.planPerPage = 10;
             $scope.activeQuery.page = 1;
+            $scope.activeQuery.orderBy = "-lastUpdated";
             this.getActivePlans();
 
             $scope.executePlan = <(plan: interfaces.IPlanVM) => void>angular.bind(this, this.executePlan);

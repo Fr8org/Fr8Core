@@ -127,6 +127,18 @@ namespace HubWeb.Controllers
         [HttpGet]
         public IHttpActionResult GetByQuery([FromUri] PlanQueryDTO planQuery)
         {
+            //i want to leave md-data-tables related logic inside controller
+            //that is why this operation is done here - our backend service shouldn't know anything
+            //about frontend libraries
+            if (planQuery != null && planQuery.OrderBy.StartsWith("-"))
+            {
+                planQuery.IsDescending = true;
+            }
+            else if (planQuery != null && !planQuery.OrderBy.StartsWith("-"))
+            {
+                planQuery.IsDescending = false;
+            }
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var planResult = _plan.GetForUser(
