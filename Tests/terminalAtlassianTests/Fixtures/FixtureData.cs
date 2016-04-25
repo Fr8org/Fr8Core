@@ -32,13 +32,14 @@ namespace terminalAtlassianTests.Fixtures
         {
             ICrateManager _crate = ObjectFactory.GetInstance<ICrateManager>();
 
-            var fieldEnterJiraKey = new TextBox()
+            var fieldEnterJiraKey = new TextSource()
             {
-                Label = "Jira Key",
-                Name = "jira_key",
+                Label = "Issue Number",
+                Name = "IssueNumber",
                 Required = true,
                 Value = "FR-1245"
             };
+
             var fields = new List<ControlDefinitionDTO>()
             {
                 fieldEnterJiraKey
@@ -48,6 +49,7 @@ namespace terminalAtlassianTests.Fixtures
             {
                 Id = Guid.NewGuid()
             };
+
             using (var crateStorage = _crate.GetUpdatableStorage(actionDo))
             {
                 crateStorage.Add(Crate.FromContent("Configuration_Controls", new StandardConfigurationControlsCM(fields)));
