@@ -10,6 +10,7 @@ using TerminalBase;
 using TerminalBase.BaseClasses;
 using System.Web.Http;
 using TerminalBase.Infrastructure;
+using System.Web.Http.Dispatcher;
 
 [assembly: OwinStartup(typeof(terminalAtlassian.Startup))]
 
@@ -23,7 +24,15 @@ namespace terminalAtlassian
             WebApiConfig.Register(new HttpConfiguration());
             TerminalBootstrapper.ConfigureLive();
             StartHosting("terminal_Atlassian");
+        }
 
+        public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
+        {
+            return new Type[] {
+                typeof(Controllers.ActivityController),
+                typeof(Controllers.TerminalController),
+                typeof(Controllers.AuthenticationController)
+            };
         }
     }
 }
