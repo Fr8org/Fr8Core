@@ -767,7 +767,8 @@ namespace Data.Migrations
 
         private static void AddPermissionSet(string objectType, bool isFullSet, Guid profileId, string name, IUnitOfWork uow)
         {
-            var permissionSet = uow.PermissionSetRepository.GetQuery().FirstOrDefault(x => x.Name == name);
+            var permissionSet = uow.PermissionSetRepository.GetQuery().FirstOrDefault(x => x.Name == name && x.ObjectType == objectType);
+
             if (permissionSet == null)
             {
                 permissionSet = new PermissionSetDO()
