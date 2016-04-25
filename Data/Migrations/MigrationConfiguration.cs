@@ -743,14 +743,16 @@ namespace Data.Migrations
 
             //create 'Standard User' profile
             var standardProfile = uow.ProfileRepository.GetQuery().FirstOrDefault(x => x.Name == "Standard User");
-            if (standardProfile != null) return;
-
-            standardProfile = new ProfileDO()
+            if (standardProfile == null)
             {
-                Id = Guid.NewGuid(),
-                Name = "Standard User",
-            };
-            uow.ProfileRepository.Add(standardProfile);
+                standardProfile = new ProfileDO()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Standard User",
+                };
+                uow.ProfileRepository.Add(standardProfile);
+
+            }
 
             //default permissions for Plans and PlanNodes
             AddPermissionSet(typeof(PlanNodeDO).Name, false, standardProfile.Id, "Standard User Permission Set", uow);
