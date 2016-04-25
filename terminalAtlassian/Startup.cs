@@ -18,15 +18,6 @@ namespace terminalAtlassian
 {
     public class Startup : BaseConfiguration
     {
-        // TODO: FR-3077, remove this.
-        // public void Configuration(IAppBuilder app)
-        // {
-        //     TerminalAtlassianStructureMapBootstrapper.ConfigureDependencies(TerminalAtlassianStructureMapBootstrapper.DependencyType.LIVE);
-        //     WebApiConfig.Register(new HttpConfiguration());
-        //     TerminalBootstrapper.ConfigureLive();
-        //     StartHosting("terminal_Atlassian");
-        // }
-
         public void Configuration(IAppBuilder app)
         {
             Configuration(app, false);
