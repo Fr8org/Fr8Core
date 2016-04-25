@@ -20,12 +20,6 @@ namespace terminalAtlassianTests.Integration
             get { return "terminalAtlassian"; }
         }
 
-        [SetUp]
-        public void SetUp()
-        {
-            TerminalAtlassianStructureMapBootstrapper.ConfigureDependencies(TerminalAtlassianStructureMapBootstrapper.DependencyType.TEST);
-        }
-
         [Test]
         public async Task Configure_Initial()
         {

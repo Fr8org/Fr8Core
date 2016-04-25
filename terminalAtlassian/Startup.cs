@@ -25,9 +25,7 @@ namespace terminalAtlassian
 
         public void Configuration(IAppBuilder app, bool selfHost)
         {
-            TerminalAtlassianStructureMapBootstrapper.ConfigureDependencies(TerminalAtlassianStructureMapBootstrapper.DependencyType.LIVE);
-
-            ConfigureProject(selfHost, null);
+            ConfigureProject(selfHost, TerminalAtlassianStructureMapBootstrapper.LiveConfiguration);
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
 
