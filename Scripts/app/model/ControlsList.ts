@@ -114,6 +114,7 @@
         listItems: Array<DropDownListItem>;
         source: FieldSource;
         selectedKey: string;
+        hasRefreshButton: boolean;
         
 
         constructor() {

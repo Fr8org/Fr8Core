@@ -18,7 +18,7 @@ namespace terminalAtlassian
         {
             // StructureMap Dependencies configuration
             Hub.StructureMap.StructureMapBootStrapper.ConfigureDependencies(Hub.StructureMap.StructureMapBootStrapper.DependencyType.LIVE);
-            GlobalConfiguration.Configure(WebApiConfig.Register);
+            GlobalConfiguration.Configure(RoutesConfig.Register);
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             
             TerminalBootstrapper.ConfigureLive();
