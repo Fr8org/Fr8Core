@@ -360,7 +360,7 @@
     <Compile Include="Helpers\FieldMemberAccessor.cs" />
     <Compile Include="Helpers\IMemberAccessor.cs" />
     <Compile Include="Interfaces\Manifests\ExternalObjectHandlesCM.cs" />
-	 <Compile Include="Interfaces\Manifests\DocuSignEnvelopeCM_v2.cs" />
+    <Compile Include="Interfaces\Manifests\DocuSignEnvelopeCM_v2.cs" />
     <Compile Include="Interfaces\Manifests\Helpers\StandardTableDataCMTools.cs" />
     <Compile Include="Interfaces\Manifests\ManifestDescriptionCM.cs" />
     <Compile Include="Interfaces\Manifests\ChartOfAccountsCM.cs" />
@@ -720,6 +720,10 @@
     <Compile Include="Migrations\201604191731406_AddLabelToTerminals.cs" />
     <Compile Include="Migrations\201604191731406_AddLabelToTerminals.Designer.cs">
       <DependentUpon>201604191731406_AddLabelToTerminals.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201604250944024_AddThemeToOrganization.cs" />
+    <Compile Include="Migrations\201604250944024_AddThemeToOrganization.Designer.cs">
+      <DependentUpon>201604250944024_AddThemeToOrganization.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1254,6 +1258,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604191731406_AddLabelToTerminals.resx">
       <DependentUpon>201604191731406_AddLabelToTerminals.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604250944024_AddThemeToOrganization.resx">
+      <DependentUpon>201604250944024_AddThemeToOrganization.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
