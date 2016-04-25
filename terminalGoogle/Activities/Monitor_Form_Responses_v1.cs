@@ -159,16 +159,20 @@ namespace terminalGoogle.Actions
             // once we activate the plan we run it. When we run the plan manualy there is no payload with event data. 
             // Just return Success as a quick fix to avoid "Plan Failed" message.
             if (payloadFields == null)
+            {
                 RequestHubExecutionTermination();
+                return Task.FromResult(0); ;
+            }
             var formResponseFields = CreatePayloadFormResponseFields(payloadFields);
 
             // once we activate the plan we run it. When we run the plan manualy there is no payload with event data. 
             // Just return Success as a quick fix to avoid "Plan Failed" message.
             if (formResponseFields == null)
+            {
                 RequestHubExecutionTermination();
-
+                return Task.FromResult(0); ;
+            }
             CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(formResponseFields)));
-            Success();
             return Task.FromResult(0);
         }
         public override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
