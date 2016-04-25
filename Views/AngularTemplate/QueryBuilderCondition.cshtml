@@ -1,27 +1,29 @@
-﻿<div class="row" style="margin-top:10px;">
-    <div class="col-md-5">
-        <select class="form-control" ng-options="f as f.name for f in fields" ng-model="condition.field" ng-change="fieldSelected(condition)">
-            <option value="">Select a Field</option>
-        </select>
-    </div>
-
-    <div class="col-md-5">
-        <div class="query-builder-operator-row">
-            <select class="form-control" ng-options="op.value as op.text for op in operators" ng-model="condition.operator" ng-disabled="!condition.field"></select>
+﻿<tr>
+    <td>
+        <div class="configuration-control-form-group">
+            <select class="form-control" ng-options="f as f.name for f in fields" ng-model="condition.field" ng-change="fieldSelected(condition)">
+                <option value="">Select a Field</option>
+            </select>
         </div>
-        <div class="query-builder-value-row">
-            <div class="condition-control">
-            </div>
-            <div ng-if="!hasConfigurationControl" style="padding: 3px; border: 1px solid #acacac;">
-                Select a field
-            </div>
-
+    </td>
+    <td>
+        <div class="configuration-control-form-group">
+            <select class="form-control" ng-options="op.value as op.text for op in operators"
+                    ng-model="condition.operator" ng-disabled="!condition.field">
+            </select>
         </div>
-    </div>
-    <div class="col-md-2">
-        <img src="/Content/img/PlanBuilder/delete-icon.png" width="15" height="15"
+    </td>
+    <td>
+        <div class="condition-control"></div>
+        <div class="configuration-control-form-group" ng-show="!hasConfigurationControl">
+            <input class="form-control" type="text" value="Select a Field" disabled>
+        </div>
+    </td>
+    <td>
+        <span class="delete-btn"
                 ng-show="!isSingle"
-                ng-click="onRemoveCondition()"
-                class="query-builder-delete-button" />
-    </div>
-</div>
+                ng-click="onRemoveCondition()">
+            <i class="fa fa-times"></i>
+        </span>
+    </td>
+</tr>

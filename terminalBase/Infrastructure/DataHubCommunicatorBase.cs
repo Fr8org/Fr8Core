@@ -186,17 +186,24 @@ namespace TerminalBase.Infrastructure
             //This code only supports integration testing scenarios
 
             var mergedFields = new FieldDescriptionsCM();
-            var curCrates = await GetCratesByDirection<FieldDescriptionsCM>(activityDO, direction, userId);
-            mergedFields.Fields.AddRange(Crate.MergeContentFields(curCrates).Fields);
+            var availableData = await GetAvailableData(activityDO, direction, availability, userId);
+
+            mergedFields.Fields.AddRange(availableData.AvailableFields);
+
             return mergedFields;
         }
 
-        public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(Guid actionId, CrateDirection direction, AvailabilityType availability, string userId)
+        public async Task<IncomingCratesDTO> GetAvailableData(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
         {
-            var mergedFields = new FieldDescriptionsCM();
-            var curCrates = await GetCratesByDirection<FieldDescriptionsCM>(null, direction, userId);
-            mergedFields.Fields.AddRange(Crate.MergeContentFields(curCrates).Fields);
-            return mergedFields;
+            var fields = await GetCratesByDirection<FieldDescriptionsCM>(activityDO, direction,  userId);
+            var crates = await GetCratesByDirection<CrateDescriptionCM>(activityDO, direction, userId);
+            var availableData = new IncomingCratesDTO();
+
+            availableData.AvailableFields.AddRange(fields.SelectMany(x => x.Content.Fields).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
+            availableData.AvailableFields.AddRange(crates.SelectMany(x => x.Content.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0).SelectMany(x => x.Fields));
+            availableData.AvailableCrates.AddRange(crates.SelectMany(x => x.Content.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
+
+            return availableData;
         }
 
         public async Task ApplyNewToken(Guid activityId, Guid authTokenId, string userId)
@@ -209,7 +216,12 @@ namespace TerminalBase.Infrastructure
             throw new NotImplementedException();
         }
 
-        public Task<ActivityDTO> CreateAndConfigureActivity(int templateId, string userId, string label = null, int? order = null, Guid? parentNodeId = default(Guid?), bool createPlan = false, Guid? authorizationTokenId = null)
+        public Task<ActivityDO> SaveActivity(ActivityDO activityDO, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<ActivityDTO> CreateAndConfigureActivity(Guid templateId, string userId, string label = null, int? order = null, Guid? parentNodeId = default(Guid?), bool createPlan = false, Guid? authorizationTokenId = null)
         {
             throw new NotImplementedException();
         }
@@ -275,6 +287,16 @@ namespace TerminalBase.Infrastructure
         }
 
         public Task DeleteActivity(Guid curActivityId, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<CrateDTO>> GetStoredManifests(string currentFr8UserId, List<CrateDTO> cratesForMTRequest)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<AuthorizationTokenDTO> GetAuthToken(string authTokenId, string curFr8UserId)
         {
             throw new NotImplementedException();
         }

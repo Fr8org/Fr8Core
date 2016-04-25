@@ -88,6 +88,7 @@
         QueryBuilder template
         -->
     <div ng-if='field.type == "QueryBuilder"'>
+        <label class='control-label'>{{::field.label}}</label>
         <query-builder current-action='currentAction' field='field'></query-builder>
     </div>
 
@@ -215,8 +216,19 @@
         <control-list field="field" current-action="currentAction" change="onChange" plan="plan"></control-list>
     </div>
 
-    <div ng-if='field.type == "ActivityChooser"'>
-        <activity-chooser field="field" current-action="currentAction" plan="plan"></activity-chooser>
+    <!-- Select Data -->
+    <div ng-if='field.type == "SelectData"'>
+        <select-data field="field" current-action="currentAction" plan="plan"></select-data>
+    </div>
+
+    <!-- External Object Chooser -->
+    <div ng-if='field.type == "ExternalObjectChooser"'>
+        <external-object-chooser field="field" current-action="currentAction" plan="plan"></external-object-chooser>
+    </div>
+
+    <!-- Build Message Appender -->
+    <div ng-if='field.type == "BuildMessageAppender"'>
+        <build-message-appender current-action="currentAction" field='field' click='onClick' change='onChange' data-field-name='{{::field.name}}'></build-message-appender>
     </div>
 
 

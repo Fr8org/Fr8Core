@@ -11,6 +11,7 @@ using Data.Entities.CTE;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Repositories.Security;
 using Utilities;
 using Data.Utility;
 using Data.Utility.JoinClasses;
@@ -288,7 +289,6 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ExpectedResponseDO>().ToTable("ExpectedResponses");
             modelBuilder.Entity<PlanDO>().ToTable("Plans");
             modelBuilder.Entity<ActivityDO>().ToTable("Actions");
-            modelBuilder.Entity<ProcessNodeDO>().ToTable("ProcessNodes");
             modelBuilder.Entity<SubPlanDO>().ToTable("SubPlans");
             modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
             modelBuilder.Entity<ActivityTemplateDO>().ToTable("ActivityTemplate");
@@ -302,12 +302,6 @@ namespace Data.Infrastructure
                 .HasRequired(a => a.From)
                 .WithMany()
                 .HasForeignKey(a => a.FromID)
-                .WillCascadeOnDelete(false);
-
-            modelBuilder.Entity<ProcessNodeDO>()
-                .HasRequired<ContainerDO>(pn => pn.ParentContainer)
-                .WithMany(p => p.ProcessNodes)
-                .HasForeignKey(pn => pn.ParentContainerId)
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<Fr8AccountDO>()

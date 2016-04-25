@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace Data.Constants
+﻿namespace Data.Constants
 {
     public enum ActivityResponse
     {
@@ -19,7 +13,11 @@ namespace Data.Constants
         ShowDocumentation,
         JumpToActivity,
         JumpToSubplan,
-        LaunchAdditionalPlan
+        LaunchAdditionalPlan,
+
+        //new op codes
+        CallAndReturn,
+        Break,
     }
 
     public enum PlanType

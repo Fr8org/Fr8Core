@@ -1,16 +1,10 @@
 ﻿using System;
+using Data.Repositories.Cache;
 
 namespace Data.Repositories.Plan
 {
-    public interface IExpirationToken
+    public interface IPlanCacheExpirationStrategy : ICacheExpirationStrategy
     {
-        bool IsExpired();
-    }
-
-    public interface IPlanCacheExpirationStrategy
-    {
-        void SetExpirationCallback(Action callback);
-        IExpirationToken NewExpirationToken();
     }
     
 }

@@ -81,9 +81,9 @@ namespace HubWeb
                     typeof(ReportController),
                     typeof(PlanNodesController),
                     typeof(PlansController),
-                    typeof(ProcessNodeTemplateController),
                     typeof(TerminalsController),
                     typeof(UserController),
+                    typeof(WarehouseController),
                     typeof(WebServicesController)
                 };
         }

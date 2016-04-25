@@ -21,6 +21,10 @@ namespace terminalFr8Core.Actions
 {
     public class FindObjects_Solution_v1 : BaseTerminalActivity
     {
+        private const string SolutionName = "Find Objects Solution";
+        private const double SolutionVersion = 1.0;
+        private const string TerminalName = "terminalFr8Core";
+        private const string SolutionBody = @"<p>This is the FindObjects Solution.</p>";
         public FindObjectHelper FindObjectHelper { get; set; }
 
         public FindObjects_Solution_v1()
@@ -278,7 +282,8 @@ namespace terminalFr8Core.Actions
         private async Task<ActivityDO> CreateConnectToSqlActivity(ActivityDO activityDO)
         {
             var connectionString = GetConnectionString();
-            var connectToSqlActionDO = await AddAndConfigureChildActivity(activityDO, "ConnectToSql");
+            var connectToSqlAT = await GetActivityTemplate("terminalFr8Core", "ConnectToSql");
+            var connectToSqlActionDO = await AddAndConfigureChildActivity(activityDO, connectToSqlAT);
 
             connectToSqlActionDO.CrateStorage = CrateManager.CrateStorageAsStr(
                     new CrateStorage()
@@ -311,8 +316,8 @@ namespace terminalFr8Core.Actions
             var crateStorage = CrateManager.GetStorage(activityDO);
             var selectedObject = GetCurrentSelectedObject(crateStorage);
             var selectedConditions = GetCurrentSelectedConditions(crateStorage);
-
-            var buildQueryActivityDO = await AddAndConfigureChildActivity(activityDO, "BuildQuery");
+            var buildQueryAT = await GetActivityTemplate("terminalFr8Core", "BuildQuery");
+            var buildQueryActivityDO = await AddAndConfigureChildActivity(activityDO, buildQueryAT);
             buildQueryActivityDO.CrateStorage = CrateManager.CrateStorageAsStr(
                     new CrateStorage()
                     {
@@ -330,7 +335,8 @@ namespace terminalFr8Core.Actions
 
         private async Task<ActivityDO> CreateExecuteSqlActivity(ActivityDO activityDO)
         {
-            return await AddAndConfigureChildActivity(activityDO, "ExecuteSql");
+            var executeSqlAT = await GetActivityTemplate("terminalFr8Core", "ExecuteSql");
+            return await AddAndConfigureChildActivity(activityDO, executeSqlAT);
         }
 
         private async Task UpdateChildActivities(ActivityDO activityDO)
@@ -355,5 +361,24 @@ namespace terminalFr8Core.Actions
         }
 
         #endregion
+        /// <summary>
+        /// This method provides documentation in two forms:
+        /// SolutionPageDTO for general information and 
+        /// ActivityResponseDTO for specific Help on minicon
+        /// </summary>
+        /// <param name="activityDO"></param>
+        /// <param name="curDocumentation"></param>
+        /// <returns></returns>
+        public dynamic Documentation(ActivityDO activityDO, string curDocumentation)
+        {
+            if (curDocumentation.Contains("MainPage"))
+            {
+                var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
+                return Task.FromResult(curSolutionPage);
+            }
+            return
+                Task.FromResult(
+                    GenerateErrorRepsonse("Unknown displayMechanism: we currently support MainPage cases"));
+        }
     }
 }

@@ -1,0 +1,45 @@
+﻿query-builder .delete-btn {
+    color: red;
+    cursor: pointer;
+}
+
+query-builder .filter-pane{
+    padding-left: 8px
+}
+
+query-builder .add-condition span {
+    vertical-align: middle;
+}
+
+query-builder .add-condition .btn {
+    margin-left: 5px;
+}
+
+query-builder table {
+    table-layout: fixed;
+    width: 100%;
+    margin-bottom: 5px;
+    text-align: center;
+}
+
+query-builder th:nth-child(2) {
+    width: 70px;
+}
+    
+query-builder th:nth-child(4) {
+    width: 20px;
+}
+
+query-builder th {
+    font-weight: normal;
+}
+
+query-builder tr > td + td,
+query-builder tr > th + th {
+    border-left-width: 10px;
+}
+
+query-builder td,
+query-builder th {
+    border: 0 solid transparent;
+}

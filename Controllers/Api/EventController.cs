@@ -29,7 +29,7 @@ namespace HubWeb.Controllers
     {
         private readonly IEvent _event;
         private readonly ICrateManager _crate;
-      
+        private IJobDispatcher _jobDispatcher;
 
         private delegate void EventRouter(LoggingDataCm loggingDataCm);
 
@@ -37,7 +37,7 @@ namespace HubWeb.Controllers
         {
             _event = ObjectFactory.GetInstance<IEvent>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
-            
+            _jobDispatcher = ObjectFactory.GetInstance<IJobDispatcher>();
         }
 
         private EventRouter GetEventRouter(EventCM eventCm)
@@ -79,7 +79,7 @@ namespace HubWeb.Controllers
             {
                 if (crateDTO.ManifestType.Id != (int)MT.LoggingData)
                 {
-                    errorMsgList.Add("Don't know how to process an EventReport with the Contents: " +  JsonConvert.SerializeObject(_crate.ToDto(crateDTO)));
+                    errorMsgList.Add("Don't know how to process an EventReport with the Contents: " + JsonConvert.SerializeObject(_crate.ToDto(crateDTO)));
                     continue;
                 }
 
@@ -93,7 +93,7 @@ namespace HubWeb.Controllers
             }
 
             return Ok();
-            
+
         }
 
         public static void ProcessEventsInternal(CrateDTO raw)
@@ -101,7 +101,7 @@ namespace HubWeb.Controllers
             var curCrateStandardEventReport = ObjectFactory.GetInstance<ICrateManager>().FromDto(raw);
             var eventTask = ObjectFactory.GetInstance<IEvent>().ProcessInboundEvents(curCrateStandardEventReport);
             Task.WaitAll(eventTask);
-        } 
+        }
 
         [HttpPost]
         [ActionName("processevents")]
@@ -131,7 +131,7 @@ namespace HubWeb.Controllers
                 throw new ArgumentException("EventReport can't have a null ExternalAccountId");
             }
 
-            BackgroundJob.Enqueue(() => ProcessEventsInternal(raw));
+            _jobDispatcher.Enqueue(() => ProcessEventsInternal(raw));
             return Ok();
         }
     }

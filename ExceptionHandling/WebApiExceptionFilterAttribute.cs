@@ -16,6 +16,7 @@ using Microsoft.ApplicationInsights;
 using System.Collections.Generic;
 using System.Linq;
 using Data.Infrastructure;
+using Utilities.Configuration.Azure;
 
 namespace HubWeb.ExceptionHandling
 {
@@ -55,8 +56,20 @@ namespace HubWeb.ExceptionHandling
                 ex.GetFullExceptionMessage(),
                 ex.StackTrace));
 
-            context.Response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+            if (ex.GetType() == typeof (HttpException))
+            {
+                var httpException = (HttpException) ex;
+                context.Response = new HttpResponseMessage((HttpStatusCode) httpException.GetHttpCode());
 
+                context.Response = context.Request.CreateResponse(HttpStatusCode.Forbidden,
+                    ErrorDTO.AuthenticationError("Authorization has been denied for this request."));
+                return;
+            }
+            else
+            {
+                context.Response = new HttpResponseMessage(HttpStatusCode.InternalServerError);
+            }
+            
             if (ex is AuthenticationExeception)
             {
                 errorDto = ErrorDTO.AuthenticationError();
@@ -69,7 +82,7 @@ namespace HubWeb.ExceptionHandling
             errorDto.Message = "Sorry, an unexpected error has occurred while serving your request. Please try again in a few minutes.";
            
             // if debugging enabled send back the details of exception as well
-            if (HttpContext.Current.IsDebuggingEnabled)
+            if (HttpContext.Current.IsDebuggingEnabled || string.Equals(CloudConfigurationManager.GetSetting("ForceExtendedDebuggingInfo"), "true", StringComparison.InvariantCultureIgnoreCase))
             {
                 if (ex is TerminalCodedException) 
                 {

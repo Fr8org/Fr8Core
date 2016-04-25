@@ -17,7 +17,7 @@
 #>
 param(
     [ValidateSet("ExtraSmall","Small","Medium","Large","ExtraLarge")]
-    $WebRoleSize = "Medium" 
+    $WebRoleSize = "Small" 
 )
 
 $RootDir = Split-Path -parent (Split-Path -parent $MyInvocation.MyCommand.Path)

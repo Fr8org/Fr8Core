@@ -25,7 +25,7 @@ namespace terminalTwilioTests.Fixture
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Send_Via_Twilio_TEST",
                 Version = "1"
             };

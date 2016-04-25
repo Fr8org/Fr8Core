@@ -1,12 +1,10 @@
 ﻿module dockyard.model {
     export class ActivityTemplate {
-        id: number;
+        id: string;
         name: string;
         label: string;
         version: string;
-        description: string;
         defaultEndPoint: string;
-        componentActivities: string;
         category: string;
         type: string;
         tags: string;
@@ -16,11 +14,9 @@
         webService: WebServiceDTO; 
 
         constructor(
-            id: number,
+            id: string,
             name: string,
             version: string,
-            description: string,
-            componentActivities: string,
             category: string,
             label?: string,
             minPaneWidth?: number,
@@ -31,8 +27,6 @@
             this.name = name;
             this.label = label;
             this.version = version;
-            this.description = description;
-            this.componentActivities = componentActivities;
             this.category = category;
             this.type = type;
             this.webService = webService;
@@ -45,8 +39,6 @@
                 this.name,
                 this.label,
                 this.version,
-                this.description,
-                this.componentActivities,
                 this.category,
                 this.minPaneWidth,
                 this.type,

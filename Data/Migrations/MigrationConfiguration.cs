@@ -340,15 +340,8 @@ namespace Data.Migrations
                               let value = constant.GetValue(null)
                               select creatorFunc((string)value, name)).ToList();
 
-            var repo = new GenericRepository<AspNetRolesDO>(uow);
             var existingRows = new GenericRepository<AspNetRolesDO>(uow).GetAll().ToList();
-            foreach (var row in existingRows) //Delete old rows that are no longer seeded
-            {
-                if (!rolesToAdd.Select(i => i.Name).Contains(row.Name))
-                {
-                    repo.Remove(row);
-                }
-            }
+            
             foreach (var row in rolesToAdd)
             {
                 if (!existingRows.Select(r => r.Name).Contains(row.Name))
@@ -370,7 +363,9 @@ namespace Data.Migrations
             CreateAdmin("bahadir.bb@gmail.com", "123456ab", unitOfWork);
             CreateAdmin("omer@fr8.co", "123456ab", unitOfWork);
             CreateAdmin("mvcdeveloper@gmail.com", "123qwe", unitOfWork);
+            CreateAdmin("maki.gjuroski@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("fr8system_monitor@fr8.company", "123qwe", unitOfWork);
+            CreateAdmin("teh.netaholic@gmail.com", "123qwe", unitOfWork);
 
             //CreateAdmin("eschebenyuk@gmail.com", "kate235", unitOfWork);
             //CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);
@@ -412,6 +407,7 @@ namespace Data.Migrations
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, user.Id);
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Booker, user.Id);
             uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Customer, user.Id);
+            uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.OwnerOfCurrentObject, user.Id);
 
             user.TestAccount = false;
             return user;
@@ -479,9 +475,9 @@ namespace Data.Migrations
             // AddTerminals(uow, "terminalDocuSign", "localhost:53234", "1", true);
             // AddTerminals(uow, "terminalExcel", "localhost:47011", "1", false);
             // AddTerminals(uow, "terminalSalesforce", "localhost:51234", "1", true);
-            AddTerminals(uow, "terminalDocuSign", "localhost:53234", "1");
-            AddTerminals(uow, "terminalExcel", "localhost:47011", "1");
-            AddTerminals(uow, "terminalSalesforce", "localhost:51234", "1");
+            AddTerminals(uow, "terminalDocuSign", "DocuSign", "localhost:53234", "1");
+            AddTerminals(uow, "terminalExcel", "Excel", "localhost:47011", "1");
+            AddTerminals(uow, "terminalSalesforce", "Salesforce", "localhost:51234", "1");
 
             uow.SaveChanges();
         }
@@ -490,8 +486,8 @@ namespace Data.Migrations
 
         // private static void AddTerminals(IUnitOfWork uow, string terminalName, string endPoint,
         //     string version, bool requiresAuthentication)
-        private static void AddTerminals(IUnitOfWork uow, string terminalName, string endPoint,
-            string version)
+        private static void AddTerminals(IUnitOfWork uow, string terminalName, string terminalLabel, 
+            string endPoint, string version)
         {
             // Check that terminal does not exist yet.
             var terminalExists = uow.TerminalRepository.GetQuery().Any(x => x.Name == terminalName);
@@ -503,6 +499,7 @@ namespace Data.Migrations
                 var terminalDO = new TerminalDO()
                 {
                     Name = terminalName,
+                    Label = terminalLabel,
                     TerminalStatus = TerminalStatus.Active,
                     Endpoint = endPoint,
                     Version = version,
@@ -538,7 +535,7 @@ namespace Data.Migrations
                 return;
 
             var curActivityTemplateDO = new ActivityTemplateDO(
-                name, version, endPoint, endPoint);
+                name, version, endPoint, endPoint, endPoint);
             uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
         }
 

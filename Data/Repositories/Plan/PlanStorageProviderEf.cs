@@ -164,7 +164,8 @@ namespace Data.Repositories.Plan
                 }
                 else
                 {
-                    PlanNodes.Remove(planNodeDo);
+                    var planNodeFromObjectContext = objectContext.GetObjectByKey(key);
+                    PlanNodes.Remove((PlanNodeDO)planNodeFromObjectContext);
                 }
             }
 

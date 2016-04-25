@@ -27,6 +27,7 @@ namespace terminalFr8Core.Actions
     public class CollectData_v1 : BaseTerminalActivity
     {
         private const string RuntimeCrateLabelPrefix = "Standard Data Table";
+        private const string RuntimeFieldCrateLabelPrefix = "Run Time Fields From CollectData";
         private const string RunFromSubmitButtonLabel = "RunFromSubmitButton";
         public const string CollectionControlsLabel = "Collection";
         protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
@@ -77,17 +78,14 @@ namespace terminalFr8Core.Actions
         {
             using (var curStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                var updateButton = GetConfigurationControls(curStorage).FindByName<Button>("update_launcher");
-                if (updateButton.Clicked)
-                {
-                    updateButton.Clicked = false;
-                    curStorage.RemoveByLabel(CollectionControlsLabel);
-                    var controls = CreateCollectionControlsCrate(curStorage);
-                    AddFileDescriptionToStorage(curStorage, controls.Get<StandardConfigurationControlsCM>().Controls.Where(a => a.Type == ControlTypes.FilePicker).ToList());
-                    curStorage.Add(controls);
-                    await PushLaunchURLNotification(curActivityDO);
-                }
+                curStorage.RemoveByLabel(CollectionControlsLabel);
+                var controls = CreateCollectionControlsCrate(curStorage);
+                AddFileDescriptionToStorage(curStorage, controls.Get<StandardConfigurationControlsCM>().Controls.Where(a => a.Type == ControlTypes.FilePicker).ToList());
+                curStorage.Add(controls);
             }
+
+            await HubCommunicator.SaveActivity(curActivityDO, CurrentFr8UserId);
+            await PushLaunchURLNotification(curActivityDO);
         }
 
         private StandardConfigurationControlsCM GetMetaControls(ActivityDO curActivityDO)
@@ -97,9 +95,47 @@ namespace terminalFr8Core.Actions
             return storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => c.Label == CollectionControlsLabel).FirstOrDefault();
         }
 
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        /// <summary>
+        /// TODO this part should be modified with 2975
+        /// run logic should be applied here
+        /// currently we will only publish textbox fields
+        /// </summary>
+        /// <param name="storage"></param>
+        /// <param name="collectionControls"></param>
+        private void PublishCollectionControls(ActivityDO curActivityDO)
         {
             var configControls = GetConfigurationControls(curActivityDO);
+            var controlContainer = configControls.FindByName<MetaControlContainer>("control_container");
+            var collectionControls = controlContainer.CreateControls();
+
+            using (var pStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            {
+                var fieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(RuntimeFieldCrateLabelPrefix, AvailabilityType.RunTime, new FieldDTO[] { });
+                pStorage.RemoveByLabel(RuntimeFieldCrateLabelPrefix);
+                pStorage.Add(fieldsCrate);
+
+                foreach (var controlDefinitionDTO in collectionControls)
+                {
+                    PublishCollectionControl(pStorage, controlDefinitionDTO);
+                }
+
+                //TODO this part should be modified with 2975
+                //PublishFilePickers(pStorage, collectionControls.Controls.Where(a => a.Type == ControlTypes.FilePicker));
+            }
+        }
+
+        private void PublishCollectionControl(IUpdatableCrateStorage pStorage, ControlDefinitionDTO controlDefinitionDTO)
+        {
+            if (controlDefinitionDTO is TextBox)
+            {
+                PublishTextBox(pStorage, (TextBox)controlDefinitionDTO);
+            }
+        }
+
+        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        {
+            var crateStorage = CrateManager.GetStorage(curActivityDO);
+            var configControls = GetConfigurationControls(crateStorage);
             var controlContainer = configControls.FindByName<MetaControlContainer>("control_container");
             if (!controlContainer.MetaDescriptions.Any())
             {
@@ -118,31 +154,34 @@ namespace terminalFr8Core.Actions
                     {
                         throw new Exception($"Activity with id \"{curActivityDO.Id}\" has no owner plan");
                     }
-                    //TODO think of a better way to flag activity
-                    var flagCrate = CrateManager.CreateDesignTimeFieldsCrate(RunFromSubmitButtonLabel, AvailabilityType.RunTime);
-                    var payload = new List<CrateDTO>() { CrateManager.ToDto(flagCrate) };
+                    
+                    var flagCrate = CrateManager.CreateDesignTimeFieldsCrate(RunFromSubmitButtonLabel,
+                        AvailabilityType.RunTime);
+                    var payload = new List<CrateDTO>() {CrateManager.ToDto(flagCrate)};
                     //we need to start the process - run current plan - that we belong to
                     await HubCommunicator.RunPlan(curActivityDO.RootPlanNodeId.Value, payload, CurrentFr8UserId);
                     //after running the plan - let's reset button state
                     //so next configure calls will be made with a fresh state
                     UnClickSubmitButton(curActivityDO);
-                }
-                else
-                {
-                    await UpdateMetaControls(curActivityDO);
+                    return curActivityDO;
                 }
             }
-            else
-            {
-                await UpdateMetaControls(curActivityDO);
-            }
-
-            return await Task.FromResult<ActivityDO>(curActivityDO);
+            
+            PublishCollectionControls(curActivityDO);
+            return curActivityDO;
         }
 
         private bool WasActivityRunFromSubmitButton(ICrateStorage payloadStorage)
         {
             return payloadStorage.CratesOfType<FieldDescriptionsCM>(c => c.Label == RunFromSubmitButtonLabel).Any();
+        }
+
+        private void RemoveFlagCrate(PayloadDTO payloadDTO)
+        {
+            using (var pStorage = CrateManager.GetUpdatableStorage(payloadDTO))
+            {
+                pStorage.RemoveByLabel(RunFromSubmitButtonLabel);
+            }
         }
 
         private static string GetUriFileExtension(string uri)
@@ -175,9 +214,16 @@ namespace terminalFr8Core.Actions
         private string GetFileDescriptionLabel(ControlDefinitionDTO filepicker, int labeless_filepickers)
         { return filepicker.Label ?? ("File from Collect Data #" + ++labeless_filepickers); }
 
+        private void PublishTextBox(IUpdatableCrateStorage pStorage, TextBox textBox)
+        {
+            var fieldsCrate = pStorage.CratesOfType<FieldDescriptionsCM>(c => c.Label == RuntimeFieldCrateLabelPrefix).First();
+            fieldsCrate.Content.Fields.Add(new FieldDTO(textBox.Label, textBox.Label));
+        }
+
         private void ProcessTextBox(IUpdatableCrateStorage pStorage, TextBox textBox)
         {
-            //TODO add StandardPayloadCM here when needed
+            var fieldsCrate = pStorage.CratesOfType<StandardPayloadDataCM>(c => c.Label == RuntimeFieldCrateLabelPrefix).First();
+            fieldsCrate.Content.PayloadObjects[0].PayloadObject.Add(new FieldDTO(textBox.Label, textBox.Value));
         }
 
         private void ProcessFilePickers(IUpdatableCrateStorage pStorage, IEnumerable<ControlDefinitionDTO> filepickers)
@@ -220,6 +266,9 @@ namespace terminalFr8Core.Actions
         {
             using (var pStorage = CrateManager.GetUpdatableStorage(payloadDTO))
             {
+                var fieldsPayloadCrate = Crate.FromContent(RuntimeFieldCrateLabelPrefix, new StandardPayloadDataCM(new FieldDTO[] { }), AvailabilityType.RunTime);
+                pStorage.Add(fieldsPayloadCrate);
+
                 foreach (var controlDefinitionDTO in collectionControls.Controls)
                 {
                     ProcessCollectionControl(pStorage, controlDefinitionDTO);
@@ -239,26 +288,21 @@ namespace terminalFr8Core.Actions
             var storage = CrateManager.GetStorage(curActivityDO);
 
             //let's put the file to payload
-            //TODO this activity should be able to put textbox values as StandardPayloadDataCM
             //user might have pressed submit button on Collection UI
             var collectionControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => c.Label == CollectionControlsLabel).FirstOrDefault();
-            if (collectionControls == null)
-            {
-                //TODO warn user?
-                //no controls were created yet
-                return TerminateHubExecution(curPayloadDTO);
-            }
 
             //did we run from run button upon PlanBuilder or from submit button inside activity?
-            if (!WasActivityRunFromSubmitButton(payloadStorage))
+            if (collectionControls == null || !WasActivityRunFromSubmitButton(payloadStorage))
             {
                 //this was triggered by run button on screen
                 //not from submit button
                 //let's just activate and return
-                await PushLaunchURLNotification(curActivityDO);
+                await UpdateMetaControls(curActivityDO);
+                //await PushLaunchURLNotification(curActivityDO);
                 return TerminateHubExecution(curPayloadDTO);
             }
 
+            RemoveFlagCrate(curPayloadDTO);
             //this means we were run by clicking the submit button
             ProcessCollectionControls(curPayloadDTO, collectionControls);
 
@@ -296,21 +340,11 @@ namespace terminalFr8Core.Actions
             var cc = new MetaControlContainer()
             {
                 Label = "Show which form fields:",
-                Name = "control_container"
+                Name = "control_container",
+                Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
             };
 
-            var updateButton = new Button
-            {
-                CssClass = "float-right mt30 btn btn-default",
-                Label = "Update Launcher",
-                Name = "update_launcher",
-                Events = new List<ControlEvent>()
-                {
-                    new ControlEvent("onClick", "requestConfig")
-                }
-            };
-
-            return PackControlsCrate(infoText, cc, updateButton);
+            return PackControlsCrate(infoText, cc);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)

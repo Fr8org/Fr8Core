@@ -26,6 +26,7 @@ namespace HealthMonitor
             var csName = string.Empty;
             var skipLocal = false;
             var interactive = false;
+            var killIISExpress = false;
 
             if (args != null)
             {
@@ -76,6 +77,25 @@ namespace HealthMonitor
                     else if (args[i] == "--interactive")
                     {
                         interactive = true;
+                    }
+                    else if (args[i] == "--killexpress")
+                    {
+                        killIISExpress = true;
+                    }
+                }
+
+                if (killIISExpress)
+                {
+                    try
+                    {
+                        foreach (var iisExpressProcess in Process.GetProcessesByName("iisexpress"))
+                        {
+                            iisExpressProcess.Kill();
+                        }
+                    }
+                    catch
+                    {
+                        //Do nothing. This may mean that user have no access to killing processes
                     }
                 }
 
@@ -215,7 +235,7 @@ namespace HealthMonitor
             var report = testRunner.Run(test, skipLocal);
 
             var failedTestsCount = report.Tests.Count(x => !x.Success);
-            
+
             if (failedTestsCount > 0)
             {
                 var failedTests = report.Tests.Where(x => !x.Success);
@@ -267,7 +287,7 @@ namespace HealthMonitor
             Trace.Indent();
             foreach (var failedTest in failedTests)
             {
-                Trace.TraceWarning(failedTest.Name);    
+                Trace.TraceWarning(failedTest.Name);
             }
             Trace.Unindent();
         }

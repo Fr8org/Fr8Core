@@ -1,31 +1,29 @@
-﻿<div class='form-group'>
+﻿<div>
     <div ng-repeat="transition in field.transitions track by $index">
-        <div class="col-md-12" style="padding-left: 0px; margin-bottom: 10px;">
-            <div class="col-md-9">
-                <label>If the following is true:</label>
-            </div>
-            <div ng-if="field.transitions.length > 1" class="col-md-2" style="float: right;">
-                <img src="/Content/img/PlanBuilder/delete-icon.png" width="15" height="15" ng-show="!isSingle" ng-click="removeTransition($index)" class="query-builder-delete-button">
-            </div>
-            
-        </div>
+        <p>
+            <span>If the following is true:</span>
+            <span class="delete-btn pull-right" ng-if="field.transitions.length > 1"
+                ng-click="removeTransition($index)">
+                <i class="fa fa-times fa-2x"></i>
+            </span>
+        </p>
         <query-builder current-action="currentAction"
                        rows="transition.conditions"
                        is-disabled="false"
-                       add-row-text="Add Criteria">
+                       add-row-text="Add Condition">
         </query-builder>
 
-        <div class="query-builder-add-button" style="margin-top: 10px;">
-            <label class='control-label'>Select Operation</label>
-            <drop-down-list-box current-action="currentAction" field='::(getOperationField(transition))' change='onOperationChange(transition)'></drop-down-list-box>
+        <div>
+            <label class="control-label">Then do the following:</label>
+            <drop-down-list-box current-action="currentAction" field="::(getOperationField(transition))" change="onOperationChange(transition)"></drop-down-list-box>
         </div>
 
-        <div ng-if="transition._dummySecondaryOperationDD" class="query-builder-add-button" style="margin-top: 10px; padding-left: 20px;">
-            <label class='control-label'>{{transition._dummySecondaryOperationDD.label}}</label>
-            <drop-down-list-box current-action="currentAction" field='transition._dummySecondaryOperationDD' change='onTargetChange(transition)'></drop-down-list-box>
+        <div ng-if="transition._dummySecondaryOperationDD" class="query-builder-add-button">
+            <label class="control-label">{{transition._dummySecondaryOperationDD.label}}</label>
+            <drop-down-list-box current-action="currentAction" field="transition._dummySecondaryOperationDD" change="onTargetChange(transition)"></drop-down-list-box>
         </div>
         <hr class="transition-seperator"/>
     </div>
 
-    <button style="margin-top: 15px;" class="btn btn-primary query-builder-add-button" ng-click="addTransition()" stop-click-propagation>Add Transition</button>
+    <button class="btn btn-primary query-builder-add-button" ng-click="addTransition()" stop-click-propagation>Add Transition</button>
 </div>

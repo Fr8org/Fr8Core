@@ -34,6 +34,7 @@ namespace terminalGoogle.Controllers
                 Endpoint = CloudConfigurationManager.GetSetting("terminalGoogle.TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
                 Name = "terminalGoogle",
+                Label = "Google",
                 Version = "1",
                 AuthenticationType = AuthenticationType.External
             };
@@ -43,7 +44,6 @@ namespace terminalGoogle.Controllers
                 Name = "Get_Google_Sheet_Data",
                 Label = "Get Google Sheet Data",
                 Version = "1",
-                Description = "Extract Spreadsheet Data: Description",
                 Category = ActivityCategory.Receivers,
                 Terminal = terminal,
                 NeedsAuthentication = true,
@@ -69,7 +69,6 @@ namespace terminalGoogle.Controllers
                 Name = "Save_To_Google_Sheet",
                 Label = "Save To Google Sheet",
                 Version = "1",
-                Description = "Save crates into google spreadsheet",
                 Category = ActivityCategory.Forwarders,
                 Terminal = terminal,
                 NeedsAuthentication = true,

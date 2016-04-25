@@ -84,13 +84,12 @@ namespace terminalQuickBooks.Actions
             //Obtain the crate of type OperationalStateCM to extract the correct StandardAccountingTransactionDTO
             var curOperationalStateCM = CrateManager.GetOperationalState(payloadCrates);
             //Get the LoopId that is equal to the Action.Id for to obtain the correct StandardAccountingTransactionDTO
-            var curLoopId = curActivityDO.GetLoopId();
             //Validate fields of the StandardAccountingTransactionCM crate
             StandardAccountingTransactionCM.Validate(curStandardAccountingTransactionCM);
             //Get the list of the StandardAccountingTransactionDTO
             var curTransactionList = curStandardAccountingTransactionCM.AccountingTransactions;
             //Get the current index of Accounting Transactions
-            var currentIndexOfTransactions = GetLoopIndex(curOperationalStateCM, curLoopId);
+            var currentIndexOfTransactions = GetLoopIndex(curOperationalStateCM);
             //Take StandardAccountingTransactionDTO from curTransactionList using core function GetCurrentElement
             var curStandardAccountingTransactionDTO = (StandardAccountingTransactionDTO)GetCurrentElement(curTransactionList, currentIndexOfTransactions);
             //Check that all required fields exists in the StandardAccountingTransactionDTO object

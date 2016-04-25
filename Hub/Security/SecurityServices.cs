@@ -13,6 +13,9 @@ using StructureMap;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using Data.Repositories.Security;
+using Data.Repositories.Security.Entities;
+using Data.States;
 using Hub.Exceptions;
 using Hub.Interfaces;
 
@@ -90,9 +93,63 @@ namespace Hub.Security
             {
                 var role = uow.AspNetRolesRepository.GetByKey(roleId);
                 identity.AddClaim(new Claim(ClaimTypes.Role, role.Name));
+
+                //add organization as claim for runtime usage
+                if (fr8AccountDO.Organization != null)
+                {
+                    identity.AddClaim(new Claim("Organization", fr8AccountDO.Organization.Name));
+                }
             }
 
             return identity;
+        }
+
+        /// <summary>
+        /// For every new created object setup default security with privileges for Read Object, Edit Object, Delete Object 
+        /// and Role OwnerOfCurrentObject
+        /// </summary>
+        /// <param name="dataObjectId"></param>
+        /// <param name="dataObjectType"></param>
+        public void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType)
+        {
+            var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
+            securityStorageProvider.SetDefaultObjectSecurity(dataObjectId.ToString(), dataObjectType);
+        }
+
+        /// <summary>
+        /// Authorize current activity by a privilege name for some data object. Get role privileges for a compare them with all roles that current uses has.
+        /// When at least one role is found for this user, he is authorized to perform some activity.
+        /// </summary>
+        /// <param name="privilegeName"></param>
+        /// <param name="curObjectId"></param>
+        /// <param name="propertyName"></param>
+        /// <returns></returns>
+        public bool AuthorizeActivity(Privilege privilegeName, string curObjectId, string propertyName = null)
+        {
+            //get all current roles for current user
+            var roles = GetRoleNames().ToList();
+
+            //get all role privileges for object
+            var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
+            var objRolePrivilegeWrapper = securityStorageProvider.GetRolePrivilegesForSecuredObject(curObjectId);
+
+            if (objRolePrivilegeWrapper == null)
+                return false;
+
+            if (string.IsNullOrEmpty(propertyName))
+            {
+                var authorizedRoles = objRolePrivilegeWrapper.RolePrivileges.Where(x => roles.Contains(x.Role.RoleName));
+                return authorizedRoles.Any();
+            }
+            else
+            {
+                //find property inside object properties collection with privileges
+                if (!objRolePrivilegeWrapper.Properties.ContainsKey(propertyName)) return false;
+
+                var propertyRolePrivileges = objRolePrivilegeWrapper.Properties[propertyName];
+                var authorizedRoles = propertyRolePrivileges.Where(x => roles.Contains(x.Role.RoleName));
+                return authorizedRoles.Any();
+            }
         }
     }
 }

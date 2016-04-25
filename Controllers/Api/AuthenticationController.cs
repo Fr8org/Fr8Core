@@ -13,6 +13,7 @@ using System.Net.Http;
 using System.Security.Claims;
 using Microsoft.Owin.Security;
 using Microsoft.AspNet.Identity;
+using HubWeb.Infrastructure;
 
 namespace HubWeb.Controllers
 {
@@ -40,7 +41,7 @@ namespace HubWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                terminalDO = _terminal.GetByKey(credentials.TerminalId);
+                terminalDO = _terminal.GetByNameAndVersion(credentials.Terminal.Name, credentials.Terminal.Version);
                 account = _security.GetCurrentAccount(uow);
             }
 
@@ -124,6 +125,21 @@ namespace HubWeb.Controllers
                 }
             }
             return StatusCode(System.Net.HttpStatusCode.Forbidden);
+        }
+
+        [HttpGet]
+        [Fr8ApiAuthorize]
+        [Fr8HubWebHMACAuthenticate]
+        public async Task<IHttpActionResult> GetAuthToken([FromUri]string curFr8UserId, [FromUri]string externalAccountId, [FromUri] string terminalId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var terminalDO = await ObjectFactory.GetInstance<ITerminal>().GetTerminalByPublicIdentifier(terminalId);
+                var token = uow.AuthorizationTokenRepository.FindTokenByExternalAccount(externalAccountId, terminalDO.Id, curFr8UserId);
+                if (token != null)
+                    return Ok(token);
+            }
+            return Ok();
         }
     }
 }

@@ -104,7 +104,7 @@ namespace terminalDocuSignTests.Integration
                 // Authenticate with DocuSign
                 //
                 var creds = GetDocuSignCredentials();
-                creds.TerminalId = solution.ActivityTemplate.TerminalId;
+                creds.Terminal = solution.ActivityTemplate.Terminal;
 
                 var token = await HttpPostAsync<CredentialsDTO, JObject>(baseUrl + "authentication/token", creds);
                 Assert.AreEqual(false, String.IsNullOrEmpty(token["authTokenId"].Value<string>()), "AuthTokenId is missing in API response.");
@@ -235,11 +235,9 @@ namespace terminalDocuSignTests.Integration
             var emailSubject = (TextSource)emailControlsCrate.Content.Controls.Single(c => c.Name == "EmailSubject");
             var emailBody = (TextSource)emailControlsCrate.Content.Controls.Single(c => c.Name == "EmailBody");
 
-            var upstreamFieldDescription = await HttpGetAsync<List<FieldDescriptionsCM>>(
-                baseUrl + "plannodes/upstream_fields?id=" + emailActivity.Id.ToString() + "&manifestType=Field Description"
-            );
+            var upstreamFieldDescription = await HttpGetAsync<IncomingCratesDTO>(baseUrl + "plannodes/available_data?id=" + emailActivity.Id);
 
-            Assert.True(upstreamFieldDescription.Any(x => x.Fields.Any(y => y.Key == "NotificationMessage")));
+            Assert.True(upstreamFieldDescription.AvailableFields.Any(y => y.Key == "NotificationMessage"));
             Assert.AreEqual("NotificationMessage", emailBody.Value);
 
             emailAddress.ValueSource = "specific";
@@ -289,7 +287,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Delete plan
             //
-            await HttpDeleteAsync(baseUrl + "plans?id=" + plan.Plan.Id);
+            //await HttpDeleteAsync(baseUrl + "plans?id=" + plan.Plan.Id);
 
             // Verify that test email has been received
             //EmailAssert.EmailReceived("fr8ops@fr8.company", "Fr8-TrackDocuSignRecipientsTest");

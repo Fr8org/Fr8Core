@@ -1,82 +1,18 @@
 ﻿@{
-    Layout = "~/Views/Shared/_HomePage.cshtml";
+    Layout = "~/Views/Shared/_HomePageNew.cshtml";
 }
 @{
     ViewBag.Title = "Add Note";
 }
-@Scripts.Render("~/bundles/js/jquery-bootstrap")
-@Html.Partial("_AngularAppScripts")
+@model List<Data.Interfaces.DataTransferObjects.SolutionPageDTO>
 <section id="solution" data-section="welcome">
     <div class="solution-header jumbotron">
-            <div id="logotext" class="text">
-                <img class="solution-docusion" src="/Content/img/welcome/DocuSign_Logo_Purple_Yellow.png">
-                @*<img class="solution-docusion" src="/Content/img/welcome/docusign.png">*@
-                <p class="descr"><span>Cloud Freight Services for DocuSign</span></p>
-            </div>
-    </div>
-</section>
-<section class="text-block full-height-block" ng-app="app">
-    <h2 class="container">Fr8 Solutions for DocuSign</h2>
-    <hr />
-    <div class="container full-height-block" ng-controller="SolutionDocumentationController">
-        <div ng-include="'../AngularTemplate/SolutionDocumentation'">
+        <div id="logotext" class="text">
+            <img class="solution-docusion" src="/Content/img/welcome/DocuSign_Logo_Purple_Yellow.png">
+            @*<img class="solution-docusion" src="/Content/img/welcome/docusign.png">*@
+            <p class="descr"><span>Cloud Fr8 Services for DocuSign</span></p>
         </div>
-        @*<div class="base-block-white title-block" style="margin-top: 56px;">
-                <h2>Process the Data In Your DocuSign Envelopes</h2>
-            </div>
-            <div class="base-block-white content-block" >
-                <p>
-                    With a few clicks, Fr8 can pull data out of your completed envelopes and put it into Salesforce.com,
-                    Sql Server, Email, and other sources. DocuSign is an enormously powerful forms engine and data
-                    collection tool, and Fr8 unlocks that power by making it easy to get at that data
-                </p>
-                <img src="~/Content/img/site/docusign-workflow-example-1.png" alt="DocuSign Workflow Example #1" />
-            </div>
-            <div class="base-block-white button-block">
-                <a href="~/Dashboard#/solution/Extract_Data_From_Envelopes" class="btn btn-lg btn-warning">Try It Now</a>
-            </div>
-
-            <div class="base-block-white title-block">
-                <h2>The World's First Universal DocuSign Mail Merge</h2>
-            </div>
-            <div class="base-block-white content-block">
-                <p>
-                    Pull data out of Excel, Salesforce, and other services and easily merge it into your DocuSign Templates.
-                    Do it once, or do it 1000 times.
-                </p>
-                <img src="~/Content/img/site/docusign-workflow-example-2.png" alt="DocuSign Workflow Example #2" />
-            </div>
-            <div class="base-block-white button-block">
-                <a href="~/Dashboard#/solution/Mail_Merge_Into_DocuSign" class="btn btn-lg btn-warning">Try It Now</a>
-            </div>
-
-            <div class="base-block-white title-block">
-                <h2>Powerful DocuSign Notifications</h2>
-            </div>
-            <div class="base-block-white content-block">
-                <p>
-                    Easily build a set of custom notifications. Want to find out every time a Signer is more than 2 days
-                    late? Want to get an SMS message when a particular recipient Signs? Set up these profiles in seconds.
-                </p>
-                <img src="~/Content/img/site/docusign-workflow-example-3.png" alt="DocuSign Workflow Example #3" />
-            </div>
-            <div class="base-block-white button-block">
-                <a href="~/Dashboard#/solution/notifications" class="btn btn-lg btn-warning">Try It Now</a>
-            </div>
-
-            <div class="base-block-white title-block">
-                <h2>Fr8 Dashboards for DocuSign</h2>
-            </div>
-            <div class="base-block-white content-block">
-                <p>
-                    Fr8 tracks your DocuSign events and can generate powerful, updating, focused dashboards. Want to
-                    see the status of everything sent to your boss, all in one place? How about a list of all the
-                    Construction Reports signed in the previous week? Fr8 makes it easy
-                </p>
-                <img src="~/Content/img/site/docusign-dashboard-example.png" alt="DocuSign Dashboard Example" />
-            </div>
-            <div class="base-block-white button-block">
-                <a href="~/Dashboard#/solution/dashboards" class="btn btn-lg btn-warning">Try It Now</a>
-            </div>*@
     </div>
 </section>
+<h2 class="container" style="margin-bottom:30px">Fr8 Solutions for DocuSign</h2>
+@Html.Partial("SolutionListTemplate",Model)

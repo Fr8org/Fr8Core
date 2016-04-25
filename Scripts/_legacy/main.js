@@ -90,6 +90,13 @@ $(document).ready(function () {
         localStorage.setItem("navbarLnk", null);
     });
 
+    if ($('.navbar').hasClass('navbar-light')) {
+        $('.navbar-brand img').attr('src', '/Content/img/dockyard_logo.png');
+    }
+    if (window.location.pathname === "/Services/DocuSign") {
+        $('.navbar-brand img').attr('src', '/Content/img/dockyard_logo_dark.png');
+    }
+
     if ($('.video-frame').length) {
         var iframe = $('.video-frame')[0];
         var player = $f(iframe);

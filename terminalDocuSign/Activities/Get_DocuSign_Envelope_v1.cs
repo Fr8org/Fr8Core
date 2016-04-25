@@ -19,6 +19,7 @@ namespace terminalDocuSign.Actions
 {
     public class Get_DocuSign_Envelope_v1 : BaseDocuSignActivity
     {
+        private const string AllFieldsCrateName = "DocuSign Envelope Fields";
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
@@ -65,13 +66,19 @@ namespace terminalDocuSign.Actions
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                var curUpstreamFields = (await GetDesignTimeFields(curActivityDO.Id, CrateDirection.Upstream)).Fields.ToArray();
+                List<FieldDTO> allFields = new List<FieldDTO>();
+
+                var curUpstreamFields = (await GetDesignTimeFields(curActivityDO, CrateDirection.Upstream)).Fields.ToArray();
                 var upstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Design-Time Fields", curUpstreamFields);
                 crateStorage.ReplaceByLabel(upstreamFieldsCrate);
 
                 var control = FindControl(CrateManager.GetStorage(curActivityDO), "EnvelopeIdSelector");
                 string envelopeId = GetEnvelopeId(control as TextSource);
-                AddOrUpdateUserDefinedFields(curActivityDO, authTokenDO, crateStorage, envelopeId);
+                allFields.AddRange(GetTemplateUserDefinedFields(authTokenDO, envelopeId, null));
+
+                // Update all fields crate
+                crateStorage.RemoveByLabel(AllFieldsCrateName);
+                crateStorage.Add(Crate.CreateDesignTimeFieldsCrate(AllFieldsCrateName, AvailabilityType.RunTime, allFields.ToArray()));
             }
             return await Task.FromResult(curActivityDO);
         }
@@ -104,10 +111,14 @@ namespace terminalDocuSign.Actions
 
             using (var crateStorage = CrateManager.UpdateStorage(() => payloadCrates.CrateStorage))
             {
+                List<FieldDTO> allFields = new List<FieldDTO>();
 
                 // This has to be re-thinked. TemplateId is neccessary to retrieve fields but is unknown atm
                 // Perhaps it can be received by EnvelopeId
-                crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Data", CreateActivityPayload(activityDO, authTokenDO, envelopeId)));
+                allFields.AddRange(GetEnvelopeData(authTokenDO, envelopeId, null));
+
+                // Update all fields crate
+                crateStorage.Add(Crate.CreateDesignTimeFieldsCrate(AllFieldsCrateName, AvailabilityType.RunTime, allFields.ToArray()));
             }
 
             return Success(payloadCrates);

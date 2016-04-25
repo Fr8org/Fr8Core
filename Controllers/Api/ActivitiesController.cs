@@ -21,6 +21,7 @@ namespace HubWeb.Controllers
     {
         private readonly IActivity _activity;
         private readonly IActivityTemplate _activityTemplate;
+        private readonly ITerminal _terminal;
         private readonly ISubPlan _subPlan;
 
         public ActivitiesController()
@@ -28,6 +29,7 @@ namespace HubWeb.Controllers
             _activity = ObjectFactory.GetInstance<IActivity>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             _subPlan = ObjectFactory.GetInstance<ISubPlan>();
+            _terminal = ObjectFactory.GetInstance<ITerminal>();
         }
 
         public ActivitiesController(IActivity service)
@@ -43,7 +45,7 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Create(int actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
+        public async Task<IHttpActionResult> Create(Guid actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -156,6 +158,7 @@ namespace HubWeb.Controllers
         /// POST : Saves or updates the given action
         /// </summary>
         [HttpPost]
+        [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> Save(ActivityDTO curActionDTO)
         {
             ActivityDO submittedActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
@@ -176,8 +179,8 @@ namespace HubWeb.Controllers
             if (curDocSupport.StartsWith("Terminal="))
             {
                 var terminalName = curDocSupport.Split('=')[1];
-                var solutionNameList = _activity.GetSolutionList(terminalName);
-                return Ok(solutionNameList);
+                var solutionPages = await _terminal.GetSolutionDocumentations(terminalName);
+                return Ok(solutionPages);
             }
             if (curDocSupport.Contains("MainPage"))
             {

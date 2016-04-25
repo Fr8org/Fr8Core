@@ -4,6 +4,8 @@ using System.Linq;
 using System.Security.Claims;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Repositories.Security;
+using Data.States;
 using StructureMap;
 
 namespace Data.Infrastructure.StructureMap
@@ -17,7 +19,6 @@ namespace Data.Infrastructure.StructureMap
             lock (_locker)
                 _currentLoggedInDockyardAccount = dockyardAccountDO;
         }
-
         public Fr8AccountDO GetCurrentAccount(IUnitOfWork uow)
         {
             lock (_locker)
@@ -70,6 +71,40 @@ namespace Data.Infrastructure.StructureMap
         public ClaimsIdentity GetIdentity(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO)
         {
             throw new NotImplementedException();
+        }
+
+        public void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType)
+        {
+            var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
+            securityStorageProvider.SetDefaultObjectSecurity(dataObjectId.ToString(), dataObjectType);
+        }
+
+        public bool AuthorizeActivity(Privilege privilegeName, string curObjectId, string propertyName = null)
+        {
+            //get all current roles for current user
+            var roles = GetRoleNames().ToList();
+
+            //get all role privileges for object
+            var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
+            var objRolePrivilegeWrapper = securityStorageProvider.GetRolePrivilegesForSecuredObject(curObjectId);
+
+            if (objRolePrivilegeWrapper == null)
+                return false;
+
+            if (string.IsNullOrEmpty(propertyName))
+            {
+                var authorizedRoles = objRolePrivilegeWrapper.RolePrivileges.Where(x => roles.Contains(x.Role.RoleName));
+                return authorizedRoles.Any();
+            }
+            else
+            {
+                //find property inside object properties collection with privileges
+                if (!objRolePrivilegeWrapper.Properties.ContainsKey(propertyName)) return false;
+
+                var propertyRolePrivileges = objRolePrivilegeWrapper.Properties[propertyName];
+                var authorizedRoles = propertyRolePrivileges.Where(x => roles.Contains(x.Role.RoleName));
+                return authorizedRoles.Any();
+            }
         }
     }
 }

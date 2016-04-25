@@ -11,6 +11,7 @@ using Data.States;
 using Hub.Interfaces;
 using Hub.Services;
 using Utilities;
+using Utilities.Configuration.Azure;
 using Utilities.Logging;
 
 namespace Hub.Managers
@@ -63,7 +64,7 @@ namespace Hub.Managers
         {
             var incident = new IncidentDO
             {
-                CustomerId = _sercurity.GetCurrentUser(),
+                Fr8UserId = _sercurity.GetCurrentUser(),
                 Data = string.Join(
                    "Multiple Monitor_All_DocuSign_Events plans were created for one DocuSign account: ", external_email
                ),
@@ -80,7 +81,7 @@ namespace Hub.Managers
         {
             var incident = new IncidentDO
             {
-                CustomerId = _sercurity.GetCurrentUser(),
+                Fr8UserId = _sercurity.GetCurrentUser(),
                 Data = string.Join(
                     "Unexpected error: ",
                     ex.Message,
@@ -99,7 +100,7 @@ namespace Hub.Managers
         {
             var incident = new IncidentDO
             {
-                CustomerId = "unknown",
+                Fr8UserId = "unknown",
                 Data = "Plan activation failed, plan.Id = " + plan.Id.ToString()
                     + ", plan.Name = " + plan.Name
                     + ", plan.PlanState = " + plan.PlanState.ToString()
@@ -117,13 +118,8 @@ namespace Hub.Managers
         {
             var incident = new IncidentDO
             {
-                CustomerId = _sercurity.GetCurrentUser(),
-                Data = string.Join(
-                    Environment.NewLine,
-                    "KeyVault method: " + keyVaultMethod,
-                    ex.Message,
-                    ex.StackTrace ?? ""
-                ),
+                Fr8UserId = _sercurity.GetCurrentUser(),
+                Data = Environment.NewLine + $"KeyVault Uri: {CloudConfigurationManager.GetSetting("KeyVaultUrl")}, Client Id: {CloudConfigurationManager.GetSetting("KeyVaultClientId")} Method: {keyVaultMethod}. Reason: {ex.Message}. StackTrace: {ex.StackTrace ?? ""}",
                 PrimaryCategory = "KeyVault",
                 SecondaryCategory = "QuerySecurePartAsync",
                 Component = "Hub",
@@ -139,7 +135,7 @@ namespace Hub.Managers
 
             if (terminal != null)
             {
-                return terminal.Name;
+                return terminal.Label;
             }
 
             return authorizationToken.TerminalID.ToString();
@@ -149,7 +145,7 @@ namespace Hub.Managers
         {
             var incident = new IncidentDO
             {
-                CustomerId = _sercurity.GetCurrentUser(),
+                Fr8UserId = _sercurity.GetCurrentUser(),
                 Data = string.Join(
                     Environment.NewLine,
                     "AuthToken method: Silent Revoke",
@@ -165,18 +161,20 @@ namespace Hub.Managers
             SaveAndLogIncident(incident);
         }
 
-        private void ContainerFailed(PlanDO plan, Exception ex)
+        private void ContainerFailed(PlanDO plan, Exception ex, string containerId)
         {
             var incident = new IncidentDO
             {
-                CustomerId = _sercurity.GetCurrentUser(),
+                Fr8UserId = _sercurity.GetCurrentUser(),
                 Data = string.Join(
                     Environment.NewLine,
                     "Container failure.",
-                    "Plan: " + (plan != null ? plan.Name : "unknown"),
+                    "PlanName: " + (plan != null ? plan.Name : "unknown"),
+                    "PlanId: "+ (plan != null ? plan.Id.ToString() : "unknown"),
                     ex.Message,
                     ex.StackTrace ?? ""
                 ),
+                ObjectId = containerId,
                 PrimaryCategory = "Container",
                 SecondaryCategory = "Execution",
                 Component = "Hub",
@@ -190,7 +188,7 @@ namespace Hub.Managers
         {
             var incident = new IncidentDO
             {
-                CustomerId = _sercurity.GetCurrentUser(),
+                Fr8UserId = _sercurity.GetCurrentUser(),
                 Data = terminalUrl + "      " + curActionDTO,
                 ObjectId = objectId,
                 PrimaryCategory = "Action",
@@ -221,14 +219,15 @@ namespace Hub.Managers
 
         private void LogIncident(IncidentDO curIncident)
         {
-            _eventReporter.LogFactInformation(curIncident, curIncident.SecondaryCategory + " " + curIncident.Activity, EventReporter.EventType.Error);
+            _eventReporter.LogHistoryItem(curIncident, EventReporter.EventType.Error);
+            //_eventReporter.LogFactInformation(curIncident, curIncident.SecondaryCategory + " " + curIncident.Activity, EventReporter.EventType.Error);
         }
 
         private void ProcessIncidentTerminalConfigureFailed(string curTerminalUrl, string curAction, string errorMessage, string objectId)
         {
             var incident = new IncidentDO
             {
-                CustomerId = _sercurity.GetCurrentUser(),
+                Fr8UserId = _sercurity.GetCurrentUser(),
                 Data = curTerminalUrl + "      " + curAction + " " + errorMessage,
                 ObjectId = objectId,
                 PrimaryCategory = "Terminal",
@@ -243,7 +242,7 @@ namespace Hub.Managers
         {
             var incident = new IncidentDO
             {
-                CustomerId = _sercurity.GetCurrentUser(),
+                Fr8UserId = _sercurity.GetCurrentUser(),
                 Data = curTerminalUrl + "      " + curAction + " " + e.Message + " \r\nStack trace: \r\n" + e.StackTrace,
                 ObjectId = objectId,
                 PrimaryCategory = "Terminal",
@@ -261,7 +260,7 @@ namespace Hub.Managers
         {
             var incident = new IncidentDO
             {
-                CustomerId = _sercurity.GetCurrentUser(),
+                Fr8UserId = _sercurity.GetCurrentUser(),
                 Data = curTerminalUrl + "      " + curAction + " " + errorMessage,
                 ObjectId = objectId,
                 PrimaryCategory = "Terminal",
@@ -276,7 +275,7 @@ namespace Hub.Managers
         {
             var incident = new IncidentDO
             {
-                CustomerId = _sercurity.GetCurrentUser(),
+                Fr8UserId = _sercurity.GetCurrentUser(),
                 Data = "Query string: " + curRequestQueryString + "      \r\n" + errorMessage,
                 ObjectId = _sercurity.GetCurrentUser(),
                 PrimaryCategory = "Terminal",
@@ -290,7 +289,7 @@ namespace Hub.Managers
         {
             var currentIncident = new IncidentDO
             {
-                CustomerId = incidentItem.CustomerId,
+                Fr8UserId = incidentItem.Fr8UserId,
                 ObjectId = incidentItem.ObjectId,
                 Data = incidentItem.Data,
                 PrimaryCategory = incidentItem.PrimaryCategory,
@@ -306,7 +305,7 @@ namespace Hub.Managers
             var currentIncident = new IncidentDO
             {
                 ObjectId = curNotificationPayload,
-                CustomerId = _sercurity.GetCurrentUser(),
+                Fr8UserId = _sercurity.GetCurrentUser(),
                 Data = curNotificationUrl,
                 PrimaryCategory = "Event",
                 SecondaryCategory = "External",
@@ -327,7 +326,7 @@ namespace Hub.Managers
             var currentIncident = new IncidentDO
             {
                 ObjectId = "EventController",
-                CustomerId = _sercurity.GetCurrentUser(),
+                Fr8UserId = _sercurity.GetCurrentUser(),
                 Data = curEventPayload,
                 PrimaryCategory = "Event",
                 SecondaryCategory = "External",
@@ -350,7 +349,7 @@ namespace Hub.Managers
                 currentIncident.SecondaryCategory,
                 currentIncident.Activity,
                 currentIncident.ObjectId,
-                currentIncident.CustomerId);
+                currentIncident.Fr8UserId);
 
             Logger.GetLogger().Info(logData);
         }
@@ -365,7 +364,7 @@ namespace Hub.Managers
                 IncidentDO incidentDO = new IncidentDO();
                 incidentDO.PrimaryCategory = "Negotiation";
                 incidentDO.SecondaryCategory = "ClarificationRequest";
-                incidentDO.CustomerId = expectedResponseDO.UserID;
+                incidentDO.Fr8UserId = expectedResponseDO.UserID;
                 incidentDO.ObjectId = expectedResponseId.ToString();
                 incidentDO.Activity = "UnresponsiveAttendee";
                 uow.IncidentRepository.Add(incidentDO);
@@ -381,7 +380,7 @@ namespace Hub.Managers
                 {
                     PrimaryCategory = "BookingRequest",
                     SecondaryCategory = "Response Received",
-                    CustomerId = customerID,
+                    Fr8UserId = customerID,
                     ObjectId = bookingRequestId.ToString(),
                     Activity = "Response Recieved"
                 };
@@ -396,7 +395,7 @@ namespace Hub.Managers
             {
                 IncidentDO incidentDO = new IncidentDO
                 {
-                    CustomerId = _sercurity.GetCurrentUser(),
+                    Fr8UserId = _sercurity.GetCurrentUser(),
                     PrimaryCategory = "Email",
                     SecondaryCategory = "Failure",
                     Priority = 5,
@@ -434,7 +433,7 @@ namespace Hub.Managers
             {
                 IncidentDO incidentDO = new IncidentDO
                 {
-                    CustomerId = _sercurity.GetCurrentUser(),
+                    Fr8UserId = _sercurity.GetCurrentUser(),
                     PrimaryCategory = "Email",
                     SecondaryCategory = "Failure",
                     Activity = "Send",
@@ -616,7 +615,7 @@ namespace Hub.Managers
             {
                 IncidentDO incidentDO = new IncidentDO
                 {
-                    CustomerId = _sercurity.GetCurrentUser(),
+                    Fr8UserId = _sercurity.GetCurrentUser(),
                     PrimaryCategory = "Envelope",
                     SecondaryCategory = "",
                     ObjectId = envelopeId,
@@ -641,7 +640,7 @@ namespace Hub.Managers
                 SecondaryCategory = "Action",
                 ObjectId = activity.Id.ToString(),
                 Activity = "Occured",
-                CustomerId = curUserId,
+                Fr8UserId = curUserId,
                 Data =
                     String.Format("MissingFieldInPayload: ActionName: {0}, Field name: {1}, ActionId {2}",
                         template?.Name, fieldKey, activity.Id)

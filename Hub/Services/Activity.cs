@@ -13,6 +13,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
+using Data.Infrastructure.Security;
 using Data.Repositories.Plan;
 using Data.Infrastructure.StructureMap;
 using Data.States;
@@ -21,7 +22,7 @@ using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
-using Utilities.Interfaces;
+using Utilities;
 
 namespace Hub.Services
 {
@@ -42,7 +43,7 @@ namespace Hub.Services
             _activityTemplate = activityTemplate;
             _planNode = planNode;
         }
-
+        
         public IEnumerable<TViewModel> GetAllActivities<TViewModel>()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -55,7 +56,8 @@ namespace Hub.Services
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                SaveAndUpdateActivity(uow, submittedActivityData, new List<ActivityDO>());
+                // SaveAndUpdateActivity(uow, submittedActivityData, new List<ActivityDO>());
+                SaveAndUpdateActivity(uow, submittedActivityData);
 
                 uow.SaveChanges();
 
@@ -106,15 +108,14 @@ namespace Hub.Services
             submittedActivity.AuthorizationTokenId = existingActivity.AuthorizationTokenId;
         }
 
-        private void SaveAndUpdateActivity(IUnitOfWork uow, ActivityDO submittedActiviy, List<ActivityDO> pendingConfiguration)
+        // private void SaveAndUpdateActivity(IUnitOfWork uow, ActivityDO submittedActiviy, List<ActivityDO> pendingConfiguration)
+        private void SaveAndUpdateActivity(IUnitOfWork uow, ActivityDO submittedActiviy)
         {
             PlanTreeHelper.Visit(submittedActiviy, x =>
             {
-                var activity = (ActivityDO)x;
-
-                if (activity.Id == Guid.Empty)
+                if (x.Id == Guid.Empty)
                 {
-                    activity.Id = Guid.NewGuid();
+                    x.Id = Guid.NewGuid();
                 }
             });
 
@@ -136,26 +137,25 @@ namespace Hub.Services
             {
                 plan.ChildNodes.Remove(originalAction);
 
+                // Add child subplans.
+                foreach (var subPlan in originalAction.ChildNodes.OfType<SubPlanDO>())
+                {
+                    submittedActiviy.ChildNodes.Add(subPlan);
+                }
+
                 var originalActions = PlanTreeHelper.Linearize(originalAction)
-                    .ToDictionary(x => x.Id, x => (ActivityDO)x);
+                    .OfType<ActivityDO>()
+                    .ToDictionary(x => x.Id, x => x);
 
                 foreach (var submitted in PlanTreeHelper.Linearize(submittedActiviy))
                 {
                     ActivityDO existingActivity;
 
-                    if (!originalActions.TryGetValue(submitted.Id, out existingActivity))
-                    {
-                        pendingConfiguration.Add((ActivityDO)submitted);
-                    }
-                    else
+                    if (originalActions.TryGetValue(submitted.Id, out existingActivity))
                     {
                         RestoreSystemProperties(existingActivity, (ActivityDO)submitted);
                     }
                 }
-            }
-            else
-            {
-                pendingConfiguration.AddRange(PlanTreeHelper.Linearize(submittedActiviy).OfType<ActivityDO>());
             }
 
             if (submittedActiviy.Ordering <= 0)
@@ -168,12 +168,13 @@ namespace Hub.Services
             }
         }
 
+        //[AuthorizeActivity(Privilege = Privilege.ReadObject, ObjectType = typeof(Guid))]
         public ActivityDO GetById(IUnitOfWork uow, Guid id)
         {
             return uow.PlanRepository.GetById<ActivityDO>(id);
         }
 
-        public async Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, int actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
+        public async Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
         {
             if (parentNodeId != null && createPlan)
             {
@@ -342,7 +343,9 @@ namespace Hub.Services
 
                 if (saveResult)
                 {
-                    SaveAndUpdateActivity(uow, curActivityDO, new List<ActivityDO>());
+                    // SaveAndUpdateActivity(uow, curActivityDO, new List<ActivityDO>());
+                    SaveAndUpdateActivity(uow, curActivityDO);
+
                     uow.SaveChanges();
                     curActivityDO = uow.PlanRepository.GetById<ActivityDO>(curActivityDO.Id);
                     return Mapper.Map<ActivityDTO>(curActivityDO);
@@ -406,34 +409,29 @@ namespace Hub.Services
             }
         }
 
-        public async Task PrepareToExecute(ActivityDO curActivity, ActivityState curActionState, ContainerDO curContainerDO, IUnitOfWork uow)
-        {
-            EventManager.ActionStarted(curActivity);
-
-            var payload = await Run(uow, curActivity, curActionState, curContainerDO);
-
-            if (payload != null)
-            {
-                using (var crateStorage = _crate.UpdateStorage(() => curContainerDO.CrateStorage))
-                {
-                    crateStorage.Replace(_crate.FromDto(payload.CrateStorage));
-                }
-            }
-
-            uow.SaveChanges();
-        }
-
-        // Maxim Kostyrkin: this should be refactored once the TO-DO snippet below is redesigned
-        public async Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActivityState curActionState, ContainerDO curContainerDO)
+        public async Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActivityExecutionMode curActionExecutionMode, ContainerDO curContainerDO)
         {
             if (curActivityDO == null)
             {
-                throw new ArgumentNullException("curActivityDO");
+                throw new ArgumentNullException(nameof(curActivityDO));
             }
+
+            //FR-2642 Logic to skip execution of activities with "SkipAtRunTime" Tag
+            var template = _activityTemplate.GetByKey(curActivityDO.ActivityTemplateId);
+            if (template.Tags != null && template.Tags.Contains("SkipAtRunTime", StringComparison.InvariantCultureIgnoreCase))
+            {
+                return null;
+            }
+
+            EventManager.ActionStarted(curActivityDO, curContainerDO);
+
+            // Explicitly extract authorization token to make AuthTokenDTO pass to activities.
+            curActivityDO.AuthorizationToken = uow.AuthorizationTokenRepository.FindTokenById(curActivityDO.AuthorizationTokenId);
 
             try
             {
-                var actionName = curActionState == ActivityState.InitialRun ? "Run" : "ExecuteChildActivities";
+                var actionName = curActionExecutionMode == ActivityExecutionMode.InitialRun ? "Run" : "ExecuteChildActivities";
+
                 EventManager.ActivityRunRequested(curActivityDO, curContainerDO);
 
                 var payloadDTO = await CallTerminalActivityAsync<PayloadDTO>(uow, actionName, curActivityDO, curContainerDO.Id);
@@ -545,7 +543,7 @@ namespace Hub.Services
         /// <param name="isSolution">This parameter controls the access level: if it is a solution case
         /// we allow calls without CurrentAccount; if it is not - we need a User to get the list of available activities</param>
         /// <returns>Task<SolutionPageDTO/> or Task<ActivityResponceDTO/></returns>
-        public async Task<T> GetActivityDocumentation<T>(ActivityDTO activityDTO, bool isSolution = false)
+        public async Task<T> GetActivityDocumentation<T>(ActivityDTO activityDTO, bool isSolution = false) where T : class
         {
             //activityResponce can be either of type SolutoinPageDTO or ActivityRepsonceDTO
             T activityResponce;
@@ -563,11 +561,19 @@ namespace Hub.Services
                     allActivityTemplates = _planNode.GetAvailableActivities(uow, curUser);
                 }
                 //find the activity by the provided name
-                var curActivityTerminalDTO = allActivityTemplates.Single(a => a.Name == activityDTO.ActivityTemplate.Name);
+
+                // To prevent mismatch between db and terminal solution lists, Single or Default used
+                var curActivityTerminalDTO = allActivityTemplates.SingleOrDefault(a => a.Name == activityDTO.ActivityTemplate.Name);
                 //prepare an Activity object to be sent to Activity in a Terminal
                 //IMPORTANT: this object will not be hold in the database
                 //It is used to transfer data
                 //as ActivityDTO is the first mean of communication between The Hub and Terminals
+
+                // Since there can be mismatched data between db and terminal solution list, we should make a null check here 
+                if (curActivityTerminalDTO == null)
+                {
+                    return null;
+                }
                 var curActivityDTO = new ActivityDTO
                 {
                     Id = Guid.NewGuid(),
@@ -604,8 +610,7 @@ namespace Hub.Services
             //Call the terminal
             return await ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<T>(actionName, fr8Data, curContainerId.ToString());
         }
-
-        public List<string> GetSolutionList(string terminalName)
+        public List<string> GetSolutionNameList(string terminalName)
         {
             var solutionNameList = new List<string>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Data.Crates;
 using StructureMap;
 using Data.Entities;
@@ -17,7 +18,7 @@ namespace UtilitiesTesting.Fixtures
         {
             ActivityTemplateDO activityTemplateDo = new ActivityTemplateDO
             {
-                Id = 1,
+                Id = GetTestGuidById(1),
                 Name = "Write to Sql Server",
                 Terminal = TerminalOne(),
                 Version = "v3"
@@ -29,7 +30,7 @@ namespace UtilitiesTesting.Fixtures
         {
             ActivityTemplateDO activityTemplateDo = new ActivityTemplateDO
             {
-                Id = 1,
+                Id = GetTestGuidById(1),
                 Version = "v4"
             };
             return activityTemplateDo;
@@ -38,7 +39,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var curActivityDO = new ActivityTemplateDO
             {
-                Id = 1,
+                Id = GetTestGuidById(1),
                 Name = "Type1",
                 Terminal = TerminalTwo(),
                 Version = "1"
@@ -50,7 +51,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var curActionTemplate = new ActivityTemplateDO
             {
-                Id = 1,
+                Id = GetTestGuidById(1),
                 Name = "terminal_azure_sql_server",
                 Terminal = TerminalThree(),
                 Version = "1"
@@ -63,10 +64,9 @@ namespace UtilitiesTesting.Fixtures
         {
             var curActionTemplate = new ActivityTemplateDTO
             {
-                Id = 1,
+                Id = GetTestGuidById(1),
                 Name = "terminal_azure_sql_server",
-                Version = "1",
-                TerminalId = 1
+                Version = "1"
             };
 
             return curActionTemplate;
@@ -95,7 +95,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var curActivityDO = new ActivityTemplateDO
             {
-                Id = 1,
+                Id = GetTestGuidById(1),
                 Name = "Write to SQL",
                 Terminal = TerminalFour(),
                 Version = "1"
@@ -107,7 +107,7 @@ namespace UtilitiesTesting.Fixtures
         {
             var curActivityDO = new ActivityTemplateDO
             {
-                Id = 1,
+                Id = GetTestGuidById(1),
                 Name = "Mail_Merge_Into_DocuSign",
                 Label = "Mail Merge Into DocuSign",
                 Terminal = TerminalSeven(),

@@ -31,14 +31,14 @@ namespace terminaBaselTests.Tools.Terminals
         /// <param name="password"></param>
         /// <param name="terminalId"></param>
         /// <returns></returns>
-        public async Task<AuthorizationTokenDTO> GenerateAuthToken(string username, string password, int terminalId)
+        public async Task<AuthorizationTokenDTO> GenerateAuthToken(string username, string password, TerminalDTO terminalDTO)
         {
             var creds = new CredentialsDTO()
             {
                 Username = username,
                 Password = password, 
                 IsDemoAccount = true,
-                TerminalId = terminalId
+                Terminal = terminalDTO
             };
 
             var token = await _baseHubITest.HttpPostAsync<CredentialsDTO, JObject>(_baseHubITest.GetHubApiBaseUrl() + "authentication/token", creds);
@@ -60,12 +60,12 @@ namespace terminaBaselTests.Tools.Terminals
         /// <param name="credentials"></param>
         /// <param name="terminalId"></param>
         /// <returns></returns>
-        public async Task<Guid> AuthenticateDocuSignAndAssociateTokenWithAction(Guid activityId, CredentialsDTO credentials, int terminalId)
+        public async Task<Guid> AuthenticateDocuSignAndAssociateTokenWithAction(Guid activityId, CredentialsDTO credentials, TerminalDTO terminalDTO)
         {
             //
             // Authenticate with DocuSign Credentials
             //
-            var authTokenDTO = await GenerateAuthToken(credentials.Username, credentials.Password, terminalId);
+            var authTokenDTO = await GenerateAuthToken(credentials.Username, credentials.Password, terminalDTO);
             var tokenGuid = Guid.Parse(authTokenDTO.Token);
            
             //

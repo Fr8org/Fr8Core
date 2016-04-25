@@ -1,6 +1,8 @@
     var gulp = require('gulp');
 var bower = require('gulp-bower');
 var concat = require('gulp-concat');
+var path = require('path');
+var child_process = require('child_process');
 var sourcemaps = require('gulp-sourcemaps');
 var templateCache = require('gulp-angular-templatecache');
 
@@ -31,6 +33,7 @@ gulp.task('concattemplates', function () {
 
 gulp.task('compile_js', function () {
     return gulp.src([
+        'Scripts/app/events/Fr8Events.js',
         'Scripts/app/model/ActionDTO.js',
         'Scripts/app/model/ActivityTemplate.js',
         'Scripts/app/model/Condition.js',
@@ -52,6 +55,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/model/ManageAuthToken.js',
         'Scripts/app/model/SolutionDTO.js',
         'Scripts/app/model/AlertDTO.js',
+        'Scripts/app/model/SubordinateSubplan.js',
         'Scripts/app/services/CrateHelper.js',
         'Scripts/app/services/AuthService.js',
         'Scripts/app/services/ConfigureTrackerService.js',
@@ -86,7 +90,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/PaneSelectAction/PaneSelectAction.js',
         'Scripts/app/directives/DesignerHeader/DesignerHeader.js',
         'Scripts/app/directives/SubplanHeader.js',
-        'Scripts/app/directives/Controls/ActivityChooser.js',
+        'Scripts/app/services/SubordinateSubplanService.js',
         'Scripts/app/directives/Controls/FilePicker.js',
         'Scripts/app/directives/Controls/RadioButtonGroup.js',
         'Scripts/app/directives/Controls/DropDownListBox.js',
@@ -100,6 +104,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/RunPlanButton.js',
         'Scripts/app/directives/Controls/FieldList.js',
         'Scripts/app/directives/Controls/QueryBuilder.js',
+        'Scripts/app/directives/Controls/QueryBuilderCondition.js',
         'Scripts/app/directives/Controls/TextSource.js',
         'Scripts/app/directives/Controls/SourceableCriteria.js',
         'Scripts/app/directives/Controls/InputFocus.js',
@@ -114,6 +119,9 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/ContainerTransition.js',
         'Scripts/app/directives/Controls/MetaControlContainer.js',
         'Scripts/app/directives/Controls/ControlList.js',
+        'Scripts/app/directives/Controls/SelectData.js',
+        'Scripts/app/directives/Controls/ExternalObjectChooser.js',
+        'Scripts/app/directives/Controls/BuildMessageAppender.js',
         'Scripts/app/directives/LongAjaxCursor.js',
         'Scripts/app/directives/Validators/ManifestDescriptionValidators.js',
         'Scripts/app/directives/ActionPicker.js',
@@ -376,4 +384,24 @@ gulp.task('cdnizer-js', ['bower'], function () {
         .pipe(gulp.dest('./Views/Shared/CDN'));
 });
 
+function getProtractorBinary(binaryName){
+    var winExt = /^win/.test(process.platform)? '.cmd' : '';
+    var pkgPath = require.resolve('protractor');
+    var protractorDir = path.resolve(path.join(path.dirname(pkgPath), '..', '..', '.bin'));
+    return path.join(protractorDir, '/'+binaryName+winExt);
+}
+
+gulp.task('update-web-driver', function(done){
+    child_process.spawnSync(getProtractorBinary('webdriver-manager'), ['update'], {
+        stdio: 'inherit'
+    });
+});
+
+gulp.task('protractor-run', function (done) {
+    child_process.spawnSync(getProtractorBinary('protractor'),  ['Scripts\\tests\\e2e\\conf.js'] ,{
+        stdio: 'inherit'
+    });
+});
 gulp.task('default', ['bower', 'concattemplates', 'cdnizer-js', 'cdnizer-css']);
+
+gulp.task('e2etests', ['update-web-driver', 'protractor-run']);

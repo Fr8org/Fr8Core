@@ -12,6 +12,7 @@ using HealthMonitor.Utility;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using terminalDocuSignTests.Fixtures;
+using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -30,10 +31,10 @@ namespace terminalDocuSignTests.Integration
 
         private void AssertCrateTypes(ICrateStorage crateStorage, bool expectValidationErrors = false)
         {
-            Assert.AreEqual(expectValidationErrors ? 5 : 4, crateStorage.Count);
+            Assert.AreEqual(expectValidationErrors ? 4 : 3, crateStorage.Count);
 
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "DocuSign Event Fields"));
+            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count(x => x.Label == "Available Run Time Crates"));
             Assert.AreEqual(1, crateStorage.CratesOfType<EventSubscriptionCM>().Count(x => x.Label == "Standard Event Subscriptions"));
             if (expectValidationErrors)
             {
@@ -128,7 +129,7 @@ namespace terminalDocuSignTests.Integration
                 radioGroup.Radios[1].Selected = false;
 
                 var recipientTextBox = (TextBox)radioGroup.Radios[0].Controls[0];
-                recipientTextBox.Value = "foo@bar.com";
+                recipientTextBox.Value = "hal9000@discovery.com";
             }
 
             return responseActionDTO;
@@ -274,11 +275,15 @@ namespace terminalDocuSignTests.Integration
                 );
 
             var crateStorage = Crate.GetStorage(responseActionDTO);
-            var docuSignEventFields = crateStorage
-                .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "DocuSign Event Fields")
+            var crateDescription = crateStorage
+                .CrateContentsOfType<CrateDescriptionCM>(x => x.Label == "Available Run Time Crates")
                 .Single();
 
-            Assert.AreEqual(12, docuSignEventFields.Fields.Count);
+            var fieldsCrate = crateStorage
+                .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "DocuSign Envelope Fields")
+                .Single();
+
+            Assert.AreEqual(7, fieldsCrate.Fields.Count);
         }
 
         /// <summary>
@@ -290,7 +295,8 @@ namespace terminalDocuSignTests.Integration
         /// the value of that field should be equal to what was set to "UpstreamCrate" drop-down-list.
         /// </summary>
         [Test]
-        public async Task Monitor_DocuSign_FollowUp_Configuration_TemplateValue()
+        public async Task
+            Monitor_DocuSign_FollowUp_Configuration_TemplateValue()
         {
             var configureUrl = GetTerminalConfigureUrl();
 
@@ -303,11 +309,11 @@ namespace terminalDocuSignTests.Integration
                 );
 
             var crateStorage = Crate.GetStorage(responseActionDTO);
-            var docuSignEventFields = crateStorage
-                .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "DocuSign Event Fields")
+            var fieldsCrate = crateStorage
+                .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "DocuSign Envelope Fields")
                 .Single();
 
-            Assert.AreEqual(12, docuSignEventFields.Fields.Count());
+            Assert.AreEqual(15, fieldsCrate.Fields.Count);
         }
 
         /// <summary>
@@ -330,7 +336,7 @@ namespace terminalDocuSignTests.Integration
                     configureUrl,
                     requestDataDTO
                 );
-            
+
             requestDataDTO.ActivityDTO = responseActionDTO;
 
             var response = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
@@ -358,20 +364,14 @@ namespace terminalDocuSignTests.Integration
 
             var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
 
+            var payload = HealthMonitor_FixtureData.GetEnvelopePayload();
+
             AddPayloadCrate(
                 dataDTO,
                 new EventReportCM()
                 {
-                    EventPayload = new CrateStorage()
-                    {
-                        Data.Crates.Crate.FromContent(
-                            "EventReport",
-                            new StandardPayloadDataCM(
-                                new FieldDTO("RecipientEmail", "foo@bar.com"),
-                                new FieldDTO("EnvelopeId", envelopeId)
-                            )
-                        )
-                    }
+                    EventPayload = payload,
+                    EventNames = string.Join(",", DocuSignEventNames.GetAllEventNames())
                 }
             );
 
@@ -384,8 +384,8 @@ namespace terminalDocuSignTests.Integration
             Assert.AreEqual(1, crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Envelope Payload Data").Count());
 
             var docuSignPayload = crateStorage.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "DocuSign Envelope Payload Data").Single();
-            Assert.AreEqual(1, docuSignPayload.AllValues().Count(x => x.Key == "RecipientEmail"));
-            Assert.IsTrue(docuSignPayload.AllValues().Any(x => x.Key == "RecipientEmail" && x.Value == "foo@bar.com"));
+            Assert.AreEqual(1, docuSignPayload.AllValues().Count(x => x.Key == "CurrentRecipientEmail"));
+            Assert.IsTrue(docuSignPayload.AllValues().Any(x => x.Key == "CurrentRecipientEmail" && x.Value == "hal9000@discovery.com"));
         }
 
         /// <summary>

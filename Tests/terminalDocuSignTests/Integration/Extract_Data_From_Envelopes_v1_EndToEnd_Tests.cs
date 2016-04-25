@@ -285,7 +285,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Delete plan
             //
-            await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
+            //await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
         }
 
         private async Task<Guid> ResolveAuth(ActivityDTO solution, ICrateStorage crateStorage)
@@ -321,7 +321,7 @@ namespace terminalDocuSignTests.Integration
                 if (!tokenGuid.HasValue)
                 {
                     var creds = GetDocuSignCredentials();
-                    creds.TerminalId = solution.ActivityTemplate.TerminalId;
+                    creds.Terminal = solution.ActivityTemplate.Terminal;
 
                     var token = await HttpPostAsync<CredentialsDTO, JObject>(
                         _baseUrl + "authentication/token",

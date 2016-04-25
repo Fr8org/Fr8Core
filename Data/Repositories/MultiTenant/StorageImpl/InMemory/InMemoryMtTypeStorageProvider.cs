@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Data.Repositories.SqlBased;
 
 namespace Data.Repositories.MultiTenant.InMemory
 {
@@ -15,7 +16,7 @@ namespace Data.Repositories.MultiTenant.InMemory
             _storage = storage;
         }
 
-        public IEnumerable<MtTypeDefinition> ListTypes(IMtConnectionProvider connectionProvider)
+        public IEnumerable<MtTypeDefinition> ListTypes(ISqlConnectionProvider connectionProvider)
         {
             lock (Types)
             {
@@ -23,7 +24,7 @@ namespace Data.Repositories.MultiTenant.InMemory
             }
         }
 
-        public IEnumerable<MtTypeReference> ListTypeReferences(IMtConnectionProvider connectionProvider)
+        public IEnumerable<MtTypeReference> ListTypeReferences(ISqlConnectionProvider connectionProvider)
         {
             lock (Types)
             {
@@ -31,7 +32,7 @@ namespace Data.Repositories.MultiTenant.InMemory
             }
         }
 
-        public IEnumerable<MtTypePropertyReference> ListTypePropertyReferences(IMtConnectionProvider connectionProvider, Guid typeId)
+        public IEnumerable<MtTypePropertyReference> ListTypePropertyReferences(ISqlConnectionProvider connectionProvider, Guid typeId)
         {
             lock (Types)
             {
@@ -46,7 +47,7 @@ namespace Data.Repositories.MultiTenant.InMemory
             }
         }
 
-        public MtTypeReference FindTypeReference(IMtConnectionProvider connectionProvider, Type type)
+        public MtTypeReference FindTypeReference(ISqlConnectionProvider connectionProvider, Type type)
         {
             MtTypeDefinition typeDef;
 
@@ -58,7 +59,7 @@ namespace Data.Repositories.MultiTenant.InMemory
             return new MtTypeReference(typeDef.Alias, typeDef.ClrType, typeDef.Id);
         }
 
-        public MtTypeReference FindTypeReference(IMtConnectionProvider connectionProvider, Guid typeId)
+        public MtTypeReference FindTypeReference(ISqlConnectionProvider connectionProvider, Guid typeId)
         {
             MtTypeDefinition typeDef;
 
@@ -74,7 +75,7 @@ namespace Data.Repositories.MultiTenant.InMemory
             }
         }
 
-        public bool TryLoadType(IMtConnectionProvider connectionProvider, Type clrType, out MtTypeDefinition mtType)
+        public bool TryLoadType(ISqlConnectionProvider connectionProvider, Type clrType, out MtTypeDefinition mtType)
         {
             lock (Types)
             {
@@ -83,12 +84,12 @@ namespace Data.Repositories.MultiTenant.InMemory
             }
         }
 
-        public void PersistType(IMtConnectionProvider connectionProvider, MtTypeDefinition mtType)
+        public void PersistType(ISqlConnectionProvider connectionProvider, MtTypeDefinition mtType)
         {
             _newTypes.Add(mtType);
         }
 
-        public void SaveChanges(IMtConnectionProvider connectionProvider)
+        public void SaveChanges(ISqlConnectionProvider connectionProvider)
         {
             using (var typeLock = _storage.AccureTypeTransactionLock())
             {

@@ -40,6 +40,15 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Demo|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Demo\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Analytics.NET, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Analytics.2.0.0\lib\Analytics.NET.dll</HintPath>
@@ -230,10 +239,11 @@
   <ItemGroup>
     <Compile Include="Constants\ActivityErrorCode.cs" />
     <Compile Include="Constants\ActivityResponse.cs" />
-    <Compile Include="Constants\ActivityState.cs" />
+    <Compile Include="Constants\ActivityExecutionMode.cs" />
     <Compile Include="Constants\FieldValidationResult.cs" />
     <Compile Include="Constants\ActivityDirection.cs" />
     <Compile Include="Constants\ManifestIdEnum.cs" />
+    <Compile Include="Constants\Tags.cs" />
     <Compile Include="Control\Control.cs" />
     <Compile Include="Crates\Crate.cs" />
     <Compile Include="Crates\CrateManifestAttribute.cs" />
@@ -263,6 +273,7 @@
     <Compile Include="Expressions\ExpressionTransformation.cs" />
     <Compile Include="Expressions\ExpressionTransformation.PropertyInfo.cs" />
     <Compile Include="Expressions\ExpressionTransformation.TransformationVisitor.cs" />
+    <Compile Include="Infrastructure\Fr8ApiHelper.cs" />
     <Compile Include="Helpers\Fr8ReflectionHelper.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
@@ -274,12 +285,14 @@
     <Compile Include="Infrastructure\JsonNet\ActivityTemplateActivityConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\AvailabilityConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\CreateTimeConverter.cs" />
-    <Compile Include="Infrastructure\JsonNet\FieldConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\TerminalActivityTemplateConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\WebServiceConverter.cs" />
+    <Compile Include="Infrastructure\Security\AuthorizeActivityAttribute.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityDataPackageDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivateActivitiesDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityResponseDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ExternalObjectHandleDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\IncomingCratesDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalNotificationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AlarmDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AuthenticateResponse.cs" />
@@ -346,14 +359,21 @@
     <Compile Include="Interfaces\Manifests\CrateDescriptionCM.cs" />
     <Compile Include="Helpers\FieldMemberAccessor.cs" />
     <Compile Include="Helpers\IMemberAccessor.cs" />
+    <Compile Include="Interfaces\Manifests\ExternalObjectHandlesCM.cs" />
+	 <Compile Include="Interfaces\Manifests\DocuSignEnvelopeCM_v2.cs" />
     <Compile Include="Interfaces\Manifests\Helpers\StandardTableDataCMTools.cs" />
     <Compile Include="Interfaces\Manifests\ManifestDescriptionCM.cs" />
     <Compile Include="Interfaces\Manifests\ChartOfAccountsCM.cs" />
     <Compile Include="Interfaces\Manifests\CrateManifestTypes.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignTemplateCM.cs" />
     <Compile Include="Interfaces\Manifests\DocuSignRecipientCM.cs" />
+    <Compile Include="Interfaces\Manifests\ManifestFieldAttribute.cs" />
     <Compile Include="Interfaces\Manifests\MtPrimaryKeyAttribute.cs" />
     <Compile Include="Helpers\PropertyMemberAccessor.cs" />
+    <Compile Include="Interfaces\Manifests\OperationalStateCM.CallStack.cs" />
+    <Compile Include="Interfaces\Manifests\OperationalStateCM.CallStackConverter.cs" />
+    <Compile Include="Interfaces\Manifests\OperationalStateCM.InternalStates.cs" />
+    <Compile Include="Interfaces\Manifests\SalesforceEventCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardAccountingTransactionCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFileListCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFr8PlansCM .cs" />
@@ -665,6 +685,42 @@
     <Compile Include="Migrations\201604061440228_RenameContainerFields.Designer.cs">
       <DependentUpon>201604061440228_RenameContainerFields.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201603302057295_Table_RolePrivilege.cs" />
+    <Compile Include="Migrations\201603302057295_Table_RolePrivilege.Designer.cs">
+      <DependentUpon>201603302057295_Table_RolePrivilege.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201603311051449_Table_ObjectRolePrivileges.cs" />
+    <Compile Include="Migrations\201603311051449_Table_ObjectRolePrivileges.Designer.cs">
+      <DependentUpon>201603311051449_Table_ObjectRolePrivileges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201603311220032_OwnerOfObject_Role_Data.cs" />
+    <Compile Include="Migrations\201603311220032_OwnerOfObject_Role_Data.Designer.cs">
+      <DependentUpon>201603311220032_OwnerOfObject_Role_Data.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201604112326145_Empty_Fix_Migration.cs" />
+    <Compile Include="Migrations\201604112326145_Empty_Fix_Migration.Designer.cs">
+      <DependentUpon>201604112326145_Empty_Fix_Migration.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201604130047415_ProcessNodesRemoved.cs" />
+    <Compile Include="Migrations\201604130047415_ProcessNodesRemoved.Designer.cs">
+      <DependentUpon>201604130047415_ProcessNodesRemoved.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.cs" />
+    <Compile Include="Migrations\201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.Designer.cs">
+      <DependentUpon>201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201604160406197_PlanNodeDO_Runnable.cs" />
+    <Compile Include="Migrations\201604160406197_PlanNodeDO_Runnable.Designer.cs">
+      <DependentUpon>201604160406197_PlanNodeDO_Runnable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201604171806555_HistoryItemDO_CustomerId_to_Fr8UserId.cs" />
+    <Compile Include="Migrations\201604171806555_HistoryItemDO_CustomerId_to_Fr8UserId.Designer.cs">
+      <DependentUpon>201604171806555_HistoryItemDO_CustomerId_to_Fr8UserId.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201604191731406_AddLabelToTerminals.cs" />
+    <Compile Include="Migrations\201604191731406_AddLabelToTerminals.Designer.cs">
+      <DependentUpon>201604191731406_AddLabelToTerminals.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -674,6 +730,8 @@
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryStub.cs" />
     <Compile Include="Repositories\Authorization\IAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\Authorization\KeyVaultAuthorizationTokenRepository.cs" />
+    <Compile Include="Repositories\Cache\ICacheExpirationStrategy.cs" />
+    <Compile Include="Repositories\Cache\IExpirationToken.cs" />
     <Compile Include="Repositories\FileTagsRepository.cs" />
     <Compile Include="Interfaces\IMultiTenantObjectRepository.cs" />
     <Compile Include="Repositories\MultiTenant\Ast\AstNode.cs" />
@@ -684,7 +742,6 @@
     <Compile Include="Repositories\MultiTenant\Ast\MtUnaryOp.cs" />
     <Compile Include="Repositories\MultiTenant\Ast\UnaryOpNode.cs" />
     <Compile Include="Repositories\MultiTenant\ExpressionToAstConverter.cs" />
-    <Compile Include="Repositories\MultiTenant\IMtConnectionProvider.cs" />
     <Compile Include="Repositories\MultiTenant\IMtObjectConverter.cs" />
     <Compile Include="Repositories\MultiTenant\IMtObjectsStorage.cs" />
     <Compile Include="Repositories\MultiTenant\IMtTypeStorage.cs" />
@@ -715,7 +772,6 @@
     <Compile Include="Repositories\MultiTenant\StorageImpl\InMemory\InMemoryMtObjectsStorage.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\InMemory\InMemoryMtTypeStorageProvider.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\AstToSqlConverter.cs" />
-    <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtConnectionProvider.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtObjectsStorage.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtTypeStorageProvider.cs" />
     <Compile Include="Repositories\Plan\Expiration.cs" />
@@ -731,7 +787,21 @@
     <Compile Include="Repositories\Plan\PlanTreeHelper.cs" />
     <Compile Include="Repositories\Plan\Internal\PlanNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
-    <Compile Include="Repositories\Plan\SlidingExpirationStrategy.cs" />
+    <Compile Include="Repositories\Cache\SlidingExpirationStrategy.cs" />
+    <Compile Include="Repositories\Security\Entities\ObjectRolePrivilegesDO.cs" />
+    <Compile Include="Repositories\Security\Entities\PrivilegeDO.cs" />
+    <Compile Include="Repositories\Security\Entities\RoleDO.cs" />
+    <Compile Include="Repositories\Security\Entities\RolePrivilegePOCO.cs" />
+    <Compile Include="Repositories\Security\ISecurityObjectsStorageProvider.cs" />
+    <Compile Include="Repositories\Security\StorageImpl\InMemorySecurityObjectsStorageProvider.cs" />
+    <Compile Include="Repositories\SqlBased\ISqlConnectionProvider.cs" />
+    <Compile Include="Repositories\Security\StorageImpl\Cache\ISecurityCacheExpirationStrategy.cs" />
+    <Compile Include="Repositories\Security\StorageImpl\Cache\ISecurityObjectsCache.cs" />
+    <Compile Include="Repositories\Security\StorageImpl\Cache\SecurityObjectsCache.cs" />
+    <Compile Include="Repositories\Security\StorageImpl\Cache\SecurityObjectsStorage.cs" />
+    <Compile Include="Repositories\Security\StorageImpl\SqlBased\SqlConnectionProvider.cs" />
+    <Compile Include="Repositories\Security\StorageImpl\SqlBased\SqlSecurityObjectsStorageProvider.cs" />
+    <Compile Include="Repositories\SqlBased\SqlConnectionProvider.cs" />
     <Compile Include="Repositories\TagRepository.cs" />
     <Compile Include="Repositories\TerminalRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
@@ -751,7 +821,6 @@
     <Compile Include="Entities\EnvelopeDO.cs" />
     <Compile Include="Entities\TerminalDO.cs" />
     <Compile Include="Entities\ContainerDO.cs" />
-    <Compile Include="Entities\ProcessNodeDO.cs" />
     <Compile Include="Entities\PlanDO.cs" />
     <Compile Include="Entities\SlipDO.cs" />
     <Compile Include="Entities\SubscriptionDO.cs" />
@@ -781,7 +850,6 @@
     <Compile Include="Repositories\CriteriaRepository.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\EnvelopeRepository.cs" />
-    <Compile Include="Repositories\ProcessNodeRepository.cs" />
     <Compile Include="Repositories\Plan\Internal\SubPlanRepository.cs" />
     <Compile Include="Repositories\Plan\Internal\PlansRepository.cs" />
     <Compile Include="Repositories\HistoryRepository.cs" />
@@ -797,10 +865,10 @@
     <Compile Include="Repositories\UserStatusRepository.cs" />
     <Compile Include="States\AccessLevel.cs" />
     <Compile Include="States\PlanVisibility.cs" />
+    <Compile Include="States\Privileges.cs" />
     <Compile Include="States\SubscriptionState.cs" />
     <Compile Include="States\Templates\_SubscriptionStateTemplate.cs" />
     <Compile Include="States\TerminalStatus.cs" />
-    <Compile Include="States\ProcessNodeState.cs" />
     <Compile Include="States\ContainerState.cs" />
     <Compile Include="States\BookingRequestAvailability.cs" />
     <Compile Include="States\BookingRequestState.cs" />
@@ -821,7 +889,6 @@
     <Compile Include="States\Templates\_CriteriaExecutionTypeTemplate.cs" />
     <Compile Include="States\Templates\_TerminalStatusTemplate.cs" />
     <Compile Include="Entities\SubPlanDO.cs" />
-    <Compile Include="States\Templates\_ProcessNodeStatusTemplate.cs" />
     <Compile Include="States\Templates\_ContainerStateTemplate.cs" />
     <Compile Include="States\Templates\IStateTemplate.cs" />
     <Compile Include="States\InstructionConstants.cs" />
@@ -1160,6 +1227,33 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604061440228_RenameContainerFields.resx">
       <DependentUpon>201604061440228_RenameContainerFields.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603302057295_Table_RolePrivilege.resx">
+      <DependentUpon>201603302057295_Table_RolePrivilege.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603311051449_Table_ObjectRolePrivileges.resx">
+      <DependentUpon>201603311051449_Table_ObjectRolePrivileges.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201603311220032_OwnerOfObject_Role_Data.resx">
+      <DependentUpon>201603311220032_OwnerOfObject_Role_Data.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604112326145_Empty_Fix_Migration.resx">
+      <DependentUpon>201604112326145_Empty_Fix_Migration.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604130047415_ProcessNodesRemoved.resx">
+      <DependentUpon>201604130047415_ProcessNodesRemoved.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.resx">
+      <DependentUpon>201604150901444_ActivityTemplateDO_Id_Int32_To_Guid.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604160406197_PlanNodeDO_Runnable.resx">
+      <DependentUpon>201604160406197_PlanNodeDO_Runnable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604171806555_HistoryItemDO_CustomerId_to_Fr8UserId.resx">
+      <DependentUpon>201604171806555_HistoryItemDO_CustomerId_to_Fr8UserId.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604191731406_AddLabelToTerminals.resx">
+      <DependentUpon>201604191731406_AddLabelToTerminals.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

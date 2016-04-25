@@ -40,6 +40,15 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Demo|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Demo\</OutputPath>
+    <DefineConstants>TRACE;DEBUG;DEV</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Analytics.NET, Version=2.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -51,6 +60,22 @@
     </Reference>
     <Reference Include="BouncyCastle.Crypto, Version=1.7.4137.9688, Culture=neutral, PublicKeyToken=a4292a325f69b123, processorArchitecture=MSIL">
       <HintPath>..\packages\BouncyCastle.1.7.0\lib\Net40-Client\BouncyCastle.Crypto.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Castle.Core, Version=1.2.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Core.1.2.0\lib\Castle.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Castle.DynamicProxy2, Version=2.2.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.DynamicProxy.2.2.0\lib\Castle.DynamicProxy2.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Castle.Services.Logging.log4netIntegration, Version=1.2.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Core.1.2.0\lib\Castle.Services.Logging.log4netIntegration.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Castle.Services.Logging.NLogIntegration, Version=1.2.0.0, Culture=neutral, PublicKeyToken=407dd0808d44fbdc, processorArchitecture=MSIL">
+      <HintPath>..\packages\Castle.Core.1.2.0\lib\Castle.Services.Logging.NLogIntegration.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
@@ -148,6 +173,10 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NLog, Version=1.0.0.505, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.1.0.0.505\lib\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="S22.Imap, Version=3.6.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -256,9 +285,12 @@
     <Compile Include="Infrastructure\fr8HMACAuthenticateAttribute.cs" />
     <Compile Include="Managers\HangfireJobDispatcher.cs" />
     <Compile Include="Interfaces\IJobDispatcher.cs" />
+    <Compile Include="Managers\HangFireJobFilter.cs" />
     <Compile Include="Managers\PlanManager.cs" />
     <Compile Include="Interfaces\IFact.cs" />
     <Compile Include="Interfaces\IOrganization.cs" />
+    <Compile Include="Security\AuthorizeActivityInterceptor.cs" />
+    <Compile Include="Security\HangFireAuthorizationFilter.cs" />
     <Compile Include="Security\HMACAuthenticator.cs" />
     <Compile Include="Interfaces\IAuthorization.cs" />
     <Compile Include="Interfaces\IFindObjectsPlan.cs" />
@@ -269,7 +301,6 @@
     <Compile Include="Interfaces\IPlanNode.cs" />
     <Compile Include="Interfaces\IActivityTemplate.cs" />
     <Compile Include="Interfaces\IActivity.cs" />
-    <Compile Include="Helper\ProcessNodeTransition.cs" />
     <Compile Include="Interfaces\ITag.cs" />
     <Compile Include="Interfaces\ITime.cs" />
     <Compile Include="Managers\CrateManager.StorageUpdater.cs">
@@ -277,13 +308,11 @@
     </Compile>
     <Compile Include="Managers\CrateMangerExtensions.cs" />
     <Compile Include="Managers\ICrateManager.cs" />
-    <Compile Include="Interfaces\ICriteria.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="Interfaces\IExpectedResponse.cs" />
     <Compile Include="Interfaces\IFile.cs" />
     <Compile Include="Interfaces\INotification.cs" />
     <Compile Include="Interfaces\IEmailAddress.cs" />
-    <Compile Include="Interfaces\IProcessNode.cs" />
     <Compile Include="Interfaces\IContainer.cs" />
     <Compile Include="Interfaces\ISubPlan.cs" />
     <Compile Include="Interfaces\IReport.cs" />
@@ -342,7 +371,9 @@
     <Compile Include="Security\DockyardIdentityManager.cs" />
     <Compile Include="Security\DockyardUserStore.cs" />
     <Compile Include="Security\Fr8HMACService.cs" />
+    <Compile Include="Security\ObjectDecorators\PlanSecurityDecorator.cs" />
     <Compile Include="Security\SecurityServices.cs" />
+    <Compile Include="Services\Container.ExecutionSession.cs" />
     <Compile Include="Services\Fact.cs" />
     <Compile Include="Services\Field.cs" />
     <Compile Include="Services\FindObjectsPlan.cs" />
@@ -354,7 +385,6 @@
     <Compile Include="Services\AuthData.cs" />
     <Compile Include="Services\Authorization.cs" />
     <Compile Include="Managers\CrateManager.cs" />
-    <Compile Include="Services\Criteria.cs" />
     <Compile Include="Services\Fr8Account.cs" />
     <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Email.cs" />
@@ -364,7 +394,6 @@
     <Compile Include="Services\Terminal.cs" />
     <Compile Include="Services\File.cs" />
     <Compile Include="Services\Notification.cs" />
-    <Compile Include="Services\ProcessNode.cs" />
     <Compile Include="Services\Container.cs" />
     <Compile Include="Services\SubPlan.cs" />
     <Compile Include="Services\Plan.cs" />

@@ -54,19 +54,6 @@ namespace terminalDocuSignTests.Integration
             _terminalDocuSignTestTools = new terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalDocuSign(this);
             _docuSignActivitiesTestTools = new IntegrationTestTools_terminalDocuSign(this);
         }
-        
-
-        [Test]
-        [ExpectedException(typeof(AssertionException))]
-        public async Task TestEmail_ShouldBeMissing()
-        {
-            await Task.Delay(EmailAssert.RecentMsgThreshold); //to avoid false positives from any earlier tests
-
-            // Verify that test email has been received
-            // Actually it should not be received and AssertionException 
-            // should be thrown
-            EmailAssert.EmailReceived("dse_demo@docusign.net", "Test Message from Fr8");
-        }
 
         [Test]
         public async Task Mail_Merge_Into_DocuSign_EndToEnd()
@@ -90,13 +77,12 @@ namespace terminalDocuSignTests.Integration
                 var loopControls = loopControlsCrate.Content.Controls;
 
                 var loopCrateChooser = loopControls
-                    .Where(x => x.Type == ControlTypes.CrateChooser && x.Name == "Available_Crates")
-                    .SingleOrDefault() as CrateChooser;
+                    .SingleOrDefault(x => x.Type == ControlTypes.CrateChooser && x.Name == "Available_Crates") as CrateChooser;
 
-                Assert.NotNull(loopCrateChooser);
-                Assert.AreEqual(1, loopCrateChooser.CrateDescriptions.Count);
-                Assert.AreEqual("Standard Table Data", loopCrateChooser.CrateDescriptions[0].ManifestType);
-                Assert.AreEqual("Table Generated From Google Sheet Data", loopCrateChooser.CrateDescriptions[0].Label);
+                Assert.NotNull(loopCrateChooser, "Unable to find CrateChooser control from loop activity");
+                Assert.AreEqual(1, loopCrateChooser.CrateDescriptions.Count, "Selected crate count is not equal to 1 on loopActivity CrateChooser");
+                Assert.AreEqual("Standard Table Data", loopCrateChooser.CrateDescriptions[0].ManifestType, "Selected crate on CrateChooser doesn't have ManifestType: Standard Table Data");
+                Assert.AreEqual("Table Generated From Google Sheet Data", loopCrateChooser.CrateDescriptions[0].Label, "Selected crate on CrateChooser doesn't have label: Table Generated From Google Sheet Data");
 
                 loopCrateChooser.CrateDescriptions = new List<CrateDescriptionDTO>();
             }
@@ -242,7 +228,7 @@ namespace terminalDocuSignTests.Integration
             // Activate and run plan
             //
             var container = await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
-            Assert.AreEqual(container.State, State.Completed);
+            Assert.AreEqual(container.State, State.Completed, "Container state is not equal to completed on Mail_Merge e2e test");
 
             //
             // Deactivate plan
@@ -255,7 +241,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Delete plan
             //
-            await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
+            //await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
         }
 
         [Test]
@@ -392,7 +378,7 @@ namespace terminalDocuSignTests.Integration
             // Activate and run plan
             //
             var container = await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
-            Assert.AreEqual(container.State, State.Completed);
+            Assert.AreEqual(container.State, State.Completed, "Container state is not equal to completed on Mail_Merge e2e test");
             
             //
             // Assert 
@@ -459,7 +445,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Delete plan
             //
-            await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
+            //await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
         }
 
         private async Task<Guid> ExtractGoogleDefaultToken()

@@ -4,6 +4,7 @@
         isTempId: boolean;
         name: string;
         tag: string;
+        lastUpdated: string;
         description: string;
         planState: PlanState;
         subscribedDocuSignTemplates: Array<string>;

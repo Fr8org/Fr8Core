@@ -10,6 +10,10 @@ using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
 using terminalSalesforceTests.Fixtures;
+using terminalSalesforce.Actions;
+using terminalSalesforce.Services;
+using terminalSalesforce.Infrastructure;
+using Data.Entities;
 
 namespace terminalSalesforceTests.Intergration
 {
@@ -28,10 +32,11 @@ namespace terminalSalesforceTests.Intergration
             var initialConfigActionDto = await PerformInitialConfiguration();
 
             //Assert
-            Assert.IsNotNull(initialConfigActionDto.CrateStorage,
-                "Initial Configuration of Post To Chatter activity contains no crate storage");
-
-            AssertConfigurationControls(Crate.FromDto(initialConfigActionDto.CrateStorage));
+            Assert.IsNotNull(initialConfigActionDto.CrateStorage, "Initial Configuration of Post To Chatter activity contains no crate storage");
+            var storage = Crate.GetStorage(initialConfigActionDto);
+            Assert.AreEqual(2, storage.Count, "Number of configuration crates not populated correctly");
+            Assert.IsNotNull(storage.FirstCrateOrDefault<StandardConfigurationControlsCM>(), "Configuration controls crate is not found in activity storage");
+            Assert.IsNotNull(storage.FirstCrateOrDefault<CrateDescriptionCM>(), "Crate with runtime crates desriptions is not found in activity storage");
         }
 
         [Test, Category("intergration.terminalSalesforce")]
@@ -82,15 +87,12 @@ namespace terminalSalesforceTests.Intergration
 
             //Assert
             Assert.IsNotNull(responseOperationalState);
-            Assert.IsTrue(responseOperationalState.CrateStorage.Crates.Any(c => c.Label.Equals("Newly Created Salesforce Feed")), "Feed is not created");
-
             var newFeedIdCrate = Crate.GetStorage(responseOperationalState)
                                          .CratesOfType<StandardPayloadDataCM>()
-                                         .Single(c => c.Label.Equals("Newly Created Salesforce Feed"));
-
-            Assert.IsTrue(
-                await SalesforceTestHelper.DeleteObject(authToken, "FeedItem", newFeedIdCrate.Content.PayloadObjects[0].PayloadObject[0].Value),
-                "Test lead created is not deleted");
+                                         .SingleOrDefault();
+            Assert.IsNotNull(newFeedIdCrate, "Feed is not created");
+            Assert.IsTrue(await new SalesforceManager().Delete(SalesforceObjectType.FeedItem, 
+                newFeedIdCrate.Content.PayloadObjects[0].PayloadObject[0].Value, new AuthorizationTokenDO { Token = authToken.Token, AdditionalAttributes = authToken.AdditionalAttributes }), "Test feed created is not deleted");
         }
 
         private async Task<ActivityDTO> PerformInitialConfiguration()
@@ -103,39 +105,16 @@ namespace terminalSalesforceTests.Intergration
 
             //perform post request to terminal and return the result
             var resultActionDto = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(terminalConfigureUrl, requestActionDTO);
-
-            using (var crateStorage = Crate.GetUpdatableStorage(resultActionDto))
+            resultActionDto.UpdateControls<Post_To_Chatter_v1.ActivityUi>(x =>
             {
-                var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
-                controls.Controls.OfType<TextSource>().ToList().ForEach(ctl => { ctl.ValueSource = "specific"; ctl.TextValue = "IntegrationTestFeed"; });
-
-                var chatterObjects = crateStorage.CratesOfType<FieldDescriptionsCM>().Single(crate => crate.Label.Equals("AvailableChatters"));
-                controls.Controls.OfType<DropDownList>().ToList().ForEach(ctl => 
-                                            {
-                                                ctl.selectedKey = chatterObjects.Content.Fields[0].Key;
-                                                ctl.Value = chatterObjects.Content.Fields[0].Value; });
-            }
-
+                x.UseUserOrGroupOption.Selected = true;
+                var selectedUser = x.UserOrGroupSelector.ListItems.First(y => y.Key == "Fr8 Admin");
+                x.UserOrGroupSelector.selectedKey = selectedUser.Key;
+                x.UserOrGroupSelector.Value = selectedUser.Value;
+                x.FeedTextSource.ValueSource = "specific";
+                x.FeedTextSource.TextValue = "IntegrationTestFeed";
+            });
             return resultActionDto;
-        }
-
-        private void AssertConfigurationControls(ICrateStorage curActionCrateStorage)
-        {
-            var availableChattersCrate = curActionCrateStorage.CratesOfType<FieldDescriptionsCM>().Single(crate => crate.Label.Equals("AvailableChatters"));
-
-            Assert.IsNotNull(availableChattersCrate, "Available Chatters is not populated in Initial Configuration");
-            Assert.IsTrue(availableChattersCrate.Content.Fields.Count > 0, "Available Chatters are not retrieved from the Salesforce");
-
-            var configurationControls = curActionCrateStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
-
-            Assert.AreEqual(2, configurationControls.Content.Controls.Count,
-                "Post To Chatter does not contain the required fields.");
-
-            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("WhatKindOfChatterObject")),
-                "Post To Chatter action does not have WhatKindOfChatterObject control");
-
-            Assert.IsTrue(configurationControls.Content.Controls.Any(ctrl => ctrl.Name.Equals("FeedTextItem")),
-                "Post To Chatter does not have FeedTextItem control");
         }
     }
 }

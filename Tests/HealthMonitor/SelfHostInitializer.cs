@@ -36,10 +36,12 @@ namespace HealthMonitor
                 expression.AddRegistry<DatabaseStructureMapBootStrapper.LiveMode>());
 
             var selfHostedApps = GetSelfHostedApps();
+
             using (var uow = _container.GetInstance<IUnitOfWork>())
             {
                 terminals = uow.TerminalRepository.GetAll();
             }
+
 
             try
             {

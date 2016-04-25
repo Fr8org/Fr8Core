@@ -33,7 +33,7 @@ namespace terminalDropboxTests.Fixtures
         {
             return new ActivityTemplateDTO
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Get_File_List_TEST",
                 Version = "1"
             };

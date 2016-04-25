@@ -1,27 +1,29 @@
 ﻿using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using Data.Interfaces.Manifests;
-using Salesforce.Force;
+using System;
 
 namespace terminalSalesforce.Infrastructure
 {
     public interface ISalesforceManager
     {
-        Task<string> CreateObject<T>(T salesforceObject, string salesforceObjectType, AuthorizationTokenDO authTokenDO);
+        Task<string> Create(SalesforceObjectType type, IDictionary<string, object> @object, AuthorizationTokenDO authTokenDO);
 
-        Task<bool> DeleteObject(string sfObjectName, string sfObjectId, AuthorizationTokenDO authTokenDO);
+        Task<StandardTableDataCM> Query(SalesforceObjectType type, IEnumerable<string> propertiesToRetrieve, string filter, AuthorizationTokenDO authTokenDO);
+        
+        Task<List<FieldDTO>> GetProperties(SalesforceObjectType type, AuthorizationTokenDO authTokenDO, bool updatableOnly = false);
 
-        Task<IList<FieldDTO>> GetFields(string salesforceObjectName, AuthorizationTokenDO authTokenDO, bool onlyUpdatableFields = false);
+        T CreateSalesforceDTO<T>(ActivityDO activity, PayloadDTO payload) where T : new();
 
-        Task<StandardPayloadDataCM> GetObjectByQuery(string salesforceObjectName, IEnumerable<string> fields, string conditionQuery, AuthorizationTokenDO authTokenDO);
+        Task<string> PostToChatter(string message, string parentObjectId, AuthorizationTokenDO authTokenDO);
 
-        Task<IList<FieldDTO>> GetChatters(AuthorizationTokenDO authTokenDO);
+        IEnumerable<FieldDTO> GetSalesforceObjectTypes(SalesforceObjectOperations filterByOperations = SalesforceObjectOperations.None, SalesforceObjectProperties filterByProperties = SalesforceObjectProperties.None);
 
-        Task<string> PostFeedTextToChatterObject(string feedText, string parentObjectId, AuthorizationTokenDO authTokenDO);
+        Task<bool> Delete(SalesforceObjectType objectType, string objectId, AuthorizationTokenDO authTokenDO);
+
+        [Obsolete("Use Task<StandardTableDataCM> Query(SalesforceObjectType, IEnumerable<string>, string, AuthorizationTokenDO) instead")]
+        Task<IList<FieldDTO>> GetUsersAndGroups(AuthorizationTokenDO authTokenDO);
     }
 }

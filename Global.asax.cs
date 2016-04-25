@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Data.Entity;
 using System.Linq;
+using System.Net;
 using System.Security.Claims;
 using System.Threading;
 using System.Web;
@@ -96,7 +97,6 @@ namespace HubWeb
 
             ConfigureValidationEngine();
             StartupMigration.CreateSystemUser();
-
         }
 
         private void ConfigureValidationEngine()
@@ -108,6 +108,7 @@ namespace HubWeb
         protected void Application_Error(Object sender, EventArgs e)
         {
             var exception = Server.GetLastError();
+
             String errorMessage = "Critical internal error occured.";
             try
             {

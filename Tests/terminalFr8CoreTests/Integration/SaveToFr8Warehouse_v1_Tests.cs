@@ -10,6 +10,7 @@ using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.Repositories.MultiTenant;
+using Data.Repositories.SqlBased;
 using HealthMonitor.Utility;
 using NUnit.Framework;
 using terminalFr8CoreTests.Fixtures;
@@ -160,7 +161,7 @@ namespace terminalFr8CoreTests.Integration
         {
             try
             {
-                var provider = ObjectFactory.GetInstance<IMtConnectionProvider>();
+                var provider = ObjectFactory.GetInstance<ISqlConnectionProvider>();
                 return provider.ConnectionInfo?.ToString() ?? "No connection info available";
             }
             catch
@@ -174,7 +175,7 @@ namespace terminalFr8CoreTests.Integration
             StringBuilder debugInfo = new StringBuilder("\n");
             string cs = ResolveConnectionString();
 
-            debugInfo.AppendLine(DisplayTypeResolution<IMtConnectionProvider>());
+            debugInfo.AppendLine(DisplayTypeResolution<ISqlConnectionProvider>());
             debugInfo.AppendLine(DisplayTypeResolution<IMtTypeStorageProvider>());
             debugInfo.AppendLine($"Current connection string for MT is: {Utilities.MiscUtils.MaskPassword(cs)}");
 

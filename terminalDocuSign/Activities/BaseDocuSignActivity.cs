@@ -48,47 +48,27 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        protected List<FieldDTO> CreateDocuSignEventFields()
+        protected List<FieldDTO> CreateDocuSignEventFields(DocuSignEnvelopeCM_v2 envelope)
         {
+            string curRecipientEmail = "";
+            string curRecipientUserName = "";
+
+            if (envelope != null)
+            {
+                var current_recipient = envelope.GetCurrentRecipient();
+                curRecipientEmail = current_recipient.Email;
+                curRecipientUserName = current_recipient.Name;
+            }
+
             return new List<FieldDTO>{
-                new FieldDTO("RecipientEmail", AvailabilityType.RunTime) { Tags = "EmailAddress" },
-                new FieldDTO("RecipientUserName", AvailabilityType.RunTime) { Tags = "UserName" },
-                new FieldDTO("DocumentName", AvailabilityType.RunTime),
-                new FieldDTO("TemplateName", AvailabilityType.RunTime),
-                new FieldDTO("Status", AvailabilityType.RunTime),
-                new FieldDTO("CreateDate") { Tags = "Date" },
-                new FieldDTO("SentDate", AvailabilityType.RunTime) { Tags = "Date" },
-                new FieldDTO("DeliveredDate", AvailabilityType.RunTime) { Tags = "Date" },
-                new FieldDTO("CompletedDate", AvailabilityType.RunTime) { Tags = "Date" },
-                new FieldDTO("HolderEmail", AvailabilityType.RunTime) { Tags = "EmailAddress" },
-                new FieldDTO("Subject", AvailabilityType.RunTime),
-                new FieldDTO("EnvelopeId", AvailabilityType.RunTime),
+                new FieldDTO("CurrentRecipientEmail", curRecipientEmail, AvailabilityType.RunTime) { Tags = "EmailAddress" },
+                new FieldDTO("CurrentRecipientUserName", curRecipientUserName, AvailabilityType.RunTime) { Tags = "UserName" },
+                new FieldDTO("Status", envelope?.Status,  AvailabilityType.RunTime),
+                new FieldDTO("CreateDate",  envelope?.CreateDate?.ToString()) { Tags = "Date" },
+                new FieldDTO("SentDate", envelope?.SentDate?.ToString(), AvailabilityType.RunTime) { Tags = "Date" },
+                new FieldDTO("Subject", envelope?.Subject, AvailabilityType.RunTime),
+                new FieldDTO("EnvelopeId", envelope?.EnvelopeId, AvailabilityType.RunTime),
             };
-        }
-
-        protected string GetValueForEventKey(PayloadDTO curPayloadDTO, string curKey)
-        {
-            var eventReportMS = CrateManager.GetStorage(curPayloadDTO).CrateContentsOfType<EventReportCM>().FirstOrDefault();
-
-            if (eventReportMS == null)
-            {
-                return null;
-            }
-
-            var crate = eventReportMS.EventPayload.CratesOfType<StandardPayloadDataCM>().First();
-
-            if (crate == null)
-            {
-                return null;
-            }
-
-            var fields = crate.Content.AllValues().ToArray();
-            if (fields == null || fields.Length == 0) return null;
-
-            var envelopeIdField = fields.SingleOrDefault(f => f.Key == curKey);
-            if (envelopeIdField == null) return null;
-
-            return envelopeIdField.Value;
         }
 
         public static DropDownList CreateDocuSignTemplatePicker(
@@ -115,6 +95,26 @@ namespace terminalDocuSign.Actions
             return control;
         }
 
+        public IEnumerable<FieldDTO> GetTemplateUserDefinedFields(AuthorizationTokenDO authTokenDO, string templateId, string envelopeId = null)
+        {
+            if (String.IsNullOrEmpty(templateId))
+            {
+                throw new ArgumentNullException(nameof(templateId));
+            }
+            var conf = DocuSignManager.SetUp(authTokenDO);
+            return DocuSignManager.GetTemplateRecipientsAndTabs(conf, templateId);
+        }
+
+        public IEnumerable<FieldDTO> GetEnvelopeData(AuthorizationTokenDO authTokenDO, string templateId, string envelopeId = null)
+        {
+            if (String.IsNullOrEmpty(templateId))
+            {
+                throw new ArgumentNullException(nameof(templateId));
+            }
+            var conf = DocuSignManager.SetUp(authTokenDO);
+            return DocuSignManager.GetEnvelopeRecipientsAndTabs(conf, templateId);
+        }
+
         public void AddOrUpdateUserDefinedFields(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, IUpdatableCrateStorage updater, string templateId, string envelopeId = null, List<FieldDTO> allFields = null)
         {
             updater.RemoveByLabel("DocuSignTemplateUserDefinedFields");
@@ -128,13 +128,6 @@ namespace terminalDocuSign.Actions
                 }
                 updater.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", AvailabilityType.RunTime, userDefinedFields.ToArray()));
             }
-        }
-
-        public StandardPayloadDataCM CreateActivityPayload(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, string curEnvelopeId)
-        {
-            var conf = DocuSignManager.SetUp(authTokenDO);
-            var payload = DocuSignManager.GetEnvelopeRecipientsAndTabs(conf, curEnvelopeId);
-            return new StandardPayloadDataCM(payload.ToArray());
         }
 
         public void FillDocuSignTemplateSource(Crate configurationCrate, string controlName, AuthorizationTokenDO authToken)

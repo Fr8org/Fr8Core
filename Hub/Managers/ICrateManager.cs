@@ -12,6 +12,7 @@ namespace Hub.Managers
     public interface IUpdatableCrateStorage : IDisposable, ICrateStorage
     {
         void Replace(ICrateStorage crateStorage);
+        void Flush();
         void DiscardChanges();
     }
 

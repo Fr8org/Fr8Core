@@ -4,6 +4,7 @@ using Data.Entities;
 using Data.Interfaces;
 using System.Net.Http;
 using System.Security.Claims;
+using Data.States;
 
 namespace Data.Infrastructure.StructureMap
 {
@@ -19,5 +20,7 @@ namespace Data.Infrastructure.StructureMap
         bool IsAuthenticated();
         void Logout();
         ClaimsIdentity GetIdentity(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO);
+        void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType);
+        bool AuthorizeActivity(Privilege privilegeName, string curObjectId, string propertyName = null);
     }
 }

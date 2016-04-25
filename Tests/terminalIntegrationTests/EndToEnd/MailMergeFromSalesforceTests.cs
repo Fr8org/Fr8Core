@@ -1,0 +1,212 @@
+﻿using NUnit.Framework;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using terminalIntegrationTests.Fixtures;
+using terminalSalesforce.Services;
+using Data.Entities;
+using terminalSalesforce.Infrastructure;
+using HealthMonitor.Utility;
+using Data.Interfaces.DataTransferObjects;
+using Hub.Managers;
+using terminalSalesforce.Actions;
+using Data.Interfaces.Manifests;
+using Data.Crates;
+using Data.Utility;
+using Data.Constants;
+using terminaBaselTests.Tools.Terminals;
+using Data.Control;
+using Data.States;
+using terminalDocuSign.Services.New_Api;
+using terminalDocuSign.Services;
+using DocuSign.eSign.Api;
+
+namespace terminalIntegrationTests.EndToEnd
+{
+    [Explicit]
+    public class MailMergeFromSalesforceTests : BaseHubIntegrationTest
+    {
+        private readonly IntegrationTestTools_terminalDocuSign _docuSignTestTools;
+
+        public MailMergeFromSalesforceTests()
+        {
+            _docuSignTestTools = new IntegrationTestTools_terminalDocuSign(this);
+        }
+
+        public override string TerminalName
+        {
+            get
+            {
+                return "terminalSalesforce";
+            }
+        }
+
+        [Test, Category("Integration.terminalSalesforce")]
+        public async Task MailMergeFromSalesforceEndToEnd()
+        {
+            await RevokeTokens("terminalDocuSign");
+            var salesforceAuthToken = await HealthMonitor_FixtureData.CreateSalesforceAuthToken();
+            //Create Case object in Salesforce
+            var caseIdAndName = await CreateCase(salesforceAuthToken);
+            PlanDTO plan = null;
+            try
+            {
+                plan = await CreatePlan();
+                var solution = plan.Plan.SubPlans.First().Activities.Single();
+                await ApplyAuthTokenToSolution(solution, salesforceAuthToken);
+                //Initial configuration
+                solution = await Configure(solution);
+                //Folowup configuration
+                solution = solution.UpdateControls<Mail_Merge_From_Salesforce_v1.ActivityUi>(x =>
+                {
+                    x.SalesforceObjectSelector.selectedKey = "Case";
+                    x.SalesforceObjectSelector.Value = "Case";
+                });
+                //This call will make solution to load specified Salesforce object properties and clear filter
+                solution = await Configure(solution);
+                //This call will run generation of child activities
+                solution = solution.UpdateControls<Mail_Merge_From_Salesforce_v1.ActivityUi>(x =>
+                {
+                    x.SalesforceObjectFilter.Value = $"[{{\"field\":\"SuppliedName\",\"operator\":\"eq\",\"value\":\"{caseIdAndName.Item2}\"}}]";
+                    var sendDocuSignItem = x.MailSenderActivitySelector.ListItems.FirstOrDefault(y => y.Key == "Send DocuSign Envelope");
+                    Assert.IsNotNull(sendDocuSignItem, $"Send DocuSign Envelope activity is not marked with '{Tags.EmailDeliverer}' tag");
+                    x.MailSenderActivitySelector.selectedKey = sendDocuSignItem.Key;
+                    x.MailSenderActivitySelector.Value = sendDocuSignItem.Value;
+                    x.RunMailMergeButton.Clicked = true;
+                });
+                solution = await Configure(solution);
+                Assert.AreEqual(2, solution.ChildrenActivities.Length, "Child activities were not generated after mail merge was requested");
+                //Configure Send DocuSign Envelope activity to use proper upstream values
+                var docuSignActivity = solution.ChildrenActivities[1].ChildrenActivities[0];
+                var docusSignAuthAndConfig = await AuthorizeAndConfigureDocuSignActivity(docuSignActivity);
+                docuSignActivity = docusSignAuthAndConfig.Item1;
+                //Run plan
+                var container = await Run(plan);
+                Assert.AreEqual(State.Completed, container.State, "Container state is not equal to Completed");
+                // Deactivate plan
+                await Deactivate(plan);
+                //Verify contents of envelope
+                AssertEnvelopeContents(docusSignAuthAndConfig.Item2, caseIdAndName.Item2);
+                // Verify that test email has been received
+                EmailAssert.EmailReceived("dse_demo@docusign.net", "Test Message from Fr8");
+            }
+            finally
+            {
+                var caseWasDeleted = await DeleteCase(caseIdAndName.Item1, salesforceAuthToken);
+                Assert.IsTrue(caseWasDeleted, "Case created for test purposes failed to be deleted");
+                //if (plan != null)
+                //{
+                //    await HttpDeleteAsync($"{_baseUrl}plans?id={plan.Plan.Id}");
+                //}
+            }
+        }
+
+        private void AssertEnvelopeContents(Guid docuSignTokenId, string expectedName)
+        {
+            var configuration = new DocuSignManager().SetUp(_docuSignTestTools.GetDocuSignAuthToken(docuSignTokenId));
+            //find the envelope on the Docusign Account
+            var folderItems = DocuSignFolders.GetFolderItems(configuration, new DocusignQuery()
+            {
+                Status = "sent",
+                SearchText = expectedName
+            });
+            var envelope = folderItems.FirstOrDefault();
+            Assert.IsNotNull(envelope, "Cannot find created Envelope in sent folder of DocuSign Account");
+            var envelopeApi = new EnvelopesApi(configuration.Configuration);
+            //get the recipient that receive this sent envelope
+            var envelopeSigner = envelopeApi.ListRecipients(configuration.AccountId, envelope.EnvelopeId).Signers.FirstOrDefault();
+            Assert.IsNotNull(envelopeSigner, "Envelope does not contain signer as recipient. Send_DocuSign_Envelope activity failed to provide any signers");
+            //get the tabs for the envelope that this recipient received
+            var tabs = envelopeApi.ListTabs(configuration.AccountId, envelope.EnvelopeId, envelopeSigner.RecipientId);
+            Assert.IsNotNull(tabs, "Envelope does not contain any tabs. Check for problems in DocuSignManager and HandleTemplateData");
+        }
+
+        private async Task<Tuple<ActivityDTO, Guid>> AuthorizeAndConfigureDocuSignActivity(ActivityDTO docuSignActivity)
+        {
+            var crateStorage = Crate.GetStorage(docuSignActivity);
+            var authenticationRequired = crateStorage.CratesOfType<StandardAuthenticationCM>().Any();
+            var tokenId = Guid.Empty;
+            if (authenticationRequired)
+            {
+                // Authenticate with DocuSign
+                tokenId = await _docuSignTestTools.AuthenticateDocuSignAndAssociateTokenWithAction(docuSignActivity.Id, GetDocuSignCredentials(), docuSignActivity.ActivityTemplate.Terminal);
+                docuSignActivity = await Configure(docuSignActivity);
+            }
+            using (var storage = Crate.GetUpdatableStorage(docuSignActivity))
+            {
+                var controls = storage.FirstCrate<StandardConfigurationControlsCM>();
+                var templateSelector = controls.Content.FindByName<DropDownList>("target_docusign_template");
+                templateSelector.selectedKey = "SendEnvelopeTestTemplate";
+                templateSelector.Value = "392f63c3-cabb-4b21-b331-52dabf1c2993";
+            }
+            //This configuration call will generate text source fields for selected template properties
+            docuSignActivity = await Configure(docuSignActivity);
+            using (var storage = Crate.GetUpdatableStorage(docuSignActivity))
+            {
+                var controls = storage.FirstCrate<StandardConfigurationControlsCM>();
+                var textSource = controls.Content.FindByName<TextSource>("RolesMappingTestSigner role email");
+                textSource.ValueSource = "upstream";
+                textSource.selectedKey = "SuppliedEmail";
+                textSource.Value = "SuppliedEmail";
+
+                textSource = controls.Content.FindByName<TextSource>("RolesMappingTestSigner role name");
+                textSource.ValueSource = "upstream";
+                textSource.selectedKey = "SuppliedName";
+                textSource.Value = "SuppliedName";
+            }
+            return new Tuple<ActivityDTO, Guid>(await Save(docuSignActivity), tokenId);
+        }
+
+        private async Task<ActivityDTO> Save(ActivityDTO activity)
+        {
+            return await HttpPostAsync<ActivityDTO, ActivityDTO>($"{_baseUrl}activities/save", activity);
+        }
+
+        private async Task<ActivityDTO> Configure(ActivityDTO activity)
+        {
+            return await HttpPostAsync<ActivityDTO, ActivityDTO>($"{_baseUrl}activities/configure?id={activity.Id}", activity);
+        }
+
+        private async Task<ContainerDTO> Run(PlanDTO plan)
+        {
+            return await HttpPostAsync<string, ContainerDTO>($"{_baseUrl}plans/run?planId={plan.Plan.Id}", null);
+        }
+
+        private async Task<string> Deactivate(PlanDTO plan)
+        {
+            return await HttpPostAsync<string, string>($"{_baseUrl}plans/deactivate?planId={plan.Plan.Id}", null);
+        }
+
+        private async Task ApplyAuthTokenToSolution(ActivityDTO solution, AuthorizationTokenDO salesforceAuthToken)
+        {
+            var applyToken = new ManageAuthToken_Apply()
+            {
+                ActivityId = solution.Id,
+                AuthTokenId = salesforceAuthToken.Id,
+                IsMain = true
+            };
+            await HttpPostAsync<ManageAuthToken_Apply[], string>(GetHubApiBaseUrl() + "ManageAuthToken/apply", new[] { applyToken });
+        }
+
+        private async Task<PlanDTO> CreatePlan()
+        {
+            var solutionCreateUrl = GetHubApiBaseUrl() + "activities/create?solutionName=Mail_Merge_From_Salesforce";
+            return await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
+        }
+
+        private async Task<bool> DeleteCase(string caseId, AuthorizationTokenDO authToken)
+        {
+            return await new SalesforceManager().Delete(SalesforceObjectType.Case, caseId, authToken);
+        }
+
+        private async Task<Tuple<string, string>> CreateCase(AuthorizationTokenDO authToken)
+        {
+            var manager = new SalesforceManager();
+            var name = Guid.NewGuid().ToString();
+            var data = new Dictionary<string, object> { { "SuppliedEmail", TestEmail }, { "SuppliedName", name } };
+            return new Tuple<string, string>(await manager.Create(SalesforceObjectType.Case, data, authToken), name);
+        }
+    }
+}

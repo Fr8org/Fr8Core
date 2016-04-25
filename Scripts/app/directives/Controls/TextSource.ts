@@ -15,6 +15,7 @@ module dockyard.directives.textSource {
     //Setup aliases
     import pca = dockyard.directives.paneConfigureAction;
     import ddl = dockyard.directives.dropDownListBox;
+    import planEvents = dockyard.Fr8Events.Plan;
 
     export function TextSource(): ng.IDirective {
         
@@ -35,7 +36,7 @@ module dockyard.directives.textSource {
             alertMessage.title = "Notification";
             alertMessage.body = 'There are no upstream fields available right now. To learn more,<a href= "/documentation/UpstreamCrates.html" target= "_blank" > click here </a><i class="fa fa-question-circle" > </i>';
 
-            $scope.$on("onFieldFocus", function(event, args:pca.CallConfigureResponseEventArgs) {
+            $scope.$on(<any>planEvents.ON_FIELD_FOCUS, function(event, args:pca.CallConfigureResponseEventArgs) {
                 if ($scope.field.name === args.focusElement.name) {
                     $scope.isFocused = true;
                 } else {

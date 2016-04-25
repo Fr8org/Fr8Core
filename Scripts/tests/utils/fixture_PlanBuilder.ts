@@ -34,14 +34,14 @@
                         <model.ActivityDTO>{
                             id: '89EBF277-0CC4-4D6D-856B-52457F10C686',
                             activityTemplate: {
-                                id: 1
+                                id: 'E553A5F9-A3AB-4116-A43D-6F5DDB923CF8'
                             },
                             parentPlanNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686'
                         },
                         <model.ActivityDTO>{
                             id: '82B62831-687F-4BC8-AB64-B421985D5CF3',
                             activityTemplate: {
-                                id: 1
+                                id: 'E553A5F9-A3AB-4196-A43D-6F5DDB911CF8'
                             },
                             parentPlanNodeId: '89EBF277-0CC4-4D6D-856B-52457F10C686'
                         }

@@ -50,12 +50,12 @@ namespace terminalSalesforceTests.Actions
             Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
             FieldDTO testField = new FieldDTO("Account", "TestAccount");
             salesforceIntegrationMock.Setup(
-                s => s.GetFields("Account", It.IsAny<AuthorizationTokenDO>(), false))
-                .Returns(() => Task.FromResult((IList<FieldDTO>)new List<FieldDTO> { testField }));
+                s => s.GetProperties(SalesforceObjectType.Account, It.IsAny<AuthorizationTokenDO>(), false))
+                .Returns(() => Task.FromResult(new List<FieldDTO> { testField }));
 
             salesforceIntegrationMock.Setup(
-                s => s.GetObjectByQuery("Account", It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationTokenDO>()))
-                .Returns(() => Task.FromResult(new StandardPayloadDataCM()));
+                s => s.Query(SalesforceObjectType.Account, It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationTokenDO>()))
+                .Returns(() => Task.FromResult(new StandardTableDataCM()));
 
             _getData_v1 = new Get_Data_v1();
         }
@@ -70,15 +70,10 @@ namespace terminalSalesforceTests.Actions
             var result = await _getData_v1.Configure(activityDO, await FixtureData.Salesforce_AuthToken());
 
             //Assert
-            var stroage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(result);
-            Assert.AreEqual(1, stroage.Count, "Number of configuration crates not populated correctly");
-
-            var configControlCM = stroage.CratesOfType<StandardConfigurationControlsCM>().Single();
-            Assert.IsNotNull(configControlCM, "Configuration controls is not present");
-
-            Assert.AreEqual(3, configControlCM.Content.Controls.Count, "Number of configuration controls are not correct");
-            Assert.IsTrue(configControlCM.Content.Controls.Any(control => control.Name.Equals("WhatKindOfData")), "WhatKindOfData DDLB is not present");
-            Assert.IsTrue(configControlCM.Content.Controls.Any(control => control.Name.Equals("SelectedQuery")), "SelectedQuery DDLB is not present");
+            var storage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(result);
+            Assert.AreEqual(2, storage.Count, "Number of configuration crates not populated correctly");
+            Assert.IsNotNull(storage.FirstCrateOrDefault<StandardConfigurationControlsCM>(), "Configuration controls is not present");
+            Assert.IsNotNull(storage.FirstCrateOrDefault<CrateDescriptionCM>(), "There is no crate with runtime crates descriptions in activity storage");
         }
 
         [Test, Category("terminalSalesforceTests.Get_Data.Configure")]
@@ -96,14 +91,17 @@ namespace terminalSalesforceTests.Actions
             activityDO = await _getData_v1.Configure(activityDO, authToken);
 
             //Assert
-            var stroage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(activityDO);
-            Assert.AreEqual(3, stroage.Count, "Number of configuration crates not populated correctly");
+            var storage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(activityDO);
+            Assert.AreEqual(5, storage.Count, "Number of configuration crates not populated correctly");
 
-            Assert.AreEqual(stroage.CratesOfType<TypedFieldsCM>()
-                    .Single(c => c.Label.Equals("Queryable Criteria"))
-                    .Content.Fields.Count, 1, "Queryable Criteria is NOT filled with invalid data");
+            Assert.IsNotNull(storage.FirstCrateOrDefault<TypedFieldsCM>(x => x.Label == Get_Data_v1.QueryFilterCrateLabel), 
+                             "There is not crate with query fields descriptions and expected label in activity storage");
+            Assert.IsNotNull(storage.FirstCrateOrDefault<StandardConfigurationControlsCM>(), "There is not crate with controls in activity storage");
+            Assert.IsNotNull(storage.FirstCrateOrDefault<CrateDescriptionCM>(), "There is no crate with runtime crates descriptions in activity storage");
+            Assert.IsNotNull(storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == Get_Data_v1.SalesforceObjectFieldsCrateLabel ),
+                             "There is no crate with field descriptions of selected Salesforce object in activity storage");
 
-            salesforceIntegrationMock.Verify(s => s.GetFields("Account", It.IsAny<AuthorizationTokenDO>(), false), Times.Exactly(1));
+            salesforceIntegrationMock.Verify(s => s.GetProperties(SalesforceObjectType.Account, It.IsAny<AuthorizationTokenDO>(), false), Times.Exactly(1));
         }
 
         [Test, Category("terminalSalesforceTests.Get_Data.Run")]
@@ -135,19 +133,17 @@ namespace terminalSalesforceTests.Actions
             var stroage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(resultPayload);
             Assert.AreEqual(2, stroage.Count, "Number of Payload crates not populated correctly");
 
-            Assert.IsNotNull(stroage.CratesOfType<StandardPayloadDataCM>()
-                    .Single(c => c.Label.Equals("Salesforce Objects")), "Not able to get the required salesforce object");
+            Assert.IsNotNull(stroage.CratesOfType<StandardTableDataCM>().Single(), "Not able to get the required salesforce object");
         }
 
         private ActivityDO SelectSalesforceAccount(ActivityDO curActivityDO)
         {
             using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(curActivityDO))
             {
-                var configControls = crateStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
-                configControls.Content.Controls.Where(control => control.Name != null && control.Name.Equals("WhatKindOfData"))
-                    .Select(control => control as DropDownList)
-                    .Single()
-                    .selectedKey = "Account";
+                var controlsCrate = crateStorage.FirstCrate<StandardConfigurationControlsCM>();
+                var activityUi = new Get_Data_v1.ActivityUi().ClonePropertiesFrom(controlsCrate.Content) as Get_Data_v1.ActivityUi;
+                activityUi.SalesforceObjectSelector.selectedKey = "Account";
+                controlsCrate.Content.ClonePropertiesFrom(activityUi);
             }
             return curActivityDO;
         }

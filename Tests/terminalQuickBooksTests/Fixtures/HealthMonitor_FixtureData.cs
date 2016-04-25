@@ -31,7 +31,7 @@ namespace terminalQuickBooksTests.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Create_Journal_Entry_TEST",
                 Version = "1"
             };
@@ -54,7 +54,7 @@ namespace terminalQuickBooksTests.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 2,
+                Id = Guid.NewGuid(),
                 Name = "Convert_TableData_To_AccountingTransactions_TEST",
                 Version = "1"
             };
