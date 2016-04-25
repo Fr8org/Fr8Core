@@ -45,8 +45,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Atlassian.Jira, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Atlassian.SDK.5.5.1\lib\Atlassian.Jira.dll</HintPath>
-      <Private>True</Private>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>.\Atlassian.Jira.dll</HintPath>
     </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
@@ -182,7 +182,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activities\Get_Jira_Issue_v1.cs" />
-    <Compile Include="App_Start\WebApiConfig.cs" />
+    <Compile Include="App_Start\RoutesConfig.cs" />
     <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
@@ -200,6 +200,7 @@
     <Compile Include="StructureMapConfiguration.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Atlassian.Jira.dll" />
     <Content Include="Global.asax" />
     <Content Include="index.html" />
     <Content Include="Web.config" />
@@ -324,13 +325,9 @@
   <Target Name="AfterBuild">
   </Target> -->
   <ItemGroup>
-    <Log4netConfigFiles Include="..\Config\*.terminals.*"/>
+    <Log4netConfigFiles Include="..\Config\*.terminals.*" />
   </ItemGroup>
-
   <Target Name="BeforeBuild">
-    <Copy
-        SourceFiles="@(Log4netConfigFiles)"
-        DestinationFolder="."
-         />
+    <Copy SourceFiles="@(Log4netConfigFiles)" DestinationFolder="." />
   </Target>
 </Project>
