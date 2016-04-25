@@ -237,8 +237,12 @@ namespace Hub.Services
                             activityTemplateDo.WebServiceId = 0;
                         }
                     }
-                    
-                    var activity = uow.ActivityTemplateRepository.GetQuery().Include(x => x.WebService).FirstOrDefault(t => t.Name == activityTemplateDo.Name);
+                    var activity = uow.ActivityTemplateRepository
+                                      .GetQuery()
+                                      .Include(x => x.WebService)
+                                      .FirstOrDefault(t => t.Name == activityTemplateDo.Name
+                                                        && t.TerminalId == activityTemplateDo.TerminalId
+                                                        && t.Version == activityTemplateDo.Version);
 
                     if (activity == null)
                     {
