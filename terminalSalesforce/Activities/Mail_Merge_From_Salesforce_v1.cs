@@ -45,14 +45,14 @@ namespace terminalSalesforce.Actions
                 SalesforceObjectSelector = new DropDownList
                 {
                     Name = nameof(SalesforceObjectSelector),
-                    Label = "Get Which Object?",
+                    Label = "Get all objects of type:",
                     Required = true,
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
                 SalesforceObjectFilter = new QueryBuilder
                 {
                     Name = nameof(SalesforceObjectFilter),
-                    Label = "Meeting Which Conditions?",
+                    Label = "That meet the following conditions:",
                     Required = true,
                     Source = new FieldSourceDTO
                     {
