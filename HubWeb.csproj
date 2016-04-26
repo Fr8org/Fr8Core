@@ -4510,6 +4510,10 @@
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
       <Name>TerminalBase</Name>
     </ProjectReference>
+    <ProjectReference Include="Tests\UtilitiesTesting\UtilitiesTesting.csproj">
+      <Project>{6B855C3F-07A9-4787-9FDE-29FA567C43E2}</Project>
+      <Name>UtilitiesTesting</Name>
+    </ProjectReference>
     <ProjectReference Include="Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
       <Name>Utilities</Name>

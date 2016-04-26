@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-    public class FactDTO
+    public class HistoryItemDTO
     {
         public string Activity { get; set; }
         public DateTimeOffset CreateDate { get; set; }
