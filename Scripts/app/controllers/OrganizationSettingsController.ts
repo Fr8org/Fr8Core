@@ -1,9 +1,14 @@
 ﻿/// <reference path="../_all.ts" />
 
-module dockyard.controllers {
+module dockyard.controllers.OrganizationSettingsController {
     'use strict';
 
     export interface IOrganizationSettingsControllerScope extends ng.IScope {
+        name: string;
+        themeName: string;
+        color: string;
+        logoUrl: string;
+        addOrganization: () => void;
     }
 
     class OrganizationSettingsController {
@@ -13,14 +18,27 @@ module dockyard.controllers {
         // See http://docs.angularjs.org/guide/di
         public static $inject = [
             '$scope',
-            'OrganizationSettingsService'
+            'OrganizationSettingsService',
+            'UserService'
         ];
 
         constructor(
             private $scope: IOrganizationSettingsControllerScope,
-            private OrganizationSettingsService: services.IOrganizationSettingsService) {
+            private OrganizationSettingsService: services.IOrganizationSettingsService,
+            private UserService: services.IUserService) {
 
-            OrganizationSettingsService.add("","","","");
+            var organization = OrganizationSettingsService.get(UserService.getCurrentUser().organizationId);
+            
+
+            $scope.addOrganization = function () {
+                var organization: model.OrganizationDTO = {
+                    name: $scope.name,
+                    themeName: $scope.themeName,
+                    color: $scope.color,
+                    logoUrl: $scope.logoUrl
+                }
+                OrganizationSettingsService.add(organization);
+            };
 
         }
     }

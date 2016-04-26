@@ -1,16 +1,25 @@
 ﻿<div ng-controller="OrganizationSettingsController">
+    
     <md-button ng-click="editMode=true">Edit</md-button>
-    <md-content ng-if="editMode" layout-padding>
+    <md-content ng-show="editMode" layout-padding>
         <div>
-            <form name="organizationForm">
+            <form>
                 <div layout-gt-sm="row">
                     <md-input-container class="md-block" flex-gt-sm>
                         <label>Organization Name</label>
-                        <input ng-model="organization.name">
+                        <input ng-model="name">
                     </md-input-container>
                     <md-input-container class="md-block" flex-gt-sm>
                         <label>Theme Name</label>
-                        <input ng-model="theMax">
+                        <input ng-model="themeName">
+                    </md-input-container>
+                    <md-input-container class="md-block" flex-gt-sm>
+                        <label>Color</label>
+                        <input ng-model="color">
+                    </md-input-container>
+                    <md-input-container class="md-block" flex-gt-sm>
+                        <label>Logo Url</label>
+                        <input ng-model="logoUrl">
                     </md-input-container>
                 </div>
             </form>
