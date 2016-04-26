@@ -1,4 +1,5 @@
-﻿using StructureMap;
+﻿using System;
+using StructureMap;
 using System.Threading.Tasks;
 using TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
@@ -8,6 +9,7 @@ using Data.Control;
 using Data.Interfaces.Manifests;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Data.States;
 
 namespace terminalSalesforce.Actions
@@ -113,12 +115,17 @@ namespace terminalSalesforce.Actions
                     throw new ActivityExecutionException("Upstream crates doesn't contain value for feed parent Id");
                 }
             }
-            var result = await _salesforceManager.PostToChatter(feedText, feedParentId, AuthorizationToken);
+            var result = await _salesforceManager.PostToChatter(StripHTML(feedText), feedParentId, AuthorizationToken);
             if (string.IsNullOrEmpty(result))
             {
                 throw new ActivityExecutionException("Failed to post to chatter due to Salesforce API error");
             }
             CurrentPayloadStorage.Add(Crate.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM(new FieldDTO("FeedID", result))));
+        }
+
+        public static string StripHTML(string input)
+        {
+            return Regex.Replace(input, "<.*?>", String.Empty);
         }
     }
 }
