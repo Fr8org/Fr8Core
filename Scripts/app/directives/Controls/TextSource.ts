@@ -16,6 +16,7 @@ module dockyard.directives.textSource {
     import pca = dockyard.directives.paneConfigureAction;
     import ddl = dockyard.directives.dropDownListBox;
     import planEvents = dockyard.Fr8Events.Plan;
+    import upstreamFieldChooserEvents = dockyard.Fr8Events.UpstreamFieldChooser;
 
     export function TextSource(): ng.IDirective {
         
@@ -48,6 +49,10 @@ module dockyard.directives.textSource {
                 if ($scope.field.listItems.length === 0) {
                     uiHelperService.openConfirmationModal(alertMessage);
                 }
+            });
+
+            $scope.$on(<any>upstreamFieldChooserEvents.NO_UPSTREAM_FIELDS, function (event, args: AlertEventArgs) {
+                    uiHelperService.openConfirmationModal(alertMessage);
             });
 
             $scope.onFocus = (fieldName: string) => {

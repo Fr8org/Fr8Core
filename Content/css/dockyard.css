@@ -913,9 +913,14 @@ div[dnd-list].dndDragover {
 
 /*END OF DRAG DROP RELATED CSS */
 
-.upstreamFieldChooser {
-    table-layout: fixed;
+.upstream-field-chooser {
+    
     word-wrap: break-word;
+    max-height:500px;
+}
+
+.upstream-field-chooser span{
+    margin-left:10px;
 }
 
 [ng-table-pagination] {
