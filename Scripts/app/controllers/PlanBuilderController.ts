@@ -807,13 +807,14 @@ module dockyard.controllers {
                 if (this.$scope.curAggReloadingActions.indexOf(results[index].id) === -1) {
                     this.$scope.curAggReloadingActions.push(results[index].id);
                 } else {
-                    var positionToRemove = this.$scope.curAggReloadingActions.indexOf(results[index].id);
-                    this.$scope.curAggReloadingActions.splice(positionToRemove, 1);
-                    return;
+                    //var positionToRemove = this.$scope.curAggReloadingActions.indexOf(results[index].id);
+                    //this.$scope.curAggReloadingActions.splice(positionToRemove, 1);
+                    continue;
+                    //return;
                 }
             }
             
-            // scann all actions to find actions with tag AgressiveReload in ActivityTemplate
+            // scan all actions to find actions with tag AgressiveReload in ActivityTemplate
             this.reConfigure(results);
 
             //wait UI to finish rendering
@@ -854,14 +855,19 @@ module dockyard.controllers {
         private getAgressiveReloadingActions(
             actionGroups: Array<model.ActionGroup>,
             currentAction: interfaces.IActivityDTO) {
-
+                         
             var results: Array<model.ActivityDTO> = [];
-            actionGroups.forEach(group => {
-                group.envelopes.filter(envelope => {
-                    return envelope.activity.activityTemplate.tags !== null && envelope.activity.activityTemplate.tags.indexOf('AggressiveReload') !== -1;
-                }).forEach(env => {
-                    results.push(env.activity);
-                });
+            var currentGroupArray = actionGroups.filter(group => _.any<model.ActivityEnvelope>(group.envelopes, envelope => envelope.activity.id == currentAction.id));
+            if (currentGroupArray.length == 0) {
+                return [];
+            }
+            var currentGroup = currentGroupArray[0]; // max one item is possible.
+            currentGroup.envelopes.filter(envelope => 
+                 /* envelope.activity.activityTemplate.tags !== null 
+                && envelope.activity.activityTemplate.tags.indexOf('AggressiveReload') !== -1 && */
+                envelope.activity.ordering > currentAction.ordering
+            ).forEach(env => {
+                results.push(env.activity);
             });
 
             return results;
