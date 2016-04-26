@@ -564,9 +564,18 @@ namespace Hub.Services
         {
             if (curPlan == default(Guid))
             {
-                throw new ArgumentException(nameof(curPlan));
+                throw new ArgumentException("Invalid pland id.", nameof(curPlan));
             }
+
+            // we "eat" this exception to make Hangfire thinks that everthying is good and job is completed
+            // this exception should be already logged somewhere
+            try
+            {
             await ObjectFactory.GetInstance<IPlan>().Run(curPlan, curPayload);
+        }
+            catch
+            {
+            }
         }
 
         public async Task<ContainerDO> Run(Guid planId, params Crate[] curPayload)
@@ -601,10 +610,17 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curContainerDO = uow.ContainerRepository.GetByKey(containerId);
+
+                if (curContainerDO == null)
+                {
+                    throw new Exception($"Can't continue container execution. Container {containerId} was not found.");
+                }
+
                 if (curContainerDO.State != State.Suspended)
                 {
-                    throw new ApplicationException("Attempted to Continue a Process that wasn't pending");
+                    throw new ApplicationException($"Attempted to Continue a Container {containerId} that wasn't in pending state. Container state is {curContainerDO.State}.");
                 }
+
                 //continue from where we left
                 return await Run(uow, curContainerDO);
             }

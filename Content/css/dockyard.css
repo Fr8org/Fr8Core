@@ -1167,6 +1167,10 @@ footer p {
     z-index: 1001;
 }
 
+.dataTable td {
+  word-break: break-all;
+}
+
 .md-table-fr8-button {
     margin: 10px 2px !important;
 }

@@ -327,14 +327,14 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
-                Name = "FindObjectsThatMatchIncomingMessage",
-                Label = "Find Objects That Match Incoming Message",
+                Name = "FilterObjectListByIncomingMessage",
+                Label = "Filter Object List by Incoming Message",
                 Version = "1",
                 Category = ActivityCategory.Processors,
                 NeedsAuthentication = false,
                 Terminal = terminal,
                 WebService = webService,
-                MinPaneWidth = 350
+                MinPaneWidth = 400
             });
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
