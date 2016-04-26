@@ -12,6 +12,14 @@ namespace Hub.Services
 {
     public class PlanDescription : IPlanDescription
     {
+        public List<PlanDescriptionDO> GetDescriptions(string userId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                return uow.PlanDescriptionsRepository.GetQuery().Where(a => a.Fr8AccountId == userId).ToList();
+            }
+        }
+
         public PlanDescriptionDO Save(Guid planId, string curFr8UserId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

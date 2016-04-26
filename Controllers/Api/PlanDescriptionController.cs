@@ -29,9 +29,23 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
+#if DEBUG
+        [AllowAnonymous]
+#endif
         public async Task<IHttpActionResult> Post(Guid planId, string userId)
         {
             var result = _planDescription.Save(planId, userId);
+            return Ok(result);
+        }
+
+
+        [HttpGet]
+#if DEBUG
+        [AllowAnonymous]
+#endif
+        public async Task<IHttpActionResult> Get(string userId)
+        {
+            var result = _planDescription.GetDescriptions(userId);
             return Ok(result);
         }
     }

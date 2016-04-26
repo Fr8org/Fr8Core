@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
@@ -18,6 +19,7 @@ namespace Data.Entities
 
         [ForeignKey("User")]
         public string Fr8AccountId { get; set; }
+        [JsonIgnore]
         public Fr8AccountDO User { get; set; }
 
         public PlanNodeDescriptionDO StartingPlanNodeDescription { get; set; }
