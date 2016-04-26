@@ -817,6 +817,12 @@ module dockyard.controllers {
             // scan all actions to find actions with tag AgressiveReload in ActivityTemplate
             this.reConfigure(results);
 
+            // Reconfigure also child activities of the activity which initiated reconfiguration. 
+            if (callConfigureResponseEventArgs.action && callConfigureResponseEventArgs.action.childrenActivities.length > 0) {
+                this.reConfigure(<model.ActivityDTO[]>callConfigureResponseEventArgs.action.childrenActivities);
+            }
+
+
             //wait UI to finish rendering
             this.$timeout(() => {
                 if (callConfigureResponseEventArgs.focusElement != null) {
