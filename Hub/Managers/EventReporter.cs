@@ -162,6 +162,8 @@ namespace Hub.Managers
                     "Activity Name: " + template?.Name)
                 };
 
+                LogHistoryItem(factDO);
+
                 uow.FactRepository.Add(factDO);
                 uow.SaveChanges();
             }
@@ -237,6 +239,8 @@ namespace Hub.Managers
                         )
                     };
 
+                    LogHistoryItem(factDO);
+
                     uow.FactRepository.Add(factDO);
                     var planDO = uow.PlanRepository.GetById<PlanDO>(activityDo.RootPlanNodeId);
                     uow.SaveChanges();
@@ -283,6 +287,8 @@ namespace Hub.Managers
                     ),
                 };
 
+                LogHistoryItem(factDO);
+
                 uow.FactRepository.Add(factDO);
                 uow.SaveChanges();
             }
@@ -319,6 +325,8 @@ namespace Hub.Managers
                 if (planDO != null)
                 {
                     var factDO = CreatedPlanFact(planId, "Deactivated");
+
+                    LogHistoryItem(factDO);
                     uowFact.FactRepository.Add(factDO);
                     uowFact.SaveChanges();
                 }
@@ -337,6 +345,8 @@ namespace Hub.Managers
                 if (planDO != null)
                 {
                     var factDO = CreatedPlanFact(planId, "Activated");
+
+                    LogHistoryItem(factDO);
                     uowFact.FactRepository.Add(factDO);
                     uowFact.SaveChanges();
                 }
@@ -361,6 +371,7 @@ namespace Hub.Managers
                    "Container Id: " + containerDO.Name)
                 };
 
+                LogHistoryItem(factDO);
                 uowFact.FactRepository.Add(factDO);
                 uowFact.SaveChanges();
             }
@@ -456,6 +467,7 @@ namespace Hub.Managers
                     "External AccountId: " + authToken.ExternalAccountId
                 );
 
+                LogHistoryItem(factDO);
                 uow.FactRepository.Add(factDO);
                 uow.SaveChanges();
             }
@@ -481,6 +493,7 @@ namespace Hub.Managers
                     )
                 };
 
+                LogHistoryItem(newFactDO);
                 uow.FactRepository.Add(newFactDO);
                 uow.SaveChanges();
             }
@@ -500,6 +513,8 @@ namespace Hub.Managers
                     CreatedByID = _security.GetCurrentUser(),
                     Status = value != null ? value.ToString() : null,
                 };
+
+                LogHistoryItem(newFactDO);
                 uow.FactRepository.Add(newFactDO);
                 uow.SaveChanges();
             }
@@ -519,6 +534,8 @@ namespace Hub.Managers
                     CreatedByID = _security.GetCurrentUser(),
                     Status = stateValue,
                 };
+
+                LogHistoryItem(newFactDO);
                 uow.FactRepository.Add(newFactDO);
                 uow.SaveChanges();
             }
@@ -619,7 +636,7 @@ namespace Hub.Managers
                     Data = string.Format("User with email :{0}, created from: {1}", uow.UserRepository.GetByKey(curUserId).EmailAddress.Address, new StackTrace())
                 };
 
-                SaveFact(curAction);
+                SaveAndLogFact(curAction);
             }
         }
 
@@ -641,7 +658,7 @@ namespace Hub.Managers
 
                 curAction.Data = string.Format("{0} ID :{1}, {2} {3}: ObjectId: {4} EmailAddress: {5} Subject: {6}", curAction.PrimaryCategory, emailId, curAction.SecondaryCategory, curAction.Activity, emailId, (uow.UserRepository.GetByKey(curAction.Fr8UserId).EmailAddress.Address), emailSubject);
 
-                SaveFact(curAction);
+                SaveAndLogFact(curAction);
             }
         }
 
@@ -655,7 +672,8 @@ namespace Hub.Managers
                 Fr8UserId = Fr8UserId,
                 ObjectId = eventId.ToString(CultureInfo.InvariantCulture)
             };
-            SaveFact(curAction);
+
+            SaveAndLogFact(curAction);
         }
         public void EmailSent(int emailId, string Fr8UserId)
         {
@@ -667,7 +685,8 @@ namespace Hub.Managers
                 Fr8UserId = Fr8UserId,
                 ObjectId = emailId.ToString(CultureInfo.InvariantCulture)
             };
-            SaveFact(curAction);
+
+            SaveAndLogFact(curAction);
         }
 
         //public void BookingRequestCreated(int bookingRequestId)
@@ -710,9 +729,8 @@ namespace Hub.Managers
                 Data = string.Format("EnvelopeId: {0}.",
                         envelopeId)
             };
-            LogHistoryItem(fact);
-            //LogFactInformation(fact, "DocusignNotificationReceived");
-            SaveFact(fact);
+            
+            SaveAndLogFact(fact);
         }
 
         /// <summary>
@@ -732,9 +750,8 @@ namespace Hub.Managers
                 Data = string.Format("Plan Name: {0}.",
                         planName)
             };
-            LogHistoryItem(fact);
-            //LogFactInformation(fact, "RouteCreated");
-            SaveFact(fact);
+            
+            SaveAndLogFact(fact);
         }
 
         /// <summary>
@@ -752,13 +769,14 @@ namespace Hub.Managers
                 Data = message
             };
 
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.IncidentRepository.Add(fact);
                 uow.SaveChanges();
             }
+
             LogHistoryItem(fact,EventType.Warning);
-            //LogFactInformation(fact, "ImproperDocusignNotificationReceived", EventType.Warning);
         }
 
         /// <summary>
@@ -776,7 +794,8 @@ namespace Hub.Managers
                 Data = message
             };
 
-            Logger.GetLogger().Error(message);
+            LogHistoryItem(incidentDO);
+            
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -812,9 +831,8 @@ namespace Hub.Managers
                         envelopeId,
                         containerId)
             };
-            LogHistoryItem(fact);
-            //LogFactInformation(fact, "ProcessProcessing");
-            SaveFact(fact);
+
+            SaveAndLogFact(fact); 
         }
 
         private void SaveFact(FactDO curAction)
@@ -830,7 +848,6 @@ namespace Hub.Managers
         {
             SaveFact(fact);
             LogHistoryItem(fact);
-            //LogFactInformation(fact, fact.SecondaryCategory + " " + fact.Activity);
         }
 
         public void UserRegistered(Fr8AccountDO curUser)
@@ -847,7 +864,9 @@ namespace Hub.Managers
                     Data = string.Format("User registrated with :{0},", curUser.EmailAddress.Address)
                     //Data = "User registrated with " + curUser.EmailAddress.Address
                 };
-                Logger.GetLogger().Info(curFactDO.Data);
+
+                LogHistoryItem(curFactDO);
+
                 uow.FactRepository.Add(curFactDO);
                 uow.SaveChanges();
             }
@@ -866,7 +885,11 @@ namespace Hub.Managers
                     Data = string.Format("{0} activity templates were registrated", count)
                     //Data = "User registrated with " + curUser.EmailAddress.Address
                 };
-                Logger.GetLogger().Info(curFactDO.Data);
+
+                //Logger.GetLogger().Info(curFactDO.Data);
+                LogHistoryItem(curFactDO);
+
+
                 uow.FactRepository.Add(curFactDO);
                 uow.SaveChanges();
             }
@@ -882,7 +905,9 @@ namespace Hub.Managers
                 Data = message
             };
 
-            Logger.GetLogger().Error(message);
+            //Logger.GetLogger().Error(message);
+            LogHistoryItem(incidentDO,EventType.Error);
+
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -911,6 +936,7 @@ namespace Hub.Managers
                     Fr8UserId = userId,
                 };
 
+                LogHistoryItem(factDO);
                 uow.FactRepository.Add(factDO);
                 uow.SaveChanges();
             }
@@ -918,11 +944,19 @@ namespace Hub.Managers
 
         public string ComposeOutputString(HistoryItemDO historyItem)
         {
+            historyItem = historyItem ?? new HistoryItemDO() { Data = "HistoryItem object is null!" };
+
             string itemType = historyItem.GetType().Name.Replace("DO", "");
+
+            //trim Data feild if it is too long, max length 256 symbols
+            historyItem.Data = historyItem.Data ?? "";
+            var dataLen = historyItem.Data.Length > 256 ? 255 : historyItem.Data.Length;
+            var substring = historyItem.Data.Substring(0, dataLen);
+
             var message = $"{itemType}: {historyItem.PrimaryCategory} " +
                               $"{historyItem.SecondaryCategory}" +
                               $"{historyItem.Activity}, " +
-                              $"Data = {historyItem.Data}, " +
+                              $"Data = {substring}, " +
                               $"Fr8User = {historyItem.Fr8UserId}, " +
                               $"ObjectId = {historyItem.ObjectId}";
 
@@ -932,55 +966,13 @@ namespace Hub.Managers
         /// <summary>
         /// Logs historyItem information using the standard log mechanisms, replacement for LogFactInformation .
         /// </summary>
-        /// <param name="fact">An instance of FactDO class.</param>
-        /// <param name="eventName">Name of the event.</param>
+        /// <param name="historyItem">An instance of FactDO class.</param>
         /// <param name="eventType">Event type.</param>
         public void LogHistoryItem(HistoryItemDO historyItem, EventType eventType = EventType.Info)
         {
             var message = ComposeOutputString(historyItem);
-
-            switch (eventType)
-            {
-                case EventType.Info:
-                    Logger.GetLogger().Info(message);
-                    break;
-                case EventType.Error:
-                    Logger.GetLogger().Error(message);
-                    break;
-                case EventType.Warning:
-                    Logger.GetLogger().Warn(message);
-                    break;
-            }
+            Logger.LogMessage(message,eventType);
         }
-
-        /// <summary>
-        /// Logs fact information using the standard log mechanisms.
-        /// </summary>
-        /// <param name="fact">An instance of FactDO class.</param>
-        /// <param name="eventName">Name of the event.</param>
-        /// <param name="eventType">Event type.</param>
-        //public void LogFactInformation(HistoryItemDO fact, string eventName, EventType eventType = EventType.Info)
-        //{
-        //    string message = string.Format(
-        //        "Event {0} generated with Fr8UserId = {1}, ObjectId = {2} and Data = {3}.",
-        //        eventName,
-        //        fact.Fr8UserId,
-        //        fact.ObjectId,
-        //        fact.Data);
-
-        //    switch (eventType)
-        //    {
-        //        case EventType.Info:
-        //            Logger.GetLogger().Info(message);
-        //            break;
-        //        case EventType.Error:
-        //            Logger.GetLogger().Error(message);
-        //            break;
-        //        case EventType.Warning:
-        //            Logger.GetLogger().Warn(message);
-        //            break;
-        //    }
-        //}
 
         private void OnAlertTokenRequestInitiated(string userId)
         {
@@ -1188,12 +1180,7 @@ namespace Hub.Managers
 
         }
 
-        public enum EventType
-        {
-            Info,
-            Error,
-            Warning
-        }
+        
 
 
         private void CreateContainerFact(ContainerDO containerDO, string activity, ActivityDO activityDO = null)
