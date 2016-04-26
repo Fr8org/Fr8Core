@@ -1,12 +1,13 @@
 ﻿using Data.Entities;
 using Data.Interfaces;
+using Data.Repositories.Encryption;
 
 namespace Data.Repositories.Plan
 {
     public class PlanStorageProviderMockedDb : PlanStorageProviderEf
     {
-        public PlanStorageProviderMockedDb(IUnitOfWork uow) 
-            : base(uow)
+        public PlanStorageProviderMockedDb(IUnitOfWork uow, IEncryptionProvider encryptionProvider) 
+            : base(uow, encryptionProvider)
         {
         }
 
@@ -32,14 +33,13 @@ namespace Data.Repositories.Plan
 
             foreach (var planNodeDo in changes.Insert)
             {
-                //RouteNodes.Add(routeNodeDo);
-
                 var entity = planNodeDo.Clone();
 
                 ClearNavigationProperties(entity);
                
                 if (entity is ActivityDO)
                 {
+                    EncryptActivityCrateStorage((ActivityDO) entity);
                     ActivityRepository.Add((ActivityDO)entity);
                 }
                 else if (entity is PlanDO)
@@ -58,12 +58,13 @@ namespace Data.Repositories.Plan
 
             foreach (var changedObject in changes.Update)
             {
-                var planNodeDo = changedObject.Node;
+                var planNodeDo = changedObject.Node.Clone();
                 object entity = null;
 
                 if (planNodeDo is ActivityDO)
                 {
                     entity = ActivityRepository.GetByKey(planNodeDo.Id);
+                    UpdateEncryptedActivityCrateStorage((ActivityDO)planNodeDo, changedObject);
                 }
                 else if (planNodeDo is PlanDO)
                 {
@@ -76,7 +77,7 @@ namespace Data.Repositories.Plan
 
                 foreach (var changedProperty in changedObject.ChangedProperties)
                 {
-                    changedProperty.SetValue(entity, changedProperty.GetValue(changedObject.Node));
+                    changedProperty.SetValue(entity, changedProperty.GetValue(planNodeDo));
                 }
             }
         }

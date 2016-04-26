@@ -360,7 +360,7 @@
     <Compile Include="Helpers\FieldMemberAccessor.cs" />
     <Compile Include="Helpers\IMemberAccessor.cs" />
     <Compile Include="Interfaces\Manifests\ExternalObjectHandlesCM.cs" />
-	 <Compile Include="Interfaces\Manifests\DocuSignEnvelopeCM_v2.cs" />
+    <Compile Include="Interfaces\Manifests\DocuSignEnvelopeCM_v2.cs" />
     <Compile Include="Interfaces\Manifests\Helpers\StandardTableDataCMTools.cs" />
     <Compile Include="Interfaces\Manifests\ManifestDescriptionCM.cs" />
     <Compile Include="Interfaces\Manifests\ChartOfAccountsCM.cs" />
@@ -721,6 +721,10 @@
     <Compile Include="Migrations\201604191731406_AddLabelToTerminals.Designer.cs">
       <DependentUpon>201604191731406_AddLabelToTerminals.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201604262255443_EncryptedCrateStorageAdded.cs" />
+    <Compile Include="Migrations\201604262255443_EncryptedCrateStorageAdded.Designer.cs">
+      <DependentUpon>201604262255443_EncryptedCrateStorageAdded.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -732,6 +736,8 @@
     <Compile Include="Repositories\Authorization\KeyVaultAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\Cache\ICacheExpirationStrategy.cs" />
     <Compile Include="Repositories\Cache\IExpirationToken.cs" />
+    <Compile Include="Repositories\Encryption\IEncryptionProvider.cs" />
+    <Compile Include="Repositories\Encryption\Impl\Dummy\DummyEncryptionProvider.cs" />
     <Compile Include="Repositories\FileTagsRepository.cs" />
     <Compile Include="Interfaces\IMultiTenantObjectRepository.cs" />
     <Compile Include="Repositories\MultiTenant\Ast\AstNode.cs" />
@@ -799,9 +805,8 @@
     <Compile Include="Repositories\Security\StorageImpl\Cache\ISecurityObjectsCache.cs" />
     <Compile Include="Repositories\Security\StorageImpl\Cache\SecurityObjectsCache.cs" />
     <Compile Include="Repositories\Security\StorageImpl\Cache\SecurityObjectsStorage.cs" />
-    <Compile Include="Repositories\Security\StorageImpl\SqlBased\SqlConnectionProvider.cs" />
-    <Compile Include="Repositories\Security\StorageImpl\SqlBased\SqlSecurityObjectsStorageProvider.cs" />
     <Compile Include="Repositories\SqlBased\SqlConnectionProvider.cs" />
+    <Compile Include="Repositories\Security\StorageImpl\SqlBased\SqlSecurityObjectsStorageProvider.cs" />
     <Compile Include="Repositories\TagRepository.cs" />
     <Compile Include="Repositories\TerminalRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
@@ -1254,6 +1259,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604191731406_AddLabelToTerminals.resx">
       <DependentUpon>201604191731406_AddLabelToTerminals.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604262255443_EncryptedCrateStorageAdded.resx">
+      <DependentUpon>201604262255443_EncryptedCrateStorageAdded.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
