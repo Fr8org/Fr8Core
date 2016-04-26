@@ -944,9 +944,12 @@ namespace Hub.Managers
 
         public string ComposeOutputString(HistoryItemDO historyItem)
         {
+            historyItem = historyItem ?? new HistoryItemDO() { Data = "HistoryItem object is null!" };
+
             string itemType = historyItem.GetType().Name.Replace("DO", "");
 
             //trim Data feild if it is too long, max length 256 symbols
+            historyItem.Data = historyItem.Data ?? "";
             var dataLen = historyItem.Data.Length > 256 ? 255 : historyItem.Data.Length;
             var substring = historyItem.Data.Substring(0, dataLen);
 

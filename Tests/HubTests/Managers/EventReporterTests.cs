@@ -39,5 +39,23 @@ namespace HubTests.Managers
 
             Assert.AreEqual(message1, message2);
         }
+
+        [Test]
+        public void Should_can_take_null_Data_and_historyItemDO_when_composing_string()
+        {
+            var historyItem = UtilitiesTesting.Fixtures.FixtureData.TestFactDO();
+            historyItem.Data = null;
+
+            //act
+            var message1 = _eventReporter.ComposeOutputString(null);
+
+
+            historyItem.Data = null;
+            historyItem.CreatedBy = null;
+            var message2 = _eventReporter.ComposeOutputString(historyItem);
+
+            Assert.IsNotEmpty(message1);
+            Assert.IsNotEmpty(message2);
+        }
     }
 }
