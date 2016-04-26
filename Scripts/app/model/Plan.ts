@@ -37,6 +37,7 @@
         category: string;
         orderBy: string;
         isDescending: boolean;
+        filter: string;
     }
 
     export class PlanResultDTO {

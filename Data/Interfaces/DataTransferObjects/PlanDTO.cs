@@ -33,6 +33,9 @@ namespace Data.Interfaces.DataTransferObjects
 
         [JsonProperty("category")]
         public string Category { get; set; }
+
+        [JsonProperty("filter")]
+        public string Filter { get; set; }
     }
 
     public class PlanResultDTO

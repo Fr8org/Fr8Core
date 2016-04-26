@@ -20,15 +20,19 @@ module dockyard.controllers {
         runningStatus: any;
         updatePlansLastUpdated: (id: any, date: any) => void;
 
+        filter: any;
+
         inActiveQuery: model.PlanQueryDTO;
         inActivePromise: ng.IPromise<model.PlanResultDTO>;
         inActivePlans: model.PlanResultDTO;
         getInactivePlans: () => void;
+        removeInactiveFilter: () => void;
 
         activeQuery: model.PlanQueryDTO;
         activePromise: ng.IPromise<model.PlanResultDTO>;
         activePlans: model.PlanResultDTO;
         getActivePlans: () => void;
+        removeActiveFilter: () => void;
     }
 
     /*
@@ -69,6 +73,12 @@ module dockyard.controllers {
                 this.reArrangePlans(plan);
             });
 
+            $scope.filter = {
+                options: {
+                    debounce: 500
+                }
+            };
+
             $scope.inActiveQuery = new model.PlanQueryDTO();
             $scope.inActiveQuery.status = 1;
             $scope.inActiveQuery.planPerPage = 10;
@@ -93,12 +103,56 @@ module dockyard.controllers {
             $scope.updatePlansLastUpdated = <(id: any, date: any) => void>angular.bind(this, this.updatePlanLastUpdated);
             $scope.getInactivePlans = <() => void>angular.bind(this, this.getInactivePlans);
             $scope.getActivePlans = <() => void>angular.bind(this, this.getActivePlans);
+            $scope.removeInactiveFilter = <() => void>angular.bind(this, this.removeInactiveFilter);
+            $scope.removeActiveFilter = <() => void>angular.bind(this, this.removeActiveFilter);
+
+            $scope.$watch('inActiveQuery.filter', (newValue, oldValue) => {
+                var bookmark: number = 1;
+                if (!oldValue) {
+                    bookmark = $scope.inActiveQuery.page;
+                }
+                if (newValue !== oldValue) {
+                    $scope.inActiveQuery.page = 1;
+                }
+                if (!newValue) {
+                    $scope.inActiveQuery.page = bookmark;
+                }
+
+                this.getInactivePlans();
+            });
+
+            $scope.$watch('activeQuery.filter', (newValue, oldValue) => {
+                var bookmark: number = 1;
+                if (!oldValue) {
+                    bookmark = $scope.activeQuery.page;
+                }
+                if (newValue !== oldValue) {
+                    $scope.activeQuery.page = 1;
+                }
+                if (!newValue) {
+                    $scope.activeQuery.page = bookmark;
+                }
+
+                this.getActivePlans();
+            });
+            
 
             UserService.getCurrentUser().$promise.then(data => {
                 PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, dockyard.services.pusherNotifierExecutionEvent, (data: any) => {
                         this.updatePlanLastUpdated(data.PlanId, data.PlanLastUpdated);
                     });
                 });
+        }
+
+        private removeInactiveFilter() {
+            this.$scope.inActiveQuery.filter = null;
+            this.$scope.filter.showInactive = false;
+            this.getInactivePlans();
+        }
+        private removeActiveFilter() {
+            this.$scope.activeQuery.filter = null;
+            this.$scope.filter.showActive = false;
+            this.getActivePlans();
         }
 
         private getInactivePlans() {

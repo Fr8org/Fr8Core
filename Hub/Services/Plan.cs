@@ -73,6 +73,11 @@ namespace Hub.Services
                 ? planQuery.Where(c => c.Category == planQueryDTO.Category) 
                 : planQuery.Where(c => string.IsNullOrEmpty(c.Category));
 
+            if (!string.IsNullOrEmpty(planQueryDTO.Filter))
+            {
+                planQuery = planQuery.Where(c => c.Name.Contains(planQueryDTO.Filter) || c.Description.Contains(planQueryDTO.Filter));
+            }
+            
             planQuery = planQueryDTO.Status == null
                 ? planQuery.Where(pt => pt.PlanState != PlanState.Deleted)
                 : planQuery.Where(pt => pt.PlanState == planQueryDTO.Status);

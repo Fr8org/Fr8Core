@@ -1,9 +1,26 @@
 ﻿<md-content>
 
-    <md-toolbar class="md-table-toolbar md-default">
+    <md-toolbar class="md-table-toolbar md-default" ng-show="!filter.showActive" style="margin-top: 30px;">
         <div class="md-toolbar-tools">
-            <h2 class="md-title font-green-haze bold">RUNNING PLANS</h2>
+            <h2 class="md-title font-green-haze">Running Plans</h2>
             <div flex></div>
+            <md-button class="md-icon-button" ng-click="filter.showActive = true">
+                <md-icon md-font-icon="fa fa-filter material-fa-icon"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-toolbar class="md-table-toolbar md-default" ng-show="filter.showActive" style="margin-top: 30px;">
+        <div class="md-toolbar-tools">
+            <md-icon md-font-icon="fa fa-search material-fa-icon"></md-icon>
+            <div flex name="filter.form">
+                <md-input-container class="md-block" flex-gt-sm>
+                    <input flex type="text" ng-model="activeQuery.filter" ng-model-options="filter.options" placeholder="Search" style="border-bottom: 1px solid #000000; border-bottom: 1px solid rgba(0,0,0,.12) !important">
+                </md-input-container>
+            </div>
+            <md-button class="md-icon-button" ng-click="removeActiveFilter()">
+                <md-icon md-font-icon="fa fa-times material-fa-icon"></md-icon>
+            </md-button>
         </div>
     </md-toolbar>
 
@@ -61,10 +78,27 @@
 
 
 
-    <md-toolbar class="md-table-toolbar md-default">
+    <md-toolbar class="md-table-toolbar md-default" ng-show="!filter.showInactive">
         <div class="md-toolbar-tools">
             <h2 class="md-title font-green-haze">Plan Library</h2>
             <div flex></div>
+            <md-button class="md-icon-button" ng-click="filter.showInactive = true">
+                <md-icon md-font-icon="fa fa-filter material-fa-icon"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-toolbar class="md-table-toolbar md-default" ng-show="filter.showInactive">
+        <div class="md-toolbar-tools">
+            <md-icon md-font-icon="fa fa-search material-fa-icon"></md-icon>
+            <div flex name="filter.form">
+                <md-input-container class="md-block" flex-gt-sm>
+                    <input flex type="text" ng-model="inActiveQuery.filter" ng-model-options="filter.options" placeholder="Search" style="border-bottom: 1px solid #000000; border-bottom: 1px solid rgba(0,0,0,.12) !important">
+                </md-input-container>
+            </div>
+            <md-button class="md-icon-button" ng-click="removeInactiveFilter()">
+                <md-icon md-font-icon="fa fa-times material-fa-icon"></md-icon>
+            </md-button>
         </div>
     </md-toolbar>
 

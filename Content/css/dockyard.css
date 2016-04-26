@@ -1181,3 +1181,9 @@ footer p {
     padding-top: 10px !important;
     padding-bottom: 10px !important;
 }
+
+.material-fa-icon {
+    font-size: 22px !important;
+    padding-left: 5px;
+    padding-right: 5px;
+}
