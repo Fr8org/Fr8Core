@@ -51,7 +51,7 @@ namespace terminalDropbox.Actions
         {
             var fileNames = await _dropboxService.GetFileList(GetDropboxAuthToken());
             ConfigurationControls.FileList.ListItems = fileNames
-                .Select(filePath => new ListItem { Key = filePath, Value = filePath }).ToList();
+                .Select(filePath => new ListItem { Key = Path.GetFileName(filePath), Value = Path.GetFileName(filePath) }).ToList();
             runtimeCrateManager.MarkAvailableAtRuntime<StandardFileListCM>(RuntimeCrateLabel);
             CurrentActivityStorage.ReplaceByLabel(PackDropboxFileListCrate(fileNames));
         }
@@ -60,7 +60,7 @@ namespace terminalDropbox.Actions
         {
             var fileList = await _dropboxService.GetFileList(GetDropboxAuthToken());
             ConfigurationControls.FileList.ListItems = fileList
-                .Select(filePath => new ListItem { Key = filePath, Value = filePath }).ToList();
+                .Select(filePath => new ListItem { Key = Path.GetFileName(filePath), Value = Path.GetFileName(filePath) }).ToList();
             runtimeCrateManager.MarkAvailableAtRuntime<StandardFileListCM>(RuntimeCrateLabel);
             CurrentActivityStorage.ReplaceByLabel(PackDropboxFileListCrate(fileList));
         }

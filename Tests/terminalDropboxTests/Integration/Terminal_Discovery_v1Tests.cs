@@ -5,10 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
-using Microsoft.Owin.Hosting;
 using NUnit.Framework;
-using Ploeh.AutoFixture;
-using terminalDropbox;
 
 namespace terminalDropboxTests.Integration
 {
@@ -19,32 +16,6 @@ namespace terminalDropboxTests.Integration
         private const string Get_File_List_Activity_Name = "Get_File_List";
 
         public override string TerminalName => "terminalDropbox";
-
-        private const string Host = "http://localhost:19760";
-        private IDisposable _app;
-
-        [TestFixtureSetUp]
-        public void FixtureSetup()
-        {
-            try
-            {
-                _app = WebApp.Start<Startup>(Host);
-            }
-            catch
-            {
-                /* Ignored
-                We need this empty exception handling when terminal already started.
-                So, if you already start terminal manually (or it started on build server),
-                there is no need to use self-hosted Owin server
-                */
-            }
-        }
-
-        [TestFixtureTearDown]
-        public void FixtureTearDown()
-        {
-            _app?.Dispose();
-        }
 
         [Test, CategoryAttribute("Integration.terminalDropbox")]
         public async Task Discover_Check_Returned_Activities()
