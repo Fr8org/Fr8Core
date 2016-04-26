@@ -111,15 +111,19 @@ module dockyard.directives {
 
                             var conditions: Array<IQueryCondition> = [];
 
-                            angular.forEach(serializedConditions, (cond) => {
-                                conditions.push({
-                                    field: findField(cond.field),
-                                    operator: cond.operator,
-                                    value: cond.value
+                            if (serializedConditions.length) {
+                                angular.forEach(serializedConditions, (cond) => {
+                                    conditions.push({
+                                        field: findField(cond.field),
+                                        operator: cond.operator,
+                                        value: cond.value
+                                    });
                                 });
-                            });
 
-                            $scope.conditions = conditions;
+                                $scope.conditions = conditions;
+                            } else {
+                                addEmptyCondition();
+                            }
                         }
                         else {
                             if (!$scope.conditions || !$scope.conditions.length) {

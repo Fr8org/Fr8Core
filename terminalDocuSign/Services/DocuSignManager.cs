@@ -147,7 +147,7 @@ namespace terminalDocuSign.Services.New_Api
                 //we create it with recipients once we've processed recipient values and tabs
                 envDef.Documents = new List<Document>() { new Document()
                 { DocumentBase64 = fileHandler.TextRepresentation, FileExtension = fileHandler.Filetype,
-                    DocumentId = "1", Name = fileHandler.Filename ?? Path.GetFileName(fileHandler.DockyardStorageUrl) ?? "document" } };
+                    DocumentId = "1", Name = fileHandler.Filename ?? Path.GetFileName(fileHandler.DirectUrl) ?? "document" } };
                 recipients = templateRecepients;
             }
             else

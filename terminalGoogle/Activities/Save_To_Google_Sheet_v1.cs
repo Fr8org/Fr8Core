@@ -18,7 +18,7 @@ using StructureMap;
 
 namespace terminalGoogle.Actions
 {
-    public class Save_To_Google_Sheet_v1 : EnhancedTerminalActivity<Save_To_Google_Sheet_v1.ActivityUi>
+    public class Save_To_Google_Sheet_v1 : BaseGoogleTerminalActivity<Save_To_Google_Sheet_v1.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -134,7 +134,7 @@ namespace terminalGoogle.Actions
         private readonly IGoogleSheet _googleSheet;
         private readonly IGoogleIntegration _googleIntegration;
 
-        public Save_To_Google_Sheet_v1() : base(true)
+        public Save_To_Google_Sheet_v1()
         {
             _googleSheet = ObjectFactory.GetInstance<IGoogleSheet>();
             _googleIntegration = ObjectFactory.GetInstance<IGoogleIntegration>();

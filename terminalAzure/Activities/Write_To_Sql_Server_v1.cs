@@ -226,33 +226,17 @@ namespace terminalAzure.Actions
         {
             var mappedFieldsCrate = CrateManager.GetStorage(payloadCrates).CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == "MappedFields");
 
-            //            var mappedFieldsCrate = processPayload.CrateStorageDTO()
-            //                .CrateDTO
-            //                .Where(x => x.Label == "MappedFields"
-            //                    && x.ManifestType == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME)
-            //                .FirstOrDefault();
-
             if (mappedFieldsCrate == null)
             {
-                throw new ApplicationException("No payload crate found with Label == MappdFields.");
+                throw new ApplicationException("No payload crate found with Label == MappedFields.");
             }
 
-            var valuesCrate = CrateManager.GetStorage(payloadCrates).CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == "DocuSign Envelope Data");
-            //
-            //            var valuesCrate = processPayload.CrateStorageDTO()
-            //                .CrateDTO
-            //                .Where(x => x.ManifestType == CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME
-            //                    && x.Label == "DocuSign Envelope Data")
-            //                .FirstOrDefault();
+            var valuesCrate = CrateManager.GetStorage(payloadCrates).CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == "TableData");
 
             if (valuesCrate == null)
             {
-                throw new ApplicationException("No payload crate found with Label == DocuSign Envelope Data");
+                throw new ApplicationException("No payload crate found with Label == TableData");
             }
-
-            //            var mappedFields = mappedFieldsCrate.Value.AllValues();// JsonConvert.DeserializeObject<List<FieldDTO>>(mappedFieldsCrate.Contents);
-            //            var values = JsonConvert.DeserializeObject<List<FieldDTO>>(valuesCrate.Contents);
-
             return CreateTables(mappedFieldsCrate.Content.AllValues().ToList(), valuesCrate.Content.AllValues().ToList());
         }
 
@@ -260,6 +244,7 @@ namespace terminalAzure.Actions
         {
             // Map tableName -> field -> value.
             var tableMap = new Dictionary<string, Dictionary<string, string>>();
+            Dictionary<string, string> columnMap = new Dictionary<string, string>();
 
             foreach (var field in fields)
             {
@@ -274,19 +259,15 @@ namespace terminalAzure.Actions
                 var valueField = values.FirstOrDefault(x => x.Key == field.Key);
 
                 string value = "";
-                if (value != null)
+                if (valueField != null)
                 {
                     value = valueField.Value;
                 }
 
-                Dictionary<string, string> columnMap;
-                if (!tableMap.TryGetValue(tableName, out columnMap))
-                {
-                    columnMap = new Dictionary<string, string>();
-                    tableMap.Add(tableName, columnMap);
-                }
-
+                // Insert fields into table
                 columnMap[columnName] = value;
+                // Insert table into table dictionary
+                tableMap[tableName] = columnMap;
             }
 
             var tables = CreateTablesFromMap(tableMap);

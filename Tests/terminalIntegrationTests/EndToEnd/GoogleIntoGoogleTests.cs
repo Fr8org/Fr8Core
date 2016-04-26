@@ -133,7 +133,5 @@ namespace terminalIntegrationTests.EndToEnd
                 return JsonConvert.DeserializeObject<GoogleAuthDTO>((validToken).Token);
             }
         }
-
-
     }
 }

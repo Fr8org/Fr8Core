@@ -58,12 +58,25 @@ namespace terminalGoogle.Actions
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            if (CheckAuthentication(curActivityDO, authTokenDO))
+            try
             {
-                return curActivityDO;
-            }
+                if (CheckAuthentication(curActivityDO, authTokenDO))
+                {
+                    return curActivityDO;
+                }
 
-            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
+                return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
+            }
+            catch (Exception ex)
+            {
+                if (GoogleAuthHelper.IsTokenInvalidation(ex))
+                {
+                    AddAuthenticationCrate(curActivityDO, true);
+                    return curActivityDO;
+                }
+
+                throw;
+            }
         }
         
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)

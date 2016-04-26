@@ -14,10 +14,11 @@ using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
 using TerminalBase.BaseClasses;
+using Google.GData.Client;
 
 namespace terminalGoogle.Actions
 {
-    public class Get_Google_Sheet_Data_v1 : EnhancedTerminalActivity<Get_Google_Sheet_Data_v1.ActivityUi>
+    public class Get_Google_Sheet_Data_v1 : BaseGoogleTerminalActivity<Get_Google_Sheet_Data_v1.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -79,7 +80,6 @@ namespace terminalGoogle.Actions
         private readonly IGoogleIntegration _googleIntegration;
 
         public Get_Google_Sheet_Data_v1()
-           : base(true)
         {
             _googleApi = ObjectFactory.GetInstance<IGoogleSheet>();
             _googleIntegration = ObjectFactory.GetInstance<IGoogleIntegration>();
@@ -134,8 +134,24 @@ namespace terminalGoogle.Actions
 
         protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
         {
-            CurrentActivityStorage.RemoveByLabel(ColumnHeadersCrateLabel);
             var googleAuth = GetGoogleAuthToken();
+            var spreadsheets = await _googleApi.GetSpreadsheets(googleAuth);
+            ConfigurationControls.SpreadsheetList.ListItems = spreadsheets
+                .Select(x => new ListItem { Key = x.Value, Value = x.Key })
+                .ToList();
+
+            var selectedSpreadsheet = ConfigurationControls.SpreadsheetList.selectedKey;
+            if (!string.IsNullOrEmpty(selectedSpreadsheet))
+            {
+                if (!ConfigurationControls.SpreadsheetList.ListItems.Any(x => x.Key == selectedSpreadsheet))
+                {
+                    ConfigurationControls.SpreadsheetList.selectedKey = null;
+                    ConfigurationControls.SpreadsheetList.Value = null;
+                }
+            }
+
+
+            CurrentActivityStorage.RemoveByLabel(ColumnHeadersCrateLabel);
             //If spreadsheet selection is cleared we hide worksheet DDLB
             if (string.IsNullOrEmpty(ConfigurationControls.SpreadsheetList.selectedKey))
             {

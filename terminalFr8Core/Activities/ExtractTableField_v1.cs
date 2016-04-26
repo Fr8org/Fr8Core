@@ -357,6 +357,7 @@ namespace terminalFr8Core.Actions
                 Label = "Find the cell labelled",
                 Name = "cellChooser",
                 Required = true,
+                HasRefreshButton = true,
                 Source = new FieldSourceDTO()
                 {
                     RequestUpstream = false,

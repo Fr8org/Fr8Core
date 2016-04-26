@@ -1,5 +1,8 @@
 ﻿using System;
 using Data.Interfaces.DataTransferObjects;
+using Hub.Managers;
+using Data.Crates;
+using Data.Interfaces.Manifests;
 
 namespace terminalTests.Fixtures
 {
@@ -28,6 +31,16 @@ namespace terminalTests.Fixtures
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };
 
+        }
+
+        public static PayloadDTO PayloadWithOnlyOperationalState()
+        {
+            var result = new PayloadDTO(Guid.NewGuid());
+            using (var storage = new CrateManager().GetUpdatableStorage(result))
+            {
+                storage.Add(Crate.FromContent("Operational State", new OperationalStateCM()));
+            }
+            return result;
         }
     }
 }

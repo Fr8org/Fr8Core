@@ -24,18 +24,22 @@ namespace Data.Interfaces.Manifests
             CrateDescriptions.AddRange(crateDescriptions);
         }
 
-        public CrateDescriptionDTO AddIfMissing(CrateDescriptionDTO crateDescription)
+        public CrateDescriptionDTO AddOrUpdate(CrateDescriptionDTO crateDescription)
         {
-            var existingCrateDescription = CrateDescriptions.FirstOrDefault(x => x.Label == crateDescription.Label && x.ManifestId == crateDescription.ManifestId);
-
-            if (existingCrateDescription != null)
+            for (int i = 0; i < CrateDescriptions.Count; i ++)
             {
-                return existingCrateDescription;
+                var x = CrateDescriptions[i];
+
+                if (x.Label == crateDescription.Label && x.ManifestId == crateDescription.ManifestId)
+                {
+                    CrateDescriptions[i] = crateDescription;
+                    return crateDescription;
+                }
             }
 
-            CrateDescriptions.Add(existingCrateDescription = crateDescription);
+            CrateDescriptions.Add(crateDescription);
 
-            return existingCrateDescription;
+            return crateDescription;
         }
     }
 }
