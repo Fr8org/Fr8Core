@@ -14,7 +14,6 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Newtonsoft.Json.Linq;
-using terminalDocuSign.Services;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -76,7 +75,6 @@ namespace terminalDocuSignTests.Integration
         private const int SingleAwaitPeriod = 10000;
         private const string DocuSignEmail = "fr8.madse.testing@gmail.com"; // "freight.testing@gmail.com";
         private const string DocuSignApiPassword = "I6HmXEbCxN";
-        private DocuSignPlan _curDocuSignPlan = new DocuSignPlan();
 
         public override string TerminalName
         {
@@ -190,15 +188,13 @@ namespace terminalDocuSignTests.Integration
             AssignAuthTokens(uow, account, tokenId);
         }
 
-        private async void AssignAuthTokens(IUnitOfWork uow, Fr8AccountDO account, Guid tokenId)
+        private void AssignAuthTokens(IUnitOfWork uow, Fr8AccountDO account, Guid tokenId)
         {
             var plans = uow.PlanRepository.GetPlanQueryUncached().Where(x => x.Fr8AccountId == account.Id && x.Name == "MonitorAllDocuSignEvents" && x.PlanState == PlanState.Active).Select(x => x.Id).ToArray();
 
             if (plans.Length == 0)
             {
-                Debug.WriteLine("No MonitorAllDocuSignEvents plan found, creating a new one");
-                await _curDocuSignPlan.CreatePlan_MonitorAllDocuSignEvents(account.Id, null);
-                // throw new ApplicationException("Could not find MonitorAllDocuSignEvents plan.");
+                throw new ApplicationException("Could not find MonitorAllDocuSignEvents plan.");
             }
 
             foreach (var planId in plans)
