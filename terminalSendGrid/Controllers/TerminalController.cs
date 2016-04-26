@@ -20,6 +20,7 @@ namespace terminalSendGrid.Controllers
             var terminal = new TerminalDTO()
             {
                 Name = "terminalSendGrid",
+                Label = "SendGrid",
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = CloudConfigurationManager.GetSetting("terminalSendGrid.TerminalEndpoint"),
                 Version = "1"

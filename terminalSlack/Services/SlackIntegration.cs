@@ -53,6 +53,13 @@ namespace terminalSlack.Services
             return jsonObj.Value<string>("user_id");
         }
 
+        public async Task<string> GetUserName(string oauthToken)
+        {
+            var url = PrepareTokenUrl("SlackAuthTestUrl", oauthToken);
+            var jsonObj = await _client.GetAsync<JObject>(new Uri(url));
+            return jsonObj.Value<string>("user");
+        }
+
         public async Task<List<FieldDTO>> GetChannelList(string oauthToken, bool includeArchived = false)
         {
             var url = $"{PrepareTokenUrl("SlackChannelsListUrl", oauthToken)}&exclude_archived={(includeArchived ? 0 : 1)}";

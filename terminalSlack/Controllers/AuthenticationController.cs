@@ -55,18 +55,22 @@ namespace terminalSlack.Controllers
                 }
 
                 var oauthToken = await _slackIntegration.GetOAuthToken(code);
-                var userId = await _slackIntegration.GetUserId(oauthToken);
+                // userId - is ID in slack, looks like U0X5LTZ2M
+                //var userId = await _slackIntegration.GetUserId(oauthToken);
+
+                // username is visible name 
+                var userName = await _slackIntegration.GetUserName(oauthToken);
 
                 return new AuthorizationTokenDTO()
                 {
                     Token = oauthToken,
-                    ExternalAccountId = userId,
+                    ExternalAccountId = userName,
                     ExternalStateToken = state
                 };
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex);
+                ReportTerminalError(curTerminal, ex,externalAuthDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

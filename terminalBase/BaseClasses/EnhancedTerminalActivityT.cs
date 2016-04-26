@@ -14,6 +14,7 @@ using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
 using TerminalBase.Infrastructure;
+using Newtonsoft.Json.Linq;
 
 namespace TerminalBase.BaseClasses
 {
@@ -91,43 +92,61 @@ namespace TerminalBase.BaseClasses
             return false;
         }
 
+        protected virtual bool IsTokenInvalidation(Exception ex)
+        {
+            return false;
+        }
+
         /**********************************************************************************/
 
         public sealed override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            if (AuthorizeIfNecessary(curActivityDO, authTokenDO))
+            try
             {
+                if (AuthorizeIfNecessary(curActivityDO, authTokenDO))
+                {
+                    return curActivityDO;
+                }
+
+                AuthorizationToken = authTokenDO;
+                CurrentActivity = curActivityDO;
+
+                UpstreamQueryManager = new UpstreamQueryManager(CurrentActivity, HubCommunicator, CurrentFr8UserId);
+
+                using (var storage = CrateManager.GetUpdatableStorage(CurrentActivity))
+                {
+                    CurrentActivityStorage = storage;
+
+                    var configurationType = GetConfigurationRequestType();
+                    var runtimeCrateManager = new RuntimeCrateManager(CurrentActivityStorage, CurrentActivity.Label);
+
+                    switch (configurationType)
+                    {
+                        case ConfigurationRequestType.Initial:
+                            await InitialConfiguration(runtimeCrateManager);
+                            break;
+
+                        case ConfigurationRequestType.Followup:
+                            await FollowupConfiguration(runtimeCrateManager);
+                            break;
+
+                        default:
+                            throw new ArgumentOutOfRangeException($"Unsupported configuration type: {configurationType}");
+                    }
+                }
+
                 return curActivityDO;
             }
-
-            AuthorizationToken = authTokenDO;
-            CurrentActivity = curActivityDO;
-
-            UpstreamQueryManager = new UpstreamQueryManager(CurrentActivity, HubCommunicator, CurrentFr8UserId);
-            
-            using (var storage = CrateManager.GetUpdatableStorage(CurrentActivity))
+            catch (Exception ex)
             {
-                CurrentActivityStorage = storage;
-
-                var configurationType = GetConfigurationRequestType();
-                var runtimeCrateManager = new RuntimeCrateManager(CurrentActivityStorage, CurrentActivity.Label);
-
-                switch (configurationType)
+                if (IsTokenInvalidation(ex))
                 {
-                    case ConfigurationRequestType.Initial:
-                        await InitialConfiguration(runtimeCrateManager);
-                        break;
-
-                    case ConfigurationRequestType.Followup:
-                        await FollowupConfiguration(runtimeCrateManager);
-                        break;
-
-                    default:
-                        throw new ArgumentOutOfRangeException($"Unsupported configuration type: {configurationType}");
+                    AddAuthenticationCrate(curActivityDO, true);
+                    return curActivityDO;
                 }
-            }
 
-            return curActivityDO;
+                throw;
+            }
         }
 
         /**********************************************************************************/
@@ -248,6 +267,7 @@ namespace TerminalBase.BaseClasses
 
             _isRunTime = true;
 
+            var activityStorageContents = CurrentActivity.CrateStorage;
             using (var payloadstorage = CrateManager.GetUpdatableStorage(processPayload))
             using (var activityStorage = CrateManager.GetUpdatableStorage(CurrentActivity))
             {
@@ -292,7 +312,19 @@ namespace TerminalBase.BaseClasses
                     Error(ex.Message);
                 }
             }
-
+            try
+            {
+                var previousActivityStorage = JToken.Parse(activityStorageContents);
+                var currentActivityStorage = JToken.Parse(CurrentActivity.CrateStorage);
+                if (!JToken.DeepEquals(previousActivityStorage, currentActivityStorage))
+                {
+                    await HubCommunicator.SaveActivity(CurrentActivity, CurrentFr8UserId);
+                }
+            }
+            catch (Exception ex)
+            {
+                Error(ex.Message);
+            }
             return processPayload;
         }
         
@@ -441,7 +473,7 @@ namespace TerminalBase.BaseClasses
             
             if (ui.Controls != null)
             {
-                var dynamicControlsCollection = GetMembers(ConfigurationControls.GetType()).Where(x => x.CanRead && x.GetCustomAttribute<DynamicControlsAttribute>() != null && CheckIfMemberIsControlsCollection(x)).ToDictionary(x => x.Name, x => x);
+                var dynamicControlsCollection = Fr8ReflectionHelper.GetMembers(ConfigurationControls.GetType()).Where(x => x.CanRead && x.GetCustomAttribute<DynamicControlsAttribute>() != null && CheckIfMemberIsControlsCollection(x)).ToDictionary(x => x.Name, x => x);
 
                 if (dynamicControlsCollection.Count > 0)
                 {
@@ -526,15 +558,7 @@ namespace TerminalBase.BaseClasses
 
             return false;
         }
-
-        /**********************************************************************************/
-
-        private static IEnumerable<IMemberAccessor> GetMembers(Type type)
-        {
-            return type.GetProperties(BindingFlags.Instance | BindingFlags.Public).Select(x => (IMemberAccessor)new PropertyMemberAccessor(x))
-                .Concat(type.GetFields(BindingFlags.Instance | BindingFlags.Public).Select(x => (IMemberAccessor)new FieldMemberAccessor(x)));
-        }
-
+        
         /**********************************************************************************/
         // Activity logic can update state of configuration controls. But as long we have copied  configuration controls crate from the storage into 
         // new instance of ActivityUi changes made to ActivityUi won't be reflected in storage.
@@ -551,7 +575,7 @@ namespace TerminalBase.BaseClasses
 
             int insertIndex = 0;
 
-            foreach (var member in GetMembers(ConfigurationControls.GetType()).Where(x => x.CanRead))
+            foreach (var member in Fr8ReflectionHelper.GetMembers(ConfigurationControls.GetType()).Where(x => x.CanRead))
             {
                 if (member.GetCustomAttribute<DynamicControlsAttribute>() != null && CheckIfMemberIsControlsCollection(member))
                 {
@@ -730,11 +754,6 @@ namespace TerminalBase.BaseClasses
         public sealed override Task<List<Crate>> GetCratesByDirection(ActivityDO activityDO, CrateDirection direction)
         {
             return base.GetCratesByDirection(activityDO, direction);
-        }
-
-        public sealed override Task<FieldDescriptionsCM> GetDesignTimeFields(Guid activityId, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
-        {
-            return base.GetDesignTimeFields(activityId, direction, availability);
         }
 
         public sealed override Task<FieldDescriptionsCM> GetDesignTimeFields(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)

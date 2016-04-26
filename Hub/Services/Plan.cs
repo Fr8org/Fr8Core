@@ -64,6 +64,7 @@ namespace Hub.Services
             else
                 planQuery = planQuery.Where(c => string.IsNullOrEmpty(c.Category));
 
+
             return (status == null
                 ? planQuery.Where(pt => pt.PlanState != PlanState.Deleted)
                 : planQuery.Where(pt => pt.PlanState == status)).ToList();
@@ -247,7 +248,7 @@ namespace Hub.Services
                     {
                         var operationalState = new OperationalStateCM();
                         operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Error);
-                        operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(control.ErrorMessage, ErrorType.Generic, string.Empty, null, curActivityDTO.ActivityTemplate.Name, curActivityDTO.ActivityTemplate.Terminal.Name));
+                        operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(control.ErrorMessage, ErrorType.Generic, string.Empty, null, curActivityDTO.ActivityTemplate.Name, curActivityDTO.ActivityTemplate.Terminal.Label));
 
                         var operationsCrate = Crate.FromContent("Operational Status", operationalState);
                         tempCrateStorage.Add(operationsCrate);
@@ -503,7 +504,8 @@ namespace Hub.Services
 
         public void Enqueue(Guid curPlanId, params Crate[] curEventReport)
         {
-            _dispatcher.Enqueue(() => LaunchProcess(curPlanId, curEventReport).Wait());
+            var curEventReportDTO = curEventReport.Select(x => CrateStorageSerializer.Default.ConvertToDto(x)).ToArray();
+            _dispatcher.Enqueue(() => LaunchProcessSync(curPlanId, curEventReportDTO));
         }
 
         public void Enqueue(List<PlanDO> curPlans, params Crate[] curEventReport)
@@ -513,13 +515,28 @@ namespace Hub.Services
                 Enqueue(curPlan.Id, curEventReport);
             }
         }
+        //This is for HangFire compatibility reasons
+        public static void LaunchProcessSync(Guid curPlan, params CrateDTO[] curPayload)
+        {
+            LaunchProcess(curPlan, curPayload.Select(x => CrateStorageSerializer.Default.ConvertFromDto(x)).ToArray()).Wait();
+        }
 
         public static async Task LaunchProcess(Guid curPlan, params Crate[] curPayload)
         {
             if (curPlan == default(Guid))
-                throw new ArgumentException(nameof(curPlan));
+            {
+                throw new ArgumentException("Invalid pland id.", nameof(curPlan));
+            }
 
-            await ObjectFactory.GetInstance<IPlan>().Run(curPlan, curPayload);
+            // we "eat" this exception to make Hangfire thinks that everthying is good and job is completed
+            // this exception should be already logged somewhere
+            try
+            {
+                await ObjectFactory.GetInstance<IPlan>().Run(curPlan, curPayload);
+            }
+            catch
+            {
+            }
         }
 
         public async Task<ContainerDO> Run(Guid planId, params Crate[] curPayload)
@@ -527,16 +544,18 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curPlan = uow.PlanRepository.GetById<PlanDO>(planId);
+                string containerId="";
                 if (curPlan == null)
                     throw new ArgumentNullException("planId");
                 try
                 {
                     var curContainerDO = Create(uow, curPlan, curPayload);
+                    containerId = curContainerDO.Id.ToString();
                     return await Run(uow, curContainerDO);
                 }
                 catch (Exception ex)
                 {
-                    EventManager.ContainerFailed(curPlan, ex);
+                    EventManager.ContainerFailed(curPlan, ex, containerId);
                     throw;
                 }
             }
@@ -552,10 +571,17 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curContainerDO = uow.ContainerRepository.GetByKey(containerId);
+
+                if (curContainerDO == null)
+                {
+                    throw new Exception($"Can't continue container execution. Container {containerId} was not found.");
+                }
+
                 if (curContainerDO.State != State.Suspended)
                 {
-                    throw new ApplicationException("Attempted to Continue a Process that wasn't pending");
+                    throw new ApplicationException($"Attempted to Continue a Container {containerId} that wasn't in pending state. Container state is {curContainerDO.State}.");
                 }
+
                 //continue from where we left
                 return await Run(uow, curContainerDO);
             }

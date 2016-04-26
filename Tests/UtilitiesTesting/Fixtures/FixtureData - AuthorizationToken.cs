@@ -25,6 +25,7 @@ namespace UtilitiesTesting.Fixtures
                 {
                     Id = 1,
                     Name = "testTerminal",
+                    Label = "test",
                     Version = "v1",
                     PublicIdentifier = "test",
                     Secret = "test",
@@ -76,6 +77,14 @@ namespace UtilitiesTesting.Fixtures
             return new AuthorizationTokenDTO
             {
                 Token = @"{""AccessToken"":""ya29.sAIlmsk843IiMs54TCbaN6XitYsrFa00XcuKvtV75lWuKIWSglzWv_F1MCLHWyuNRg"",""RefreshToken"":""1/3DJhIxl_HceJmyZaWwI_O9MRdHyDGCtWo-69dZRbgBQ"",""Expires"":""2017-03-25T17:21:49.6958377+01:00""}"
+            };
+        }
+
+        public static AuthorizationTokenDTO GetDropboxAuthorizationToken()
+        {
+            return new AuthorizationTokenDTO
+            {
+                Token = @"bLgeJYcIkHAAAAAAAAAAFf6hjXX_RfwsFNTfu3z00zrH463seBYMNqBaFpbfBmqf"
             };
         }
     }

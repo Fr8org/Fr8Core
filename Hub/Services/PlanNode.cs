@@ -20,6 +20,8 @@ namespace Hub.Services
 
         private readonly ICrateManager _crate;
         private readonly IActivityTemplate _activityTemplate;
+        private const string ValidationErrorsLabel = "Validation Errors";
+
         #endregion
 
         public PlanNode()
@@ -72,6 +74,20 @@ namespace Hub.Services
             }
         }
 
+        public IncomingCratesDTO GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability)
+        {
+            var fields = GetCrateManifestsByDirection<FieldDescriptionsCM>(activityId, direction, AvailabilityType.NotSet);
+
+            var crates = GetCrateManifestsByDirection<CrateDescriptionCM>(activityId, direction, AvailabilityType.NotSet);
+            var availableData = new IncomingCratesDTO();
+
+            availableData.AvailableFields.AddRange(fields.SelectMany(x => x.Fields).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
+            availableData.AvailableFields.AddRange(crates.SelectMany(x => x.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0).SelectMany(x => x.Fields));
+            availableData.AvailableCrates.AddRange(crates.SelectMany(x => x.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
+
+            return availableData;
+        }
+        
         public List<T> GetCrateManifestsByDirection<T>(
             Guid activityId,
             CrateDirection direction,
@@ -83,7 +99,8 @@ namespace Hub.Services
 
             if (availability == AvailabilityType.NotSet)
             {
-                cratePredicate = f => true;
+                //validation errors don't need to be present as available data, so remove Validation Errors
+                cratePredicate = f => f.Label != ValidationErrorsLabel;
             }
             else
             {
@@ -109,25 +126,7 @@ namespace Hub.Services
                 return result;
             }
         }
-
-        public FieldDescriptionsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability)
-        {
-            Func<FieldDTO, bool> fieldPredicate;
-
-            if (availability == AvailabilityType.NotSet)
-            {
-                fieldPredicate = f => true;
-            }
-            else
-            {
-                fieldPredicate = f => (f.Availability & availability) != 0;
-            }
-
-            var manifests = GetCrateManifestsByDirection<FieldDescriptionsCM>(activityId, direction, availability);
-          
-            return new FieldDescriptionsCM(manifests.SelectMany(x => x.Fields).Where(fieldPredicate));
-        }
-
+        
         private List<PlanNodeDO> GetActivitiesByDirection(IUnitOfWork uow, CrateDirection direction, PlanNodeDO curActivityDO)
         {
             switch (direction)

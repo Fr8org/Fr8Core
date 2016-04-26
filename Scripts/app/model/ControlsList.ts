@@ -114,6 +114,7 @@
         listItems: Array<DropDownListItem>;
         source: FieldSource;
         selectedKey: string;
+        hasRefreshButton: boolean;
         
 
         constructor() {
@@ -329,5 +330,11 @@
         activityTemplateId: string;
         subPlanId: string;
         externalObjectName: string;
+    }
+
+    export class BuildMessageAppender extends TextArea {
+        constructor() {
+            super();
+        }
     }
 }

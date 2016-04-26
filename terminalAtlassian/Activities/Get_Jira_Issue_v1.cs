@@ -15,95 +15,78 @@ using TerminalBase.Infrastructure;
 
 namespace terminalAtlassian.Actions
 {
-    public class Get_Jira_Issue_v1 : BaseTerminalActivity
+    public class Get_Jira_Issue_v1 : EnhancedTerminalActivity<Get_Jira_Issue_v1.ActivityUi>
     {
-        private readonly AtlassianService _atlassianService;
-        protected ICrateManager _crateManager;
+        public class ActivityUi : StandardConfigurationControlsCM
+        {
+            public TextSource IssueNumber { get; set; }
 
-        public Get_Jira_Issue_v1()
+            public ActivityUi()
+            {
+                IssueNumber = new TextSource()
+                {
+                    InitialLabel = "Issue Number",
+                    Name = "IssueNumber",
+                    Source = new FieldSourceDTO
+                    {
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields,
+                        RequestUpstream = true
+                    },
+                    Events = new List<ControlEvent>()
+                    {
+                        ControlEvent.RequestConfig
+                    }
+                };
+
+                Controls.Add(IssueNumber);
+            }
+        }
+
+
+        private readonly AtlassianService _atlassianService;
+
+        public Get_Jira_Issue_v1() : base(true)
         {
             _atlassianService = ObjectFactory.GetInstance<AtlassianService>();
-            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 
-        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
-            if (CheckAuthentication(curActivityDO, authTokenDO))
+            await Task.Yield();
+        }
+
+        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        {
+            var issueKey = ConfigurationControls.IssueNumber.GetValue(CurrentActivityStorage);
+            if (!string.IsNullOrEmpty(issueKey))
             {
-                return curActivityDO;
+                var issueFields = _atlassianService.GetJiraIssue(issueKey, AuthorizationToken);
+                CurrentActivityStorage.ReplaceByLabel(CrateJiraIssueDetailsDescriptionCrate(issueFields));
             }
 
-            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
+            await Task.Yield();
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        protected override async Task RunCurrentActivity()
         {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
+            var issueKey = ConfigurationControls.IssueNumber.GetValue(CurrentActivityStorage);
+            if (!string.IsNullOrEmpty(issueKey))
             {
-                return ConfigurationRequestType.Initial;
+                var issueFields = _atlassianService.GetJiraIssue(issueKey, AuthorizationToken);
+                CurrentPayloadStorage.Add(CrateJiraIssueDetailsPayloadCrate(issueFields));
             }
 
-            return ConfigurationRequestType.Followup;
+            await Task.Yield();
         }
 
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        private Crate CrateJiraIssueDetailsDescriptionCrate(List<FieldDTO> curJiraIssue)
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.Clear();
-                crateStorage.Add(CreateControlsCrate());
-            }
-
-            return await Task.FromResult<ActivityDO>(curActivityDO);
+            return Data.Crates.Crate.FromContent("Jira Issue Details", new FieldDescriptionsCM(curJiraIssue), Data.States.AvailabilityType.Configuration);
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        private Crate CrateJiraIssueDetailsPayloadCrate(List<FieldDTO> curJiraIssue)
         {
-            var payloadCrates = await GetPayload(curActivityDO, containerId);
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(payloadCrates);
-            }
-
-            string jiraKey = ExtractJiraKey(curActivityDO);
-            var jiraIssue = _atlassianService.GetJiraIssue(jiraKey, authTokenDO);
-
-            using (var crateStorage = _crateManager.GetUpdatableStorage(payloadCrates))
-            {
-                crateStorage.Add(PackCrate_JiraIssueDetails(jiraIssue));
-            }
-
-            return Success(payloadCrates);
-        }
-
-        private string ExtractJiraKey(ActivityDO curActivityDO)
-        {
-            var controls = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls;
-            var templateTextBox = controls.SingleOrDefault(x => x.Name == "jira_key");
-
-            if (templateTextBox == null)
-            {
-                throw new ApplicationException("Could not find jira_key TextBox control.");
-            }
-
-            return templateTextBox.Value;
-        }
-
-        private Crate PackCrate_JiraIssueDetails(List<FieldDTO> curJiraIssue)
-        {
-            return Data.Crates.Crate.FromContent("Jira Issue Details", new StandardPayloadDataCM(curJiraIssue));
-        }
-
-        private Crate CreateControlsCrate()
-        {
-            var control = new TextBox()
-            {
-                Label = "Jira Key",
-                Name = "jira_key",
-                Required = true
-            };
-
-            return PackControlsCrate(control);
+            return Data.Crates.Crate.FromContent("Jira Issue Details", new StandardPayloadDataCM(curJiraIssue), Data.States.AvailabilityType.RunTime);
         }
     }
 }

@@ -33,22 +33,14 @@ namespace terminalFr8Core.Actions
                     return Error(curPayloadDTO, "This Action can't run without OperationalStateCM crate", ActivityErrorCode.PAYLOAD_DATA_MISSING);
                 }
 
-                var crateToProcess = FindCrateToProcess(curActivityDO, payloadStorage);
-
-                if (crateToProcess == null)
-                {
-                    Error(curPayloadDTO, "This Action can't run without OperationalStateCM crate", ActivityErrorCode.PAYLOAD_DATA_MISSING);
-                    throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any crate with Manifest Type: \"" + crateToProcess.ManifestType.Type + "\" and Label: \"" + crateToProcess.Label + "\"");
-                }
+                var crateDescriptionToProcess = FindCrateDescriptionToProcess(curActivityDO);
 
                 var loopData = operationsCrate.CallStack.GetLocalData<OperationalStateCM.LoopStatus>("Loop");
 
                 if (loopData == null)
                 {
                     loopData = new OperationalStateCM.LoopStatus();
-
-                    loopData.CrateManifest = crateToProcess.ManifestType.Type;
-                    loopData.Label = crateToProcess.Label;
+                    loopData.CrateManifest = new CrateDescriptionCM(crateDescriptionToProcess);
                 }
                 else
                 {
@@ -56,6 +48,13 @@ namespace terminalFr8Core.Actions
                 }
 
                 operationsCrate.CallStack.StoreLocalData("Loop", loopData);
+
+                var crateToProcess = FindCrateToProcess(crateDescriptionToProcess, payloadStorage);
+                if (crateToProcess == null)
+                {
+                    Error(curPayloadDTO, "This Action can't run without OperationalStateCM crate", ActivityErrorCode.PAYLOAD_DATA_MISSING);
+                    throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any crate with Manifest Type: \"" + crateToProcess.ManifestType + "\" and Label: \"" + crateToProcess.Label + "\"");
+                }
 
                 var dataListSize = GetDataListSize(crateToProcess);
 
@@ -97,7 +96,7 @@ namespace terminalFr8Core.Actions
             }
             return await Task.FromResult<ICrateStorage>(null);
         }
-        
+
         internal static int? GetDataListSize(Crate crateToProcess)
         {
             var tableData = crateToProcess.ManifestType.Id == (int)MT.StandardTableData ? crateToProcess.Get<StandardTableDataCM>() : null;
@@ -109,17 +108,19 @@ namespace terminalFr8Core.Actions
             return array?.Length;
         }
 
-        private Crate FindCrateToProcess(ActivityDO curActivityDO, ICrateStorage payloadStorage)
+        private CrateDescriptionDTO FindCrateDescriptionToProcess(ActivityDO curActivityDO)
         {
-
             var configControls = GetConfigurationControls(curActivityDO);
             var crateChooser = (CrateChooser)configControls.Controls.Single(c => c.Name == "Available_Crates");
-            var selectedCrateDescription = crateChooser.CrateDescriptions.Single(c => c.Selected);
-
-            //find crate by user selected values
-            return payloadStorage.FirstOrDefault(c => c.ManifestType.Type == selectedCrateDescription.ManifestType && c.Label == selectedCrateDescription.Label);
+            return crateChooser.CrateDescriptions.Single(c => c.Selected);
         }
-        
+
+
+        private Crate FindCrateToProcess(CrateDescriptionDTO selectedCrateDescripiton, ICrateStorage payloadStorage)
+        {
+            return payloadStorage.FirstOrDefault(c => c.ManifestType.Type == selectedCrateDescripiton.ManifestType && c.Label == selectedCrateDescripiton.Label);
+        }
+
         /// <summary>
         /// Helper function that Vladimir wrote to find first array in a JToken
         /// </summary>
@@ -203,7 +204,7 @@ namespace terminalFr8Core.Actions
             //     crateStorage.Add(await GetUpstreamManifestTypes(curActivityDO));
             // }
 
-            
+
 
             if (crateChooser.CrateDescriptions != null)
             {
@@ -216,7 +217,7 @@ namespace terminalFr8Core.Actions
                     {
                         crateStorage.RemoveByLabel("Available Labels");
                         crateStorage.Add(Data.Crates.Crate.FromContent("Available Labels",
-                            new FieldDescriptionsCM() {Fields = labelList}));
+                            new FieldDescriptionsCM() { Fields = labelList }));
                     }
                 }
                 else
@@ -232,7 +233,7 @@ namespace terminalFr8Core.Actions
 
             return curActivityDO;
         }
-        
+
         private async Task<Crate> CreateControlsCrate(ActivityDO curActivityDO)
         {
             var crateChooser = await GenerateCrateChooser(
