@@ -303,7 +303,7 @@ namespace HubTests.Services
 
             AreEqual(template, storedTemplate, true);
 
-            CheckIfInSyncWithDd(service, 20);
+            CheckIfInSyncWithDd(service, 21);
         }
 
         private void CheckIfInSyncWithDd(ActivityTemplate activityTemplateService, int count)
