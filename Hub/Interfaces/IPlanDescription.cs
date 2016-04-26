@@ -1,4 +1,5 @@
 ﻿using Data.Entities;
+using Data.Interfaces.DataTransferObjects.PlanDescription;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,7 +10,7 @@ namespace Hub.Interfaces
 {
     public interface IPlanDescription
     {
-        PlanDescriptionDO Save(Guid planId, string curFr8UserId);
-        List<PlanDescriptionDO> GetDescriptions(string userId);
+        PlanDescriptionDTO Save(Guid planId, string curFr8UserId);
+        List<PlanDescriptionDTO> GetDescriptions(string userId);
     }
 }

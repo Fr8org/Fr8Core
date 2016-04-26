@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Data.Entities
 {
-    public class ActivityTransitionDO
+    public class ActivityTransitionDO : BaseObject
     {
         public int Id { get; set; }
 

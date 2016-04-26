@@ -12,7 +12,7 @@ namespace Data.Interfaces.DataTransferObjects.PlanDescription
 
         public string Name { get; set; }
 
-        public PlanNodeDescriptionDTO ParentNode { get; set; }
+        public int ParentNodeId { get; set; }
 
         public List<ActivityTransitionDTO> Transitions { get; set; }
 

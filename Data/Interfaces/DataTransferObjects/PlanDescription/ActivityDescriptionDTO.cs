@@ -17,8 +17,6 @@ namespace Data.Interfaces.DataTransferObjects.PlanDescription
 
         public Guid ActivityTemplateId { get; set; }
 
-        public ActivityTemplateDTO ActivityTemplate { get; set; }
-
         public ActivityDescriptionStatus Status { get; set; }
     }
 }

@@ -408,9 +408,9 @@
     <Compile Include="Interfaces\Manifests\EventReportCM.cs" />
     <Compile Include="Interfaces\Manifests\EventSubscriptionCM.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PlanDTO.cs" />
-    <Compile Include="Migrations\201604251402589_PlanDescription.cs" />
-    <Compile Include="Migrations\201604251402589_PlanDescription.Designer.cs">
-      <DependentUpon>201604251402589_PlanDescription.cs</DependentUpon>
+    <Compile Include="Migrations\201604261455159_PlanDescription.cs" />
+    <Compile Include="Migrations\201604261455159_PlanDescription.Designer.cs">
+      <DependentUpon>201604261455159_PlanDescription.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\PlanDescriptions\ActivityDescriptionRepository.cs" />
     <Compile Include="Repositories\PlanDescriptions\ActivityTransitionRepository.cs" />
@@ -1271,8 +1271,8 @@
     <EmbeddedResource Include="Migrations\201604191731406_AddLabelToTerminals.resx">
       <DependentUpon>201604191731406_AddLabelToTerminals.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201604251402589_PlanDescription.resx">
-      <DependentUpon>201604251402589_PlanDescription.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201604261455159_PlanDescription.resx">
+      <DependentUpon>201604261455159_PlanDescription.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

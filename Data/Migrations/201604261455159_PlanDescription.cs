@@ -32,6 +32,8 @@ namespace Data.Migrations
                         ActivityDescriptionId = c.Int(),
                         PlanDescriptionId = c.Int(),
                         PlanId = c.Guid(),
+                        LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),
+                        CreateDate = c.DateTimeOffset(nullable: false, precision: 7),
                         PlanNodeDescriptionDO_Id = c.Int(),
                     })
                 .PrimaryKey(t => t.Id)

@@ -193,6 +193,7 @@ namespace Data.Infrastructure.AutoMapper
 
             Mapper.CreateMap<ActivityTransitionDO, ActivityTransitionDTO>();
             Mapper.CreateMap<ActivityTransitionDTO, ActivityTransitionDO>();
+
         }
 
         private static List<PlanNodeDO> MapActivities(IEnumerable<ActivityDTO> actions)
