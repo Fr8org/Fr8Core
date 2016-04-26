@@ -332,7 +332,7 @@ namespace terminalGoogleTests.Unit
         {
             return new StandardFileDescriptionCM
             {
-                DockyardStorageUrl = "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1o0cle_rnfVtmeLqDDeF40dRWKL6FSCuQz5E84pcCpTs",
+                DirectUrl = "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1o0cle_rnfVtmeLqDDeF40dRWKL6FSCuQz5E84pcCpTs",
                 Filename = "Column_Only",
                 Filetype = "Google_Spreadsheet"
             };

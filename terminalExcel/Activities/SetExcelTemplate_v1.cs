@@ -113,7 +113,7 @@ namespace terminalExcel.Actions
             StandardFileDescriptionCM fileHandleMS = upstreamFileHandleCrates.First().Get<StandardFileDescriptionCM>();
 
             // Use the url for file from StandardFileHandleMS and read from the file and transform the data into StandardTableData and assign it to Action's crate storage
-            StandardTableDataCM tableDataMS = ExcelUtils.GetExcelFile(fileHandleMS.DockyardStorageUrl);
+            StandardTableDataCM tableDataMS = ExcelUtils.GetExcelFile(fileHandleMS.DirectUrl);
 
             return tableDataMS;
         }
