@@ -1,21 +1,44 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Data.Interfaces.DataTransferObjects;
 using HealthMonitor.Utility;
 using Hub.Managers.APIManagers.Transmitters.Restful;
+using Microsoft.Owin.Hosting;
 using NUnit.Framework;
+using terminalDropbox;
 
-namespace terminalDocuSignTests.Integration
+namespace terminalDropboxTests.Integration
 {
     [Explicit]
     public class Terminal_Authentication_v1_Tests : BaseTerminalIntegrationTest
     {
-        public override string TerminalName
+        public override string TerminalName => "terminalDropbox";
+
+        private const string Host = "http://localhost:19760";
+        private IDisposable _app;
+
+        [TestFixtureSetUp]
+        public void FixtureSetup()
         {
-            get { return "terminalDropbox"; }
+            try
+            {
+                _app = WebApp.Start<Startup>(Host);
+            }
+            catch
+            {
+                /* Ignored
+                We need this empty exception handling when terminal already started.
+                So, if you already start terminal manually (or it started on build server),
+                there is no need to use self-hosted Owin server
+                */
+            }
+        }
+
+        [TestFixtureTearDown]
+        public void FixtureTearDown()
+        {
+            _app?.Dispose();
         }
 
         /// <summary>

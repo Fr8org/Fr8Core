@@ -209,8 +209,8 @@ namespace TerminalBase.BaseClasses
                 {
                     case "configure":
                         {
-                            var resutlActionDO = await (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curAuthTokenDO });
-                            return Mapper.Map<ActivityDTO>(resutlActionDO);
+                            var resultActionDO = await (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curAuthTokenDO });
+                            return Mapper.Map<ActivityDTO>(resultActionDO);
                         }
                     case "run":
                     case "executechildactivities":
