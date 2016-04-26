@@ -81,8 +81,16 @@ namespace Data.Repositories.Security.StorageImpl.Cache
                 var roleCollection = uow.AspNetRolesRepository.GetQuery().Where(x=> roleNames.Contains(x.Name) && x.ProfileId.HasValue).ToList();
                 foreach (var role in roleCollection)
                 {
-                    //todo: use cache for profile permission sets
-                    result.AddRange(uow.PermissionSetRepository.GetQuery().Where(x => x.ProfileId == role.ProfileId && x.ObjectType == dataObjectType).SelectMany(l => l.Permissions.Select(m => m.Id)).ToList());
+                    lock (_cache)
+                    {
+                        var permissionSets = _cache.GetProfilePermissionSets(role.ProfileId.ToString());
+                        if (permissionSets == null)
+                        {
+                            permissionSets = uow.PermissionSetRepository.GetQuery().Where(x => x.ProfileId == role.ProfileId).ToList();
+                            _cache.AddOrUpdateProfile(role.ProfileId.ToString(), permissionSets);
+                        }
+                        result.AddRange(permissionSets.Where(x => x.ObjectType == dataObjectType).SelectMany(l => l.Permissions.Select(m => m.Id)).ToList());
+                    }
                 }
 
                 return result;
