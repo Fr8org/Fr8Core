@@ -17,10 +17,11 @@ namespace Data.Interfaces.Manifests
         public string CustomerId { get; set; }
         public string OwnerId { get; set; }
 
+        public DateTime? CreateDate { get; set; }
         public DateTime? DayBucket { get; set; }
         public DateTime? WeekBucket { get; set; }
         public DateTime? MonthBucket { get; set; }
         public DateTime? YearBucket { get; set; }
-        public DateTime? UserType { get; set; }
+        public string UserType { get; set; }
     }
 }
