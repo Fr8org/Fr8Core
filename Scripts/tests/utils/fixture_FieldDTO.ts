@@ -54,7 +54,8 @@ module dockyard.tests.utils.fixtures {
             value: 'value3',
             errorMessage: null,
             selectedKey: 'test3',
-            isHidden: false
+            isHidden: false,
+            hasRefreshButton: false
         };
 
         public static radioButtonGroupField: model.RadioButtonGroup = {
@@ -144,7 +145,8 @@ module dockyard.tests.utils.fixtures {
             errorMessage: null,
             isFocused: false,
             isHidden: false,
-            isCollapsed:false,
+            isCollapsed: false,
+            hasRefreshButton: false,
             source: {
                 manifestType: 'testManifest',
                 label: 'testLabel',
