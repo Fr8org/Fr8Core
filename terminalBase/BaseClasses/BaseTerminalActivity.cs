@@ -78,7 +78,7 @@ namespace TerminalBase.BaseClasses
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                var operationalState = GetOperationalStateCrate(crateStorage);
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestSuspend);
             }
 
@@ -96,9 +96,7 @@ namespace TerminalBase.BaseClasses
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().SingleOrDefault();
-                if (operationalState == null)
-                    throw new Exception("No Operational State Crate found.");
+                var operationalState = GetOperationalStateCrate(crateStorage);
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestTerminate);
                 operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Message = message });
             }
@@ -110,7 +108,7 @@ namespace TerminalBase.BaseClasses
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                var operationalState = GetOperationalStateCrate(crateStorage);
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.LaunchAdditionalPlan);
                 operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Details = targetPlanId });
             }
@@ -122,7 +120,7 @@ namespace TerminalBase.BaseClasses
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                var operationalState = GetOperationalStateCrate(crateStorage);
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.JumpToSubplan);
                 operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Details = targetSubplanId });
             }
@@ -139,7 +137,7 @@ namespace TerminalBase.BaseClasses
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                var operationalState = GetOperationalStateCrate(crateStorage);
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.JumpToActivity);
                 operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Details = targetActivityId });
             }
@@ -156,7 +154,7 @@ namespace TerminalBase.BaseClasses
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                var operationalState = GetOperationalStateCrate(crateStorage);
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.LaunchAdditionalPlan);
                 operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Details = targetSubplanId });
             }
@@ -173,9 +171,7 @@ namespace TerminalBase.BaseClasses
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().SingleOrDefault();
-                if (operationalState == null)
-                    throw new Exception("No Operational State Crate found.");
+                var operationalState = GetOperationalStateCrate(crateStorage);
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Success);
                 operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Message = message });
             }
@@ -185,7 +181,7 @@ namespace TerminalBase.BaseClasses
 
         protected void Success(IUpdatableCrateStorage crateStorage, string message = "")
         {
-            var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+            var operationalState = GetOperationalStateCrate(crateStorage);
             operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Success);
             operationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Message = message });
         }
@@ -194,7 +190,7 @@ namespace TerminalBase.BaseClasses
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                var operationalState = GetOperationalStateCrate(crateStorage);
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.ExecuteClientActivity);
                 operationalState.CurrentClientActivityName = clientActionName;
             }
@@ -209,7 +205,7 @@ namespace TerminalBase.BaseClasses
         /// <returns></returns>
         protected void SkipChildren(IUpdatableCrateStorage crateStorage)
         {
-            var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+            var operationalState = GetOperationalStateCrate(crateStorage);
             operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.SkipChildren);
         }
 
@@ -226,7 +222,7 @@ namespace TerminalBase.BaseClasses
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+                var operationalState = GetOperationalStateCrate(crateStorage);
                 operationalState.CurrentActivityErrorCode = errorCode;
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Error);
                 operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, ErrorType.Generic, errorCode.ToString(), null, currentActivity, currentTerminal));
@@ -246,7 +242,7 @@ namespace TerminalBase.BaseClasses
         /// <returns></returns>
         protected void Error(IUpdatableCrateStorage crateStorage, string errorMessage = null, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
         {
-            var operationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+            var operationalState = GetOperationalStateCrate(crateStorage);
             operationalState.CurrentActivityErrorCode = errorCode;
             operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Error);
             operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, ErrorType.Generic, errorCode.ToString(), null, currentActivity, currentTerminal));
@@ -392,13 +388,13 @@ namespace TerminalBase.BaseClasses
                     }
                     return curActivityDO;
                 }
-                
+
                 //clean any existing crates with "Validation Errors" that can be present from previous
                 using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                 {
                     crateStorage.RemoveByLabel("Validation Errors");
                 }
-                
+
                 var result = await FollowupConfigurationResponse(curActivityDO, authToken);
                 UpdateRuntimeAvailableCrates(result);
                 return result;
@@ -1342,6 +1338,14 @@ namespace TerminalBase.BaseClasses
         {
             var curElement = enumerableObject.ElementAt(objectIndex);
             return curElement;
+        }
+
+        protected OperationalStateCM GetOperationalStateCrate(ICrateStorage storage)
+        {
+            var operationalState = storage.CrateContentsOfType<OperationalStateCM>().SingleOrDefault();
+            if (operationalState == null)
+                throw new Exception("No Operational State Crate found.");
+            return operationalState;
         }
     }
 }

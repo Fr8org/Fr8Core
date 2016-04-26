@@ -32,7 +32,7 @@ namespace terminalGoogle.Actions
                     Name = "Selected_Google_Form",
                     Required = true,
                     Source = null,
-                    Events = new List<ControlEvent>() { new ControlEvent("onChange", "requestConfig") }
+                    Events = { ControlEvent.RequestConfig }
                 };
                 Controls.Add(FormsList);
             }
@@ -76,28 +76,6 @@ namespace terminalGoogle.Actions
             CurrentActivityStorage.Add(CreateEventSubscriptionCrate());
             runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
-        //protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        //{
-        //    if (curActivityDO.Id != Guid.Empty)
-        //    {
-        //        var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
-        //        var configurationCrate = PackCrate_ConfigurationControls();
-        //        await FillSelectedGoogleFormSource(configurationCrate, "Selected_Google_Form", authDTO);
-        //        var eventCrate = CreateEventSubscriptionCrate();
-
-        //        using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-        //        {
-        //            crateStorage.Add(configurationCrate);
-        //            crateStorage.Add(eventCrate);
-        //        }
-        //    }
-        //    else
-        //    {
-        //        throw new ArgumentException(
-        //            "Configuration requires the submission of an Activity that has a real ActivityId");
-        //    }
-        //    return await Task.FromResult(curActivityDO);
-        //}
 
         protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
         {
@@ -118,35 +96,12 @@ namespace terminalGoogle.Actions
             }
             if (string.IsNullOrEmpty(ConfigurationControls.FormsList.selectedKey))
                 SelectedForm = null;
-            CurrentActivityStorage.RemoveByLabel(RunTimeCrateLabel);
-            CurrentActivityStorage.Add(CrateManager.CreateDesignTimeFieldsCrate(RunTimeCrateLabel, AvailabilityType.RunTime, new[]
-            {
-                    new FieldDTO("Full Name", "Full Name")
-                    {
-                        Availability = AvailabilityType.RunTime,
-                        SourceCrateLabel = "Google Form Payload Data",
-                        SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
-                    },
-                    new FieldDTO("TR ID", "TR ID")
-                    {
-                        Availability = AvailabilityType.RunTime,
-                        SourceCrateLabel = "Google Form Payload Data",
-                        SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
-                    },
-                    new FieldDTO("Email Address", "Email Address")
-                    {
-                        Availability = AvailabilityType.RunTime,
-                        SourceCrateLabel = "Google Form Payload Data",
-                        SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
-                    },
-                    new FieldDTO("Period of Availability", "Period of Availability")
-                    {
-                        Availability = AvailabilityType.RunTime,
-                        SourceCrateLabel = "Google Form Payload Data",
-                        SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
-                    }
-                }));
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            runtimeCrateManager.ClearAvailableCrates();
+            runtimeCrateManager.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel)
+                .AddField("Full Name")
+                .AddField("TR ID")
+                .AddField("Email Address")
+                .AddField("Period of Availability");
         }
 
         protected override async Task Activate()
