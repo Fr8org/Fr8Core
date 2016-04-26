@@ -120,6 +120,7 @@ namespace HubWeb.Controllers
                         {
                             IsPersistent = true
                         }, identity);
+
                         return Ok();
                     }
                 }
