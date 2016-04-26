@@ -12,7 +12,7 @@
         query: model.HistoryQueryDTO;
         promise: ng.IPromise<model.HistoryResultDTO>;
         result: model.HistoryResultDTO;
-        getItems: () => void;
+        getHistory: () => void;
         removeFilter: () => void;
     }
 
@@ -25,11 +25,25 @@
 
         constructor(private $scope: IReportIncidentListScope, private ReportIncidentService: services.IReportIncidentService) {
 
-            this.getHistory();  
+            $scope.query = new model.HistoryQueryDTO();
+            $scope.query.itemPerPage = 10;
+            $scope.query.page = 1;
 
+            this.getHistory();  
+            /*
             ReportIncidentService.query().$promise.then(incidentRecords => {
                 $scope.incidentRecords = incidentRecords;
             });
+            */
+
+            $scope.filter = {
+                options: {
+                    debounce: 500
+                }
+            };
+
+            $scope.getHistory = <() => void>angular.bind(this, this.getHistory);
+            $scope.removeFilter = <() => void>angular.bind(this, this.removeFilter);
 
             var _selectedRow: model.IncidentDTO = null;
 

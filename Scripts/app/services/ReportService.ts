@@ -13,11 +13,11 @@
     ]);
 
     app.factory('ReportIncidentService', ['$resource', ($resource: ng.resource.IResourceService): IReportIncidentService =>
-        <IReportIncidentService> $resource('/api/report/getallincidents', {
+        <IReportIncidentService> $resource('/api/report/getallincidents', null, {
             'getByQuery': {
                 method: 'GET',
                 isArray: false,
-                url: '/api/report/getIncidentsByQuery'
+                url: '/api/report/getByQuery'
             }
         })
     ]);

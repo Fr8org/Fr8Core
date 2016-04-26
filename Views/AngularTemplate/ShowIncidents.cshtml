@@ -18,7 +18,7 @@
                          <input flex type="text" ng-model="query.filter" ng-model-options="filter.options" placeholder="Search" style="border-bottom: 1px solid #000000; border-bottom: 1px solid rgba(0,0,0,.12) !important">
                      </md-input-container>
                  </div>
-                 <md-button class="md-icon-button" ng-click="removeActiveFilter()">
+                 <md-button class="md-icon-button" ng-click="removeFilter()">
                      <md-icon md-font-icon="fa fa-times material-fa-icon"></md-icon>
                  </md-button>
              </div>
@@ -26,32 +26,40 @@
 
          <md-table-container>
              <table md-table md-progress="promise">
-                 <thead md-head md-order="query.orderBy" md-on-reorder="getIncidents">
+                 <thead md-head md-order="query.orderBy" md-on-reorder="getHistory">
                      <tr md-row>
-                         <th md-column md-order-by="name" style="width: 20%;"><span>Name</span></th>
-                         <th md-column style="width: 35%;"><span>Description</span></th>
-                         <th md-column md-order-by="lastUpdated" style="width: 20%;">Last Updated</th>
-                         <th md-column style="width: 10%;">Status</th>
-                         <th md-column md-numeric style="width: 15%;">Actions</th>
+                         <th md-column md-order-by="createdDate" style="width: 20%;"><span>Created Date</span></th>
+                         <th md-column style="width: 35%;"><span>Primary Category</span></th>
+                         <th md-column style="width: 35%;"><span>Secondary Category</span></th>
+                         <th md-column md-order-by="lastUpdated" style="width: 20%;">Activity</th>
+                         <th md-column style="width: 10%;">Component</th>
+                         <th md-column md-numeric style="width: 15%;">Data</th>
+                         <th md-column md-numeric style="width: 15%;">Fr8UserId</th>
+                         <th md-column md-numeric style="width: 15%;">Object Id</th>
+                         <th md-column md-numeric style="width: 15%;">Priority</th>
                      </tr>
                  </thead>
                  <tbody md-body>
                      <tr md-row ng-repeat="historyItem in result.items">
-                         <td md-cell class="column-spacer">{{ plan.name }}</td>
-                         <td md-cell class="column-spacer">{{ plan.description }}</td>
-                         <td md-cell>{{ plan.lastUpdated | date:"MM/dd/yyyy h:mm:ss a"}}</td>
-                         <td md-cell>
-                             <span class="bold font-green-haze">{{plan.planState == 2 ? 'Active' : 'Inactive' }}</span>
-                         </td>
-                         <td md-cell style="display: flex;">
-                            
-                         </td>
+                         <td md-cell>{{ historyItem.createDate | date:"MM/dd/yyyy h:mm:ss a"}}</td>
+
+                         <td md-cell class="column-spacer">{{ historyItem.primaryCategory }}</td>
+                         <td md-cell class="column-spacer">{{ historyItem.secondaryCategory }}</td>
+                         <td md-cell class="column-spacer">{{ historyItem.activity }}</td>
+                         <td md-cell class="column-spacer">{{ historyItem.component }}</td>
+                         <td md-cell class="column-spacer">{{ historyItem.data }}</td>
+                         <td md-cell class="column-spacer">{{ historyItem.name }}</td>
+                         <td md-cell class="column-spacer">{{ historyItem.name }}</td>
+                         <td md-cell class="column-spacer">{{ historyItem.name }}</td>
+                         <td md-cell class="column-spacer">{{ historyItem.name }}</td>
+                         <td md-cell class="column-spacer">{{ historyItem.description }}</td>
+                         
                      </tr>
                  </tbody>
              </table>
          </md-table-container>
 
-         <md-table-pagination md-limit="query.itemPerPage" md-limit-options="[5, 10, 15, 20, 50, 100]" md-page="query.page" md-total="{{(result.totalItemCount || result.totalItemCount === 0) ? result.totalItemCount : 'NaN'}}" md-on-paginate="getActivePlans" md-page-select></md-table-pagination>
+         <md-table-pagination md-limit="query.itemPerPage" md-limit-options="[5, 10, 15, 20, 50, 100]" md-page="query.page" md-total="{{(result.totalItemCount || result.totalItemCount === 0) ? result.totalItemCount : 'NaN'}}" md-on-paginate="getHistory" md-page-select></md-table-pagination>
      
      </md-content>
  </div>
