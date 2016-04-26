@@ -1,25 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Hub.Interfaces;
-using Moq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using NUnit.Framework;
-using StructureMap;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Managers.APIManagers.Transmitters.Restful;
+using Moq;
+using NUnit.Framework;
+using StructureMap;
 using terminalDropbox.Actions;
 using terminalDropboxTests.Fixtures;
 using TerminalBase.Infrastructure;
 using UtilitiesTesting;
 
-namespace terminalDropboxTests.Actions
+namespace terminalDropboxTests.Activities
 {
     [TestFixture]
     [Category("terminalDropboxTests")]
-    public class GetFileList_v1Tests : BaseTest
+    public class Get_File_List_v1_Tests : BaseTest
     {
         private Get_File_List_v1 _getFileList_v1;
 
@@ -38,19 +35,17 @@ namespace terminalDropboxTests.Actions
         }
 
         [Test]
-        public void Run_ReturnsPayloadDTO()
+        public void Initialize_ReturnsActivityDto()
         {
             //Arrange
-            var curActivityDO = FixtureData.GetFileListTestActivityDO1();
-            var container = FixtureData.TestContainer();
+            var curActivityDO = FixtureData.GetFileListActivityDO();
+            AuthorizationTokenDO tokenDO = FixtureData.DropboxAuthorizationToken();
+
             //Act
-            var payloadDTOResult = _getFileList_v1.Run(curActivityDO, container.Id, FixtureData.DropboxAuthorizationToken()).Result;
-            var jsonData = ((JValue)(payloadDTOResult.CrateStorage.Crates[1].Contents)).Value.ToString();
-            var dropboxFileList = JsonConvert.DeserializeObject<List<string>>(jsonData);
-            
+            var activityDto = _getFileList_v1.Configure(curActivityDO, tokenDO).Result;
+
             // Assert
-            Assert.NotNull(payloadDTOResult);
-            Assert.True(dropboxFileList.Any());
+            Assert.NotNull(activityDto);
         }
     }
 }

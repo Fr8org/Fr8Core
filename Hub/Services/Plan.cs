@@ -64,6 +64,7 @@ namespace Hub.Services
             else
                 planQuery = planQuery.Where(c => string.IsNullOrEmpty(c.Category));
 
+
             return (status == null
                 ? planQuery.Where(pt => pt.PlanState != PlanState.Deleted)
                 : planQuery.Where(pt => pt.PlanState == status)).ToList();
@@ -524,9 +525,18 @@ namespace Hub.Services
         {
             if (curPlan == default(Guid))
             {
-                throw new ArgumentException(nameof(curPlan));
+                throw new ArgumentException("Invalid pland id.", nameof(curPlan));
             }
-            await ObjectFactory.GetInstance<IPlan>().Run(curPlan, curPayload);
+
+            // we "eat" this exception to make Hangfire thinks that everthying is good and job is completed
+            // this exception should be already logged somewhere
+            try
+            {
+                await ObjectFactory.GetInstance<IPlan>().Run(curPlan, curPayload);
+            }
+            catch
+            {
+            }
         }
 
         public async Task<ContainerDO> Run(Guid planId, params Crate[] curPayload)
