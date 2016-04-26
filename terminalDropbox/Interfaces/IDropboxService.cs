@@ -10,6 +10,8 @@ namespace terminalDropbox.Interfaces
 {
     public interface IDropboxService
     {
-       Task<List<string>> GetFileList(AuthorizationTokenDO authorizationTokenDO);
+        Task<List<string>> GetFileList(AuthorizationTokenDO authorizationTokenDO);
+
+        string GetFileSharedUrl(AuthorizationTokenDO authorizationTokenDO, string path);
     }
 }
