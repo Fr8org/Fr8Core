@@ -2,7 +2,9 @@
 
     export interface IReportFactService extends ng.resource.IResourceClass<interfaces.IReportFactVM> { }
 
-    export interface IReportIncidentService extends ng.resource.IResourceClass<interfaces.IReportIncidentVM> { }
+    export interface IReportIncidentService extends ng.resource.IResourceClass<interfaces.IReportIncidentVM> {
+        getByQuery: (query: model.HistoryQueryDTO) => interfaces.IHistoryResultDTO;
+    }
 
 
     app.factory('ReportFactService', ['$resource', ($resource: ng.resource.IResourceService): IReportFactService =>
@@ -11,6 +13,12 @@
     ]);
 
     app.factory('ReportIncidentService', ['$resource', ($resource: ng.resource.IResourceService): IReportIncidentService =>
-        <IReportIncidentService> $resource('/api/report/getallincidents', {})
+        <IReportIncidentService> $resource('/api/report/getallincidents', {
+            'getByQuery': {
+                method: 'GET',
+                isArray: false,
+                url: '/api/report/getIncidentsByQuery'
+            }
+        })
     ]);
 } 

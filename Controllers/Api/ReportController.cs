@@ -26,7 +26,6 @@ namespace HubWeb.Controllers
             _report = ObjectFactory.GetInstance<IReport>();
         }
 
-        //[Route("api/report/getallfacts")]
         public IHttpActionResult GetAllFacts()
         {
             IEnumerable<HistoryItemDTO> factDTOList = null;
@@ -44,7 +43,18 @@ namespace HubWeb.Controllers
             return Ok(factDTOList);
         }
 
-        //[Route("api/v1/report/GetIncidents?page={page}&pageSize={pageSize}&user={current/all}")]
+        [Fr8ApiAuthorize]
+        [ActionName("getByQuery")]
+        [HttpGet]
+        public IHttpActionResult GetByQuery([FromUri] HistoryQueryDTO historyQueryDTO)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var result = _report.GetIncidents(uow, historyQueryDTO);
+                return Ok(result);
+            }
+        }
+
         public IHttpActionResult GetIncidents(int page, int pageSize, string user)
         {
             //this is a flag to return either all or user-specific incidents
@@ -62,8 +72,7 @@ namespace HubWeb.Controllers
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     var incidents = _report.GetIncidents(uow, page, pageSize, isCurrentUser);
-                    //We map DO->DTO to avoid lazy load entity references that may lead to crash
-                    historyItems.AddRange(incidents.Select(i => Mapper.Map<HistoryItemDTO>(i)));
+                    historyItems.AddRange(incidents.Select(Mapper.Map<HistoryItemDTO>));
                 }
             }
             catch (Exception e)

@@ -1,5 +1,6 @@
 ﻿module dockyard.model {
-    export class IncidentDTO {
+
+    export class HistoryItemDTO {
         id: number;
         activity: string;       
         createDate: Date;
@@ -12,20 +13,19 @@
         priority: number;
         secondaryCategory: string;
         status: string;
+        component: string;
     }
 
-
-    export class IncidentQueryDTO {
+    export class HistoryQueryDTO {
         page: number;
         itemPerPage: number;
-        category: string;
-        orderBy: string;
         isDescending: boolean;
         filter: string;
+        isCurrentUser: boolean;
     }
 
-    export class IncidentResultDTO {
-        items: Array<model.IncidentDTO>;
+    export class HistoryResultDTO {
+        items: Array<model.HistoryItemDTO>;
         currentPage: number;
         totalItemCount: number;
     }

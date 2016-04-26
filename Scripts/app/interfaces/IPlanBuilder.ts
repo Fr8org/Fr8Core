@@ -6,6 +6,8 @@ module dockyard.interfaces {
 
     export interface IPlanResultDTO extends ng.resource.IResource<model.PlanResultDTO>, model.PlanResultDTO { }
 
+    export interface IHistoryResultDTO extends ng.resource.IResource<model.HistoryResultDTO>, model.HistoryResultDTO { }
+
     export interface IReportFactVM extends ng.resource.IResource<model.FactDTO>, model.FactDTO { }
 
     export interface IPlanFullDTO extends ng.resource.IResource<model.PlanDTO>, model.PlanFullDTO { }
