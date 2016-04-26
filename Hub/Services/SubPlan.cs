@@ -280,27 +280,20 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curAction = uow.PlanRepository.GetById<PlanNodeDO>(activityId);
-                PlanNodeDO currentAction = curAction;
-                var downStreamActivities = _planNode.GetDownstreamActivities(uow, curAction).OfType<ActivityDO>();
-
-                bool hasChanges = false;
-
-                do
+                var hasChanges = false;
+                if (curAction.ChildNodes != null)
                 {
-                    currentAction = _planNode.GetNextActivity(currentAction, curAction);
-                    if (currentAction != null)
+                    foreach (var childActivity in curAction.ChildNodes.ToArray())
                     {
                         hasChanges = true;
-                        currentAction.RemoveFromParent();
+                        childActivity.RemoveFromParent();
                     }
-
-                } while (currentAction != null);
-
-
+                }
                 if (hasChanges)
                 {
                     uow.SaveChanges();
                 }
+                var downStreamActivities = _planNode.GetDownstreamActivities(uow, curAction).OfType<ActivityDO>();
                 //we should clear values of configuration controls
 
                 foreach (var downStreamActivity in downStreamActivities)

@@ -12,10 +12,6 @@ container-transition .btn :not(.add-condition.btn-sm) {
     padding: 6px 10px;
 }
 
-container-transition .filter-pane{
-    padding-left:8px
-}
-
 container-transition .control-label,.drop-down-list-box-container{
         padding-left:8px
 }

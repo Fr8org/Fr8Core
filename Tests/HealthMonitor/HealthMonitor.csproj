@@ -321,6 +321,10 @@
       <Project>{4e04feb2-b452-4739-8336-ea2cefb18d87}</Project>
       <Name>terminalDocuSign</Name>
     </ProjectReference>
+    <ProjectReference Include="..\terminalAtlassianTests\terminalAtlassianTests.csproj">
+      <Project>{f39ea7be-25c2-45ed-91ac-29647effad2b}</Project>
+      <Name>terminalAtlassianTests</Name>
+    </ProjectReference>
     <ProjectReference Include="..\terminalDropboxTests\terminalDropboxTests.csproj">
       <Project>{42f21ce5-c8d1-4083-937b-951b92c2f93c}</Project>
       <Name>terminalDropboxTests</Name>
