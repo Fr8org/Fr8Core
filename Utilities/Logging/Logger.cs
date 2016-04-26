@@ -1,6 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using log4net;
 using log4net.Appender;
 
@@ -25,10 +27,37 @@ namespace Utilities.Logging
             log4net.Config.XmlConfigurator.Configure();
         }
 
+        // taken from NLog  sources
+        public static ILog GetCurrentClassLogger()
+        {
+            string className;
+            Type declaringType;
+            int framesToSkip = 2;
+
+            do
+            {
+                StackFrame frame = new StackFrame(framesToSkip, false);
+                MethodBase method = frame.GetMethod();
+
+                declaringType = method.DeclaringType;
+                if (declaringType == null)
+                {
+                    className = method.Name;
+                    break;
+                }
+
+                framesToSkip++;
+                className = declaringType.FullName;
+            } while (declaringType.Module.Name.Equals("mscorlib.dll", StringComparison.OrdinalIgnoreCase));
+
+            return LogManager.GetLogger(Assembly.GetCallingAssembly(), className);
+        }
+
         public static ILog GetLogger(int depth = 1)
         {
             return LogManager.GetLogger(new StackTrace().GetFrame(depth).GetMethod().DeclaringType);
         }
+        
 
         public static ILog GetPapertrailLogger(string targetPapertrailUrl, int papertrailPort, int depth = 1)
         {
