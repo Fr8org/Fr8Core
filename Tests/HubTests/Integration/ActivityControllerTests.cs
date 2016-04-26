@@ -18,7 +18,7 @@ namespace HubTests.Integration
                                               <iframe src='https://player.vimeo.com/video/162762690' width='500' height='343' frameborder='0' webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>";
         private string Extract_Data_Description = @"<p>This powerful report generator extends the capabilities of the standard DocuSign reporting tools. 
                                                 Search by Recipient or Template and build powerful queries with a few mouse clicks</p>";
-        private string Track_DocuSign_Description = @"<p>Link your important outgoing envelopes to Fr8's powerful notification Activities, 
+        private string Track_DocuSign_Description = @"<p>Link your important outgoing envelopes to Fr8's powerful notification activities, 
                                             which allow you to receive SMS notices, emails, or receive posts to popular tracking systems like Slack and Yammer. 
                                             Get notified when recipients take too long to sign!</p>";
         private string Generate_DocuSign_Report_Description = @"<p>This is Generate DocuSign Report solution action</p>";
