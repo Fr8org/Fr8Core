@@ -324,7 +324,7 @@ namespace HubTests.Controllers
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("DockyardStorageUrl")), "DockyardStorageUrl Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("DirectUrl")), "DirectUrl Not Found");
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Filename")), "Filename Not Found");
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Filetype")), "Filetype Not Found");
         }

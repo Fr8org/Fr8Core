@@ -8,40 +8,69 @@ using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web;
+using Dropbox.Api.Sharing;
 using terminalDropbox.Interfaces;
 
 namespace terminalDropbox.Services
 {
     public class DropboxService : IDropboxService
     {
+        private const string Path = "";
+        private const string UserAgent = "DockyardApp";
+        private const int ReadWriteTimeout = 10 * 1000;
+        private const int Timeout = 20;
+
+        /// <summary>
+        /// Gets file paths from dropbox
+        /// </summary>
+        /// <param name="authorizationTokenDO"></param>
+        /// <returns></returns>
         public async Task<List<string>> GetFileList(AuthorizationTokenDO authorizationTokenDO)
         {
-            List<string> fileNames = new List<string>();
-            string path = "";
+            var client = new DropboxClient(authorizationTokenDO.Token, CreateDropboxClientConfig(UserAgent));
 
-            var client = CreateDropboxClient(authorizationTokenDO.Token);
+            var result = await client.Files.ListFolderAsync(Path);
 
-            var result = await client.Files.ListFolderAsync(path);
-            foreach (var x in result.Entries)
-                fileNames.Add(x.Name);
-
-            return fileNames;
+            return result.Entries.Select(x => x.PathLower).ToList();
         }
 
-        private HttpClient CreateHttpClient()
+        /// <summary>
+        /// Gets file shared link. If file not shared, shares it.
+        /// </summary>
+        /// <param name="authorizationTokenDO"></param>
+        /// <param name="path">Path to file</param>
+        /// <returns></returns>
+        public string GetFileSharedUrl(AuthorizationTokenDO authorizationTokenDO, string path)
         {
-            var httpClient = new HttpClient(new WebRequestHandler { ReadWriteTimeout = 10 * 1000 })
+            var client = new DropboxClient(authorizationTokenDO.Token, CreateDropboxClientConfig(UserAgent));
+
+            // Trying to get file links
+            var links = client.Sharing.ListSharedLinksAsync(path).Result.Links;
+            if (links.Count > 0)
+                return links[0].Url;
+
+            // If file is not shared already, we create a sharing ulr for this file.
+            var createResult = client.Sharing.CreateSharedLinkWithSettingsAsync(path).Result;
+            return createResult.Url;
+        }
+
+        private static DropboxClientConfig CreateDropboxClientConfig(string userAgent)
+        {
+            return new DropboxClientConfig
             {
-                // Specify request level timeout which decides maximum time taht can be spent on
-                // download/upload files.
-                Timeout = TimeSpan.FromMinutes(20)
+                UserAgent = userAgent,
+                HttpClient = CreateHttpClient()
             };
-            return httpClient;
         }
 
-        private DropboxClient CreateDropboxClient(string token)
+        private static HttpClient CreateHttpClient()
         {
-            return new DropboxClient(token, userAgent: "DockyardApp", httpClient: CreateHttpClient());
+            return new HttpClient(new WebRequestHandler { ReadWriteTimeout = ReadWriteTimeout })
+            {
+                // Specify request level timeout which decides maximum time that can be spent on
+                // download/upload files.
+                Timeout = TimeSpan.FromMinutes(Timeout)
+            };
         }
     }
 }
