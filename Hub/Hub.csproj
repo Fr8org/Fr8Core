@@ -285,10 +285,12 @@
     <Compile Include="Infrastructure\fr8HMACAuthenticateAttribute.cs" />
     <Compile Include="Managers\HangfireJobDispatcher.cs" />
     <Compile Include="Interfaces\IJobDispatcher.cs" />
+    <Compile Include="Managers\HangFireJobFilter.cs" />
     <Compile Include="Managers\PlanManager.cs" />
     <Compile Include="Interfaces\IFact.cs" />
     <Compile Include="Interfaces\IOrganization.cs" />
     <Compile Include="Security\AuthorizeActivityInterceptor.cs" />
+    <Compile Include="Security\HangFireAuthorizationFilter.cs" />
     <Compile Include="Security\HMACAuthenticator.cs" />
     <Compile Include="Interfaces\IAuthorization.cs" />
     <Compile Include="Interfaces\IFindObjectsPlan.cs" />

@@ -91,7 +91,7 @@ namespace terminalDocuSignTests.Integration
                 await RecreateDefaultAuthToken(unitOfWork, testAccount, docuSignTerminal);
 
                 var mtDataCountBefore = unitOfWork.MultiTenantObjectRepository
-                    .AsQueryable<DocuSignEnvelopeCM>(testAccount.Id.ToString())
+                    .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id.ToString())
                     .Count();
 
                 //Set up DS
@@ -99,6 +99,9 @@ namespace terminalDocuSignTests.Integration
                 var authTokenDO = new AuthorizationTokenDO() { Token = authToken.Token };
                 var docuSignManager = new DocuSignManager();
                 var loginInfo = docuSignManager.SetUp(authTokenDO);
+
+                //let's wait 10 seconds to ensure that MADSE plan was created/activated by re-authentication
+                await Task.Delay(SingleAwaitPeriod);
 
                 //send envelope
                 await SendDocuSignTestEnvelope(docuSignManager, loginInfo, authTokenDO);
@@ -112,7 +115,7 @@ namespace terminalDocuSignTests.Integration
                     await Task.Delay(SingleAwaitPeriod);
 
                     mtDataCountAfter = unitOfWork.MultiTenantObjectRepository
-                        .AsQueryable<DocuSignEnvelopeCM>(testAccount.Id.ToString())
+                        .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id.ToString())
                         .Count();
 
                     if (mtDataCountBefore < mtDataCountAfter)

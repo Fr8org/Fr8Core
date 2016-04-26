@@ -16,6 +16,7 @@ namespace terminalAtlassian
             TEST = 0,
             LIVE = 1
         }
+
         public static void ConfigureDependencies(DependencyType type)
         {
             switch (type)
@@ -28,6 +29,7 @@ namespace terminalAtlassian
                     break;
             }
         }
+
         public class LiveMode : StructureMapBootStrapper.LiveMode
         {
             public LiveMode()
@@ -39,6 +41,11 @@ namespace terminalAtlassian
                 For<IAtlassianService>().Use<AtlassianService>();
                 For<IHubCommunicator>().Use<DefaultHubCommunicator>();
             }
+        }
+
+        public static void LiveConfiguration(ConfigurationExpression configuration)
+        {
+            configuration.AddRegistry<LiveMode>();
         }
     }
 }

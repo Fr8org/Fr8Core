@@ -149,6 +149,7 @@
     </Compile>
     <Compile Include="Serializers\Json\JsonSerializer.cs" />
     <Compile Include="Server.cs" />
+    <Compile Include="StopwordsRemover.cs" />
     <Compile Include="TypeSafeEnum.cs" />
     <Compile Include="UAParser\UAParser.cs" />
   </ItemGroup>
