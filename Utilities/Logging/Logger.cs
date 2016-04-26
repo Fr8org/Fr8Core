@@ -21,9 +21,12 @@ namespace Utilities.Logging
             log4net.Config.XmlConfigurator.Configure();
         }
 
-        public static ILog GetLogger(int depth = 1)
+        public static ILog GetLogger(int depth = 1, string name = "")
         {
-            return LogManager.GetLogger(new StackTrace().GetFrame(depth).GetMethod().DeclaringType);
+            var logger = name.IsNullOrEmpty()
+                ? LogManager.GetLogger(new StackTrace().GetFrame(depth).GetMethod().DeclaringType)
+                : LogManager.GetLogger(name);
+            return logger;
         }
 
         public static ILog GetPapertrailLogger(string targetPapertrailUrl, int papertrailPort, int depth = 1)
@@ -43,9 +46,14 @@ namespace Utilities.Logging
 
         #region
 
-        public static void LogMessage(string message, EventType eventType = EventType.Info, int depth = 2)
+        public static void LogMessage(string message, EventType eventType = EventType.Info, int depth = 3)
         {
-            var logger = GetLogger(depth);
+            LogMessageWithNamedLogger(message, eventType , depth);
+        }
+
+        public static void LogMessageWithNamedLogger(string message, EventType eventType = EventType.Info, int depth = 2, string loggerName = "")
+        {
+            var logger = GetLogger(depth, loggerName);
 
             switch (eventType)
             {
@@ -72,14 +80,29 @@ namespace Utilities.Logging
             LogMessage(message, EventType.Info, 3);
         }
 
+        public static void LogInfo(string message, string loggerName)
+        {
+            LogMessageWithNamedLogger(message, EventType.Info, 2, loggerName);
+        }
+
         public static void LogWarning(string message)
         {
             LogMessage(message,EventType.Warning, 3);
         }
 
+        public static void LogWarning(string message, string loggerName)
+        {
+            LogMessageWithNamedLogger(message, EventType.Warning, 2, loggerName);
+        }
+
         public static void LogError(string message)
         {
             LogMessage(message, EventType.Error, 3);
+        }
+
+        public static void LogError(string message, string loggerName)
+        {
+            LogMessageWithNamedLogger(message, EventType.Error, 2, loggerName);
         }
 
         #endregion
