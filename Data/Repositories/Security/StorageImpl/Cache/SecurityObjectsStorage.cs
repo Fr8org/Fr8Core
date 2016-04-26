@@ -84,7 +84,7 @@ namespace Data.Repositories.Security.StorageImpl.Cache
                     lock (_cache)
                     {
                         var permissionSets = _cache.GetProfilePermissionSets(role.ProfileId.ToString());
-                        if (permissionSets == null)
+                        if (!permissionSets.Any())
                         {
                             permissionSets = uow.PermissionSetRepository.GetQuery().Where(x => x.ProfileId == role.ProfileId).ToList();
                             _cache.AddOrUpdateProfile(role.ProfileId.ToString(), permissionSets);
