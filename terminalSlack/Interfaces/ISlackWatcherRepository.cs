@@ -1,14 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace terminalSlack.Interfaces
 {
-    public interface ISlackWatcherRepository
+    public interface ISlackWatcherRepository : IDisposable
     {
-        Task<ISlackWatcher> GetOrSubscribe(Guid activityId);
+        Task Subscribe(string authToken, Guid activityId);
 
         Task Unsubscribe(Guid activityId);
     }

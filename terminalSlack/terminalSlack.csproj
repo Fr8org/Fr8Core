@@ -201,7 +201,9 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\Event.cs" />
     <Compile Include="Services\SlackIntegration.cs" />
+    <Compile Include="Services\SlackWatcherRepository.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="TerminalSlackBootstrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
