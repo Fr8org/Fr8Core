@@ -229,6 +229,17 @@ namespace terminalFr8Core.Controllers
                 MinPaneWidth = 550
             });
 
+            result.Add(new ActivityTemplateDTO()
+            {
+                Name = "GetDataFromFr8Warehouse",
+                Label = "Get Data From Fr8 Warehouse",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1",
+                MinPaneWidth = 550
+            });
+
             result.Add(new ActivityTemplateDTO
             {
                 Name = "Show_Report_Onscreen",
