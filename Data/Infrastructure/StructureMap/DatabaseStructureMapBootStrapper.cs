@@ -60,7 +60,7 @@ namespace Data.Infrastructure.StructureMap
                 For<IEncryptionService>().Use<EncryptionService>().Singleton();
                 For<IEncryptionProvider>().Add<BypassEncryptionProvider>().Singleton();
                 For<IEncryptionProvider>().Add<CompressingEncryptionProvider>().Singleton();
-                For<IEncryptionKeyProvider>().Add<KeyVaultEncryptionKeyProvider>().Singleton();
+                For<IEncryptionKeyProvider>().Use<KeyVaultEncryptionKeyProvider>().Singleton();
             }
         }
 
