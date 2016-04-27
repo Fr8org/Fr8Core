@@ -13,19 +13,16 @@ namespace HubTests.Repositories.Encryption
     [Category("EncryptionService")]
     public class EncryptionServiceTests : BaseTest
     {
+        // ReSharper disable once ClassNeverInstantiated.Local
         private class CustomEncryptionProvider : IEncryptionProvider
         {
-            public int Id { get; } = 2;
+            public int Id { get; } = 10001;
             public int Version { get; } = 1;
-
-            public int EncryptDataCalls;
-            public int DecryptDataCalls;
 
             public void EncryptData(Stream encryptedData, Stream sourceData, string peerId)
             {
                 encryptedData.WriteByte(128);
                 sourceData.CopyTo(encryptedData);
-                EncryptDataCalls ++;
             }
 
             public void DecryptData(Stream encryptedData, Stream decryptedData, string peerId)
@@ -33,7 +30,6 @@ namespace HubTests.Repositories.Encryption
                 var flag = encryptedData.ReadByte();
 
                 Assert.AreEqual(128, flag, "Invalid encrypted data flag for CustomEncryptionProvider");
-                DecryptDataCalls++;
 
                 encryptedData.CopyTo(decryptedData);
             }
@@ -44,7 +40,7 @@ namespace HubTests.Repositories.Encryption
         public override void SetUp()
         {
             base.SetUp();
-            _encryptionService = ObjectFactory.GetInstance<IEncryptionService>(); // new EncryptionService(new DefaultEncryptionProvider(), ObjectFactory.Container);
+            _encryptionService = ObjectFactory.GetInstance<IEncryptionService>(); 
         }
         
         [Test]
@@ -85,7 +81,7 @@ namespace HubTests.Repositories.Encryption
             {
                 x.For<IEncryptionService>().Use<EncryptionService>();
                 x.For<IEncryptionProvider>().Add<CustomEncryptionProvider>();
-                x.For<IEncryptionProvider>().Use<DefaultEncryptionProvider>();
+                x.For<IEncryptionProvider>().Use<BypassEncryptionProvider>();
             });
             
             var data = containerA.GetInstance<IEncryptionService>().EncryptData("peer", "test string");
@@ -99,12 +95,12 @@ namespace HubTests.Repositories.Encryption
             var containerA = new Container(x =>
             {
                 x.For<IEncryptionService>().Use<EncryptionService>();
-                x.For<IEncryptionProvider>().Add<DefaultEncryptionProvider>();
+                x.For<IEncryptionProvider>().Add<BypassEncryptionProvider>();
                 x.For<IEncryptionProvider>().Use<CustomEncryptionProvider>();
             });
 
             var data = containerA.GetInstance<IEncryptionService>().EncryptData("peer", "test string");
-            Assert.AreEqual(2, BitConverter.ToInt32(data, 0), "Invalid provier was selected");
+            Assert.AreEqual(10001, BitConverter.ToInt32(data, 0), "Invalid provier was selected");
         }
 
 
@@ -114,7 +110,7 @@ namespace HubTests.Repositories.Encryption
             var containerA = new Container(x =>
             {
                 x.For<IEncryptionService>().Use<EncryptionService>();
-                x.For<IEncryptionProvider>().Add<DefaultEncryptionProvider>();
+                x.For<IEncryptionProvider>().Add<BypassEncryptionProvider>();
                 x.For<IEncryptionProvider>().Use<CustomEncryptionProvider>();
             });
 
@@ -124,7 +120,7 @@ namespace HubTests.Repositories.Encryption
             {
                 x.For<IEncryptionService>().Use<EncryptionService>();
                 x.For<IEncryptionProvider>().Add<CustomEncryptionProvider>();
-                x.For<IEncryptionProvider>().Use<DefaultEncryptionProvider>();
+                x.For<IEncryptionProvider>().Use<BypassEncryptionProvider>();
             });
 
             var dataByDefaultProvier = containerB.GetInstance<IEncryptionService>().EncryptData("peer", "test string default");

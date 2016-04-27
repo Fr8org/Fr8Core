@@ -39,6 +39,7 @@ namespace Data.Repositories.Encryption.Impl
             }
         }
 
+        // type codes for encrypted data
         private static readonly Dictionary<Type, int> SupportedTypeCodes = new Dictionary<Type, int>
         {
             {typeof(string), 1},
@@ -61,20 +62,25 @@ namespace Data.Repositories.Encryption.Impl
             _encryptionProviders[new EncryptionProviderKey(encryptionProvider.Id, encryptionProvider.Version)] =  encryptionProvider;
         }
 
+        // here we are trying to find encryption provider with given Id and Version (they are stored within EncryptionProviderKey)
         private IEncryptionProvider ResolveDecryptionProvider(EncryptionProviderKey key)
         {
             IEncryptionProvider provider;
 
             lock (_encryptionProviders)
             {
+                // If there is no provider in cache
                 if (!_encryptionProviders.TryGetValue(key, out provider))
                 {
+                    // list all implementations of IEncryptionProvider within container.
                     var availableProviders = _container.GetAllInstances<IEncryptionProvider>();
 
                     foreach (var encryptionProvider in availableProviders)
                     {
+                        // add them into cache
                         RegisterEncryptionProvider(encryptionProvider);
 
+                        // and check if this provider is what we are looking for
                         if (encryptionProvider.Id == key.Id && encryptionProvider.Version == key.Version)
                         {
                             provider = encryptionProvider;
@@ -105,7 +111,15 @@ namespace Data.Repositories.Encryption.Impl
             }
 
             // read encrypted data header (12 bytes)
-            var providerKey = new EncryptionProviderKey(BitConverter.ToInt32(encryptedData, 0), BitConverter.ToInt32(encryptedData, 4));
+            // Using marshaling instead of BitConverter will result into more performant (and somewhat more clear) code, but this requieres Full Trust for execution. 
+            // Lets use BitConverter for now
+            var providerKey = new EncryptionProviderKey(
+                // First 4 bytes are 32-bit integer id of the encryption provider used to encrypt data
+                BitConverter.ToInt32(encryptedData, 0),
+                // Second 4 bytes are 32-bit integer version of  the encryption provider used to encrypt data
+                BitConverter.ToInt32(encryptedData, 4));
+
+            // Third 4 bytes are 32-integer represending type code of the data being encrypted
             typeCode = BitConverter.ToInt32(encryptedData, 8);
             var decryptedDataStream = new MemoryStream();
 
@@ -137,11 +151,16 @@ namespace Data.Repositories.Encryption.Impl
 
             using (var encryptedDataStream = new MemoryStream())
             {
-                //write encrypted data header
+                //write encrypted data header (12 bytes)
+                // Using marshaling instead of BinaryWriter will result into more performant (and somewhat more clear) code, but this requieres Full Trust for execution. 
+                // Lets use BinaryWriter for now
                 using (var writer = new BinaryWriter(encryptedDataStream, Encoding.UTF8, true))
                 {
+                    // First 4 bytes are 32-bit integer id of the encryption provider used to encrypt data
                     writer.Write(_defaultEncryptionProvider.Id);
+                    // Second 4 bytes are 32-bit integer version of  the encryption provider used to encrypt data
                     writer.Write(_defaultEncryptionProvider.Version);
+                    // Third 4 bytes are 32-integer represending type code of the data being encrypted
                     writer.Write(typeCode);
                 }
 
@@ -149,6 +168,7 @@ namespace Data.Repositories.Encryption.Impl
                 {
                     using (var sourceDataStream = new MemoryStream(data))
                     {
+                        //we always use defaul provider to encrypt the data for now
                         _defaultEncryptionProvider.EncryptData(encryptedDataStream, sourceDataStream, peerId);
                     }
                 }

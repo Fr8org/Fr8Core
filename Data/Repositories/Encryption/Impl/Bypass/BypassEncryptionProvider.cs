@@ -2,9 +2,9 @@
 
 namespace Data.Repositories.Encryption.Impl
 {
-    public class DefaultEncryptionProvider : IEncryptionProvider
+    public class BypassEncryptionProvider : IEncryptionProvider
     {
-        public int Id { get; } = 1;
+        public int Id { get; } = EncryptionProvidersIds.Bypass;
         public int Version { get; } = 1;
 
         public void EncryptData(Stream encryptedData, Stream sourceData, string peerId)

@@ -7,6 +7,8 @@ using Data.Repositories;
 using Data.Repositories.Cache;
 using Data.Repositories.Encryption;
 using Data.Repositories.Encryption.Impl;
+using Data.Repositories.Encryption.Impl.KeyVault;
+using Data.Repositories.Encryption.Impl.Rijndael;
 using Data.Repositories.MultiTenant;
 using Data.Repositories.MultiTenant.InMemory;
 using Data.Repositories.MultiTenant.Sql;
@@ -56,7 +58,9 @@ namespace Data.Infrastructure.StructureMap
                 For<IPlanCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(planCacheExpiration)).Singleton();
                 For<ISecurityCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(planCacheExpiration)).Singleton();
                 For<IEncryptionService>().Use<EncryptionService>().Singleton();
-                // For<IMT_Field>().Use<MT_FieldService>();
+                For<IEncryptionProvider>().Add<BypassEncryptionProvider>().Singleton();
+                For<IEncryptionProvider>().Add<CompressingEncryptionProvider>().Singleton();
+                For<IEncryptionKeyProvider>().Add<KeyVaultEncryptionKeyProvider>().Singleton();
             }
         }
 
@@ -97,10 +101,9 @@ namespace Data.Infrastructure.StructureMap
                 For<ISqlConnectionProvider>().Use<SqlConnectionProvider>();
                 For<ISecurityObjectsStorageProvider>().Use<SqlSecurityObjectsStorageProvider>();
                 For<ISecurityObjectsStorageProvider>().DecorateAllWith<SecurityObjectsStorage>();
-
-                //*************** !!!!!!!!CHANGE TO REAL PROVIDER!!!!!!!!! ********************//
-                For<IEncryptionProvider>().Use<DefaultEncryptionProvider>().Singleton(); 
-
+                
+                For<IEncryptionProvider>().Use<RijndaelEncryptionProviderWithCompressionV1>().Singleton(); 
+                
                 DataAutoMapperBootStrapper.ConfigureAutoMapper();
             }
         }
@@ -121,7 +124,7 @@ namespace Data.Infrastructure.StructureMap
                 For<IMtObjectsStorage>().Use<InMemoryMtObjectsStorage>().Singleton();
                 For<IMtTypeStorageProvider>().Use<InMemoryMtTypeStorageProvider>();
                 For<ISecurityObjectsStorageProvider>().Use<InMemorySecurityObjectsStorageProvider>();
-                For<IEncryptionProvider>().Use<DefaultEncryptionProvider>().Singleton();
+                For<IEncryptionProvider>().Use<BypassEncryptionProvider>().Singleton();
                 DataAutoMapperBootStrapper.ConfigureAutoMapper();
             }
         }

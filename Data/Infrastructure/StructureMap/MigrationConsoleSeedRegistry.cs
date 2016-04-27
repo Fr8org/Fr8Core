@@ -38,7 +38,7 @@ namespace Data.Infrastructure
             For<IPlanStorageProvider>().Use<PlanStorageProviderEf>();
 
             //*************** !!!!!!!!CHANGE TO REAL PROVIDER!!!!!!!!! ********************//
-            For<IEncryptionProvider>().Use<DefaultEncryptionProvider>().Singleton();
+            For<IEncryptionProvider>().Use<BypassEncryptionProvider>().Singleton();
 
             For<PlanStorage>().Use<PlanStorage>();
         }

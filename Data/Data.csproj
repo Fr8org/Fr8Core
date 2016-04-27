@@ -725,6 +725,10 @@
     <Compile Include="Migrations\201604262255443_EncryptedCrateStorageAdded.Designer.cs">
       <DependentUpon>201604262255443_EncryptedCrateStorageAdded.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201604272021337_TableEncryptionTokens.cs" />
+    <Compile Include="Migrations\201604272021337_TableEncryptionTokens.Designer.cs">
+      <DependentUpon>201604272021337_TableEncryptionTokens.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -738,8 +742,15 @@
     <Compile Include="Repositories\Cache\IExpirationToken.cs" />
     <Compile Include="Repositories\Encryption\IEncryptionProvider.cs" />
     <Compile Include="Repositories\Encryption\IEncryptionService.cs" />
+    <Compile Include="Repositories\Encryption\Impl\Compressor\CompressingEncryptionProvider.cs" />
+    <Compile Include="Repositories\Encryption\Impl\EncryptionProvidersIds.cs" />
     <Compile Include="Repositories\Encryption\Impl\EncryptionService.cs" />
-    <Compile Include="Repositories\Encryption\Impl\Default\DefaultEncryptionProvider.cs" />
+    <Compile Include="Repositories\Encryption\Impl\Bypass\BypassEncryptionProvider.cs" />
+    <Compile Include="Repositories\Encryption\Impl\Rijndael\EncryptionKey.cs" />
+    <Compile Include="Repositories\Encryption\Impl\Rijndael\IEncryptionKeyProvider.cs" />
+    <Compile Include="Repositories\Encryption\Impl\KeyVault\KeyVaultEncryptionKeyProvider.cs" />
+    <Compile Include="Repositories\Encryption\Impl\Rijndael\RijndaelEncryptionProviderV1.cs" />
+    <Compile Include="Repositories\Encryption\Impl\Rijndael\RijndaelEncryptionProviderWithCompressionV1.cs" />
     <Compile Include="Repositories\FileTagsRepository.cs" />
     <Compile Include="Interfaces\IMultiTenantObjectRepository.cs" />
     <Compile Include="Repositories\MultiTenant\Ast\AstNode.cs" />
@@ -1264,6 +1275,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604262255443_EncryptedCrateStorageAdded.resx">
       <DependentUpon>201604262255443_EncryptedCrateStorageAdded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604272021337_TableEncryptionTokens.resx">
+      <DependentUpon>201604272021337_TableEncryptionTokens.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
