@@ -12,5 +12,6 @@ namespace Hub.Interfaces
     {
         PlanDescriptionDTO Save(Guid planId, string curFr8UserId);
         List<PlanDescriptionDTO> GetDescriptions(string userId);
+        string BuildAPlan(int planDescriptionId, string userId);
     }
 }

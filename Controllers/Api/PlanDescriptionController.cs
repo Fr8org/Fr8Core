@@ -39,6 +39,18 @@ namespace HubWeb.Controllers
         }
 
 
+
+        [HttpPost]
+#if DEBUG
+        [AllowAnonymous]
+#endif
+        public async Task<IHttpActionResult> Create(int planDescriptionId, string userId)
+        {
+            var result = _planDescription.BuildAPlan(planDescriptionId, userId);
+            return Ok(result);
+        }
+
+
         [HttpGet]
 #if DEBUG
         [AllowAnonymous]

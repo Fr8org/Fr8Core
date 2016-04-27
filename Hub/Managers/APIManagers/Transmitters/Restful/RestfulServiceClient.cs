@@ -48,11 +48,11 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
         {
         }
 
-          public RestfulServiceClient(HttpClient _client)
-            : this(new JsonMediaTypeFormatter(), _client)
+        public RestfulServiceClient(HttpClient _client)
+          : this(new JsonMediaTypeFormatter(), _client)
         {
-        }      
-        
+        }
+
         /// <summary>
         /// Creates an instance with specified formatter for requests and responses
         /// </summary>
@@ -69,7 +69,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
 #endif
             }
 
-            _innerClient = client; 
+            _innerClient = client;
             _formatter = formatter;
             _formatterLogger = new FormatterLogger();
         }
@@ -122,7 +122,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
                 stopWatch.Stop();
                 var isSuccess = raisedException == null;
                 //log details
-                var logDetails = string.Format(HttpLogFormat, isSuccess ? "YES" : "NO", 
+                var logDetails = string.Format(HttpLogFormat, isSuccess ? "YES" : "NO",
                     DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
                     stopWatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture),
                     CorrelationId, statusCode, prettyStatusCode);
@@ -155,13 +155,13 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
         //    }
         //    return response;
         //}
-        
+
         protected virtual string ExtractErrorMessage(string responseContent)
         {
             return responseContent;
         }
 
-#region InternalRequestMethods
+        #region InternalRequestMethods
         private async Task<HttpResponseMessage> GetInternalAsync(Uri requestUri, string CorrelationId, Dictionary<string, string> headers)
         {
             using (var request = new HttpRequestMessage(HttpMethod.Get, requestUri))
@@ -206,7 +206,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             }
         }
 
-#endregion
+        #endregion
 
         private void AddHeaders(HttpRequestMessage request, Dictionary<string, string> headers)
         {
@@ -222,7 +222,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
         private async Task<T> DeserializeResponseAsync<T>(HttpResponseMessage response)
         {
             var responseStream = await response.Content.ReadAsStreamAsync();
-           
+
             var responseObject = await _formatter.ReadFromStreamAsync(
                 typeof(T),
                 responseStream,
@@ -238,7 +238,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             set { _innerClient.BaseAddress = value; }
         }
 
-#region GenericRequestMethods
+        #region GenericRequestMethods
         /// <summary>
         /// Downloads file as a MemoryStream from given URL
         /// </summary>
@@ -310,9 +310,9 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             return await PutAsync(requestUri, (HttpContent)new ObjectContent(typeof(TContent), content, _formatter), CorrelationId, headers);
         }
 
-#endregion
+        #endregion
 
-#region HttpContentRequestMethods
+        #region HttpContentRequestMethods
         public async Task<string> PostAsync(Uri requestUri, HttpContent content, string CorrelationId = null, Dictionary<string, string> headers = null)
         {
             using (var response = await PostInternalAsync(requestUri, content, CorrelationId, headers))
@@ -346,7 +346,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             }
         }
 
-#endregion
+        #endregion
 
     }
 }

@@ -194,6 +194,10 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ActivityTransitionDO, ActivityTransitionDTO>();
             Mapper.CreateMap<ActivityTransitionDTO, ActivityTransitionDO>();
 
+            Mapper.CreateMap<PlanNodeTransitionType, String>().ConvertUsing(e => e.ToString().ToLower());
+            Mapper.CreateMap<string, PlanNodeTransitionType>().ConvertUsing(e => (PlanNodeTransitionType)Enum.Parse(typeof(PlanNodeTransitionType), e, true));
+
+
         }
 
         private static List<PlanNodeDO> MapActivities(IEnumerable<ActivityDTO> actions)

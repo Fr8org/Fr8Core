@@ -11,7 +11,7 @@ namespace Data.Interfaces.DataTransferObjects.PlanDescription
     {
         public int Id { get; set; }
 
-        public PlanNodeTransitionType Transition { get; set; }
+        public string Transition { get; set; }
 
         /// <summary>
         /// Used if Containers generated from this PlanDescription would transition to another Activity described in this PlanDescription. Validation should make sure that all ActivityDescriptionIds can be found somewhere in the PlanDescription. This is jused for Jump to Activity and Jump to Subplan.
