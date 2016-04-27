@@ -284,7 +284,7 @@ namespace TerminalBase.BaseClasses
                 };
 
                 Logger.GetLogger().Error($"Exception caught while processing {curActionPath} for {this.GetType()}", e);
-                Debug.WriteLine($"Exception caught while processing {curActionPath} for {this.GetType()}", e);
+                Debug.WriteLine($"Exception caught while processing {curActionPath} for {this.GetType()} with exception {e.Data} and stack trace {e.StackTrace} and message {e.GetFullExceptionMessage()}", e);
                 var endpoint = (curActivityDO.ActivityTemplate != null && curActivityDO.ActivityTemplate.Terminal != null && curActivityDO.ActivityTemplate.Terminal.Endpoint != null) ? curActivityDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
                 EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActivityDO, settings), e, curActivityDO.Id.ToString());
 
