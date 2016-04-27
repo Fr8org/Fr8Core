@@ -61,7 +61,7 @@
                             <div ng-if="historyItem.$isExpanded">
                                 {{ historyItem.data }}
                             </div>
-                            <div ng-if="!historyItem.$isExpanded" style="height: 50px; vertical-align: middle;">
+                            <div ng-if="!historyItem.$isExpanded" style="height: 80px; vertical-align: middle;">
                                 {{ historyItem.data.length > 50 ? (historyItem.data | limitTo: 50)+'...' : historyItem.data }}
                             </div>
                         </td>
