@@ -134,7 +134,7 @@ namespace terminalDocuSign.Services.New_Api
 
             //creatig an envelope definiton
             EnvelopeDefinition envDef = new EnvelopeDefinition();
-            envDef.EmailSubject = "Test message from Fr8";
+            envDef.EmailSubject = "Test message from Fr8 Demo Test";
             envDef.Status = "created";
 
 
