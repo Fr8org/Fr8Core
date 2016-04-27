@@ -215,7 +215,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                 'header@': {
                     templateUrl: ($stateParams: ng.ui.IStateParamsService) => {
                         if ($stateParams['viewMode'] === 'kiosk') {
-                            return "/AngularTemplate/Empty";
+                            return "/AngularTemplate/KioskModeOrganizationHeader";
                         }
                         return "/AngularTemplate/Header";
                     }

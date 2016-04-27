@@ -153,6 +153,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/SolutionListController.js',
         'Scripts/app/controllers/NotifierController.js',
         'Scripts/app/controllers/OrganizationSettingsController.js',
+        'Scripts/app/controllers/KioskModeOrganizationHeaderController.js',
         'Scripts/app/controllers/PlanActionsDialogController.js',
         'Scripts/app/controllers/FindObjectsController.js',
         'Scripts/app/controllers/FindObjectsResultsController.js',

@@ -964,6 +964,7 @@
     <Content Include="_PowerShellScripts\MergePRSourcesIntoDev.ps1" />
     <Content Include="_PowerShellScripts\UpdateGitHubBuildStatus.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\KioskModeOrganizationHeaderController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\OrganizationSettingsController.ts" />
@@ -1120,6 +1121,7 @@
     <Content Include="Views\AngularTemplate\SelectData.cshtml" />
     <Content Include="Views\AngularTemplate\BuildMessageAppender.cshtml" />
     <Content Include="Views\AngularTemplate\OrganizationSettings.cshtml" />
+    <Content Include="Views\AngularTemplate\KioskModeOrganizationHeader.cshtml" />
     <None Include="Web.Demo.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
