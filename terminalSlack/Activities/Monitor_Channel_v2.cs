@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Control;
@@ -6,6 +7,7 @@ using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
+using StructureMap;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 using TerminalBase.BaseClasses;
@@ -54,7 +56,7 @@ namespace terminalSlack.Actions
                 IncludeDirectMessagesOption = new CheckBox
                 {
                     Name = nameof(IncludeDirectMessagesOption),
-                    Label = "Include direct messages to me"
+                    Label = "Including direct messages to me and my group conversations"
                 };
                 Controls.Add(ChannelSelectionGroup);
                 Controls.Add(IncludeDirectMessagesOption);
@@ -66,8 +68,6 @@ namespace terminalSlack.Actions
         public const string EventSubscriptionsCrateLabel = "Standard Event Subscriptions";
 
         private readonly ISlackIntegration _slackIntegration;
-
-        private readonly 
 
         public Monitor_Channel_v2() : base(true)
         {
@@ -88,12 +88,10 @@ namespace terminalSlack.Actions
 
         private IEnumerable<FieldDTO> GetChannelProperties()
         {
-            yield return new FieldDTO { Key = "token", Value = "token", Availability = AvailabilityType.Always };
             yield return new FieldDTO { Key = "team_id", Value = "team_id", Availability = AvailabilityType.Always };
             yield return new FieldDTO { Key = "team_domain", Value = "team_domain", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Key = "service_id", Value = "service_id", Availability = AvailabilityType.Always };
             yield return new FieldDTO { Key = "timestamp", Value = "timestamp", Availability = AvailabilityType.Always };
-            yield return new FieldDTO { Key = "channel_id", Value = "channel_id", Availability = AvailabilityType.Always },
+            yield return new FieldDTO { Key = "channel_id", Value = "channel_id", Availability = AvailabilityType.Always };
             yield return new FieldDTO { Key = "channel_name", Value = "channel_name", Availability = AvailabilityType.Always };
             yield return new FieldDTO { Key = "user_id", Value = "user_id", Availability = AvailabilityType.Always };
             yield return new FieldDTO { Key = "user_name", Value = "user_name", Availability = AvailabilityType.Always };
@@ -111,34 +109,47 @@ namespace terminalSlack.Actions
             return Task.FromResult(0);
         }
 
-        protected override Task RunCurrentActivity()
+        protected override async Task RunCurrentActivity()
         {
             var incomingMessageContents = ExtractIncomingMessageContentFromPayload();
-            var hasIncomingMessage = incomingMessageContents?.Fields.Count > 0;
+            var hasIncomingMessage = incomingMessageContents?.Fields?.Count > 0;
             if (hasIncomingMessage)
             {
-                var channelMatches = ConfigurationControls.AllChannelsOption.Selected
-                    || string.IsNullOrEmpty(ConfigurationControls.ChannelList.selectedKey)
-                    || ConfigurationControls.ChannelList.Value == incomingMessageContents["channel_id"];
-                if (channelMatches)
+                var incomingChannelId = incomingMessageContents["channel_id"];
+                if (string.IsNullOrEmpty(incomingChannelId))
                 {
-                    CurrentPayloadStorage.Add(Crate.FromContent(ResultPayloadCrateLabel, new StandardPayloadDataCM(incomingMessageContents.Fields), AvailabilityType.RunTime));
+                    RequestHubExecutionTermination("Incoming message doesn't contain information about source channel");
                 }
                 else
                 {
-                    RequestHubExecutionTermination("Incoming message doesn't belong to specified channel. No downstream activities are executed");
+                    //Slack channel Id first letter: C - for channel, D - for direct messages to current user, G - for message in group conversation with current user
+                    var isChannel = incomingChannelId.StartsWith("C", StringComparison.OrdinalIgnoreCase);
+                    var isDirect = incomingChannelId.StartsWith("D", StringComparison.OrdinalIgnoreCase);
+                    var isGroup = incomingChannelId.StartsWith("G", StringComparison.OrdinalIgnoreCase);
+
+                    var isMatch = ((ConfigurationControls.AllChannelsOption.Selected || string.IsNullOrEmpty(ConfigurationControls.ChannelList.selectedKey)) && isChannel)
+                                  || (ConfigurationControls.SpecificChannelOption.Selected && isChannel && ConfigurationControls.ChannelList.Value == incomingChannelId)
+                                  || (ConfigurationControls.IncludeDirectMessagesOption.Selected && (isDirect || isGroup));
+                    if (isMatch)
+                    {
+                        CurrentPayloadStorage.Add(Crate.FromContent(ResultPayloadCrateLabel, new StandardPayloadDataCM(incomingMessageContents.Fields), AvailabilityType.RunTime));
+                    }
+                    else
+                    {
+                        RequestHubExecutionTermination("Incoming message doesn't belong to specified channel. No downstream activities are executed");
+                    }
                 }
             }
             else
             {
+                await ObjectFactory.GetInstance<ISlackEventManager>().Subscribe(AuthorizationToken, CurrentActivity.Id);
                 RequestHubExecutionTermination("Plan successfully activated. It will wait and respond to specified Slack postings");
             }
-            return Task.FromResult(0);
         }
 
         protected override Task Deactivate()
         {
-            //TODO: remove subscription
+            ObjectFactory.GetInstance<ISlackEventManager>().Unsubscribe(CurrentActivity.Id);
             return base.Deactivate();
         }
 

@@ -1,58 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
-using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
 using Data.Crates;
-using AutoMapper;
-using Newtonsoft.Json;
-using StructureMap;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Hub.Managers;
-using Utilities.Configuration.Azure;
 using terminalSlack.Interfaces;
 
 namespace terminalSlack.Services
 {
     public class Event : IEvent
     {
-        private readonly ICrateManager _crate;
-
-        public Event()
-        {
-            _crate = ObjectFactory.GetInstance<ICrateManager>();
-        }
-
         public Task<Crate> Process(string externalEventPayload)
         {
             if (string.IsNullOrEmpty(externalEventPayload))
             {
                 return null;
             }
-
+            externalEventPayload = externalEventPayload.Trim('\"');
             var payloadFields = ParseSlackPayloadData(externalEventPayload);
-
-            var slackToken = payloadFields.FirstOrDefault(x => x.Key == "user_id");
-            if (slackToken == null || string.IsNullOrEmpty(slackToken.Value))
+            var userId = payloadFields.FirstOrDefault(x => x.Key == "user_id")?.Value;
+            var teamId = payloadFields.FirstOrDefault(x => x.Key == "team_id")?.Value;
+            if (string.IsNullOrEmpty(userId) && string.IsNullOrEmpty(teamId))
             {
                 return null;
             }
-
             var eventReportContent = new EventReportCM
             {
                 EventNames = "Slack Outgoing Message",
                 ContainerDoId = "",
                 EventPayload = WrapPayloadDataCrate(payloadFields),
-                ExternalAccountId = slackToken.Value,
+                ExternalAccountId = userId,
+                ExternalDomainId = teamId,
                 Manufacturer = "Slack"
             };
-
-            var curEventReport = Data.Crates.Crate.FromContent("Standard Event Report", eventReportContent);
-
+            var curEventReport = Crate.FromContent("Standard Event Report", eventReportContent);
             return Task.FromResult(curEventReport);
         }
 
@@ -70,8 +53,8 @@ namespace terminalSlack.Services
                     continue;
                 }
 
-                var name = HttpUtility.UrlDecode(nameValue[0]);
-                var value = HttpUtility.UrlDecode(nameValue[1]);
+                var name = HttpUtility.UrlDecode(nameValue[0]).Trim('\"');
+                var value = HttpUtility.UrlDecode(nameValue[1]).Trim('\"');
 
                 payloadFields.Add(new FieldDTO()
                 {
@@ -85,8 +68,7 @@ namespace terminalSlack.Services
 
         private ICrateStorage WrapPayloadDataCrate(List<FieldDTO> payloadFields)
         {
-
-            return new CrateStorage(Data.Crates.Crate.FromContent("Payload Data", new StandardPayloadDataCM(payloadFields)));
+            return new CrateStorage(Crate.FromContent("Payload Data", new StandardPayloadDataCM(payloadFields)));
         }
     }
 }
