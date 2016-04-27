@@ -29,7 +29,7 @@ namespace HubWeb.Controllers.Api
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var facts = _fact.GetByObjectId(uow, query.ObjectId);
-                return Ok(facts.Select(Mapper.Map<FactDTO>));
+                return Ok(facts.Select(Mapper.Map<HistoryItemDTO>));
             };
         }
     }

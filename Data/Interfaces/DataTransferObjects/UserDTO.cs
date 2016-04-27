@@ -19,5 +19,7 @@ namespace Data.Interfaces.DataTransferObjects
         public int Status { get; set; }
 
         public string Role { get; set; }
+
+        public int organizationId { get; set; }
     }
 }

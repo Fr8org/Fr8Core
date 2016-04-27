@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class EncryptedCrateStorageAdded : IMigrationMetadata
+    public sealed partial class AddThemeToOrganization : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(EncryptedCrateStorageAdded));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddThemeToOrganization));
         
         string IMigrationMetadata.Id
         {
-            get { return "201604262255443_EncryptedCrateStorageAdded"; }
+            get { return "201604250944024_AddThemeToOrganization"; }
         }
         
         string IMigrationMetadata.Source

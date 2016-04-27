@@ -1,11 +1,14 @@
-using System.Data.Entity.Migrations;
-
 namespace Data.Migrations
 {
-    public partial class TableEncryptionTokens : DbMigration
+    using System;
+    using System.Data.Entity.Migrations;
+    
+    public partial class EncryptedCrateStorageAdded : DbMigration
     {
         public override void Up()
         {
+            AddColumn("dbo.Actions", "EncryptedCrateStorage", c => c.Binary());
+
             CreateTable("dbo.EncryptionTokens",
                 c => new
                 {
@@ -17,9 +20,10 @@ namespace Data.Migrations
 
             CreateIndex("dbo.EncryptionTokens", "PeerId");
         }
-
+        
         public override void Down()
         {
+            DropColumn("dbo.Actions", "EncryptedCrateStorage");
             DropIndex("dbo.EncryptionTokens", "PeerId");
             DropTable("dbo.EncryptionTokens");
         }

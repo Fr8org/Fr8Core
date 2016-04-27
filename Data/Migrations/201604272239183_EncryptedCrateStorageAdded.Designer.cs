@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class TableEncryptionTokens : IMigrationMetadata
+    public sealed partial class EncryptedCrateStorageAdded : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(TableEncryptionTokens));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(EncryptedCrateStorageAdded));
         
         string IMigrationMetadata.Id
         {
-            get { return "201604272021337_TableEncryptionTokens"; }
+            get { return "201604272239183_EncryptedCrateStorageAdded"; }
         }
         
         string IMigrationMetadata.Source
