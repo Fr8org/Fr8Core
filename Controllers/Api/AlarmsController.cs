@@ -1,27 +1,20 @@
-﻿using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
+﻿using Data.Interfaces.DataTransferObjects;
 using Hangfire;
-using Hangfire.Common;
-using Hangfire.States;
 using Hub.Interfaces;
-using Hub.Managers;
 using HubWeb.Infrastructure;
 using StructureMap;
 using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Net.Http;
-using System.Net.Http.Formatting;
 using System.Threading.Tasks;
 using System.Web.Http;
+using log4net;
 using Utilities.Configuration;
-using Utilities.Interfaces;
 
 namespace HubWeb.Controllers
 {
     public class AlarmsController : ApiController
     {
+        private static readonly ILog Logger = Utilities.Logging.Logger.GetCurrentClassLogger();
+
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
@@ -43,10 +36,17 @@ namespace HubWeb.Controllers
         [Queue("hub"), MoveToTheHubQueueAttribute]
         public void Execute(AlarmDTO alarmDTO)
         {
-            var plan = ObjectFactory.GetInstance<IPlan>();
-            var continueTask = plan.Continue(alarmDTO.ContainerId);
-            Task.WaitAll(continueTask);
-            
+            try
+            {
+                var plan = ObjectFactory.GetInstance<IPlan>();
+                var continueTask = plan.Continue(alarmDTO.ContainerId);
+                Task.WaitAll(continueTask);
+            }
+            catch (Exception ex)
+            {
+                Logger.Error($"Failed to run container: {alarmDTO.ContainerId}", ex);
+            }
+
             //TODO report output to somewhere to pusher service maybe
 
             /*
