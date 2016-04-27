@@ -1,6 +1,8 @@
-﻿using System.Diagnostics;
+﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Net;
+using System.Reflection;
 using log4net;
 using log4net.Appender;
 
@@ -16,9 +18,39 @@ namespace Utilities.Logging
 
     public static class Logger
     {
+        static string ErrorColor = "\x1b[31m";
+        static string InfoColor = "\x1b[36m";
+        static string WarnColor = "\x1b[33m";
+
         static Logger()
         {
             log4net.Config.XmlConfigurator.Configure();
+        }
+
+        // taken from NLog  sources
+        public static ILog GetCurrentClassLogger()
+        {
+            string className;
+            Type declaringType;
+            int framesToSkip = 2;
+
+            do
+            {
+                StackFrame frame = new StackFrame(framesToSkip, false);
+                MethodBase method = frame.GetMethod();
+
+                declaringType = method.DeclaringType;
+                if (declaringType == null)
+                {
+                    className = method.Name;
+                    break;
+                }
+
+                framesToSkip++;
+                className = declaringType.FullName;
+            } while (declaringType.Module.Name.Equals("mscorlib.dll", StringComparison.OrdinalIgnoreCase));
+
+            return LogManager.GetLogger(Assembly.GetCallingAssembly(), className);
         }
 
         public static ILog GetLogger(int depth = 1, string name = "")
@@ -28,6 +60,7 @@ namespace Utilities.Logging
                 : LogManager.GetLogger(name);
             return logger;
         }
+
 
         public static ILog GetPapertrailLogger(string targetPapertrailUrl, int papertrailPort, int depth = 1)
         {
@@ -44,11 +77,22 @@ namespace Utilities.Logging
         }
 
 
-        #region
+        #region Solution logging logic 
 
+        static string WrapColor(string message, string color)
+        {
+            return color + message + "\x1b[0m";
+        }
+
+        /// <summary>
+        /// Logs message with log4net
+        /// </summary>
+        /// <param name="message">formatted messsage should contain critical data like Fr8UserId</param>
+        /// <param name="eventType"></param>
+        /// <param name="depth">Defines how many stack frames we slice from top</param>
         public static void LogMessage(string message, EventType eventType = EventType.Info, int depth = 3)
         {
-            LogMessageWithNamedLogger(message, eventType , depth);
+            LogMessageWithNamedLogger(message, eventType, depth);
         }
 
         public static void LogMessageWithNamedLogger(string message, EventType eventType = EventType.Info, int depth = 2, string loggerName = "")
@@ -67,43 +111,45 @@ namespace Utilities.Logging
                     logger.Warn(message);
                     break;
                 default:
-                {
-                    logger.Info(message);
-                    break;
-                }
+                    {
+                        logger.Info(message);
+                        break;
+                    }
             }
 
         }
 
         public static void LogInfo(string message)
         {
-            LogMessage(message, EventType.Info, 3);
+            LogMessage(message, EventType.Info, 4);
         }
 
         public static void LogInfo(string message, string loggerName)
         {
-            LogMessageWithNamedLogger(message, EventType.Info, 2, loggerName);
+            LogMessageWithNamedLogger(message, EventType.Info, 3, loggerName);
         }
 
         public static void LogWarning(string message)
         {
-            LogMessage(message,EventType.Warning, 3);
+            LogMessage(message, EventType.Warning, 4);
         }
 
         public static void LogWarning(string message, string loggerName)
         {
-            LogMessageWithNamedLogger(message, EventType.Warning, 2, loggerName);
+            LogMessageWithNamedLogger(message, EventType.Warning, 3, loggerName);
         }
 
         public static void LogError(string message)
         {
-            LogMessage(message, EventType.Error, 3);
+            LogMessage(message, EventType.Error, 4);
         }
 
         public static void LogError(string message, string loggerName)
         {
-            LogMessageWithNamedLogger(message, EventType.Error, 2, loggerName);
+            LogMessageWithNamedLogger(message, EventType.Error, 3, loggerName);
         }
+
+
 
         #endregion
 
