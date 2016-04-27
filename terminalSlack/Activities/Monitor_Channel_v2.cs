@@ -116,6 +116,7 @@ namespace terminalSlack.Actions
             if (hasIncomingMessage)
             {
                 var incomingChannelId = incomingMessageContents["channel_id"];
+                var isSentByCurrentUser = incomingMessageContents["user_name"] == AuthorizationToken.ExternalAccountId;
                 if (string.IsNullOrEmpty(incomingChannelId))
                 {
                     RequestHubExecutionTermination("Incoming message doesn't contain information about source channel");
@@ -129,14 +130,14 @@ namespace terminalSlack.Actions
 
                     var isMatch = ((ConfigurationControls.AllChannelsOption.Selected || string.IsNullOrEmpty(ConfigurationControls.ChannelList.selectedKey)) && isChannel)
                                   || (ConfigurationControls.SpecificChannelOption.Selected && isChannel && ConfigurationControls.ChannelList.Value == incomingChannelId)
-                                  || (ConfigurationControls.IncludeDirectMessagesOption.Selected && (isDirect || isGroup));
+                                  || (ConfigurationControls.IncludeDirectMessagesOption.Selected && (isDirect || isGroup) && !isSentByCurrentUser);
                     if (isMatch)
                     {
                         CurrentPayloadStorage.Add(Crate.FromContent(ResultPayloadCrateLabel, new StandardPayloadDataCM(incomingMessageContents.Fields), AvailabilityType.RunTime));
                     }
                     else
                     {
-                        RequestHubExecutionTermination("Incoming message doesn't belong to specified channel. No downstream activities are executed");
+                        RequestHubExecutionTermination("Incoming message doesn't pass filter criteria. No downstream activities are executed");
                     }
                 }
             }

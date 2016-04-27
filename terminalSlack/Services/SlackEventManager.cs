@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Runtime.Remoting.Channels;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -19,8 +21,6 @@ namespace terminalSlack.Services
         private readonly IRestfulServiceClient _resfultClient;
 
         private readonly Dictionary<string, SlackClientWrapper> _clientsByTeamId = new Dictionary<string, SlackClientWrapper>();
-
-        private readonly HashSet<SlackSocketClient> _clientsWithSkippedFirstMessage = new HashSet<SlackSocketClient>(); 
 
         private readonly Dictionary<Guid, string> _teamIdByActivity = new Dictionary<Guid, string>();
         
@@ -75,6 +75,7 @@ namespace terminalSlack.Services
                     Client = new SlackSocketClient(token.Token)
                 };
                 _clientsByTeamId.Add(teamId, client);
+                _teamIdByActivity[activityId] = teamId;
                 client.Client.Connect(x => OnLoginResponse(client, x, teamId));
                 return client.ClientConnectOperation.Task;
             }
@@ -88,8 +89,8 @@ namespace terminalSlack.Services
                 ClearClientSubscriptions(teamId);
                 return;
             }
+            client.Client.MessageReceived += OnIgnoredMessageReceived;
             client.ClientConnectOperation.SetResult(0);
-            client.Client.MessageReceived += OnMessageReceived;
         }
 
         private void ClearClientSubscriptions(string teamId)
@@ -134,6 +135,7 @@ namespace terminalSlack.Services
                         {
                             client.ClientConnectOperation.SetCanceled();
                         }
+                        client.Client.MessageReceived -= OnIgnoredMessageReceived;
                         client.Client.MessageReceived -= OnMessageReceived;
                         try
                         {
@@ -160,6 +162,7 @@ namespace terminalSlack.Services
                 //This is to perform graceful exit in case of terminal shutdown
                 foreach (var client in _clientsByTeamId.Values)
                 {
+                    client.Client.MessageReceived -= OnIgnoredMessageReceived;
                     client.Client.MessageReceived -= OnMessageReceived;
                     client.Client.CloseSocket();
                     client.ClientConnectOperation.SetCanceled();
@@ -167,25 +170,37 @@ namespace terminalSlack.Services
             }
         }
 
-        private async void OnMessageReceived(object sender, MessageReceivedEventArgs e)
+        private void OnIgnoredMessageReceived(object sender, MessageReceivedEventArgs e)
         {
             //After we successfully login we recieve last message sent or recieved by current user so we should ignore it
-            //TODO: this is temporary solution, find something better
-            if (DateTime.Now.Subtract(e.WrappedMessage.Timestamp).TotalSeconds > 2.0)
+            var client = (SlackSocketClient)sender;
+            client.MessageReceived -= OnIgnoredMessageReceived;
+            client.MessageReceived += OnMessageReceived;
+        }
+
+        private async void OnMessageReceived(object sender, MessageReceivedEventArgs e)
+        {
+            //The naming conventions of message property is for backwards compatibility with existing event processing logic
+            var valuePairs = new List<KeyValuePair<string, string>>(8)
+                             {
+                                 new KeyValuePair<string, string>("team_id", e.WrappedMessage.TeamId),
+                                 new KeyValuePair<string, string>("team_domain", e.WrappedMessage.TeamName),
+                                 new KeyValuePair<string, string>("channel_id", e.WrappedMessage.ChannelId),
+                                 new KeyValuePair<string, string>("channel_name", e.WrappedMessage.ChannelName),
+                                 new KeyValuePair<string, string>("timestamp", e.WrappedMessage.Timestamp.ToUniversalTime().ToUnixTime().ToString()),
+                                 new KeyValuePair<string, string>("user_id", e.WrappedMessage.UserId),
+                                 new KeyValuePair<string, string>("user_name", e.WrappedMessage.UserName),
+                                 new KeyValuePair<string, string>("text", e.WrappedMessage.Text)
+                             };
+            var encodedMessage = string.Join("&", valuePairs.Where(x => !string.IsNullOrWhiteSpace(x.Value)).Select(x => $"{x.Key}={HttpUtility.UrlEncode(x.Value)}"));
+            try
             {
-                return;
+                await _resfultClient.PostAsync(_eventsUri, content: encodedMessage);
             }
-            //This is for backwards compatibility with existing event processing logic
-            var encodedMessage = new StringBuilder(1024);
-            encodedMessage.Append("team_id=").Append(HttpUtility.UrlEncode(e.WrappedMessage.TeamId)).Append('&')
-                          .Append("team_domain=").Append(HttpUtility.UrlEncode(e.WrappedMessage.TeamName)).Append('&')
-                          .Append("channel_id=").Append(HttpUtility.UrlEncode(e.WrappedMessage.ChannelId)).Append('&')
-                          .Append("channel_name=").Append(HttpUtility.UrlEncode(e.WrappedMessage.ChannelName)).Append('&')
-                          .Append("timestamp=").Append(HttpUtility.UrlEncode(e.WrappedMessage.Timestamp.ToUniversalTime().ToUnixTime().ToString())).Append('&')
-                          .Append("user_id=").Append(HttpUtility.UrlEncode(e.WrappedMessage.UserId)).Append('&')
-                          .Append("user_name=").Append(HttpUtility.UrlEncode(e.WrappedMessage.UserName)).Append('&')
-                          .Append("text=").Append(HttpUtility.UrlEncode(e.WrappedMessage.Text));
-            await _resfultClient.PostAsync(_eventsUri, content: encodedMessage.ToString());
+            catch (Exception ex)
+            {
+                Logger.GetLogger().Info($"Failed to post event from SlackEventMenager with following payload: {encodedMessage}", ex);
+            }
         }
 
         private class SlackClientWrapper
@@ -195,10 +210,6 @@ namespace terminalSlack.Services
             public TaskCompletionSource<int> ClientConnectOperation { get; set; }
 
             public HashSet<Guid> SubscribedActivities { get; set; }
-
-            public int FirstMessageIsSkipped;
         }
     }
-
-
 }

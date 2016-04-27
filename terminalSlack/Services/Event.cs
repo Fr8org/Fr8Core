@@ -20,9 +20,11 @@ namespace terminalSlack.Services
             }
             externalEventPayload = externalEventPayload.Trim('\"');
             var payloadFields = ParseSlackPayloadData(externalEventPayload);
-            var userId = payloadFields.FirstOrDefault(x => x.Key == "user_id")?.Value;
+            //Currently Slack username is stored in ExternalAccountId property of AuthorizationToken (in order to display it in authentication dialog)
+            //TODO: this should be changed. We should have ExternalAccountName and ExternalDomainName for displaying purposes
+            var userName = payloadFields.FirstOrDefault(x => x.Key == "user_name")?.Value;
             var teamId = payloadFields.FirstOrDefault(x => x.Key == "team_id")?.Value;
-            if (string.IsNullOrEmpty(userId) && string.IsNullOrEmpty(teamId))
+            if (string.IsNullOrEmpty(userName) && string.IsNullOrEmpty(teamId))
             {
                 return null;
             }
@@ -31,7 +33,7 @@ namespace terminalSlack.Services
                 EventNames = "Slack Outgoing Message",
                 ContainerDoId = "",
                 EventPayload = WrapPayloadDataCrate(payloadFields),
-                ExternalAccountId = userId,
+                ExternalAccountId = userName,
                 ExternalDomainId = teamId,
                 Manufacturer = "Slack"
             };

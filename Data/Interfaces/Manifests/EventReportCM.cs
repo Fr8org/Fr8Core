@@ -69,6 +69,7 @@ namespace Data.Interfaces.Manifests
                 EventNames = e.EventNames,
                 ContainerDoId = e.ContainerDoId,
                 ExternalAccountId = e.ExternalAccountId,
+                ExternalDomainId = e.ExternalDomainId,
                 Manufacturer = e.Manufacturer,
                 EventPayload = _storageSerizlier.ConvertToDto(e.EventPayload)
             };

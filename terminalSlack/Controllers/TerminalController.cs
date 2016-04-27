@@ -37,17 +37,17 @@ namespace terminalSlack.Controllers
             };
             var result = new List<ActivityTemplateDTO>
             {
-                //new ActivityTemplateDTO
-                //{
-                //    Name = "Monitor_Channel",
-                //    Label = "Monitor Channel",
-                //    Category = ActivityCategory.Monitors,
-                //    Terminal = terminal,
-                //    NeedsAuthentication = true,
-                //    Version = "1",
-                //    WebService = webService,
-                //    MinPaneWidth = 330
-                //},
+                new ActivityTemplateDTO
+                {
+                    Name = "Monitor_Channel",
+                    Label = "Monitor Channel",
+                    Category = ActivityCategory.Monitors,
+                    Terminal = terminal,
+                    NeedsAuthentication = true,
+                    Version = "1",
+                    WebService = webService,
+                    MinPaneWidth = 330
+                },
                 new ActivityTemplateDTO
                 {
                     Name = "Monitor_Channel",
