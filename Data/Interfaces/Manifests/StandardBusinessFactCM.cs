@@ -16,6 +16,7 @@ namespace Data.Interfaces.Manifests
         public string ObjectId { get; set; }
         public string CustomerId { get; set; }
         public string OwnerId { get; set; }
+        public string Data { get; set; }
 
         public DateTime? CreateDate { get; set; }
         public DateTime? DayBucket { get; set; }

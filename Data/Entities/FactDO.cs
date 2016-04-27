@@ -1,12 +1,10 @@
-﻿
+﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
 using Data.Interfaces.Manifests;
 using Utilities;
 
 namespace Data.Entities
 {
-
-    
     public class FactDO : HistoryItemDO
     {
         public FactDO()
@@ -20,7 +18,7 @@ namespace Data.Entities
 
         public StandardBusinessFactCM ToFactCM()
         {
-            var createDate = CreateDate.DateTime;
+            var createDate = DateTime.Now;
 
             return new StandardBusinessFactCM()
             {
@@ -31,6 +29,7 @@ namespace Data.Entities
                 ObjectId = this.ObjectId,
                 CustomerId = this.Fr8UserId,
                 OwnerId = this.CreatedByID,
+                Data = this.Data,
 
                 CreateDate = createDate,
                 DayBucket = DateUtility.CalculateDayBucket(createDate),

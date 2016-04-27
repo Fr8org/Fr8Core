@@ -45,21 +45,12 @@ namespace Hub.Managers
         {
             EventManager.AlertTrackablePropertyUpdated += TrackablePropertyUpdated;
             EventManager.AlertEntityStateChanged += EntityStateChanged;
-            //AlertManager.AlertConversationMatched += AlertManagerOnAlertConversationMatched;
             EventManager.AlertEmailReceived += EmailReceived;
             EventManager.AlertEventBooked += EventBooked;
             EventManager.AlertEmailSent += EmailSent;
-            //AlertManager.AlertBookingRequestCreated += BookingRequestCreated;
             EventManager.AlertExplicitCustomerCreated += CustomerCreated;
 
             EventManager.AlertUserRegistration += UserRegistered;
-
-            //AlertManager.AlertBookingRequestOwnershipChange += BookingRequestOwnershipChanged;
-            //AlertManager.AlertBookingRequestReserved += BookingRequestReserved;
-            //AlertManager.AlertBookingRequestReservationTimeout += BookingRequestReservationTimeOut;
-            //AlertManager.AlertStaleBookingRequestsDetected += StaleBookingRequestsDetected;
-
-            //AlertManager.AlertPostResolutionNegotiationResponseReceived += OnPostResolutionNegotiationResponseReceived;
 
             EventManager.AlertTokenRequestInitiated += OnAlertTokenRequestInitiated;
             EventManager.AlertTokenObtained += OnAlertTokenObtained;
@@ -95,21 +86,12 @@ namespace Hub.Managers
         {
             EventManager.AlertTrackablePropertyUpdated -= TrackablePropertyUpdated;
             EventManager.AlertEntityStateChanged -= EntityStateChanged;
-            //AlertManager.AlertConversationMatched -= AlertManagerOnAlertConversationMatched;
             EventManager.AlertEmailReceived -= EmailReceived;
             EventManager.AlertEventBooked -= EventBooked;
             EventManager.AlertEmailSent -= EmailSent;
-            //AlertManager.AlertBookingRequestCreated -= BookingRequestCreated;
             EventManager.AlertExplicitCustomerCreated -= CustomerCreated;
 
             EventManager.AlertUserRegistration -= UserRegistered;
-
-            //AlertManager.AlertBookingRequestOwnershipChange -= BookingRequestOwnershipChanged;
-            //AlertManager.AlertBookingRequestReserved -= BookingRequestReserved;
-            //AlertManager.AlertBookingRequestReservationTimeout -= BookingRequestReservationTimeOut;
-            //AlertManager.AlertStaleBookingRequestsDetected -= StaleBookingRequestsDetected;
-
-            //AlertManager.AlertPostResolutionNegotiationResponseReceived -= OnPostResolutionNegotiationResponseReceived;
 
             EventManager.AlertTokenRequestInitiated -= OnAlertTokenRequestInitiated;
             EventManager.AlertTokenObtained -= OnAlertTokenObtained;
@@ -163,6 +145,7 @@ namespace Hub.Managers
                 };
 
                 uow.FactRepository.Add(factDO);
+                uow.MultiTenantObjectRepository.Add(factDO.ToFactCM(), _security.GetCurrentUser());
                 uow.SaveChanges();
             }
         }
@@ -238,6 +221,8 @@ namespace Hub.Managers
                     };
 
                     uow.FactRepository.Add(factDO);
+                    uow.MultiTenantObjectRepository.Add(factDO.ToFactCM(), _security.GetCurrentUser());
+
                     var planDO = uow.PlanRepository.GetById<PlanDO>(activityDo.RootPlanNodeId);
                     uow.SaveChanges();
                     planId = planDO.Id;
@@ -284,6 +269,8 @@ namespace Hub.Managers
                 };
 
                 uow.FactRepository.Add(factDO);
+                uow.MultiTenantObjectRepository.Add(factDO.ToFactCM(), _security.GetCurrentUser());
+
                 uow.SaveChanges();
             }
         }
@@ -319,7 +306,10 @@ namespace Hub.Managers
                 if (planDO != null)
                 {
                     var factDO = CreatedPlanFact(planId, "Deactivated");
+
                     uowFact.FactRepository.Add(factDO);
+                    uowFact.MultiTenantObjectRepository.Add(factDO.ToFactCM(), _security.GetCurrentUser());
+
                     uowFact.SaveChanges();
                 }
             }
@@ -337,7 +327,10 @@ namespace Hub.Managers
                 if (planDO != null)
                 {
                     var factDO = CreatedPlanFact(planId, "Activated");
+
                     uowFact.FactRepository.Add(factDO);
+                    uowFact.MultiTenantObjectRepository.Add(factDO.ToFactCM(), _security.GetCurrentUser());
+
                     uowFact.SaveChanges();
                 }
             }
@@ -362,69 +355,11 @@ namespace Hub.Managers
                 };
 
                 uowFact.FactRepository.Add(factDO);
+                uowFact.MultiTenantObjectRepository.Add(factDO.ToFactCM(), _security.GetCurrentUser());
+
                 uowFact.SaveChanges();
             }
         }
-        //private void StaleBookingRequestsDetected(BookingRequestDO[] oldBookingRequests)
-        //{
-        //    string toNumber = ObjectFactory.GetInstance<IConfigRepository>().Get<string>("TwilioToNumber");
-        //    var tw = ObjectFactory.GetInstance<ISMSPackager>();
-        //    tw.SendSMS(toNumber, oldBookingRequests.Length + " Booking requests are over-due by 30 minutes.");
-        //}
-
-        //private void BookingRequestReserved(int bookingRequestId, string bookerId)
-        //{
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        var curBookingRequest = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-        //        if (curBookingRequest == null)
-        //            throw new EntityNotFoundException<BookingRequestDO>(bookingRequestId);
-        //        var curBooker = uow.UserRepository.GetByKey(bookerId);
-        //        if (curBooker == null)
-        //            throw new EntityNotFoundException<UserDO>(bookerId);
-
-        //        if (!curBooker.Available.GetValueOrDefault())
-        //        {
-        //            IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-        //            string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
-
-        //            const string subject = "A booking request has been reserved for you";
-        //            const string messageTemplate = "A booking request has been reserved for you ({0}). Click {1} to view the booking request.";
-
-        //            var bookingRequestURL = String.Format("{0}/BookingRequest/Details/{1}", Server.ServerUrl, curBookingRequest.Id);
-        //            var message = String.Format(messageTemplate, curBookingRequest.Subject, "<a href='" + bookingRequestURL + "'>here</a>");
-
-        //            var toRecipient = curBooker.EmailAddress;
-
-        //            EmailDO curEmail = new EmailDO
-        //            {
-        //                Subject = subject,
-        //                PlainText = message,
-        //                HTMLText = message,
-        //                From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress),
-        //                Recipients = new List<RecipientDO>
-        //                    {
-        //                        new RecipientDO
-        //                            {
-        //                                EmailAddress = toRecipient,
-        //                                EmailParticipantType = EmailParticipantType.To
-        //                            }
-        //                    }
-        //            };
-
-        //            // uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
-        //            uow.SaveChanges();
-        //        }
-        //    }
-        //    Logger.GetLogger().Info(string.Format("Reserved. BookingRequest ID : {0}, Booker ID: {1}", bookingRequestId, bookerId));
-        //}
-
-        //private void BookingRequestReservationTimeOut(int bookingRequestId, string bookerId)
-        //{
-
-        //    Logger.GetLogger().Info(string.Format("Reservation Timed out. BookingRequest ID : {0}, Booker ID: {1}", bookingRequestId, bookerId));
-        //}
-
 
         private string FormatTerminalName(AuthorizationTokenDO authorizationToken)
         {
@@ -457,6 +392,8 @@ namespace Hub.Managers
                 );
 
                 uow.FactRepository.Add(factDO);
+                uow.MultiTenantObjectRepository.Add(factDO.ToFactCM(), _security.GetCurrentUser());
+
                 uow.SaveChanges();
             }
         }
@@ -482,6 +419,8 @@ namespace Hub.Managers
                 };
 
                 uow.FactRepository.Add(newFactDO);
+                uow.MultiTenantObjectRepository.Add(newFactDO.ToFactCM(), _security.GetCurrentUser());
+
                 uow.SaveChanges();
             }
         }
@@ -500,7 +439,10 @@ namespace Hub.Managers
                     CreatedByID = _security.GetCurrentUser(),
                     Status = value != null ? value.ToString() : null,
                 };
+
                 uow.FactRepository.Add(newFactDO);
+                uow.MultiTenantObjectRepository.Add(newFactDO.ToFactCM(), _security.GetCurrentUser());
+
                 uow.SaveChanges();
             }
         }
@@ -519,7 +461,10 @@ namespace Hub.Managers
                     CreatedByID = _security.GetCurrentUser(),
                     Status = stateValue,
                 };
+
                 uow.FactRepository.Add(newFactDO);
+                uow.MultiTenantObjectRepository.Add(newFactDO.ToFactCM(), _security.GetCurrentUser());
+
                 uow.SaveChanges();
             }
         }
@@ -544,66 +489,6 @@ namespace Hub.Managers
                 SaveAndLogFact(fact);
             }
         }
-
-
-        //private void AlertManagerOnAlertConversationMatched(int emailID, string subject, int bookingRequestID)
-        //{
-        //    const string logMessageFormat = "Inbound Email ID {0} with subject '{1}' was matched to BR ID {2}";
-        //    var logMessage = String.Format(logMessageFormat, emailID, subject, bookingRequestID);
-
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        var incidentDO = new IncidentDO
-        //        {
-        //            ObjectId = emailID.ToString(),
-        //            PrimaryCategory = "BookingRequest",
-        //            SecondaryCategory = "Conversation",
-        //            Data = logMessage
-        //        };
-        //        uow.IncidentRepository.Add(incidentDO);
-        //        uow.SaveChanges();
-        //    }
-
-        //    Logger.GetLogger().Info(logMessage);
-        //}
-
-        //private static void OnPostResolutionNegotiationResponseReceived(int negotiationId)
-        //{
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        var negotiationDO = uow.NegotiationsRepository.GetByKey(negotiationId);
-
-        //        IConfigRepository configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-        //        string fromAddress = configRepository.Get("EmailAddress_GeneralInfo");
-
-        //        const string subject = "New response to resolved negotiation request";
-        //        const string messageTemplate = "A customer has submitted a new response to an already-resolved negotiation request ({0}). Click {1} to view the booking request.";
-
-        //        var bookingRequestURL = String.Format("{0}/BookingRequest/Details/{1}", Server.ServerUrl, negotiationDO.BookingRequestID);
-        //        var message = String.Format(messageTemplate, negotiationDO.Name, "<a href='" + bookingRequestURL + "'>here</a>");
-
-        //        var toRecipient = negotiationDO.BookingRequest.Booker.EmailAddress;
-
-        //        EmailDO curEmail = new EmailDO
-        //        {
-        //            Subject = subject,
-        //            PlainText = message,
-        //            HTMLText = message,
-        //            From = uow.EmailAddressRepository.GetOrCreateEmailAddress(fromAddress),
-        //            Recipients = new List<RecipientDO>
-        //                    {
-        //                        new RecipientDO
-        //                            {
-        //                                EmailAddress = toRecipient,
-        //                                EmailParticipantType = EmailParticipantType.To
-        //                            }
-        //                    }
-        //        };
-
-        //        //  uow.EnvelopeRepository.ConfigurePlainEmail(curEmail);
-        //        uow.SaveChanges();
-        //    }
-        //}
 
         private void CustomerCreated(string curUserId)
         {
@@ -669,29 +554,6 @@ namespace Hub.Managers
             };
             SaveFact(curAction);
         }
-
-        //public void BookingRequestCreated(int bookingRequestId)
-        //{
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-
-
-        //        ObjectFactory.GetInstance<ITracker>().Track(bookingRequestDO.Customer, "BookingRequest", "Submit", new Dictionary<string, object> { { "BookingRequestId", bookingRequestDO.Id } });
-
-        //        FactDO curAction = new FactDO
-        //        {
-        //            PrimaryCategory = "BookingRequest",
-        //            SecondaryCategory = "",
-        //            Activity = "Created",
-        //            Fr8UserId = bookingRequestDO.Fr8UserId,
-        //            ObjectId = bookingRequestId.ToString(CultureInfo.InvariantCulture)
-        //        };
-
-        //        curAction.Data = string.Format("{0} ID :{1},", curAction.PrimaryCategory, curAction.ObjectId);
-        //        SaveFact(curAction);
-        //    }
-        //}
 
         /// <summary>
         /// The method logs the fact of receiving a notification from DocuSign.      
@@ -822,6 +684,8 @@ namespace Hub.Managers
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.FactRepository.Add(curAction);
+                uow.MultiTenantObjectRepository.Add(curAction.ToFactCM(), _security.GetCurrentUser());
+
                 uow.SaveChanges();
             }
         }
@@ -848,7 +712,10 @@ namespace Hub.Managers
                     //Data = "User registrated with " + curUser.EmailAddress.Address
                 };
                 Logger.GetLogger().Info(curFactDO.Data);
+
                 uow.FactRepository.Add(curFactDO);
+                uow.MultiTenantObjectRepository.Add(curFactDO.ToFactCM(), _security.GetCurrentUser());
+
                 uow.SaveChanges();
             }
         }
@@ -866,8 +733,12 @@ namespace Hub.Managers
                     Data = string.Format("{0} activity templates were registrated", count)
                     //Data = "User registrated with " + curUser.EmailAddress.Address
                 };
+
                 Logger.GetLogger().Info(curFactDO.Data);
+
                 uow.FactRepository.Add(curFactDO);
+                uow.MultiTenantObjectRepository.Add(curFactDO.ToFactCM(), _security.GetCurrentUser());
+
                 uow.SaveChanges();
             }
         }
@@ -912,6 +783,8 @@ namespace Hub.Managers
                 };
 
                 uow.FactRepository.Add(factDO);
+                uow.MultiTenantObjectRepository.Add(factDO.ToFactCM(), _security.GetCurrentUser());
+
                 uow.SaveChanges();
             }
         }
@@ -1217,8 +1090,11 @@ namespace Hub.Managers
                 }
 
                 LogHistoryItem(curFact);
+                
                 //LogFactInformation(curFact, curFact.Data);
                 uow.FactRepository.Add(curFact);
+                uow.MultiTenantObjectRepository.Add(curFact.ToFactCM(), _security.GetCurrentUser());
+
                 uow.SaveChanges();
             }
         }
