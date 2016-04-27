@@ -43,45 +43,14 @@ namespace terminalSalesforce.Infrastructure
             return externalAuthUrlDTO;
         }
 
-        private void ParseCodeAndState(string queryString, out string code, out string state)
-        {
-            if (string.IsNullOrEmpty(queryString))
-            {
-                throw new ApplicationException("QueryString is empty.");
-            }
-
-            code = null;
-            state = null;
-
-            var tokens = queryString.Split(new[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var token in tokens)
-            {
-                var nameValueTokens = token.Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
-                if (nameValueTokens.Length < 2)
-                {
-                    continue;
-                }
-
-                if (nameValueTokens[0] == "code")
-                {
-                    code = nameValueTokens[1];
-                }
-                else if (nameValueTokens[0] == "state")
-                {
-                    state = nameValueTokens[1];
-                }
-            }
-        }
-
         public AuthorizationTokenDTO Authenticate(
             ExternalAuthenticationDTO externalAuthDTO)
         {
-            string code;
-            string state;
-
+            var query = HttpUtility.ParseQueryString(externalAuthDTO.RequestQueryString);
             //Code will be access code returned by the Salesforce after the user authenticates app
+            var code = query["code"];
             //State is be value passed by us to salesforce and it's returned by the salesforce after the authentication
-            ParseCodeAndState(externalAuthDTO.RequestQueryString, out code, out state);
+            var state = query["state"];
 
             AuthenticationClient oauthToken = (AuthenticationClient)Task.Run(() => GetAuthToken(code)).Result;
 
