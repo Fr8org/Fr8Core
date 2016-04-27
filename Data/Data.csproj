@@ -299,7 +299,7 @@
     <Compile Include="Interfaces\DataTransferObjects\AuthenticateResponse.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CrateDescriptionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventLoggingDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\FactDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\HistoryItemDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\QueryFieldType.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldValidationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityDTO.cs" />
@@ -983,6 +983,7 @@
     <Compile Include="Crates\Helpers\LoggingDataCrateFactory.cs" />
     <Compile Include="Utility\JoinClasses\FileTags.cs" />
     <Compile Include="Utility\CopyPropertiesHelper.cs" />
+    <Compile Include="Utility\PagingExtensions.cs" />
     <Compile Include="Utility\TagDO.cs" />
     <Compile Include="Validations\ActionValidator.cs" />
     <Compile Include="Validations\ContainerValidator.cs" />

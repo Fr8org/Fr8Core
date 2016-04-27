@@ -24,7 +24,8 @@ var app = angular.module("app", [
     "ivh.treeview",
     "ngMaterial",
     "angularResizable",
-    "mdColorPicker"
+    "mdColorPicker",
+    "md.data.table"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */

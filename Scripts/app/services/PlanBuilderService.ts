@@ -6,6 +6,7 @@
 module dockyard.services {
     export interface IPlanService extends ng.resource.IResourceClass<interfaces.IPlanFullDTO> {
         getbystatus: (id: { id: number; status: number; category?: string }) => Array<interfaces.IPlanVM>;
+        getByQuery: (query: model.PlanQueryDTO) => interfaces.IPlanResultDTO;
         getFull: (id: Object) => interfaces.IPlanFullDTO;
         getByActivity: (id: { id: string }) => interfaces.IPlanVM;
         execute: (id: { id: number }, payload: { payload: string }, success: any, error: any) => void;
@@ -107,6 +108,11 @@ module dockyard.services {
                             status: '@status',
                             category: '@category'
                         }
+                    },
+                    'getByQuery': {
+                        method: 'GET',
+                        isArray: false,
+                        url: '/api/plans/getByQuery'
                     },
                     'getByActivity': {
                         method: 'GET',

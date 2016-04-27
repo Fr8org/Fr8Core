@@ -56,6 +56,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/model/SolutionDTO.js',
         'Scripts/app/model/AlertDTO.js',
         'Scripts/app/model/SubordinateSubplan.js',
+        'Scripts/app/model/HistoryDTO.js',
         'Scripts/app/services/CrateHelper.js',
         'Scripts/app/services/AuthService.js',
         'Scripts/app/services/ConfigureTrackerService.js',
