@@ -130,6 +130,9 @@ namespace terminalDocuSign.Services
                     connectId = _docuSignConnect.CreateConnect(config, TemporaryConnectName, publishUrl);
                     Console.WriteLine("Created connect named {0} pointing to {1} with id {2}", TemporaryConnectName, publishUrl, connectId);
                 }
+            } else
+            {
+                Console.WriteLine($"terminalUrl is empty, no work has been done in DocuSignPlan.CreateConnect: prodUrl -> {prodUrl}, devUrl -> {devUrl}, demoUrl -> {demoUrl}");
             }
         }
 
