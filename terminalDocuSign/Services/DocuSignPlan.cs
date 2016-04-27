@@ -58,6 +58,7 @@ namespace terminalDocuSign.Services
         /// </summary>
         public async Task CreatePlan_MonitorAllDocuSignEvents(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
+            Debug.WriteLine($"Create MADSE called {curFr8UserId}");
             string currentPlanId = await FindAndActivateExistingPlan(curFr8UserId, "MonitorAllDocuSignEvents", authTokenDTO);
             if (string.IsNullOrEmpty(currentPlanId))
                 await CreateAndActivateNewMADSEPlan(curFr8UserId, authTokenDTO);
@@ -66,6 +67,7 @@ namespace terminalDocuSign.Services
         //only create a connect when running on dev/production
         public void CreateConnect(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
+            Debug.WriteLine($"CreateConnect called {curFr8UserId}");
             var authTokenDO = new AuthorizationTokenDO() { Token = authTokenDTO.Token, ExternalAccountId = authTokenDTO.ExternalAccountId };
             var config = _docuSignManager.SetUp(authTokenDO);
 
@@ -79,6 +81,7 @@ namespace terminalDocuSign.Services
 
 
             Console.WriteLine("Connect creation: terminalUrl = {0}", terminalUrl);
+            Debug.WriteLine($"CreateConnect terminalUrl {terminalUrl}");
             if (!string.IsNullOrEmpty(terminalUrl))
             {
                 if (terminalUrl.Contains(devUrl, StringComparison.InvariantCultureIgnoreCase))

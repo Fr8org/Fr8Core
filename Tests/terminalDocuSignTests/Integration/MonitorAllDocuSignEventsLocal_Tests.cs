@@ -118,7 +118,10 @@ namespace terminalDocuSignTests.Integration
                 //let's wait 10 seconds to ensure that MADSE plan was created/activated by re-authentication
                 await Task.Delay(SingleAwaitPeriod);
 
-                await HttpPostAsync<string>(GetTerminalEventsUrl(), new StringContent(string.Format(EnvelopeToSend, Guid.NewGuid())));
+                string response = 
+                    await HttpPostAsync<string>(GetTerminalEventsUrl(), new StringContent(string.Format(EnvelopeToSend, Guid.NewGuid())));
+
+                Debug.WriteLine($"Received {GetTerminalEventsUrl()} response {response}");
 
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
