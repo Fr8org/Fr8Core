@@ -55,7 +55,7 @@ namespace Data.Infrastructure.StructureMap
                 For<ISecurityObjectsCache>().Use<SecurityObjectsCache>().Singleton();
                 For<IPlanCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(planCacheExpiration)).Singleton();
                 For<ISecurityCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(planCacheExpiration)).Singleton();
-                For<IEncryptionProvider>().Use<DummyEncryptionProvider>().Singleton();
+                For<IEncryptionProvider>().Use<DefaultEncryptionProvider>().Singleton();
                 // For<IMT_Field>().Use<MT_FieldService>();
             }
         }

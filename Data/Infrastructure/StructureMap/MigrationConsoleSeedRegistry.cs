@@ -4,6 +4,8 @@ using StructureMap.Configuration.DSL;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.Repositories.Cache;
+using Data.Repositories.Encryption;
+using Data.Repositories.Encryption.Impl;
 using Data.Repositories.MultiTenant;
 using Data.Repositories.MultiTenant.InMemory;
 using Data.Repositories.Plan;
@@ -33,7 +35,7 @@ namespace Data.Infrastructure
             var planCacheExpiration = TimeSpan.FromMinutes(10);
             For<IPlanCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(planCacheExpiration)).Singleton();
             For<ISecurityCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(planCacheExpiration)).Singleton();
-
+            For<IEncryptionProvider>().Use<DefaultEncryptionProvider>().Singleton();
             For<IPlanStorageProvider>().Use<PlanStorageProviderEf>();
             For<PlanStorage>().Use<PlanStorage>();
         }

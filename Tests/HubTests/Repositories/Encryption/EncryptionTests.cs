@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories.Encryption;
@@ -8,22 +10,29 @@ using Data.States;
 using Hub.StructureMap;
 using NUnit.Framework;
 using StructureMap;
+using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
 namespace HubTests.Repositories.Encryption
 {
     [TestFixture]
     [Category("EncryptionProvider")]
-    public class EncryptionTests
+    public class EncryptionTests : BaseTest
     {
         private class EncryptionProviderMock : IEncryptionProvider
         {
             public readonly HashSet<string> DataToEncrypt = new HashSet<string>();
+            public readonly HashSet<string> DecryptedData = new HashSet<string>(); 
 
             public byte[] EncryptData(string peerId, string data)
             {
                 DataToEncrypt.Add(data);
-                return null;
+                return Encrypt(peerId, data);
+            }
+
+            public static byte[] Encrypt(string peerId, string data)
+            {
+                return Encoding.Default.GetBytes(peerId + data);
             }
 
             public byte[] EncryptData(string peerId, byte[] data)
@@ -33,7 +42,24 @@ namespace HubTests.Repositories.Encryption
 
             public string DecryptString(string peerId, byte[] encryptedData)
             {
-                return null;
+                var decryptedString = Encoding.Default.GetString(encryptedData);
+
+                if (string.IsNullOrEmpty(peerId))
+                {
+                    DecryptedData.Add(decryptedString);
+                    return decryptedString;
+                }
+
+                if (!decryptedString.StartsWith(peerId))
+                {
+                    throw new InvalidOperationException("Can't decrypt data because it is belong to another user");
+                }
+
+                var decryptedData = decryptedString.Substring(peerId.Length);
+
+                DecryptedData.Add(decryptedData);
+
+                return decryptedData;
             }
 
             public byte[] DecryptByteArray(string peerId, byte[] encryptedData)
@@ -76,7 +102,7 @@ namespace HubTests.Repositories.Encryption
                         },
                         AuthorizationTokenId = NewGuid(34),
                         Label = "label",
-                        CrateStorage = "stroage " + NewGuid(1),
+                        CrateStorage = "storage " + NewGuid(1),
                         Ordering = 6666,
                         Fr8Account = new Fr8AccountDO()
                         {
@@ -97,7 +123,7 @@ namespace HubTests.Repositories.Encryption
                                 ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                 RootPlanNodeId = NewGuid(13),
                                 Id = NewGuid(2),
-                                CrateStorage = "stroage " + NewGuid(2),
+                                CrateStorage = "storage " + NewGuid(2),
                                 Fr8Account = new Fr8AccountDO()
                                 {
                                     Id = "acoountId",
@@ -113,7 +139,7 @@ namespace HubTests.Repositories.Encryption
                                     Id = FixtureData.GetTestGuidById(1),
                                     Name = "New template",
                                 },
-                                CrateStorage = "stroage " + NewGuid(3),
+                                CrateStorage = "storage " + NewGuid(3),
                                 ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                 RootPlanNodeId = NewGuid(13),
                                 Id = NewGuid(3),
@@ -135,8 +161,7 @@ namespace HubTests.Repositories.Encryption
         {
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
         }
-
-
+        
         private void StoreTestPlan(IContainer container)
         {
             var plan = GenerateTestPlan();
@@ -204,14 +229,81 @@ namespace HubTests.Repositories.Encryption
 
             var expected = new[]
             {
-                "stroage " + NewGuid(1),
-                "stroage " + NewGuid(2),
-                "stroage " + NewGuid(3),
+                "storage " + NewGuid(1),
+                "storage " + NewGuid(2),
+                "storage " + NewGuid(3),
             };
 
             foreach (var s in expected)
             {
                 Assert.IsTrue(mockedEncryptionProvider.DataToEncrypt.Contains(s), "Missing encrypted data: " + s);
+            }
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var activities = uow.PlanRepository.GetActivityQueryUncached().ToArray();
+
+                foreach (var activity in activities)
+                {
+                    var exprectedEncryptedData = EncryptionProviderMock.Encrypt(activity.Fr8AccountId, "storage " + activity.Id);
+                    
+                    Assert.AreEqual(exprectedEncryptedData.Length, activity.EncryptedCrateStorage.Length, $"Activity {activity.Id} has invalid encrypted storage data. Invalid size.");
+
+                    for (int i = 0; i < exprectedEncryptedData.Length; i++)
+                    {
+                        Assert.AreEqual(exprectedEncryptedData[i], activity.EncryptedCrateStorage[i], $"Activity {activity.Id} has invalid encrypted storage data at {i}");
+                    }
+                }
+            }
+        }
+        
+        [Test]
+        public void IsEncryptionProviderCalledOnActivityLoad()
+        {
+            var container = ObjectFactory.Container.CreateChildContainer();
+            var mockedEncryptionProvider = new EncryptionProviderMock();
+
+            container.Configure(x =>
+            {
+                x.For<IPlanCache>().Use<PlanCache>().Singleton();
+                x.For<IEncryptionProvider>().Use(mockedEncryptionProvider);
+            });
+
+            StoreTestPlan(container);
+
+            container = ObjectFactory.Container.CreateChildContainer();
+            mockedEncryptionProvider = new EncryptionProviderMock();
+
+            container.Configure(x =>
+            {
+                x.For<IPlanCache>().Use<PlanCache>().Singleton();
+                x.For<IEncryptionProvider>().Use(mockedEncryptionProvider);
+            });
+
+
+            var expected = new[]
+            {
+                "storage " + NewGuid(1),
+                "storage " + NewGuid(2),
+                "storage " + NewGuid(3),
+            };
+
+            using (var uow = container.GetInstance<IUnitOfWork>())
+            {
+                var activities = uow.PlanRepository.GetById<PlanNodeDO>(NewGuid(13)).GetDescendants().OfType<ActivityDO>().ToArray();
+
+                Assert.AreEqual(3, mockedEncryptionProvider.DecryptedData.Count, "Invalid number of data decryption calls");
+
+                foreach (var s in expected)
+                {
+                    Assert.IsTrue(mockedEncryptionProvider.DecryptedData.Contains(s), "Missing decrypted data: " + s);
+                }
+
+                foreach (var activity in activities)
+                {
+                    Assert.AreEqual("storage " + activity.Id, activity.CrateStorage, $"Activity {activity.Id} has invalid decrypted crate storage");
+                    Assert.IsNull(activity.EncryptedCrateStorage, $"Encrypted crate storage data is present for activity {activity.Id}");
+                }
             }
         }
 
