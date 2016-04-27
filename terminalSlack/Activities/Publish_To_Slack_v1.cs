@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using Data.Constants;
 using Data.Control;
@@ -57,9 +58,14 @@ namespace terminalSlack.Actions
 
 
             await _slackIntegration.PostMessageToChat(authTokenDO.Token,
-                actionChannelId, message);
+                actionChannelId, StripHTML(message));
 
             return Success(payloadCrates);
+        }
+
+        public static string StripHTML(string input)
+        {
+            return Regex.Replace(input, "<.*?>", String.Empty);
         }
 
         private List<FieldDTO> ExtractPayloadFields(PayloadDTO payloadCrates)

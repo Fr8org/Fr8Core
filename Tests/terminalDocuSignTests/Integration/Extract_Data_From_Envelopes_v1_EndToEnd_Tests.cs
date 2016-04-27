@@ -73,8 +73,10 @@ namespace terminalDocuSignTests.Integration
             _solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "activities/configure?id=" + _solution.Id, _solution);
             _crateStorage = Crate.FromDto(_solution.CrateStorage);
             Assert.AreEqual(2, _solution.ChildrenActivities.Count(), "Solution child activities failed to create.");
-            Assert.True(_solution.ChildrenActivities.Any(a => a.Label == "Monitor DocuSign Envelope Activity" && a.Ordering == 1));
-            Assert.True(_solution.ChildrenActivities.Any(a => a.Label == "Send DocuSign Envelope" && a.Ordering == 2));
+            Assert.True(_solution.ChildrenActivities.Any(a => a.Label == "Monitor DocuSign Envelope Activity" && a.Ordering == 1),
+                "Failed to detect Monitor DocuSign Envelope Activity as the first child activity");
+            Assert.True(_solution.ChildrenActivities.Any(a => a.Label == "Send DocuSign Envelope" && a.Ordering == 2),
+                "Failed to detect Send DocuSign Envelope as the second child activity");
 
 
             var monitorDocuSignEnvelopeActivity = _solution.ChildrenActivities
@@ -314,7 +316,7 @@ namespace terminalDocuSignTests.Integration
                         token = terminalDocuSign.AuthTokens.FirstOrDefault();
                     }
 
-                    Assert.NotNull(token);
+                    Assert.NotNull(token, "Failed to get the auth token for Docusign terminal. ");
                     tokenGuid = token.Id;
                 }
 
