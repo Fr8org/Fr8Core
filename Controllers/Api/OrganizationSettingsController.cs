@@ -19,60 +19,24 @@ namespace HubWeb.Controllers
     public class OrganizationSettingsController: ApiController
 	{
         private readonly IOrganization _organization;
+
+        public OrganizationSettingsController()
+        {
+            _organization = ObjectFactory.GetInstance<IOrganization>();
+        }
+
         [HttpGet]
-        public IHttpActionResult Get(string OrganizationName, bool isNew)
+        public IHttpActionResult Get(int id)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                
-                OrganizationDO organization = _organization.GetOrCreateOrganization(uow, OrganizationName,out isNew);
-                return Ok(organization);
-            }
+            return Ok(_organization.GetOrganizationById(id));
         }
-        /// <summary>
-        /// Recieve criteria with global id, update criteria,
-        /// and return updated criteria.
-        /// </summary>
-        /// <param name="dto">Criteria data transfer object.</param>
-        /// <returns>Updated criteria.</returns>
-        [ResponseType(typeof(OrganizationDTO))]
-        [HttpPost]
-        public IHttpActionResult Post(OrganizationDTO dto)
-        {
-            Mapper.CreateMap<OrganizationDTO, OrganizationDO>();
-            OrganizationDO entity = Mapper.Map<OrganizationDO>(dto);
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.OrganizationRepository.Add(entity);
-
-                uow.SaveChanges();
-            }
-            Mapper.CreateMap<OrganizationDO, OrganizationDTO>();
-            var model = Mapper.Map<OrganizationDTO>(entity);
-            return Ok(model);
-            
-        }
+        
+        
         [ResponseType(typeof(OrganizationDTO))]
         [HttpPut]
-        public IHttpActionResult Update(OrganizationDTO dto)
+        public IHttpActionResult Put(OrganizationDTO dto)
         {
-
-            OrganizationDO curOrganization = null;
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                curOrganization = uow.OrganizationRepository.GetByKey(dto.Id);
-                if (curOrganization == null)
-                {
-                    throw new Exception(string.Format("Unable to find criteria by id = {0}", dto.Id));
-                }
-
-                Mapper.Map<OrganizationDTO, OrganizationDO>(dto, curOrganization);
-
-                uow.SaveChanges();
-            }
-            return Ok(Mapper.Map<OrganizationDTO>(curOrganization));
+            return Ok(_organization.UpdateOrganization(dto));
         }
     }
 }

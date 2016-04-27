@@ -14,8 +14,8 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("themeName")]
         public string ThemeName { get; set; }
 
-        [JsonProperty("color")]
-        public string Color { get; set; }
+        [JsonProperty("backgroundColor")]
+        public string BackgroundColor { get; set; }
 
         [JsonProperty("logoUrl")]
         public string LogoUrl { get; set; }

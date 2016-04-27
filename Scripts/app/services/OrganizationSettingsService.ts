@@ -3,6 +3,7 @@
     export interface IOrganizationSettingsService extends ng.resource.IResourceClass<interfaces.IOrganizationSettingsVM> {
         add: (organizationSettings: model.OrganizationDTO) => interfaces.IOrganizationSettingsVM;
         update: (organizationSettings: model.OrganizationDTO) => interfaces.IOrganizationSettingsVM;
+        getOrganization: (params: { organizationId: number }) => interfaces.IOrganizationSettingsVM;
     }
 
     app.factory('OrganizationSettingsService', ['$resource', ($resource: ng.resource.IResourceService): IOrganizationSettingsService =>
@@ -14,9 +15,13 @@
                 'update': {
                     method: 'PUT'
                 },
-                'get': {
-                    method: 'GET'
-                }   
+                'getOrganization': {
+                    method: 'GET',
+                    url: '/api/organizationsettings?id=:id',
+                    params: {
+                        id: '@id'
+                    }
+                }
             })
     ]);
 } 
