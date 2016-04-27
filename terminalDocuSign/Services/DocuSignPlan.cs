@@ -178,7 +178,7 @@ namespace terminalDocuSign.Services
                                 await _hubCommunicator.ApplyNewToken(firstActivity.Id, Guid.Parse(authTokenDTO.Id), curFr8UserId);
                                 var existingPlanDO = Mapper.Map<PlanDO>(existingPlan.Plan);
                                 await _hubCommunicator.ActivatePlan(existingPlanDO, curFr8UserId);
-                                Console.WriteLine("#### Existing MADSE plan activated with planId: " + existingPlanDO.RootPlanNodeId);
+                                Console.WriteLine("#### Existing MADSE plan activated with planId: " + existingPlanDO.Id);
                                 return existingPlan.Plan.Id.to_S();
                             }
                         }
