@@ -1,23 +1,21 @@
 ﻿module dockyard.services {
 
-    export interface IReportFactService extends ng.resource.IResourceClass<interfaces.IReportFactVM> { }
-
-    export interface IReportIncidentService extends ng.resource.IResourceClass<interfaces.IReportIncidentVM> {
-        getByQuery: (query: model.HistoryQueryDTO) => interfaces.IHistoryResultDTO;
+    export interface IReportService extends ng.resource.IResourceClass<interfaces.IHistoryItemDTO> {
+        getIncidentsByQuery: (query: model.HistoryQueryDTO) => interfaces.IHistoryResultDTO<model.IncidentDTO>;
+        getFactsByQuery: (query: model.HistoryQueryDTO) => interfaces.IHistoryResultDTO<model.FactDTO>;
     }
 
-
-    app.factory('ReportFactService', ['$resource', ($resource: ng.resource.IResourceService): IReportFactService =>
-        <IReportFactService> $resource('/api/report/getallfacts', {})
-            
-    ]);
-
-    app.factory('ReportIncidentService', ['$resource', ($resource: ng.resource.IResourceService): IReportIncidentService =>
-        <IReportIncidentService> $resource('/api/report/getallincidents', null, {
-            'getByQuery': {
+    app.factory('ReportService', ['$resource', ($resource: ng.resource.IResourceService): IReportService =>
+        <IReportService> $resource('/api/report/getallincidents', null, {
+            'getIncidentsByQuery': {
                 method: 'GET',
                 isArray: false,
-                url: '/api/report/getByQuery'
+                url: '/api/report/getIncidentsByQuery'
+            },
+            'getFactsByQuery': {
+                method: 'GET',
+                isArray: false,
+                url: '/api/report/getFactsByQuery'
             }
         })
     ]);

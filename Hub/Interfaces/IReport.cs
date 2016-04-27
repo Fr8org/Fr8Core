@@ -11,8 +11,7 @@ namespace Hub.Interfaces
 {
     public interface IReport
     {
-        IList<FactDO> GetAllFacts(IUnitOfWork uow);
-        List<IncidentDO> GetIncidents(IUnitOfWork uow, int page, int pageSize, bool isCurrentUser);
-        HistoryResultDTO GetIncidents(IUnitOfWork uow, HistoryQueryDTO historyQueryDTO);
+        HistoryResultDTO<IncidentDTO> GetIncidents(IUnitOfWork uow, HistoryQueryDTO historyQueryDTO);
+        HistoryResultDTO<FactDTO> GetFacts(IUnitOfWork uow, HistoryQueryDTO historyQueryDTO);
     }
 }

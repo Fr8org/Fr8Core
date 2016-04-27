@@ -9,16 +9,41 @@ namespace Data.Interfaces.DataTransferObjects
 {
     public class HistoryItemDTO
     {
+        [JsonProperty("id")]
+        public int Id { get; set; }
+        [JsonProperty("activity")]
         public string Activity { get; set; }
+        [JsonProperty("createDate")]
         public DateTimeOffset CreateDate { get; set; }
+        [JsonProperty("fr8UserId")]
         public string Fr8UserId { get; set; }
+        [JsonProperty("data")]
         public string Data { get; set; }
-        public DateTimeOffset LastUpdated { get; set; }
+        [JsonProperty("objectId")]
         public string ObjectId { get; set; }
+        [JsonProperty("component")]
         public string Component { get; set; }
+        [JsonProperty("primaryCategory")]
         public string PrimaryCategory { get; set; }
+        [JsonProperty("secondaryCategory")]
         public string SecondaryCategory { get; set; }
+        [JsonProperty("status")]
         public string Status { get; set; }
+    }
+
+    public class IncidentDTO : HistoryItemDTO
+    {
+        [JsonProperty("priority")]
+        public int Priority { get; set; }
+        [JsonProperty("isHighPriority")]
+        public bool isHighPriority { get; set; }
+        
+    }
+
+    public class FactDTO : HistoryItemDTO
+    {
+        [JsonProperty("createdByID")]
+        public string CreatedByID { get; set; }
     }
 
     public class HistoryQueryDTO
@@ -39,10 +64,10 @@ namespace Data.Interfaces.DataTransferObjects
         public string Filter { get; set; }
     }
 
-    public class HistoryResultDTO
+    public class HistoryResultDTO<T> where T : HistoryItemDTO
     {
         [JsonProperty("items")]
-        public IList<HistoryItemDTO> Items { get; set; }
+        public IList<T> Items { get; set; }
 
         [JsonProperty("currentPage")]
         public int CurrentPage { get; set; }

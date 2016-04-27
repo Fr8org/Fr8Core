@@ -1,32 +1,8 @@
 ﻿module dockyard.model {
-    export class IncidentDTO {
-        id: number;
-        activity: string;       
-        createDate: Date;
-        fr8UserId: string;
-        data: string;       
-        is_high_priority: boolean;
-        lastUpdated: Date;       
-        objectId: string;
-        primaryCategory: string;
+
+    export class IncidentDTO extends HistoryItemDTO {
         priority: number;
-        secondaryCategory: string;
-        status: string;
+        isHighPriority: boolean;
     }
 
-
-    export class IncidentQueryDTO {
-        page: number;
-        itemPerPage: number;
-        category: string;
-        orderBy: string;
-        isDescending: boolean;
-        filter: string;
-    }
-
-    export class IncidentResultDTO {
-        items: Array<model.IncidentDTO>;
-        currentPage: number;
-        totalItemCount: number;
-    }
 }

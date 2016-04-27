@@ -1191,3 +1191,13 @@ footer p {
     padding-left: 5px;
     padding-right: 5px;
 }
+
+.color-row {
+    background-color: #AAAAAA;
+    background-color: rgba(0,0,0,.12);
+}
+
+.high-priority-row {
+    background-color: #FF0000;
+    background-color: rgba(255,0,0,.09);
+}

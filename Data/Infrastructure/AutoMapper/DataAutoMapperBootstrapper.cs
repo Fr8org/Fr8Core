@@ -28,6 +28,8 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ActivityDO, ActivityDTO>();
             Mapper.CreateMap<FactDO, HistoryItemDTO>();
             Mapper.CreateMap<IncidentDO, HistoryItemDTO>();
+            Mapper.CreateMap<IncidentDO, IncidentDTO>();
+            Mapper.CreateMap<FactDO, FactDTO>();
             Mapper.CreateMap<Fr8AccountDO, UserDTO>()
                 .ForMember(dto => dto.EmailAddress, opts => opts.ResolveUsing(e => e.EmailAddress.Address))
                 .ForMember(dto => dto.Status, opts => opts.ResolveUsing(e => e.State.Value));

@@ -19,34 +19,17 @@ namespace HubWeb.Controllers
     [Fr8ApiAuthorize]
     public class ReportController : ApiController
     {
-        private IReport _report;
+        private readonly IReport _report;
 
         public ReportController()
         {
             _report = ObjectFactory.GetInstance<IReport>();
         }
 
-        public IHttpActionResult GetAllFacts()
-        {
-            IEnumerable<HistoryItemDTO> factDTOList = null;
-            try
-            {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    factDTOList = _report.GetAllFacts(uow).Select(f => Mapper.Map<HistoryItemDTO>(f));
-                }
-            }
-            catch (Exception e)
-            {
-                Logger.GetLogger().Error("Error checking for activity template ", e);
-            }
-            return Ok(factDTOList);
-        }
-
         [Fr8ApiAuthorize]
-        [ActionName("getByQuery")]
+        [ActionName("getIncidentsByQuery")]
         [HttpGet]
-        public IHttpActionResult GetByQuery([FromUri] HistoryQueryDTO historyQueryDTO)
+        public IHttpActionResult GetIncidentsByQuery([FromUri] HistoryQueryDTO historyQueryDTO)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -55,31 +38,16 @@ namespace HubWeb.Controllers
             }
         }
 
-        public IHttpActionResult GetIncidents(int page, int pageSize, string user)
+        [Fr8ApiAuthorize]
+        [ActionName("getFactsByQuery")]
+        [HttpGet]
+        public IHttpActionResult GetFactsByQuery([FromUri] HistoryQueryDTO historyQueryDTO)
         {
-            //this is a flag to return either all or user-specific incidents
-            bool isCurrentUser;
-            var historyItems = new List<HistoryItemDTO>();
-            //based on the parameter in GET request decide the value of the flag
-            if (string.Equals(user, "current"))
-                isCurrentUser = true;
-            else if (string.Equals(user, "all"))
-                isCurrentUser = false;
-            else
-                throw new ArgumentException("Incorect user parameter. Only 'current' and 'all' are allowed");
-            try
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    var incidents = _report.GetIncidents(uow, page, pageSize, isCurrentUser);
-                    historyItems.AddRange(incidents.Select(Mapper.Map<HistoryItemDTO>));
-                }
+                var result = _report.GetFacts(uow, historyQueryDTO);
+                return Ok(result);
             }
-            catch (Exception e)
-            {
-                Logger.GetLogger().Error("Error checking for activity template ", e);
-            }
-            return Ok(historyItems);
         }
     }
 }

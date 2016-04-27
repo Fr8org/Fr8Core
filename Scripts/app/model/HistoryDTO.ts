@@ -6,14 +6,11 @@
         createDate: Date;
         fr8UserId: string;
         data: string;       
-        is_high_priority: boolean;
-        lastUpdated: Date;       
         objectId: string;
+        component: string;
         primaryCategory: string;
-        priority: number;
         secondaryCategory: string;
         status: string;
-        component: string;
     }
 
     export class HistoryQueryDTO {
@@ -24,8 +21,8 @@
         isCurrentUser: boolean;
     }
 
-    export class HistoryResultDTO {
-        items: Array<model.HistoryItemDTO>;
+    export class HistoryResultDTO<T> {
+        items: Array<T>;
         currentPage: number;
         totalItemCount: number;
     }

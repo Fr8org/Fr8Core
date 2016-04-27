@@ -2,39 +2,34 @@
     'use strict';
 
     export interface IReportIncidentListScope extends ng.IScope {
-        GetFacts: () => void;
-        incidentRecords: Array<model.IncidentDTO>;
-        isSelectedRow: (row: model.IncidentDTO) => boolean;
-        selectRow: (row: model.IncidentDTO) => void;
-        shrinkData: (str: string) => string;
-
         filter: any;
         query: model.HistoryQueryDTO;
-        promise: ng.IPromise<model.HistoryResultDTO>;
-        result: model.HistoryResultDTO;
+        promise: ng.IPromise<model.HistoryResultDTO<model.IncidentDTO>>;
+        result: model.HistoryResultDTO<model.IncidentDTO>;
         getHistory: () => void;
         removeFilter: () => void;
+        expandItem: (historyItem: model.HistoryItemDTO) => void;
+        orderBy: string;
+        selected: any;
     }
 
     class ReportIncidentController {
 
         public static $inject = [
             '$scope',
-            'ReportIncidentService'
+            'ReportService'
         ];
 
-        constructor(private $scope: IReportIncidentListScope, private ReportIncidentService: services.IReportIncidentService) {
+        constructor(private $scope: IReportIncidentListScope, private ReportService: services.IReportService) {
+
+            $scope.selected = [];
 
             $scope.query = new model.HistoryQueryDTO();
             $scope.query.itemPerPage = 10;
             $scope.query.page = 1;
-
-            this.getHistory();  
-            /*
-            ReportIncidentService.query().$promise.then(incidentRecords => {
-                $scope.incidentRecords = incidentRecords;
-            });
-            */
+            $scope.orderBy = "-createdDate";
+            $scope.query.isCurrentUser = true;
+            
 
             $scope.filter = {
                 options: {
@@ -44,43 +39,32 @@
 
             $scope.getHistory = <() => void>angular.bind(this, this.getHistory);
             $scope.removeFilter = <() => void>angular.bind(this, this.removeFilter);
+            $scope.expandItem = <(historyItem: model.HistoryItemDTO) => void>angular.bind(this, this.expandItem);
 
-            var _selectedRow: model.IncidentDTO = null;
-
-            $scope.selectRow = (row: model.IncidentDTO) => {
-                if (_selectedRow === row) {
-                    _selectedRow = null;
+            $scope.$watch('query.filter', (newValue, oldValue) => {
+                var bookmark: number = 1;
+                if (!oldValue) {
+                    bookmark = $scope.query.page;
                 }
-                else {
-                    _selectedRow = row;
+                if (newValue !== oldValue) {
+                    $scope.query.page = 1;
                 }
-            };
-
-            $scope.isSelectedRow = (row: model.IncidentDTO) => (_selectedRow === row);
-
-            $scope.shrinkData = (str: string) => {
-                var result = '';
-                if (str) {
-                    var lines = str.split('\n');
-                    var i;
-
-                    for (i = 0; i < Math.min(5, lines.length); ++i) {
-                        if (result) {
-                            result += '\n';
-                        }
-
-                        result += lines[i];
-                    }
+                if (!newValue) {
+                    $scope.query.page = bookmark;
                 }
 
-                if (result.length > 400) {
-                    result = result.substr(0, 400);
-                }
-
-                return result;
-            };
+                this.getHistory();
+            });
         }
-        
+
+        private expandItem(historyItem: model.HistoryItemDTO) {
+            if ((<any>historyItem).$isExpanded) {
+                (<any>historyItem).$isExpanded = false;
+            } else {
+                (<any>historyItem).$isExpanded = true;
+            }
+        }
+
         private removeFilter() {
             this.$scope.query.filter = null;
             this.$scope.filter.showFilter = false;
@@ -88,8 +72,13 @@
         }
 
         private getHistory() {
-            this.$scope.promise = this.ReportIncidentService.getByQuery(this.$scope.query).$promise;
-            this.$scope.promise.then((data: model.HistoryResultDTO) => {
+            if (this.$scope.orderBy && this.$scope.orderBy.charAt(0) === '-') {
+                this.$scope.query.isDescending = true;
+            } else {
+                this.$scope.query.isDescending = false;
+            }
+            this.$scope.promise = this.ReportService.getIncidentsByQuery(this.$scope.query).$promise;
+            this.$scope.promise.then((data: model.HistoryResultDTO<model.IncidentDTO>) => {
                 this.$scope.result = data;
             });
         }     

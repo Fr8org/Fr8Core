@@ -2,9 +2,10 @@
      <md-content>
          <md-toolbar class="md-table-toolbar md-default" ng-show="!filter.showFilter" style="margin-top: 30px;">
              <div class="md-toolbar-tools">
-                 <h2 class="md-title font-green-haze">All Incidents</h2>
+                 <h2 class="md-title font-green-haze">Incidents</h2>
                  <div flex></div>
                  <md-button class="md-icon-button" ng-click="filter.showFilter = true">
+                     <md-tooltip md-direction="top">Filter</md-tooltip>
                      <md-icon md-font-icon="fa fa-filter material-fa-icon"></md-icon>
                  </md-button>
              </div>
@@ -15,7 +16,7 @@
                  <md-icon md-font-icon="fa fa-search material-fa-icon"></md-icon>
                  <div flex name="filter.form">
                      <md-input-container class="md-block" flex-gt-sm>
-                         <input flex type="text" ng-model="query.filter" ng-model-options="filter.options" placeholder="Search" style="border-bottom: 1px solid #000000; border-bottom: 1px solid rgba(0,0,0,.12) !important">
+                         <input flex type="text" ng-model="query.filter" ng-model-options="filter.options" placeholder="Search" style="border-bottom: 1px solid #000000; border-bottom: 1px solid rgba(0, 0, 0, .12) !important">
                      </md-input-container>
                  </div>
                  <md-button class="md-icon-button" ng-click="removeFilter()">
@@ -24,36 +25,64 @@
              </div>
          </md-toolbar>
 
+         <md-toolbar class="md-table-toolbar md-default">
+             <div class="md-toolbar-tools" style="font-size: 15px;">
+                 <md-radio-group ng-model="query.isCurrentUser" ng-change="getHistory()">
+                     <md-radio-button ng-value="false" class="md-primary">Show all logs</md-radio-button>
+                     <md-radio-button ng-value="true">Show current user's logs</md-radio-button>
+                 </md-radio-group>
+             </div>
+         </md-toolbar>
+
          <md-table-container>
-             <table md-table md-progress="promise">
-                 <thead md-head md-order="query.orderBy" md-on-reorder="getHistory">
-                     <tr md-row>
-                         <th md-column md-order-by="createdDate" style="width: 20%;"><span>Created Date</span></th>
-                         <th md-column style="width: 35%;"><span>Primary Category</span></th>
-                         <th md-column style="width: 35%;"><span>Secondary Category</span></th>
-                         <th md-column md-order-by="lastUpdated" style="width: 20%;">Activity</th>
-                         <th md-column style="width: 10%;">Component</th>
-                         <th md-column md-numeric style="width: 15%;">Data</th>
-                         <th md-column md-numeric style="width: 15%;">Fr8UserId</th>
-                         <th md-column md-numeric style="width: 15%;">Object Id</th>
-                         <th md-column md-numeric style="width: 15%;">Priority</th>
-                     </tr>
+             <table md-row-select ng-model="selected" md-table md-progress="promise">
+                 <thead md-head md-order="orderBy" md-on-reorder="getHistory">
+                 <tr md-row>
+                     <th md-column md-order-by="createdDate" style="width: 10%;"><span>Created Date</span></th>
+                     <th md-column style="width: 10%;"><span>Primary Category</span></th>
+                     <th md-column style="width: 10%;"><span>Secondary Category</span></th>
+                     <th md-column style="width: 5%;">Activity</th>
+                     <th md-column style="width: 5%;">Component</th>
+                     <th md-column md-numeric style="width: 25%; max-width: 30%;">Data</th>
+                     <th md-column md-numeric style="width: 10%;">Fr8UserId</th>
+                     <th md-column md-numeric style="width: 10%;">Object Id</th>
+                     <th md-column md-numeric style="width: 10%;">Status</th>
+                     <th md-column md-numeric style="width: 5%;">Priority</th>
+                 </tr>
                  </thead>
                  <tbody md-body>
-                     <tr md-row ng-repeat="historyItem in result.items">
+                     <tr ng-class="{'color-row': historyItem.$isExpanded, 'high-priority-row': historyItem.isHighPriority}" md-row md-auto-select ng-repeat="historyItem in result.items" ng-click="expandItem(historyItem)">
                          <td md-cell>{{ historyItem.createDate | date:"MM/dd/yyyy h:mm:ss a"}}</td>
-
                          <td md-cell class="column-spacer">{{ historyItem.primaryCategory }}</td>
                          <td md-cell class="column-spacer">{{ historyItem.secondaryCategory }}</td>
                          <td md-cell class="column-spacer">{{ historyItem.activity }}</td>
                          <td md-cell class="column-spacer">{{ historyItem.component }}</td>
-                         <td md-cell class="column-spacer">{{ historyItem.data }}</td>
-                         <td md-cell class="column-spacer">{{ historyItem.name }}</td>
-                         <td md-cell class="column-spacer">{{ historyItem.name }}</td>
-                         <td md-cell class="column-spacer">{{ historyItem.name }}</td>
-                         <td md-cell class="column-spacer">{{ historyItem.name }}</td>
-                         <td md-cell class="column-spacer">{{ historyItem.description }}</td>
-                         
+                         <td md-cell class="column-spacer" style="text-align: right;">
+                             <div ng-if="historyItem.$isExpanded">
+                                {{ historyItem.data }}    
+                             </div>
+                             <div ng-if="!historyItem.$isExpanded" style="height: 50px; vertical-align: middle;">
+                                 {{ historyItem.data.length > 50 ? (historyItem.data | limitTo: 50)+'...' : historyItem.data }}
+                             </div>
+                         </td>
+                         <td md-cell class="column-spacer">
+                             <div ng-if="historyItem.$isExpanded">
+                                 {{ historyItem.fr8UserId }}
+                             </div>
+                             <div ng-if="!historyItem.$isExpanded">
+                                 {{ historyItem.fr8UserId.length > 8 ? (historyItem.fr8UserId | limitTo: 8)+'...' : historyItem.fr8UserId }}
+                             </div>
+                         </td>
+                         <td md-cell class="column-spacer">
+                             <div ng-if="historyItem.$isExpanded">
+                                 {{ historyItem.objectId }}
+                             </div>
+                             <div ng-if="!historyItem.$isExpanded">
+                                 {{ historyItem.objectId.length > 8 ? (historyItem.objectId | limitTo: 8)+'...' : historyItem.objectId }}
+                             </div>
+                         </td>
+                         <td md-cell class="column-spacer">{{ historyItem.status }}</td>
+                         <td md-cell class="column-spacer">{{ historyItem.priority }}</td>
                      </tr>
                  </tbody>
              </table>
