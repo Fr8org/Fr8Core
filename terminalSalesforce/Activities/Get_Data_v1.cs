@@ -64,9 +64,10 @@ namespace terminalSalesforce.Actions
 
         protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
-            ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager.GetSalesforceObjectTypes()
-                                                                                .Select(x => new ListItem() { Key = x.Key, Value = x.Key })
-                                                                                .ToList();
+            ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager
+                .GetSalesforceObjectTypes()
+                .Select(x => new ListItem() { Key = x.Key, Value = x.Key })
+                .ToList();
             runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
             return Task.FromResult(true);
         }
@@ -88,11 +89,14 @@ namespace terminalSalesforce.Actions
                 return;
             }
             //Prepare new query filters from selected object properties
-            var selectedObjectProperties = await _salesforceManager.GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
+            var selectedObjectProperties = await _salesforceManager
+                .GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
             var queryFilterCrate = Crate<TypedFieldsCM>.FromContent(
                 QueryFilterCrateLabel,
-                new TypedFieldsCM(selectedObjectProperties.OrderBy(x => x.Key)
-                                                                  .Select(x => new TypedFieldDTO(x.Key, x.Value, FieldType.String, new TextBox { Name = x.Key }))),
+                new TypedFieldsCM(
+                    selectedObjectProperties
+                    .OrderBy(x => x.Key)
+                    .Select(x => new TypedFieldDTO(x.Key, x.Value, FieldType.String, new TextBox { Name = x.Key }))),
                 AvailabilityType.Configuration);
             CurrentActivityStorage.ReplaceByLabel(queryFilterCrate);
 
@@ -111,7 +115,9 @@ namespace terminalSalesforce.Actions
             var salesforceObject = ConfigurationControls.SalesforceObjectSelector.selectedKey;
             if (string.IsNullOrEmpty(salesforceObject))
             {
-                throw new ActivityExecutionException("No Salesforce object is selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                throw new ActivityExecutionException(
+                    "No Salesforce object is selected", 
+                    ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
             var salesforceObjectFields = CurrentActivityStorage
                                             .FirstCrate<TypedFieldsCM>(x => x.Label == QueryFilterCrateLabel)
@@ -128,8 +134,15 @@ namespace terminalSalesforce.Actions
                 parsedCondition = ParseConditionToText(filterDataDTO);
             }
 
-            var resultObjects = await _salesforceManager.Query(salesforceObject.ToEnum<SalesforceObjectType>(), salesforceObjectFields, parsedCondition, AuthorizationToken);
-            CurrentPayloadStorage.Add(Crate<StandardTableDataCM>.FromContent(RuntimeDataCrateLabel, resultObjects, AvailabilityType.RunTime));
+            var resultObjects = await _salesforceManager.Query(
+                salesforceObject.ToEnum<SalesforceObjectType>(), 
+                salesforceObjectFields, 
+                parsedCondition, 
+                AuthorizationToken);
+            CurrentPayloadStorage.Add(Crate<StandardTableDataCM>.FromContent(
+                RuntimeDataCrateLabel, 
+                resultObjects, 
+                AvailabilityType.RunTime));
         }
     }
 }
