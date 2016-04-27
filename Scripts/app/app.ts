@@ -23,6 +23,7 @@ var app = angular.module("app", [
     "ngMessages",
     "ivh.treeview",
     "ngMaterial",
+    "md.data.table",
     "angularResizable"
 ]);
 

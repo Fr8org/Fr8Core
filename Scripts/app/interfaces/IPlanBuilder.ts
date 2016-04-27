@@ -4,11 +4,15 @@ module dockyard.interfaces {
 
     export interface IPlanVM extends ng.resource.IResource<model.PlanDTO>, model.PlanDTO { }
 
+    export interface IPlanResultDTO extends ng.resource.IResource<model.PlanResultDTO>, model.PlanResultDTO { }
+
+    export interface IHistoryResultDTO<T> extends ng.resource.IResource<model.HistoryResultDTO<T>>, model.HistoryResultDTO<T> { }
+
     export interface IReportFactVM extends ng.resource.IResource<model.FactDTO>, model.FactDTO { }
 
     export interface IPlanFullDTO extends ng.resource.IResource<model.PlanDTO>, model.PlanFullDTO { }
 
-    export interface IReportIncidentVM extends ng.resource.IResource<model.IncidentDTO>, model.IncidentDTO { }
+    export interface IHistoryItemDTO extends ng.resource.IResource<model.HistoryItemDTO>, model.HistoryItemDTO { }
 
     export interface ISubscribedDocuSignTemplates {
         planId?: number;
