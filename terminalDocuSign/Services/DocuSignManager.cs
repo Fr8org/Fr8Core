@@ -134,7 +134,7 @@ namespace terminalDocuSign.Services.New_Api
 
             //creatig an envelope definiton
             EnvelopeDefinition envDef = new EnvelopeDefinition();
-            envDef.EmailSubject = "Test message from Fr8 Demo Test";
+            envDef.EmailSubject = "Test message from Fr8";
             envDef.Status = "created";
 
 
@@ -147,7 +147,7 @@ namespace terminalDocuSign.Services.New_Api
                 //we create it with recipients once we've processed recipient values and tabs
                 envDef.Documents = new List<Document>() { new Document()
                 { DocumentBase64 = fileHandler.TextRepresentation, FileExtension = fileHandler.Filetype,
-                    DocumentId = "1", Name = fileHandler.Filename ?? Path.GetFileName(fileHandler.DirectUrl) ?? "document" } };
+                    DocumentId = "1", Name = fileHandler.Filename ?? Path.GetFileName(fileHandler.DockyardStorageUrl) ?? "document" } };
                 recipients = templateRecepients;
             }
             else

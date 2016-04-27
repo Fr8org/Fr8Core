@@ -36,6 +36,7 @@ namespace terminalDocuSign.Services
         private readonly IncidentReporter _alertReporter;
 
         private readonly string DevConnectName = "(dev) Fr8 Company DocuSign integration";
+        private readonly string DemoConnectName = "(demo) Fr8 Company DocuSign integration";
         private readonly string ProdConnectName = "Fr8 Company DocuSign integration";
         private readonly string TemporaryConnectName = "int-tests-Fr8";
 
@@ -71,6 +72,7 @@ namespace terminalDocuSign.Services
             string terminalUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint");
             string prodUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultProductionUrl");
             string devUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultDevUrl");
+            string demoUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultDemoUrl");
 
             string connectName = "";
             string connectId = "";
@@ -90,12 +92,22 @@ namespace terminalDocuSign.Services
                 }
                 else
                     if (terminalUrl.Contains(prodUrl, StringComparison.InvariantCultureIgnoreCase))
+                {
                     connectName = ProdConnectName;
-
+                }
+                else 
+                    if (terminalUrl.Contains(demoUrl, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    connectName = DemoConnectName;
+                }
+                else
+                {
+                    Console.WriteLine($"Unable to set connectName from {terminalUrl}");
+                }                    
 
                 string publishUrl = terminalUrl + "/terminals/terminalDocuSign/events";
 
-                Console.WriteLine("Connect creation: publishUrl = {0}", publishUrl);
+                Console.WriteLine("Connect creation: publishUrl = {0}", publishUrl);               
 
                 if (!string.IsNullOrEmpty(connectName))
                 {
