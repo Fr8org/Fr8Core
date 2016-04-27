@@ -3,11 +3,7 @@ using HealthMonitor.Utility;
 using NUnit.Framework;
 using System.Threading.Tasks;
 using Data.Interfaces.DataTransferObjects;
-using System.Web.Http;
-using StructureMap;
-using Data.Interfaces;
 using System.Linq;
-using Data.Entities;
 using System.Collections.Generic;
 using Hub.Managers;
 using Data.Interfaces.Manifests;
@@ -15,6 +11,8 @@ using Data.Crates;
 using Data.Control;
 using Newtonsoft.Json;
 using System.Diagnostics;
+using terminalSalesforce.Actions;
+using Data.Entities;
 
 namespace terminalSalesforceTests.Intergration
 {
@@ -27,7 +25,7 @@ namespace terminalSalesforceTests.Intergration
             get { return "terminalSalesforce"; }
         }
 
-        [Test]
+        [Test, Ignore("Vas is working on fixing this test.")]
         public async Task GetSalesforceData_Into_SendEmail_EndToEnd()
         {
             AuthorizationTokenDO authTokenDO = null;
@@ -49,14 +47,14 @@ namespace terminalSalesforceTests.Intergration
                 {
                     //select Lead
                     var configControls = updatableStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
-                    (configControls.Content.Controls.Single(c => c.Name.Equals("WhatKindOfData")) as DropDownList).selectedKey = "Lead";
+                (configControls.Content.Controls.Single(c => c.Name.Equals(nameof(Get_Data_v1.ActivityUi.SalesforceObjectSelector))) as DropDownList).selectedKey = "Lead";
 
                     //give condition
-                    var conditionQuery = new List<FilterConditionDTO>() { new FilterConditionDTO { Field = "Full Name", Operator = "eq", Value = "Marty McSorely" } };
-                    (configControls.Content.Controls.Single(c => c.Name.Equals("SelectedQuery")) as QueryBuilder).Value = JsonConvert.SerializeObject(conditionQuery);
+                    var conditionQuery = new List<FilterConditionDTO>() { new FilterConditionDTO { Field = "LastName", Operator = "eq", Value = "McSorely" } };
+                (configControls.Content.Controls.Single(c => c.Name.Equals(nameof(Get_Data_v1.ActivityUi.SalesforceObjectFilter))) as QueryBuilder).Value = JsonConvert.SerializeObject(conditionQuery);
                 }
                 getData = await ConfigureActivity(getData);
-                Assert.IsTrue(getData.CrateStorage.Crates.Any(c => c.Label.Equals("Salesforce Object Fields - Lead")),
+            Assert.IsTrue(getData.CrateStorage.Crates.Any(c => c.Label.Equals(Get_Data_v1.SalesforceObjectFieldsCrateLabel)), 
                               "Follow up configuration is not getting any Salesforce Object Fields");
                 Debug.WriteLine("Get Lead using condition is successful in the Follow Up Configure");
 
@@ -138,7 +136,7 @@ namespace terminalSalesforceTests.Intergration
         {
             if (initialPlanId != Guid.Empty)
             {
-                await HttpDeleteAsync(_baseUrl + "Plans/Delete?id=" + initialPlanId.ToString());
+               // await HttpDeleteAsync(_baseUrl + "Plans/Delete?id=" + initialPlanId.ToString());
             }
 
             if (authTokenDO != null)

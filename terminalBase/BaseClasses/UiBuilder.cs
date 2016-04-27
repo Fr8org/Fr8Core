@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using Data.Control;
 using Data.Interfaces.Manifests;
+using Data.States;
 
 namespace TerminalBase.BaseClasses
 {
@@ -43,7 +44,8 @@ namespace TerminalBase.BaseClasses
                                                                string upstreamSourceLabel = "",
                                                                string filterByTag = "",
                                                                bool addRequestConfigEvent = false,
-                                                               bool requestUpstream = false)
+                                                               bool requestUpstream = false,
+                                                               AvailabilityType availability = AvailabilityType.NotSet)
         {
             var control = new TextSource(label, upstreamSourceLabel, controlName)
             {
@@ -52,7 +54,8 @@ namespace TerminalBase.BaseClasses
                     Label = upstreamSourceLabel,
                     ManifestType = CrateManifestTypes.StandardDesignTimeFields,
                     FilterByTag = filterByTag,
-                    RequestUpstream = requestUpstream
+                    RequestUpstream = requestUpstream,
+                    AvailabilityType = availability
                 }
             };
 

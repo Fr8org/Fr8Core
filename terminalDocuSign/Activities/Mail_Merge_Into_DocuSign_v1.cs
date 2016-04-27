@@ -21,7 +21,7 @@ namespace terminalDocuSign.Actions
 {
     public class Mail_Merge_Into_DocuSign_v1 : BaseDocuSignActivity
     {
-      
+
         private string _dataSourceValue;
 
         private DropDownList _docuSignTemplate;
@@ -29,10 +29,10 @@ namespace terminalDocuSign.Actions
         private const string SolutionName = "Mail Merge Into DocuSign";
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "DocuSign";
-        private const string SolutionBody = @"<p>Pull data from a variety of sources, including Excel files, 
-                                            Google Sheets, and databases, and merge the data into your DocuSign template. 
-                                            You can link specific fields from your source data to DocuSign fields</p>";
 
+        private const string SolutionBody = @"<p>This solution is designed to take data from any table-like source(initially supported: Microsoft Excel and Google Sheets) and create and send DocuSign Envelopes.A DocuSign Template is used to generate the envelopes, and Fr8 makes it easy to map data from the sources to the DocuSign Template for automatic insertion.</p>
+                                              <p>This Activity also highlights the use of the Loop activity, which can process any amount of table data, one row at a time.</p>
+                                              <iframe src='https://player.vimeo.com/video/162762690' width='500' height='343' frameborder='0' webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>";
 
         public override Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
@@ -135,7 +135,7 @@ namespace terminalDocuSign.Actions
             var control = (T)controls.FindByName(name);
             return control;
         }
-        
+
         protected internal override ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
         {
             var errorMessages = new List<string>();
@@ -192,7 +192,7 @@ namespace terminalDocuSign.Actions
             // If no values selected in textboxes, remain on initial phase
             DropDownList dataSource = GetStdConfigurationControl<DropDownList>(storage, "DataSource");
             if (dataSource.Value != null)
-            _dataSourceValue = dataSource.Value;
+                _dataSourceValue = dataSource.Value;
 
             _docuSignTemplate = GetStdConfigurationControl<DropDownList>(storage, "DocuSignTemplate");
 
@@ -251,17 +251,26 @@ namespace terminalDocuSign.Actions
             return Task.FromResult(activityExists);
         }
 
+        /// <summary>
+        /// TODO this part is ugly - why do we load those activities from hub in activity
+        /// we already have a code in base class that does this operation with caching
+        /// </summary>
+        /// <param name="context"></param>
+        /// <returns></returns>
         private async Task<ActivityDO> CreateFirstChildActivity(ReconfigurationContext context)
         {
             var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
                 .Select(Mapper.Map<ActivityTemplateDO>)
                 .ToList();
-            
+
             // Let's check if activity template generates table data
             var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
+
+            var selectedReceiverTemplate = await GetActivityTemplate(selectedReceiver.Id);
+
             var dataSourceActivity = await AddAndConfigureChildActivity(
                 context.SolutionActivity,
-                selectedReceiver.Id.ToString(),
+                selectedReceiverTemplate,
                 order: 1
             );
 
@@ -345,7 +354,8 @@ namespace terminalDocuSign.Actions
 
             if (DoesActivityTemplateGenerateTableData(selectedReceiver))
             {
-                var loopActivity = await AddAndConfigureChildActivity(context.SolutionActivity, "Loop", "Loop", "Loop", 2);
+                var loopAT = await GetActivityTemplate("terminalFr8Core", "Loop");
+                var loopActivity = await AddAndConfigureChildActivity(context.SolutionActivity, loopAT, "Loop", "Loop", 2);
 
                 using (var crateStorage = CrateManager.GetUpdatableStorage(loopActivity))
                 {
@@ -366,7 +376,8 @@ namespace terminalDocuSign.Actions
                 activityIndex = 2;
             }
 
-            var sendDocuSignActivity = await AddAndConfigureChildActivity(parentActivity, "Send_DocuSign_Envelope", order: activityIndex);
+            var sendDocusignEnvelopeAT = await GetActivityTemplate("terminalDocuSign", "Send_DocuSign_Envelope");
+            var sendDocuSignActivity = await AddAndConfigureChildActivity(parentActivity, sendDocusignEnvelopeAT, order: activityIndex);
             // Set docusign template
             SetControlValue(
                 sendDocuSignActivity,
@@ -374,7 +385,7 @@ namespace terminalDocuSign.Actions
                 _docuSignTemplate.ListItems
                     .FirstOrDefault(a => a.Key == _docuSignTemplate.selectedKey)
             );
-            
+
             await ConfigureChildActivity(parentActivity, sendDocuSignActivity);
 
             return activityIndex == 1 ? sendDocuSignActivity : parentActivity;
@@ -458,7 +469,7 @@ namespace terminalDocuSign.Actions
             {
                 var curSolutionPage = GetDefaultDocumentation(SolutionName, SolutionVersion, TerminalName, SolutionBody);
                 return Task.FromResult(curSolutionPage);
-              
+
             }
             if (curDocumentation.Contains("HelpMenu"))
             {

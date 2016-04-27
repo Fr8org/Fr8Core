@@ -3,6 +3,8 @@
     export class ManageAuthToken_TerminalDTO {
         id: number;
         name: string;
+        label: string;
+        version: string;
         authTokens: Array<ManageAuthToken_AuthTokenDTO>;
         authenticationType: number;
         selectedAuthTokenId: number;

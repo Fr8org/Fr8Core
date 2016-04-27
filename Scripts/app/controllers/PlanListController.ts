@@ -6,6 +6,8 @@
 module dockyard.controllers {
     'use strict';
 
+    import designHeaderEvents = dockyard.Fr8Events.DesignerHeader;
+
     export interface IPlanListScope extends ng.IScope {
         executePlan: (plan: interfaces.IPlanVM) => void;
         goToPlanPage: (plan: interfaces.IPlanVM) => void;
@@ -62,7 +64,7 @@ module dockyard.controllers {
             });
 
             // This is to reArrangePlans so that plans get rendered in desired sections i.e Running or Plans Library
-            $scope.$on('planExecutionCompleted-rearrangePlans', (event, plan) => {
+            $scope.$on(<any>designHeaderEvents.PLAN_EXECUTION_COMPLETED_REARRANGE_PLANS, (event, plan) => {
                 this.reArrangePlans(plan);
             });
 

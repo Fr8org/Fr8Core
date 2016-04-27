@@ -518,9 +518,10 @@ namespace terminalDocuSign.Actions
                         .FirstOrDefault(x => x.Name == "QueryFr8Warehouse");
                     if (queryFr8WarehouseActivityTemplate == null) { return activityDO; }
 
+                    var queryFr8WarehouseTemplate = await GetActivityTemplate("terminalFr8Core", "QueryFr8Warehouse");
+
                     var queryFr8WarehouseAction = await AddAndConfigureChildActivity(
-                        activityDO,
-                        "QueryFr8Warehouse"
+                        activityDO,queryFr8WarehouseTemplate
                     );
 
                     using (var crateStorage = CrateManager.GetUpdatableStorage(queryFr8WarehouseAction))

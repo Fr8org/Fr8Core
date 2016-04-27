@@ -111,7 +111,7 @@ module dockyard.tests.utils.fixtures {
                 }]
             },
             activityTemplate: {
-                id: 2
+                id: 'E553A5F9-A3AB-4196-A43D-6F5DDB923CF8'
             },
             currentView: null,
             id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8'
@@ -143,7 +143,7 @@ module dockyard.tests.utils.fixtures {
                 }]
             },
             activityTemplate: {
-                id: 2
+                id: 'E553A229-A3AB-4196-A43D-6F5DDB923CF8'
             },
             currentView: null,
             id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8'
@@ -175,7 +175,31 @@ module dockyard.tests.utils.fixtures {
                 }]
             },
             activityTemplate: {
-                id: 2
+                id: 'E553A5F9-A3AB-4196-A43D-6F522B923CF8'
+            },
+            currentView: null,
+            id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8'
+        };
+
+        public static typedFieldsVM = <interfaces.IActionVM> {
+            crateStorage: {
+                crates: [{
+                    id: "36047336-fb27-4382-8c02-2ea41bc2ac92",
+                    label: "Queryable Criteria",
+                    contents: angular.fromJson('{ "Fields": [ { "Name": "CreatedById", "Label": "Created By ID", "FieldType": "String", "Control": { "name": "CreatedById", "required": false, "value": null, "label": null, "type": "TextBox", "selected": false, "events": [], "source": null, "showDocumentation": null, "errorMessage": null, "isHidden": false, "isCollapsed": false } }]}'),
+                    parentCrateId: null,
+                    manifestType: "Typed Fields",
+                    manufacturer: null,
+            }]},
+            configurationControls: {
+                fields: [{
+                    fieldLabel: "Test Label",
+                    name: "test_name",
+                    value: null
+                }]
+            },
+            activityTemplate: {
+                id: 'E553A229-A3AB-4196-A43D-6F5DDB923CF8'
             },
             currentView: null,
             id: 'E55315F9-A30B-4196-A43D-6F511B91CCF8'

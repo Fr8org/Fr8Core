@@ -4,12 +4,20 @@ using DocuSign.eSign.Model;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Web;
 using terminalDocuSign.DataTransferObjects;
+using Utilities;
 
 namespace terminalDocuSign.Services.NewApi
 {
+
+    //IMPORTANT:
+    //
+    // if you bring changes to the logic, responsible for processing json int DocuSignTabDTO, 
+    // make sure you don't break consistency between the way DocuSignEnvelopeCM_v2 is populated by Connect events and by polling
+    //
     public static class DocuSignTab
     {
         public static IEnumerable<DocuSignTabDTO> ExtractTabs(JObject tabs, string roleName)
@@ -146,9 +154,11 @@ namespace terminalDocuSign.Services.NewApi
                 Name = string.Format("{0}({1})", tab["tabLabel"], roleName),
                 TabId = tab["tabId"],
                 Value = value,
-                Type = GetFieldType(tabName),
+                Fr8DisplayType = GetFieldType(tabName),
+                Type = tabName.Replace("Tabs", "").UppercaseFirst(), // "textTabs" -> "Text"
                 RoleName = roleName,
-                TabName = tabName
+                TabName = tabName,
+                TabLabel = tab["tabLabel"]
             };
         }
 
@@ -189,7 +199,7 @@ namespace terminalDocuSign.Services.NewApi
                         RecipientId = grpTab["recipientId"],
                         Name = string.Format("{0}({1})", grpTab["groupName"], roleName),
                         TabId = grpTab["tabId"],
-                        Type = ControlTypes.RadioButtonGroup,
+                        Fr8DisplayType = ControlTypes.RadioButtonGroup,
                         RoleName = roleName,
                         TabName = tabName
                     };
@@ -225,7 +235,7 @@ namespace terminalDocuSign.Services.NewApi
                         RecipientId = grpTab["recipientId"],
                         Name = string.Format("{0}({1})", grpTab["tabLabel"], roleName),
                         TabId = grpTab["tabId"],
-                        Type = ControlTypes.DropDownList,
+                        Fr8DisplayType = ControlTypes.DropDownList,
                         Value = grpTab["value"],
                         RoleName = roleName,
                         TabName = tabName

@@ -103,6 +103,7 @@ namespace HubWeb.App_Start
             
             bundles.Add(new StyleBundle("~/bundles/css/frontpage-new")
                 .Include("~/Content/css/homecss/bootstrap.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/shared/main.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/frontcss/main_new.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/shared/navbar.css", new CssRewriteUrlTransform()));
 
@@ -137,6 +138,7 @@ namespace HubWeb.App_Start
                 .Include("~/Content/css/dockyard.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/dockyard/container-transition.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/dockyard/query-builder.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/dockyard/authentication-dialog.css", new CssRewriteUrlTransform())
             );
 
             bundles.Add(new ScriptBundle("~/bundles/jsunittests")
@@ -170,7 +172,7 @@ namespace HubWeb.App_Start
                 .Include("~/Scripts/homejs/plugins/scrollto/jquery.localscroll-1.2.7-min.js")
                 .Include("~/Scripts/homejs/plugins/easing/jquery.easing.min.js")
                 .Include("~/Scripts/homejs/plugins/parallax/jquery.parallax-1.1.3.js")
-                .Include("~/Scripts/homejs/plugins/twitter/twitter-fetcher.js")
+                //.Include("~/Scripts/homejs/plugins/twitter/twitter-fetcher.js")
                 .Include("~/Scripts/homejs/plugins/jpreloader/jpreloader.min.js")
                 .Include("~/Scripts/homejs/plugins/isotope/imagesloaded.pkgd.js")
                 .Include("~/Scripts/homejs/plugins/isotope/isotope.pkgd.min.js")
@@ -191,6 +193,7 @@ namespace HubWeb.App_Start
             bundles.Add(new StyleBundle("~/bundles/css/home")
                 .Include("~/Content/css/homecss/bootstrap.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/homecss/font-awesome.min.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/shared/main.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/homecss/main.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/shared/navbar.css", new CssRewriteUrlTransform())
             );

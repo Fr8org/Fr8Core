@@ -28,6 +28,8 @@ using Data.Interfaces.Manifests;
 using System.Text;
 using Data.Constants;
 using Data.Infrastructure;
+using Hangfire;
+using System.Web.Http.Results;
 
 namespace HubWeb.Controllers
 {
@@ -285,7 +287,7 @@ namespace HubWeb.Controllers
         {
             string activityDTO = await _plan.Deactivate(planId);
             EventManager.PlanDeactivated(planId);
-            
+
             return Ok(activityDTO);
         }
 
@@ -304,21 +306,32 @@ namespace HubWeb.Controllers
             }
         }
 
+        // method for plan execution continuation from URL
+        [Fr8ApiAuthorize("Admin", "Customer")]
+        [HttpGet]
+        public Task<IHttpActionResult> Run(Guid planId, Guid? containerId = null)
+        {
+            return Run(planId, null, containerId);
+        }
+
         [Fr8ApiAuthorize("Admin", "Customer")]
         [HttpPost]
-        public async Task<IHttpActionResult> Run(Guid planId, [FromBody]PayloadVM model)
+        public async Task<IHttpActionResult> Run(Guid planId, [FromBody]PayloadVM model, Guid? containerId = null)
         {
             string currentPlanType = string.Empty;
 
             //ACTIVATE - activate route if its inactive
-            
+
             bool inActive = false;
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
 
                 if (planDO.PlanState == PlanState.Inactive)
+                {
                     inActive = true;
+                }
             }
 
             string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
@@ -338,21 +351,21 @@ namespace HubWeb.Controllers
 
                     return Ok(activateDTO.Container);
                 }
-                
+
             }
 
             //RUN
-            CrateDTO curCrateDto;
             Crate curPayload = null;
 
-            if (model != null)
+            // there is no reason to check for payload if we have continerId passed because this indicates execution continuation scenario.
+            if (model != null && containerId == null)
             {
                 try
                 {
-                    curCrateDto = JsonConvert.DeserializeObject<CrateDTO>(model.Payload);
+                    var curCrateDto = JsonConvert.DeserializeObject<CrateDTO>(model.Payload);
                     curPayload = _crate.FromDto(curCrateDto);
                 }
-                catch (Exception ex)
+                catch
                 {
                     _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "Your payload is invalid. Make sure that it represents a valid crate object JSON.");
 
@@ -367,33 +380,55 @@ namespace HubWeb.Controllers
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                ContainerDO container;
                 var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
+
+                // it container id was passed validate it
+                if (containerId != null)
+                {
+                    container = uow.ContainerRepository.GetByKey(containerId.Value);
+
+                    // we didn't find contaier or found container belong to the other plan.
+                    if (container == null || container.PlanId != planId)
+                    {
+                        // that's bad. Reset containerId to run plan with new container
+                        containerId = null;
+                    }
+                }
 
                 try
                 {
                     if (planDO != null)
                     {
-                        _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS,
-                            string.Format("Launching a new Container for Plan \"{0}\"", planDO.Name));
 
-                        var containerDO = await _plan.Run(planDO, curPayload);
-                        if (!planDO.IsOngoingPlan())
+                        if (containerId == null)
                         {
-                            var deactivateDTO = await _plan.Deactivate(planId);
+                            container = await _plan.Run(planDO, curPayload);
+                            _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, $"Launching a new Container for Plan \"{planDO.Name}\"");
+                        }
+                        else
+                        {
+                            container = await _plan.Continue(containerId.Value);
+                            _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, $"Continue execution of the supsended Plan \"{planDO.Name}\"");
                         }
 
-                        var response = _crate.GetContentType<OperationalStateCM>(containerDO.CrateStorage);
+                        if (!planDO.IsOngoingPlan())
+                        {
+                            await _plan.Deactivate(planId);
+                        }
+
+                        var response = _crate.GetContentType<OperationalStateCM>(container.CrateStorage);
                         var responseMsg = GetResponseMessage(response);
 
                         string message = String.Format("Complete processing for Plan \"{0}\".{1}", planDO.Name, responseMsg);
 
                         _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
-                        EventManager.ContainerLaunched(containerDO);
+                        EventManager.ContainerLaunched(container);
 
-                        var containerDTO = Mapper.Map<ContainerDTO>(containerDO);
+                        var containerDTO = Mapper.Map<ContainerDTO>(container);
                         containerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
 
-                        EventManager.ContainerExecutionCompleted(containerDO);
+                        EventManager.ContainerExecutionCompleted(container);
 
                         return Ok(containerDTO);
                     }
@@ -423,14 +458,12 @@ namespace HubWeb.Controllers
                 {
                     if (!planDO.IsOngoingPlan())
                     {
-                        var deactivateDTO = await _plan.Deactivate(planId);
+                        await _plan.Deactivate(planId);
                     }
                 }
-                var containerDefaultDTO = new ContainerDTO();
-                containerDefaultDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
-                return Ok(containerDefaultDTO);
             }
         }
+
 
         private string GetResponseMessage(OperationalStateCM response)
         {
@@ -454,10 +487,10 @@ namespace HubWeb.Controllers
             {
                 messageToNotify = errorMessage;
             }
-                       
+
             var message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, messageToNotify);
             _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
-            
+
         }
 
         [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
@@ -510,7 +543,7 @@ namespace HubWeb.Controllers
                         _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, $"Launching a new Container for Plan \"{planDO.Name}\"");
 
                         var crates = payload.Select(c => _crate.FromDto(c)).ToArray();
-                        var containerDO = await _plan.Run(uow , planDO, crates);
+                        var containerDO = await _plan.Run(uow, planDO, crates);
                         if (!planDO.IsOngoingPlan())
                         {
                             await _plan.Deactivate(planId);

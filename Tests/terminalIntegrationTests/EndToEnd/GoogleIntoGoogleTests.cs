@@ -59,7 +59,7 @@ namespace terminalIntegrationTests.EndToEnd
                 //Configure Save_To_Google activity to save this message into new test spreadsheet
                 destinationSpreadsheetUri = await googleSheetApi.CreateSpreadsheet(destinationSpreadsheetName, defaultGoogleAuthToken);
 
-                await _googleActivityConfigurator.AddAndConfigureSaveToGoogleSheet(thePlan, 3, "Field Description", "Build Message", destinationSpreadsheetName);
+                await _googleActivityConfigurator.AddAndConfigureSaveToGoogleSheet(thePlan, 3, "Standard Payload Data", "Build Message", destinationSpreadsheetName);
                 //run the plan
                 await _plansHelper.RunPlan(thePlan.Plan.Id);
 
@@ -132,7 +132,5 @@ namespace terminalIntegrationTests.EndToEnd
                 return JsonConvert.DeserializeObject<GoogleAuthDTO>((validToken).Token);
             }
         }
-
-
     }
 }

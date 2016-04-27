@@ -14,8 +14,12 @@ namespace Hub.Services
 {
     public class ActivityTemplate : IActivityTemplate
     {
+        public const string EmailDelivererTag = "Email Deliverer";
+
+        public const string TableDataGeneratorTag = "Table Data Generator";
+
         private readonly ITerminal _terminal;
-        private readonly Dictionary<int, ActivityTemplateDO> _activityTemplates = new Dictionary<int, ActivityTemplateDO>();
+        private readonly Dictionary<Guid, ActivityTemplateDO> _activityTemplates = new Dictionary<Guid, ActivityTemplateDO>();
         private bool _isInitialized;
 
         public bool IsATandTCacheDisabled
@@ -76,7 +80,7 @@ namespace Hub.Services
             }
         }
 
-        public string GetTerminalUrl(int? curActivityTemplateId)
+        public string GetTerminalUrl(Guid? curActivityTemplateId)
         {
             if (curActivityTemplateId == null)
             {
@@ -88,7 +92,7 @@ namespace Hub.Services
             return GetByKey(curActivityTemplateId.Value).Terminal.Endpoint;
         }
 
-        public ActivityTemplateDO GetByKey(int curActivityTemplateId)
+        public ActivityTemplateDO GetByKey(Guid curActivityTemplateId)
         {
             Initialize();
 
@@ -234,11 +238,13 @@ namespace Hub.Services
                         }
                     }
                     
-                    var activity = uow.ActivityTemplateRepository.GetQuery().Include(x => x.WebService).FirstOrDefault(t => t.Name == activityTemplateDo.Name);
+                    var activity = uow.ActivityTemplateRepository.GetQuery().Include(x => x.WebService).FirstOrDefault(t => t.Name == activityTemplateDo.Name
+                                                                                                                         && t.TerminalId == activityTemplateDo.TerminalId
+                                                                                                                         && t.Version == activityTemplateDo.Version);
 
                     if (activity == null)
                     {
-                        activityTemplateDo.Id = 0;
+                        activityTemplateDo.Id = Guid.NewGuid();
                         uow.ActivityTemplateRepository.Add(activity = activityTemplateDo);
                         uow.SaveChanges();
                     }

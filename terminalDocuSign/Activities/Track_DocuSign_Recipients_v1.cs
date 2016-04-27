@@ -25,7 +25,7 @@ namespace terminalDocuSign.Actions
         private const string SolutionName = "Track DocuSign Recipients";
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "DocuSign";
-        private const string SolutionBody = @"<p>Link your important outgoing envelopes to Fr8's powerful notification Activities, 
+        private const string SolutionBody = @"<p>Link your important outgoing envelopes to Fr8's powerful notification activities, 
                                             which allow you to receive SMS notices, emails, or receive posts to popular tracking systems like Slack and Yammer. 
                                             Get notified when recipients take too long to sign!</p>";
 
@@ -166,13 +166,19 @@ namespace terminalDocuSign.Actions
                 return activityDO;
             }
 
-            //DocuSign
-            var monitorDocuSignActionTask = AddAndConfigureChildActivity(activityDO, "Monitor_DocuSign_Envelope_Activity", "Monitor Docusign Envelope Activity", "Monitor Docusign Envelope Activity", 1);
-            var setDelayActionTask = AddAndConfigureChildActivity(activityDO, "SetDelay", "Set Delay", "Set Delay", 2);
-            var queryFr8WarehouseActionTask = AddAndConfigureChildActivity(activityDO, "QueryFr8Warehouse", "Query Fr8 Warehouse", "Query Fr8 Warehouse", 3);
-            var filterActionTask = AddAndConfigureChildActivity(activityDO, "TestIncomingData", "Test Incoming Data", "Test Incoming Data", 4);
+            var monitorDocusignAT = await GetActivityTemplate("terminalDocuSign", "Monitor_DocuSign_Envelope_Activity");
+            var setDelayAT = await GetActivityTemplate("terminalFr8Core", "SetDelay");
+            var queryFr8WareHouseAT = await GetActivityTemplate("terminalFr8Core", "QueryFr8Warehouse");
+            var testIncomingDataAT = await GetActivityTemplate("terminalFr8Core", "TestIncomingData");
+            var buildMessageAT = await GetActivityTemplate("terminalFr8Core", "Build_Message");
 
-            var buildMessageActivityTask = AddAndConfigureChildActivity((Guid)activityDO.ParentPlanNodeId, "Build_Message", "Build a Message", "Build a Message", 2);
+            //DocuSign
+            var monitorDocuSignActionTask = AddAndConfigureChildActivity(activityDO, monitorDocusignAT, "Monitor Docusign Envelope Activity", "Monitor Docusign Envelope Activity", 1);
+            var setDelayActionTask = AddAndConfigureChildActivity(activityDO, setDelayAT, "Set Delay", "Set Delay", 2);
+            var queryFr8WarehouseActionTask = AddAndConfigureChildActivity(activityDO, queryFr8WareHouseAT, "Query Fr8 Warehouse", "Query Fr8 Warehouse", 3);
+            var filterActionTask = AddAndConfigureChildActivity(activityDO, testIncomingDataAT, "Test Incoming Data", "Test Incoming Data", 4);
+
+            var buildMessageActivityTask = AddAndConfigureChildActivity((Guid)activityDO.ParentPlanNodeId, buildMessageAT, "Build a Message", "Build a Message", 2);
 
             await Task.WhenAll(monitorDocuSignActionTask, setDelayActionTask, queryFr8WarehouseActionTask, filterActionTask, buildMessageActivityTask);
 
@@ -199,7 +205,8 @@ namespace terminalDocuSign.Actions
 
             buildMessageActivity = await HubCommunicator.ConfigureActivity(buildMessageActivity, CurrentFr8UserId);
 
-            var notifierActivity = await AddAndConfigureChildActivity((Guid)activityDO.ParentPlanNodeId, howToBeNotifiedDdl.Value, howToBeNotifiedDdl.selectedKey, howToBeNotifiedDdl.selectedKey, 3);
+            var notifierAT = await GetActivityTemplate(Guid.Parse(howToBeNotifiedDdl.Value));
+            var notifierActivity = await AddAndConfigureChildActivity((Guid)activityDO.ParentPlanNodeId, notifierAT, howToBeNotifiedDdl.selectedKey, howToBeNotifiedDdl.selectedKey, 3);
             SetNotifierActivityBody(notifierActivity);
 
             SetControlValue(monitorDocuSignAction, "EnvelopeSent", "true");
@@ -263,6 +270,11 @@ namespace terminalDocuSign.Actions
                 using (var updater = CrateManager.GetUpdatableStorage(notifierActivity))
                 {
                     var configControls = GetConfigurationControls(updater);
+                    if (configControls == null)
+                    {
+                        //user is not authenticated yet - there is nothing we can do now
+                        return;
+                    }
                     var messageField = (TextSource)GetControl(configControls, "Select_Message_Field", ControlTypes.TextSource);
                     if (messageField == null)
                     {
@@ -322,11 +334,11 @@ namespace terminalDocuSign.Actions
 
                 if (string.IsNullOrEmpty(recipientEmail))
                 {
-                    selectedObject = GetMtType(typeof(DocuSignEventCM));
+                    selectedObject = GetMtType(typeof(DocuSignEnvelopeCM_v2));
                 }
                 else
                 {
-                    selectedObject = GetMtType(typeof(DocuSignRecipientCM));
+                    selectedObject = GetMtType(typeof(DocuSignRecipientStatus));
                 }
 
                 if (selectedObject == null)
@@ -346,7 +358,7 @@ namespace terminalDocuSign.Actions
 
                 if (recipientEmail != null)
                 {
-                    conditions.Add(new FilterConditionDTO { Field = "RecipientEmail", Operator = "eq", Value = recipientEmail });
+                    conditions.Add(new FilterConditionDTO { Field = "Email", Operator = "eq", Value = recipientEmail });
                 }
 
                 filterPane.Value = JsonConvert.SerializeObject(new FilterDataDTO

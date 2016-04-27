@@ -103,7 +103,16 @@ namespace Data.Constants
         CrateDescription = 32,
 
         [Display(Name = "Typed Fields")]
-        TypedFields = 33
+        TypedFields = 33,
+
+        [Display(Name = "External Object Handles")]
+        ExternalObjectHandles = 34,
+
+        [Display(Name = "Salesforce Event")]
+        SalesforceEvent = 35,
+
+        [Display(Name = "Docusign Envelope v2")]
+        DocuSignEnvelope_v2 = 36,
     }
 }
 

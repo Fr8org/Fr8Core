@@ -7,6 +7,7 @@ using Data.Crates;
 using Data.Infrastructure.AutoMapper;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
+using RazorEngine.Configuration;
 
 namespace Hub.Managers
 {
@@ -60,6 +61,11 @@ namespace Hub.Managers
             public void Replace(ICrateStorage crateStorage)
             {
                 _crateStorage = crateStorage;
+            }
+
+            public void Flush()
+            {
+                _setValue(_crateStorage ?? new CrateStorage());
             }
 
             public void Add(Crate crate)
@@ -125,7 +131,7 @@ namespace Hub.Managers
             {
                 if (!_discardChanges)
                 {
-                    _setValue(_crateStorage ?? new CrateStorage());
+                   Flush();
                 }
             }
 

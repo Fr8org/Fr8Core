@@ -67,7 +67,6 @@ namespace Hub.Managers
 
             EventManager.EventDocuSignNotificationReceived += LogDocuSignNotificationReceived;
             EventManager.EventContainerLaunched += LogEventProcessLaunched;
-            EventManager.EventProcessNodeCreated += LogEventProcessNodeCreated;
             EventManager.EventCriteriaEvaluationStarted += LogEventCriteriaEvaluationStarted;
             EventManager.EventCriteriaEvaluationFinished += LogEventCriteriaEvaluationFinished;
             EventManager.EventActionStarted += LogEventActivityStarted;
@@ -118,7 +117,6 @@ namespace Hub.Managers
 
             EventManager.EventDocuSignNotificationReceived -= LogDocuSignNotificationReceived;
             EventManager.EventContainerLaunched -= LogEventProcessLaunched;
-            EventManager.EventProcessNodeCreated -= LogEventProcessNodeCreated;
             EventManager.EventCriteriaEvaluationStarted -= LogEventCriteriaEvaluationStarted;
             EventManager.EventCriteriaEvaluationFinished -= LogEventCriteriaEvaluationFinished;
             EventManager.EventActionStarted -= LogEventActivityStarted;
@@ -157,12 +155,14 @@ namespace Hub.Managers
                     Activity = "Process Execution",
                     Status = responseType.ToString(),
                     ObjectId = activityDo.Id.ToString(),
-                    CustomerId = _security.GetCurrentUser(),
+                    Fr8UserId = _security.GetCurrentUser(),
                     CreatedByID = _security.GetCurrentUser(),
                     Data = string.Join(
                     Environment.NewLine,
                     "Activity Name: " + template?.Name)
                 };
+
+                LogHistoryItem(factDO);
 
                 uow.FactRepository.Add(factDO);
                 uow.SaveChanges();
@@ -182,7 +182,7 @@ namespace Hub.Managers
                         Activity = "Plan Launch",
                         Status = "Plan Launch Initiating",
                         ObjectId = targetPlanDO.Id.ToString(),
-                        CustomerId = _security.GetCurrentUser(),
+                        Fr8UserId = _security.GetCurrentUser(),
                         CreatedByID = _security.GetCurrentUser(),
                         Data = string.Join(
                             Environment.NewLine,
@@ -231,13 +231,15 @@ namespace Hub.Managers
                         Activity = "Process Execution",
                         Status = "Activity Execution Initiating",
                         ObjectId = activityDo.Id.ToString(),
-                        CustomerId = _security.GetCurrentUser(),
+                        Fr8UserId = _security.GetCurrentUser(),
                         CreatedByID = _security.GetCurrentUser(),
                         Data = string.Join(
                             Environment.NewLine,
                             "Activity Name: " + template?.Name
                         )
                     };
+
+                    LogHistoryItem(factDO);
 
                     uow.FactRepository.Add(factDO);
                     var planDO = uow.PlanRepository.GetById<PlanDO>(activityDo.RootPlanNodeId);
@@ -276,7 +278,7 @@ namespace Hub.Managers
                     SecondaryCategory = "Container",
                     Activity = "Launched",
                     ObjectId = containerDO.Id.ToString(),
-                    CustomerId = _security.GetCurrentUser(),
+                    Fr8UserId = _security.GetCurrentUser(),
                     CreatedByID = _security.GetCurrentUser(),
                     Data = string.Join(
                         Environment.NewLine,
@@ -284,6 +286,8 @@ namespace Hub.Managers
                         "Plan Id: " + containerDO.PlanId
                     ),
                 };
+
+                LogHistoryItem(factDO);
 
                 uow.FactRepository.Add(factDO);
                 uow.SaveChanges();
@@ -298,7 +302,7 @@ namespace Hub.Managers
                 SecondaryCategory = "PlanState",
                 Activity = "StateChanged",
                 ObjectId = planId.ToString(),
-                CustomerId = _security.GetCurrentUser(),
+                Fr8UserId = _security.GetCurrentUser(),
                 CreatedByID = _security.GetCurrentUser(),
                 Data = string.Join(
                 Environment.NewLine,
@@ -321,6 +325,8 @@ namespace Hub.Managers
                 if (planDO != null)
                 {
                     var factDO = CreatedPlanFact(planId, "Deactivated");
+
+                    LogHistoryItem(factDO);
                     uowFact.FactRepository.Add(factDO);
                     uowFact.SaveChanges();
                 }
@@ -339,6 +345,8 @@ namespace Hub.Managers
                 if (planDO != null)
                 {
                     var factDO = CreatedPlanFact(planId, "Activated");
+
+                    LogHistoryItem(factDO);
                     uowFact.FactRepository.Add(factDO);
                     uowFact.SaveChanges();
                 }
@@ -357,12 +365,13 @@ namespace Hub.Managers
                     Status = resposneType.ToString(),
                     ObjectId = containerDO.Id.ToString(),
                     CreatedByID = _security.GetCurrentUser(),
-                    CustomerId = _security.GetCurrentUser(),
+                    Fr8UserId = _security.GetCurrentUser(),
                     Data = string.Join(
                     Environment.NewLine,
                    "Container Id: " + containerDO.Name)
                 };
 
+                LogHistoryItem(factDO);
                 uowFact.FactRepository.Add(factDO);
                 uowFact.SaveChanges();
             }
@@ -434,7 +443,7 @@ namespace Hub.Managers
 
             if (terminal != null)
             {
-                return terminal.Name;
+                return terminal.Label;
             }
 
             return authorizationToken.TerminalID.ToString();
@@ -458,6 +467,7 @@ namespace Hub.Managers
                     "External AccountId: " + authToken.ExternalAccountId
                 );
 
+                LogHistoryItem(factDO);
                 uow.FactRepository.Add(factDO);
                 uow.SaveChanges();
             }
@@ -483,6 +493,7 @@ namespace Hub.Managers
                     )
                 };
 
+                LogHistoryItem(newFactDO);
                 uow.FactRepository.Add(newFactDO);
                 uow.SaveChanges();
             }
@@ -502,6 +513,8 @@ namespace Hub.Managers
                     CreatedByID = _security.GetCurrentUser(),
                     Status = value != null ? value.ToString() : null,
                 };
+
+                LogHistoryItem(newFactDO);
                 uow.FactRepository.Add(newFactDO);
                 uow.SaveChanges();
             }
@@ -515,11 +528,14 @@ namespace Hub.Managers
                 {
                     PrimaryCategory = entityName,
                     SecondaryCategory = stateName,
+                    Fr8UserId = _security.GetCurrentUser(),
                     Activity = "StateChanged",
                     ObjectId = id != null ? id.ToString() : null,
                     CreatedByID = _security.GetCurrentUser(),
                     Status = stateValue,
                 };
+
+                LogHistoryItem(newFactDO);
                 uow.FactRepository.Add(newFactDO);
                 uow.SaveChanges();
             }
@@ -533,8 +549,8 @@ namespace Hub.Managers
 
                 var fact = new FactDO
                 {
-                    //CustomerId = containerDO.Fr8AccountId,
-                    CustomerId = plan.Fr8AccountId,
+                    //Fr8UserId = containerDO.Fr8AccountId,
+                    Fr8UserId = plan.Fr8AccountId,
                     Data = containerDO.Id.ToStr(),
                     ObjectId = containerDO.Id.ToStr(),
                     PrimaryCategory = "Process Access",
@@ -615,16 +631,16 @@ namespace Hub.Managers
                     PrimaryCategory = "User",
                     SecondaryCategory = "",
                     Activity = "Created",
-                    CustomerId = curUserId,
+                    Fr8UserId = curUserId,
                     ObjectId = null,
                     Data = string.Format("User with email :{0}, created from: {1}", uow.UserRepository.GetByKey(curUserId).EmailAddress.Address, new StackTrace())
                 };
 
-                SaveFact(curAction);
+                SaveAndLogFact(curAction);
             }
         }
 
-        public void EmailReceived(int emailId, string customerId)
+        public void EmailReceived(int emailId, string Fr8UserId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -636,39 +652,41 @@ namespace Hub.Managers
                     PrimaryCategory = "Email",
                     SecondaryCategory = "",
                     Activity = "Received",
-                    CustomerId = customerId,
+                    Fr8UserId = Fr8UserId,
                     ObjectId = emailId.ToString(CultureInfo.InvariantCulture)
                 };
 
-                curAction.Data = string.Format("{0} ID :{1}, {2} {3}: ObjectId: {4} EmailAddress: {5} Subject: {6}", curAction.PrimaryCategory, emailId, curAction.SecondaryCategory, curAction.Activity, emailId, (uow.UserRepository.GetByKey(curAction.CustomerId).EmailAddress.Address), emailSubject);
+                curAction.Data = string.Format("{0} ID :{1}, {2} {3}: ObjectId: {4} EmailAddress: {5} Subject: {6}", curAction.PrimaryCategory, emailId, curAction.SecondaryCategory, curAction.Activity, emailId, (uow.UserRepository.GetByKey(curAction.Fr8UserId).EmailAddress.Address), emailSubject);
 
-                SaveFact(curAction);
+                SaveAndLogFact(curAction);
             }
         }
 
-        public void EventBooked(int eventId, string customerId)
+        public void EventBooked(int eventId, string Fr8UserId)
         {
             FactDO curAction = new FactDO
             {
                 PrimaryCategory = "Event",
                 SecondaryCategory = "",
                 Activity = "Booked",
-                CustomerId = customerId,
+                Fr8UserId = Fr8UserId,
                 ObjectId = eventId.ToString(CultureInfo.InvariantCulture)
             };
-            SaveFact(curAction);
+
+            SaveAndLogFact(curAction);
         }
-        public void EmailSent(int emailId, string customerId)
+        public void EmailSent(int emailId, string Fr8UserId)
         {
             FactDO curAction = new FactDO
             {
                 PrimaryCategory = "Email",
                 SecondaryCategory = "",
                 Activity = "Sent",
-                CustomerId = customerId,
+                Fr8UserId = Fr8UserId,
                 ObjectId = emailId.ToString(CultureInfo.InvariantCulture)
             };
-            SaveFact(curAction);
+
+            SaveAndLogFact(curAction);
         }
 
         //public void BookingRequestCreated(int bookingRequestId)
@@ -685,7 +703,7 @@ namespace Hub.Managers
         //            PrimaryCategory = "BookingRequest",
         //            SecondaryCategory = "",
         //            Activity = "Created",
-        //            CustomerId = bookingRequestDO.CustomerID,
+        //            Fr8UserId = bookingRequestDO.Fr8UserId,
         //            ObjectId = bookingRequestId.ToString(CultureInfo.InvariantCulture)
         //        };
 
@@ -706,13 +724,13 @@ namespace Hub.Managers
                 PrimaryCategory = "Notification",
                 SecondaryCategory = null,
                 Activity = "Received",
-                CustomerId = userId,
+                Fr8UserId = userId,
                 ObjectId = null,
                 Data = string.Format("EnvelopeId: {0}.",
                         envelopeId)
             };
-            LogFactInformation(fact, "DocusignNotificationReceived");
-            SaveFact(fact);
+            
+            SaveAndLogFact(fact);
         }
 
         /// <summary>
@@ -727,13 +745,13 @@ namespace Hub.Managers
                 PrimaryCategory = "PlanService",
                 SecondaryCategory = null,
                 Activity = "Created",
-                CustomerId = userId,
+                Fr8UserId = userId,
                 ObjectId = "0",
                 Data = string.Format("Plan Name: {0}.",
                         planName)
             };
-            LogFactInformation(fact, "RouteCreated");
-            SaveFact(fact);
+            
+            SaveAndLogFact(fact);
         }
 
         /// <summary>
@@ -745,18 +763,20 @@ namespace Hub.Managers
         {
             var fact = new IncidentDO
             {
-                CustomerId = _security.GetCurrentUser(),
+                Fr8UserId = _security.GetCurrentUser(),
                 PrimaryCategory = "Notification",
                 Activity = "Received",
                 Data = message
             };
+
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.IncidentRepository.Add(fact);
                 uow.SaveChanges();
             }
-            LogFactInformation(fact, "ImproperDocusignNotificationReceived", EventType.Warning);
+
+            LogHistoryItem(fact,EventType.Warning);
         }
 
         /// <summary>
@@ -767,14 +787,15 @@ namespace Hub.Managers
         {
             var incidentDO = new IncidentDO
             {
-                CustomerId = _security.GetCurrentUser(),
+                Fr8UserId = _security.GetCurrentUser(),
                 PrimaryCategory = "Error",
                 SecondaryCategory = "ApplicationException",
                 Activity = "Received",
                 Data = message
             };
 
-            Logger.GetLogger().Error(message);
+            LogHistoryItem(incidentDO);
+            
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -803,15 +824,15 @@ namespace Hub.Managers
                 PrimaryCategory = "Notification",
                 SecondaryCategory = null,
                 Activity = "Processed",
-                CustomerId = userId,
+                Fr8UserId = userId,
                 ObjectId = null,
                 Data = string.Format("A notification from DocuSign is processed. UserId: {0}, EnvelopeId: {1}, ContainerDO id: {2}.",
                         userId,
                         envelopeId,
                         containerId)
             };
-            LogFactInformation(fact, "ProcessProcessing");
-            SaveFact(fact);
+
+            SaveAndLogFact(fact); 
         }
 
         private void SaveFact(FactDO curAction)
@@ -826,7 +847,7 @@ namespace Hub.Managers
         private void SaveAndLogFact(FactDO fact)
         {
             SaveFact(fact);
-            LogFactInformation(fact, fact.SecondaryCategory + " " + fact.Activity);
+            LogHistoryItem(fact);
         }
 
         public void UserRegistered(Fr8AccountDO curUser)
@@ -838,12 +859,14 @@ namespace Hub.Managers
                     PrimaryCategory = "User",
                     SecondaryCategory = "",
                     Activity = "Registered",
-                    CustomerId = curUser.Id,
+                    Fr8UserId = curUser.Id,
                     ObjectId = null,
                     Data = string.Format("User registrated with :{0},", curUser.EmailAddress.Address)
                     //Data = "User registrated with " + curUser.EmailAddress.Address
                 };
-                Logger.GetLogger().Info(curFactDO.Data);
+
+                LogHistoryItem(curFactDO);
+
                 uow.FactRepository.Add(curFactDO);
                 uow.SaveChanges();
             }
@@ -862,7 +885,11 @@ namespace Hub.Managers
                     Data = string.Format("{0} activity templates were registrated", count)
                     //Data = "User registrated with " + curUser.EmailAddress.Address
                 };
-                Logger.GetLogger().Info(curFactDO.Data);
+
+                //Logger.GetLogger().Info(curFactDO.Data);
+                LogHistoryItem(curFactDO);
+
+
                 uow.FactRepository.Add(curFactDO);
                 uow.SaveChanges();
             }
@@ -878,7 +905,9 @@ namespace Hub.Managers
                 Data = message
             };
 
-            Logger.GetLogger().Error(message);
+            //Logger.GetLogger().Error(message);
+            LogHistoryItem(incidentDO,EventType.Error);
+
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -904,41 +933,45 @@ namespace Hub.Managers
                     PrimaryCategory = "DocuSign",
                     SecondaryCategory = "Token",
                     Activity = activity,
-                    CustomerId = userId,
+                    Fr8UserId = userId,
                 };
 
+                LogHistoryItem(factDO);
                 uow.FactRepository.Add(factDO);
                 uow.SaveChanges();
             }
         }
 
-        /// <summary>
-        /// Logs fact information using the standard log mechanisms.
-        /// </summary>
-        /// <param name="fact">An instance of FactDO class.</param>
-        /// <param name="eventName">Name of the event.</param>
-        /// <param name="eventType">Event type.</param>
-        public void LogFactInformation(HistoryItemDO fact, string eventName, EventType eventType = EventType.Info)
+        public string ComposeOutputString(HistoryItemDO historyItem)
         {
-            string message = string.Format(
-                "Event {0} generated with CustomerId = {1}, ObjectId = {2} and Data = {3}.",
-                eventName,
-                fact.CustomerId,
-                fact.ObjectId,
-                fact.Data);
+            historyItem = historyItem ?? new HistoryItemDO() { Data = "HistoryItem object is null!" };
 
-            switch (eventType)
-            {
-                case EventType.Info:
-                    Logger.GetLogger().Info(message);
-                    break;
-                case EventType.Error:
-                    Logger.GetLogger().Error(message);
-                    break;
-                case EventType.Warning:
-                    Logger.GetLogger().Warn(message);
-                    break;
-            }
+            string itemType = historyItem.GetType().Name.Replace("DO", "");
+
+            //trim Data feild if it is too long, max length 256 symbols
+            historyItem.Data = historyItem.Data ?? "";
+            var dataLen = historyItem.Data.Length > 256 ? 255 : historyItem.Data.Length;
+            var substring = historyItem.Data.Substring(0, dataLen);
+
+            var message = $"{itemType}: {historyItem.PrimaryCategory} " +
+                              $"{historyItem.SecondaryCategory}" +
+                              $"{historyItem.Activity}, " +
+                              $"Data = {substring}, " +
+                              $"Fr8User = {historyItem.Fr8UserId}, " +
+                              $"ObjectId = {historyItem.ObjectId}";
+
+            return message;
+        }
+
+        /// <summary>
+        /// Logs historyItem information using the standard log mechanisms, replacement for LogFactInformation .
+        /// </summary>
+        /// <param name="historyItem">An instance of FactDO class.</param>
+        /// <param name="eventType">Event type.</param>
+        public void LogHistoryItem(HistoryItemDO historyItem, EventType eventType = EventType.Info)
+        {
+            var message = ComposeOutputString(historyItem);
+            Logger.LogMessage(message,eventType);
         }
 
         private void OnAlertTokenRequestInitiated(string userId)
@@ -960,7 +993,7 @@ namespace Hub.Managers
         {
             var fact = new FactDO
             {
-                CustomerId = null,
+                Fr8UserId = null,
                 Data = "DocuSign Notificaiton Received",
                 ObjectId = null,
                 PrimaryCategory = "External Event",
@@ -979,7 +1012,7 @@ namespace Hub.Managers
 
                 var fact = new FactDO
                 {
-                    CustomerId = plan.Fr8AccountId,
+                    Fr8UserId = plan.Fr8AccountId,
                     Data = launchedContainer.Id.ToStr(),
                     ObjectId = launchedContainer.Id.ToStr(),
                     PrimaryCategory = "Container Execution",
@@ -989,30 +1022,6 @@ namespace Hub.Managers
 
                 SaveAndLogFact(fact);
             }
-        }
-
-        private void LogEventProcessNodeCreated(ProcessNodeDO processNode)
-        {
-            ContainerDO containerInExecution;
-            FactDO fact;
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                containerInExecution = uow.ContainerRepository.GetByKey(processNode.ParentContainerId);
-                var plan = containerInExecution != null ? uow.PlanRepository.GetById<PlanDO>(containerInExecution.PlanId) : null;
-
-                fact = new FactDO
-                {
-                    CustomerId = containerInExecution != null ? plan.Fr8AccountId : "unknown",
-                    Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
-                    ObjectId = processNode.Id.ToStr(),
-                    PrimaryCategory = "Container Execution",
-                    SecondaryCategory = "Process Node",
-                    Activity = "Created"
-                };
-            }
-
-            SaveAndLogFact(fact);
         }
 
         private void LogEventCriteriaEvaluationStarted(Guid containerId)
@@ -1027,7 +1036,7 @@ namespace Hub.Managers
 
                 fact = new FactDO
                 {
-                    CustomerId = containerInExecution != null ? plan.Fr8AccountId : "unknown",
+                    Fr8UserId = containerInExecution != null ? plan.Fr8AccountId : "unknown",
                     Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                     ObjectId = null,
                     PrimaryCategory = "Process Execution",
@@ -1051,7 +1060,7 @@ namespace Hub.Managers
 
                 fact = new FactDO
                 {
-                    CustomerId = containerInExecution != null ? plan.Fr8AccountId : "unknown",
+                    Fr8UserId = containerInExecution != null ? plan.Fr8AccountId : "unknown",
                     Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                     ObjectId = null,
                     PrimaryCategory = "Process Execution",
@@ -1063,20 +1072,17 @@ namespace Hub.Managers
             SaveAndLogFact(fact);
         }
 
-        private void LogEventActivityStarted(ActivityDO curActivity)
+        private void LogEventActivityStarted(ActivityDO curActivity, ContainerDO containerInExecution)
         {
-            ContainerDO containerInExecution;
             FactDO fact;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                containerInExecution = uow.ContainerRepository.GetQuery()
-                    .FirstOrDefault(p => p.CurrentActivityId.Value == curActivity.Id);
                 var plan = containerInExecution != null ? uow.PlanRepository.GetById<PlanDO>(containerInExecution.PlanId) : null;
 
                 fact = new FactDO
                 {
-                    CustomerId = (containerInExecution != null) ? plan.Fr8AccountId : "unknown",
+                    Fr8UserId = (containerInExecution != null) ? plan.Fr8AccountId : "unknown",
                     Data = (containerInExecution != null) ? containerInExecution.Id.ToStr() : "unknown",
                     ObjectId = curActivity.Id.ToStr(),
                     PrimaryCategory = "Process Execution",
@@ -1101,7 +1107,7 @@ namespace Hub.Managers
 
                 fact = new FactDO
                 {
-                    CustomerId = containerInExecution != null ? plan.Fr8AccountId : "unknown",
+                    Fr8UserId = containerInExecution != null ? plan.Fr8AccountId : "unknown",
                     Data = containerInExecution != null ? containerInExecution.Id.ToStr() : "unknown",
                     ObjectId = curActivity.Id.ToStr(),
                     PrimaryCategory = "Process Execution",
@@ -1118,7 +1124,7 @@ namespace Hub.Managers
             var fact = new FactDO
             {
                 ObjectId = eventDataCm.ObjectId,
-                CustomerId = eventDataCm.CustomerId,
+                Fr8UserId = eventDataCm.Fr8UserId,
                 Data = eventDataCm.Data,
                 PrimaryCategory = eventDataCm.PrimaryCategory,
                 SecondaryCategory = eventDataCm.SecondaryCategory,
@@ -1141,7 +1147,7 @@ namespace Hub.Managers
             //
             //            var fact = new FactDO
             //            {
-            //                CustomerId = processInExecution.DockyardAccountId,
+            //                Fr8UserId = processInExecution.DockyardAccountId,
             //                Data = processInExecution.Id.ToStr(),
             //                ObjectId = curAction.Id.ToStr(),
             //                PrimaryCategory = "Action",
@@ -1174,12 +1180,7 @@ namespace Hub.Managers
 
         }
 
-        public enum EventType
-        {
-            Info,
-            Error,
-            Warning
-        }
+        
 
 
         private void CreateContainerFact(ContainerDO containerDO, string activity, ActivityDO activityDO = null)
@@ -1190,7 +1191,7 @@ namespace Hub.Managers
 
                 var curFact = new FactDO
                 {
-                    CustomerId = plan.Fr8AccountId,
+                    Fr8UserId = plan.Fr8AccountId,
                     ObjectId = containerDO.Id.ToStr(),
                     PrimaryCategory = "Containers",
                     SecondaryCategory = "Operations",
@@ -1202,7 +1203,8 @@ namespace Hub.Managers
                     curFact.Data = string.Format("Terminal: {0} - Action: {1}.", activityTemplate.Terminal.Name, activityTemplate.Name);
                 }
 
-                LogFactInformation(curFact, curFact.Data);
+                LogHistoryItem(curFact);
+                //LogFactInformation(curFact, curFact.Data);
                 uow.FactRepository.Add(curFact);
                 uow.SaveChanges();
             }

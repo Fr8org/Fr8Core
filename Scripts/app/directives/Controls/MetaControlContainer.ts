@@ -16,7 +16,8 @@ module dockyard.directives.controlContainer {
     //More detail on creating directives in TypeScript: 
     //http://blog.aaronholmes.net/writing-angularjs-directives-as-typescript-classes/
     export function MetaControlContainer(): ng.IDirective {
-        var controller = ['$scope', '$modal', ($scope: IMetaControlContainerScope, $modal: any) => {
+        var controller = ['$scope', '$modal', 'SubPlanService',
+            ($scope: IMetaControlContainerScope, $modal: any, SubPlanService: services.ISubPlanService) => {
             var triggerChange = () => {
                 if ($scope.change != null && angular.isFunction($scope.change)) {
                     $scope.change()($scope.field);
@@ -29,12 +30,38 @@ module dockyard.directives.controlContainer {
             };
 
             $scope.removeMetaDescription = (index: number) => {
-                $scope.field.metaDescriptions.splice(index, 1);
+                // Search for "subPlanId" property of nested "SelectData" controls.
+                var existingSubPlanId : string = null;
+                var i, j, control;
+                for (i = 0; i < $scope.field.metaDescriptions.length; ++i) {
+                    for (j = 0; j < $scope.field.metaDescriptions[i].controls.length; ++j) {
+                        control = $scope.field.metaDescriptions[i].controls[j];
+                        if (control.type === 'SelectData' && control.subPlanId) {
+                            existingSubPlanId = control.subPlanId;
+                            break;
+                        }
+                    }
+
+                    if (existingSubPlanId) {
+                        break;
+                    }
+                }
+
+                // If no SubPlanId found, then simply remove control from array.
+                if (!existingSubPlanId) {
+                    $scope.field.metaDescriptions.splice(index, 1);
+                }
+                // If SubPlanId found, delete subplan first, and then remove control from array.
+                else {
+                    SubPlanService.delete({ id: existingSubPlanId })
+                        .$promise
+                        .then(() => {
+                            $scope.field.metaDescriptions.splice(index, 1);
+                        });
+                }
             };
-
+            
             $scope.getIndex = (control: model.ControlMetaDescriptionDTO) => {
-
-
                 var ix = 1;
 
                 for (var i = 0; i < $scope.field.metaDescriptions.length; i++)
@@ -79,8 +106,11 @@ module dockyard.directives.controlContainer {
 
     app.controller('MetaControlContainer__MetaDescSelectionController', ['$scope', '$modalInstance', ($scope: any, $modalInstance: any): void => {
 
-        //we have 3 meta descriptions for now
-        $scope.metaDescriptions = [ new model.TextBoxMetaDescriptionDTO(), new model.TextBlockMetaDescriptionDTO(), new model.FilePickerMetaDescriptionDTO() ];
+        $scope.metaDescriptions = [
+            new model.TextBoxMetaDescriptionDTO(),
+            new model.TextBlockMetaDescriptionDTO(),
+            new model.SelectDataMetaDescriptionDTO()
+        ];
 
         $scope.selectControl = (control: model.ControlMetaDescriptionDTO) => {
             $modalInstance.close(control);

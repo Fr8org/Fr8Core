@@ -22,7 +22,9 @@ module dockyard.directives.paneConfigureAction {
     }
 
     export interface IConfigurationControlScope extends ng.IScope {
+        currentAction: interfaces.IActionVM;
         field: model.ControlDefinitionDTO;
+        plan: any;
         onChange: (radio: model.ControlDefinitionDTO) => void;
         onClick: (event: any) => void;
     }

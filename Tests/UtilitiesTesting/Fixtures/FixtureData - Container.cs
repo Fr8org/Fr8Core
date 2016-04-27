@@ -8,7 +8,7 @@ namespace UtilitiesTesting.Fixtures
 {
 	partial class FixtureData
 	{
-		private  const string _xmlPayLoadLocation = "DockyardTest\\Content\\DocusignXmlPayload.xml";
+		private  const string _xmlPayLoadLocation = "HubTests\\Content\\DocusignXmlPayload.xml";
         
         public static ContainerDO TestContainer1()
 		{
@@ -16,7 +16,6 @@ namespace UtilitiesTesting.Fixtures
             containerDO.Id = TestContainer_Id_49();
             containerDO.PlanId = TestPlan2().Id;
             containerDO.State = 1;
-            containerDO.ProcessNodes.Add(TestProcessNode1());
             return containerDO;
 		}
 
@@ -26,7 +25,6 @@ namespace UtilitiesTesting.Fixtures
             containerDO.Id = TestContainer_Id_49();
             containerDO.PlanId = TestPlan2().Id;
             containerDO.State = State.Executing;
-            containerDO.ProcessNodes.Add(TestProcessNode1());
             return containerDO;
         }
 
@@ -192,7 +190,7 @@ namespace UtilitiesTesting.Fixtures
 		/// </summary>
 		/// <param name="physLocation"></param>
 		/// <returns></returns>
-		public static string FindXmlPayloadFullPath(string physLocation, string filepath="DockyardTest\\Content\\DocusignXmlPayload.xml")
+		public static string FindXmlPayloadFullPath(string physLocation, string filepath="HubTests\\Content\\DocusignXmlPayload.xml")
 		{
 			if (string.IsNullOrEmpty(physLocation))
 				return string.Empty;
@@ -218,76 +216,5 @@ namespace UtilitiesTesting.Fixtures
 			}
 			return result;
 		}
-
-        public static ContainerDO TestContainerWithCurrentActivityAndNextActivity()
-        {
-            var container = new ContainerDO();
-            container.Id = TestContainer_Id_49();
-				container.Plan = TestPlan2();
-            container.PlanId = TestPlan2().Id;
-            container.State = 1;
-            container.ProcessNodes.Add(TestProcessNode1());
-            container.CurrentActivityId = FixtureData.TestActivity7().Id;
-			container.NextActivityId = FixtureData.TestActivity10().Id;
-            return container;
-        }
-
-        public static ContainerDO TestContainerCurrentActivityNULL()
-        {
-            var container = new ContainerDO();
-            container.Id = TestContainer_Id_49();
-            container.PlanId = TestPlan2().Id;
-            container.State = 1;
-            container.ProcessNodes.Add(TestProcessNode1());
-            container.CurrentPlanNode = null;
-            return container;
-        }
-
-        public static ContainerDO TestContainerWithCurrentActivityAndNextActivityTheSame()
-        {
-            var container = new ContainerDO();
-            container.Id = TestContainer_Id_49();
-            container.PlanId = TestPlan2().Id;
-            container.State = 1;
-            container.ProcessNodes.Add(TestProcessNode1());
-            container.CurrentActivityId = FixtureData.TestActivity7().Id;
-            container.NextActivityId = FixtureData.TestActivity7().Id;
-            return container;
-        }
-
-        public static ContainerDO TestContainerSetNextActivity()
-        {
-            var container = new ContainerDO();
-            container.Id = TestContainer_Id_49();
-            container.PlanId = TestPlan2().Id;
-            container.State = 1;
-            container.ProcessNodes.Add(TestProcessNode1());
-            container.CurrentActivityId = FixtureData.TestActivity7().Id;
-            container.NextRouteNode = null;
-            return container;
-        }
-
-        public static ContainerDO TestContainerUpdateNextActivity()
-        {
-            var container = new ContainerDO();
-            container.Id = TestContainer_Id_49();
-            container.PlanId = TestPlan2().Id;
-            container.State = 1;
-            container.ProcessNodes.Add(TestProcessNode1());
-            container.CurrentActivityId = FixtureData.TestActivity8(null).Id;
-            container.NextRouteNode = null;
-            return container;
-        }
-
-        public static ContainerDO TestContainerExecute()
-        {
-            var containerDO = new ContainerDO();
-            containerDO.Id = TestContainer_Id_49();
-            containerDO.Plan = FixtureData.TestPlan2();
-            containerDO.PlanId = containerDO.Plan.Id;
-            containerDO.State = 1;
-            containerDO.ProcessNodes.Add(FixtureData.TestProcessNode1());
-            return containerDO;
-        }
 	}
 }

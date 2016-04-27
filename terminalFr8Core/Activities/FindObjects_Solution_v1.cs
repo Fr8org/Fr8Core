@@ -282,7 +282,8 @@ namespace terminalFr8Core.Actions
         private async Task<ActivityDO> CreateConnectToSqlActivity(ActivityDO activityDO)
         {
             var connectionString = GetConnectionString();
-            var connectToSqlActionDO = await AddAndConfigureChildActivity(activityDO, "ConnectToSql");
+            var connectToSqlAT = await GetActivityTemplate("terminalFr8Core", "ConnectToSql");
+            var connectToSqlActionDO = await AddAndConfigureChildActivity(activityDO, connectToSqlAT);
 
             connectToSqlActionDO.CrateStorage = CrateManager.CrateStorageAsStr(
                     new CrateStorage()
@@ -315,8 +316,8 @@ namespace terminalFr8Core.Actions
             var crateStorage = CrateManager.GetStorage(activityDO);
             var selectedObject = GetCurrentSelectedObject(crateStorage);
             var selectedConditions = GetCurrentSelectedConditions(crateStorage);
-
-            var buildQueryActivityDO = await AddAndConfigureChildActivity(activityDO, "BuildQuery");
+            var buildQueryAT = await GetActivityTemplate("terminalFr8Core", "BuildQuery");
+            var buildQueryActivityDO = await AddAndConfigureChildActivity(activityDO, buildQueryAT);
             buildQueryActivityDO.CrateStorage = CrateManager.CrateStorageAsStr(
                     new CrateStorage()
                     {
@@ -334,7 +335,8 @@ namespace terminalFr8Core.Actions
 
         private async Task<ActivityDO> CreateExecuteSqlActivity(ActivityDO activityDO)
         {
-            return await AddAndConfigureChildActivity(activityDO, "ExecuteSql");
+            var executeSqlAT = await GetActivityTemplate("terminalFr8Core", "ExecuteSql");
+            return await AddAndConfigureChildActivity(activityDO, executeSqlAT);
         }
 
         private async Task UpdateChildActivities(ActivityDO activityDO)

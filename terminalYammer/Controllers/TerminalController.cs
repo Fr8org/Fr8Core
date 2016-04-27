@@ -27,6 +27,7 @@ namespace terminalYammer.Controllers
                 Endpoint = CloudConfigurationManager.GetSetting("terminalYammer.TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
                 Name = "terminalYammer",
+                Label = "Yammer",
                 Version = "1",
                 AuthenticationType = AuthenticationType.External
             };
@@ -46,7 +47,6 @@ namespace terminalYammer.Controllers
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 Version = "1",
-                Description = "Post To Yammer: Description",
                 MinPaneWidth = 330,
                 WebService = webService
             };

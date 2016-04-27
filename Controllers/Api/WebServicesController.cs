@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Http;
 using AutoMapper;
+using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -24,15 +26,25 @@ namespace HubWeb.Controllers
 	    }
 
 	    [HttpGet]
-		public IHttpActionResult Get()
+		public IHttpActionResult Get(Guid? id = null)
 		{
 			using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
 			{
-				var models = uow.WebServiceRepository.GetAll()
-					.Select(x => Mapper.Map<WebServiceDTO>(x))
-					.ToList();
+                if (!id.HasValue)
+                {
+                    var models = uow.WebServiceRepository.GetAll()
+                        .Select(x => Mapper.Map<WebServiceDTO>(x))
+                        .ToList();
 
-				return Ok(models);
+                    return Ok(models);
+                }
+                else
+                {
+                    var activityTemplate = uow.ActivityTemplateRepository
+                        .GetByKey(id.Value);
+
+                    return Ok(Mapper.Map<ActivityTemplateDTO>(activityTemplate));
+                }
 			}
 		}
 
@@ -71,7 +83,7 @@ namespace HubWeb.Controllers
                 var activityTemplate = _activityTemplate.GetQuery()
                     .Where(x => x.ActivityTemplateState == ActivityTemplateState.Active)
                     .Where(x => categories == null || categories.Contains(x.Category))
-                    .Where(x => x.Tags == null || !x.Tags.Contains("internal"));
+                    .Where(x => x.Tags == null || !x.Tags.Contains(Tags.Internal));
 
                 if (!fr8Account.IsCurrentUserInAdminRole())
                     activityTemplate = activityTemplate.Where(x => x.ClientVisibility != false);
@@ -87,20 +99,21 @@ namespace HubWeb.Controllers
                     {
                         WebServiceIconPath = x.WebService != null ? x.WebService.IconPath : (unknwonService != null ? unknwonService.IconPath : null),
                         WebServiceName = x.WebService != null ? x.WebService.Name : string.Empty,
-                        Activities = x.Actions.Select(p => new ActivityTemplateDTO
+                        Activities = x.Actions
+                         .GroupBy(y => y.Name)
+                         .Select(y => y.OrderByDescending(z => int.Parse(z.Version)).First())
+                         .Select(p => new ActivityTemplateDTO
                         {
                             Id = p.Id,
                             Name = p.Name,
                             Category = p.Category,
-                            ComponentActivities = p.ComponentActivities,
                             Label = p.Label,
                             MinPaneWidth = p.MinPaneWidth,
-                            TerminalId = p.Terminal.Id,
                             Version = p.Version,
                             Type = p.Type,
                             Tags = p.Tags,
-                            Description = p.Description,
-                            WebService = Mapper.Map<WebServiceDTO>(p.WebService)
+                            WebService = Mapper.Map<WebServiceDTO>(p.WebService),
+                            Terminal = Mapper.Map<TerminalDTO>(p.Terminal)
 			            }).ToList()
 			        }).ToList();
 			}

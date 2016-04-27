@@ -38,9 +38,8 @@
                 if (!$scope.form.$valid) {
                     return;
                 }
-
                 var data = {
-                    TerminalId: $scope.terminalId,
+                    Terminal: $scope.terminal,
                     Username: $scope.formData.username,
                     Password: $scope.formData.password,
                     Domain: $scope.formData.domain,

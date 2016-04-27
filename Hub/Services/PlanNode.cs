@@ -1,25 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-using System.Net.Http;
-using System.Threading.Tasks;
 using AutoMapper;
-using Data.Constants;
 using Data.Crates;
-using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.States;
-
 using Hub.Interfaces;
 using Hub.Managers;
-using Utilities.Configuration.Azure;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using Data.Interfaces.Manifests;
-using Utilities;
 
 namespace Hub.Services
 {
@@ -28,16 +19,15 @@ namespace Hub.Services
         #region Fields
 
         private readonly ICrateManager _crate;
-        private readonly IRestfulServiceClient _restfulServiceClient;
-        private readonly IPlanNode _activity;
         private readonly IActivityTemplate _activityTemplate;
+        private const string ValidationErrorsLabel = "Validation Errors";
+
         #endregion
 
         public PlanNode()
         {
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
-            _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
         }
 
         public List<PlanNodeDO> GetUpstreamActivities(IUnitOfWork uow, PlanNodeDO curActivityDO)
@@ -84,6 +74,20 @@ namespace Hub.Services
             }
         }
 
+        public IncomingCratesDTO GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability)
+        {
+            var fields = GetCrateManifestsByDirection<FieldDescriptionsCM>(activityId, direction, AvailabilityType.NotSet);
+
+            var crates = GetCrateManifestsByDirection<CrateDescriptionCM>(activityId, direction, AvailabilityType.NotSet);
+            var availableData = new IncomingCratesDTO();
+
+            availableData.AvailableFields.AddRange(fields.SelectMany(x => x.Fields).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
+            availableData.AvailableFields.AddRange(crates.SelectMany(x => x.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0).SelectMany(x => x.Fields));
+            availableData.AvailableCrates.AddRange(crates.SelectMany(x => x.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
+
+            return availableData;
+        }
+        
         public List<T> GetCrateManifestsByDirection<T>(
             Guid activityId,
             CrateDirection direction,
@@ -95,7 +99,8 @@ namespace Hub.Services
 
             if (availability == AvailabilityType.NotSet)
             {
-                cratePredicate = f => true;
+                //validation errors don't need to be present as available data, so remove Validation Errors
+                cratePredicate = f => f.Label != ValidationErrorsLabel;
             }
             else
             {
@@ -121,25 +126,7 @@ namespace Hub.Services
                 return result;
             }
         }
-
-        public FieldDescriptionsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability)
-        {
-            Func<FieldDTO, bool> fieldPredicate;
-
-            if (availability == AvailabilityType.NotSet)
-            {
-                fieldPredicate = f => true;
-            }
-            else
-            {
-                fieldPredicate = f => (f.Availability & availability) != 0;
-            }
-
-            var manifests = GetCrateManifestsByDirection<FieldDescriptionsCM>(activityId, direction, availability);
-          
-            return new FieldDescriptionsCM(manifests.SelectMany(x => x.Fields).Where(fieldPredicate));
-        }
-
+        
         private List<PlanNodeDO> GetActivitiesByDirection(IUnitOfWork uow, CrateDirection direction, PlanNodeDO curActivityDO)
         {
             switch (direction)
@@ -200,14 +187,14 @@ namespace Hub.Services
                 return null;
             }
 
-            return currentActivity.ParentPlanNode.GetOrderedChildren().FirstOrDefault(x => x.Ordering > currentActivity.Ordering);
+            return currentActivity.ParentPlanNode.GetOrderedChildren().FirstOrDefault(x => x.Runnable && x.Ordering > currentActivity.Ordering);
         }
 
         public PlanNodeDO GetFirstChild(PlanNodeDO currentActivity)
         {
             if (currentActivity.ChildNodes.Count != 0)
             {
-                return currentActivity.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault();
+                return currentActivity.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault(x => x.Runnable);
             }
 
             return null;
@@ -295,40 +282,7 @@ namespace Hub.Services
             foreach (PlanNodeDO child in parent.ChildNodes)
                 TraverseActivity(child, visitAction);
         }
-
-        public async Task Process(Guid curActivityId, ActivityState curActionState, ContainerDO containerDO)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                //why do we get container from db again???
-                var curContainerDO = uow.ContainerRepository.GetByKey(containerDO.Id);
-                var curActivityDO = uow.PlanRepository.GetById<PlanNodeDO>(curActivityId);
-
-                if (curActivityDO == null)
-                {
-                    throw new ArgumentException("Cannot find Activity with the supplied curActivityId");
-                }
-
-                if (curActivityDO is ActivityDO)
-                {
-                    // Explicitly extract authorization token to make AuthTokenDTO pass to activities.
-                    var currentActivity = (ActivityDO)curActivityDO;
-                    currentActivity.AuthorizationToken = uow.AuthorizationTokenRepository
-                        .FindTokenById(currentActivity.AuthorizationTokenId);
-
-                    IActivity _activity = ObjectFactory.GetInstance<IActivity>();
-
-                    //FR-2642 Logic to skip execution of activities with "SkipAtRunTime" Tag
-                    var template = _activityTemplate.GetByKey(currentActivity.ActivityTemplateId);
-                    if (!(template.Tags != null && template.Tags.Contains("SkipAtRunTime", StringComparison.InvariantCultureIgnoreCase)))
-                        await _activity.PrepareToExecute(currentActivity, curActionState, curContainerDO, uow);
-                    //TODO inspect this
-                    //why do we get container from db again???
-                    containerDO.CrateStorage = curContainerDO.CrateStorage;
-                }
-            }
-        }
-
+       
         public IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, IFr8AccountDO curAccount)
         {
             IEnumerable<ActivityTemplateDTO> curActivityTemplates;

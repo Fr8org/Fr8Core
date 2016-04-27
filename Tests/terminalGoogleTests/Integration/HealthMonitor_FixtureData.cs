@@ -87,7 +87,7 @@ namespace terminalGoogleTests.Unit
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Monitor_Form_Responses_TEST",
                 Version = "1"
             };
@@ -239,7 +239,7 @@ namespace terminalGoogleTests.Unit
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Get_Google_Sheet_Data_TEST",
                 Version = "1"
             };
@@ -294,7 +294,7 @@ namespace terminalGoogleTests.Unit
         {
             return new StandardFileDescriptionCM
             {
-                DockyardStorageUrl = "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1o0cle_rnfVtmeLqDDeF40dRWKL6FSCuQz5E84pcCpTs",
+                DirectUrl = "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1o0cle_rnfVtmeLqDDeF40dRWKL6FSCuQz5E84pcCpTs",
                 Filename = "Column_Only",
                 Filetype = "Google_Spreadsheet"
             };

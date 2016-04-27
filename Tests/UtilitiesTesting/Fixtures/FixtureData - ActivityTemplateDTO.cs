@@ -15,7 +15,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Write_To_Sql_Server",
                 Version = "1"
             };
@@ -25,7 +25,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Create_Lead",
                 Version = "1"
             };
@@ -35,7 +35,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "SendEmailViaSendGrid",
                 Version = "1"
             };
@@ -45,7 +45,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityTemplateDO
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Send_Via_Twilio",
                 Version = "1"
             };
@@ -55,7 +55,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Select Fr8 Object",
                 Version = "1"
             };
@@ -65,7 +65,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Query_DocuSign",
                 Version = "1",
             };
@@ -75,7 +75,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Save_To_Google_Sheet",
                 Version = "1"
             };
@@ -85,7 +85,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Get_Google_Sheet_Data",
                 Version = "1"
             };
@@ -95,8 +95,18 @@ namespace UtilitiesTesting.Fixtures
         {
             return new ActivityTemplateDTO()
             {
-                Id = 1,
+                Id = Guid.NewGuid(),
                 Name = "Build_Message",
+                Version = "1"
+            };
+        }
+
+        public static ActivityTemplateDTO GetFileListActivityTemplate()
+        {
+            return new ActivityTemplateDTO
+            {
+                Id = Guid.NewGuid(),
+                Name = "Get_File_List",
                 Version = "1"
             };
         }

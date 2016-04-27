@@ -47,15 +47,15 @@ namespace terminalSalesforceTests.Actions
                 .Returns(() => Task.FromResult(testPayloadDTO));
 
 
-            hubCommunicatorMock.Setup(h => h.GetDesignTimeFieldsByDirection(It.IsAny<Guid>(), It.IsAny<CrateDirection>(), 
+            hubCommunicatorMock.Setup(h => h.GetDesignTimeFieldsByDirection(It.IsAny<ActivityDO>(), It.IsAny<CrateDirection>(), 
                 It.IsAny<AvailabilityType>(), It.IsAny<string>())).Returns(() => Task.FromResult(new FieldDescriptionsCM()));
 
             ObjectFactory.Container.Inject(typeof(IHubCommunicator), hubCommunicatorMock.Object);
 
             Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
-            salesforceIntegrationMock.Setup(si => si.GetChatters(It.IsAny<AuthorizationTokenDO>())).Returns(
+            salesforceIntegrationMock.Setup(si => si.GetUsersAndGroups(It.IsAny<AuthorizationTokenDO>())).Returns(
                 () => Task.FromResult<IList<FieldDTO>>(new List<FieldDTO> { new FieldDTO("One", "1")}));
-            salesforceIntegrationMock.Setup(si => si.PostFeedTextToChatterObject("SomeValue", "SomeValue", 
+            salesforceIntegrationMock.Setup(si => si.PostToChatter(It.IsAny<string>(), It.IsAny<string>(), 
                 It.IsAny<AuthorizationTokenDO>())).Returns(() => Task.FromResult("SomeValue"));
 
             postToChatter_v1 = new Post_To_Chatter_v1();
@@ -71,18 +71,10 @@ namespace terminalSalesforceTests.Actions
             var result = await postToChatter_v1.Configure(activityDO, await FixtureData.Salesforce_AuthToken());
 
             //Assert
-            var stroage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(result);
-            Assert.AreEqual(3, stroage.Count, "Number of configuration crates not populated correctly");
-
-            var configControlCM = stroage.CratesOfType<StandardConfigurationControlsCM>().Single();
-            Assert.IsNotNull(configControlCM, "Configuration controls is not present");
-
-            var availableChatters = stroage.CratesOfType<FieldDescriptionsCM>().Single(x => x.Label.Equals("AvailableChatters"));
-            Assert.AreEqual(1, availableChatters.Content.Fields.Count, "Available chatter objects are not correct");
-
-            Assert.AreEqual(2, configControlCM.Content.Controls.Count, "Number of configuration controls are not correct");
-            Assert.IsTrue(configControlCM.Content.Controls.Any(control => control.Name.Equals("WhatKindOfChatterObject")), "WhatKindOfChatterObject DDLB is not present");
-            Assert.IsTrue(configControlCM.Content.Controls.Any(control => control.Name.Equals("FeedTextItem")), "FeedTextItem is not present");
+            var storage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(result);
+            Assert.AreEqual(2, storage.Count, "Number of configuration crates not populated correctly");
+            Assert.IsNotNull(storage.FirstCrateOrDefault<StandardConfigurationControlsCM>(), "Configuration controls crate is not found in activity storage");
+            Assert.IsNotNull(storage.FirstCrateOrDefault<CrateDescriptionCM>(), "Crate with runtime crates desriptions is not found in activity storage");
         }
 
         [Test, Category("terminalSalesforceTests.Post_To_Chatter_v1.Run")]
@@ -100,28 +92,19 @@ namespace terminalSalesforceTests.Actions
             var resultPayload = await postToChatter_v1.Run(activityDO, new Guid(), authToken);
 
             //Assert
-            var stroage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(resultPayload);
-            Assert.AreEqual("Success", stroage.CratesOfType<OperationalStateCM>().Single().Content.CurrentActivityResponse.Type, 
-                "The Run method did not get success");
+            var storage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(resultPayload);
+            Assert.IsNotNull(storage.FirstCrateOrDefault<StandardPayloadDataCM>(), "Paylod doesn't contain crate with posted feed Id");
         }
 
         private ActivityDO SetValues(ActivityDO curActivityDO)
         {
-            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(curActivityDO))
+            curActivityDO.UpdateControls<Post_To_Chatter_v1.ActivityUi>(x =>
             {
-                var configControls = crateStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
-                configControls.Content.Controls.Where(control => control.Name != null && control.Name.Equals("WhatKindOfChatterObject"))
-                    .Select(control => control as DropDownList)
-                    .Single()
-                    .Value = "SomeValue";
-
-                var textSource = configControls.Content.Controls.Where(control => control.Name != null && control.Name.Equals("FeedTextItem"))
-                    .Select(control => control as TextSource)
-                    .Single();
-
-                textSource.ValueSource = "specific";
-                textSource.TextValue = "SomeValue";
-            }
+                x.UseUserOrGroupOption.Selected = true;
+                x.UserOrGroupSelector.Value = "1";
+                x.FeedTextSource.ValueSource = "specific";
+                x.FeedTextSource.TextValue = "SomeValue";
+            });
             return curActivityDO;
         }
     }
