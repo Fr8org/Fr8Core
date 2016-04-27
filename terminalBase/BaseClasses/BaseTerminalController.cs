@@ -220,7 +220,7 @@ namespace TerminalBase.BaseClasses
                     case "run":
                     case "executechildactivities":
                         {
-                            Debug.WriteLine($"executing run action {curTerminal} - {activityTemplateName} - {IntegrationTestMode} - {curMethodInfo} - {curActivityDO} - {curDataDTO} - {curAuthTokenDO} - object {curObject}"); 
+                            Debug.WriteLine($"executing run action {curTerminal} - {activityTemplateName} - {IntegrationTestMode} method info {curMethodInfo} - {curActivityDO} - {curDataDTO} - {curAuthTokenDO} - object {curObject}"); 
                             OnStartActivity(curTerminal, activityTemplateName, IntegrationTestMode);
                             var resultPayloadDTO = await (Task<PayloadDTO>)curMethodInfo
                                 .Invoke(curObject, new Object[] { curActivityDO, curDataDTO.ContainerId, curAuthTokenDO });

@@ -65,7 +65,7 @@ namespace terminalDocuSign.Actions
         public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             Debug.WriteLine($"Running PrepareDocuSignEventForStorage: {activityDO.ActivityTemplateId} - view {activityDO.currentView} - label {activityDO.Label}");
-            Debug.WriteLine($"for container {containerId} and authToken {authTokenDO.ExternalAccountId} - {authTokenDO} - {authTokenDO}");
+            Debug.WriteLine($"for container {containerId} and authToken {authTokenDO}");
             var curProcessPayload = await GetPayload(activityDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
