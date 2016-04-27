@@ -55,7 +55,7 @@ namespace Data.Infrastructure.StructureMap
                 For<ISecurityObjectsCache>().Use<SecurityObjectsCache>().Singleton();
                 For<IPlanCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(planCacheExpiration)).Singleton();
                 For<ISecurityCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(planCacheExpiration)).Singleton();
-                For<IEncryptionProvider>().Use<DefaultEncryptionProvider>().Singleton();
+                For<IEncryptionService>().Use<EncryptionService>().Singleton();
                 // For<IMT_Field>().Use<MT_FieldService>();
             }
         }
@@ -97,6 +97,10 @@ namespace Data.Infrastructure.StructureMap
                 For<ISqlConnectionProvider>().Use<SqlConnectionProvider>();
                 For<ISecurityObjectsStorageProvider>().Use<SqlSecurityObjectsStorageProvider>();
                 For<ISecurityObjectsStorageProvider>().DecorateAllWith<SecurityObjectsStorage>();
+
+                //*************** !!!!!!!!CHANGE TO REAL PROVIDER!!!!!!!!! ********************//
+                For<IEncryptionProvider>().Use<DefaultEncryptionProvider>().Singleton(); 
+
                 DataAutoMapperBootStrapper.ConfigureAutoMapper();
             }
         }
@@ -117,6 +121,7 @@ namespace Data.Infrastructure.StructureMap
                 For<IMtObjectsStorage>().Use<InMemoryMtObjectsStorage>().Singleton();
                 For<IMtTypeStorageProvider>().Use<InMemoryMtTypeStorageProvider>();
                 For<ISecurityObjectsStorageProvider>().Use<InMemorySecurityObjectsStorageProvider>();
+                For<IEncryptionProvider>().Use<DefaultEncryptionProvider>().Singleton();
                 DataAutoMapperBootStrapper.ConfigureAutoMapper();
             }
         }

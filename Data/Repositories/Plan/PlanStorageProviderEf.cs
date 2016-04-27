@@ -13,17 +13,17 @@ namespace Data.Repositories.Plan
     public class PlanStorageProviderEf : IPlanStorageProvider
     {
         protected readonly IUnitOfWork Uow;
-        private readonly IEncryptionProvider _encryptionProvider;
+        private readonly IEncryptionService _encryptionService;
         // Note repository Names are not renamed .....
         protected readonly PlanNodeRepository PlanNodes;
         protected readonly ActivityRepository ActivityRepository;
         protected readonly SubPlanRepository SubPlans;
         protected readonly PlansRepository Plans;
 
-        public PlanStorageProviderEf(IUnitOfWork uow, IEncryptionProvider encryptionProvider)
+        public PlanStorageProviderEf(IUnitOfWork uow, IEncryptionService encryptionService)
         {
             Uow = uow;
-            _encryptionProvider = encryptionProvider;
+            _encryptionService = encryptionService;
             PlanNodes = new PlanNodeRepository(uow);
             ActivityRepository = new ActivityRepository(uow);
             SubPlans = new SubPlanRepository(uow);
@@ -38,7 +38,7 @@ namespace Data.Repositories.Plan
             // if we have encrypted data decrypt it, otherwise leave CrateStorage as is
             if (source.EncryptedCrateStorage != null && source.EncryptedCrateStorage.Length != 0)
             {
-                clone.CrateStorage = _encryptionProvider.DecryptString(source.Fr8AccountId, source.EncryptedCrateStorage);
+                clone.CrateStorage = _encryptionService.DecryptString(source.Fr8AccountId, source.EncryptedCrateStorage);
                 // get rid of encrypted data representation to save space in memory.
                 clone.EncryptedCrateStorage = null;
             }
@@ -253,7 +253,7 @@ namespace Data.Repositories.Plan
 
         protected void EncryptActivityCrateStorage(ActivityDO activity)
         {
-            activity.EncryptedCrateStorage = _encryptionProvider.EncryptData(activity.Fr8AccountId, activity.CrateStorage);
+            activity.EncryptedCrateStorage = _encryptionService.EncryptData(activity.Fr8AccountId, activity.CrateStorage);
 
             // should be uncommented for production
             // we should never allow unecnrypted data hit the DB

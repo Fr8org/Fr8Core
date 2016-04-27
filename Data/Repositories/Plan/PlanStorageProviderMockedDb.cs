@@ -6,8 +6,8 @@ namespace Data.Repositories.Plan
 {
     public class PlanStorageProviderMockedDb : PlanStorageProviderEf
     {
-        public PlanStorageProviderMockedDb(IUnitOfWork uow, IEncryptionProvider encryptionProvider) 
-            : base(uow, encryptionProvider)
+        public PlanStorageProviderMockedDb(IUnitOfWork uow, IEncryptionService encryptionService) 
+            : base(uow, encryptionService)
         {
         }
 

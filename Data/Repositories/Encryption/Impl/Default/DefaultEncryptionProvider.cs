@@ -1,39 +1,20 @@
-﻿using System.Text;
+﻿using System.IO;
 
 namespace Data.Repositories.Encryption.Impl
 {
     public class DefaultEncryptionProvider : IEncryptionProvider
     {
-        public byte[] EncryptData(string peerId, string data)
-        {
-            if (data == null)
-            {
-                return null;
-            }
+        public int Id { get; } = 1;
+        public int Version { get; } = 1;
 
-            return Encoding.Default.GetBytes(data);
-        }
-        
-        public string DecryptString(string peerId, byte[] encryptedData)
+        public void EncryptData(Stream encryptedData, Stream sourceData, string peerId)
         {
-            if (encryptedData == null)
-            {
-                return null;
-            }
-
-            var decryptedString = Encoding.Default.GetString(encryptedData);
-           
-            return decryptedString;
+            sourceData.CopyTo(encryptedData);
         }
 
-        public byte[] EncryptData(string peerId, byte[] data)
+        public void DecryptData(Stream encryptedData, Stream decryptedData, string peerId)
         {
-            return data;
-        }
-
-        public byte[] DecryptByteArray(string peerId, byte[] encryptedData)
-        {
-            return encryptedData;
+            encryptedData.CopyTo(decryptedData);
         }
     }
 }

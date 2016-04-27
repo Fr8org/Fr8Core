@@ -16,10 +16,10 @@ using UtilitiesTesting.Fixtures;
 namespace HubTests.Repositories.Encryption
 {
     [TestFixture]
-    [Category("EncryptionProvider")]
+    [Category("EncryptionService")]
     public class EncryptionTests : BaseTest
     {
-        private class EncryptionProviderMock : IEncryptionProvider
+        private class EncryptionServiceMock : IEncryptionService
         {
             public readonly HashSet<string> DataToEncrypt = new HashSet<string>();
             public readonly HashSet<string> DecryptedData = new HashSet<string>(); 
@@ -215,12 +215,12 @@ namespace HubTests.Repositories.Encryption
         public void IsEncryptionProviderCalledOnActivityInsert()
         {
             var container = ObjectFactory.Container.CreateChildContainer();
-            var mockedEncryptionProvider = new EncryptionProviderMock();
+            var mockedEncryptionProvider = new EncryptionServiceMock();
 
             container.Configure(x =>
             {
                 x.For<IPlanCache>().Use<PlanCache>().Singleton();
-                x.For<IEncryptionProvider>().Use(mockedEncryptionProvider);
+                x.For<IEncryptionService>().Use(mockedEncryptionProvider);
             });
             
             StoreTestPlan(container);
@@ -245,7 +245,7 @@ namespace HubTests.Repositories.Encryption
 
                 foreach (var activity in activities)
                 {
-                    var exprectedEncryptedData = EncryptionProviderMock.Encrypt(activity.Fr8AccountId, "storage " + activity.Id);
+                    var exprectedEncryptedData = EncryptionServiceMock.Encrypt(activity.Fr8AccountId, "storage " + activity.Id);
                     
                     Assert.AreEqual(exprectedEncryptedData.Length, activity.EncryptedCrateStorage.Length, $"Activity {activity.Id} has invalid encrypted storage data. Invalid size.");
 
@@ -261,23 +261,23 @@ namespace HubTests.Repositories.Encryption
         public void IsEncryptionProviderCalledOnActivityLoad()
         {
             var container = ObjectFactory.Container.CreateChildContainer();
-            var mockedEncryptionProvider = new EncryptionProviderMock();
+            var mockedEncryptionProvider = new EncryptionServiceMock();
 
             container.Configure(x =>
             {
                 x.For<IPlanCache>().Use<PlanCache>().Singleton();
-                x.For<IEncryptionProvider>().Use(mockedEncryptionProvider);
+                x.For<IEncryptionService>().Use(mockedEncryptionProvider);
             });
 
             StoreTestPlan(container);
 
             container = ObjectFactory.Container.CreateChildContainer();
-            mockedEncryptionProvider = new EncryptionProviderMock();
+            mockedEncryptionProvider = new EncryptionServiceMock();
 
             container.Configure(x =>
             {
                 x.For<IPlanCache>().Use<PlanCache>().Singleton();
-                x.For<IEncryptionProvider>().Use(mockedEncryptionProvider);
+                x.For<IEncryptionService>().Use(mockedEncryptionProvider);
             });
 
 

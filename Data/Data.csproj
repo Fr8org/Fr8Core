@@ -737,6 +737,8 @@
     <Compile Include="Repositories\Cache\ICacheExpirationStrategy.cs" />
     <Compile Include="Repositories\Cache\IExpirationToken.cs" />
     <Compile Include="Repositories\Encryption\IEncryptionProvider.cs" />
+    <Compile Include="Repositories\Encryption\IEncryptionService.cs" />
+    <Compile Include="Repositories\Encryption\Impl\EncryptionService.cs" />
     <Compile Include="Repositories\Encryption\Impl\Default\DefaultEncryptionProvider.cs" />
     <Compile Include="Repositories\FileTagsRepository.cs" />
     <Compile Include="Interfaces\IMultiTenantObjectRepository.cs" />

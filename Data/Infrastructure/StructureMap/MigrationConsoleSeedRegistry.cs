@@ -10,7 +10,6 @@ using Data.Repositories.MultiTenant;
 using Data.Repositories.MultiTenant.InMemory;
 using Data.Repositories.Plan;
 using Data.Repositories.Security.StorageImpl.Cache;
-using Data.Repositories.Security.StorageImpl.SqlBased;
 using Data.Repositories.SqlBased;
 
 namespace Data.Infrastructure
@@ -35,8 +34,12 @@ namespace Data.Infrastructure
             var planCacheExpiration = TimeSpan.FromMinutes(10);
             For<IPlanCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(planCacheExpiration)).Singleton();
             For<ISecurityCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(planCacheExpiration)).Singleton();
-            For<IEncryptionProvider>().Use<DefaultEncryptionProvider>().Singleton();
+            For<IEncryptionService>().Use<EncryptionService>().Singleton();
             For<IPlanStorageProvider>().Use<PlanStorageProviderEf>();
+
+            //*************** !!!!!!!!CHANGE TO REAL PROVIDER!!!!!!!!! ********************//
+            For<IEncryptionProvider>().Use<DefaultEncryptionProvider>().Singleton();
+
             For<PlanStorage>().Use<PlanStorage>();
         }
     }

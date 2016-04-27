@@ -1,10 +1,13 @@
-﻿namespace Data.Repositories.Encryption
+﻿using System.IO;
+
+namespace Data.Repositories.Encryption
 {
     public interface IEncryptionProvider
     {
-        byte[] EncryptData(string peerId, string data);
-        byte[] EncryptData(string peerId, byte[] data);
-        string DecryptString(string peerId, byte[] encryptedData);
-        byte[] DecryptByteArray(string peerId, byte[] encryptedData);
+        int Id { get; }
+        int Version { get; }
+        
+        void EncryptData(Stream encryptedData, Stream sourceData, string peerId);
+        void DecryptData(Stream encryptedData, Stream decryptedData, string peerId);
     }
 }
