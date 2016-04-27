@@ -246,7 +246,8 @@ namespace Data.Repositories.Plan
             // update EncrypredCrateStorage
             changedObject.ChangedProperties.Add(typeof(ActivityDO).GetProperty(nameof(ActivityDO.EncryptedCrateStorage)));
             
-            changedObject.ChangedProperties.RemoveAt(crateStoragePropertyIndex); // For TESTING ONLY!!!
+            // we should never update CrateStorage property
+            changedObject.ChangedProperties.RemoveAt(crateStoragePropertyIndex); 
 
             EncryptActivityCrateStorage(activity);
         }
@@ -254,10 +255,7 @@ namespace Data.Repositories.Plan
         protected void EncryptActivityCrateStorage(ActivityDO activity)
         {
             activity.EncryptedCrateStorage = _encryptionService.EncryptData(activity.Fr8AccountId, activity.CrateStorage);
-
-            // should be uncommented for production
-            // we should never allow unecnrypted data hit the DB
-            //activity.CrateStorage = null; 
+            activity.CrateStorage = null; 
         }
 
         //we do this not to accidentatlly add duplicates
