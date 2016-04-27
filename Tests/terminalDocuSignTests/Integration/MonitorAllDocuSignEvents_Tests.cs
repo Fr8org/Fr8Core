@@ -32,7 +32,7 @@ namespace terminalDocuSignTests.Integration
     {
         // private const string UserAccountName = "y.gnusin@gmail.com";
         private const string UserAccountName = "integration_test_runner@fr8.company";
-        private const int MaxAwaitPeriod = 300000;
+        private const int MaxAwaitPeriod = 600000;
         private const int SingleAwaitPeriod = 10000;
 
         private const string templateId = "b0c8eb61-ff16-410d-be0b-6a2feec57f4c"; // "392f63c3-cabb-4b21-b331-52dabf1c2993"; // "SendEnvelopeIntegrationTest" template
@@ -114,9 +114,17 @@ namespace terminalDocuSignTests.Integration
                 {
                     await Task.Delay(SingleAwaitPeriod);
 
-                    mtDataCountAfter = unitOfWork.MultiTenantObjectRepository
-                        .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id.ToString())
-                        .Count();
+                    var envelopes = unitOfWork.MultiTenantObjectRepository
+                        .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id.ToString()).ToList<DocuSignEnvelopeCM_v2>();
+
+                    mtDataCountAfter = envelopes.Count();
+
+                    Debug.WriteLine($"There are {mtDataCountAfter} items");
+
+                    foreach(var envelope in envelopes)
+                    {
+                        Debug.WriteLine($"Envelope: {envelope.EnvelopeId} - {envelope.CreateDate}");
+                    }
 
                     if (mtDataCountBefore < mtDataCountAfter)
                     {

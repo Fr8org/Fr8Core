@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Http;
@@ -158,7 +159,11 @@ namespace TerminalBase.BaseClasses
         public async Task<object> HandleFr8Request(string curTerminal, string curActionPath, Fr8DataDTO curDataDTO)
         {
             if (curDataDTO?.ActivityDTO == null)
+            {
+                Debug.WriteLine($"curDataDTO activity DTO is null");
                 throw new ArgumentNullException(nameof(curDataDTO.ActivityDTO));
+            }
+                
 
             if (curDataDTO.ActivityDTO.ActivityTemplate == null)
                 throw new ArgumentException("ActivityTemplate is null", nameof(curDataDTO.ActivityDTO));
@@ -214,7 +219,8 @@ namespace TerminalBase.BaseClasses
                         }
                     case "run":
                     case "executechildactivities":
-                        {                            
+                        {
+                            Debug.WriteLine($"executing run action {curTerminal} - {activityTemplateName} - {IntegrationTestMode} - {curMethodInfo} - {curActivityDO} - {curDataDTO} - {curAuthTokenDO}"); 
                             OnStartActivity(curTerminal, activityTemplateName, IntegrationTestMode);
                             var resultPayloadDTO = await (Task<PayloadDTO>)curMethodInfo
                                 .Invoke(curObject, new Object[] { curActivityDO, curDataDTO.ContainerId, curAuthTokenDO });

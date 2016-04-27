@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
@@ -17,6 +18,7 @@ namespace terminalTest.Controllers
         [Authorize]
         public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
+            Debug.WriteLine($"Test Activity Controller Handling {actionType} for {curDataDTO}");
             return HandleFr8Request(curTerminal, actionType, curDataDTO);
 
         }
