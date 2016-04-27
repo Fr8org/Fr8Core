@@ -18,6 +18,10 @@ namespace terminalSlack.Actions
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
+            public CheckBox MonitorDirectMessagesOption { get; set; }
+
+            public CheckBox MonitorChannelsOption { get; set; }
+
             public RadioButtonGroup ChannelSelectionGroup { get; set; }
 
             public RadioButtonOption AllChannelsOption { get; set; }
@@ -26,10 +30,19 @@ namespace terminalSlack.Actions
 
             public DropDownList ChannelList { get; set; }
 
-            public CheckBox IncludeDirectMessagesOption { get; set; }
-
             public ActivityUi()
             {
+                MonitorDirectMessagesOption = new CheckBox
+                {
+                    Name = nameof(MonitorDirectMessagesOption),
+                    Label = "Monitor direct messages to me and my group conversations"
+                };
+                MonitorChannelsOption = new CheckBox
+                {
+                    Name = nameof(MonitorChannelsOption),
+                    Label = "Monitor channels",
+                    Selected = true
+                };
                 AllChannelsOption = new RadioButtonOption
                 {
                     Name = nameof(AllChannelsOption),
@@ -53,13 +66,9 @@ namespace terminalSlack.Actions
                     Radios = new List<RadioButtonOption> { AllChannelsOption, SpecificChannelOption },
                     Label = "Monitor which channels?"
                 };
-                IncludeDirectMessagesOption = new CheckBox
-                {
-                    Name = nameof(IncludeDirectMessagesOption),
-                    Label = "Including direct messages to me and my group conversations"
-                };
+                Controls.Add(MonitorDirectMessagesOption);
+                Controls.Add(MonitorChannelsOption);
                 Controls.Add(ChannelSelectionGroup);
-                Controls.Add(IncludeDirectMessagesOption);
             }
         }
 
@@ -72,7 +81,7 @@ namespace terminalSlack.Actions
         public Monitor_Channel_v2() : base(true)
         {
             _slackIntegration = new SlackIntegration();
-            ActivityName = "Monitor Channel";
+            ActivityName = "Monitor Slack Messages";
         }
 
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
@@ -124,13 +133,12 @@ namespace terminalSlack.Actions
                 else
                 {
                     //Slack channel Id first letter: C - for channel, D - for direct messages to current user, G - for message in group conversation with current user
-                    var isChannel = incomingChannelId.StartsWith("C", StringComparison.OrdinalIgnoreCase);
+                    var isSentToChannel = incomingChannelId.StartsWith("C", StringComparison.OrdinalIgnoreCase);
                     var isDirect = incomingChannelId.StartsWith("D", StringComparison.OrdinalIgnoreCase);
-                    var isGroup = incomingChannelId.StartsWith("G", StringComparison.OrdinalIgnoreCase);
-
-                    var isMatch = ((ConfigurationControls.AllChannelsOption.Selected || string.IsNullOrEmpty(ConfigurationControls.ChannelList.selectedKey)) && isChannel)
-                                  || (ConfigurationControls.SpecificChannelOption.Selected && isChannel && ConfigurationControls.ChannelList.Value == incomingChannelId)
-                                  || (ConfigurationControls.IncludeDirectMessagesOption.Selected && (isDirect || isGroup) && !isSentByCurrentUser);
+                    var isSentToGroup = incomingChannelId.StartsWith("G", StringComparison.OrdinalIgnoreCase);
+                    //Message is sent to tracked channel or is sent directly or to group but not by current user
+                    var isMatch = (isSentToChannel && IsMonitoringChannels && (IsMonitoringAllChannels || incomingChannelId == SelectedChannelId))
+                               || ((isDirect || isSentToGroup) && !isSentByCurrentUser && IsMonitoringDirectMessages);
                     if (isMatch)
                     {
                         CurrentPayloadStorage.Add(Crate.FromContent(ResultPayloadCrateLabel, new StandardPayloadDataCM(incomingMessageContents.Fields), AvailabilityType.RunTime));
@@ -143,6 +151,10 @@ namespace terminalSlack.Actions
             }
             else
             {
+                if (!IsMonitoringDirectMessages && (!IsMonitoringChannels || (!IsMonitoringAllChannels && !IsMonitoringSpecificChannels)))
+                {
+                    throw new ActivityExecutionException("At least one of the monitoring options must be selected");
+                }
                 await ObjectFactory.GetInstance<ISlackEventManager>().Subscribe(AuthorizationToken, CurrentActivity.Id);
                 RequestHubExecutionTermination("Plan successfully activated. It will wait and respond to specified Slack postings");
             }
@@ -163,5 +175,20 @@ namespace terminalSlack.Actions
             }
             return new FieldDescriptionsCM(eventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()));
         }
+
+        #region Control properties wrappers
+
+        private bool IsMonitoringChannels => ConfigurationControls.MonitorChannelsOption.Selected;
+
+        private bool IsMonitoringDirectMessages => ConfigurationControls.MonitorDirectMessagesOption.Selected;
+
+        private bool IsMonitoringAllChannels => ConfigurationControls.AllChannelsOption.Selected 
+                                            || (ConfigurationControls.SpecificChannelOption.Selected && string.IsNullOrEmpty(ConfigurationControls.ChannelList.Value));
+
+        private bool IsMonitoringSpecificChannels => ConfigurationControls.SpecificChannelOption.Selected;
+
+        private string SelectedChannelId => ConfigurationControls.ChannelList.Value;
+
+        #endregion
     }
 }
