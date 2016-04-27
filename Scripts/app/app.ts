@@ -23,7 +23,8 @@ var app = angular.module("app", [
     "ngMessages",
     "ivh.treeview",
     "ngMaterial",
-    "angularResizable"
+    "angularResizable",
+    "mdColorPicker"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */

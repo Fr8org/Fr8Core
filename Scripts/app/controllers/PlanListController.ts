@@ -24,6 +24,7 @@ module dockyard.controllers {
         reArrangePlans: (plan: interfaces.IPlanVM) => void;
         runningStatus: any;
         updatePlansLastUpdated: (id: any, date: any) => void;
+        isOrganizationExists: boolean;
     }
 
     /*
@@ -87,8 +88,15 @@ module dockyard.controllers {
                 UserService.getCurrentUser().$promise.then(data => {
                                      PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, dockyard.services.pusherNotifierExecutionEvent, (data: any) => {
                                              this.updatePlanLastUpdated(data.PlanId, data.PlanLastUpdated);
-                                         });
-                                     });
+                    });
+                    if (angular.isNumber(data.organizationId) && data.organizationId !== 0) {
+                         $scope.isOrganizationExists = true;
+                    }
+                    else {
+                        $scope.isOrganizationExists = false;
+                    }
+                                        
+                });
         }
 
         private reArrangePlans(plan) {
