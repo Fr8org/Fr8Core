@@ -6,7 +6,7 @@ using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using Hub.Managers;
 using NUnit.Framework;
-using terminalGoogleTests.Unit;
+
 
 namespace terminalGoogleTests.Integration
 {
@@ -43,7 +43,6 @@ namespace terminalGoogleTests.Integration
 
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             AssertCrateTypes_OnConfiguration(crateStorage);
@@ -86,7 +85,6 @@ namespace terminalGoogleTests.Integration
             //Assert
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             Assert.AreEqual(2, crateStorage.Count);
@@ -122,7 +120,6 @@ namespace terminalGoogleTests.Integration
             //Assert
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             Assert.AreEqual(2, crateStorage.Count);
@@ -157,7 +154,6 @@ namespace terminalGoogleTests.Integration
             //Assert
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             Assert.AreEqual(2, crateStorage.Count);

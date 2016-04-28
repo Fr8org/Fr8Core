@@ -111,24 +111,11 @@ namespace terminalGoogle.Actions
             return JsonConvert.DeserializeObject<GoogleAuthDTO>((authTokenDO ?? AuthorizationToken).Token);
         }
 
-        public override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
-        {
-            if (base.NeedsAuthentication(authTokenDO))
-            {
-                return true;
-            }
-            var token = GetGoogleAuthToken(authTokenDO);
-
-            // Post token to google api to check its validity
-            // Variable needs for more readability.
-            var result = Task.Run(async () => await _googleIntegration.IsTokenInfoValid(token)).Result;
-            return !result;
-        }
-
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
             var spreadsheets = await _googleApi.GetSpreadsheets(GetGoogleAuthToken());
             ConfigurationControls.SpreadsheetList.ListItems = spreadsheets.Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
+
             runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
@@ -149,7 +136,6 @@ namespace terminalGoogle.Actions
                     ConfigurationControls.SpreadsheetList.Value = null;
                 }
             }
-
 
             CurrentActivityStorage.RemoveByLabel(ColumnHeadersCrateLabel);
             //If spreadsheet selection is cleared we hide worksheet DDLB
@@ -198,18 +184,43 @@ namespace terminalGoogle.Actions
             var selectedSpreadsheet = ConfigurationControls.SpreadsheetList.Value;
             if (string.IsNullOrEmpty(selectedSpreadsheet))
             {
-                throw new ActivityExecutionException("Spreadsheet is not selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                throw new ActivityExecutionException("Spreadsheet is not selected",
+                    ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
-            var selectedWorksheet = ConfigurationControls.WorksheetList == null ? string.Empty : ConfigurationControls.WorksheetList.Value;
+            var selectedWorksheet = ConfigurationControls.WorksheetList == null
+                ? string.Empty
+                : ConfigurationControls.WorksheetList.Value;
             var data = (await _googleApi.GetData(selectedSpreadsheet, selectedWorksheet, GetGoogleAuthToken())).ToList();
             var hasHeaderRow = false;
             //Adding header row if possible
             if (data.Count > 0)
             {
-                data.Insert(0, new TableRowDTO { Row = data.First().Row.Select(x => new TableCellDTO { Cell = new FieldDTO(x.Cell.Key, x.Cell.Key) }).ToList() });
+                data.Insert(0,
+                    new TableRowDTO
+                    {
+                        Row =
+                            data.First()
+                                .Row.Select(x => new TableCellDTO { Cell = new FieldDTO(x.Cell.Key, x.Cell.Key) })
+                                .ToList()
+                    });
                 hasHeaderRow = true;
             }
-            CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM { Table = data, FirstRowHeaders = hasHeaderRow }));
+            CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel,
+                new StandardTableDataCM { Table = data, FirstRowHeaders = hasHeaderRow }));
+        }
+
+        public override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
+        {
+            if (base.NeedsAuthentication(authTokenDO))
+            {
+                return true;
+            }
+            var token = GetGoogleAuthToken(authTokenDO);
+
+            // Post token to google api to check its validity
+            // Variable needs for more readability.
+            var result = Task.Run(async () => await _googleIntegration.IsTokenInfoValid(token)).Result;
+            return !result;
         }
     }
 }

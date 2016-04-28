@@ -6,7 +6,6 @@ namespace Data.Crates
     public interface ICrateStorage : IEnumerable<Crate>
     {
         int Count { get; }
-
         void Add(Crate crate);
         void Clear();
         int Remove(Predicate<Crate> predicate);

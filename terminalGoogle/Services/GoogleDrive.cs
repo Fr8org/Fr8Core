@@ -75,7 +75,7 @@ namespace terminalGoogle.Services
         public async Task<Dictionary<string, string>> GetGoogleForms(GoogleAuthDTO authDTO)
         {
             var driveService = await CreateDriveService(authDTO);
-
+            
             // Define parameters of request.
             FilesResource.ListRequest listRequest = driveService.Files.List();
             listRequest.Q = "mimeType='application/vnd.google-apps.form'  and Trashed=false";
@@ -84,6 +84,17 @@ namespace terminalGoogle.Services
             FileList fileList = listRequest.Execute();
             IList<Google.Apis.Drive.v2.Data.File> files = fileList.Items;
             return await Task.FromResult(files.ToDictionary(a => a.Id, a => a.Title));
+        }
+
+        public async Task<string> CreateGoogleForm(GoogleAuthDTO authDTO, string title)
+        {
+            var driveService = await CreateDriveService(authDTO);
+            var file = new Google.Apis.Drive.v2.Data.File();
+            file.Title = title;
+            file.MimeType = "application/vnd.google-apps.form";
+            var request = driveService.Files.Insert(file);
+            var result = request.Execute();
+            return result.Id;
         }
 
         public async Task<ScriptService> CreateScriptsService(GoogleAuthDTO authDTO)
@@ -270,6 +281,11 @@ namespace terminalGoogle.Services
 
             return fileName;
         }
-
+        public async Task DeleteForm(string formId, GoogleAuthDTO authDTO)
+        {
+            GoogleDrive googleDrive = new GoogleDrive();
+            var driveService = await googleDrive.CreateDriveService(authDTO);
+            driveService.Files.Delete(formId).Execute();
+        }
     }
 }

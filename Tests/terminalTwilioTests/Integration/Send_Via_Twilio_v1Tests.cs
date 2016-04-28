@@ -43,7 +43,6 @@ namespace terminalTwilioTests.Integration
             //Assert
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             Assert.NotNull(controls.Controls[0] is TextSource);
@@ -117,7 +116,6 @@ namespace terminalTwilioTests.Integration
             //After Configure Test
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             Assert.NotNull(controls.Controls[0] is TextSource);

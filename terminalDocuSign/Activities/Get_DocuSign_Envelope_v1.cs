@@ -5,14 +5,13 @@ using System.Threading.Tasks;
 using Data.Constants;
 using Data.Control;
 using Data.Crates;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Data.States;
 using Hub.Managers;
 using Newtonsoft.Json;
 using terminalDocuSign.DataTransferObjects;
-using terminalDocuSign.Services;
 using TerminalBase.Infrastructure;
-using Data.Entities;
-using Data.States;
 using Utilities;
 
 namespace terminalDocuSign.Actions
