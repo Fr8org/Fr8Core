@@ -16,18 +16,18 @@ module dockyard.controllers.KioskModeOrganizationHeaderController {
         // See http://docs.angularjs.org/guide/di
         public static $inject = [
             '$scope',
-            'OrganizationSettingsService',
+            'OrganizationService',
             'UserService',
         ];
 
         constructor(
             private $scope: IKioskModeOrganizationHeaderController,
-            private OrganizationSettingsService: services.IOrganizationSettingsService,
+            private OrganizationService: services.IOrganizationService,
             private UserService: services.IUserService) {
 
             UserService.getCurrentUser().$promise.then(function (currentUser: interfaces.IUserDTO) {
                 var organizationId = currentUser.organizationId;
-                OrganizationSettingsService.get({ id: organizationId }).$promise.then(function (organization: interfaces.IOrganizationSettingsVM) {
+                OrganizationService.get({ id: organizationId }).$promise.then(function (organization: interfaces.IOrganizationVM) {
                     $scope.name = organization.name;
                     $scope.themeName = organization.themeName;
                     $scope.backgroundColor = organization.backgroundColor;

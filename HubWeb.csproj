@@ -372,7 +372,7 @@
     <Compile Include="App_Start\StartupMigration.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\Api\ActivitiesController.cs" />
-    <Compile Include="Controllers\Api\OrganizationSettingsController.cs" />
+    <Compile Include="Controllers\Api\OrganizationController.cs" />
     <Compile Include="Controllers\Api\Fr8BaseApiController.cs" />
     <Compile Include="Controllers\Api\NotificationsController.cs" />
     <Compile Include="Controllers\Api\AlarmsController.cs" />
@@ -970,7 +970,7 @@
     <TypeScriptCompile Include="Scripts\app\controllers\KioskModeOrganizationHeaderController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryListController.ts" />
-    <TypeScriptCompile Include="Scripts\app\controllers\OrganizationSettingsController.ts" />
+    <TypeScriptCompile Include="Scripts\app\controllers\OrganizationController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\BuildMessageAppender.ts" />
@@ -1013,7 +1013,7 @@
     <TypeScriptCompile Include="Scripts\app\services\ConfigureTrackerService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\FileDetailsService.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\ISolutionDocumentationService.ts" />
-    <TypeScriptCompile Include="Scripts\app\services\OrganizationSettingsService.ts" />
+    <TypeScriptCompile Include="Scripts\app\services\OrganizationService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\SolutionDocumentationService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\SubordinateSubplanService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UpstreamExtractor.ts" />
@@ -1124,8 +1124,8 @@
     <Content Include="Views\Services\SolutionListTemplate.cshtml" />
     <Content Include="Views\AngularTemplate\SelectData.cshtml" />
     <Content Include="Views\AngularTemplate\BuildMessageAppender.cshtml" />
-    <Content Include="Views\AngularTemplate\OrganizationSettings.cshtml" />
     <Content Include="Views\AngularTemplate\KioskModeOrganizationHeader.cshtml" />
+    <Content Include="Views\AngularTemplate\Organization.cshtml" />
     <None Include="Web.Demo.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

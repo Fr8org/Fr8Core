@@ -1,4 +1,4 @@
-﻿<div ng-controller="OrganizationSettingsController">
+﻿<div ng-controller="OrganizationController">
     <md-content layout-padding class="col-md-6">
         <div>
             <form>
@@ -14,13 +14,13 @@
                     <label>Background Color</label>
                     <div md-color-picker="scopeVariable.options" ng-model="backgroundColor" style="color:black"></div>
                     <md-input-container class="md-block" flex-gt-sm>
-                    <label>Logo</label>
+                        <label>Logo</label>
                         <div style="margin-top:30px;margin-left:10px">
                             <span class="file-info">{{logoUrl == null ? 'No file selected' : logoUrl|formatInput}}</span>
                             <img data-ng-src="{{logoUrl}}" id="photo-id" style="width:150px" />
                         </div>
-                        <md-button class="btn-upload" ngf-select="OnFileSelect($file)" 
-                                  accept='.png,.jpeg,.jpg' ngf-max-size='20MB' ngf-min-height='100'>Select File</md-button>
+                        <md-button class="btn-upload" ngf-select="OnFileSelect($file)"
+                                   accept='.png,.jpeg,.jpg' ngf-max-size='20MB' ngf-min-height='100'>Select File</md-button>
                     </md-input-container>
                 </div>
             </form>
