@@ -13,6 +13,7 @@ using terminalTests.Fixtures;
 
 namespace terminalFr8CoreTests.Integration
 {
+    [Explicit]
     public class GetDataFromFr8Warehouse_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName
