@@ -34,34 +34,26 @@ namespace terminalSlack.Actions
             {
                 MonitorDirectMessagesOption = new CheckBox
                 {
-                    Name = nameof(MonitorDirectMessagesOption),
                     Label = "Monitor direct messages to me and my group conversations"
                 };
                 MonitorChannelsOption = new CheckBox
                 {
-                    Name = nameof(MonitorChannelsOption),
                     Label = "Monitor channels",
                     Selected = true
                 };
                 AllChannelsOption = new RadioButtonOption
                 {
-                    Name = nameof(AllChannelsOption),
                     Value = "All",
                     Selected = true
                 };
-                ChannelList = new DropDownList
-                {
-                    Name = nameof(ChannelList),
-                };
+                ChannelList = new DropDownList();
                 SpecificChannelOption = new RadioButtonOption
                 {
-                    Name = nameof(SpecificChannelOption),
                     Controls = new List<ControlDefinitionDTO> { ChannelList },
                     Value = "Select channel"
                 };
                 ChannelSelectionGroup = new RadioButtonGroup
                 {
-                    Name = nameof(ChannelSelectionGroup),
                     GroupName = nameof(ChannelSelectionGroup),
                     Radios = new List<RadioButtonOption> { AllChannelsOption, SpecificChannelOption },
                     Label = "Monitor which channels?"
@@ -137,9 +129,9 @@ namespace terminalSlack.Actions
                     var isDirect = incomingChannelId.StartsWith("D", StringComparison.OrdinalIgnoreCase);
                     var isSentToGroup = incomingChannelId.StartsWith("G", StringComparison.OrdinalIgnoreCase);
                     //Message is sent to tracked channel or is sent directly or to group but not by current user
-                    var isMatch = (isSentToChannel && IsMonitoringChannels && (IsMonitoringAllChannels || incomingChannelId == SelectedChannelId))
-                               || ((isDirect || isSentToGroup) && !isSentByCurrentUser && IsMonitoringDirectMessages);
-                    if (isMatch)
+                    var isTrackedByChannel = IsMonitoringChannels && isSentToChannel && (IsMonitoringAllChannels || incomingChannelId == SelectedChannelId);
+                    var isTrackedByUser = IsMonitoringDirectMessages && (isDirect || isSentToGroup) && !isSentByCurrentUser;
+                    if (isTrackedByUser || isTrackedByChannel)
                     {
                         CurrentPayloadStorage.Add(Crate.FromContent(ResultPayloadCrateLabel, new StandardPayloadDataCM(incomingMessageContents.Fields), AvailabilityType.RunTime));
                     }
@@ -154,6 +146,10 @@ namespace terminalSlack.Actions
                 if (!IsMonitoringDirectMessages && (!IsMonitoringChannels || (!IsMonitoringAllChannels && !IsMonitoringSpecificChannels)))
                 {
                     throw new ActivityExecutionException("At least one of the monitoring options must be selected");
+                }
+                if (string.IsNullOrEmpty(AuthorizationToken.ExternalDomainId))
+                {
+                    throw new ActivityExecutionException("Your authorization doesn't contain info about your Slack team. Please reauthorize with Slack to update your team info");
                 }
                 await ObjectFactory.GetInstance<ISlackEventManager>().Subscribe(AuthorizationToken, CurrentActivity.Id);
                 RequestHubExecutionTermination("Plan successfully activated. It will wait and respond to specified Slack postings");

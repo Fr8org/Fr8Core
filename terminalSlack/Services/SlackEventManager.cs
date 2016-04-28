@@ -1,9 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Channels;
-using System.Text;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Data.Entities;
@@ -28,7 +25,7 @@ namespace terminalSlack.Services
 
         private readonly Uri _eventsUri;
 
-        private int _disposed;
+        private bool _disposed;
 
         public SlackEventManager(IRestfulServiceClient resfultClient)
         {
@@ -42,75 +39,39 @@ namespace terminalSlack.Services
 
         public Task Subscribe(AuthorizationTokenDO token, Guid activityId)
         {
-            if (Interlocked.CompareExchange(ref _disposed, 0, 0) == 1)
-            {
-                //It means that we disposed our registry already probably due to terminal shutdown
-                return Task.FromResult(0);
-            }
-            if (string.IsNullOrEmpty(token.ExternalDomainId))
-            {
-                throw new ArgumentException("Authorization token doesn't contain info about Slack user's team. Try to revoke existing Slack token and reauthorize again", nameof(token));
-            }
-            if (activityId == Guid.Empty)
-            {
-                throw new ArgumentException("Can't create subscription for empty activity Id", nameof(activityId));
-            }
             lock (_locker)
             {
+                if (_disposed)
+                {
+                    return Task.FromResult(0);
+                }
                 Unsubscribe(activityId);
-                //This team already have subscription - just return it
                 SlackClientWrapper client;
                 var teamId = token.ExternalDomainId;
-                if (_clientsByTeamId.TryGetValue(teamId, out client))
+                if (!_clientsByTeamId.TryGetValue(teamId, out client))
                 {
-                    client.SubscribedActivities.Add(activityId);
-                    _teamIdByActivity[activityId] = teamId;
-                    return client.ClientConnectOperation.Task;
+                    //This team doesn't have subscription yet - create a new subscription
+                    client = new SlackClientWrapper(token.Token, token.ExternalDomainId);
+                    client.MessageReceived += OnMessageReceived;
+                    client.Connect();
+                    _clientsByTeamId.Add(teamId, client);
+                    client.ClientConnectOperation.Task.ContinueWith(x => OnSubscriptionFailed(client), TaskContinuationOptions.NotOnRanToCompletion);
                 }
-                //This team doesn't have subscription yet - create a new subscription
-                client = new SlackClientWrapper
-                {
-                    ClientConnectOperation = new TaskCompletionSource<int>(),
-                    SubscribedActivities = new HashSet<Guid> { activityId },
-                    Client = new SlackSocketClient(token.Token)
-                };
-                _clientsByTeamId.Add(teamId, client);
+                client.Subscribe(activityId);
                 _teamIdByActivity[activityId] = teamId;
-                client.Client.Connect(x => OnLoginResponse(client, x, teamId));
                 return client.ClientConnectOperation.Task;
             }
         }
 
-        private void OnLoginResponse(SlackClientWrapper client, LoginResponse loginResponse, string teamId)
-        {
-            if (!loginResponse.ok)
-            {
-                client.ClientConnectOperation.SetException(new ApplicationException($"Failed to start Slack RTM session. Error code - {loginResponse.error}"));
-                ClearClientSubscriptions(teamId);
-                return;
-            }
-            client.Client.MessageReceived += OnIgnoredMessageReceived;
-            client.ClientConnectOperation.SetResult(0);
-        }
-
-        private void ClearClientSubscriptions(string teamId)
+        private void OnSubscriptionFailed(SlackClientWrapper client)
         {
             lock (_locker)
             {
-                SlackClientWrapper client;
-                if (string.IsNullOrEmpty(teamId) || !_clientsByTeamId.TryGetValue(teamId, out client))
+                foreach (var acitivityId in client.SubscribedActivities)
                 {
-                    return;
+                    _teamIdByActivity.Remove(acitivityId);
                 }
-                foreach (var activityId in client.SubscribedActivities)
-                {
-                    _teamIdByActivity.Remove(activityId);
-                }
-                if (!client.ClientConnectOperation.Task.IsCompleted)
-                {
-                    client.ClientConnectOperation.SetCanceled();
-                }
-                _clientsByTeamId.Remove(teamId);
+                _clientsByTeamId.Remove(client.TeamId);
             }
         }
 
@@ -118,6 +79,10 @@ namespace terminalSlack.Services
         {
             lock (_locker)
             {
+                if (_disposed)
+                {
+                    return;
+                }
                 string existingTeamId;
                 if (_teamIdByActivity.TryGetValue(activityId, out existingTeamId))
                 {
@@ -126,25 +91,12 @@ namespace terminalSlack.Services
                 SlackClientWrapper client;
                 if (!string.IsNullOrEmpty(existingTeamId) && _clientsByTeamId.TryGetValue(existingTeamId, out client))
                 {
-                    client.SubscribedActivities.Remove(activityId);
                     //We've removed last subscription - disconnect from RTM websocket and remove it
-                    if (client.SubscribedActivities.Count == 0)
+                    if (client.Unsubsribe(activityId))
                     {
                         _clientsByTeamId.Remove(existingTeamId);
-                        if (!client.ClientConnectOperation.Task.IsCompleted)
-                        {
-                            client.ClientConnectOperation.SetCanceled();
-                        }
-                        client.Client.MessageReceived -= OnIgnoredMessageReceived;
-                        client.Client.MessageReceived -= OnMessageReceived;
-                        try
-                        {
-                            client.Client.CloseSocket();
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.GetLogger().Error("Failed to unsubscribe from Slack client events. Probably subscriptions was not completed prior to unsubscribe request", ex);
-                        }
+                        client.MessageReceived -= OnMessageReceived;
+                        client.Dispose();
                     }
                 }
             }
@@ -152,30 +104,19 @@ namespace terminalSlack.Services
 
         public void Dispose()
         {
-            if (Interlocked.Exchange(ref _disposed, 1) == 1)
-            {
-                //Already disposed
-                return;
-            }
             lock (_locker)
             {
+                if (_disposed)
+                {
+                    return;
+                }
+                _disposed = true;
                 //This is to perform graceful exit in case of terminal shutdown
                 foreach (var client in _clientsByTeamId.Values)
                 {
-                    client.Client.MessageReceived -= OnIgnoredMessageReceived;
-                    client.Client.MessageReceived -= OnMessageReceived;
-                    client.Client.CloseSocket();
-                    client.ClientConnectOperation.SetCanceled();
+                    client.Dispose();
                 }
             }
-        }
-
-        private void OnIgnoredMessageReceived(object sender, MessageReceivedEventArgs e)
-        {
-            //After we successfully login we recieve last message sent or recieved by current user so we should ignore it
-            var client = (SlackSocketClient)sender;
-            client.MessageReceived -= OnIgnoredMessageReceived;
-            client.MessageReceived += OnMessageReceived;
         }
 
         private async void OnMessageReceived(object sender, MessageReceivedEventArgs e)
@@ -201,15 +142,6 @@ namespace terminalSlack.Services
             {
                 Logger.GetLogger().Info($"Failed to post event from SlackEventMenager with following payload: {encodedMessage}", ex);
             }
-        }
-
-        private class SlackClientWrapper
-        {
-            public SlackSocketClient Client { get; set; }
-
-            public TaskCompletionSource<int> ClientConnectOperation { get; set; }
-
-            public HashSet<Guid> SubscribedActivities { get; set; }
         }
     }
 }
