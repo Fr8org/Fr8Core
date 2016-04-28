@@ -513,6 +513,7 @@
     <Content Include="Content\img\freight-connect.jpg" />
     <Content Include="Content\img\freight-connect.png" />
     <Content Include="Content\img\freight-containers.jpg" />
+    <Content Include="Content\img\freight-containers_s.jpg" />
     <Content Include="Content\img\freight-design.jpg" />
     <Content Include="Content\img\freight-design.png" />
     <Content Include="Content\img\freight-train.jpg" />
