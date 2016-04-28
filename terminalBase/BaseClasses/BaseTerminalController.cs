@@ -217,6 +217,13 @@ namespace TerminalBase.BaseClasses
             ConfigureHubCommunicator(curObject, curTerminal);
             try
             {
+                // null checking
+                curActionDTO = curActionDTO ?? new ActivityDTO();
+                curActionDTO.ActivityTemplate = curActionDTO.ActivityTemplate ?? new ActivityTemplateDTO();
+                curActionDTO.ActivityTemplate.Terminal = curActionDTO.ActivityTemplate.Terminal ?? new TerminalDTO();
+                curActivityDO = curActivityDO ?? new ActivityDO();
+
+                //log when request start proceeding
                 LogWhenRequestRecived(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDO.Id.ToString());
 
                 switch (curActionPath.ToLower())
