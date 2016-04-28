@@ -142,9 +142,9 @@ namespace Hub.Security.ObjectDecorators
             return _target.GetByName(uow, account, name, visibility);
         }
 
-        public IList<PlanDO> GetForUser(IUnitOfWork uow, Fr8AccountDO account, bool isAdmin, Guid? id = default(Guid?), int? status = default(int?), string category = "")
+        public PlanResultDTO GetForUser(IUnitOfWork uow, Fr8AccountDO account, PlanQueryDTO planQueryDTO, bool isAdmin)
         {
-            return _target.GetForUser(uow, account, isAdmin, id ,status,category);
+            return _target.GetForUser(uow, account, planQueryDTO, isAdmin);
         }
 
         public IList<PlanDO> GetMatchingPlans(string userId, EventReportCM curEventReport)

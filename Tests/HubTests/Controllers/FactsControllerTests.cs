@@ -69,7 +69,7 @@ namespace HubTests.Controllers
             {
                 ObjectId = container.Id.ToString()
             };
-            var actionResult = factsController.ProcessQuery(query) as OkNegotiatedContentResult<IEnumerable<FactDTO>>;
+            var actionResult = factsController.ProcessQuery(query) as OkNegotiatedContentResult<IEnumerable<HistoryItemDTO>>;
 
             ////Assert
             Assert.NotNull(actionResult);

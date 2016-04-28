@@ -38,17 +38,17 @@ namespace HubTests.Controllers
             _testUserAccount = FixtureData.TestDockyardAccount5();
             _containerService = ObjectFactory.GetInstance<Hub.Interfaces.IContainer>();
 
-            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //uow.UserRepository.Add(_testUserAccount);
                 var plan = FixtureData.TestPlan4();
-                unitOfWork.UserRepository.Add(plan.Fr8Account);
+                uow.UserRepository.Add(plan.Fr8Account);
                 // This will Add a user as well as a plan for creating Containers
-                unitOfWork.PlanRepository.Add(plan);
-                unitOfWork.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, _testUserAccount.Id);
-                unitOfWork.SaveChanges();
+                uow.PlanRepository.Add(plan);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, _testUserAccount.Id);
+                uow.SaveChanges();
 
-                ObjectFactory.GetInstance<ISecurityServices>().Login(unitOfWork, _testUserAccount);
+                ObjectFactory.GetInstance<ISecurityServices>().Login(uow, _testUserAccount);
             }
         }
 
