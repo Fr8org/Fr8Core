@@ -72,6 +72,7 @@ namespace terminalSlack.Services
                     _teamIdByActivity.Remove(acitivityId);
                 }
                 _clientsByTeamId.Remove(client.TeamId);
+                client.Dispose();
             }
         }
 
