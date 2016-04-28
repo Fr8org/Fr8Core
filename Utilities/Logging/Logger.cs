@@ -84,6 +84,9 @@ namespace Utilities.Logging
             return color + message + "\x1b[0m";
         }
 
+
+
+
         /// <summary>
         /// Logs message with log4net
         /// </summary>
@@ -102,13 +105,13 @@ namespace Utilities.Logging
             switch (eventType)
             {
                 case EventType.Info:
-                    logger.Info(message);
+                    logger.Info(WrapColor(message,InfoColor));
                     break;
                 case EventType.Error:
-                    logger.Error(message);
+                    logger.Error(WrapColor(message, ErrorColor));
                     break;
                 case EventType.Warning:
-                    logger.Warn(message);
+                    logger.Warn(WrapColor(message, WarnColor));
                     break;
                 default:
                     {
