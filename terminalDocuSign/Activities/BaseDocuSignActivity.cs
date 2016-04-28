@@ -1,7 +1,4 @@
-﻿using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -9,12 +6,14 @@ using System.Threading.Tasks;
 using Data.Constants;
 using Data.Control;
 using Data.Crates;
-using TerminalBase.BaseClasses;
-using terminalDocuSign.Infrastructure;
-using Hub.Managers;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Data.States;
-using terminalDocuSign.Services.New_Api;
+using Hub.Managers;
 using StructureMap;
+using terminalDocuSign.Services.New_Api;
+using TerminalBase.BaseClasses;
 
 namespace terminalDocuSign.Actions
 {
