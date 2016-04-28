@@ -14,10 +14,16 @@ namespace Data.Entities
 
         public string Name { get; set; }
 
+        [ForeignKey("ParentNode")]
+        public int? ParentNodeId { get; set; }
         public PlanNodeDescriptionDO ParentNode { get; set; }
 
         public List<ActivityTransitionDO> Transitions { get; set; }
-
+        
         public ActivityDescriptionDO ActivityDescription { get; set; }
+
+        public string SubPlanName { get; set; }
+
+        public bool IsStartingSubplan { get; set; }
     }
 }

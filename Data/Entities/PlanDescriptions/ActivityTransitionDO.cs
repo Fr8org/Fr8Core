@@ -9,6 +9,7 @@ namespace Data.Entities
 {
     public class ActivityTransitionDO : BaseObject
     {
+
         public int Id { get; set; }
 
         public PlanNodeTransitionType Transition { get; set; }

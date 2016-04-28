@@ -15,14 +15,57 @@ namespace Data.Entities
 
         public string Name { get; set; }
 
-        public int? StartingPlanNodeDescriptionId { get; set; }
+        public string Description { get; set; }
 
         [ForeignKey("User")]
         public string Fr8AccountId { get; set; }
         [JsonIgnore]
         public Fr8AccountDO User { get; set; }
 
-        public PlanNodeDescriptionDO StartingPlanNodeDescription { get; set; }
+        [NotMapped]
+        public int StartingPlanNodeDescriptionId
+        {
+            get
+            {
+                if (PlanNodeDescriptions != null)
+                {
+                    var startingSubPlan = PlanNodeDescriptions
+                          .SingleOrDefault(pnt => pnt.IsStartingSubplan);
+                    if (null != startingSubPlan)
+                    {
+                        return startingSubPlan.Id;
+                    }
+                }
+
+                return 0;
+            }
+        }
+
+        [NotMapped]
+        public PlanNodeDescriptionDO StartingPlanNodeDescription
+        {
+            get
+            {
+                return PlanNodeDescriptions.SingleOrDefault(pnt => pnt.IsStartingSubplan == true);
+            }
+
+            set
+            {
+                var startingSubPlan = PlanNodeDescriptions.SingleOrDefault(pnt => pnt.IsStartingSubplan == true);
+                if (null != startingSubPlan)
+                    startingSubPlan = value;
+                else
+                {
+                    PlanNodeDescriptions.ToList().ForEach(pnt => pnt.IsStartingSubplan = false);
+                    if (value != null)
+                    {
+                        value.IsStartingSubplan = true;
+                        PlanNodeDescriptions.Add(value);
+                    }
+
+                }
+            }
+        }
 
         public List<PlanNodeDescriptionDO> PlanNodeDescriptions { get; set; }
     }

@@ -52,15 +52,13 @@ namespace Data.Migrations
                     {
                         Id = c.Int(nullable: false, identity: true),
                         Name = c.String(),
-                        StartingPlanNodeDescriptionId = c.Int(),
+                        Description = c.String(),
                         Fr8AccountId = c.String(maxLength: 128),
                         LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),
                         CreateDate = c.DateTimeOffset(nullable: false, precision: 7),
                     })
                 .PrimaryKey(t => t.Id)
-                .ForeignKey("dbo.PlanNodeDescriptions", t => t.StartingPlanNodeDescriptionId)
                 .ForeignKey("dbo.Users", t => t.Fr8AccountId)
-                .Index(t => t.StartingPlanNodeDescriptionId)
                 .Index(t => t.Fr8AccountId);
             
             CreateTable(
@@ -69,18 +67,20 @@ namespace Data.Migrations
                     {
                         Id = c.Int(nullable: false, identity: true),
                         Name = c.String(),
+                        ParentNodeId = c.Int(),
+                        SubPlanName = c.String(),
+                        IsStartingSubplan = c.Boolean(nullable: false),
                         LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),
                         CreateDate = c.DateTimeOffset(nullable: false, precision: 7),
                         ActivityDescription_Id = c.Int(),
-                        ParentNode_Id = c.Int(),
                         PlanDescriptionDO_Id = c.Int(),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.ActivityDescriptions", t => t.ActivityDescription_Id)
-                .ForeignKey("dbo.PlanNodeDescriptions", t => t.ParentNode_Id)
+                .ForeignKey("dbo.PlanNodeDescriptions", t => t.ParentNodeId)
                 .ForeignKey("dbo.PlanDescription", t => t.PlanDescriptionDO_Id)
+                .Index(t => t.ParentNodeId)
                 .Index(t => t.ActivityDescription_Id)
-                .Index(t => t.ParentNode_Id)
                 .Index(t => t.PlanDescriptionDO_Id);
             
         }
@@ -89,19 +89,17 @@ namespace Data.Migrations
         {
             DropForeignKey("dbo.ActivityTransitions", "PlanDescriptionId", "dbo.PlanDescription");
             DropForeignKey("dbo.PlanDescription", "Fr8AccountId", "dbo.Users");
-            DropForeignKey("dbo.PlanDescription", "StartingPlanNodeDescriptionId", "dbo.PlanNodeDescriptions");
             DropForeignKey("dbo.PlanNodeDescriptions", "PlanDescriptionDO_Id", "dbo.PlanDescription");
             DropForeignKey("dbo.ActivityTransitions", "PlanNodeDescriptionDO_Id", "dbo.PlanNodeDescriptions");
-            DropForeignKey("dbo.PlanNodeDescriptions", "ParentNode_Id", "dbo.PlanNodeDescriptions");
+            DropForeignKey("dbo.PlanNodeDescriptions", "ParentNodeId", "dbo.PlanNodeDescriptions");
             DropForeignKey("dbo.PlanNodeDescriptions", "ActivityDescription_Id", "dbo.ActivityDescriptions");
             DropForeignKey("dbo.ActivityTransitions", "PlanId", "dbo.Plans");
             DropForeignKey("dbo.ActivityTransitions", "ActivityDescriptionId", "dbo.ActivityDescriptions");
             DropForeignKey("dbo.ActivityDescriptions", "ActivityTemplateId", "dbo.ActivityTemplate");
             DropIndex("dbo.PlanNodeDescriptions", new[] { "PlanDescriptionDO_Id" });
-            DropIndex("dbo.PlanNodeDescriptions", new[] { "ParentNode_Id" });
             DropIndex("dbo.PlanNodeDescriptions", new[] { "ActivityDescription_Id" });
+            DropIndex("dbo.PlanNodeDescriptions", new[] { "ParentNodeId" });
             DropIndex("dbo.PlanDescription", new[] { "Fr8AccountId" });
-            DropIndex("dbo.PlanDescription", new[] { "StartingPlanNodeDescriptionId" });
             DropIndex("dbo.ActivityTransitions", new[] { "PlanNodeDescriptionDO_Id" });
             DropIndex("dbo.ActivityTransitions", new[] { "PlanId" });
             DropIndex("dbo.ActivityTransitions", new[] { "PlanDescriptionId" });

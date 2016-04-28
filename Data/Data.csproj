@@ -409,9 +409,9 @@
     <Compile Include="Interfaces\Manifests\EventReportCM.cs" />
     <Compile Include="Interfaces\Manifests\EventSubscriptionCM.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PlanDTO.cs" />
-    <Compile Include="Migrations\201604281131474_PlanDescription.cs" />
-    <Compile Include="Migrations\201604281131474_PlanDescription.Designer.cs">
-      <DependentUpon>201604281131474_PlanDescription.cs</DependentUpon>
+    <Compile Include="Migrations\201604281454422_PlanDescription.cs" />
+    <Compile Include="Migrations\201604281454422_PlanDescription.Designer.cs">
+      <DependentUpon>201604281454422_PlanDescription.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\PlanDescriptions\ActivityDescriptionRepository.cs" />
     <Compile Include="Repositories\PlanDescriptions\ActivityTransitionRepository.cs" />
@@ -1280,8 +1280,8 @@
     <EmbeddedResource Include="Migrations\201604250944024_AddThemeToOrganization.resx">
       <DependentUpon>201604250944024_AddThemeToOrganization.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201604281131474_PlanDescription.resx">
-      <DependentUpon>201604281131474_PlanDescription.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201604281454422_PlanDescription.resx">
+      <DependentUpon>201604281454422_PlanDescription.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -15,5 +15,7 @@ namespace Data.Interfaces.DataTransferObjects.PlanDescription
         public int? StartingPlanNodeDescriptionId { get; set; }
 
         public List<PlanNodeDescriptionDTO> PlanNodeDescriptions { get; set; }
+
+        public string Description { get; set; }
     }
 }

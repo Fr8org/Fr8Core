@@ -45,13 +45,14 @@ namespace Hub.Services
                 string name = CalculateName(curFr8UserId, descriptions, plan);
 
                 planDescription.Name = name;
+                planDescription.Description = plan.Description;
                 planDescription.Fr8AccountId = curFr8UserId;
                 planDescription.PlanNodeDescriptions = new List<PlanNodeDescriptionDO>();
                 uow.PlanDescriptionsRepository.Add(planDescription);
 
                 foreach (var subplan in plan.SubPlans.Where(a => a.ChildNodes.Count > 0))
                 {
-                    BuildNodes(subplan, planDescription, all_activities, related_templates);
+                    BuildNodes(subplan, planDescription, all_activities, related_templates, plan.StartingSubPlanId == subplan.Id);
                 }
 
                 uow.SaveChanges();
@@ -70,13 +71,22 @@ namespace Hub.Services
                     .Include(t => t.PlanNodeDescriptions.Select(x => x.Transitions))
                     .Where(a => a.Id == planDescriptionId).FirstOrDefault();
 
-                var first_activity = planDescription.PlanNodeDescriptions.Where(a => a.ParentNode == null).FirstOrDefault();
+                var planDO = new PlanDO() { Fr8AccountId = userId, Name = planDescription.Name, PlanState = 1, ChildNodes = new List<PlanNodeDO>(), Description = planDescription.Description };
 
-                var planDO = new PlanDO() { Fr8AccountId = userId, Name = planDescription.Name, PlanState = 1 };
-                if (planDO.StartingSubPlan == null)
-                    planDO.StartingSubPlan = new SubPlanDO();
+                var first_activities = planDescription.PlanNodeDescriptions.Where(a => a.ParentNode == null);
+                foreach (var startingActivity in first_activities)
+                {
+                    var subplan = new SubPlanDO() { Name = startingActivity.SubPlanName };
+                    if (planDescription.StartingPlanNodeDescription.Id == startingActivity.Id)
+                        planDO.StartingSubPlan = subplan;
+                    planDO.ChildNodes.Add(subplan);
+                    BuildAPlan(userId, 1, subplan, planDescription, startingActivity, planDO);
+                }
 
-                BuildALayer(userId, 1, planDO.StartingSubPlan, planDescription, first_activity, planDO);
+
+
+
+
 
                 uow.PlanRepository.Add(planDO);
 
@@ -86,7 +96,7 @@ namespace Hub.Services
             }
         }
 
-        private void BuildALayer(string userId, int ordering, PlanNodeDO planNodeDO, PlanDescriptionDO planDescription, PlanNodeDescriptionDO parentNode, PlanDO planDO)
+        private void BuildAPlan(string userId, int ordering, PlanNodeDO planNodeDO, PlanDescriptionDO planDescription, PlanNodeDescriptionDO parentNode, PlanDO planDO)
         {
             ActivityDO parentNodeActivity = CreateActivityDO(userId, ordering, planNodeDO, parentNode, planDO);
             planNodeDO.ChildNodes.Add(parentNodeActivity);
@@ -97,11 +107,11 @@ namespace Hub.Services
                 var transition = parentNode.Transitions.Where(a => a.ActivityDescriptionId == child.ActivityDescription.Id).FirstOrDefault().Transition;
                 if (transition == PlanNodeTransitionType.Downstream)
                 {
-                    BuildALayer(userId, ++ordering, planNodeDO, planDescription, child, planDO);
+                    BuildAPlan(userId, ++ordering, planNodeDO, planDescription, child, planDO);
                 }
                 if (transition == PlanNodeTransitionType.Child)
                 {
-                    BuildALayer(userId, ordering, parentNodeActivity, planDescription, child, planDO);
+                    BuildAPlan(userId, ordering, parentNodeActivity, planDescription, child, planDO);
                 }
             }
         }
@@ -124,7 +134,11 @@ namespace Hub.Services
             string name = plan.Name;
             if (existingDescriptionWithLargestNumber != null)
             {
-                string largestNumber = existingDescriptionWithLargestNumber.Name.Substring((plan.Name + " #").Length);
+                string largestNumber = "0";
+                if (existingDescriptionWithLargestNumber.Name.Length != plan.Name.Length)
+                {
+                    largestNumber = existingDescriptionWithLargestNumber.Name.Substring((plan.Name + " #").Length);
+                }
                 int number = Convert.ToInt32(largestNumber) + 1;
                 name += string.Format(" #{0}", number);
             }
@@ -132,7 +146,7 @@ namespace Hub.Services
         }
 
 
-        private Dictionary<Guid, PlanNodeDescriptionDO> BuildNodes(PlanNodeDO nodeDO, PlanDescriptionDO planDescription, IQueryable<ActivityDO> all_activities, IQueryable<ActivityTemplateDO> related_templates)
+        private Dictionary<Guid, PlanNodeDescriptionDO> BuildNodes(PlanNodeDO nodeDO, PlanDescriptionDO planDescription, IQueryable<ActivityDO> all_activities, IQueryable<ActivityTemplateDO> related_templates, bool startingSubplan)
         {
             var result = new Dictionary<Guid, PlanNodeDescriptionDO>();
             foreach (var activityNode in nodeDO.ChildNodes)
@@ -140,16 +154,28 @@ namespace Hub.Services
                 var firstActivity = all_activities.Where(a => a.Id == activityNode.Id).FirstOrDefault();
                 var template = related_templates.Where(a => a.Id == firstActivity.ActivityTemplateId).FirstOrDefault();
                 var node = CreatePlanNode(firstActivity, template);
-                planDescription.PlanNodeDescriptions.Add(node);
+
+                if (nodeDO is SubPlanDO)
+                    node.SubPlanName = (nodeDO as SubPlanDO).Name;
+
+                if (startingSubplan)
+                {
+                    planDescription.StartingPlanNodeDescription = node;
+                    startingSubplan = false;
+                }
+                else
+                    planDescription.PlanNodeDescriptions.Add(node);
+
                 result.Add(firstActivity.Id, node);
 
-                var child_nodes = BuildNodes(activityNode, planDescription, all_activities, related_templates);
+                var child_nodes = BuildNodes(activityNode, planDescription, all_activities, related_templates, startingSubplan);
 
                 //handle childs
                 foreach (var child in child_nodes)
                 {
                     node.Transitions.Add(new ActivityTransitionDO() { ActivityDescription = child.Value.ActivityDescription, Transition = PlanNodeTransitionType.Child });
                     child.Value.ParentNode = node;
+                    child.Value.SubPlanName = node.SubPlanName;
                 }
             }
 
