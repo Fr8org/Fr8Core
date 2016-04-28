@@ -244,7 +244,7 @@ namespace terminalFr8Core.Controllers
             {
                 Name = "Show_Report_Onscreen",
                 Label = "Show Report Onscreen",
-                Version = "1",
+                Version = "2",
                 Category = ActivityCategory.Processors,
                 NeedsAuthentication = false,
                 Terminal = terminal,
