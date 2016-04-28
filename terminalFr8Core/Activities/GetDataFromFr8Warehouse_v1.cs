@@ -196,6 +196,8 @@ namespace terminalFr8Core.Actions
                     )
                 );
             }
+
+            await Task.Yield();
         }
 
         private Func<object, TableRowDTO> CrateManifestToRowConverter(Type manifestType)
