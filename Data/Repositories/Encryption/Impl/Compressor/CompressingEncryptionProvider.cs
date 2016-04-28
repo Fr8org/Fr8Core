@@ -5,7 +5,7 @@ namespace Data.Repositories.Encryption.Impl
 {
     public class CompressingEncryptionProvider : IEncryptionProvider
     {
-        public int Id { get; } = EncryptionProvidersIds.Compressor;
+        public int Id { get; } = EncryptionProviderIds.Compressor;
         public int Version { get; } = 1;
 
         public void EncryptData(Stream encryptedData, Stream sourceData, string peerId)

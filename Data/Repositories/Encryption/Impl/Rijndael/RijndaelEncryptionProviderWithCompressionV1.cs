@@ -6,7 +6,7 @@ namespace Data.Repositories.Encryption.Impl.Rijndael
 {
     public class RijndaelEncryptionProviderWithCompressionV1 : RijndaelEncryptionProviderV1
     {
-        public override int Id { get; } = EncryptionProvidersIds.RinjdaelWithCompression;
+        public override int Id { get; } = EncryptionProviderIds.RinjdaelWithCompression;
         public override int Version { get; } = 1;
         
         public RijndaelEncryptionProviderWithCompressionV1(IEncryptionKeyProvider encryptionKeyProvider)

@@ -23,7 +23,7 @@ namespace Data.Repositories.Encryption.Impl.Rijndael
 
         protected RijndaelManaged CryptoProvider { get; }
 
-        public virtual int Id { get; } = EncryptionProvidersIds.Rinjdael;
+        public virtual int Id { get; } = EncryptionProviderIds.Rinjdael;
         public virtual int Version { get; } = 1;
         
         public RijndaelEncryptionProviderV1(IEncryptionKeyProvider encryptionKeyProvider)
@@ -60,7 +60,9 @@ namespace Data.Repositories.Encryption.Impl.Rijndael
             {
                 if (!_transforms.TryGetValue(peerId, out transform))
                 {
-                    var key =_encryptionEncryptionKeyProvider.GetEncryptionKey(peerId, CryptoProvider.KeySize / 8, CryptoProvider.BlockSize / 8);
+                    // we prepend RijndaelV1 to peerId to make possible future changes to RijndaelEncryptionProvider logic (for example increasing key or IV size).
+                    // if we use unchanged peerId (user id) then it will be impossilbe to store ecnryption keys of different sizes and encryption provider versioning will be broken. 
+                    var key =_encryptionEncryptionKeyProvider.GetEncryptionKey("RijndaelV1." + peerId, CryptoProvider.KeySize / 8, CryptoProvider.BlockSize / 8);
 
                     transform = new CryptoTransform(CryptoProvider.CreateEncryptor(key.Key, key.IV), 
                                                     CryptoProvider.CreateDecryptor(key.Key, key.IV));

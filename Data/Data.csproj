@@ -744,7 +744,7 @@
     <Compile Include="Repositories\Encryption\IEncryptionProvider.cs" />
     <Compile Include="Repositories\Encryption\IEncryptionService.cs" />
     <Compile Include="Repositories\Encryption\Impl\Compressor\CompressingEncryptionProvider.cs" />
-    <Compile Include="Repositories\Encryption\Impl\EncryptionProvidersIds.cs" />
+    <Compile Include="Repositories\Encryption\Impl\EncryptionProviderIds.cs" />
     <Compile Include="Repositories\Encryption\Impl\EncryptionService.cs" />
     <Compile Include="Repositories\Encryption\Impl\Bypass\BypassEncryptionProvider.cs" />
     <Compile Include="Repositories\Encryption\Impl\Rijndael\EncryptionKey.cs" />

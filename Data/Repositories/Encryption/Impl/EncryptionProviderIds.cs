@@ -6,7 +6,7 @@
     /// NEVER EVER CHANGE VALUES OF EXISITNG IDs!!! You'll make decryption of exisitng data impossible if you do so.
     /// But you are free to add new Ids for new encryption providers. 
     /// </summary>
-    static class EncryptionProvidersIds
+    static class EncryptionProviderIds
     {
         public const int Bypass = 1;
         public const int Compressor = 2;

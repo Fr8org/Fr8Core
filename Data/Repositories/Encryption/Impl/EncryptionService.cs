@@ -8,6 +8,7 @@ namespace Data.Repositories.Encryption.Impl
 {
     public class EncryptionService : IEncryptionService
     {
+        // Id+Version pair represented as the struct with equality members to use as dictionary's key
         private struct EncryptionProviderKey
         {
             public readonly int Id;
@@ -140,7 +141,7 @@ namespace Data.Repositories.Encryption.Impl
             }
         }
         
-        private byte[] EncryptDataInternal(string peerId, byte[] data, Type type)
+        private byte[] EncryptData(string peerId, byte[] data, Type type)
         {
             int typeCode;
 
@@ -176,7 +177,8 @@ namespace Data.Repositories.Encryption.Impl
                 return encryptedDataStream.ToArray();
             }
         }
-        
+
+        // check if typeCodeToValidate represents type T 
         private void ValidateTypeCode<T>(int typeCodeToValidate)
         {
             int typeCode;
@@ -230,13 +232,13 @@ namespace Data.Repositories.Encryption.Impl
                 writer.Write(data);
                 writer.Flush();
 
-                return EncryptDataInternal(peerId, memStream.ToArray(), typeof (string));
+                return EncryptData(peerId, memStream.ToArray(), typeof (string));
             }
         }
 
         public byte[] EncryptData(string peerId, byte[] data)
         {
-            return EncryptDataInternal(peerId, data, typeof (byte[]));
+            return EncryptData(peerId, data, typeof (byte[]));
         }
     }
 }
