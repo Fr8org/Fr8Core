@@ -54,16 +54,18 @@ namespace TerminalBase.BaseClasses
             if (_integrationTestMode)
                 return Ok();
 
-            var exceptionMessage = terminalError.GetFullExceptionMessage() + "      \r\n" + terminalError.ToString();//string.Format("{0}\r\n{1}", terminalError.Message, terminalError.StackTrace);
+            var exceptionMessage = terminalError.GetFullExceptionMessage() + "  \n\r   " + terminalError.ToString();//string.Format("{0}\r\n{1}", terminalError.Message, terminalError.StackTrace);
             try
             {
                 return Json(_baseTerminalEvent.SendTerminalErrorIncident(terminalName, exceptionMessage, terminalError.GetType().Name,userId));
             }
             catch (Exception ex)
             {
-                string errorMessage = "An error has occurred in terminal {0}.             \r\n{1}             \r\n";
-                errorMessage += "Additionally, an error has occurred while trying to post error details to the Hub.             \r\n{2}";
-                Logger.GetLogger().ErrorFormat(errorMessage, terminalName, exceptionMessage, ex.ToString());
+                string errorMessage = $"An error has occurred in terminal [{terminalName}]. {exceptionMessage} | Fr8UserId = {userId} \n\r "
+                                    + $"Additionally, an error has occurred while trying to post error details to the Hub. {ex.Message}";
+
+                Logger.LogError(errorMessage);
+                //Logger.GetLogger().ErrorFormat(errorMessage, terminalName, exceptionMessage, ex.ToString());
                 throw;
             }
         }
@@ -154,6 +156,16 @@ namespace TerminalBase.BaseClasses
             return _baseTerminalEvent.SendEventOrIncidentReport(terminalName, "Terminal Event");
         }
 
+        void LogWhenRequestRecived(string actionPath,string terminalName, string activityId)
+        {
+            Logger.LogInfo($"[{terminalName}] received /{actionPath} call  at {DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt")} for ActivityID {activityId}", terminalName);
+        }
+
+        void LogWhenRequestResponded(string actionPath,string terminalName, string activityId)
+        {
+            Logger.LogInfo($"[{terminalName}] responded to /{actionPath} call  at {DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt")} for ActivityID {activityId}", terminalName);
+        }
+
         // For /Configure and /Activate actions that accept ActionDTO
         public async Task<object> HandleFr8Request(string curTerminal, string curActionPath, Fr8DataDTO curDataDTO)
         {
@@ -205,11 +217,23 @@ namespace TerminalBase.BaseClasses
             ConfigureHubCommunicator(curObject, curTerminal);
             try
             {
+                // null checking
+                curActionDTO = curActionDTO ?? new ActivityDTO();
+                curActionDTO.ActivityTemplate = curActionDTO.ActivityTemplate ?? new ActivityTemplateDTO();
+                curActionDTO.ActivityTemplate.Terminal = curActionDTO.ActivityTemplate.Terminal ?? new TerminalDTO();
+                curActivityDO = curActivityDO ?? new ActivityDO();
+
+                //log when request start proceeding
+                LogWhenRequestRecived(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDO.Id.ToString());
+
                 switch (curActionPath.ToLower())
                 {
                     case "configure":
                         {
                             var resultActionDO = await (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curAuthTokenDO });
+
+                            LogWhenRequestResponded(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDO.Id.ToString());
+
                             return Mapper.Map<ActivityDTO>(resultActionDO);
                         }
                     case "run":
@@ -219,18 +243,30 @@ namespace TerminalBase.BaseClasses
                             var resultPayloadDTO = await (Task<PayloadDTO>)curMethodInfo
                                 .Invoke(curObject, new Object[] { curActivityDO, curDataDTO.ContainerId, curAuthTokenDO });
                             await OnCompletedActivity(curTerminal, IntegrationTestMode);
-                            
+
+                            LogWhenRequestResponded(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDO.Id.ToString());
+
                             return resultPayloadDTO;        
                         }
                     case "initialconfigurationresponse":
                         {
                             Task<ActivityDO> resutlActionDO = (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curAuthTokenDO });
-                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
+
+                            var resultICR = await resutlActionDO.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
+
+                            LogWhenRequestResponded(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDO.Id.ToString());
+
+                            return resultICR;
                         }
                     case "followupconfigurationresponse":
                         {
                             Task<ActivityDO> resutlActionDO = (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curAuthTokenDO });
-                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
+
+                            var resultFCR = await resutlActionDO.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
+
+                            LogWhenRequestResponded(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDO.Id.ToString());
+
+                            return resultFCR;
                         }
                     case "activate":
                         {
@@ -238,7 +274,12 @@ namespace TerminalBase.BaseClasses
                             if (curMethodInfo == null) return Mapper.Map<ActivityDTO>(curActivityDO);
 
                             Task<ActivityDO> resutlActionDO = (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curAuthTokenDO });
-                            return await resutlActionDO.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
+
+                            var resultA = await resutlActionDO.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
+
+                            LogWhenRequestResponded(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDO.Id.ToString());
+
+                            return resultA;
                         }
                     case "deactivate":
                         {
@@ -252,7 +293,12 @@ namespace TerminalBase.BaseClasses
                             else
                             {
                                 response = (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO });
-                                return await response.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result)); ;
+
+                                var resultD = await response.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
+
+                                LogWhenRequestResponded(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDO.Id.ToString());
+
+                                return resultD;
                             }
 
                             return resutlActionDO.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
@@ -263,12 +309,22 @@ namespace TerminalBase.BaseClasses
                         {
                             return getDefaultDocumentation();
                         }
-                        return await HandleDocumentationRequest(curObject, curMethodInfo, curActivityDO, curDocumentation);
+
+                        var resultDCN = await HandleDocumentationRequest(curObject, curMethodInfo, curActivityDO, curDocumentation); 
+                        
+                        LogWhenRequestResponded(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDO.Id.ToString());
+
+                        return resultDCN;
                     }
                     default:
                         response = (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO });
-                        return await response.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result)); ;
+
+                        var result = await response.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
+
+                        return result;
                 }
+
+                
             }
             catch (Exception e)
             {
