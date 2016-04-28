@@ -11,7 +11,6 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using terminalSlack.Actions;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 
