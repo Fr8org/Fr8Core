@@ -9,5 +9,6 @@ module dockyard.interfaces {
         email: string;
         status: string;
         role: string;
+        organizationId: number;
     }    
 }
