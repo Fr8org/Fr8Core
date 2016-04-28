@@ -1,9 +1,9 @@
 ﻿/// <reference path="../_all.ts" />
 
-module dockyard.controllers.OrganizationSettingsController {
+module dockyard.controllers.OrganizationController {
     'use strict';
     import filePickerEvents = dockyard.Fr8Events.FilePicker;
-    export interface IOrganizationSettingsControllerScope extends ng.IScope {
+    export interface IOrganizationControllerScope extends ng.IScope {
         name: string;
         themeName: string;
         backgroundColor: string;
@@ -13,29 +13,29 @@ module dockyard.controllers.OrganizationSettingsController {
         updateOrganization: () => void;
         OnFileSelect: ($file: any) => void;
     }
-
-    class OrganizationSettingsController {
+    
+    class OrganizationController {
         // $inject annotation.
         // It provides $injector with information about dependencies to be injected into constructor
         // it is better to have it close to the constructor, because the parameters must match in count and type.
         // See http://docs.angularjs.org/guide/di
         public static $inject = [
             '$scope',
-            'OrganizationSettingsService',
+            'OrganizationService',
             'UserService',
             'FileService'
         ];
 
         constructor(
-            private $scope: IOrganizationSettingsControllerScope,
-            private OrganizationSettingsService: services.IOrganizationSettingsService,
+            private $scope: IOrganizationControllerScope,
+            private OrganizationService: services.IOrganizationService,
             private UserService: services.IUserService,
             private FileService: services.IFileService) {
             
 
             UserService.getCurrentUser().$promise.then(function (currentUser: interfaces.IUserDTO){
                 var organizationId = currentUser.organizationId;
-                OrganizationSettingsService.get({ id: organizationId }).$promise.then(function (organization: interfaces.IOrganizationSettingsVM) {
+                OrganizationService.get({ id: organizationId }).$promise.then(function (organization: interfaces.IOrganizationVM) {
                     $scope.name = organization.name;
                     $scope.id = organization.id;
                     $scope.themeName = organization.themeName;
@@ -52,7 +52,7 @@ module dockyard.controllers.OrganizationSettingsController {
                     backgroundColor: $scope.backgroundColor,
                     logoUrl: $scope.logoUrl
                 }
-                OrganizationSettingsService.update(organization).$promise.then(printResultMessage);
+                OrganizationService.update(organization).$promise.then(printResultMessage);
             };
 
             var printResultMessage = function () {
@@ -69,5 +69,5 @@ module dockyard.controllers.OrganizationSettingsController {
         }
     }
 
-    app.controller('OrganizationSettingsController', OrganizationSettingsController);
+    app.controller('OrganizationController', OrganizationController);
 }

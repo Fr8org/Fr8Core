@@ -20,6 +20,6 @@ namespace Data.Interfaces.DataTransferObjects
 
         public string Role { get; set; }
 
-        public int organizationId { get; set; }
+        public int? organizationId { get; set; }
     }
 }
