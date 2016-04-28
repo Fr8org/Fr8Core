@@ -243,7 +243,7 @@ namespace TerminalBase.Infrastructure
 
         public async Task ApplyNewToken(Guid activityId, Guid authTokenId, string userId)
         {
-         
+
             var applyToken = new ManageAuthToken_Apply()
             {
                 ActivityId = activityId,
@@ -455,6 +455,25 @@ namespace TerminalBase.Infrastructure
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/files/download?id=" + fileId;
             var uri = new Uri(hubUrl);
             return await _restfulServiceClient.DownloadAsync(uri, null, await GetHMACHeader(uri, userId));
+        }
+
+        public async Task<List<CrateDTO>> GetStoredManifests(string currentFr8UserId, List<CrateDTO> cratesForMTRequest)
+        {
+            var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+            + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/warehouse?userId=" + currentFr8UserId;
+
+            var uri = new Uri(hubUrl);
+            return await _restfulServiceClient.PostAsync<List<CrateDTO>, List<CrateDTO>>(uri, cratesForMTRequest, null, await GetHMACHeader(uri, currentFr8UserId, cratesForMTRequest));
+        }
+
+        public async Task<AuthorizationTokenDTO> GetAuthToken(string externalAccountId, string curFr8UserId)
+        {
+
+            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+                    + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion")
+                    + string.Format("/authentication/GetAuthToken?curFr8UserId={0}&externalAccountId={1}&terminalId={2}", curFr8UserId, externalAccountId, TerminalId);
+            var uri = new Uri(url);
+            return await _restfulServiceClient.GetAsync<AuthorizationTokenDTO>(uri, null, await GetHMACHeader(uri, curFr8UserId));
         }
     }
 }

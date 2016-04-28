@@ -91,7 +91,7 @@ namespace terminalDocuSignTests.Integration
                 await RecreateDefaultAuthToken(unitOfWork, testAccount, docuSignTerminal);
 
                 var mtDataCountBefore = unitOfWork.MultiTenantObjectRepository
-                    .AsQueryable<DocuSignEnvelopeCM>(testAccount.Id.ToString())
+                    .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id.ToString())
                     .Count();
 
                 //Set up DS
@@ -100,8 +100,11 @@ namespace terminalDocuSignTests.Integration
                 var docuSignManager = new DocuSignManager();
                 var loginInfo = docuSignManager.SetUp(authTokenDO);
 
+                //let's wait 10 seconds to ensure that MADSE plan was created/activated by re-authentication
+                await Task.Delay(SingleAwaitPeriod);
+
                 //send envelope
-                await SendDocuSignTestEnvelope(docuSignManager, loginInfo, authTokenDO);
+                SendDocuSignTestEnvelope(docuSignManager, loginInfo, authTokenDO);
 
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
@@ -112,7 +115,7 @@ namespace terminalDocuSignTests.Integration
                     await Task.Delay(SingleAwaitPeriod);
 
                     mtDataCountAfter = unitOfWork.MultiTenantObjectRepository
-                        .AsQueryable<DocuSignEnvelopeCM>(testAccount.Id.ToString())
+                        .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id.ToString())
                         .Count();
 
                     if (mtDataCountBefore < mtDataCountAfter)
@@ -167,30 +170,6 @@ namespace terminalDocuSignTests.Integration
                 tokenResponse["authTokenId"],
                 "AuthTokenId is missing in API response."
             );
-
-            var tokenId = Guid.Parse(tokenResponse["authTokenId"].Value<string>());
-
-            AssignAuthTokens(uow, account, tokenId);
-        }
-
-        private void AssignAuthTokens(IUnitOfWork uow, Fr8AccountDO account, Guid tokenId)
-        {
-            var plans = uow.PlanRepository.GetPlanQueryUncached().Where(x => x.Fr8AccountId == account.Id && x.Name == "MonitorAllDocuSignEvents" && x.PlanState == PlanState.Active).Select(x => x.Id).ToArray();
-
-            if (plans.Length == 0)
-            {
-                throw new ApplicationException("Could not find MonitorAllDocuSignEvents plan.");
-            }
-
-            foreach (var planId in plans)
-            {
-                foreach (var activity in uow.PlanRepository.GetById<PlanNodeDO>(planId).GetDescendants().OfType<ActivityDO>())
-                {
-                    activity.AuthorizationTokenId = tokenId;
-                }
-            }
-
-            uow.SaveChanges();
         }
 
         private async Task<AuthorizationTokenDTO> Authenticate()
@@ -213,7 +192,7 @@ namespace terminalDocuSignTests.Integration
             return docuSignToken;
         }
 
-        private async Task SendDocuSignTestEnvelope(DocuSignManager docuSignManager, DocuSignApiConfiguration loginInfo, AuthorizationTokenDO authTokenDO)
+        private  void SendDocuSignTestEnvelope(DocuSignManager docuSignManager, DocuSignApiConfiguration loginInfo, AuthorizationTokenDO authTokenDO)
         {
             var rolesList = new List<FieldDTO>()
             {

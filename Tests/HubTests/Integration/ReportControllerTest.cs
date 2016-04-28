@@ -12,6 +12,7 @@ using System.Threading.Tasks;
 using HealthMonitor.Utility;
 using Hub.Services;
 using System.Data.Entity.Infrastructure;
+using Data.Interfaces.DataTransferObjects;
 
 namespace HubTests.Integration
 {
@@ -34,7 +35,7 @@ namespace HubTests.Integration
             List<Task> tasks = new List<Task>();
             for (int i = 0; i < 5; i++)
             {
-                tasks.Add(Task.Factory.StartNew(() => GetRecords()));
+                tasks.Add(Task.Factory.StartNew(GetRecords));
             }
             await Task.WhenAll(tasks);
         }
@@ -45,7 +46,7 @@ namespace HubTests.Integration
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 ((IObjectContextAdapter)uow.Db).ObjectContext.CommandTimeout = 6000; //100 minutes
-                report.GetAllFacts(uow);
+                report.GetFacts(uow, null);
             }
         }
     }

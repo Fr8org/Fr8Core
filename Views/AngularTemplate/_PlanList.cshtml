@@ -1,143 +1,157 @@
-﻿<div class="row">
-    <div class="col-md-12 col-sm-12">
-        <div class="portlet light">
+﻿<md-content>
 
-            <div class="portlet-title">
-                <div class="caption caption-md">
-                    <i class="icon-bar-chart font-green-haze hide"></i>
-                    <span class="caption-subject font-green-haze bold uppercase">RUNNING Plans</span>
-                    <span class="caption-helper hide">weekly stats...</span>
-                </div>
+    <md-toolbar class="md-table-toolbar md-default" ng-show="!filter.showActive" style="margin-top: 30px;">
+        <div class="md-toolbar-tools">
+            <h2 class="md-title font-green-haze">Running Plans</h2>
+            <div flex></div>
+            <md-button class="md-icon-button" ng-click="filter.showActive = true">
+                <md-icon md-font-icon="fa fa-filter material-fa-icon"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
+
+    <md-toolbar class="md-table-toolbar md-default" ng-show="filter.showActive" style="margin-top: 30px;">
+        <div class="md-toolbar-tools">
+            <md-icon md-font-icon="fa fa-search material-fa-icon"></md-icon>
+            <div flex name="filter.form">
+                <md-input-container class="md-block" flex-gt-sm>
+                    <input flex type="text" ng-model="activeQuery.filter" ng-model-options="filter.options" placeholder="Search" style="border-bottom: 1px solid #000000; border-bottom: 1px solid rgba(0,0,0,.12) !important">
+                </md-input-container>
             </div>
+            <md-button class="md-icon-button" ng-click="removeActiveFilter()">
+                <md-icon md-font-icon="fa fa-times material-fa-icon"></md-icon>
+            </md-button>
+        </div>
+    </md-toolbar>
 
-            <div class="portlet-body">
-                <div ng-if="activePlans.$resolved != true">Loading Plans...</div>
-                <div ng-if="activePlans.$resolved == true && activePlans.length == 0">No running plans found. To make a plan running, click on the Run Now button after your plan is fully configured.</div>
-                <div ng-if="activePlans.$resolved == true && activePlans.length > 0">
-                    <div class="table-scrollable table-scrollable-borderless">
-                        <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-routes">
-                            <thead>
-                                <tr>
-                                    <th>Name</th>
-                                    <th>Description</th>
-                                    <th>Last Updated</th>
-                                    <th>Status</th>
-                                    <th style="text-align: right">Actions</th>
+    <md-table-container>
+        <table md-table md-progress="activePromise">
+            <thead md-head md-order="activeQuery.orderBy" md-on-reorder="getActivePlans">
+                <tr md-row>
+                    <th md-column md-order-by="name" style="width: 20%;"><span>Name</span></th>
+                    <th md-column style="width: 35%;"><span>Description</span></th>
+                    <th md-column md-order-by="lastUpdated" style="width: 20%;">Last Updated</th>
+                    <th md-column style="width: 10%;">Status</th>
+                    <th md-column md-numeric style="width: 15%;">Actions</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                <tr ng-repeat="plan in activePlans | filter: {planState:2}">
-                                    <td ng-click="goToPlanDetailsPage(plan.id)">{{ plan.name }}</td>
-                                    <td ng-click="goToPlanDetailsPage(plan.id)">{{ plan.description }}</td>
-                                    <td ng-click="goToPlanDetailsPage(plan.id)">{{plan.lastUpdated | date:"MM/dd/yyyy h:mm:ss a"}}</td>
-                                    <td ng-click="goToPlanDetailsPage(plan.id)">
+            <tbody md-body>
+                <tr md-row ng-repeat="plan in activePlans.plans | filter: {planState:2}">
+                    <td md-cell class="column-spacer">{{ plan.name }}</td>
+                    <td md-cell class="column-spacer">{{ plan.description }}</td>
+                    <td md-cell>{{ plan.lastUpdated | date:"MM/dd/yyyy h:mm:ss a"}}</td>
+                    <td md-cell>
                                         <span class="bold font-green-haze">{{plan.planState == 2 ? 'Active' : 'Inactive' }}</span>
                                     </td>
-                                    <td>
-                                        <div>
-                                            <md-button class="md-icon-button" ng-click="goToPlanDetailsPage(plan.id);">
+                    <td md-cell style="display: flex;">
+                        <md-button class="md-icon-button md-table-fr8-button" ng-click="goToPlanDetailsPage(plan.id);">
                                                 <md-icon md-font-icon="fa fa-ellipsis-h" class="fa fa-lg"></md-icon>
                                                 <md-tooltip md-direction="top">
                                                     Settings
                                                 </md-tooltip>
                                             </md-button>
-                                            <md-button class="md-icon-button" ng-click="deactivatePlan(plan);">
+                        <md-button class="md-icon-button md-table-fr8-button" ng-click="deactivatePlan(plan);">
                                                 <md-icon md-font-icon="fa-bolt" class="fa fa-lg font-red-haze"></md-icon>
                                                 <md-tooltip md-direction="top">
                                                     Deactivate
                                                 </md-tooltip>
                                             </md-button>
-                                            <md-button class="md-icon-button" ng-click="deletePlan(plan.id,plan.planState);">
+                        <md-button class="md-icon-button md-table-fr8-button" ng-click="deletePlan(plan.id,plan.planState);">
                                                 <md-icon md-font-icon="fa-trash" class="fa fa-lg"></md-icon>
                                                 <md-tooltip md-direction="top">
                                                     Delete
                                                 </md-tooltip>
                                             </md-button>
-                                            <md-button class="md-icon-button" ng-click="goToPlanPage(plan.id);">
+                        <md-button class="md-icon-button md-table-fr8-button" ng-click="goToPlanPage(plan.id);">
                                                 <md-icon md-font-icon="fa-edit" class="fa fa-lg"></md-icon>
                                                 <md-tooltip md-direction="top">
                                                     Edit
                                                 </md-tooltip>
                                             </md-button>
-                                        </div>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
-                    </div>
-                </div>
-                <br />
-                <hr />
+    </md-table-container>
 
-                <div class="portlet-title">
-                    <div class="caption caption-md">
-                        <i class="icon-bar-chart font-green-haze hide"></i>
-                        <span class="caption-subject font-green-haze bold uppercase">Plan Library</span>
-                        <span class="caption-helper hide">weekly stats...</span>
-                    </div>
-                    <div class="actions">
-                    </div>
-                </div>
+    <md-table-pagination md-limit="activeQuery.planPerPage" md-limit-options="[5, 10, 15, 20]" md-page="activeQuery.page" md-total="{{(activePlans.totalPlanCount || activePlans.totalPlanCount === 0) ? activePlans.totalPlanCount : 'NaN'}}" md-on-paginate="getActivePlans" md-page-select></md-table-pagination>
 
-                <div class="portlet-body">
-                    <div ng-if="inActivePlans.$resolved != true">Loading plans...</div>
-                    <div ng-if="inActivePlans.$resolved == true && inActivePlans.length == 0">No inactive plans are found. To make a plan inactive, click on the Deactivate button for an Active plan you wish to disable.</div>
-                    <div ng-if="inActivePlans.$resolved == true && inActivePlans.length > 0">
-                        <div class="table-scrollable table-scrollable-borderless">
-                            <table datatable="ng" dt-options="dtOptionsBuilder" dt-column-defs="dtColumnDefs" class="row-border hover table table-hover table-light table-linkrows table-routes">
-                                <thead>
-                                    <tr>
-                                        <th>Name</th>
-                                        <th>Description</th>
-                                        <th>Last Updated</th>
-                                        <th>Status</th>
-                                        <th style="text-align: right">Actions</th>
+
+
+    <md-toolbar class="md-table-toolbar md-default" ng-show="!filter.showInactive">
+        <div class="md-toolbar-tools">
+            <h2 class="md-title font-green-haze">Plan Library</h2>
+            <div flex></div>
+            <md-button class="md-icon-button" ng-click="filter.showInactive = true">
+                <md-icon md-font-icon="fa fa-filter material-fa-icon"></md-icon>
+            </md-button>
+                </div>
+    </md-toolbar>
+
+    <md-toolbar class="md-table-toolbar md-default" ng-show="filter.showInactive">
+        <div class="md-toolbar-tools">
+            <md-icon md-font-icon="fa fa-search material-fa-icon"></md-icon>
+            <div flex name="filter.form">
+                <md-input-container class="md-block" flex-gt-sm>
+                    <input flex type="text" ng-model="inActiveQuery.filter" ng-model-options="filter.options" placeholder="Search" style="border-bottom: 1px solid #000000; border-bottom: 1px solid rgba(0,0,0,.12) !important">
+                </md-input-container>
+                    </div>
+            <md-button class="md-icon-button" ng-click="removeInactiveFilter()">
+                <md-icon md-font-icon="fa fa-times material-fa-icon"></md-icon>
+            </md-button>
+                </div>
+    </md-toolbar>
+
+    <md-table-container>
+        <table md-table md-progress="inActivePromise">
+            <thead md-head md-order="inActiveQuery.orderBy" md-on-reorder="getInactivePlans">
+                <tr md-row>
+                    <th md-column md-order-by="name" style="width: 20%;"><span>Name</span></th>
+                    <th md-column style="width: 35%;"><span>Description</span></th>
+                    <th md-column md-order-by="lastUpdated" style="width: 20%;">Last Updated</th>
+                    <th md-column style="width: 10%;">Status</th>
+                    <th md-column md-numeric style="width: 15%;">Actions</th>
                                     </tr>
                                 </thead>
-                                <tbody>
-                                    <tr ng-repeat="plan in inActivePlans | filter: {planState:1}">
-                                        <td ng-click="goToPlanDetailsPage(plan.id)">{{ plan.name }}</td>
-                                        <td ng-click="goToPlanDetailsPage(plan.id)">{{ plan.description }}</td>
-                                        <td ng-click="goToPlanDetailsPage(plan.id)">{{plan.lastUpdated | date:"MM/dd/yyyy h:mm:ss a"}}</td>
-                                        <td ng-click="goToPlanDetailsPage(plan.id)">
-                                            <span class="bold font-green-haze">{{plan.planState == 2 ? 'Active' : 'Inactive' }}</span>
-                                        <td>
-                                            <div>
-                                                <md-button class="md-icon-button" ng-click="goToPlanDetailsPage(plan.id);">
+            <tbody md-body>
+                <tr md-row ng-repeat="plan in inActivePlans.plans | filter: {planState:1}">
+                    <td md-cell class="column-spacer">{{ plan.name }}</td>
+                    <td md-cell class="column-spacer">{{ plan.description }}</td>
+                    <td md-cell>{{ plan.lastUpdated | date:"MM/dd/yyyy h:mm:ss a"}}</td>
+                    <td md-cell>
+                        <span class="bold font-red-haze">{{plan.planState == 2 ? 'Active' : 'Inactive' }}</span>
+                    </td>
+                    <td md-cell style="display: flex;">
+                        <md-button class="md-icon-button md-table-fr8-button" ng-click="goToPlanDetailsPage(plan.id);">
                                                     <md-icon md-font-icon="fa fa-ellipsis-h" class="fa fa-lg"></md-icon>
                                                     <md-tooltip md-direction="top">
                                                         Settings
                                                     </md-tooltip>
                                                 </md-button>
-                                                <md-button class="md-icon-button" ng-click="executePlan(plan,$event);">
+                        <md-button class="md-icon-button md-table-fr8-button" ng-click="executePlan(plan,$event);">
                                                     <md-icon md-font-icon="fa-play" class="fa fa-lg font-green-haze"></md-icon>
                                                     <md-tooltip md-direction="top">
                                                         Run
                                                     </md-tooltip>
                                                 </md-button>
-                                                <md-button class="md-icon-button" ng-click="deletePlan(plan.id,plan.planState);">
+                        <md-button class="md-icon-button md-table-fr8-button" ng-click="deletePlan(plan.id,plan.planState);">
                                                     <md-icon md-font-icon="fa-trash" class="fa fa-lg"></md-icon>
                                                     <md-tooltip md-direction="top">
                                                         Delete
                                                     </md-tooltip>
                                                 </md-button>
-                                                <md-button class="md-icon-button" ng-click="goToPlanPage(plan.id);">
+                        <md-button class="md-icon-button md-table-fr8-button" ng-click="goToPlanPage(plan.id);">
                                                     <md-icon md-font-icon="fa-edit" class="fa fa-lg"></md-icon>
                                                     <md-tooltip md-direction="top">
                                                         Edit
                                                     </md-tooltip>
                                                 </md-button>
-                                            </div>
                                         </td>
                                     </tr>
                                 </tbody>
                             </table>
-                        </div>
-                    </div>
-                </div>
+    </md-table-container>
 
-            </div>
+    <md-table-pagination md-limit="inActiveQuery.planPerPage" md-limit-options="[5, 10, 15, 20]" md-page="inActiveQuery.page" md-total="{{(inActivePlans.totalPlanCount || inActivePlans.totalPlanCount === 0) ? inActivePlans.totalPlanCount : 'NaN'}}" md-on-paginate="getInactivePlans" md-page-select></md-table-pagination>
 
-        </div>
-    </div>
-</div>
+</md-content>

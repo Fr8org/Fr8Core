@@ -204,9 +204,11 @@
     <Compile Include="Fixtures\FixtureData - StandardEventReport.cs" />
     <Compile Include="Fixtures\FixtureData - TestFiles.cs" />
     <Compile Include="Fixtures\FixtureData - User.cs" />
+    <Compile Include="Fixtures\FixtureData - IncidentDO.cs" />
     <Compile Include="ManageUserVM.cs" />
     <Compile Include="MiscUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="StopwordsRemoverTests.cs" />
     <Compile Include="UserVM.cs" />
   </ItemGroup>
   <ItemGroup>

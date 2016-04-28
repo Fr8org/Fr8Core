@@ -16,6 +16,7 @@ using terminalDocuSign.Services;
 using TerminalBase.Infrastructure;
 using Data.States;
 using Data.Repositories.MultiTenant;
+using terminalDocuSign.Actions;
 using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Actions
@@ -25,7 +26,7 @@ namespace terminalDocuSign.Actions
         private const string SolutionName = "Track DocuSign Recipients";
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "DocuSign";
-        private const string SolutionBody = @"<p>Link your important outgoing envelopes to Fr8's powerful notification Activities, 
+        private const string SolutionBody = @"<p>Link your important outgoing envelopes to Fr8's powerful notification activities, 
                                             which allow you to receive SMS notices, emails, or receive posts to popular tracking systems like Slack and Yammer. 
                                             Get notified when recipients take too long to sign!</p>";
 
@@ -334,11 +335,11 @@ namespace terminalDocuSign.Actions
 
                 if (string.IsNullOrEmpty(recipientEmail))
                 {
-                    selectedObject = GetMtType(typeof(DocuSignEventCM));
+                    selectedObject = GetMtType(typeof(DocuSignEnvelopeCM_v2));
                 }
                 else
                 {
-                    selectedObject = GetMtType(typeof(DocuSignRecipientCM));
+                    selectedObject = GetMtType(typeof(DocuSignRecipientStatus));
                 }
 
                 if (selectedObject == null)
@@ -358,7 +359,7 @@ namespace terminalDocuSign.Actions
 
                 if (recipientEmail != null)
                 {
-                    conditions.Add(new FilterConditionDTO { Field = "RecipientEmail", Operator = "eq", Value = recipientEmail });
+                    conditions.Add(new FilterConditionDTO { Field = "Email", Operator = "eq", Value = recipientEmail });
                 }
 
                 filterPane.Value = JsonConvert.SerializeObject(new FilterDataDTO

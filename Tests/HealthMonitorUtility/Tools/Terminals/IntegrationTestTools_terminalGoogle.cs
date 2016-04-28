@@ -27,7 +27,7 @@ namespace terminaBaselTests.Tools.Terminals
         }
 
         /// <summary>
-        /// For a given google account check for a spreasheet file existence amd return the content from that spreadsheet
+        /// For a given google account check for a spreasheet file existence and return the content from that spreadsheet
         /// </summary>
         /// <param name="authorizationTokenId"></param>
         /// <param name="spreadsheetName"></param>

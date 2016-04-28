@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using Data.Constants;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
@@ -13,7 +10,7 @@ namespace Data.Helpers
 {
     public static class Fr8ApiHelper
     {
-        public static string FindField(ICrateStorage payloadStorage, string fieldKey, bool ignoreCase = false, MT? manifestType = null, string label = null)
+        public static string FindField(this ICrateStorage payloadStorage, string fieldKey, bool ignoreCase = false, MT? manifestType = null, string label = null)
         {
             //search through every crate except operational state crate
             Expression<Func<Crate, bool>> defaultSearchArguments = (c) => c.ManifestType.Id != (int)MT.OperationalStatus;
@@ -67,7 +64,7 @@ namespace Data.Helpers
                 {
                     var loopStatus = x.LocalData.ReadAs<OperationalStateCM.LoopStatus>();
 
-                    if (loopStatus != null && loopStatus.Label == crate.Label && loopStatus.CrateManifest == crate.ManifestType.Type)
+                    if (loopStatus != null && loopStatus.CrateManifest.CrateDescriptions[0].Label == crate.Label && loopStatus.CrateManifest.CrateDescriptions[0].ManifestType == crate.ManifestType.Type)
                     {
                         return true;
                     }

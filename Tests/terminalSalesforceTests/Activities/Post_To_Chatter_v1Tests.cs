@@ -1,4 +1,6 @@
-﻿using Data.Control;
+﻿using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
@@ -8,15 +10,11 @@ using Hub.Managers;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using TerminalBase.Infrastructure;
 using terminalSalesforce;
 using terminalSalesforce.Actions;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforceTests.Fixtures;
+using TerminalBase.Infrastructure;
 using UtilitiesTesting;
 
 namespace terminalSalesforceTests.Actions
@@ -55,7 +53,7 @@ namespace terminalSalesforceTests.Actions
             Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
             salesforceIntegrationMock.Setup(si => si.GetUsersAndGroups(It.IsAny<AuthorizationTokenDO>())).Returns(
                 () => Task.FromResult<IList<FieldDTO>>(new List<FieldDTO> { new FieldDTO("One", "1")}));
-            salesforceIntegrationMock.Setup(si => si.PostFeedTextToChatterObject(It.IsAny<string>(), It.IsAny<string>(), 
+            salesforceIntegrationMock.Setup(si => si.PostToChatter(It.IsAny<string>(), It.IsAny<string>(), 
                 It.IsAny<AuthorizationTokenDO>())).Returns(() => Task.FromResult("SomeValue"));
 
             postToChatter_v1 = new Post_To_Chatter_v1();
@@ -93,7 +91,7 @@ namespace terminalSalesforceTests.Actions
 
             //Assert
             var storage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(resultPayload);
-            Assert.IsNotNull(storage.FirstCrateOrDefault<StandardPayloadDataCM>(), "Paylod doesn't contain crate with posted feed Id");
+            Assert.IsNotNull(storage.FirstCrateOrDefault<StandardPayloadDataCM>(), "Payload doesn't contain crate with posted feed Id");
         }
 
         private ActivityDO SetValues(ActivityDO curActivityDO)

@@ -24,7 +24,7 @@
         -->
     <div ng-if='field.type == "TextBox"'>
         <label class='control-label' ng-if="field.label">{{::field.label}}</label>
-        <input type='text' ng-model='field.value' ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }"
+        <input type='text' ng-model='field.value' ng-model-options="{ updateOn: 'blur' }"
                ng-change="onChange(field)" ng-required='field.required' data-field-name='{{::field.name}}' id='pca__txt__{{::field.name | validId}}'
                class='form-control form-control-focus' name='pca__txt__{{::field.name | validId}}' stop-click-propagation>
     </div>
@@ -88,6 +88,7 @@
         QueryBuilder template
         -->
     <div ng-if='field.type == "QueryBuilder"'>
+        <label class='control-label'>{{::field.label}}</label>
         <query-builder current-action='currentAction' field='field'></query-builder>
     </div>
 

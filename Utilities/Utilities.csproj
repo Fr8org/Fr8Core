@@ -132,6 +132,7 @@
     <Compile Include="JsonPackager.cs" />
     <Compile Include="JsonSettings.cs" />
     <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Logging\RemoteSyslogAppender.cs" />
     <Compile Include="MappingEngineExtensions.cs" />
     <Compile Include="MemoryCache.cs" />
     <Compile Include="MiscUtils.cs" />
@@ -149,6 +150,7 @@
     </Compile>
     <Compile Include="Serializers\Json\JsonSerializer.cs" />
     <Compile Include="Server.cs" />
+    <Compile Include="StopwordsRemover.cs" />
     <Compile Include="TypeSafeEnum.cs" />
     <Compile Include="UAParser\UAParser.cs" />
   </ItemGroup>

@@ -3,23 +3,21 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using Data.Constants;
 using Data.Control;
 using Data.Crates;
-using Newtonsoft.Json;
-using StructureMap;
-using Data.Interfaces;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.States;
 using Hub.Exceptions;
 using Hub.Interfaces;
 using Hub.Managers;
+using Newtonsoft.Json;
+using StructureMap;
+using terminalUtilities.Excel;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using Data.States;
-using terminalUtilities.Excel;
 using Utilities;
 
 namespace terminalExcel.Actions
@@ -115,7 +113,7 @@ namespace terminalExcel.Actions
             StandardFileDescriptionCM fileHandleMS = upstreamFileHandleCrates.First().Get<StandardFileDescriptionCM>();
 
             // Use the url for file from StandardFileHandleMS and read from the file and transform the data into StandardTableData and assign it to Action's crate storage
-            StandardTableDataCM tableDataMS = ExcelUtils.GetExcelFile(fileHandleMS.DockyardStorageUrl);
+            StandardTableDataCM tableDataMS = ExcelUtils.GetExcelFile(fileHandleMS.DirectUrl);
 
             return tableDataMS;
         }
