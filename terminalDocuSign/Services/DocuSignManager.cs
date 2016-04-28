@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using Data.Validations;
@@ -137,7 +138,7 @@ namespace terminalDocuSign.Services.New_Api
             envDef.EmailSubject = "Test message from Fr8";
             envDef.Status = "created";
 
-
+            Debug.WriteLine($"sending an envelope from template {curTemplateId} to {loginInfo}");
             var templateRecepients = templatesApi.ListRecipients(loginInfo.AccountId, curTemplateId);
 
             //adding file or applying template
