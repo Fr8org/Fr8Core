@@ -301,12 +301,13 @@
     <Compile Include="Interfaces\DataTransferObjects\PlanDescription\ActivityTransitionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PlanDescription\PlanDescriptionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PlanDescription\PlanNodeDescriptionDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\OrganizationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalNotificationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AlarmDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AuthenticateResponse.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CrateDescriptionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventLoggingDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\FactDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\HistoryItemDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\QueryFieldType.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldValidationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityDTO.cs" />
@@ -368,7 +369,7 @@
     <Compile Include="Helpers\FieldMemberAccessor.cs" />
     <Compile Include="Helpers\IMemberAccessor.cs" />
     <Compile Include="Interfaces\Manifests\ExternalObjectHandlesCM.cs" />
-    <Compile Include="Interfaces\Manifests\DocuSignEnvelopeCM_v2.cs" />
+	 <Compile Include="Interfaces\Manifests\DocuSignEnvelopeCM_v2.cs" />
     <Compile Include="Interfaces\Manifests\Helpers\StandardTableDataCMTools.cs" />
     <Compile Include="Interfaces\Manifests\ManifestDescriptionCM.cs" />
     <Compile Include="Interfaces\Manifests\ChartOfAccountsCM.cs" />
@@ -737,6 +738,10 @@
     <Compile Include="Migrations\201604191731406_AddLabelToTerminals.Designer.cs">
       <DependentUpon>201604191731406_AddLabelToTerminals.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201604250944024_AddThemeToOrganization.cs" />
+    <Compile Include="Migrations\201604250944024_AddThemeToOrganization.Designer.cs">
+      <DependentUpon>201604250944024_AddThemeToOrganization.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -994,6 +999,7 @@
     <Compile Include="Crates\Helpers\LoggingDataCrateFactory.cs" />
     <Compile Include="Utility\JoinClasses\FileTags.cs" />
     <Compile Include="Utility\CopyPropertiesHelper.cs" />
+    <Compile Include="Utility\PagingExtensions.cs" />
     <Compile Include="Utility\TagDO.cs" />
     <Compile Include="Validations\ActionValidator.cs" />
     <Compile Include="Validations\ContainerValidator.cs" />
@@ -1273,6 +1279,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604261455159_PlanDescription.resx">
       <DependentUpon>201604261455159_PlanDescription.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604250944024_AddThemeToOrganization.resx">
+      <DependentUpon>201604250944024_AddThemeToOrganization.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
