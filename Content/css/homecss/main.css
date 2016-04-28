@@ -5257,7 +5257,7 @@ img.mfp-img {
 /* SOCIAL NETWORK
 /* --------------------- */
 #social-network {
-  background-image: url('/Content/img/background-cta-3.jpg');
+  background-image: url('http://static.fr8.co/Content/img/background-cta-3.jpg');
   text-align: center;
   min-height: 550px;
 }
@@ -5982,21 +5982,21 @@ img.mfp-img {
 .demo-card-square-connect > .mdl-card__title {
   color: #F2F4F5;
   font-weight: 700;
-  background: url('/Content/img/freight-connect.jpg') center no-repeat;
+  background: url('http://static.fr8.co/Content/img/freight-connect.jpg') center no-repeat;
   background-color: #F2F4F5;
 }
 
 .demo-card-square-workflows > .mdl-card__title {
   color: #F2F4F5;
   font-weight: 500;
-  background: url('/Content/img/freight-design.jpg') center no-repeat;
+  background: url('http://static.fr8.co/Content/img/freight-design.jpg') center no-repeat;
   background-color: #444C58;
 }
 
 .demo-card-square-run > .mdl-card__title {
   color: #F2F4F5;
   font-weight: 500;
-  background: url('/Content/img/freight-train.jpg') center no-repeat;
+  background: url('http://static.fr8.co/Content/img/freight-train.jpg') center no-repeat;
   background-color: #444C58;
 }
 
@@ -6085,14 +6085,14 @@ img.mfp-img {
 .demo-card-square-docusign-box > .mdl-card__title {
   color: #F2F4F5;
   font-weight: 700;
-  background: url('/Content/img/docusign-logo.png') center no-repeat;
+  background: url('http://static.fr8.co/Content/img/docusign-logo.png') center no-repeat;
   background-color: #F2F4F5;
   opacity:1;
 }
 .demo-card-square-docusign-box > .mdl-card__title:hover {
   color: #F2F4F5;
   font-weight: 700;
-  background: url('/Content/img/docusign-logo.png') center no-repeat;
+  background: url('http://static.fr8.co/Content/img/docusign-logo.png') center no-repeat;
   background-color: #F2F4F5;
   opacity:0.9;
 }
@@ -6100,14 +6100,14 @@ img.mfp-img {
 .demo-card-square-fr8-box > .mdl-card__title {
   color: #F2F4F5;
   font-weight: 700;
-  background: url('/Content/img/freight-containers.jpg') center no-repeat;
+  background: url('http://static.fr8.co/Content/img/freight-containers_s.jpg') center no-repeat;
   background-color: #F2F4F5;
   opacity:1;
 }
 .demo-card-square-fr8-box > .mdl-card__title:hover {
   color: #F2F4F5;
   font-weight: 700;
-  background: url('/Content/img/freight-containers.jpg') center no-repeat;
+  background: url('http://static.fr8.co/Content/img/freight-containers_s.jpg') center no-repeat;
   background-color: #F2F4F5;
   opacity:0.9;
 }
@@ -6116,7 +6116,7 @@ img.mfp-img {
   opacity: 0.6;
   width: 100%;
   height: 100%;
-  background-image: url('/Content/img/background-7.png');
+  background-image: url('http://static.fr8.co/Content/img/background-7.png');
   -webkit-background-size: cover;
   -moz-background-size: cover;
   -o-background-size: cover;
