@@ -272,6 +272,7 @@
     <Compile Include="Managers\CommunicationManagerTest.cs" />
     <Compile Include="Managers\CrateManagerTests.cs" />
     <Compile Include="Managers\CrateManagerTests.Fixtures.cs" />
+    <Compile Include="Managers\EventReporterTests.cs" />
     <Compile Include="Managers\IncidentReporterTests.cs" />
     <Compile Include="Managers\OAuthAuthorizerTest.cs" />
     <Compile Include="Managers\PlanManagerTests.cs" />

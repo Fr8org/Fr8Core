@@ -214,7 +214,7 @@ namespace Hub.Managers
 
         private void LogIncident(IncidentDO curIncident)
         {
-            _eventReporter.LogHistoryItem(curIncident, EventReporter.EventType.Error);
+            _eventReporter.LogHistoryItem(curIncident, EventType.Error);
             //_eventReporter.LogFactInformation(curIncident, curIncident.SecondaryCategory + " " + curIncident.Activity, EventReporter.EventType.Error);
         }
 

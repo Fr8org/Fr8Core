@@ -158,7 +158,6 @@ namespace terminalDocuSignTests.Integration
 
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             AssertCrateTypes(crateStorage);
@@ -275,7 +274,6 @@ namespace terminalDocuSignTests.Integration
 
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             AssertCrateTypes(crateStorage);
@@ -299,7 +297,6 @@ namespace terminalDocuSignTests.Integration
 
              Assert.NotNull(responseActionDTO);
              Assert.NotNull(responseActionDTO.CrateStorage);
-             Assert.NotNull(responseActionDTO.CrateStorage.Crates);
              Assert.AreEqual(2, responseActionDTO.ChildrenActions.Length);
              Assert.AreEqual(1, responseActionDTO.ChildrenActions.Count(x => x.Label == "Monitor DocuSign"));
         }
@@ -321,7 +318,6 @@ namespace terminalDocuSignTests.Integration
 
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
             Assert.AreEqual(5, responseActionDTO.ChildrenActions.Length);
             Assert.AreEqual(1, responseActionDTO.ChildrenActions.Count(x => x.Label == "Monitor DocuSign"));
             Assert.AreEqual(1, responseActionDTO.ChildrenActions.Count(x => x.Label == "Query MT Database"));
