@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using Hub.Managers;
 using System.Linq;
 using System.Runtime.InteropServices;
+using Data.States;
 using terminalGoogle.Actions;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogleTests.Integration;
@@ -89,7 +90,11 @@ namespace terminalGoogleTests.Unit
             {
                 Id = Guid.NewGuid(),
                 Name = "Monitor_Form_Responses_TEST",
-                Version = "1"
+                Version = "1",
+                Terminal = new TerminalDTO()
+                {
+                    AuthenticationType = AuthenticationType.External
+                }
             };
         }
 
@@ -112,14 +117,30 @@ namespace terminalGoogleTests.Unit
             var controls = PackControlsCrate(fieldSelectTemplate);
             return controls;
         }
-
-        public void ActivateCrateStorage(ActivityDTO curActivityDO)
+        private Crate PackCrate_ConfigurationControlsWithNoListItems()
         {
-            var configurationControlsCrate = PackCrate_ConfigurationControls();
+            var fieldSelectTemplate = new DropDownList()
+            {
+                Label = "Select Google Form",
+                Name = "Selected_Google_Form",
+                Required = true,
+                Source = new FieldSourceDTO
+                {
+                    Label = "Available Forms",
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
+                }
+            };
+
+            var controls = PackControlsCrate(fieldSelectTemplate);
+            return controls;
+        }
+        public void ActivateCrateStorage(ActivityDTO curActivityDTO, Crate curCrate)
+        {
+            var configurationControlsCrate = curCrate;
             var crateDesignTimeFields = PackCrate_GoogleForms();
             var eventCrate = CreateEventSubscriptionCrate();
 
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDTO))
             {
                 crateStorage.Add(configurationControlsCrate);
                 crateStorage.Add(crateDesignTimeFields);
@@ -135,7 +156,7 @@ namespace terminalGoogleTests.Unit
             {
                 Id = Guid.NewGuid(),
                 Label = "Monitor Form Responses",
-                AuthToken = Google_AuthToken(),
+                AuthToken = Google_AuthToken1(),
                 ActivityTemplate = activityTemplate
             };
             return new Fr8DataDTO { ActivityDTO = activityDTO };
@@ -149,15 +170,30 @@ namespace terminalGoogleTests.Unit
             {
                 Id = Guid.NewGuid(),
                 Label = "Monitor Form Responses",
-                AuthToken = Google_AuthToken(),
+                AuthToken = Google_AuthToken1(),
                 ActivityTemplate = activityTemplate,
                 ParentPlanNodeId = Guid.NewGuid()
             };
 
-            ActivateCrateStorage(activity);
+            ActivateCrateStorage(activity, PackCrate_ConfigurationControls());
             return new Fr8DataDTO { ActivityDTO = activity };
         }
+        public Fr8DataDTO Monitor_Form_Responses_v1_Followup_Fr8DataDTO()
+        {
+            var activityTemplate = Monitor_Form_Responses_v1_ActivityTemplate();
 
+            var activity = new ActivityDTO()
+            {
+                Id = Guid.NewGuid(),
+                Label = "Monitor Form Responses",
+                AuthToken = Google_AuthToken1(),
+                ActivityTemplate = activityTemplate,
+                ParentPlanNodeId = Guid.NewGuid()
+            };
+
+            ActivateCrateStorage(activity, PackCrate_ConfigurationControlsWithNoListItems());
+            return new Fr8DataDTO { ActivityDTO = activity };
+        }
         private ICrateStorage WrapPayloadDataCrate(List<FieldDTO> payloadFields)
         {
             return new CrateStorage(Data.Crates.Crate.FromContent("Payload Data", new StandardPayloadDataCM(payloadFields)));
@@ -210,6 +246,7 @@ namespace terminalGoogleTests.Unit
                 AuthToken = Google_AuthToken(),
                 ActivityTemplate = activityTemplate
             };
+            ActivateCrateStorage(activity, PackCrate_ConfigurationControls());
             using (var crateStorage = CrateManager.GetUpdatableStorage(activity))
             {
                 crateStorage.Add(PayloadRaw());
@@ -228,6 +265,7 @@ namespace terminalGoogleTests.Unit
                 AuthToken = Google_AuthToken(),
                 ActivityTemplate = activityTemplate
             };
+            ActivateCrateStorage(activity, PackCrate_ConfigurationControls());
             using (var crateStorage = CrateManager.GetUpdatableStorage(activity))
             {
                 crateStorage.Add(PayloadEmptyRaw());

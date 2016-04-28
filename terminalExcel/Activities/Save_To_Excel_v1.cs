@@ -1,21 +1,19 @@
-﻿using Data.Entities;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Constants;
-using TerminalBase.BaseClasses;
-using Data.Interfaces.Manifests;
-using Data.Interfaces.DataTransferObjects;
-using Data.Crates;
-using Data.States;
 using Data.Control;
+using Data.Crates;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Data.Interfaces.Manifests.Helpers;
-using StructureMap;
-using System.Globalization;
+using Data.States;
 using terminalUtilities.Excel;
-using System.IO;
+using TerminalBase.BaseClasses;
 
 namespace terminalExcel.Actions
 {

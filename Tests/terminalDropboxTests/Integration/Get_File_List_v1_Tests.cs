@@ -38,7 +38,6 @@ namespace terminalDropboxTests.Integration
             // Assert
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
         }
 
         [Test]

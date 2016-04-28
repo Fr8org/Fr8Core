@@ -1,5 +1,4 @@
-﻿using System.IO;
-using Data.Interfaces.Manifests;
+﻿using Data.Interfaces.Manifests;
 using TerminalBase.BaseClasses;
 
 namespace terminalTest.Actions
