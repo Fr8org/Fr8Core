@@ -1,11 +1,12 @@
 ﻿using System;
 using NUnit.Framework;
 using Utilities;
+using UtilitiesTesting;
 
 namespace HubTests.Utilities
 {
     [TestFixture]
-    public class DateUtilityTests
+    public class DateUtilityTests : BaseTest
     {
         [Test]
         public void CalculateDayBucket()
