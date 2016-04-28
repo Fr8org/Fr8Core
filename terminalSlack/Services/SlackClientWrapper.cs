@@ -22,6 +22,8 @@ namespace terminalSlack.Services
 
         public event EventHandler<MessageReceivedEventArgs> MessageReceived = delegate { };
 
+        private int _firstMessageIsSkipped;
+
         public SlackClientWrapper(string oAuthToken, string teamId)
         {
             Client = new SlackSocketClient(oAuthToken);
@@ -36,23 +38,19 @@ namespace terminalSlack.Services
             if (Interlocked.CompareExchange(ref _isConnecting, 1, 0) == 0)
             {
                 Client.Connect(OnLoginResponse);
-                Client.MessageReceived += ClientOnIgnoredMessageReceived;
+                Client.MessageReceived += ClientOnMessageReceived;
             }
             return ClientConnectOperation.Task;
         }
 
-        private void ClientOnIgnoredMessageReceived(object sender, MessageReceivedEventArgs e)
-        {
-            //After we successfully login we recieve last message sent or recieved by current user so we should ignore it
-            Client.MessageReceived -= ClientOnIgnoredMessageReceived;
-            Client.MessageReceived += ClientOnMessageReceived;
-        }
-
         private void ClientOnMessageReceived(object sender, MessageReceivedEventArgs e)
         {
-            OnMessageReceived(e);
+            //After we successfully login we recieve last message sent or recieved by current user so we should ignore it
+            if (Interlocked.CompareExchange(ref _firstMessageIsSkipped, 1, 0) != 0)
+            {
+                OnMessageReceived(e);
+            }
         }
-
         /// <summary>
         /// Adds specified activity Id to subscription list
         /// </summary>
