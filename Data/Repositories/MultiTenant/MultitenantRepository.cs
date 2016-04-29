@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Linq.Expressions;
 using Data.Crates;
@@ -242,7 +241,6 @@ namespace Data.Repositories.MultiTenant
 
             foreach (var mtObjectChange in _changes)
             {
-                Debug.WriteLine($"Processing MultiTenant changes for {mtObjectChange.Type.ToString()} - {mtObjectChange.Object.MtTypeDefinition.Id}");
                 switch (mtObjectChange.Type)
                 {
                     case MtObjectChangeType.Insert:
