@@ -53,8 +53,10 @@ namespace HubWeb.ExceptionHandling
                 }
             }
 
-            Logger.GetLogger().Error("Critical internal error occured.", exception);
-           
+            //Logger.GetLogger().Error("Critical internal error occured.", exception);
+            Logger.LogError($"Critical internal error occured. Exception = {exception}");
+
+
             HandleErrorInfo model = new HandleErrorInfo(filterContext.Exception, controllerName, actionName);
             filterContext.Result = new ViewResult
             {
