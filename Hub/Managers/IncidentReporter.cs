@@ -346,7 +346,8 @@ namespace Hub.Managers
                 currentIncident.ObjectId,
                 currentIncident.Fr8UserId);
 
-            Logger.GetLogger().Info(logData);
+            //Logger.GetLogger().Info(logData);
+            Logger.LogInfo(logData);
         }
 
         private void ProcessAttendeeUnresponsivenessThresholdReached(int expectedResponseId)
@@ -491,7 +492,8 @@ namespace Hub.Managers
                             fieldName)
                 };
                 _uow.IncidentRepository.Add(incidentDO);
-                Logger.GetLogger().Warn(incidentDO.Data);
+                //Logger.GetLogger().Warn(incidentDO.Data);
+                Logger.LogWarning(incidentDO.Data);
                 _uow.SaveChanges();
             }
         }

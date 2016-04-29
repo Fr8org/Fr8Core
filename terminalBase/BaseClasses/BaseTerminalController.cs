@@ -329,7 +329,7 @@ namespace TerminalBase.BaseClasses
                     PreserveReferencesHandling = PreserveReferencesHandling.Objects
                 };
 
-                Logger.GetLogger().Error($"Exception caught while processing {curActionPath} for {this.GetType()}", e);
+                //Logger.GetLogger().Error($"Exception caught while processing {curActionPath} for {this.GetType()}", e);
                 Logger.LogError($"Exception caught while processing {curActionPath} for {this.GetType()} with exception {e.Data} and stack trace {e.StackTrace} and message {e.GetFullExceptionMessage()}", curTerminal);
                 var endpoint = (curActivityDO.ActivityTemplate != null && curActivityDO.ActivityTemplate.Terminal != null && curActivityDO.ActivityTemplate.Terminal.Endpoint != null) ? curActivityDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
                 EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActivityDO, settings), e, curActivityDO.Id.ToString());
