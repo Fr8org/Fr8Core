@@ -27,7 +27,7 @@ namespace Data.Infrastructure.Security
         /// <summary>
         /// Permission name that must be checked for authorization 
         /// </summary>
-        public int Permission { get; set; }
+        public PermissionType Permission { get; set; }
 
         /// <summary>
         /// Type of the argument/parameter where dataObjectId is located. 

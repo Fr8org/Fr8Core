@@ -80,7 +80,7 @@ namespace Data.Infrastructure.StructureMap
             securityStorageProvider.SetDefaultObjectSecurity(dataObjectId.ToString(), dataObjectType);
         }
 
-        public bool AuthorizeActivity(int permissionName, string curObjectId, string curObjectType, string propertyName = null)
+        public bool AuthorizeActivity(PermissionType permissionName, string curObjectId, string curObjectType, string propertyName = null)
         {
             //check if user is authenticated. Unauthenticated users cannot pass security and come up to here, which means this is internal fr8 event, that need to be passed 
             if (!IsAuthenticated())
@@ -96,14 +96,14 @@ namespace Data.Infrastructure.StructureMap
             var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
             var permissionSets = securityStorageProvider.GetObjectBasedPermissionSetForObject(curObjectId, curObjectType, roles);
 
-            var modifyAllData = permissionSets.FirstOrDefault(x => x == PermissionType.ModifyAllObjects);
-            var viewAllData = permissionSets.FirstOrDefault(x => x == PermissionType.ViewAllObjects);
+            var modifyAllData = permissionSets.FirstOrDefault(x => x == (int) PermissionType.ModifyAllObjects);
+            var viewAllData = permissionSets.FirstOrDefault(x => x == (int) PermissionType.ViewAllObjects);
 
-            if (viewAllData != default(int) && permissionName == PermissionType.ReadObject) return true;
-            if (modifyAllData != default(int)) return true;
+            if (viewAllData != 0 && permissionName == PermissionType.ReadObject) return true;
+            if (modifyAllData != 0) return true;
 
-            var currentPermission = permissionSets.FirstOrDefault(x => x == permissionName);
-            if (currentPermission != default(int)) return true;
+            var currentPermission = permissionSets.FirstOrDefault(x => x == (int) permissionName);
+            if (currentPermission != 0) return true;
 
             return false;
         }

@@ -134,7 +134,7 @@ namespace Hub.Security
         /// <param name="curObjectType"></param>
         /// <param name="propertyName"></param>
         /// <returns></returns>
-        public bool AuthorizeActivity(int permissionType, string curObjectId, string curObjectType, string propertyName = null)
+        public bool AuthorizeActivity(PermissionType permissionType, string curObjectId, string curObjectType, string propertyName = null)
         {
             //check if user is authenticated. Unauthenticated users cannot pass security and come up to here, which means this is internal fr8 event, that need to be passed 
             if (!IsAuthenticated())
@@ -171,15 +171,15 @@ namespace Hub.Security
             return EvaluatePermissionSet(permissionType, permissionSets);
         }
 
-        private bool EvaluatePermissionSet(int permissionType, List<int> permissionSet)
+        private bool EvaluatePermissionSet(PermissionType permissionType, List<int> permissionSet)
         {
-            var modifyAllData = permissionSet.FirstOrDefault(x => x == PermissionType.ModifyAllObjects);
-            var viewAllData = permissionSet.FirstOrDefault(x => x == PermissionType.ViewAllObjects);
+            var modifyAllData = permissionSet.FirstOrDefault(x => x == (int) PermissionType.ModifyAllObjects);
+            var viewAllData = permissionSet.FirstOrDefault(x => x == (int) PermissionType.ViewAllObjects);
 
             if (viewAllData != 0 && permissionType == PermissionType.ReadObject) return true;
             if (modifyAllData != 0) return true;
 
-            var currentPermission = permissionSet.FirstOrDefault(x => x == permissionType);
+            var currentPermission = permissionSet.FirstOrDefault(x => x == (int) permissionType);
             if (currentPermission != 0) return true;
 
             return false;

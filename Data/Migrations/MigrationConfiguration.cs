@@ -273,10 +273,25 @@ namespace Data.Migrations
             where TConstantDO : class, IStateTemplate<TConstantsType>, new()
         {
             FieldInfo[] constants = typeof(TConstantsType).GetFields();
-            var instructionsToAdd = (from constant in constants
-                                     let name = constant.Name
-                                     let value = constant.GetValue(null)
-                                     select creatorFunc((int)value, name)).ToList();
+            List<TConstantDO> instructionsToAdd;
+            if (typeof (TConstantsType).BaseType == typeof (Enum))
+            {
+                var enumValues = Enum.GetValues(typeof(TConstantsType)).Cast<TConstantsType>().ToList();
+
+                instructionsToAdd = (from constant in enumValues
+                    let name = constant.ToString()
+                    let value = constant
+                    select creatorFunc(Convert.ToInt32(value), name)).ToList();
+            }
+            else
+            {
+                instructionsToAdd = (from constant in constants
+                                         let name = constant.Name
+                                         let value = constant.GetValue(null)
+                                         select creatorFunc((int)value, name)).ToList();
+            }
+
+
 
             //First, we find rows in the DB that don't exist in our seeding. We delete those.
             //Then, we find rows in our seeding that don't exist in the DB. We create those ones (or update the name).
@@ -792,15 +807,15 @@ namespace Data.Migrations
             var repo = new GenericRepository<_PermissionTypeTemplate>(uow);
 
             permissionSet.Permissions.Clear();
-            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x=>x.Id == PermissionType.CreateObject));
-            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == PermissionType.ReadObject));
-            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == PermissionType.EditObject));
-            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == PermissionType.DeleteObject));
-            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == PermissionType.RunObject));
+            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x=>x.Id == (int) PermissionType.CreateObject));
+            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.ReadObject));
+            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.EditObject));
+            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.DeleteObject));
+            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.RunObject));
             if (isFullSet)
             {
-                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == PermissionType.ViewAllObjects));
-                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == PermissionType.ModifyAllObjects));
+                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.ViewAllObjects));
+                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.ModifyAllObjects));
             }
 
             if (permissionSet.Id == Guid.Empty)
