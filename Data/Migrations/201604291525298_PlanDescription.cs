@@ -16,6 +16,7 @@ namespace Data.Migrations
                         Version = c.String(),
                         ActivityTemplateId = c.Guid(nullable: false),
                         Status = c.Int(nullable: false),
+                        CrateStorage = c.String(),
                         LastUpdated = c.DateTimeOffset(nullable: false, precision: 7),
                         CreateDate = c.DateTimeOffset(nullable: false, precision: 7),
                     })

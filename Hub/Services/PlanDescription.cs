@@ -79,7 +79,8 @@ namespace Hub.Services
                     var subplan = new SubPlanDO() { Name = startingActivity.SubPlanName };
                     if (planDescription.StartingPlanNodeDescription.Id == startingActivity.Id)
                         planDO.StartingSubPlan = subplan;
-                    planDO.ChildNodes.Add(subplan);
+                    else
+                        planDO.ChildNodes.Add(subplan);
                     BuildAPlan(userId, 1, subplan, planDescription, startingActivity, planDO);
                 }
 
@@ -119,6 +120,7 @@ namespace Hub.Services
         private static ActivityDO CreateActivityDO(string userId, int ordering, PlanNodeDO planNodeDO, PlanNodeDescriptionDO parentNode, PlanDO planDO)
         {
             var activityDO = new ActivityDO();
+            activityDO.CrateStorage = parentNode.ActivityDescription.CrateStorage;
             activityDO.ActivityTemplateId = parentNode.ActivityDescription.ActivityTemplateId;
             activityDO.Fr8AccountId = userId;
             activityDO.Label = parentNode.Name;
@@ -205,6 +207,7 @@ namespace Hub.Services
                 Name = firstActivity.Label,
                 Status = ActivityDescriptionStatus.Primary,
                 Version = template.Version,
+                CrateStorage = firstActivity.CrateStorage
             };
             planNode.Transitions = new List<ActivityTransitionDO>();
             return planNode;
