@@ -384,6 +384,7 @@
     <Compile Include="Interfaces\Manifests\OperationalStateCM.InternalStates.cs" />
     <Compile Include="Interfaces\Manifests\SalesforceEventCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardAccountingTransactionCM.cs" />
+    <Compile Include="Interfaces\Manifests\StandardBusinessFactCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFileListCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFr8PlansCM .cs" />
     <Compile Include="Interfaces\Manifests\DocuSignEnvelopeCM.cs" />
@@ -741,6 +742,10 @@
     <Compile Include="Migrations\201604250944024_AddThemeToOrganization.cs" />
     <Compile Include="Migrations\201604250944024_AddThemeToOrganization.Designer.cs">
       <DependentUpon>201604250944024_AddThemeToOrganization.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201604272231431_AddExternalDomainIdToAuthorizationToken.cs" />
+    <Compile Include="Migrations\201604272231431_AddExternalDomainIdToAuthorizationToken.Designer.cs">
+      <DependentUpon>201604272231431_AddExternalDomainIdToAuthorizationToken.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1282,6 +1287,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604281454422_PlanDescription.resx">
       <DependentUpon>201604281454422_PlanDescription.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604272231431_AddExternalDomainIdToAuthorizationToken.resx">
+      <DependentUpon>201604272231431_AddExternalDomainIdToAuthorizationToken.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

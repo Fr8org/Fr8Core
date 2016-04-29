@@ -8,8 +8,8 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
-using Newtonsoft.Json;
 using Hub.Managers;
+using Newtonsoft.Json;
 using TerminalBase.Infrastructure;
 
 namespace terminalDocuSign.Actions

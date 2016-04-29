@@ -90,7 +90,15 @@ namespace UtilitiesTesting.Fixtures
                 Version = "1"
             };
         }
-
+        public static ActivityTemplateDTO MonitorFormResponsesActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Monitor_Form_Responses",
+                Version = "1"
+            };
+        }
         public static ActivityTemplateDTO BuildMessageActivityTemplate()
         {
             return new ActivityTemplateDTO()
