@@ -732,9 +732,9 @@
     <Compile Include="Migrations\201604272231431_AddExternalDomainIdToAuthorizationToken.Designer.cs">
       <DependentUpon>201604272231431_AddExternalDomainIdToAuthorizationToken.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201604241356070_Security_Infrastructure.cs" />
-    <Compile Include="Migrations\201604241356070_Security_Infrastructure.Designer.cs">
-      <DependentUpon>201604241356070_Security_Infrastructure.cs</DependentUpon>
+    <Compile Include="Migrations\201604292019158_Security_Infrastructure.cs" />
+    <Compile Include="Migrations\201604292019158_Security_Infrastructure.Designer.cs">
+      <DependentUpon>201604292019158_Security_Infrastructure.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1272,8 +1272,8 @@
     <EmbeddedResource Include="Migrations\201604272231431_AddExternalDomainIdToAuthorizationToken.resx">
       <DependentUpon>201604272231431_AddExternalDomainIdToAuthorizationToken.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201604241356070_Security_Infrastructure.resx">
-      <DependentUpon>201604241356070_Security_Infrastructure.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201604292019158_Security_Infrastructure.resx">
+      <DependentUpon>201604292019158_Security_Infrastructure.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

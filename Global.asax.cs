@@ -23,7 +23,7 @@ using Newtonsoft.Json.Serialization;
 using Segment;
 using StructureMap;
 using Utilities;
-using Logger = Google.Apis.Util.Utilities.Logging.Logger;
+using Logger = Utilities.Logging.Logger;
 using HubWeb.Infrastructure;
 
 namespace HubWeb
