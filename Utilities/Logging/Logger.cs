@@ -84,9 +84,6 @@ namespace Utilities.Logging
             return color + message + "\x1b[0m";
         }
 
-
-
-
         /// <summary>
         /// Logs message with log4net
         /// </summary>
@@ -151,8 +148,6 @@ namespace Utilities.Logging
         {
             LogMessageWithNamedLogger(message, EventType.Error, 3, loggerName);
         }
-
-
 
         #endregion
 
