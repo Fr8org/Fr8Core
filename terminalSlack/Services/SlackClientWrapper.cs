@@ -69,7 +69,7 @@ namespace terminalSlack.Services
             lock (_subscribedActivities)
             {
                 _subscribedActivities.Remove(activityId);
-                return _subscribedActivities.Count > 0;
+                return _subscribedActivities.Count == 0;
             }
         }
 
