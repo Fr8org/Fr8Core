@@ -131,17 +131,8 @@ namespace terminalDocuSignTests.Integration
                 {
                     await Task.Delay(SingleAwaitPeriod);
 
-                    var envelopes = unitOfWork.MultiTenantObjectRepository
-                        .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id.ToString()).ToList<DocuSignEnvelopeCM_v2>();
-
-                    mtDataCountAfter = envelopes.Count();
-
-                    Debug.WriteLine($"There are {mtDataCountAfter} local items");
-
-                    foreach (var envelope in envelopes)
-                    {
-                        Debug.WriteLine($"Local Envelope: {envelope.EnvelopeId} - {envelope.CreateDate}");
-                    }
+                    mtDataCountAfter = unitOfWork.MultiTenantObjectRepository
+                        .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id.ToString()).Count();
 
                     if (mtDataCountBefore < mtDataCountAfter)
                     {
@@ -150,7 +141,7 @@ namespace terminalDocuSignTests.Integration
                 }
 
                 Assert.IsTrue(mtDataCountBefore < mtDataCountAfter,
-                    $"The number of Local  MtData records for user {UserAccountName} remained unchanged within {MaxAwaitPeriod} miliseconds.");
+                    $"The number of Local MtData ({mtDataCountAfter}) records for user {UserAccountName} remained unchanged within {MaxAwaitPeriod} miliseconds.");
             }
         }
 

@@ -29,6 +29,8 @@ namespace terminalDocuSign.Services.New_Api
 
     public class DocuSignManager : IDocuSignManager
     {
+        public const string DocusignTerminalName = "terminalDocuSign";
+
         public DocuSignApiConfiguration SetUp(AuthorizationTokenDO authTokenDO)
         {
             string baseUrl = string.Empty;
