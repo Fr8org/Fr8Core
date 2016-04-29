@@ -5,6 +5,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Threading;
 using System.Web;
+using System.Web.Hosting;
 using Microsoft.AspNet.Identity;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Microsoft.Owin;
@@ -24,6 +25,13 @@ namespace Hub.Security
 {
     internal class SecurityServices : ISecurityServices
     {
+        private ISecurityObjectsStorageProvider _securityObjectStorageProvider;
+
+        public SecurityServices(ISecurityObjectsStorageProvider securityObjectStorageProvider)
+        {
+            _securityObjectStorageProvider = securityObjectStorageProvider;
+        }
+
         public void Login(IUnitOfWork uow, Fr8AccountDO fr8AccountDO)
         {
             ClaimsIdentity identity = GetIdentity(uow, fr8AccountDO);
@@ -141,10 +149,8 @@ namespace Hub.Security
             if (!roles.Any())
                 return true;
 
-            var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
-            
             //first check Record Based Permission.
-            var objRolePermissionWrapper = securityStorageProvider.GetRecordBasedPermissionSetForObject(curObjectId);
+            var objRolePermissionWrapper = _securityObjectStorageProvider.GetRecordBasedPermissionSetForObject(curObjectId);
             if (objRolePermissionWrapper.RolePermissions.Any() || objRolePermissionWrapper.Properties.Any())
             {
                 if (string.IsNullOrEmpty(propertyName))
@@ -161,7 +167,7 @@ namespace Hub.Security
             }
 
             //Object Based permission set checks
-            var permissionSets = securityStorageProvider.GetObjectBasedPermissionSetForObject(curObjectId, curObjectType, roles);
+            var permissionSets = _securityObjectStorageProvider.GetObjectBasedPermissionSetForObject(curObjectId, curObjectType, roles);
             return EvaluatePermissionSet(permissionType, permissionSets);
         }
 
@@ -170,11 +176,11 @@ namespace Hub.Security
             var modifyAllData = permissionSet.FirstOrDefault(x => x == PermissionType.ModifyAllObjects);
             var viewAllData = permissionSet.FirstOrDefault(x => x == PermissionType.ViewAllObjects);
 
-            if (viewAllData != default(int) && permissionType == PermissionType.ReadObject) return true;
-            if (modifyAllData != default(int)) return true;
+            if (viewAllData != 0 && permissionType == PermissionType.ReadObject) return true;
+            if (modifyAllData != 0) return true;
 
             var currentPermission = permissionSet.FirstOrDefault(x => x == permissionType);
-            if (currentPermission != default(int)) return true;
+            if (currentPermission != 0) return true;
 
             return false;
         }

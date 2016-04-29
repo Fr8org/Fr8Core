@@ -9,20 +9,12 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Data.States;
 using HealthMonitor.Utility;
 using HealthMonitorUtility;
-using Hub.Services;
-using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
-using Utilities.Configuration.Azure;
-using terminalDocuSignTests.Fixtures;
 using Newtonsoft.Json;
-using terminalDocuSign.DataTransferObjects;
 using System.Diagnostics;
 using AutoMapper;
-using TerminalBase.Infrastructure;
-using Hub.Managers;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -104,7 +96,7 @@ namespace terminalDocuSignTests.Integration
                 await Task.Delay(SingleAwaitPeriod);
 
                 //send envelope
-                await SendDocuSignTestEnvelope(docuSignManager, loginInfo, authTokenDO);
+                SendDocuSignTestEnvelope(docuSignManager, loginInfo, authTokenDO);
 
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
@@ -115,8 +107,7 @@ namespace terminalDocuSignTests.Integration
                     await Task.Delay(SingleAwaitPeriod);
 
                     mtDataCountAfter = unitOfWork.MultiTenantObjectRepository
-                        .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id.ToString())
-                        .Count();
+                        .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id.ToString()).Count();
 
                     if (mtDataCountBefore < mtDataCountAfter)
                     {
@@ -124,16 +115,15 @@ namespace terminalDocuSignTests.Integration
                     }
                 }
 
-
                 Assert.IsTrue(mtDataCountBefore < mtDataCountAfter,
-                    $"The number of MtData records for user {UserAccountName} remained unchanged within {MaxAwaitPeriod} miliseconds.");
+                    $"The number of MtData: ({mtDataCountAfter}) records for user {UserAccountName} remained unchanged within {MaxAwaitPeriod} miliseconds.");
             }
         }
 
         private async Task RecreateDefaultAuthToken(IUnitOfWork uow,
             Fr8AccountDO account, TerminalDO docuSignTerminal)
         {
-            Debug.WriteLine($"Reauthorizing tokens for {account.EmailAddress.Address}");
+            Console.WriteLine($"Reauthorizing tokens for {account.EmailAddress.Address}");
             var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
                 _baseUrl + "manageauthtoken/"
             );
@@ -170,30 +160,6 @@ namespace terminalDocuSignTests.Integration
                 tokenResponse["authTokenId"],
                 "AuthTokenId is missing in API response."
             );
-
-            var tokenId = Guid.Parse(tokenResponse["authTokenId"].Value<string>());
-
-            AssignAuthTokens(uow, account, tokenId);
-        }
-
-        private void AssignAuthTokens(IUnitOfWork uow, Fr8AccountDO account, Guid tokenId)
-        {
-            var plans = uow.PlanRepository.GetPlanQueryUncached().Where(x => x.Fr8AccountId == account.Id && x.Name == "MonitorAllDocuSignEvents" && x.PlanState == PlanState.Active).Select(x => x.Id).ToArray();
-
-            if (plans.Length == 0)
-            {
-                throw new ApplicationException("Could not find MonitorAllDocuSignEvents plan.");
-            }
-
-            foreach (var planId in plans)
-            {
-                foreach (var activity in uow.PlanRepository.GetById<PlanNodeDO>(planId).GetDescendants().OfType<ActivityDO>())
-                {
-                    activity.AuthorizationTokenId = tokenId;
-                }
-            }
-
-            uow.SaveChanges();
         }
 
         private async Task<AuthorizationTokenDTO> Authenticate()
@@ -216,7 +182,7 @@ namespace terminalDocuSignTests.Integration
             return docuSignToken;
         }
 
-        private async Task SendDocuSignTestEnvelope(DocuSignManager docuSignManager, DocuSignApiConfiguration loginInfo, AuthorizationTokenDO authTokenDO)
+        private  void SendDocuSignTestEnvelope(DocuSignManager docuSignManager, DocuSignApiConfiguration loginInfo, AuthorizationTokenDO authTokenDO)
         {
             var rolesList = new List<FieldDTO>()
             {

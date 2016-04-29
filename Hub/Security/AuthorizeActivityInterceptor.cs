@@ -18,6 +18,13 @@ namespace Hub.Security
     /// </summary>
     public class AuthorizeActivityInterceptor : IInterceptor
     {
+        private ISecurityServices _securityServices;
+
+        public AuthorizeActivityInterceptor(ISecurityServices securityServices)
+        {
+            _securityServices = securityServices;
+        }
+
         public void Intercept(IInvocation invocation)
         {
             AuthorizeActivity(invocation);
@@ -78,9 +85,8 @@ namespace Hub.Security
                     var property = parameter.GetType().GetProperty("Id");
                     objectId = property.GetValue(parameter).ToString();
                 }
-                
-                ISecurityServices securityServices = ObjectFactory.GetInstance<ISecurityServices>();
-                if (securityServices.AuthorizeActivity(authorizeAttribute.Permission, objectId, authorizeAttribute.TargetType.Name))
+               
+                if (_securityServices.AuthorizeActivity(authorizeAttribute.Permission, objectId, authorizeAttribute.TargetType.Name))
                 {
                     invocation.Proceed();
                 }
@@ -112,8 +118,7 @@ namespace Hub.Security
                 invocation.Proceed();
             }
 
-            ISecurityServices securityServices = ObjectFactory.GetInstance<ISecurityServices>();
-            if (securityServices.AuthorizeActivity(authorizeAttribute.Permission, objectId, authorizeAttribute.TargetType.Name))
+            if (_securityServices.AuthorizeActivity(authorizeAttribute.Permission, objectId, authorizeAttribute.TargetType.Name))
             {
                 invocation.Proceed();
                 return;

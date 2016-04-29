@@ -294,12 +294,13 @@
     <Compile Include="Interfaces\DataTransferObjects\ActivityResponseDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ExternalObjectHandleDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\IncomingCratesDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\OrganizationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalNotificationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AlarmDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AuthenticateResponse.cs" />
     <Compile Include="Interfaces\DataTransferObjects\CrateDescriptionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventLoggingDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\FactDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\HistoryItemDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\QueryFieldType.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldValidationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityDTO.cs" />
@@ -376,6 +377,7 @@
     <Compile Include="Interfaces\Manifests\OperationalStateCM.InternalStates.cs" />
     <Compile Include="Interfaces\Manifests\SalesforceEventCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardAccountingTransactionCM.cs" />
+    <Compile Include="Interfaces\Manifests\StandardBusinessFactCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFileListCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFr8PlansCM .cs" />
     <Compile Include="Interfaces\Manifests\DocuSignEnvelopeCM.cs" />
@@ -722,13 +724,13 @@
     <Compile Include="Migrations\201604191731406_AddLabelToTerminals.Designer.cs">
       <DependentUpon>201604191731406_AddLabelToTerminals.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201604211556495_RenamePrivilegesToPermission.cs" />
-    <Compile Include="Migrations\201604211556495_RenamePrivilegesToPermission.Designer.cs">
-      <DependentUpon>201604211556495_RenamePrivilegesToPermission.cs</DependentUpon>
+    <Compile Include="Migrations\201604250944024_AddThemeToOrganization.cs" />
+    <Compile Include="Migrations\201604250944024_AddThemeToOrganization.Designer.cs">
+      <DependentUpon>201604250944024_AddThemeToOrganization.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201604221404010_Drop_Old_Profile_Tables.cs" />
-    <Compile Include="Migrations\201604221404010_Drop_Old_Profile_Tables.Designer.cs">
-      <DependentUpon>201604221404010_Drop_Old_Profile_Tables.cs</DependentUpon>
+    <Compile Include="Migrations\201604272231431_AddExternalDomainIdToAuthorizationToken.cs" />
+    <Compile Include="Migrations\201604272231431_AddExternalDomainIdToAuthorizationToken.Designer.cs">
+      <DependentUpon>201604272231431_AddExternalDomainIdToAuthorizationToken.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201604241356070_Security_Infrastructure.cs" />
     <Compile Include="Migrations\201604241356070_Security_Infrastructure.Designer.cs">
@@ -986,6 +988,7 @@
     <Compile Include="Crates\Helpers\LoggingDataCrateFactory.cs" />
     <Compile Include="Utility\JoinClasses\FileTags.cs" />
     <Compile Include="Utility\CopyPropertiesHelper.cs" />
+    <Compile Include="Utility\PagingExtensions.cs" />
     <Compile Include="Utility\TagDO.cs" />
     <Compile Include="Validations\ActionValidator.cs" />
     <Compile Include="Validations\ContainerValidator.cs" />
@@ -1263,11 +1266,11 @@
     <EmbeddedResource Include="Migrations\201604191731406_AddLabelToTerminals.resx">
       <DependentUpon>201604191731406_AddLabelToTerminals.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201604211556495_RenamePrivilegesToPermission.resx">
-      <DependentUpon>201604211556495_RenamePrivilegesToPermission.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201604250944024_AddThemeToOrganization.resx">
+      <DependentUpon>201604250944024_AddThemeToOrganization.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201604221404010_Drop_Old_Profile_Tables.resx">
-      <DependentUpon>201604221404010_Drop_Old_Profile_Tables.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201604272231431_AddExternalDomainIdToAuthorizationToken.resx">
+      <DependentUpon>201604272231431_AddExternalDomainIdToAuthorizationToken.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604241356070_Security_Infrastructure.resx">
       <DependentUpon>201604241356070_Security_Infrastructure.cs</DependentUpon>

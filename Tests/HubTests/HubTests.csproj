@@ -272,6 +272,7 @@
     <Compile Include="Managers\CommunicationManagerTest.cs" />
     <Compile Include="Managers\CrateManagerTests.cs" />
     <Compile Include="Managers\CrateManagerTests.Fixtures.cs" />
+    <Compile Include="Managers\EventReporterTests.cs" />
     <Compile Include="Managers\IncidentReporterTests.cs" />
     <Compile Include="Managers\OAuthAuthorizerTest.cs" />
     <Compile Include="Managers\PlanManagerTests.cs" />
@@ -315,6 +316,7 @@
     <Compile Include="Services\TagTests.cs" />
     <Compile Include="Services\TerminalServiceTests.cs" />
     <Compile Include="Services\UserServiceTests.cs" />
+    <Compile Include="Utilities\DateUtilityTests.cs" />
     <Compile Include="Validations\ValidationsTest.cs" />
     <Compile Include="Wrapper\DcousingAccountTest.cs" />
   </ItemGroup>

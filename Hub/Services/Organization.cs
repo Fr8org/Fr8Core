@@ -7,6 +7,8 @@ using Data.Repositories.Security.Entities;
 using Data.States;
 using Hub.Interfaces;
 using StructureMap;
+using Data.Interfaces.DataTransferObjects;
+using AutoMapper;
 
 namespace Hub.Services
 {
@@ -20,6 +22,33 @@ namespace Hub.Services
         public static string AdminOfOrganizationRoleName(string organizationName)
         {
             return $"AdminOfOrganization_{organizationName}";
+        }
+
+        public OrganizationDTO GetOrganizationById(int id) {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var organization = uow.OrganizationRepository.GetByKey(id);
+                var model = Mapper.Map<OrganizationDTO>(organization);
+                return model;
+            }
+        }
+
+        public OrganizationDTO UpdateOrganization(OrganizationDTO dto) {
+            OrganizationDO curOrganization = null;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                curOrganization = uow.OrganizationRepository.GetByKey(dto.Id);
+                if (curOrganization == null)
+                {
+                    throw new Exception(string.Format("Unable to find criteria by id = {0}", dto.Id));
+                }
+
+                Mapper.Map<OrganizationDTO, OrganizationDO>(dto, curOrganization);
+
+                uow.SaveChanges();
+            }
+            return Mapper.Map<OrganizationDTO>(curOrganization);
         }
 
         /// <summary>

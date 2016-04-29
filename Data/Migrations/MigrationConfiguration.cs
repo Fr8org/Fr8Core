@@ -740,16 +740,16 @@ namespace Data.Migrations
 
             profile.PermissionSets.Clear();
             //default permissions for Plans and PlanNodes
-            profile.PermissionSets.Add(AddPermissionSet(typeof(PlanNodeDO).Name, true, profile.Id,"System Administrator Permission Set", uow));
+            profile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), true, profile.Id,"System Administrator Permission Set", uow));
 
             //default permissions for ContainerDO
-            profile.PermissionSets.Add(AddPermissionSet(typeof(ContainerDO).Name, true, profile.Id, "System Administrator Permission Set", uow));
+            profile.PermissionSets.Add(AddPermissionSet(nameof(ContainerDO), true, profile.Id, "System Administrator Permission Set", uow));
 
             //default permissions for Terminals
-            profile.PermissionSets.Add(AddPermissionSet(typeof(TerminalDO).Name, true, profile.Id, "System Administrator Permission Set", uow));
+            profile.PermissionSets.Add(AddPermissionSet(nameof(TerminalDO), true, profile.Id, "System Administrator Permission Set", uow));
 
             //default permissions for Users
-            profile.PermissionSets.Add(AddPermissionSet(typeof(Fr8AccountDO).Name, true, profile.Id, "System Administrator Permission Set", uow));
+            profile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), true, profile.Id, "System Administrator Permission Set", uow));
 
             //update existing roles to have sys admin profile //todo: check this when Standard User profile start using in system
             var roles = uow.AspNetRolesRepository.GetQuery().Where(x => x.ProfileId == null).ToList();
@@ -760,16 +760,16 @@ namespace Data.Migrations
             
             standardProfile.PermissionSets.Clear();
             //default permissions for Plans and PlanNodes
-            standardProfile.PermissionSets.Add(AddPermissionSet(typeof(PlanNodeDO).Name, false, standardProfile.Id, "Standard User Permission Set", uow));
+            standardProfile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), false, standardProfile.Id, "Standard User Permission Set", uow));
 
             //default permissions for ContainerDO
-            standardProfile.PermissionSets.Add(AddPermissionSet(typeof(ContainerDO).Name, false, standardProfile.Id, "Standard User Permission Set", uow));
+            standardProfile.PermissionSets.Add(AddPermissionSet(nameof(ContainerDO), false, standardProfile.Id, "Standard User Permission Set", uow));
 
             //default permissions for Terminals
-            standardProfile.PermissionSets.Add(AddPermissionSet(typeof(TerminalDO).Name, false, standardProfile.Id, "Standard User Permission Set", uow));
+            standardProfile.PermissionSets.Add(AddPermissionSet(nameof(TerminalDO), false, standardProfile.Id, "Standard User Permission Set", uow));
 
             //default permissions for Users
-            standardProfile.PermissionSets.Add(AddPermissionSet(typeof(Fr8AccountDO).Name, false, standardProfile.Id, "Standard User Permission Set", uow));
+            standardProfile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), false, standardProfile.Id, "Standard User Permission Set", uow));
         }
 
         private static PermissionSetDO AddPermissionSet(string objectType, bool isFullSet, Guid profileId, string name, IUnitOfWork uow)

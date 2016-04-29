@@ -28,8 +28,8 @@ namespace HubTests.Security
         private ISecurityServices _securityServices;
         private IActivity _activity;
         private ISecurityObjectsStorageProvider _objectsStorageProvider;
-        private Guid readRolePermissionId;
-        private Guid editRolePermissionId;
+        private Guid _readRolePermissionId;
+        private Guid _editRolePermissionId;
 
 
         private CustomDataObject customDataObject { get; set; }
