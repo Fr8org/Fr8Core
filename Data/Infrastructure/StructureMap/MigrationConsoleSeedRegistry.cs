@@ -36,10 +36,7 @@ namespace Data.Infrastructure
             For<ISecurityCacheExpirationStrategy>().Use(_ => new SlidingExpirationStrategy(planCacheExpiration)).Singleton();
             For<IEncryptionService>().Use<EncryptionService>().Singleton();
             For<IPlanStorageProvider>().Use<PlanStorageProviderEf>();
-
-            //*************** !!!!!!!!CHANGE TO REAL PROVIDER!!!!!!!!! ********************//
             For<IEncryptionProvider>().Use<BypassEncryptionProvider>().Singleton();
-
             For<PlanStorage>().Use<PlanStorage>();
         }
     }

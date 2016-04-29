@@ -79,6 +79,8 @@ namespace Hub.Services
                     activityDTO.AuthToken = new AuthorizationTokenDTO
                     {
                         Id = authToken.Id.ToString(),
+                        ExternalAccountId = authToken.ExternalAccountId,
+                        ExternalDomainId = authToken.ExternalDomainId,
                         UserId = authToken.UserID,
                         Token = authToken.Token,
                         AdditionalAttributes = authToken.AdditionalAttributes
@@ -170,6 +172,7 @@ namespace Hub.Services
                     {
                         Token = terminalResponseAuthTokenDTO.Token,
                         ExternalAccountId = terminalResponseAuthTokenDTO.ExternalAccountId,
+                        ExternalDomainId = terminalResponseAuthTokenDTO.ExternalDomainId,
                         TerminalID = curTerminal.Id,
                         UserDO = curAccount,
                         AdditionalAttributes = terminalResponseAuthTokenDTO.AdditionalAttributes,
@@ -257,6 +260,7 @@ namespace Hub.Services
                 {
                     authTokenByExternalAccountId.Token = authTokenDTO.Token;
                     authTokenByExternalState.ExternalAccountId = authTokenDTO.ExternalAccountId;
+                    authTokenByExternalState.ExternalDomainId = authTokenDTO.ExternalDomainId;
                     authTokenByExternalAccountId.ExternalStateToken = null;
                     authTokenByExternalState.AdditionalAttributes = authTokenDTO.AdditionalAttributes;
 
@@ -268,6 +272,7 @@ namespace Hub.Services
                 {
                     authTokenByExternalState.Token = authTokenDTO.Token;
                     authTokenByExternalState.ExternalAccountId = authTokenDTO.ExternalAccountId;
+                    authTokenByExternalState.ExternalDomainId = authTokenDTO.ExternalDomainId;
                     authTokenByExternalState.ExternalStateToken = null;
                     authTokenByExternalState.AdditionalAttributes = authTokenDTO.AdditionalAttributes;
 

@@ -1,21 +1,19 @@
 ﻿using System;
 using System.Globalization;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Crates;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Hub.Managers;
-using TerminalBase.Infrastructure;
-using terminalDocuSign.Infrastructure;
-using TerminalBase.BaseClasses;
-using Data.Entities;
-using Utilities.Configuration.Azure;
-using Data.Constants;
 using Data.States;
+using Hub.Managers;
 using Newtonsoft.Json;
 using terminalDocuSign.DataTransferObjects;
+using terminalDocuSign.Infrastructure;
+using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {

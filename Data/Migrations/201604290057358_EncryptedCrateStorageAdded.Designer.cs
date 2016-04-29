@@ -13,7 +13,7 @@ namespace Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201604272239183_EncryptedCrateStorageAdded"; }
+            get { return "201604290057358_EncryptedCrateStorageAdded"; }
         }
         
         string IMigrationMetadata.Source

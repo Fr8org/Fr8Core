@@ -46,6 +46,17 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
+        public static ActivityDTO Monitor_Form_Responses_v1_InitialConfiguration()
+        {
+            var activityTemplate = MonitorFormResponsesActivityTemplate();
+            return new ActivityDTO
+            {
+                Id = Guid.NewGuid(),
+                Label = "Monitor Form Responses",
+                AuthToken = GetGoogleAuthorizationToken(),
+                ActivityTemplate = activityTemplate
+            };
+        }
         public static ActivityDTO Build_Message_v1_InitialConfiguration()
         {
             var activityTemplate = BuildMessageActivityTemplate();

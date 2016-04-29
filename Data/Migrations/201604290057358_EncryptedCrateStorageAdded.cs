@@ -2,7 +2,7 @@ namespace Data.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class EncryptedCrateStorageAdded : DbMigration
     {
         public override void Up()
@@ -20,7 +20,7 @@ namespace Data.Migrations
 
             CreateIndex("dbo.EncryptionTokens", "PeerId");
         }
-        
+
         public override void Down()
         {
             DropColumn("dbo.Actions", "EncryptedCrateStorage");

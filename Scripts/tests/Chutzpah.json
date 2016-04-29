@@ -98,6 +98,15 @@
       "Path": "../../bower_components/angular-resource/angular-resource.min.js"
     },
     {
+      "Path": "../../bower_components/tinycolor/dist/tinycolor-min.js"
+    },
+    {
+      "Path": "../../bower_components/md-color-picker/dist/mdColorPicker.min.js"
+    },
+    {
+      "Path": "../../bower_components/angular-material-data-table/dist/md-data-table.min.js"
+    },
+    {
       "Path": "../app/app.js"
     },
     {
