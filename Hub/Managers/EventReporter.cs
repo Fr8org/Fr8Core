@@ -820,11 +820,12 @@ namespace Hub.Managers
             historyItem.Data = historyItem.Data ?? "";
             var dataLen = historyItem.Data.Length > 256 ? 255 : historyItem.Data.Length;
             var substring = historyItem.Data.Substring(0, dataLen);
+            substring = dataLen == 255 ? substring + "..." : substring;
 
             var message = $"{itemType}: {historyItem.PrimaryCategory} " +
                               $"{historyItem.SecondaryCategory}" +
                               $"{historyItem.Activity}, " +
-                              $"Data = {substring}...., " +
+                              $"Data = {substring}, " +
                               $"Fr8User = {historyItem.Fr8UserId}, " +
                               $"ObjectId = {historyItem.ObjectId}";
 
