@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Data.Entities;
@@ -39,10 +40,12 @@ namespace terminalSlack.Services
 
         public Task Subscribe(AuthorizationTokenDO token, Guid activityId)
         {
+            Logger.GetLogger().Info($"SlackEventManager: subscribing on thread {Thread.CurrentThread.ManagedThreadId}");
             lock (_locker)
             {
                 if (_disposed)
                 {
+                    Logger.GetLogger().Info("SlackEventManager: can't subscribe to disposed object");
                     return Task.FromResult(0);
                 }
                 Unsubscribe(activityId);
@@ -50,6 +53,7 @@ namespace terminalSlack.Services
                 var teamId = token.ExternalDomainId;
                 if (!_clientsByTeamId.TryGetValue(teamId, out client))
                 {
+                    Logger.GetLogger().Info("SlackEventManager: creating new subscription and opening socket");
                     //This team doesn't have subscription yet - create a new subscription
                     client = new SlackClientWrapper(token.Token, token.ExternalDomainId);
                     client.MessageReceived += OnMessageReceived;
@@ -65,6 +69,7 @@ namespace terminalSlack.Services
 
         private void OnSubscriptionFailed(SlackClientWrapper client)
         {
+            Logger.GetLogger().Info($"SlackEventManager: subscription fail on thread {Thread.CurrentThread.ManagedThreadId}");
             lock (_locker)
             {
                 foreach (var acitivityId in client.SubscribedActivities)
@@ -78,6 +83,7 @@ namespace terminalSlack.Services
 
         public void Unsubscribe(Guid activityId)
         {
+            Logger.GetLogger().Info($"SlackEventManager: usubscribing in thread {Thread.CurrentThread.ManagedThreadId}");
             lock (_locker)
             {
                 if (_disposed)
@@ -95,6 +101,7 @@ namespace terminalSlack.Services
                     //We've removed last subscription - disconnect from RTM websocket and remove it
                     if (client.Unsubsribe(activityId))
                     {
+                        Logger.GetLogger().Info("SlackEventManager: unsubscribing closes socket");
                         _clientsByTeamId.Remove(existingTeamId);
                         client.MessageReceived -= OnMessageReceived;
                         client.Dispose();
@@ -105,6 +112,7 @@ namespace terminalSlack.Services
 
         public void Dispose()
         {
+            Logger.GetLogger().Info("SlackEventManager: Dispose() closes all clients");
             lock (_locker)
             {
                 if (_disposed)
@@ -122,6 +130,7 @@ namespace terminalSlack.Services
 
         private async void OnMessageReceived(object sender, MessageReceivedEventArgs e)
         {
+            Logger.GetLogger().Info("SlackEventManager: message is received");
             //The naming conventions of message property is for backwards compatibility with existing event processing logic
             var valuePairs = new List<KeyValuePair<string, string>>(8)
                              {
