@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class MMSalesforceSolution : IMigrationMetadata
+    public sealed partial class AddExternalDomainIdToAuthorizationToken : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(MMSalesforceSolution));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddExternalDomainIdToAuthorizationToken));
         
         string IMigrationMetadata.Id
         {
-            get { return "201604152259367_MMSalesforceSolution"; }
+            get { return "201604272231431_AddExternalDomainIdToAuthorizationToken"; }
         }
         
         string IMigrationMetadata.Source

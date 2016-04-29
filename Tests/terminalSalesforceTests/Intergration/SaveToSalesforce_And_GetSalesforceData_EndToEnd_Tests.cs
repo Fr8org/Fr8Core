@@ -1,5 +1,4 @@
-﻿
-using Data.Control;
+﻿using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;

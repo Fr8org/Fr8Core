@@ -41,7 +41,6 @@ namespace terminalSlackTests.Integration
 
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             Assert.IsNotNull(crateStorage.FirstCrateOrDefault<CrateDescriptionCM>(x => x.Label == RuntimeCrateManager.RuntimeCrateDescriptionsCrateLabel), "Activity storage doesn't contain crate with runtime crates descriptions");
