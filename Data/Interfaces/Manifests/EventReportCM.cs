@@ -11,6 +11,7 @@ namespace Data.Interfaces.Manifests
         public string EventNames { get; set; }
         public string ContainerDoId { get; set; }
         public string ExternalAccountId { get; set; }
+        public string ExternalDomainId { get; set; }
         public ICrateStorage EventPayload { get; set; }
         public string Manufacturer { get; set; }
         public string Source { get; set; }
@@ -31,6 +32,7 @@ namespace Data.Interfaces.Manifests
             public string EventNames { get; set; }
             public string ContainerDoId { get; set; }
             public string ExternalAccountId { get; set; }
+            public string ExternalDomainId { get; set; }
             public CrateStorageDTO EventPayload { get; set; }
             public string Manufacturer { get; set; }
         }
@@ -52,6 +54,7 @@ namespace Data.Interfaces.Manifests
                 EventNames = proxy.EventNames,
                 ContainerDoId = proxy.ContainerDoId,
                 ExternalAccountId = proxy.ExternalAccountId,
+                ExternalDomainId = proxy.ExternalDomainId,
                 EventPayload = storage,
                 Manufacturer = proxy.Manufacturer
             };
@@ -66,6 +69,7 @@ namespace Data.Interfaces.Manifests
                 EventNames = e.EventNames,
                 ContainerDoId = e.ContainerDoId,
                 ExternalAccountId = e.ExternalAccountId,
+                ExternalDomainId = e.ExternalDomainId,
                 Manufacturer = e.Manufacturer,
                 EventPayload = _storageSerizlier.ConvertToDto(e.EventPayload)
             };

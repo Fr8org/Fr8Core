@@ -4,24 +4,16 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
 using Data.Constants;
-using StructureMap;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using TerminalBase.Infrastructure;
-using Utilities.Configuration.Azure;
 using Newtonsoft.Json;
 using Data.Infrastructure;
 using Utilities.Logging;
 using Utilities;
 using System.Net.Http;
-using System.IO;
 using System.Linq;
-using System.Web.Routing;
-using System.Net;
-using System.Net.Http.Formatting;
 using System.Net.Http.Headers;
-using Hub.Exceptions;
-using System.Runtime.ExceptionServices;
 
 namespace TerminalBase.BaseClasses
 {
@@ -170,7 +162,11 @@ namespace TerminalBase.BaseClasses
         public async Task<object> HandleFr8Request(string curTerminal, string curActionPath, Fr8DataDTO curDataDTO)
         {
             if (curDataDTO?.ActivityDTO == null)
+            {
+                Logger.LogError($"curDataDTO activity DTO is null", curTerminal);
                 throw new ArgumentNullException(nameof(curDataDTO.ActivityDTO));
+            }
+                
 
             if (curDataDTO.ActivityDTO.ActivityTemplate == null)
                 throw new ArgumentException("ActivityTemplate is null", nameof(curDataDTO.ActivityDTO));
@@ -238,7 +234,7 @@ namespace TerminalBase.BaseClasses
                         }
                     case "run":
                     case "executechildactivities":
-                        {                            
+                        {
                             OnStartActivity(curTerminal, activityTemplateName, IntegrationTestMode);
                             var resultPayloadDTO = await (Task<PayloadDTO>)curMethodInfo
                                 .Invoke(curObject, new Object[] { curActivityDO, curDataDTO.ContainerId, curAuthTokenDO });
@@ -333,6 +329,8 @@ namespace TerminalBase.BaseClasses
                     PreserveReferencesHandling = PreserveReferencesHandling.Objects
                 };
 
+                Logger.GetLogger().Error($"Exception caught while processing {curActionPath} for {this.GetType()}", e);
+                Logger.LogError($"Exception caught while processing {curActionPath} for {this.GetType()} with exception {e.Data} and stack trace {e.StackTrace} and message {e.GetFullExceptionMessage()}", curTerminal);
                 var endpoint = (curActivityDO.ActivityTemplate != null && curActivityDO.ActivityTemplate.Terminal != null && curActivityDO.ActivityTemplate.Terminal.Endpoint != null) ? curActivityDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
                 EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActivityDO, settings), e, curActivityDO.Id.ToString());
 
