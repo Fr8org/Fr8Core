@@ -3,6 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web.UI.WebControls;
+using Data.Entities;
+using Data.Interfaces;
 using Data.Repositories.Security.Entities;
 using StructureMap;
 
@@ -17,6 +20,7 @@ namespace Data.Repositories.Security.StorageImpl.Cache
     public class SecurityObjectsStorage : ISecurityObjectsStorageProvider
     {
         private readonly ISecurityObjectsCache _cache;
+        //todo: provide a context like logic for sqlObjectsStorageProvider and connect it to UnitOfWork.SaveChanges()
         private readonly ISecurityObjectsStorageProvider _securityObjectStorageProvider;
 
         public SecurityObjectsStorage(ISecurityObjectsCache cache, ISecurityObjectsStorageProvider securityObjectStorageProvider)
@@ -25,52 +29,72 @@ namespace Data.Repositories.Security.StorageImpl.Cache
             _securityObjectStorageProvider = securityObjectStorageProvider;
         }
 
-        public int InsertRolePrivilege(RolePrivilege rolePrivilege)
+        public int InsertRolePermission(RolePermission rolePermission)
         {
-            return _securityObjectStorageProvider.InsertRolePrivilege(rolePrivilege);
+            return _securityObjectStorageProvider.InsertRolePermission(rolePermission);
         }
 
-        public int UpdateRolePrivilege(RolePrivilege rolePrivilege)
+        public int UpdateRolePermission(RolePermission rolePermission)
         {
-            return _securityObjectStorageProvider.UpdateRolePrivilege(rolePrivilege);
+            return _securityObjectStorageProvider.UpdateRolePermission(rolePermission);
         }
 
-        public int InsertObjectRolePrivilege(string dataObjectId, Guid rolePrivilegeId, string dataObjectType, string propertyName = null)
+        public int InsertObjectRolePermission(string dataObjectId, Guid rolePermissionId, string dataObjectType, string propertyName = null)
         {
-            var affectedRows = _securityObjectStorageProvider.InsertObjectRolePrivilege(dataObjectId, rolePrivilegeId, dataObjectType, propertyName);
+            var affectedRows = _securityObjectStorageProvider.InsertObjectRolePermission(dataObjectId, rolePermissionId, dataObjectType, propertyName);
 
             InvokeCacheUpdate(dataObjectId);
 
             return affectedRows;
         }
 
-        public int RemoveObjectRolePrivilege(string dataObjectId, Guid rolePrivilegeId, string propertyName = null)
+        public int RemoveObjectRolePermission(string dataObjectId, Guid rolePermissionId, string propertyName = null)
         {
-            var affectedRows = _securityObjectStorageProvider.RemoveObjectRolePrivilege(dataObjectId, rolePrivilegeId, propertyName);
+            var affectedRows = _securityObjectStorageProvider.RemoveObjectRolePermission(dataObjectId, rolePermissionId, propertyName);
 
             InvokeCacheUpdate(dataObjectId);
 
             return affectedRows;
         }
 
-        public ObjectRolePrivilegesDO GetRolePrivilegesForSecuredObject(string dataObjectId)
+        public ObjectRolePermissionsWrapper GetRecordBasedPermissionSetForObject(string dataObjectId)
         {
             lock (_cache)
             {
-                var rolePrivileges = _cache.Get(dataObjectId);
-                if (rolePrivileges == null)
-                {
-                    rolePrivileges = _securityObjectStorageProvider.GetRolePrivilegesForSecuredObject(dataObjectId);
-                    _cache.AddOrUpdate(dataObjectId, rolePrivileges);
-                }
+                var permissionSet = _cache.GetRecordBasedPermissionSet(dataObjectId);
+                if (permissionSet != null) return permissionSet;
 
-                return rolePrivileges;
+                permissionSet = _securityObjectStorageProvider.GetRecordBasedPermissionSetForObject(dataObjectId);
+                if (!permissionSet.RolePermissions.Any() && !permissionSet.Properties.Any())
+                    return new ObjectRolePermissionsWrapper();
+
+                _cache.AddOrUpdateRecordBasedPermissionSet(dataObjectId, permissionSet);
+                return permissionSet;
             }
         }
 
-        public List<RolePrivilege> GetRolePrivilegesForFr8Account(Guid fr8AccountId)
+        public List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, List<string> roleNames)
         {
-            return _securityObjectStorageProvider.GetRolePrivilegesForFr8Account(fr8AccountId);
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var result = new List<int>();
+                var roleCollection = uow.AspNetRolesRepository.GetQuery().Where(x=> roleNames.Contains(x.Name) && x.ProfileId.HasValue).ToList();
+                foreach (var role in roleCollection)
+                {
+                    lock (_cache)
+                    {
+                        var permissionSets = _cache.GetProfilePermissionSets(role.ProfileId.ToString());
+                        if (!permissionSets.Any())
+                        {
+                            permissionSets = uow.PermissionSetRepository.GetQuery().Where(x => x.ProfileId == role.ProfileId).ToList();
+                            _cache.AddOrUpdateProfile(role.ProfileId.ToString(), permissionSets);
+                        }
+                        result.AddRange(permissionSets.Where(x => x.ObjectType == dataObjectType).SelectMany(l => l.Permissions.Select(m => m.Id)).ToList());
+                    }
+                }
+
+                return result;
+            }
         }
 
         public void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType)
@@ -84,9 +108,9 @@ namespace Data.Repositories.Security.StorageImpl.Cache
         {
             lock (_cache)
             {
-                //update cache with new ObjectRolePrivilege
-                var rolePrivileges = GetRolePrivilegesForSecuredObject(dataObjectId);
-                _cache.AddOrUpdate(dataObjectId, rolePrivileges);
+                //update cache with new ObjectRolePermissions
+                var rolePermissions = GetRecordBasedPermissionSetForObject(dataObjectId);
+                _cache.AddOrUpdateRecordBasedPermissionSet(dataObjectId, rolePermissions);
             }
         }
     }

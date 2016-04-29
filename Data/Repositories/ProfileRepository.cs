@@ -5,16 +5,13 @@ namespace Data.Repositories
 {
     public class ProfileRepository : GenericRepository<ProfileDO>, IProfileRepository
     {
-        internal ProfileRepository(IUnitOfWork uow)
+        public ProfileRepository(IUnitOfWork uow)
             : base(uow)
         {
-
         }
     }
 
-
     public interface IProfileRepository : IGenericRepository<ProfileDO>
     {
-
     }
 }
