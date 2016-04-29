@@ -152,7 +152,8 @@ namespace terminalSlack.Actions
                 {
                     throw new ActivityExecutionException("Your authorization doesn't contain info about your Slack team. Please reauthorize with Slack to update your team info");
                 }
-                await ObjectFactory.GetInstance<ISlackEventManager>().Subscribe(AuthorizationToken, CurrentActivity.Id).ConfigureAwait(false);
+                //Try not to wait on this (test measure)
+                ObjectFactory.GetInstance<ISlackEventManager>().Subscribe(AuthorizationToken, CurrentActivity.Id);
                 RequestHubExecutionTermination("Plan successfully activated. It will wait and respond to specified Slack postings");
             }
         }
