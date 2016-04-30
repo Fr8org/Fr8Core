@@ -11,17 +11,14 @@ using NUnit.Framework;
 namespace terminalGoogleTests.Integration
 {
     /// <summary>
-    /// Mark test case class with [Explicit] attiribute.
+    /// Mark test case class with [Explicit] attribute.
     /// It prevents test case from running when CI is building the solution,
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
     public class Get_Google_Sheet_Data_v1Tests : BaseTerminalIntegrationTest
     {
-        public override string TerminalName
-        {
-            get { return "terminalGoogle"; }
-        }
+        public override string TerminalName => "terminalGoogle";
 
         /////////////
         /// Initial Configuration Tests Begin

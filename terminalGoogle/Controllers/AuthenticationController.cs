@@ -16,12 +16,12 @@ namespace terminalGoogle.Controllers
     {
         private const string curTerminal = "terminalGoogle";
 
-        private readonly IGoogleIntegration _google;
+        private readonly IGoogleIntegration _googleIntegration;
 
 
         public AuthenticationController()
         {
-            _google = new GoogleIntegration();
+            _googleIntegration = new GoogleIntegration();
         }
 
         [HttpPost]
@@ -29,7 +29,7 @@ namespace terminalGoogle.Controllers
         public ExternalAuthUrlDTO GenerateOAuthInitiationURL()
         {
             var externalStateToken = Guid.NewGuid().ToString();
-            var url = _google.CreateOAuth2AuthorizationUrl(externalStateToken);
+            var url = _googleIntegration.CreateOAuth2AuthorizationUrl(externalStateToken);
 
             var externalAuthUrlDTO = new ExternalAuthUrlDTO()
             {
@@ -55,8 +55,8 @@ namespace terminalGoogle.Controllers
                     throw new ApplicationException("Code or State is empty.");
                 }
 
-                var oauthToken = _google.GetToken(code);
-                var email = await _google.GetExternalUserId(oauthToken);
+                var oauthToken = _googleIntegration.GetToken(code);
+                var email = await _googleIntegration.GetExternalUserId(oauthToken);
 
                 return new AuthorizationTokenDTO()
                 {
@@ -67,7 +67,7 @@ namespace terminalGoogle.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex,externalAuthDTO.Fr8UserId);
+                ReportTerminalError(curTerminal, ex, externalAuthDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

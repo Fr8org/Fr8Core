@@ -42,7 +42,7 @@ namespace terminalGoogleTests.Integration
 
         [Test]
         [TestCase("foo", "bar", "12/31/9999")]
-        [TestCase("valid_token", "", "01/20/2001")]
+        [TestCase("valid_token", "refresh_token", "01/20/2001")]
         public async Task ShouldReturnFalse_WhenTokenInvalid(string accessToken, string refreshToken, DateTime expires)
         {
             // Arrange

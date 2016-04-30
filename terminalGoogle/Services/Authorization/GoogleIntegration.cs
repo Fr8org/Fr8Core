@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net;
 using System.Threading.Tasks;
 using Google.GData.Client;
 using Hub.Managers.APIManagers.Transmitters.Restful;
@@ -7,6 +8,7 @@ using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
 using Utilities.Configuration.Azure;
+using Utilities.Logging;
 
 namespace terminalGoogle.Services.Authorization
 {
@@ -66,10 +68,20 @@ namespace terminalGoogle.Services.Authorization
             };
         }
 
-        public async Task<string> GetExternalUserId(GoogleAuthDTO authDTO)
+        public GoogleAuthDTO RefreshToken(GoogleAuthDTO googleAuthDTO)
+        {
+            var parameters = CreateOAuth2Parameters(
+                accessToken: googleAuthDTO.AccessToken,
+                refreshToken: googleAuthDTO.RefreshToken);
+            OAuthUtil.RefreshAccessToken(parameters);
+            googleAuthDTO.AccessToken = parameters.AccessToken;
+            return googleAuthDTO;
+        }
+
+        public async Task<string> GetExternalUserId(GoogleAuthDTO googleAuthDTO)
         {
             var url = CloudConfigurationManager.GetSetting("GoogleUserProfileUrl");
-            url = url.Replace("%TOKEN%", authDTO.AccessToken);
+            url = url.Replace("%TOKEN%", googleAuthDTO.AccessToken);
 
             var jsonObj = await _client.GetAsync<JObject>(new Uri(url));
             return jsonObj.Value<string>("email");
@@ -84,8 +96,9 @@ namespace terminalGoogle.Services.Authorization
         {
             try
             {
+                googleAuthDTO = RefreshToken(googleAuthDTO);
                 // Checks token for expiration local
-                if (googleAuthDTO.Expires - DateTime.Now < TimeSpan.FromMinutes(5) 
+                if (googleAuthDTO.Expires - DateTime.Now < TimeSpan.FromMinutes(5)
                     && string.IsNullOrEmpty(googleAuthDTO.RefreshToken))
                 {
                     return false;
@@ -96,8 +109,14 @@ namespace terminalGoogle.Services.Authorization
                 await _client.GetAsync(new Uri(url));
                 return true;
             }
-            catch (RestfulServiceException)
+            catch (RestfulServiceException exception)
             {
+                Logger.LogError(exception.Message);
+                return false;
+            }
+            catch (WebException exception)
+            {
+                Logger.LogError(exception.Message);
                 return false;
             }
         }
