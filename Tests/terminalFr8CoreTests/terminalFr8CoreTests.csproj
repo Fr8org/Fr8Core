@@ -146,6 +146,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Integration\ConnectToSql_v1_Tests.cs" />
+    <Compile Include="Integration\GetDataFromFr8Warehouse_v1_Tests.cs" />
     <Compile Include="Unit\FilterObjectListByIncomingMessage_v1Tests.cs" />
     <Compile Include="Integration\SaveToFr8Warehouse_v1_Tests.cs" />
     <Compile Include="Integration\ExecuteSql_v1_Tests.cs" />

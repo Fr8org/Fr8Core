@@ -95,15 +95,18 @@ namespace Hub.Services
                 else
                 {
                     //find the corresponding DockyardAccount
-                    var authTokenList = uow.AuthorizationTokenRepository.GetPublicDataQuery()
-                        .Include(x => x.UserDO).Where(x => x.ExternalAccountId.Contains(eventReportMS.ExternalAccountId)).ToArray();
-                    var tasks = new List<Task>();
+                    //For team-wide events we use ExternalDomainId property (e.g. received Slack message should run all plans for respective Slack team)
+                    var authTokenList = uow.AuthorizationTokenRepository
+                        .GetPublicDataQuery()
+                        .Include(x => x.UserDO)
+                        .Where(x => x.ExternalAccountId.Contains(eventReportMS.ExternalAccountId)
+                                || (x.ExternalDomainId != null && x.ExternalDomainId == eventReportMS.ExternalDomainId))
+                        .ToArray();
                     foreach (var authToken in authTokenList)
                     {
-                        var curDockyardAccount = authToken.UserDO;
                         try
                         {
-                            FindAndExecuteAccountPlans(uow, eventReportMS, curCrateStandardEventReport, curDockyardAccount);
+                            FindAndExecuteAccountPlans(uow, eventReportMS, curCrateStandardEventReport, authToken.UserDO);
                         }
                         catch (Exception ex)
                         {
