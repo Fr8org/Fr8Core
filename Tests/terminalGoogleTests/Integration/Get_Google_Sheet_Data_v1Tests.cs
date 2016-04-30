@@ -1,11 +1,18 @@
-﻿using System.Linq;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Data.Crates;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using Hub.Managers;
+using Newtonsoft.Json;
 using NUnit.Framework;
+using StructureMap;
+using terminalGoogle.DataTransferObjects;
+using terminalGoogle.Services;
 using terminalGoogleTests.Unit;
 
 namespace terminalGoogleTests.Integration
@@ -43,7 +50,6 @@ namespace terminalGoogleTests.Integration
 
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             AssertCrateTypes_OnConfiguration(crateStorage);
@@ -86,7 +92,6 @@ namespace terminalGoogleTests.Integration
             //Assert
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             Assert.AreEqual(2, crateStorage.Count);
@@ -122,7 +127,6 @@ namespace terminalGoogleTests.Integration
             //Assert
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             Assert.AreEqual(2, crateStorage.Count);
@@ -157,7 +161,6 @@ namespace terminalGoogleTests.Integration
             //Assert
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             Assert.AreEqual(2, crateStorage.Count);

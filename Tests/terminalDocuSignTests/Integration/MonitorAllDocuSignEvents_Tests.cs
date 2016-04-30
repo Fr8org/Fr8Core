@@ -9,20 +9,12 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Data.States;
 using HealthMonitor.Utility;
 using HealthMonitorUtility;
-using Hub.Services;
-using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
-using Utilities.Configuration.Azure;
-using terminalDocuSignTests.Fixtures;
 using Newtonsoft.Json;
-using terminalDocuSign.DataTransferObjects;
 using System.Diagnostics;
 using AutoMapper;
-using TerminalBase.Infrastructure;
-using Hub.Managers;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -115,8 +107,7 @@ namespace terminalDocuSignTests.Integration
                     await Task.Delay(SingleAwaitPeriod);
 
                     mtDataCountAfter = unitOfWork.MultiTenantObjectRepository
-                        .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id.ToString())
-                        .Count();
+                        .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id.ToString()).Count();
 
                     if (mtDataCountBefore < mtDataCountAfter)
                     {
@@ -124,16 +115,15 @@ namespace terminalDocuSignTests.Integration
                     }
                 }
 
-
                 Assert.IsTrue(mtDataCountBefore < mtDataCountAfter,
-                    $"The number of MtData records for user {UserAccountName} remained unchanged within {MaxAwaitPeriod} miliseconds.");
+                    $"The number of MtData: ({mtDataCountAfter}) records for user {UserAccountName} remained unchanged within {MaxAwaitPeriod} miliseconds.");
             }
         }
 
         private async Task RecreateDefaultAuthToken(IUnitOfWork uow,
             Fr8AccountDO account, TerminalDO docuSignTerminal)
         {
-            Debug.WriteLine($"Reauthorizing tokens for {account.EmailAddress.Address}");
+            Console.WriteLine($"Reauthorizing tokens for {account.EmailAddress.Address}");
             var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
                 _baseUrl + "manageauthtoken/"
             );
