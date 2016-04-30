@@ -309,12 +309,13 @@ namespace Hub.Services
 
                         currentNode = _uow.PlanRepository.GetById<PlanNodeDO>(topFrame.NodeId);
 
-                        if (currentNode.RootPlanNodeId != targetNode.RootPlanNodeId)
-                        {
-                            throw new InvalidOperationException("Can't jump to the subplan from different plan. Instead, use Jump to Plan.");
-                        }
+                        // @alexavrutin here: commented this block since this check broke Test and Branch in Kiosk mode 
+                        // when a new plan is being created. 
+                        //if (currentNode.RootPlanNodeId != targetNode.RootPlanNodeId)
+                        //{
+                        //    throw new InvalidOperationException("Can't jump to the subplan from different plan. Instead, use Jump to Plan.");
+                        //}
 
-                        _operationalState.BypassData = topFrame.LocalData;
                         _callStack.Clear();
                         AddNodeForExecution(id);
                         break;
