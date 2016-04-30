@@ -177,7 +177,8 @@ namespace terminalFr8Core.Actions
             catch (Exception e)
             {
                 // This message will get display in Terminal Activity Response.
-                Logger.GetLogger().Error("Error while configuring the search Fr8 Warehouse action" + e.Message, e);
+                //Logger.GetLogger().Error("Error while configuring the search Fr8 Warehouse action" + e.Message, e);
+                Logger.LogError($"Error while configuring the search Fr8 Warehouse action {e}");
                 throw;
             }
 

@@ -51,7 +51,8 @@ namespace Data.Entities
                 Data = dataHeader + "\r\n" + Data;
 
                 if (configRepo.Get("LogLevel", String.Empty) == "Verbose")
-                    Logger.GetLogger().Info(Data);
+                    //Logger.GetLogger().Info(Data);
+                    Logger.LogInfo(Data);
             }
         }
     }

@@ -21,7 +21,8 @@ namespace terminalAzure.Services
             if (dbProvider == null)
             {
                 var message = string.Format("No DbProvider found for \"{0}\"", args.ProviderName);
-                Logger.GetLogger().Error(message);
+                //Logger.GetLogger().Error(message);
+                Logger.LogError(message);
 
                 throw new Exception(message);
             }
@@ -37,7 +38,8 @@ namespace terminalAzure.Services
                 }
                 catch (Exception ex)
                 {
-                    Logger.GetLogger().Error(ex.Message, ex);
+                    //Logger.GetLogger().Error(ex.Message, ex);
+                    Logger.LogError($"{ex}");
                     throw;
                 }
             }
@@ -55,7 +57,8 @@ namespace terminalAzure.Services
             catch (Exception ex)
             {
                 var message = string.Format("Could not connect to remote database \"{0}\"", dbconn.ConnectionString);
-                Logger.GetLogger().Error(message, ex);
+                //Logger.GetLogger().Error(message, ex);
+                Logger.LogError($"{message}. Exception = {ex}");
 
                 throw new Exception(message);
             }
@@ -84,7 +87,8 @@ namespace terminalAzure.Services
                         table.TableInfo.TableName);
                 }
 
-                Logger.GetLogger().Error(message);
+                //Logger.GetLogger().Error(message);
+                Logger.LogError(message);
 
                 throw new Exception(message);
             }

@@ -1,25 +1,18 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Control;
+using Data.Crates;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
 using Newtonsoft.Json;
-using terminalDocuSign.DataTransferObjects;
-using terminalDocuSign.Services;
-using TerminalBase.Infrastructure;
-using Data.Entities;
-using Data.Crates;
-using Data.States;
-using Utilities;
-using terminalDocuSign.Infrastructure;
-using terminalDocuSign.Services.New_Api;
-using Data.Constants;
 using Newtonsoft.Json.Linq;
+using TerminalBase.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {

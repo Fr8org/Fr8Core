@@ -15,6 +15,13 @@ namespace Data.Entities
 
         public string Name { get; set; }
 
+        public string LogoUrl { get; set; }
+
+        public string BackgroundColor { get; set; }
+
+        public string ThemeName { get; set; }
+
+
         [InverseProperty("Organization")]
         public virtual IList<Fr8AccountDO> Fr8Accounts{ get; set; }
     }

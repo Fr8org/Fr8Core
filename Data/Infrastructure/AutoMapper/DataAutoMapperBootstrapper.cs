@@ -30,6 +30,10 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<IncidentDO, HistoryItemDTO>();
             Mapper.CreateMap<IncidentDO, IncidentDTO>();
             Mapper.CreateMap<FactDO, FactDTO>();
+
+            Mapper.CreateMap<OrganizationDTO, OrganizationDO>();
+            Mapper.CreateMap<OrganizationDO, OrganizationDTO>();
+
             Mapper.CreateMap<Fr8AccountDO, UserDTO>()
                 .ForMember(dto => dto.EmailAddress, opts => opts.ResolveUsing(e => e.EmailAddress.Address))
                 .ForMember(dto => dto.Status, opts => opts.ResolveUsing(e => e.State.Value));
@@ -163,10 +167,12 @@ namespace Data.Infrastructure.AutoMapper
                 );
             Mapper.CreateMap<AuthorizationTokenDTO, AuthorizationTokenDO>()
                 .ForMember(x => x.UserID,    x => x.ResolveUsing(y => y.UserId))
-                .ForMember(x => x.Id, x => x.ResolveUsing(y => y.Id != null ? new Guid(y.Id) : (Guid?)null));
+                .ForMember(x => x.Id, x => x.ResolveUsing(y => y.Id != null ? new Guid(y.Id) : (Guid?)null))
+                .ForMember(x => x.ExternalDomainId, x => x.ResolveUsing(y => y.ExternalDomainId));
             Mapper.CreateMap<AuthorizationTokenDO, AuthorizationTokenDTO>()
                 .ForMember(x => x.UserId, x => x.ResolveUsing(y => y.UserID))
-                .ForMember(x => x.Id, x => x.ResolveUsing(y => y.Id.ToString()));
+                .ForMember(x => x.Id, x => x.ResolveUsing(y => y.Id.ToString()))
+                .ForMember(x => x.ExternalDomainId, x => x.ResolveUsing(y => y.ExternalDomainId));
 
             Mapper.CreateMap<ManifestDescriptionCM, ManifestDescriptionDTO>();
             Mapper.CreateMap<ManifestDescriptionDTO, ManifestDescriptionCM>();
