@@ -15,7 +15,7 @@ using ServiceStack;
 
 namespace terminalSalesforce.Actions
 {
-    public class Get_Data_v1 : EnhancedTerminalActivity<Get_Data_v1.ActivityUi>
+    public class Get_Data_v1 : BaseSalesforceTerminalActivity<Get_Data_v1.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -56,7 +56,7 @@ namespace terminalSalesforce.Actions
 
         private readonly ISalesforceManager _salesforceManager;
 
-        public Get_Data_v1() : base(true)
+        public Get_Data_v1()
         {
             _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
             ActivityName = "Get Data from Salesforce";
