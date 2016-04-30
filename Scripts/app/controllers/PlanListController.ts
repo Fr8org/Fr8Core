@@ -19,6 +19,7 @@ module dockyard.controllers {
         reArrangePlans: (plan: interfaces.IPlanVM) => void;
         runningStatus: any;
         updatePlansLastUpdated: (id: any, date: any) => void;
+        doesOrganizationExists: boolean;
 
         filter: any;
 
@@ -132,15 +133,21 @@ module dockyard.controllers {
                 if (!newValue) {
                     $scope.activeQuery.page = bookmark;
                 }
-
+            
                 this.getActivePlans();
             });
             
 
-            UserService.getCurrentUser().$promise.then(data => {
-                PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, dockyard.services.pusherNotifierExecutionEvent, (data: any) => {
-                        this.updatePlanLastUpdated(data.PlanId, data.PlanLastUpdated);
-                    });
+                UserService.getCurrentUser().$promise.then(data => {
+                                     PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, dockyard.services.pusherNotifierExecutionEvent, (data: any) => {
+                                             this.updatePlanLastUpdated(data.PlanId, data.PlanLastUpdated);
+                                     })
+                    if (angular.isNumber(data.organizationId)) {
+                        $scope.doesOrganizationExists = true;
+                    }
+                    else {
+                        $scope.doesOrganizationExists = false;
+                    }                                         ;
                 });
         }
 
@@ -166,7 +173,7 @@ module dockyard.controllers {
             this.$scope.activePromise = this.PlanService.getByQuery(this.$scope.activeQuery).$promise;
             this.$scope.activePromise.then((data: model.PlanResultDTO) => {
                 this.$scope.activePlans = data;
-            });
+                                     });
         }
 
         private reArrangePlans(plan) {
@@ -218,14 +225,14 @@ module dockyard.controllers {
         private updatePlanLastUpdated(id, date) {
             for (var i = 0; i < this.$scope.activePlans.plans.length; i++) {
                 if (!this.$scope.activePlans.plans[i].id){
-                    break;
+                                           break;
                 }
                 if (this.$scope.activePlans.plans[i].id === id) {
                     this.$scope.activePlans.plans[i].lastUpdated = date;
-                    break;
-                }
-            }
-        }
+                                           break;
+                                       }
+                             }
+                   }
         private executePlan(plan, $event) {
             // If Plan is inactive, activate it in-order to move under Running section
             var isInactive = plan.planState === 1;

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Web.Http;
 using Data.Interfaces.DataTransferObjects;
 using TerminalBase.BaseClasses;
@@ -17,6 +18,7 @@ namespace terminalDropbox.Controllers
         [Authorize]
         public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
+            Debug.WriteLine($"Handling request for {actionType} and DTO {curDataDTO}");
             return HandleFr8Request(curTerminal, actionType, curDataDTO);
         }
     }

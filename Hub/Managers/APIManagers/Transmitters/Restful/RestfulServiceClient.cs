@@ -27,12 +27,14 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
         {
             public void LogError(string message, Exception ex)
             {
-                Log.Error(message, ex);
+                //Log.Error(message, ex);
+                Logger.LogError($"{message}. Exception = {ex}");
             }
 
             public void LogError(string errorPath, string errorMessage)
             {
-                Log.Error(string.Format("{0}: {1}", errorPath, errorMessage));
+                //Log.Error(string.Format("{0}: {1}", errorPath, errorMessage))
+                Logger.LogError(string.Format("{0}: {1}", errorPath, errorMessage));
             }
         }
 

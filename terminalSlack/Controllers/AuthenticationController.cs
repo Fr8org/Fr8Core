@@ -39,8 +39,7 @@ namespace terminalSlack.Controllers
 
         [HttpPost]
         [Route("token")]
-        public async Task<AuthorizationTokenDTO> GenerateOAuthToken(
-            ExternalAuthenticationDTO externalAuthDTO)
+        public async Task<AuthorizationTokenDTO> GenerateOAuthToken(ExternalAuthenticationDTO externalAuthDTO)
         {
             try
             {
@@ -55,17 +54,14 @@ namespace terminalSlack.Controllers
                 }
 
                 var oauthToken = await _slackIntegration.GetOAuthToken(code);
-                // userId - is ID in slack, looks like U0X5LTZ2M
-                //var userId = await _slackIntegration.GetUserId(oauthToken);
+                var userInfo = await _slackIntegration.GetUserInfo(oauthToken);
 
-                // username is visible name 
-                var userName = await _slackIntegration.GetUserName(oauthToken);
-
-                return new AuthorizationTokenDTO()
+                return new AuthorizationTokenDTO
                 {
                     Token = oauthToken,
-                    ExternalAccountId = userName,
-                    ExternalStateToken = state
+                    ExternalAccountId = userInfo.UserName,
+                    ExternalStateToken = state,
+                    ExternalDomainId = userInfo.TeamId
                 };
             }
             catch (Exception ex)
