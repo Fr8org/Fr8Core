@@ -225,6 +225,7 @@
     <Compile Include="Activities\Select_Fr8_Object_v1.cs" />
     <Compile Include="Activities\Show_Report_Onscreen_v1.cs" />
     <Compile Include="Activities\SaveToFr8Warehouse_v1.cs" />
+    <Compile Include="Activities\TestIncomingData_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
     <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Activities\TestIncomingData_v1.cs" />
