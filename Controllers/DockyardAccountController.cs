@@ -278,7 +278,8 @@ Please register first.");
                 }
                 catch (Exception ex)
                 {
-                    Logger.GetLogger().Error("ForgotPassword failed.", ex);
+                    //Logger.GetLogger().Error("ForgotPassword failed.", ex);
+                    Logger.LogError($"ForgotPassword failed. Exception = {ex}");
                     ModelState.AddModelError("", ex);
                 }
             }
@@ -329,7 +330,8 @@ Please register first.");
                 }
                 catch (Exception ex)
                 {
-                    Logger.GetLogger().Error("ResetPassword failed.", ex);
+                    //Logger.GetLogger().Error("ResetPassword failed.", ex);
+                    Logger.LogError($"ResetPassword failed. Email = {viewModel.Email}; UserId = {viewModel.UserId} Exception = {ex}");
                     ModelState.AddModelError("", ex);
                 }
             }

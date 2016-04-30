@@ -824,7 +824,7 @@ namespace Hub.Managers
             var message = $"{itemType}: {historyItem.PrimaryCategory} " +
                               $"{historyItem.SecondaryCategory}" +
                               $"{historyItem.Activity}, " +
-                              $"Data = {substring}, " +
+                              $"Data = {substring}...., " +
                               $"Fr8User = {historyItem.Fr8UserId}, " +
                               $"ObjectId = {historyItem.ObjectId}";
 

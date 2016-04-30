@@ -19,8 +19,8 @@ select cp.Id into #Nodes from Plans p
 update p set p.ParentPlanNodeId = null, p.RootPlanNodeId = null from PlanNodes p 
 	inner join #Nodes cp on cp.Id = p.Id
 
--- list of ObjectRolePrivileges
-delete derived from ObjectRolePrivileges derived 
+-- list of ObjectRolePermissions
+delete derived from ObjectRolePermissions derived 
 	inner join #Nodes cp on cp.Id = derived.ObjectId
 
 delete m from History m
