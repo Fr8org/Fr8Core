@@ -13,7 +13,7 @@ describe('login page tests', function () {
         loginPage.setPassword("fr8#s@lt!");
         loginPage.login();
         browser.waitForAngular();
-        expect(browser.getCurrentUrl()).toContain('Welcome');
+        expect(browser.getCurrentUrl()).toContain('Welcomeasdasdas');
     });
 
 });
