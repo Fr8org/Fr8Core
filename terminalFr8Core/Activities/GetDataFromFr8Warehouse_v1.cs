@@ -97,7 +97,7 @@ namespace terminalFr8Core.Actions
                     CurrentActivityStorage.ReplaceByLabel(
                         Crate.FromContent(
                             "Queryable Criteria",
-                            new TypedFieldsCM(GetFieldsByTypeId(selectedObjectId))
+                            new FieldDescriptionsCM(GetFieldsByTypeId(selectedObjectId))
                         )
                     );
                 }
@@ -258,7 +258,7 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        private IEnumerable<TypedFieldDTO> GetFieldsByTypeId(Guid typeId)
+        private IEnumerable<FieldDTO> GetFieldsByTypeId(Guid typeId)
         {
             var fields = new Dictionary<string, string>();
 
@@ -267,39 +267,70 @@ namespace terminalFr8Core.Actions
                 return uow.MultiTenantObjectRepository
                     .ListTypePropertyReferences(typeId)
                     .OrderBy(x => x.Name)
-                    .Select(x =>
-                        new TypedFieldDTO(
-                            x.Name,
-                            x.Name,
-                            FieldType.String,
-                            CreateQueryControlByPropertyReference(x)
-                        )
-                    );
+                    .Select(x => new FieldDTO()
+                    {
+                        Key = x.Name,
+                        FieldType = GetFieldType(x)
+                    })
+                    .ToList();
             }
         }
 
-        private ControlDefinitionDTO CreateQueryControlByPropertyReference(
-            MtTypePropertyReference propReference)
+        private string GetFieldType(MtTypePropertyReference propReference)
         {
-            ControlDefinitionDTO control;
-
             if (propReference.PropertyClrType == typeof(DateTime)
                 || propReference.PropertyClrType == typeof(DateTime?))
             {
-                control = new DatePicker()
-                {
-                    Name = "QueryField_" + propReference.Name
-                };
+                return FieldType2.Date;
             }
             else
             {
-                control = new TextBox()
-                {
-                    Name = "QueryField_" + propReference.Name
-                };
+                return FieldType2.String;
             }
-
-            return control;
         }
+
+        // private IEnumerable<TypedFieldDTO> GetFieldsByTypeId(Guid typeId)
+        // {
+        //     var fields = new Dictionary<string, string>();
+        // 
+        //     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //     {
+        //         return uow.MultiTenantObjectRepository
+        //             .ListTypePropertyReferences(typeId)
+        //             .OrderBy(x => x.Name)
+        //             .Select(x =>
+        //                 new TypedFieldDTO(
+        //                     x.Name,
+        //                     x.Name,
+        //                     FieldType.String,
+        //                     CreateQueryControlByPropertyReference(x)
+        //                 )
+        //             );
+        //     }
+        // }
+
+        // private ControlDefinitionDTO CreateQueryControlByPropertyReference(
+        //     MtTypePropertyReference propReference)
+        // {
+        //     ControlDefinitionDTO control;
+        // 
+        //     if (propReference.PropertyClrType == typeof(DateTime)
+        //         || propReference.PropertyClrType == typeof(DateTime?))
+        //     {
+        //         control = new DatePicker()
+        //         {
+        //             Name = "QueryField_" + propReference.Name
+        //         };
+        //     }
+        //     else
+        //     {
+        //         control = new TextBox()
+        //         {
+        //             Name = "QueryField_" + propReference.Name
+        //         };
+        //     }
+        // 
+        //     return control;
+        // }
     }
 }

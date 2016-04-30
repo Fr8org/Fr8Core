@@ -193,6 +193,7 @@ namespace Data.Control
         }
     }
 
+    // TODO: FR-3003, rename this to QueryBuilder.
     public class QueryBuilder2 : ControlDefinitionDTO
     {
         public QueryBuilder2()

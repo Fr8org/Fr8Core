@@ -301,7 +301,7 @@
     <Compile Include="Interfaces\DataTransferObjects\CrateDescriptionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventLoggingDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\HistoryItemDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\QueryFieldType.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FieldType.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldValidationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityPayloadDTO.cs" />

@@ -1,0 +1,29 @@
+﻿<div class="filter-pane">
+    <div>
+        <table ng-class="{'noclick-background': isDisabled}">
+            <thead>
+                <tr>
+                    <th>Field</th>
+                    <th>Operator</th>
+                    <th>Value</th>
+                    <th></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr query-builder-condition-two
+                    ng-repeat="condition in conditions track by $index"
+                    current-action="currentAction"
+                    condition="condition"
+                    is-single="conditions.length <= 1"
+                    fields="fields"
+                    operators="operators"
+                    on-remove-condition="removeCondition($index)">
+                </tr>
+            </tbody>
+        </table>
+            <div class="add-condition">
+                <p><span>AND</span><a class="btn btn-primary btn-sm" ng-click="addCondition()" stop-click-propagation>{{::addRowText}}</a></p>
+            </div>
+        </div>
+    </div>
+</div>

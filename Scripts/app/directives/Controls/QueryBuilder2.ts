@@ -7,7 +7,6 @@ module dockyard.directives {
         name: string;
         label: string;
         fieldType: string;
-        control: model.ControlDefinitionDTO;
     }
 
     export interface IQueryOperator2 {
@@ -16,7 +15,7 @@ module dockyard.directives {
     }
 
     export interface IQueryCondition2 {
-        field: IQueryField;
+        field: IQueryField2;
         operator: string;
         value: string;
     }
@@ -44,7 +43,7 @@ module dockyard.directives {
     export function QueryBuilder2(): ng.IDirective {
         return {
             restrict: 'E',
-            templateUrl: '/AngularTemplate/QueryBuilder',
+            templateUrl: '/AngularTemplate/QueryBuilder2',
             scope: {
                 currentAction: '=',
                 field: '=',
@@ -74,7 +73,7 @@ module dockyard.directives {
                         if (newValue && newValue.crateStorage) {
                             var crate = crateHelper.findByManifestTypeAndLabel(
                                 newValue.crateStorage,
-                                'Typed Fields',
+                                'Field Description',
                                 'Queryable Criteria'
                             );
                     
@@ -83,10 +82,9 @@ module dockyard.directives {
                                 var crateJson = <any>(crate.contents);
                                 angular.forEach(crateJson.Fields, function (it) {
                                     $scope.fields.push({
-                                        name: it.Name,
-                                        label: it.Label,
-                                        fieldType: it.FieldType,
-                                        control: it.Control
+                                        name: it.key,
+                                        label: it.label,
+                                        fieldType: it.fieldType
                                     });
                                 });
 
