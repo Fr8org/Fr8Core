@@ -225,7 +225,7 @@
     <Compile Include="Activities\SaveToFr8Warehouse_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
     <Compile Include="Controllers\ActivityController.cs" />
-    <Compile Include="App_Start\TestIncomingData_v1.cs" />
+    <Compile Include="Activities\TestIncomingData_v1.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
     <Compile Include="Converters\StandardFileDescriptionToDocuSignTemplateConversion.cs" />
