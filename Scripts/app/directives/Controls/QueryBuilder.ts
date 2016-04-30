@@ -82,12 +82,12 @@ module dockyard.directives {
                             if (crate != null) {
                                 var crateJson = <any>(crate.contents);
                                 angular.forEach(crateJson.Fields, function (it) {
-                                    $scope.fields.push({
-                                        name: it.Name,
-                                        label: it.Label,
-                                        fieldType: it.FieldType,
-                                        control: it.Control
-                                    });
+                                        $scope.fields.push({
+                                            name: it.Name,
+                                            label: it.Label,
+                                            fieldType: it.FieldType,
+                                            control: it.Control
+                                        });
                                 });
 
                                 if ($scope.rows) {
