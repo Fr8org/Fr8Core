@@ -220,12 +220,23 @@ namespace TerminalBase.BaseClasses
         /// <returns></returns>
         protected PayloadDTO Error(PayloadDTO payload, string errorMessage = null, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
         {
+            return Error(payload, errorMessage, ErrorType.Generic, errorCode, currentActivity, currentTerminal);
+        }
+
+        /// <summary>
+        /// returns error to hub
+        /// </summary>
+        /// <param name="currentActivity">Activity where the error occured</param>
+        /// <param name="currentTerminal">Terminal where the error occured</param>
+        /// <returns></returns>
+        protected PayloadDTO Error(PayloadDTO payload, string errorMessage, ErrorType errorType, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
+        {
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
                 var operationalState = GetOperationalStateCrate(crateStorage);
                 operationalState.CurrentActivityErrorCode = errorCode;
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Error);
-                operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, ErrorType.Generic, errorCode.ToString(), null, currentActivity, currentTerminal));
+                operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, errorType, errorCode.ToString(), null, currentActivity, currentTerminal));
             }
 
             return payload;
@@ -255,7 +266,7 @@ namespace TerminalBase.BaseClasses
         /// <returns></returns>
         protected PayloadDTO NeedsAuthenticationError(PayloadDTO payload)
         {
-            return Error(payload, "No AuthToken provided.", ActivityErrorCode.NO_AUTH_TOKEN_PROVIDED);
+            return Error(payload, "No AuthToken provided.", ErrorType.Authentication, ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID);
         }
 
         protected async Task PushUserNotification(TerminalNotificationDTO notificationMessage)

@@ -37,8 +37,6 @@ namespace HubWeb.Controllers
     [Fr8ApiAuthorize]
     public class PlansController : ApiController
     {
-        private const string PUSHER_EVENT_GENERIC_SUCCESS = "fr8pusher_generic_success";
-        private const string PUSHER_EVENT_GENERIC_FAILURE = "fr8pusher_generic_failure";
 
         private readonly Hub.Interfaces.IPlan _plan;
         private readonly IFindObjectsPlan _findObjectsPlan;
@@ -273,7 +271,7 @@ namespace HubWeb.Controllers
                 //check if the response contains any error message and show it to the user 
                 if (activateDTO != null && !string.IsNullOrEmpty(activateDTO.ErrorMessage))
                 {
-                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, activateDTO.ErrorMessage);
+                    _pusherNotifier.Notify(pusherChannel, NotificationChannel.GenericFailure, activateDTO.ErrorMessage);
                 }
 
                 EventManager.PlanActivated(planId);
@@ -282,12 +280,12 @@ namespace HubWeb.Controllers
             }
             catch (ApplicationException ex)
             {
-                _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, ex.Message);
+                _pusherNotifier.Notify(pusherChannel, NotificationChannel.GenericFailure, ex.Message);
                 throw;
             }
             catch (Exception)
             {
-                _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "There is a problem with activating this plan. Please try again later.");
+                _pusherNotifier.Notify(pusherChannel, NotificationChannel.GenericFailure, "There is a problem with activating this plan. Please try again later.");
                 throw;
             }
         }
@@ -378,7 +376,7 @@ namespace HubWeb.Controllers
                 }
                 catch
                 {
-                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "Your payload is invalid. Make sure that it represents a valid crate object JSON.");
+                    _pusherNotifier.Notify(pusherChannel, NotificationChannel.GenericFailure, "Your payload is invalid. Make sure that it represents a valid crate object JSON.");
 
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
@@ -415,12 +413,12 @@ namespace HubWeb.Controllers
                         if (containerId == null)
                         {
                             container = await _plan.Run(planDO, curPayload);
-                            _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, $"Launching a new Container for Plan \"{planDO.Name}\"");
+                            _pusherNotifier.Notify(pusherChannel, NotificationChannel.GenericSuccess, $"Launching a new Container for Plan \"{planDO.Name}\"");
                         }
                         else
                         {
                             container = await _plan.Continue(containerId.Value);
-                            _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, $"Continue execution of the supsended Plan \"{planDO.Name}\"");
+                            _pusherNotifier.Notify(pusherChannel, NotificationChannel.GenericSuccess, $"Continue execution of the supsended Plan \"{planDO.Name}\"");
                         }
 
                         if (!planDO.IsOngoingPlan())
@@ -433,7 +431,7 @@ namespace HubWeb.Controllers
 
                         string message = String.Format("Complete processing for Plan \"{0}\".{1}", planDO.Name, responseMsg);
 
-                        _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
+                        _pusherNotifier.Notify(pusherChannel, NotificationChannel.GenericSuccess, message);
                         EventManager.ContainerLaunched(container);
 
                         var containerDTO = Mapper.Map<ContainerDTO>(container);
@@ -500,7 +498,7 @@ namespace HubWeb.Controllers
             }
 
             var message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, messageToNotify);
-            _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
+            _pusherNotifier.Notify(pusherChannel, NotificationChannel.GenericFailure, message);
 
         }
 
@@ -551,7 +549,7 @@ namespace HubWeb.Controllers
                 {
                     if (planDO != null)
                     {
-                        _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, $"Launching a new Container for Plan \"{planDO.Name}\"");
+                        _pusherNotifier.Notify(pusherChannel, NotificationChannel.GenericSuccess, $"Launching a new Container for Plan \"{planDO.Name}\"");
 
                         var crates = payload.Select(c => _crate.FromDto(c)).ToArray();
                         var containerDO = await _plan.Run(uow, planDO, crates);
@@ -574,7 +572,7 @@ namespace HubWeb.Controllers
 
                         var message = $"Complete processing for Plan \"{planDO.Name}\".{responseMsg}";
 
-                        _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
+                        _pusherNotifier.Notify(pusherChannel, NotificationChannel.GenericSuccess, message);
                         EventManager.ContainerLaunched(containerDO);
 
                         var containerDTO = Mapper.Map<ContainerDTO>(containerDO);
