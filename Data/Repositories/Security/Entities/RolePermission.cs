@@ -1,16 +1,17 @@
 ﻿using System;
+using Data.Entities;
 
 namespace Data.Repositories.Security.Entities
 {
-    public class RolePrivilege
+    public class RolePermission
     {
-        public RolePrivilege()
+        public RolePermission()
         {
-            Privilege = new PrivilegeDO();
+            PermissionSet = new PermissionSetDO();
             Role = new RoleDO();
         }
         public Guid Id { get; set; }
-        public PrivilegeDO Privilege { get; set; }
+        public PermissionSetDO PermissionSet { get; set; }
         public RoleDO Role { get; set; }
         public DateTimeOffset LastUpdated { get; set; }
         public DateTimeOffset CreateDate { get; set; }

@@ -1,21 +1,20 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Data.Constants;
 using Data.Crates;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Hub.Managers;
-using TerminalBase.Infrastructure;
-using terminalDocuSign.Infrastructure;
-using TerminalBase.BaseClasses;
-using Data.Entities;
-using Utilities.Configuration.Azure;
-using Data.Constants;
 using Data.States;
+using Hub.Managers;
 using Newtonsoft.Json;
 using terminalDocuSign.DataTransferObjects;
+using terminalDocuSign.Infrastructure;
+using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
@@ -63,6 +62,8 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
+            Debug.WriteLine($"Running PrepareDocuSignEventForStorage: {activityDO.ActivityTemplateId} - view {activityDO.currentView} - label {activityDO.Label}");
+            Debug.WriteLine($"for container {containerId} and authToken {authTokenDO}");
             var curProcessPayload = await GetPayload(activityDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
@@ -80,7 +81,7 @@ namespace terminalDocuSign.Actions
                     crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope", crate));
                 }
             }
-
+            Debug.WriteLine($"Returning success for payload {curProcessPayload.ContainerId} - {curProcessPayload.CrateStorage.Crates}");
             return Success(curProcessPayload);
         }
     }

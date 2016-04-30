@@ -29,7 +29,8 @@ namespace Daemons
                     var emailToUpdate = emailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
                     if (emailToUpdate == null)
                     {
-                        Logger.GetLogger().Error("Email id " + emailID + " received a callback saying it was sent from Gmail, but the email was not found in our database");
+                        //Logger.GetLogger().Error("Email id " + emailID + " received a callback saying it was sent from Gmail, but the email was not found in our database");
+                        Logger.LogError("Email id " + emailID + " received a callback saying it was sent from Gmail, but the email was not found in our database");
                         return;
                     }
 
@@ -120,7 +121,8 @@ namespace Daemons
                                         String.Format(
                                             "The following recipients were removed because they are not test accounts: {0}",
                                             String.Join(", ", recipientsRemoved));
-                                    Logger.GetLogger().Info(message);
+                                    //Logger.GetLogger().Info(message);
+                                    Logger.LogInfo(message);
                                     LogEvent(message);
                                 }
                             }
@@ -151,7 +153,8 @@ namespace Daemons
                         }
                         catch (StructureMapConfigurationException ex)
                         {
-                            Logger.GetLogger().ErrorFormat("Unknown email packager: {0}", curMailerDO.Handler);
+                            //Logger.GetLogger().ErrorFormat("Unknown email packager: {0}", curMailerDO.Handler);
+                            Logger.LogError($"Unknown email packager: {curMailerDO.Handler}");
 
                             try
                             {
@@ -195,7 +198,8 @@ namespace Daemons
             var emailDO = uow.EmailRepository.GetQuery().FirstOrDefault(e => e.Id == emailID);
             if (emailDO == null)
             {
-                Logger.GetLogger().Error(logMessage);
+                //Logger.GetLogger().Error(logMessage);
+                Logger.LogError(logMessage);
             }
             return emailDO;
         }

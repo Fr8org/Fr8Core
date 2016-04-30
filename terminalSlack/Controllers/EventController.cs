@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using System.Threading.Tasks;
+using System.Web.Http;
 using StructureMap;
 using TerminalBase.Infrastructure;
 using terminalSlack.Interfaces;
@@ -20,7 +21,7 @@ namespace terminalSlack.Controllers
 
         [HttpPost]
         [Route("events")]
-        public async void ProcessIncomingNotification()
+        public async Task ProcessIncomingNotification()
         {
             //_event.Process(await Request.Content.ReadAsStringAsync());
             string eventPayLoadContent = await Request.Content.ReadAsStringAsync();

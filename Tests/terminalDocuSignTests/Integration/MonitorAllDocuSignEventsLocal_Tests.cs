@@ -118,7 +118,10 @@ namespace terminalDocuSignTests.Integration
                 //let's wait 10 seconds to ensure that MADSE plan was created/activated by re-authentication
                 await Task.Delay(SingleAwaitPeriod);
 
-                await HttpPostAsync<string>(GetTerminalEventsUrl(), new StringContent(string.Format(EnvelopeToSend, Guid.NewGuid())));
+                string response = 
+                    await HttpPostAsync<string>(GetTerminalEventsUrl(), new StringContent(string.Format(EnvelopeToSend, Guid.NewGuid())));
+
+                Debug.WriteLine($"Received {GetTerminalEventsUrl()} response {response}");
 
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
@@ -129,8 +132,7 @@ namespace terminalDocuSignTests.Integration
                     await Task.Delay(SingleAwaitPeriod);
 
                     mtDataCountAfter = unitOfWork.MultiTenantObjectRepository
-                        .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id)
-                        .Count();
+                        .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id.ToString()).Count();
 
                     if (mtDataCountBefore < mtDataCountAfter)
                     {
@@ -139,7 +141,7 @@ namespace terminalDocuSignTests.Integration
                 }
 
                 Assert.IsTrue(mtDataCountBefore < mtDataCountAfter,
-                    $"The number of MtData records for user {UserAccountName} remained unchanged within {MaxAwaitPeriod} miliseconds.");
+                    $"The number of Local MtData ({mtDataCountAfter}) records for user {UserAccountName} remained unchanged within {MaxAwaitPeriod} miliseconds.");
             }
         }
 

@@ -113,6 +113,9 @@ namespace Data.Constants
 
         [Display(Name = "Docusign Envelope v2")]
         DocuSignEnvelope_v2 = 36,
+
+        [Display(Name = "Standard Business Fact")]
+        StandardBusinessFact = 37
     }
 }
 

@@ -1,8 +1,10 @@
 ﻿using System;
-using Google.GData.Client;
+using Data.Entities;
 using Data.Interfaces.Manifests;
-using TerminalBase.BaseClasses;
+using Newtonsoft.Json;
+using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services;
+using TerminalBase.BaseClasses;
 
 namespace terminalGoogle.Actions
 {
@@ -16,6 +18,10 @@ namespace terminalGoogle.Actions
         protected override bool IsTokenInvalidation(Exception ex)
         {
             return GoogleAuthHelper.IsTokenInvalidation(ex);
+        }
+        public GoogleAuthDTO GetGoogleAuthToken(AuthorizationTokenDO authTokenDO = null)
+        {
+            return JsonConvert.DeserializeObject<GoogleAuthDTO>((authTokenDO ?? AuthorizationToken).Token);
         }
     }
 }
