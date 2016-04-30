@@ -822,7 +822,7 @@ namespace Hub.Managers
             var substring = historyItem.Data.Substring(0, dataLen);
             substring = dataLen == 255 ? substring + "..." : substring;
             
-            //in FactDO we have CreatedById property, so we need cruntch to not have Fr8UserId empty
+            //in FactDO we have CreatedById property, so we need crutch to not have Fr8UserId empty
             if (typeof(FactDO) == historyItem.GetType() && historyItem.Fr8UserId.IsNullOrEmpty())
             {
                 historyItem.Fr8UserId = (historyItem as FactDO).CreatedByID;
