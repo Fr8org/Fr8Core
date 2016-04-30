@@ -314,6 +314,7 @@ namespace Hub.Services
                             throw new InvalidOperationException("Can't jump to the subplan from different plan. Instead, use Jump to Plan.");
                         }
 
+                        _operationalState.BypassData = topFrame.LocalData;
                         _callStack.Clear();
                         AddNodeForExecution(id);
                         break;
