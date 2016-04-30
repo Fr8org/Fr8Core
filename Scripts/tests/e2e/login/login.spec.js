@@ -11,6 +11,7 @@ describe('login page tests', function () {
     it('should login', function () {
         loginPage.setEmail("integration_test_runner@fr8.company");
         loginPage.setPassword("fr8#s@lt!");
+
         loginPage.login();
         browser.waitForAngular();
         expect(browser.getCurrentUrl()).toContain('Welcome');
