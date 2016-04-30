@@ -72,8 +72,13 @@ namespace Data.Infrastructure
                 return _recipientRepository ?? (_recipientRepository = new RecipientRepository(this));
             }
         }
-        
 
+        private IProfileRepository _profileRepository;
+        public IProfileRepository ProfileRepository => _profileRepository ?? (_profileRepository = new ProfileRepository(this));
+
+        private IPermissionSetRepository _permissionSetRepository;
+        public IPermissionSetRepository PermissionSetRepository => _permissionSetRepository ?? (_permissionSetRepository = new PermissionSetRepository(this));
+        
         private SlipRepository _SlipRepository;
 
         public SlipRepository SlipRepository
@@ -378,36 +383,6 @@ namespace Data.Infrastructure
             get
             {
                 return _logRepository ?? (_logRepository = new LogRepository(this));
-            }
-        }
-
-        private ProfileNodeRepository _profileNodeRepository;
-
-        public ProfileNodeRepository ProfileNodeRepository
-        {
-            get
-            {
-                return _profileNodeRepository ?? (_profileNodeRepository = new ProfileNodeRepository(this));
-            }
-        }
-
-        private ProfileItemRepository _profileItemRepository;
-
-        public ProfileItemRepository ProfileItemRepository
-        {
-            get
-            {
-                return _profileItemRepository ?? (_profileItemRepository = new ProfileItemRepository(this));
-            }
-        }
-
-        private ProfileRepository _profileRepository;
-
-        public ProfileRepository ProfileRepository
-        {
-            get
-            {
-                return _profileRepository ?? (_profileRepository = new ProfileRepository(this));
             }
         }
 

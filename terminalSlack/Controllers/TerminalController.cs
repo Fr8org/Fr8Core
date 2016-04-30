@@ -48,17 +48,17 @@ namespace terminalSlack.Controllers
                     WebService = webService,
                     MinPaneWidth = 330
                 },
-                new ActivityTemplateDTO
-                {
-                    Name = "Monitor_Channel",
-                    Label = "Monitor Slack Messages",
-                    Category = ActivityCategory.Monitors,
-                    Terminal = terminal,
-                    NeedsAuthentication = true,
-                    Version = "2",
-                    WebService = webService,
-                    MinPaneWidth = 330
-                },
+                //new ActivityTemplateDTO
+                //{
+                //    Name = "Monitor_Channel",
+                //    Label = "Monitor Slack Messages",
+                //    Category = ActivityCategory.Monitors,
+                //    Terminal = terminal,
+                //    NeedsAuthentication = true,
+                //    Version = "2",
+                //    WebService = webService,
+                //    MinPaneWidth = 330
+                //},
                 new ActivityTemplateDTO
                 {
                     Name = "Publish_To_Slack",

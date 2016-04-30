@@ -11,6 +11,7 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using Data.Interfaces;
 using FluentValidation.WebApi;
+using Hub.Infrastructure;
 using Hub.Managers;
 using Hub.ModelBinders;
 using Hub.StructureMap;
