@@ -84,22 +84,22 @@ namespace Utilities.Logging
             return color + message + "\x1b[0m";
         }
 
-
-
-
         /// <summary>
         /// Logs message with log4net
         /// </summary>
         /// <param name="message">formatted messsage should contain critical data like Fr8UserId</param>
         /// <param name="eventType"></param>
         /// <param name="depth">Defines how many stack frames we slice from top</param>
-        public static void LogMessage(string message, EventType eventType = EventType.Info, int depth = 3)
+        public static void LogMessage(string message, EventType eventType = EventType.Info, int depth = 0)
         {
+            depth += 3;
             LogMessageWithNamedLogger(message, eventType, depth);
         }
 
-        public static void LogMessageWithNamedLogger(string message, EventType eventType = EventType.Info, int depth = 2, string loggerName = "")
+        public static void LogMessageWithNamedLogger(string message, EventType eventType = EventType.Info, int depth = 0, string loggerName = "")
         {
+            //if somebody calls LogMessageWithNamedLogger from outside with depth of stack trace we dont want to show Logger calls
+            depth += 2;
             var logger = GetLogger(depth, loggerName);
 
             switch (eventType)
@@ -151,8 +151,6 @@ namespace Utilities.Logging
         {
             LogMessageWithNamedLogger(message, EventType.Error, 3, loggerName);
         }
-
-
 
         #endregion
 

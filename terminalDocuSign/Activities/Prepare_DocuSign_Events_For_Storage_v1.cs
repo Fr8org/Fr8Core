@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
@@ -61,6 +62,8 @@ namespace terminalDocuSign.Actions
 
         public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
+            Debug.WriteLine($"Running PrepareDocuSignEventForStorage: {activityDO.ActivityTemplateId} - view {activityDO.currentView} - label {activityDO.Label}");
+            Debug.WriteLine($"for container {containerId} and authToken {authTokenDO}");
             var curProcessPayload = await GetPayload(activityDO, containerId);
 
             if (NeedsAuthentication(authTokenDO))
@@ -78,7 +81,7 @@ namespace terminalDocuSign.Actions
                     crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope", crate));
                 }
             }
-
+            Debug.WriteLine($"Returning success for payload {curProcessPayload.ContainerId} - {curProcessPayload.CrateStorage.Crates}");
             return Success(curProcessPayload);
         }
     }

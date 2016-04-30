@@ -14,7 +14,7 @@ namespace terminalSlackTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
-        private const int ActivityCount = 3;
+        private const int ActivityCount = 2;
         private const string Monitor_Channel_Activity_Name = "Monitor_Channel";
         private const string Publish_To_Slack_Activity_Name = "Publish_To_Slack";
         public override string TerminalName

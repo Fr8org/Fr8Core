@@ -106,18 +106,17 @@ namespace Hub.StructureMap
 
                 For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
 
-                For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchy>();
                 For<IImapClient>().Use<ImapClientWrapper>();
 
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
                 For<IRestfulServiceClient>().Singleton().Use<RestfulServiceClient>().SelectConstructor(() => new RestfulServiceClient());
                 For<ITerminalTransmitter>().Use<TerminalTransmitter>();
 
-                For<IPlan>().Use<Hub.Services.Plan>(); //.DecorateWith((context, service) => new PlanSecurityDecorator(service, ObjectFactory.GetInstance<ISecurityServices>()));
+                For<IPlan>().Use<Hub.Services.Plan>().DecorateWith((context, service) => new PlanSecurityDecorator(service, ObjectFactory.GetInstance<ISecurityServices>()));
                 For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
                 For<InternalInterfaces.IFact>().Use<InternalClass.Fact>();
                 var dynamicProxy = new ProxyGenerator();
-                For<IActivity>().Use<Activity>().Singleton().DecorateWith(z => dynamicProxy.CreateInterfaceProxyWithTarget(z, new AuthorizeActivityInterceptor()));
+                For<IActivity>().Use<Activity>().Singleton().DecorateWith(z => dynamicProxy.CreateInterfaceProxyWithTarget(z, new AuthorizeActivityInterceptor(ObjectFactory.GetInstance<ISecurityServices>())));
                 For<IPlanNode>().Use<PlanNode>();
                 For<ISubscription>().Use<Subscription>();
                 For<ISubPlan>().Use<SubPlan>();
@@ -170,7 +169,6 @@ namespace Hub.StructureMap
                 var restfulServiceClientMock = new Mock<RestfulServiceClient>(MockBehavior.Default);
                 For<IRestfulServiceClient>().Use(restfulServiceClientMock.Object).Singleton();
 
-                For<IProfileNodeHierarchy>().Use<ProfileNodeHierarchyWithoutCTE>();
                 var mockSegment = new Mock<ITracker>();
                 For<ITracker>().Use(mockSegment.Object);
                 For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();

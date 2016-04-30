@@ -144,7 +144,8 @@ namespace HubWeb.Controllers
             }
             catch (Exception ex)
             {
-                Logger.GetLogger().Error("Failed to run test", ex);
+                //Logger.GetLogger().Error("Failed to run test", ex);
+                Logger.LogError($"Failed to run test. Exception = {ex}");
                 return Json(false);
             }
         }
