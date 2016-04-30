@@ -240,7 +240,7 @@ namespace terminalGoogleTests.Integration
             {
                 Id = Guid.NewGuid(),
                 Label = "Monitor Form Responses",
-                AuthToken = Google_AuthToken(),
+                AuthToken = Google_AuthToken1(),
                 ActivityTemplate = activityTemplate
             };
             ActivateCrateStorage(activity, PackCrate_ConfigurationControls());
