@@ -29,7 +29,7 @@ namespace terminalFr8Core.Actions
 
             public TextBlock SelectObjectLabel { get; set; }
 
-            public QueryBuilder QueryBuilder { get; set; }
+            public QueryBuilder2 QueryBuilder { get; set; }
 
             public ActivityUi()
             {
@@ -52,7 +52,7 @@ namespace terminalFr8Core.Actions
                 };
                 Controls.Add(SelectObjectLabel);
 
-                QueryBuilder = new QueryBuilder()
+                QueryBuilder = new QueryBuilder2()
                 {
                     Label = "Find all Fields where:",
                     Name = "QueryBuilder",

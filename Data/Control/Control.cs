@@ -43,6 +43,7 @@ namespace Data.Control
         public const string TextSource = "TextSource";
         public const string TextArea = "TextArea";
         public const string QueryBuilder = "QueryBuilder";
+        public const string QueryBuilder2 = "QueryBuilder2";
         public const string ManagePlan = "ManagePlan";
         public const string Duration = "Duration";
         public const string RunPlanButton = "RunPlanButton";
@@ -183,11 +184,20 @@ namespace Data.Control
         }
     }
 
+    // TODO: FR-3003, remove this.
     public class QueryBuilder : ControlDefinitionDTO
     {
         public QueryBuilder()
         {
             Type = ControlTypes.QueryBuilder;
+        }
+    }
+
+    public class QueryBuilder2 : ControlDefinitionDTO
+    {
+        public QueryBuilder2()
+        {
+            Type = ControlTypes.QueryBuilder2;
         }
     }
 

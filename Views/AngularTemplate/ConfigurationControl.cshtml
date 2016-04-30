@@ -93,6 +93,14 @@
     </div>
 
     <!--
+        QueryBuilder-2 template
+    -->
+    <div ng-if='field.type == "QueryBuilder2"'>
+        <label class='control-label'>{{::field.label}}</label>
+        <query-builder-two current-action='currentAction' field='field'></query-builder-two>
+    </div>
+
+    <!--
         MappingPane template
         -->
     <div ng-if='field.type == "MappingPane"'>

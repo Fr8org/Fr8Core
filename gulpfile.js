@@ -108,6 +108,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/FieldList.js',
         'Scripts/app/directives/Controls/QueryBuilder.js',
         'Scripts/app/directives/Controls/QueryBuilderCondition.js',
+        'Scripts/app/directives/Controls/QueryBuilder2.js',
         'Scripts/app/directives/Controls/TextSource.js',
         'Scripts/app/directives/Controls/SourceableCriteria.js',
         'Scripts/app/directives/Controls/InputFocus.js',

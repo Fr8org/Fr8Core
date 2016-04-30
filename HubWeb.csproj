@@ -975,6 +975,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ContainerTransition.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DatePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Fr8Event.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\QueryBuilder2.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\QueryBuilderCondition.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\SelectData.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\SourceableCriteria.ts" />
