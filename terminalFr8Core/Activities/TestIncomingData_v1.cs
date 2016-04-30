@@ -15,6 +15,7 @@ using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
+
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
@@ -328,7 +329,7 @@ namespace terminalFr8Core.Actions
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var curUpstreamFields =
-                (await GetDesignTimeFields(curActivityDO, CrateDirection.Upstream))
+                (await GetDesignTimeFields(curActivityDO, CrateDirection.Upstream, AvailabilityType.RunTime))
                 .Fields
                 .ToArray();
 
@@ -365,7 +366,7 @@ namespace terminalFr8Core.Actions
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var curUpstreamFields =
-                (await GetDesignTimeFields(curActivityDO, CrateDirection.Upstream))
+                (await GetDesignTimeFields(curActivityDO, CrateDirection.Upstream, AvailabilityType.RunTime))
                 .Fields
                 .ToArray();
 
