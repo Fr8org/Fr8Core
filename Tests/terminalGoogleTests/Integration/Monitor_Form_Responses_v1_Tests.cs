@@ -20,10 +20,7 @@ namespace terminalGoogleTests.Integration
     public class Monitor_Form_Responses_v1_Tests : BaseTerminalIntegrationTest
     {
         private string ActivityName = "Monitor_Form_Responses_v1";
-        public override string TerminalName
-        {
-            get { return "terminalGoogle"; }
-        }
+        public override string TerminalName => "terminalGoogle";
 
         /// <summary>
         /// Validate correct crate-storage structure in initial configuration response.

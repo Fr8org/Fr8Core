@@ -104,7 +104,7 @@ namespace terminalGoogleTests.Integration
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
             var requestActionDTO = fixture.Get_Google_Sheet_Data_v1_Followup_Configuration_Request_ActivityDTO_With_Crates();
 
-            ////Act
+            //Act
             fixture.Get_Google_Sheet_Data_v1_AddPayload(requestActionDTO, "Column_Only");
             var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
             //As the ActionDTO is preconfigured configure url actually calls the follow up configuration

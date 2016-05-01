@@ -146,20 +146,6 @@ namespace terminalGoogle.Actions
             return JsonConvert.DeserializeObject<GoogleAuthDTO>((authTokenDO ?? AuthorizationToken).Token);
         }
 
-        public override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
-        {
-            if (base.NeedsAuthentication(authTokenDO))
-            {
-                return true;
-            }
-            var token = GetGoogleAuthToken(authTokenDO);
-
-            // Post token to google api to check its validity
-            // Variable needs for more readability.
-            var result = Task.Run(async () => await _googleIntegration.IsTokenInfoValid(token)).Result;
-            return !result;
-        }
-
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
             ConfigurationControls.ExistingSpreadsheetsList.ListItems = (await _googleSheet.GetSpreadsheets(GetGoogleAuthToken())).Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();

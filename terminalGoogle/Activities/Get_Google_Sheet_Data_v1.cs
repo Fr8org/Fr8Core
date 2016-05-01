@@ -82,7 +82,6 @@ namespace terminalGoogle.Actions
         public Get_Google_Sheet_Data_v1()
         {
             _googleApi = ObjectFactory.GetInstance<IGoogleSheet>();
-            _googleIntegration = ObjectFactory.GetInstance<IGoogleIntegration>();
         }
         //This property is used to store and retrieve user-selected spreadsheet and worksheet between configuration responses 
         //to avoid extra fetch from Google
@@ -207,20 +206,6 @@ namespace terminalGoogle.Actions
             }
             CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel,
                 new StandardTableDataCM { Table = data, FirstRowHeaders = hasHeaderRow }));
-        }
-
-        public override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
-        {
-            if (base.NeedsAuthentication(authTokenDO))
-            {
-                return true;
-            }
-            var token = GetGoogleAuthToken(authTokenDO);
-
-            // Post token to google api to check its validity
-            // Variable needs for more readability.
-            var result = Task.Run(async () => await _googleIntegration.IsTokenInfoValid(token)).Result;
-            return !result;
         }
     }
 }

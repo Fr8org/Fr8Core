@@ -7,22 +7,12 @@ using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.DataTransferObjects.Helpers;
 using Data.Interfaces.Manifests;
 using Data.States;
-using Hub.Managers;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using TerminalBase.BaseClasses;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using Data.Control;
-using Data.States;
 using StructureMap;
 using terminalGoogle.Interfaces;
 
@@ -165,20 +155,6 @@ namespace terminalGoogle.Actions
             CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(formResponseFields)));
             return Task.FromResult(0);
         }
-        public override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
-        {
-            if (authTokenDO == null) return true;
-            if (base.NeedsAuthentication(authTokenDO))
-            {
-                return true;
-            }
-            var token = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
-
-            // Post token to google api to check its validity
-            // Variable needs for more readability.
-            var result = Task.Run(async () => await _googleIntegration.IsTokenInfoValid(token)).Result;
-            return !result;
-        }
 
         private Crate CreateEventSubscriptionCrate()
         {
@@ -192,6 +168,7 @@ namespace terminalGoogle.Actions
                 subscriptions.ToArray()
                 );
         }
+
         private List<FieldDTO> CreatePayloadFormResponseFields(List<FieldDTO> payloadfields)
         {
             List<FieldDTO> formFieldResponse = new List<FieldDTO>();
