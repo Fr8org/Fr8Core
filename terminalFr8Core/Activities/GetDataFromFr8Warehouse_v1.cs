@@ -17,6 +17,7 @@ using Data.Repositories.MultiTenant;
 using Data.States;
 using TerminalBase.BaseClasses;
 using TerminalBase.Services;
+using TerminalBase.Services.MT;
 
 namespace terminalFr8Core.Actions
 {
@@ -97,7 +98,7 @@ namespace terminalFr8Core.Actions
                     CurrentActivityStorage.ReplaceByLabel(
                         Crate.FromContent(
                             "Queryable Criteria",
-                            new FieldDescriptionsCM(GetFieldsByTypeId(selectedObjectId))
+                            new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(selectedObjectId))
                         )
                     );
                 }
@@ -258,37 +259,7 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        private IEnumerable<FieldDTO> GetFieldsByTypeId(Guid typeId)
-        {
-            var fields = new Dictionary<string, string>();
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                return uow.MultiTenantObjectRepository
-                    .ListTypePropertyReferences(typeId)
-                    .OrderBy(x => x.Name)
-                    .Select(x => new FieldDTO()
-                    {
-                        Key = x.Name,
-                        FieldType = GetFieldType(x)
-                    })
-                    .ToList();
-            }
-        }
-
-        private string GetFieldType(MtTypePropertyReference propReference)
-        {
-            if (propReference.PropertyClrType == typeof(DateTime)
-                || propReference.PropertyClrType == typeof(DateTime?))
-            {
-                return FieldType2.Date;
-            }
-            else
-            {
-                return FieldType2.String;
-            }
-        }
-
+        // TODO: FR-3003, remove this.
         // private IEnumerable<TypedFieldDTO> GetFieldsByTypeId(Guid typeId)
         // {
         //     var fields = new Dictionary<string, string>();
@@ -309,6 +280,7 @@ namespace terminalFr8Core.Actions
         //     }
         // }
 
+        // TODO: FR-3003, remove this.
         // private ControlDefinitionDTO CreateQueryControlByPropertyReference(
         //     MtTypePropertyReference propReference)
         // {

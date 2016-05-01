@@ -79,9 +79,16 @@
 
     <!--
         FilterPane template
-        -->
+    -->
     <div ng-if='field.type == "FilterPane"'>
         <filter-pane current-action='currentAction' field='field' change='onChange'></filter-pane>
+    </div>
+
+    <!--
+        FilterPane2 template
+    -->
+    <div ng-if='field.type == "FilterPane2"'>
+        <filter-pane-two current-action='currentAction' field='field' change='onChange'></filter-pane-two>
     </div>
 
     <!--

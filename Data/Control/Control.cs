@@ -34,6 +34,7 @@ namespace Data.Control
         public const string DropDownList = "DropDownList";
         public const string RadioButtonGroup = "RadioButtonGroup";
         public const string FilterPane = "FilterPane";
+        public const string FilterPane2 = "FilterPane2";
         public const string MappingPane = "MappingPane";
         public const string TextBlock = "TextBlock";
         public const string FilePicker = "FilePicker";
@@ -326,6 +327,7 @@ namespace Data.Control
         }
     }
 
+    // TODO: FR-3003, remove this.
     public class FilterPane : ControlDefinitionDTO
     {
         [JsonProperty("fields")]
@@ -334,6 +336,17 @@ namespace Data.Control
         public FilterPane()
         {
             Type = ControlTypes.FilterPane;
+        }
+    }
+
+    public class FilterPane2 : ControlDefinitionDTO
+    {
+        [JsonProperty("fields")]
+        public List<FilterPaneField> Fields { get; set; }
+
+        public FilterPane2()
+        {
+            Type = ControlTypes.FilterPane2;
         }
     }
 

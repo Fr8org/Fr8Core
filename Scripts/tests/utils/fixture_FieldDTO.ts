@@ -37,13 +37,17 @@ module dockyard.tests.utils.fixtures {
         public static textBlock: model.TextBlock = new model.TextBlock('<p>teststs</p>', 'well well-lg');
 
         public static dropDownListBox: model.DropDownList = {
-            listItems: [{ key: 'test1', selected: false, value: 'value1', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null }, { key: 'test2', selected: false, value: 'value2', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null }, { key: 'test3', selected: false, value: 'value3', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null }],
+            listItems: [
+                { key: 'test1', fieldType: null, selected: false, value: 'value1', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null },
+                { key: 'test2', fieldType: null, selected: false, value: 'value2', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null },
+                { key: 'test3', fieldType: null, selected: false, value: 'value3', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null }
+            ],
             source: {
                 manifestType: 'testManifest',
                 label: 'testLabel',
                 filterByTag: null,
                 requestUpstream: false,
-                availabilityType: model.AvailabilityType.NotSet
+                availabilityType: model.AvailabilityType.NotSet,
             },
             type: 'DropDownList',
             fieldLabel: 'DropDownList Test',
@@ -155,17 +159,37 @@ module dockyard.tests.utils.fixtures {
                 availabilityType: model.AvailabilityType.NotSet
             },
             valueSource: 'test',
-            listItems: [{
-                key: 'test1',
-                selected: false,
-                value: 'value1', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null
-            },
+            listItems: [
+                {
+                    key: 'test1',
+                    selected: false,
+                    value: 'value1',
+                    tags: null,
+                    availability: model.AvailabilityType.Configuration,
+                    sourceCrateLabel: null,
+                    sourceCrateManifest: null,
+                    fieldType: null
+                },
                 {
                     key: 'test2',
                     selected: false,
-                    value: 'value2', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null
+                    value: 'value2',
+                    tags: null,
+                    availability: model.AvailabilityType.Configuration,
+                    sourceCrateLabel: null,
+                    sourceCrateManifest: null,
+                    fieldType: null
                 },
-                { key: 'test3', selected: false, value: 'value3', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null }],
+                {
+                    key: 'test3',
+                    selected: false,
+                    value: 'value3',
+                    tags: null,
+                    availability: model.AvailabilityType.Configuration,
+                    sourceCrateLabel: null,
+                    sourceCrateManifest: null,
+                    fieldType: null
+                }],
             name: 'test name',
             fieldLabel: 'test label',
             selectedKey: null

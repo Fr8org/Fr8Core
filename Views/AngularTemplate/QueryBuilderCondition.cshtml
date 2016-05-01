@@ -1,7 +1,7 @@
 ﻿<tr>
     <td>
         <div class="configuration-control-form-group">
-            <select class="form-control" ng-options="f as f.name for f in fields" ng-model="condition.field" ng-change="fieldSelected(condition)">
+            <select class="form-control" ng-options="f as f.key for f in fields" ng-model="condition.field" ng-change="fieldSelected(condition)">
                 <option value="">Select a Field</option>
             </select>
         </div>

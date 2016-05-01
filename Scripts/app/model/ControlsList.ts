@@ -78,6 +78,7 @@
         public availability: AvailabilityType;
         public tags: string;
         public sourceCrateLabel: string;
+        public fieldType: string;
         public sourceCrateManifest: {
             Id: string;
             Type: string;
@@ -335,6 +336,13 @@
     export class BuildMessageAppender extends TextArea {
         constructor() {
             super();
+        }
+    }
+
+    export class DatePicker extends ControlDefinitionDTO {
+        constructor() {
+            super();
+            this.type = 'DatePicker';
         }
     }
 }

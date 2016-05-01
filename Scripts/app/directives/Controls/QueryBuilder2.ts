@@ -15,7 +15,7 @@ module dockyard.directives {
     }
 
     export interface IQueryCondition2 {
-        field: IQueryField2;
+        field: model.FieldDTO;
         operator: string;
         value: string;
     }
@@ -29,7 +29,7 @@ module dockyard.directives {
     export interface IQueryBuilder2Scope extends ng.IScope {
         currentAction: model.ActivityDTO;
         field: any;
-        fields: Array<IQueryField2>;
+        fields: Array<model.FieldDTO>;
         operators: Array<IQueryOperator2>;
         defaultOperator: string;
         conditions: Array<IQueryCondition2>;
@@ -81,11 +81,7 @@ module dockyard.directives {
                             if (crate != null) {
                                 var crateJson = <any>(crate.contents);
                                 angular.forEach(crateJson.Fields, function (it) {
-                                    $scope.fields.push({
-                                        name: it.key,
-                                        label: it.label,
-                                        fieldType: it.fieldType
-                                    });
+                                    $scope.fields.push(it);
                                 });
 
                                 if ($scope.rows) {
@@ -144,10 +140,10 @@ module dockyard.directives {
                         $scope.conditions.push(condition);
                     };
 
-                    var findField = (name): IQueryField2 => {
+                    var findField = (name): model.FieldDTO => {
                         var i;
                         for (i = 0; i < $scope.fields.length; ++i) {
-                            if ($scope.fields[i].name === name) {
+                            if ($scope.fields[i].key === name) {
                                 return $scope.fields[i];
                             }
                         }
@@ -161,7 +157,7 @@ module dockyard.directives {
                             if (!cond.field) { return; }
 
                             toBeSerialized.push({
-                                field: cond.field.name,
+                                field: cond.field.key,
                                 operator: cond.operator,
                                 value: cond.value
                             });

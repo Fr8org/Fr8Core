@@ -3,9 +3,9 @@
 
     export interface IQueryBuilderCondition2Scope extends ng.IScope {
         currentAction: model.ActivityDTO;
-        fields: Array<IQueryField>;
-        operators: Array<IQueryOperator>;
-        condition: IQueryCondition;
+        fields: Array<model.FieldDTO>;
+        operators: Array<IQueryOperator2>;
+        condition: IQueryCondition2;
         isSingle: boolean;
         hasConfigurationControl: boolean;
 
@@ -36,10 +36,26 @@
             },
             controller: ['$rootScope', '$scope', '$compile',
                 ($rootScope: ng.IRootScopeService,
-                    $scope: IQueryBuilderConditionScope,
+                    $scope: IQueryBuilderCondition2Scope,
                     $compile: ng.ICompileService) => {
 
                     var configurationControl = null;
+
+                    var createControl = (condition: IQueryCondition2): model.ControlDefinitionDTO => {
+                        var control;
+
+                        if ($scope.condition.field.fieldType === 'Date') {
+                            control = new model.DatePicker();
+                            control.value = condition.value;
+                        }
+                        // All other field types.
+                        else {
+                            control = new model.TextBox();
+                            control.value = condition.value;
+                        }
+
+                        return control;
+                    };
 
                     var attachControl = () => {
                         if (configurationControl) {
@@ -55,14 +71,10 @@
                         }
 
                         var configurationControlScope = $scope.$new();
-                        (<any>configurationControlScope).control =
-                            angular.copy($scope.condition.field.control);
-
-                        (<any>configurationControlScope).control.selectedKey = $scope.condition.value;
-                        (<any>configurationControlScope).control.value = $scope.condition.value;
+                        (<any>configurationControlScope).control = createControl($scope.condition);
                         (<any>configurationControlScope).currentAction = $scope.currentAction;
 
-                        $scope.hasConfigurationControl = true;
+                        $scope.hasConfigurationControl = true; 
 
                         $compile('<configuration-control current-action="currentAction" field="control" />')
                             (configurationControlScope, (markup, scope) => {
@@ -100,4 +112,4 @@
     }
 }
 
-app.directive('queryBuilderConditionTwo', dockyard.directives.QueryBuilderCondition);
+app.directive('queryBuilderConditionTwo', dockyard.directives.QueryBuilderCondition2);
