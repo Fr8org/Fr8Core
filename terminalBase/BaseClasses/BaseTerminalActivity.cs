@@ -260,13 +260,23 @@ namespace TerminalBase.BaseClasses
         }
 
         /// <summary>
-        /// returns Needs authentication error to hub
+        /// Returns Needs authentication error to hub
         /// </summary>
         /// <param name="payload"></param>
         /// <returns></returns>
         protected PayloadDTO NeedsAuthenticationError(PayloadDTO payload)
         {
             return Error(payload, "No AuthToken provided.", ErrorType.Authentication, ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID);
+        }
+
+        /// <summary>
+        /// Returns authentication error to hub
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO InvalidTokenError(PayloadDTO payload, string customMessage = "")
+        {
+            return Error(payload, customMessage ?? "AuthToken is invalid or expired.", ErrorType.Authentication, ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID);
         }
 
         protected async Task PushUserNotification(TerminalNotificationDTO notificationMessage)

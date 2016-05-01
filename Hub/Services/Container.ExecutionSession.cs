@@ -179,6 +179,10 @@ namespace Hub.Services
                     {
                         throw new ActivityExecutionException(e.ContainerDTO, Mapper.Map<ActivityDO, ActivityDTO>((ActivityDO) currentNode), e.Message, e);
                     }
+                    catch (InvalidTokenRuntimeException)
+                    {
+                        throw;
+                    }
                     catch (Exception e)
                     {
                         var curActivity = currentNode as ActivityDO;
@@ -260,7 +264,7 @@ namespace Hub.Services
                     case ActivityResponse.Error:
                         var currentActivity = _uow.PlanRepository.GetById<ActivityDO>(topFrame.NodeId);
                         ErrorDTO error = activityResponse.TryParseErrorDTO(out error) ? error : null;
-                        var errorCode = (ActivityErrorCode)int.Parse(error.ErrorCode);
+                        var errorCode = (ActivityErrorCode)Enum.Parse(typeof(ActivityErrorCode), error.ErrorCode);
                         if (errorCode == ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID)
                         {
                             throw new InvalidTokenRuntimeException(Mapper.Map<ActivityDO, ActivityDTO>(currentActivity), 

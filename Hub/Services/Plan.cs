@@ -44,7 +44,7 @@ namespace Hub.Services
         private readonly IPusherNotifier _pusher;
 
         public Plan(InternalInterface.IContainer container, Fr8Account dockyardAccount, IActivity activity,
-            ICrateManager crate, ISecurityServices security,  IJobDispatcher dispatcher)
+            ICrateManager crate, ISecurityServices security,  IJobDispatcher dispatcher, IPusherNotifier pusher)
         {
             _container = container;
             _dockyardAccount = dockyardAccount;
@@ -52,6 +52,7 @@ namespace Hub.Services
             _crate = crate;
             _security = security;
             _dispatcher = dispatcher;
+            _pusher = pusher;
         }
 
         public PlanResultDTO GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, PlanQueryDTO planQueryDTO, bool isAdmin = false)
@@ -528,10 +529,9 @@ namespace Hub.Services
                         $"{ex?.FailedActivityDTO.ActivityTemplate.WebService.Name}. Plan execution has stopped. Please " +
                         $"re-authorize Fr8 to connect to webservice name by clicking on the Settings dots in the upper " +
                         $"right corner of the activity and then selecting Choose Authentication.";
-                _pusher.PushNotification(errorMessage, NotificationChannel.SecurityFailure, user.UserName);
+                _pusher.NotifyUser(errorMessage, NotificationChannel.GenericFailure, user.UserName);
                 curContainerDO.State = State.Failed;
                 throw;
-
             }
             catch (Exception)
             {
