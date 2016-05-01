@@ -41,7 +41,7 @@ namespace HubTests.Managers
         }
 
         [Test]
-        public void Should_can_take_null_Data_and_historyItemDO_when_composing_string()
+        public void Should_take_null_Data_and_historyItemDO_when_composing_string()
         {
             var historyItem = UtilitiesTesting.Fixtures.FixtureData.TestFactDO();
             historyItem.Data = null;

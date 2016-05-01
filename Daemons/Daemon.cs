@@ -66,7 +66,8 @@ namespace Daemons
         protected void LogFail(Exception ex, String message = null)
         {
             _serviceManager.LogFail(ex, message);
-            Logger.GetLogger(2).Error(message, ex);
+            //Logger.GetLogger(2).Error(message, ex);
+            Logger.LogMessage($"{message}, Exception = {ex}",EventType.Error,2);
         }
         protected void LogSuccess(String message = null)
         {
@@ -319,7 +320,8 @@ namespace Daemons
             lock (_loggedExceptions)
                 _loggedExceptions.Add(e);
 
-            Logger.GetLogger().Error("Error occured in " + GetType().Name, e);
+            //Logger.GetLogger().Error("Error occured in " + GetType().Name, e);
+            Logger.LogError($"Error occured in  + {GetType().Name}; Exception = {e}");
             LogFail(e, "Error occured in " + GetType().Name);
         }
     }
