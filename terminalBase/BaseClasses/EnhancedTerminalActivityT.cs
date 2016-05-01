@@ -733,12 +733,12 @@ namespace TerminalBase.BaseClasses
         /// <summary>
         /// returns error to hub
         /// </summary>
-        protected void ErrorInvalidToken(string errorMessage = null)
+        protected void ErrorInvalidToken(string instructionsToUser = null)
         {
             SetResponse(ActivityResponse.Error);
             var errorCode = ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID;
             OperationalState.CurrentActivityErrorCode = errorCode;
-            OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, ErrorType.Authentication, errorCode.ToString(), null, null, null));
+            OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(instructionsToUser, ErrorType.Authentication, errorCode.ToString(), null, null, null));
         }
 
         /**********************************************************************************/

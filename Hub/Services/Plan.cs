@@ -526,9 +526,19 @@ namespace Hub.Services
             catch (InvalidTokenRuntimeException ex)
             {
                 string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with " +
-                        $"{ex?.FailedActivityDTO.ActivityTemplate.WebService.Name}. Plan execution has stopped. Please " +
-                        $"re-authorize Fr8 to connect to webservice name by clicking on the Settings dots in the upper " +
+                        $"{ex?.FailedActivityDTO.ActivityTemplate.WebService.Name}. Plan execution has stopped. ";
+
+                errorMessage += $"Please re-authorize Fr8 to connect to {ex?.FailedActivityDTO.ActivityTemplate.WebService.Name} " +
+                        $"by clicking on the Settings dots in the upper " +
                         $"right corner of the activity and then selecting Choose Authentication.";
+
+                // Try getting specific the instructions provided by the terminal.
+                if (!String.IsNullOrEmpty(ex.Message))
+                {
+                    errorMessage += "Additional instructions from the terminal: ";
+                    errorMessage += ex.Message;
+                }
+
                 _pusher.NotifyUser(errorMessage, NotificationChannel.GenericFailure, user.UserName);
                 curContainerDO.State = State.Failed;
                 throw;
