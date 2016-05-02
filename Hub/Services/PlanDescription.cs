@@ -1,14 +1,19 @@
 ﻿using AutoMapper;
+using Data.Constants;
+using Data.Control;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects.PlanDescription;
+using Data.Interfaces.Manifests;
 using Hub.Interfaces;
+using Hub.Managers;
 using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 
 namespace Hub.Services
@@ -16,10 +21,12 @@ namespace Hub.Services
     public class PlanDescription : IPlanDescription
     {
         private IPlan _plan;
+        private ICrateManager _crateManager;
 
         public PlanDescription()
         {
             _plan = ObjectFactory.GetInstance<IPlan>();
+            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 
         public List<PlanDescriptionDTO> GetDescriptions(string userId)
@@ -41,7 +48,9 @@ namespace Hub.Services
                 Dictionary<Guid, PlanNodeDescriptionDO> nodes_dictionary = new Dictionary<Guid, PlanNodeDescriptionDO>();
 
                 var planDescription = new PlanDescriptionDO();
-                var descriptions = uow.PlanDescriptionsRepository.GetQuery().Where(a => a.Name.Contains(plan.Name) && a.Fr8AccountId == curFr8UserId).ToList();
+                var descriptions = uow.PlanDescriptionsRepository.GetQuery().Where(a => a.Fr8AccountId == curFr8UserId &&
+                a.Name.Contains(plan.Name)).ToList() //linq to entities
+                .Where(a => (a.Name == plan.Name) || Regex.Match(a.Name, "^(" + plan.Name + " #\\d*)").Success).ToList(); //linq
                 string name = CalculateName(curFr8UserId, descriptions, plan);
 
                 planDescription.Name = name;
@@ -50,10 +59,13 @@ namespace Hub.Services
                 planDescription.PlanNodeDescriptions = new List<PlanNodeDescriptionDO>();
                 uow.PlanDescriptionsRepository.Add(planDescription);
 
+                var all_nodes_dictionary = new Dictionary<Guid, PlanNodeDescriptionDO>();
                 foreach (var subplan in plan.SubPlans.Where(a => a.ChildNodes.Count > 0))
                 {
-                    BuildNodes(subplan, planDescription, all_activities, related_templates, plan.StartingSubPlanId == subplan.Id);
+                    BuildNodes(subplan, planDescription, all_activities, related_templates, plan.StartingSubPlanId == subplan.Id, ref all_nodes_dictionary);
                 }
+
+                HandleJumpTransitions(all_nodes_dictionary, all_activities, related_templates, planDescription, plan);
 
                 uow.SaveChanges();
 
@@ -61,6 +73,51 @@ namespace Hub.Services
             }
         }
 
+        private void HandleJumpTransitions(Dictionary<Guid, PlanNodeDescriptionDO> all_nodes_dictionary, IQueryable<ActivityDO> all_activities, IQueryable<ActivityTemplateDO> related_templates, PlanDescriptionDO planDescription, PlanDO plan)
+        {
+            var testAndBranchTemplate = related_templates.Where(a => a.Name == "TestAndBranch").FirstOrDefault();
+            if (testAndBranchTemplate == null) return;
+
+            var testAndBranch_activities = all_activities.Where(a => a.ActivityTemplateId == testAndBranchTemplate.Id).ToList();
+
+            foreach (var tab_Activity in testAndBranch_activities)
+            {
+                var testAndBranch_node = all_nodes_dictionary[tab_Activity.Id];
+                using (var crateStorage = _crateManager.GetUpdatableStorage(tab_Activity))
+                {
+                    var controlsCrate = crateStorage.Where(a => a.ManifestType.Id == (int)MT.StandardConfigurationControls).FirstOrDefault().Get<StandardConfigurationControlsCM>();
+                    var transitionsPanel = (ContainerTransition)controlsCrate.Controls.Where(a => a.Type == ControlTypes.ContainerTransition).FirstOrDefault();
+
+                    foreach (var transition in transitionsPanel.Transitions.Where(a => a.TargetNodeId.HasValue))
+                    {
+                        switch (transition.Transition)
+                        {
+                            case ContainerTransitions.JumpToActivity:
+                                var target_node = all_nodes_dictionary[transition.TargetNodeId.Value];
+                                testAndBranch_node.Transitions.Add(new ActivityTransitionDO() { ActivityDescription = target_node.ActivityDescription, Transition = PlanNodeTransitionType.Jump });
+                                break;
+
+                            case ContainerTransitions.JumpToSubplan:
+                                var subplan = plan.SubPlans.Where(a => a.Id == transition.TargetNodeId.Value).FirstOrDefault();
+                                var target_starting_nodeDO = subplan.ChildNodes.Where(a => a.Ordering == 1).FirstOrDefault();
+
+                                if (target_starting_nodeDO != null) //false if a jump is targeting an emty subplan, so we won't create transitions
+                                {
+                                    var target_starting_node = all_nodes_dictionary[target_starting_nodeDO.Id];
+                                    testAndBranch_node.Transitions.Add(new ActivityTransitionDO() { ActivityDescription = target_starting_node.ActivityDescription, Transition = PlanNodeTransitionType.Jump });
+                                }
+                                break;
+
+                            case ContainerTransitions.LaunchAdditionalPlan:
+                                // for now let's jump to an existing a plan, but that will lead to "unsharable" plan description,
+                                // so in future we might want to evaluate if a user wants a target plan to be saved as description as well
+                                testAndBranch_node.Transitions.Add(new ActivityTransitionDO() { PlanId = transition.TargetNodeId, Transition = PlanNodeTransitionType.Jump });
+                                break;
+                        }
+                    }
+                }
+            }
+        }
 
         public string BuildAPlan(int planDescriptionId, string userId)
         {
@@ -71,7 +128,7 @@ namespace Hub.Services
                     .Include(t => t.PlanNodeDescriptions.Select(x => x.Transitions))
                     .Where(a => a.Id == planDescriptionId).FirstOrDefault();
 
-                var planDO = new PlanDO() { Fr8AccountId = userId, Name = planDescription.Name, PlanState = 1, ChildNodes = new List<PlanNodeDO>(), Description = planDescription.Description };
+                var planDO = new PlanDO() { Fr8AccountId = userId, Name = planDescription.Name + "— from a plan description", PlanState = 1, ChildNodes = new List<PlanNodeDO>(), Description = planDescription.Description };
 
                 var first_activities = planDescription.PlanNodeDescriptions.Where(a => a.ParentNode == null);
                 foreach (var startingActivity in first_activities)
@@ -148,7 +205,8 @@ namespace Hub.Services
         }
 
 
-        private Dictionary<Guid, PlanNodeDescriptionDO> BuildNodes(PlanNodeDO nodeDO, PlanDescriptionDO planDescription, IQueryable<ActivityDO> all_activities, IQueryable<ActivityTemplateDO> related_templates, bool startingSubplan)
+        private Dictionary<Guid, PlanNodeDescriptionDO> BuildNodes(PlanNodeDO nodeDO, PlanDescriptionDO planDescription, IQueryable<ActivityDO> all_activities,
+            IQueryable<ActivityTemplateDO> related_templates, bool startingSubplan, ref Dictionary<Guid, PlanNodeDescriptionDO> allNodesDictionary)
         {
             var result = new Dictionary<Guid, PlanNodeDescriptionDO>();
             foreach (var activityNode in nodeDO.ChildNodes)
@@ -169,8 +227,11 @@ namespace Hub.Services
                     planDescription.PlanNodeDescriptions.Add(node);
 
                 result.Add(firstActivity.Id, node);
+                if (!allNodesDictionary.ContainsKey(firstActivity.Id))
+                    allNodesDictionary.Add(firstActivity.Id, node);
 
-                var child_nodes = BuildNodes(activityNode, planDescription, all_activities, related_templates, startingSubplan);
+
+                var child_nodes = BuildNodes(activityNode, planDescription, all_activities, related_templates, startingSubplan, ref allNodesDictionary);
 
                 if (child_nodes.Count > 0)
                 {
