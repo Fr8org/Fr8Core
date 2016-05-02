@@ -22,7 +22,6 @@ WITH NodeTree1 AS (
 )
 select distinct (NodeTree1.Id) into #Nodes from NodeTree1 left join PlanNodes on NodeTree1.Id = PlanNodes.Id order by NodeTree1.Id;
  
-
 update p set p.ParentPlanNodeId = null, p.RootPlanNodeId = null from PlanNodes p 
 	inner join #Nodes cp on cp.Id = p.Id
 
