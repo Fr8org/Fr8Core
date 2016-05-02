@@ -47,32 +47,32 @@ namespace terminalSlack.Services
             }
         }
         /// <summary>
-        /// Adds specified activity Id to subscription list
+        /// Adds specified plan Id to subscription list
         /// </summary>
-        public void Subscribe(Guid activityId)
+        public void Subscribe(Guid planId)
         {
-            //Logger.GetLogger().Info($"SlackClientWrapper: mark activity {activityId} as subscribed");
+            //Logger.GetLogger().Info($"SlackClientWrapper: mark plan {planId} as subscribed");
             Logger.LogInfo("SlackClientWrapper: message received");
             lock (_subscribedActivities)
             {
-                _subscribedActivities.Add(activityId);
+                _subscribedActivities.Add(planId);
             }
         }
         /// <summary>
-        /// Removes specified activity Id from subscription list and returns value indicating whether any active subscription stil exists
+        /// Removes specified plan Id from subscription list and returns value indicating whether any active subscription stil exists
         /// </summary>
-        public bool Unsubsribe(Guid activityId)
+        public bool Unsubsribe(Guid planId)
         {
-            //Logger.GetLogger().Info($"SlackClientWrapper: mark activity {activityId} as unsubscribed");
-            Logger.LogInfo($"SlackClientWrapper: mark activity {activityId} as unsubscribed");
+            //Logger.GetLogger().Info($"SlackClientWrapper: mark plan {planId} as unsubscribed");
+            Logger.LogInfo($"SlackClientWrapper: mark plan {planId} as unsubscribed");
             lock (_subscribedActivities)
             {
-                _subscribedActivities.Remove(activityId);
+                _subscribedActivities.Remove(planId);
                 return _subscribedActivities.Count == 0;
             }
         }
 
-        public IEnumerable<Guid> SubscribedActivities
+        public IEnumerable<Guid> SubscribedPlans
         {
             get
             {
@@ -93,7 +93,7 @@ namespace terminalSlack.Services
             {
                 TeamId = SlackData.Team.Id,
                 TeamName = SlackData.Team.Name,
-                Timestamp = double.Parse(e.Data.Timestamp).FromUnixTime(),
+                Timestamp = e.Data.Timestamp,
                 ChannelId = e.Data.ChannelId,
                 ChannelName = SlackData.Channels.FirstOrDefault(x => x.Id == e.Data.ChannelId)?.Name,
                 UserName = SlackData.Users.FirstOrDefault(x => x.Id == e.Data.UserId)?.Name,
@@ -123,7 +123,7 @@ namespace terminalSlack.Services
 
         public string TeamName { get; set; }
 
-        public DateTime Timestamp { get; set; }
+        public string Timestamp { get; set; }
 
         public string Text { get; set; }
 
