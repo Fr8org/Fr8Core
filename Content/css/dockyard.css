@@ -1201,3 +1201,8 @@ footer p {
     background-color: #FF0000;
     background-color: rgba(255,0,0,.09);
 }
+
+.delete-button{
+     width:15px;
+     margin-top:10px;
+}
