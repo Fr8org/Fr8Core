@@ -21,9 +21,9 @@ namespace Utilities.Logging
         public override void ActivateOptions()
         {
             IgnoresException = false;
-            InfoColor = DebugColor.IsNullOrEmpty() ? "\x1b[36m" : InfoColor;
-            WarnColor = DebugColor.IsNullOrEmpty() ? "\x1b[33m" : WarnColor;
-            ErrorColor = DebugColor.IsNullOrEmpty() ? "\x1b[31m" : ErrorColor;
+            InfoColor = InfoColor.IsNullOrEmpty() ? "\x1b[36m" : "\x1b[" + InfoColor;
+            WarnColor = WarnColor.IsNullOrEmpty() ? "\x1b[33m" : "\x1b[" + WarnColor;
+            ErrorColor = ErrorColor.IsNullOrEmpty() ? "\x1b[31m" : "\x1b[" + ErrorColor;
         }
 
         static string WrapColor(string message, string color)
