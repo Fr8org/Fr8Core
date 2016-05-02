@@ -172,12 +172,19 @@ namespace Hub.Services
 
                 var child_nodes = BuildNodes(activityNode, planDescription, all_activities, related_templates, startingSubplan);
 
-                //handle childs
-                foreach (var child in child_nodes)
+                if (child_nodes.Count > 0)
                 {
-                    node.Transitions.Add(new ActivityTransitionDO() { ActivityDescription = child.Value.ActivityDescription, Transition = PlanNodeTransitionType.Child });
-                    child.Value.ParentNode = node;
-                    child.Value.SubPlanName = node.SubPlanName;
+                    var child_activities = new List<ActivityDO>();
+                    foreach (var activity in all_activities)
+                    {
+                        if (child_nodes.ContainsKey(activity.Id))
+                            child_activities.Add(activity);
+                    }
+                    var single_child = child_activities.OrderBy(a => a.Ordering).FirstOrDefault().Id;
+                    var child = child_nodes[single_child];
+                    node.Transitions.Add(new ActivityTransitionDO() { ActivityDescription = child.ActivityDescription, Transition = PlanNodeTransitionType.Child });
+                    child.ParentNode = node;
+                    child.SubPlanName = node.SubPlanName;
                 }
             }
 
