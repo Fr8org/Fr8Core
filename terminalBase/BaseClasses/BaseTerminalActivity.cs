@@ -659,7 +659,7 @@ namespace TerminalBase.BaseClasses
         }
 
 
-        public ActivityResponseDTO GenerateDocumentationRepsonse(string documentation)
+        public ActivityResponseDTO GenerateDocumentationResponse(string documentation)
         {
             return new ActivityResponseDTO
             {
@@ -667,7 +667,7 @@ namespace TerminalBase.BaseClasses
                 Type = ActivityResponse.ShowDocumentation.ToString()
             };
         }
-        public ActivityResponseDTO GenerateErrorRepsonse(string errorMessage)
+        public ActivityResponseDTO GenerateErrorResponse(string errorMessage)
         {
             return new ActivityResponseDTO
             {
