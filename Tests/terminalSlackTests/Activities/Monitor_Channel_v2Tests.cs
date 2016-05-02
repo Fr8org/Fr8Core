@@ -31,7 +31,7 @@ namespace terminalSlackTests.Activities
         [Test]
         public void Initialize_Always_LoadsChannelList()
         {
-            var activity = new Monitor_Channel_v2();
+            //var activity = new Monitor_Channel_v2();
             //var currentActivity = acti
         }
     }
