@@ -852,6 +852,10 @@ div[dnd-list].dndDragover {
     margin-left:10px;
 }
 
+.upstream-field-chooser-modal  th[title]{
+    padding:0;
+}
+
 [ng-table-pagination] {
     display: none;
 }

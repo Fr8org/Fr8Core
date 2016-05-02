@@ -1,24 +1,18 @@
-﻿<div class="modal-header">
+﻿<div class="modal-header upstream-field-chooser-modal">
     <!--UpstreamDataChooser main container-->
     <h3 class="modal-title">Select Available Upstream Field:</h3>
     <table ng-table="tableParams" class="table table-condensed table-bordered table-hover modal-body">
         <tr class="ng-table-group" ng-repeat-start="group in $groups" ng-init="group.$hideRows = true">
 
             <td colspan="3">
-                <a href="" ng-click="group.$hideRows = !group.$hideRows">
+                <a href="" ng-click="group.$hideRows = !group.$hideRows; expand()">
                     <span class="glyphicon" ng-class="{ 'glyphicon-chevron-right': group.$hideRows, 'glyphicon-chevron-down': !group.$hideRows }"></span>
                     <strong>{{ group.value }}</strong>
                 </a>
             </td>
         </tr>
         <tr ng-hide="group.$hideRows" ng-repeat="row in group.data" ng-repeat-end groupable="label" ng-click="setItem(row.key)" ng-class="{ 'active': selectedFieldValue === row.key }">
-            <td data-title="'Name'">{{row.key}}</td>
-            <td data-title="'Manifest'">{{row.tags}}</td>
+            <td>{{row.key}}</td>
         </tr>
     </table>
-    Selected: <b>{{ selectedFieldValue }}</b>
-    <div class="modal-footer">
-        <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
-        <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
-    </div>
 </div> 
