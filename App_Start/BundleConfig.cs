@@ -198,6 +198,7 @@ namespace HubWeb.App_Start
                 .Include("~/Content/css/shared/main.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/homecss/main.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/shared/navbar.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/CDNRelatedStyles.css")
             );
 
             bundles.Add(new StyleBundle("~/bundles/css/homeie")
