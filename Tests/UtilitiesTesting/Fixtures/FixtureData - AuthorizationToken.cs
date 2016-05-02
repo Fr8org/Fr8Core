@@ -84,7 +84,7 @@ namespace UtilitiesTesting.Fixtures
         {
             return new AuthorizationTokenDTO
             {
-                Token = @"bLgeJYcIkHAAAAAAAAAAFf6hjXX_RfwsFNTfu3z00zrH463seBYMNqBaFpbfBmqf"
+                Token = @"odQGb-zMEiAAAAAAAAAANnouWOHmMTge7bJxucikAlb8sEXaMDAXXFdowLFBSyTn"
             };
         }
     }
