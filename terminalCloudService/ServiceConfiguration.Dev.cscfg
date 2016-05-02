@@ -27,7 +27,7 @@
       <Setting name="terminalYammer.TerminalEndpoint" value="" />
     </ConfigurationSettings>
     <Certificates>
-      <Certificate name="Microsoft.WindowsAzure.Plugins.RemoteAccess.PasswordEncryption" thumbprint="4A0CFAE91F22D6D9A60358B6F1DC35223E6B6A06" thumbprintAlgorithm="sha1" />
+      <Certificate name="Microsoft.WindowsAzure.Plugins.RemoteAccess.PasswordEncryption" thumbprint="F40F5EB637C284D25002E891E5604C2A98B3BAF4" thumbprintAlgorithm="sha1" />
       <Certificate name="fr8Certificate" thumbprint="8588F9C9DA346691E9806A5D0E25EDA32FBE724F" thumbprintAlgorithm="sha1" />
     </Certificates>
   </Role>
