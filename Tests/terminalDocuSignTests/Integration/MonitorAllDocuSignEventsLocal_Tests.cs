@@ -143,6 +143,7 @@ namespace terminalDocuSignTests.Integration
                 Assert.IsTrue(mtDataCountBefore < mtDataCountAfter,
                     $"The number of Local MtData ({mtDataCountAfter}) records for user {UserAccountName} remained unchanged within {MaxAwaitPeriod} miliseconds.");
             }
+
         }
 
         private async Task RecreateDefaultAuthToken(IUnitOfWork uow,
