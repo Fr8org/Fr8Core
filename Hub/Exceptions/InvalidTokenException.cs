@@ -37,18 +37,5 @@ namespace Hub.Exceptions
         {
             FailedActivityDTO = activityDTO;
         }
-
-        protected override string GetErrorMessage()
-        {
-            if (!string.IsNullOrEmpty(Message))
-            {
-                return String.Format("Failed to run activity \"{0}\" due to invalid authorization token. {1}", FailedActivityDTO?.Label, Message);
-            }
-            else
-            {
-                return String.Format("Failed to run activity \"{0}\" due to invalid authorization token. Please log in to Plan Builder and reauthorize.", FailedActivityDTO?.Label);
-            }
-        }
-
     }
 }

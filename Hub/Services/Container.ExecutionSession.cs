@@ -269,7 +269,7 @@ namespace Hub.Services
                         {
                             throw new InvalidTokenRuntimeException(Mapper.Map<ActivityDO, ActivityDTO>(currentActivity), 
                                 Mapper.Map<ContainerDO, ContainerDTO>(_container), 
-                                error?.Message);
+                                error?.Message ?? string.Empty);
                         }
                         else
                         {

@@ -5,7 +5,7 @@ namespace TerminalBase.Errors
 {
     public class AuthorizationTokenExpiredOrInvalidException : Exception
     {
-        public AuthorizationTokenExpiredOrInvalidException()
+        public AuthorizationTokenExpiredOrInvalidException(): base(string.Empty)
         {
         }
 

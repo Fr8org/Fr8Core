@@ -274,9 +274,9 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         /// <param name="payload"></param>
         /// <returns></returns>
-        protected PayloadDTO InvalidTokenError(PayloadDTO payload, string customMessage = "")
+        protected PayloadDTO InvalidTokenError(PayloadDTO payload, string instructionsToUser = null)
         {
-            return Error(payload, customMessage ?? "AuthToken is invalid or expired.", ErrorType.Authentication, ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID);
+            return Error(payload, instructionsToUser, ErrorType.Authentication, ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID);
         }
 
         protected async Task PushUserNotification(TerminalNotificationDTO notificationMessage)
