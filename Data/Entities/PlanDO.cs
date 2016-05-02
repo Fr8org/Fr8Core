@@ -17,12 +17,12 @@ namespace Data.Entities
 		    
         private static readonly PropertyInfo[] TrackingProperties =
         {
-            typeof(PlanDO).GetProperty("Name"),
-            typeof(PlanDO).GetProperty("Tag"),
-            typeof(PlanDO).GetProperty("Description"),
-            typeof(PlanDO).GetProperty("PlanState"),
-            typeof(PlanDO).GetProperty("Category"),
-            typeof(PlanDO).GetProperty("Visibility")
+            typeof(PlanDO).GetProperty(nameof(Name)),
+            typeof(PlanDO).GetProperty(nameof(Tag)),
+            typeof(PlanDO).GetProperty(nameof(Description)),
+            typeof(PlanDO).GetProperty(nameof(PlanState)),
+            typeof(PlanDO).GetProperty(nameof(Category)),
+            typeof(PlanDO).GetProperty(nameof(Visibility))
         };
      
         public PlanDO()

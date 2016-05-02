@@ -1,10 +1,12 @@
-    var gulp = require('gulp');
+var gulp = require('gulp');
 var bower = require('gulp-bower');
 var concat = require('gulp-concat');
 var path = require('path');
 var child_process = require('child_process');
 var sourcemaps = require('gulp-sourcemaps');
 var templateCache = require('gulp-angular-templatecache');
+var argv = require('yargs').argv;
+var gutil = require('gulp-util');
 
 gulp.task('bower', function (done) {
     return bower({ layout: "byComponent" });
@@ -397,15 +399,20 @@ function getProtractorBinary(binaryName){
 }
 
 gulp.task('update-web-driver', function(done){
-    child_process.spawnSync(getProtractorBinary('webdriver-manager'), ['update'], {
+    return child_process.spawnSync(getProtractorBinary('webdriver-manager'), ['update'], {
         stdio: 'inherit'
     });
 });
 
 gulp.task('protractor-run', function (done) {
-    child_process.spawnSync(getProtractorBinary('protractor'),  ['Scripts\\tests\\e2e\\conf.js'] ,{
+    gutil.log('Using base url: ' + argv.baseUrl);
+    var result = child_process.spawnSync(getProtractorBinary('protractor'),  ['--baseUrl='+argv.baseUrl, 'Scripts\\tests\\e2e\\conf.js'] ,{
         stdio: 'inherit'
     });
+
+    if (result.status !== 0) {
+        process.exit(1);
+    }
 });
 gulp.task('default', ['bower', 'concattemplates', 'cdnizer-js', 'cdnizer-css']);
 
