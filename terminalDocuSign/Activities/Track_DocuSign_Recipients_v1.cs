@@ -354,7 +354,7 @@ namespace terminalDocuSign.Actions
                 objectList.Value = selectedObject.Id.ToString("N");
                 objectList.selectedKey = selectedObject.Alias;
 
-                var filterPane = (FilterPane)radioButtonGroup.Radios[1].Controls.First(c => c.Name == "Filter");
+                var filterPane = (FilterPane2)radioButtonGroup.Radios[1].Controls.First(c => c.Name == "Filter");
 
                 var conditions = new List<FilterConditionDTO>
                                 {
@@ -484,7 +484,7 @@ namespace terminalDocuSign.Actions
             var delayTimeString = delayValue.Days + " days, " + delayValue.Hours + " hours and " + delayValue.Minutes + " minutes";
             runTimePayloadData.Add(new FieldDTO("DelayTime", delayTimeString, AvailabilityType.RunTime));
 
-            var filterPane = (FilterPane)configControls.Single(c => c.Name == "Selected_Filter" && c.Type == ControlTypes.FilterPane);
+            var filterPane = (FilterPane2)configControls.Single(c => c.Name == "Selected_Filter" && c.Type == ControlTypes.FilterPane2);
 
             var conditions = JsonConvert.DeserializeObject<FilterDataDTO>(filterPane.Value);
 

@@ -33,7 +33,8 @@ namespace Data.Control
         public const string CheckBox = "CheckBox";
         public const string DropDownList = "DropDownList";
         public const string RadioButtonGroup = "RadioButtonGroup";
-        public const string FilterPane = "FilterPane";
+        // TODO: FR-3003, remove this.
+        // public const string FilterPane = "FilterPane";
         public const string FilterPane2 = "FilterPane2";
         public const string MappingPane = "MappingPane";
         public const string TextBlock = "TextBlock";
@@ -43,7 +44,8 @@ namespace Data.Control
         public const string Button = "Button";
         public const string TextSource = "TextSource";
         public const string TextArea = "TextArea";
-        public const string QueryBuilder = "QueryBuilder";
+        // TODO: FR-3003, remove this.
+        // public const string QueryBuilder = "QueryBuilder";
         public const string QueryBuilder2 = "QueryBuilder2";
         public const string ManagePlan = "ManagePlan";
         public const string Duration = "Duration";
@@ -186,13 +188,13 @@ namespace Data.Control
     }
 
     // TODO: FR-3003, remove this.
-    public class QueryBuilder : ControlDefinitionDTO
-    {
-        public QueryBuilder()
-        {
-            Type = ControlTypes.QueryBuilder;
-        }
-    }
+    // public class QueryBuilder : ControlDefinitionDTO
+    // {
+    //     public QueryBuilder()
+    //     {
+    //         Type = ControlTypes.QueryBuilder;
+    //     }
+    // }
 
     // TODO: FR-3003, rename this to QueryBuilder.
     public class QueryBuilder2 : ControlDefinitionDTO
@@ -328,16 +330,16 @@ namespace Data.Control
     }
 
     // TODO: FR-3003, remove this.
-    public class FilterPane : ControlDefinitionDTO
-    {
-        [JsonProperty("fields")]
-        public List<FilterPaneField> Fields { get; set; }
-
-        public FilterPane()
-        {
-            Type = ControlTypes.FilterPane;
-        }
-    }
+    // public class FilterPane : ControlDefinitionDTO
+    // {
+    //     [JsonProperty("fields")]
+    //     public List<FilterPaneField> Fields { get; set; }
+    // 
+    //     public FilterPane()
+    //     {
+    //         Type = ControlTypes.FilterPane;
+    //     }
+    // }
 
     public class FilterPane2 : ControlDefinitionDTO
     {

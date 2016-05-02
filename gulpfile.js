@@ -100,15 +100,19 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/TextBlock.js',
         'Scripts/app/directives/Controls/TextArea.js',
         'Scripts/app/directives/Controls/TextArea.js',
-        'Scripts/app/directives/Controls/FilterPane.js',
+        // TODO: FR-3003, remove this.
+        // 'Scripts/app/directives/Controls/FilterPane.js',
         'Scripts/app/directives/Controls/FilterPane2.js',
-        'Scripts/app/directives/QueryBuilderWidget.js',
+        // TODO: FR-3003, remove this.
+        // 'Scripts/app/directives/QueryBuilderWidget.js',
         'Scripts/app/directives/Controls/MappingPane.js',
         'Scripts/app/directives/Controls/ManagePlan.js',
         'Scripts/app/directives/Controls/RunPlanButton.js',
         'Scripts/app/directives/Controls/FieldList.js',
-        'Scripts/app/directives/Controls/QueryBuilder.js',
-        'Scripts/app/directives/Controls/QueryBuilderCondition.js',
+        // TODO: FR-3003, remove this.
+        // 'Scripts/app/directives/Controls/QueryBuilder.js',
+        // TODO: FR-3003, remove this.
+        // 'Scripts/app/directives/Controls/QueryBuilderCondition.js',
         'Scripts/app/directives/Controls/QueryBuilder2.js',
         'Scripts/app/directives/Controls/QueryBuilderCondition2.js',
         'Scripts/app/directives/Controls/TextSource.js',

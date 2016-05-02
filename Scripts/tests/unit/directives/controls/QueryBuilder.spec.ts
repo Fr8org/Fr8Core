@@ -5,9 +5,9 @@ module dockyard.tests.unit.directives.controls {
         let $compile: ng.ICompileService,
             $rootScope: ng.IRootScopeService,
             scope: dd.paneConfigureAction.IConfigurationControlScope,
-            elScope: dd.IQueryBuilderScope,
+            elScope: dd.IQueryBuilder2Scope,
             element: ng.IAugmentedJQuery,
-            emptyCondition: dd.IQueryCondition;
+            emptyCondition: dd.IQueryCondition2;
 
         beforeEach(module('app'));
 
@@ -24,7 +24,7 @@ module dockyard.tests.unit.directives.controls {
             };
             element = $compile("<query-builder current-action='currentAction' field='field'>")(scope);
             scope.$digest();
-            elScope = <dd.IQueryBuilderScope> element.isolateScope();
+            elScope = <dd.IQueryBuilder2Scope> element.isolateScope();
             expect(elScope.conditions.length).toBe(1);
             expect(elScope.conditions[0].value).toEqual('test value');
         });
@@ -35,7 +35,7 @@ module dockyard.tests.unit.directives.controls {
             };
             element = $compile("<query-builder current-action='currentAction' field='field'>")(scope);
             scope.$digest();
-            elScope = <dd.IQueryBuilderScope> element.isolateScope();
+            elScope = <dd.IQueryBuilder2Scope> element.isolateScope();
             emptyCondition = {
                 field: null,
                 operator: elScope.defaultOperator,

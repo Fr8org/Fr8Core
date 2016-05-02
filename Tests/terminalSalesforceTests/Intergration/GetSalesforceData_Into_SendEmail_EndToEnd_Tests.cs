@@ -51,7 +51,7 @@ namespace terminalSalesforceTests.Intergration
 
                     //give condition
                     var conditionQuery = new List<FilterConditionDTO>() { new FilterConditionDTO { Field = "LastName", Operator = "eq", Value = "McSorely" } };
-                (configControls.Content.Controls.Single(c => c.Name.Equals(nameof(Get_Data_v1.ActivityUi.SalesforceObjectFilter))) as QueryBuilder).Value = JsonConvert.SerializeObject(conditionQuery);
+                (configControls.Content.Controls.Single(c => c.Name.Equals(nameof(Get_Data_v1.ActivityUi.SalesforceObjectFilter))) as QueryBuilder2).Value = JsonConvert.SerializeObject(conditionQuery);
                 }
                 getData = await ConfigureActivity(getData);
             Assert.IsTrue(getData.CrateStorage.Crates.Any(c => c.Label.Equals(Get_Data_v1.SalesforceObjectFieldsCrateLabel)), 

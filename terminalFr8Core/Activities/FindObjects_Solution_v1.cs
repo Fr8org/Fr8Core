@@ -208,7 +208,7 @@ namespace terminalFr8Core.Actions
         {
             AddControl(
                 updater,
-                new QueryBuilder()
+                new QueryBuilder2()
                 {
                     Name = "QueryBuilder",
                     Label = "Query",

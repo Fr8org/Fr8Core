@@ -15,10 +15,10 @@ namespace Data.Interfaces.Manifests
         }
 
         // TODO: FR-3003, remove this.
-        public static string StandardQueryFields
-        {
-            get { return ManifestDiscovery.Default.GetManifestType<TypedFieldsCM>().Type; }
-        }
+        // public static string StandardQueryFields
+        // {
+        //     get { return ManifestDiscovery.Default.GetManifestType<TypedFieldsCM>().Type; }
+        // }
 
         public static string StandardTableData
         {

@@ -61,7 +61,7 @@ namespace terminalFr8Core.Actions
                     Source = new FieldSourceDTO
                     {
                         Label = "Queryable Criteria",
-                        ManifestType = CrateManifestTypes.StandardQueryFields
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     },
                     IsHidden = true
                 };

@@ -213,17 +213,18 @@ namespace UtilitiesTesting.Fixtures
                 Label = "Mapping Pane"
             };
 
-            var fieldFilterPane = new FilterPane()
-            {
-                Label = "Execute Actions If:",
-                Name = "Selected_Filter",
-                Required = true,
-                Source = new FieldSourceDTO
-                {
-                    Label = "Queryable Criteria",
-                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
-                }
-            };
+            // TODO: FR-3003, remove this.
+            // var fieldFilterPane = new FilterPane()
+            // {
+            //     Label = "Execute Actions If:",
+            //     Name = "Selected_Filter",
+            //     Required = true,
+            //     Source = new FieldSourceDTO
+            //     {
+            //         Label = "Queryable Criteria",
+            //         ManifestType = CrateManifestTypes.StandardDesignTimeFields
+            //     }
+            // };
 
             var mappingPane = new MappingPane()
             {
@@ -238,8 +239,6 @@ namespace UtilitiesTesting.Fixtures
                 Name = "Event_Envelope_Sent"
             };
 
-
-
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
                 fieldSelectDocusignTemplateDTO,
@@ -247,7 +246,8 @@ namespace UtilitiesTesting.Fixtures
                 textboxControl,
                 textblockControl,
                 filepickerControl,
-                fieldFilterPane,
+                // TODO: FR-3003, remove this.
+                // fieldFilterPane,
                 mappingPane,
                 checkboxControl
             };

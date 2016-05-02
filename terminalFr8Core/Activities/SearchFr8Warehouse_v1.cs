@@ -239,10 +239,10 @@ namespace terminalFr8Core.Actions
                     fr8ObjectDropDown.Value = fr8ObjectID;
                     fr8ObjectDropDown.selectedKey = fr8ObjectID;
 
-                    FilterPane upstreamCrateChooser1 = radioButtonGroup.Radios[1].Controls[1] as FilterPane;
+                    FilterPane2 upstreamCrateChooser1 = radioButtonGroup.Radios[1].Controls[1] as FilterPane2;
 
                     var configurationControls = GetConfigurationControls(activityDO);
-                    var queryBuilderControl = configurationControls.FindByName<QueryBuilder>("QueryBuilder");
+                    var queryBuilderControl = configurationControls.FindByName<QueryBuilder2>("QueryBuilder");
                     var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(queryBuilderControl.Value);
 
                     FilterDataDTO filterPaneDTO = new FilterDataDTO();

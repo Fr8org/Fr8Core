@@ -147,8 +147,8 @@ namespace terminalDocuSignTests.Integration
         private void ValidateCrateStructure(ICrateStorage crateStorage)
         {
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<TypedFieldsCM>().Count());
-            Assert.AreEqual("Queryable Criteria", crateStorage.CratesOfType<TypedFieldsCM>().Single().Label);
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count());
+            Assert.AreEqual("Queryable Criteria", crateStorage.CratesOfType<FieldDescriptionsCM>().Single().Label);
         }
 
         private void ValidateConfigurationControls(ICrateStorage crateStorage)
@@ -156,7 +156,7 @@ namespace terminalDocuSignTests.Integration
             var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
             Assert.AreEqual(ControlTypes.TextArea, controls.Controls[0].Type);
-            Assert.AreEqual(ControlTypes.QueryBuilder, controls.Controls[1].Type);
+            Assert.AreEqual(ControlTypes.QueryBuilder2, controls.Controls[1].Type);
             Assert.AreEqual("QueryBuilder", controls.Controls[1].Name);
             Assert.AreEqual(ControlTypes.Button, controls.Controls[2].Type);
             Assert.AreEqual("Continue", controls.Controls[2].Name);
@@ -169,7 +169,7 @@ namespace terminalDocuSignTests.Integration
                 var controls = updater.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
                 // Set QueryBuilder's value.
-                var queryBuilder = controls.FindByName<QueryBuilder>("QueryBuilder");
+                var queryBuilder = controls.FindByName<QueryBuilder2>("QueryBuilder");
 
                 var criteria = new List<FilterConditionDTO>()
                 {
@@ -268,7 +268,7 @@ namespace terminalDocuSignTests.Integration
     public class ActivityUi : StandardConfigurationControlsCM
     {
         [JsonIgnore]
-        public QueryBuilder QueryBuilder { get; set; }
+        public QueryBuilder2 QueryBuilder { get; set; }
 
         public ActivityUi()
         {
@@ -290,14 +290,14 @@ namespace terminalDocuSignTests.Integration
 
             string initialQuery = JsonConvert.SerializeObject(filterConditions);
 
-            Controls.Add((QueryBuilder = new QueryBuilder
+            Controls.Add((QueryBuilder = new QueryBuilder2
             {
                 Name = "QueryBuilder",
                 Value = initialQuery,
                 Source = new FieldSourceDTO
                 {
                     Label = "Queryable Criteria",
-                    ManifestType = CrateManifestTypes.StandardQueryFields
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
                 }
             }));
 
