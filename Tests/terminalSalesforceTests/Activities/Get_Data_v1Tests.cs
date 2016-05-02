@@ -119,7 +119,7 @@ namespace terminalSalesforceTests.Actions
             {
                 crateStorage.CratesOfType<StandardConfigurationControlsCM>()
                     .Single()
-                    .Content.Controls.Single(control => control.Type == ControlTypes.QueryBuilder2)
+                    .Content.Controls.Single(control => control.Type == ControlTypes.QueryBuilder)
                     //.Value = JsonConvert.SerializeObject(new FilterDataDTO() {Conditions = new List<FilterConditionDTO>()});
                     .Value = JsonConvert.SerializeObject(new List<FilterConditionDTO>());
             }

@@ -10,7 +10,7 @@
                 </tr>
             </thead>
             <tbody>
-                <tr query-builder-condition-two
+                <tr query-builder-condition
                     ng-repeat="condition in conditions track by $index"
                     current-action="currentAction"
                     condition="condition"
@@ -22,7 +22,10 @@
             </tbody>
         </table>
             <div class="add-condition">
-                <p><span>AND</span><a class="btn btn-primary btn-sm" ng-click="addCondition()" stop-click-propagation>{{::addRowText}}</a></p>
+                <p>
+                    <span>AND</span>
+                    <a class="btn btn-primary btn-sm" ng-click="addCondition()" stop-click-propagation>{{::addRowText}}</a>
+                </p>
             </div>
         </div>
     </div>

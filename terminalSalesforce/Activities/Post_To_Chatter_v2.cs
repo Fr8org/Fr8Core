@@ -29,7 +29,7 @@ namespace terminalSalesforce.Actions
 
             public DropDownList ChatterSelector { get; set; }
 
-            public QueryBuilder2 ChatterFilter { get; set; }
+            public QueryBuilder ChatterFilter { get; set; }
 
             public RadioButtonOption UseIncomingChatterIdOption { get; set; }
 
@@ -47,7 +47,7 @@ namespace terminalSalesforce.Actions
                     Required = true,
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
-                ChatterFilter = new QueryBuilder2
+                ChatterFilter = new QueryBuilder
                 {
                     Name = nameof(ChatterFilter),
                     Label = "Meeting which conditions?",

@@ -102,7 +102,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/TextArea.js',
         // TODO: FR-3003, remove this.
         // 'Scripts/app/directives/Controls/FilterPane.js',
-        'Scripts/app/directives/Controls/FilterPane2.js',
+        'Scripts/app/directives/Controls/FilterPane.js',
         // TODO: FR-3003, remove this.
         // 'Scripts/app/directives/QueryBuilderWidget.js',
         'Scripts/app/directives/Controls/MappingPane.js',
@@ -113,8 +113,8 @@ gulp.task('compile_js', function () {
         // 'Scripts/app/directives/Controls/QueryBuilder.js',
         // TODO: FR-3003, remove this.
         // 'Scripts/app/directives/Controls/QueryBuilderCondition.js',
-        'Scripts/app/directives/Controls/QueryBuilder2.js',
-        'Scripts/app/directives/Controls/QueryBuilderCondition2.js',
+        'Scripts/app/directives/Controls/QueryBuilder.js',
+        'Scripts/app/directives/Controls/QueryBuilderCondition.js',
         'Scripts/app/directives/Controls/TextSource.js',
         'Scripts/app/directives/Controls/SourceableCriteria.js',
         'Scripts/app/directives/Controls/InputFocus.js',

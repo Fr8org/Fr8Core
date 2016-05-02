@@ -38,7 +38,7 @@ namespace terminalFr8Core.Actions
 
             var controlsMS = GetControlsManifest(curActivityDO);
 
-            ControlDefinitionDTO filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == ControlTypes.FilterPane2);
+            ControlDefinitionDTO filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == ControlTypes.FilterPane);
             if (filterPaneControl == null)
             {
                 return Error(curPayloadDTO, "No control found with Type == \"filterPane\"");
@@ -307,7 +307,7 @@ namespace terminalFr8Core.Actions
 
         protected virtual Crate CreateControlsCrate()
         {
-            var fieldFilterPane = new FilterPane2()
+            var fieldFilterPane = new FilterPane()
             {
                 Label = "Execute Actions If:",
                 Name = "Selected_Filter",

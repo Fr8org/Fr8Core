@@ -33,7 +33,7 @@ namespace terminalFr8Core.Actions
             public DropDownList AvailableObjects { get; set; }
 
             [JsonIgnore]
-            public FilterPane2 Filter { get; set; }
+            public FilterPane Filter { get; set; }
 
             [JsonIgnore]
             public RadioButtonGroup QueryPicker { get; set; }
@@ -97,7 +97,7 @@ namespace terminalFr8Core.Actions
                                     Events = new List<ControlEvent> { ControlEvent.RequestConfig },
                                     Source = null
                                 }),
-                                (Filter = new FilterPane2
+                                (Filter = new FilterPane
                                 {
                                     Label = "Find all Fields where:",
                                     Name = "Filter",
@@ -241,7 +241,7 @@ namespace terminalFr8Core.Actions
             }
             else
             {
-                var filterPane = (FilterPane2)queryPicker.Radios[1].Controls[1];
+                var filterPane = (FilterPane)queryPicker.Radios[1].Controls[1];
                 var availableObjects = (DropDownList)queryPicker.Radios[1].Controls[0];
                 var criteria = JsonConvert.DeserializeObject<FilterDataDTO>(filterPane.Value);
 

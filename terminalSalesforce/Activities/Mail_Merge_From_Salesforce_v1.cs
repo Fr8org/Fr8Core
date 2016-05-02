@@ -34,7 +34,7 @@ namespace terminalSalesforce.Actions
         {
             public DropDownList SalesforceObjectSelector { get; set; }
 
-            public QueryBuilder2 SalesforceObjectFilter { get; set; }
+            public QueryBuilder SalesforceObjectFilter { get; set; }
 
             public DropDownList MailSenderActivitySelector { get; set; }
 
@@ -49,7 +49,7 @@ namespace terminalSalesforce.Actions
                     Required = true,
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
-                SalesforceObjectFilter = new QueryBuilder2
+                SalesforceObjectFilter = new QueryBuilder
                 {
                     Name = nameof(SalesforceObjectFilter),
                     Label = "That meet the following conditions:",

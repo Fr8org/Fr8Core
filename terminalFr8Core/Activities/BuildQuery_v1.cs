@@ -344,7 +344,7 @@ namespace terminalFr8Core.Actions
         /// </summary>
         private void AddQueryBuilder(ICrateStorage storage)
         {
-            var queryBuilder = new QueryBuilder2()
+            var queryBuilder = new QueryBuilder()
             {
                 Label = "Please, specify query:",
                 Name = "SelectedQuery",

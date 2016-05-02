@@ -68,7 +68,7 @@ namespace terminalDocuSign.Actions
         public class ActivityUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
-            public QueryBuilder2 QueryBuilder { get; set; }
+            public QueryBuilder QueryBuilder { get; set; }
 
             public ActivityUi()
             {
@@ -90,7 +90,7 @@ namespace terminalDocuSign.Actions
 
                 string initialQuery = JsonConvert.SerializeObject(filterConditions);
 
-                Controls.Add((QueryBuilder = new QueryBuilder2
+                Controls.Add((QueryBuilder = new QueryBuilder
                 {
                     Name = "QueryBuilder",
                     Value = initialQuery,

@@ -49,7 +49,7 @@ namespace terminalFr8Core.Actions
         public class ActionUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
-            public QueryBuilder2 QueryBuilder { get; set; }
+            public QueryBuilder QueryBuilder { get; set; }
 
             public ActionUi()
             {
@@ -75,7 +75,7 @@ namespace terminalFr8Core.Actions
                     Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") }
                 });
 
-                Controls.Add((QueryBuilder = new QueryBuilder2
+                Controls.Add((QueryBuilder = new QueryBuilder
                 {
                     Name = "QueryBuilder",
                     Value = null,
@@ -239,10 +239,10 @@ namespace terminalFr8Core.Actions
                     fr8ObjectDropDown.Value = fr8ObjectID;
                     fr8ObjectDropDown.selectedKey = fr8ObjectID;
 
-                    FilterPane2 upstreamCrateChooser1 = radioButtonGroup.Radios[1].Controls[1] as FilterPane2;
+                    FilterPane upstreamCrateChooser1 = radioButtonGroup.Radios[1].Controls[1] as FilterPane;
 
                     var configurationControls = GetConfigurationControls(activityDO);
-                    var queryBuilderControl = configurationControls.FindByName<QueryBuilder2>("QueryBuilder");
+                    var queryBuilderControl = configurationControls.FindByName<QueryBuilder>("QueryBuilder");
                     var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(queryBuilderControl.Value);
 
                     FilterDataDTO filterPaneDTO = new FilterDataDTO();

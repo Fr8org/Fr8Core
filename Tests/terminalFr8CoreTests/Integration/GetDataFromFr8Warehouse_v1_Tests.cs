@@ -40,7 +40,7 @@ namespace terminalFr8CoreTests.Integration
             using (var updater = Crate.UpdateStorage(() => activityDTO.CrateStorage))
             {
                 var controls = updater.CrateContentsOfType<StandardConfigurationControlsCM>().First();
-                var queryBuilder = controls.FindByName<QueryBuilder2>("QueryBuilder");
+                var queryBuilder = controls.FindByName<QueryBuilder>("QueryBuilder");
                 queryBuilder.Value = JsonConvert.SerializeObject(
                     new List<FilterConditionDTO>()
                     {

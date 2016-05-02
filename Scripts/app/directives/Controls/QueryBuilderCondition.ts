@@ -1,11 +1,11 @@
 ﻿module dockyard.directives {
     'use strict';
 
-    export interface IQueryBuilderCondition2Scope extends ng.IScope {
+    export interface IQueryBuilderConditionScope extends ng.IScope {
         currentAction: model.ActivityDTO;
         fields: Array<model.FieldDTO>;
-        operators: Array<IQueryOperator2>;
-        condition: IQueryCondition2;
+        operators: Array<IQueryOperator>;
+        condition: IQueryCondition;
         isSingle: boolean;
         hasConfigurationControl: boolean;
 
@@ -15,11 +15,11 @@
         rootElem: any;
     }
 
-    export function QueryBuilderCondition2(): ng.IDirective {
+    export function QueryBuilderCondition(): ng.IDirective {
         return {
             restrict: 'A',
             replace: true,
-            templateUrl: '/AngularTemplate/QueryBuilderCondition2',
+            templateUrl: '/AngularTemplate/QueryBuilderCondition',
             scope: {
                 currentAction: '=',
                 condition: '=',
@@ -28,7 +28,7 @@
                 isSingle: '=',
                 onRemoveCondition: '&'
             },
-            link: (scope: IQueryBuilderCondition2Scope,
+            link: (scope: IQueryBuilderConditionScope,
                 elem: ng.IAugmentedJQuery,
                 attr: ng.IAttributes) => {
 
@@ -36,12 +36,12 @@
             },
             controller: ['$rootScope', '$scope', '$compile',
                 ($rootScope: ng.IRootScopeService,
-                    $scope: IQueryBuilderCondition2Scope,
+                    $scope: IQueryBuilderConditionScope,
                     $compile: ng.ICompileService) => {
 
                     var configurationControl = null;
 
-                    var createControl = (condition: IQueryCondition2): model.ControlDefinitionDTO => {
+                    var createControl = (condition: IQueryCondition): model.ControlDefinitionDTO => {
                         var control;
 
                         if ($scope.condition.field.fieldType === 'Date') {
@@ -112,4 +112,4 @@
     }
 }
 
-app.directive('queryBuilderConditionTwo', dockyard.directives.QueryBuilderCondition2);
+app.directive('queryBuilderCondition', dockyard.directives.QueryBuilderCondition);

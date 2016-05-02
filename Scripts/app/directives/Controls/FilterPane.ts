@@ -3,11 +3,11 @@
 module dockyard.directives {
     'use strict';
 
-    export function FilterPane2(): ng.IDirective {
+    export function FilterPane(): ng.IDirective {
         var uniqueDirectiveId = 1;
         return {
             restrict: 'E',
-            templateUrl: '/AngularTemplate/FilterPane2',
+            templateUrl: '/AngularTemplate/FilterPane',
             scope: {
                 currentAction: '=',
                 field: '=',
@@ -15,7 +15,7 @@ module dockyard.directives {
             },
             controller: ['$scope', '$timeout', 'CrateHelper',
                 function (
-                    $scope: IPaneDefineCriteria2Scope,
+                    $scope: IPaneDefineCriteriaScope,
                     $timeout: ng.ITimeoutService,
                     crateHelper: services.CrateHelper
                 ) {
@@ -74,14 +74,14 @@ module dockyard.directives {
         }
     }
 
-    export interface IPaneDefineCriteria2Scope extends ng.IScope {
+    export interface IPaneDefineCriteriaScope extends ng.IScope {
         field: any;
         change: () => (field: model.ControlDefinitionDTO) => void;
-        fields: Array<IQueryField2>;
-        conditions: Array<IQueryCondition2>;
+        fields: Array<IQueryField>;
+        conditions: Array<IQueryCondition>;
         executionType: number;
         uniqueDirectiveId: number;
     }
 }
 
-app.directive('filterPaneTwo', dockyard.directives.FilterPane2);
+app.directive('filterPane', dockyard.directives.FilterPane);

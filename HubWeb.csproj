@@ -936,7 +936,7 @@
     <Content Include="Config\log4net.tests.healthMonitor.Demo.config" />
     <Content Include="Config\log4net.tests.healthMonitor.Dev.config" />
     <Content Include="Config\log4net.tests.healthMonitor.Release.config" />
-    <Content Include="Views\AngularTemplate\FilterPane2.cshtml" />
+    <Content Include="Views\AngularTemplate\FilterPane.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />
@@ -973,13 +973,13 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\BuildMessageAppender.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ControlList.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ExternalObjectChooser.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\FilterPane2.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\FilterPane.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\MetaControlContainer.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ContainerTransition.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DatePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Fr8Event.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\QueryBuilder2.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\QueryBuilderCondition2.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\QueryBuilder.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\QueryBuilderCondition.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\--TO-BE-REMOVED--QueryBuilderCondition.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\SelectData.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\SourceableCriteria.ts" />
@@ -1126,8 +1126,8 @@
     <Content Include="Views\AngularTemplate\BuildMessageAppender.cshtml" />
     <Content Include="Views\AngularTemplate\KioskModeOrganizationHeader.cshtml" />
     <Content Include="Views\AngularTemplate\Organization.cshtml" />
-    <Content Include="Views\AngularTemplate\QueryBuilder2.cshtml" />
-    <Content Include="Views\AngularTemplate\QueryBuilderCondition2.cshtml" />
+    <Content Include="Views\AngularTemplate\QueryBuilder.cshtml" />
+    <Content Include="Views\AngularTemplate\QueryBuilderCondition.cshtml" />
     <None Include="Web.Demo.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>

@@ -3,36 +3,36 @@
 module dockyard.directives {
     'use strict';
 
-    export interface IQueryField2 {
+    export interface IQueryField {
         name: string;
         label: string;
         fieldType: string;
     }
 
-    export interface IQueryOperator2 {
+    export interface IQueryOperator {
         text: string;
         value: string;
     }
 
-    export interface IQueryCondition2 {
+    export interface IQueryCondition {
         field: model.FieldDTO;
         operator: string;
         value: string;
     }
 
-    export interface ISerializedCondition2 {
+    export interface ISerializedCondition {
         field: string;
         operator: string;
         value: string;
     }
 
-    export interface IQueryBuilder2Scope extends ng.IScope {
+    export interface IQueryBuilderScope extends ng.IScope {
         currentAction: model.ActivityDTO;
         field: any;
         fields: Array<model.FieldDTO>;
-        operators: Array<IQueryOperator2>;
+        operators: Array<IQueryOperator>;
         defaultOperator: string;
-        conditions: Array<IQueryCondition2>;
+        conditions: Array<IQueryCondition>;
         rows: Array<interfaces.ICondition>;
 
         addCondition: () => void;
@@ -40,10 +40,10 @@ module dockyard.directives {
         addRowText: string;
     }
 
-    export function QueryBuilder2(): ng.IDirective {
+    export function QueryBuilder(): ng.IDirective {
         return {
             restrict: 'E',
-            templateUrl: '/AngularTemplate/QueryBuilder2',
+            templateUrl: '/AngularTemplate/QueryBuilder',
             scope: {
                 currentAction: '=',
                 field: '=',
@@ -53,7 +53,7 @@ module dockyard.directives {
             },
             controller: ['$scope', '$timeout', 'CrateHelper',
                 function (
-                    $scope: IQueryBuilder2Scope,
+                    $scope: IQueryBuilderScope,
                     $timeout: ng.ITimeoutService,
                     crateHelper: services.CrateHelper
                 ) {
@@ -101,9 +101,9 @@ module dockyard.directives {
                     $scope.$watch('field', (newValue: any) => {
                         if (newValue && newValue.value) {
                             var jsonValue = angular.fromJson(newValue.value);
-                            var serializedConditions = <Array<ISerializedCondition2>>jsonValue;
+                            var serializedConditions = <Array<ISerializedCondition>>jsonValue;
 
-                            var conditions: Array<IQueryCondition2> = [];
+                            var conditions: Array<IQueryCondition> = [];
 
                             if (serializedConditions.length) {
                                 angular.forEach(serializedConditions, (cond) => {
@@ -192,4 +192,4 @@ module dockyard.directives {
     }
 }
 
-app.directive('queryBuilderTwo', dockyard.directives.QueryBuilder2);
+app.directive('queryBuilder', dockyard.directives.QueryBuilder);
