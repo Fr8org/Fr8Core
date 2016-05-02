@@ -28,17 +28,37 @@ namespace terminalSlack.Services
             {
                 return null;
             }
+            var plansAffectedString = payloadFields.FirstOrDefault(x => x.Key == "plans_affected")?.Value;
+            var plansAffected = ParsePlansAffected(plansAffectedString);
             var eventReportContent = new EventReportCM
             {
                 EventNames = "Slack Outgoing Message",
                 ContainerDoId = "",
                 EventPayload = WrapPayloadDataCrate(payloadFields),
                 ExternalAccountId = userName,
-                ExternalDomainId = teamId,
-                Manufacturer = "Slack"
+                //Now plans won't be run for entire team but rather for specific user again
+                //ExternalDomainId = teamId,
+                Manufacturer = "Slack",
+                PlansAffected = plansAffected
             };
             var curEventReport = Crate.FromContent("Standard Event Report", eventReportContent);
             return Task.FromResult(curEventReport);
+        }
+
+        private List<Guid> ParsePlansAffected(string plansAffectedString)
+        {
+            if (string.IsNullOrEmpty(plansAffectedString))
+            {
+                return null;
+            }
+            try
+            {
+                return plansAffectedString.Split(',').Select(x => Guid.Parse(x)).ToList();
+            }
+            catch
+            {
+                return null;
+            }
         }
 
         private List<FieldDTO> ParseSlackPayloadData(string message)
