@@ -21,7 +21,7 @@ namespace terminalSalesforce.Actions
         {
             public DropDownList SalesforceObjectSelector { get; set; }
 
-            public QueryBuilder SalesforceObjectFilter { get; set; }
+            public QueryBuilder2 SalesforceObjectFilter { get; set; }
 
             public ActivityUi()
             {
@@ -32,7 +32,7 @@ namespace terminalSalesforce.Actions
                     Required = true,
                     Events = new List<ControlEvent> {  ControlEvent.RequestConfig }
                 };
-                SalesforceObjectFilter = new QueryBuilder
+                SalesforceObjectFilter = new QueryBuilder2
                 {
                     Name = nameof(SalesforceObjectFilter),
                     Label = "That meet the following conditions:",
@@ -40,7 +40,7 @@ namespace terminalSalesforce.Actions
                     Source = new FieldSourceDTO
                     {
                         Label = QueryFilterCrateLabel,
-                        ManifestType = CrateManifestTypes.StandardQueryFields
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
                 };
                 Controls.Add(SalesforceObjectSelector);
@@ -89,18 +89,19 @@ namespace terminalSalesforce.Actions
             }
             //Prepare new query filters from selected object properties
             var selectedObjectProperties = await _salesforceManager.GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
-            var queryFilterCrate = Crate<TypedFieldsCM>.FromContent(
+            var queryFilterCrate = Crate<FieldDescriptionsCM>.FromContent(
                 QueryFilterCrateLabel,
-                new TypedFieldsCM(selectedObjectProperties.OrderBy(x => x.Key)
-                                                                  .Select(x => new TypedFieldDTO(x.Key, x.Value, FieldType.String, new TextBox { Name = x.Key }))),
+                new FieldDescriptionsCM(selectedObjectProperties),
                 AvailabilityType.Configuration);
             CurrentActivityStorage.ReplaceByLabel(queryFilterCrate);
 
-            var objectPropertiesCrate = Crate<FieldDescriptionsCM>.FromContent(
-                SalesforceObjectFieldsCrateLabel,
-                new FieldDescriptionsCM(selectedObjectProperties.Select(c => new FieldDTO(c.Key, c.Key))),            
-                AvailabilityType.RunTime);
-            CurrentActivityStorage.ReplaceByLabel(objectPropertiesCrate);
+            // TODO: FR-3003, remove this.
+            // var objectPropertiesCrate = Crate<FieldDescriptionsCM>.FromContent(
+            //     SalesforceObjectFieldsCrateLabel,
+            //     new FieldDescriptionsCM(selectedObjectProperties.Select(c => new FieldDTO(c.Key, c.Key))),            
+            //     AvailabilityType.RunTime);
+            // CurrentActivityStorage.ReplaceByLabel(objectPropertiesCrate);
+
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
             //Publish information for downstream activities
             runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
@@ -114,10 +115,11 @@ namespace terminalSalesforce.Actions
                 throw new ActivityExecutionException("No Salesforce object is selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
             var salesforceObjectFields = CurrentActivityStorage
-                                            .FirstCrate<TypedFieldsCM>(x => x.Label == QueryFilterCrateLabel)
-                                            .Content
-                                            .Fields
-                                            .Select(x => x.Name);
+                .FirstCrate<FieldDescriptionsCM>(x => x.Label == QueryFilterCrateLabel)
+                .Content
+                .Fields
+                .Select(x => x.Key);
+
             var filterValue = ConfigurationControls.SalesforceObjectFilter.Value;
             var filterDataDTO = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(filterValue);
             //If without filter, just get all selected objects
@@ -128,8 +130,22 @@ namespace terminalSalesforce.Actions
                 parsedCondition = ParseConditionToText(filterDataDTO);
             }
 
-            var resultObjects = await _salesforceManager.Query(salesforceObject.ToEnum<SalesforceObjectType>(), salesforceObjectFields, parsedCondition, AuthorizationToken);
-            CurrentPayloadStorage.Add(Crate<StandardTableDataCM>.FromContent(RuntimeDataCrateLabel, resultObjects, AvailabilityType.RunTime));
+            var resultObjects = await _salesforceManager
+                .Query(
+                    salesforceObject.ToEnum<SalesforceObjectType>(),
+                    salesforceObjectFields,
+                    parsedCondition,
+                    AuthorizationToken
+                );
+
+            CurrentPayloadStorage.Add(
+                Crate<StandardTableDataCM>
+                    .FromContent(
+                        RuntimeDataCrateLabel,
+                        resultObjects,
+                        AvailabilityType.RunTime
+                    )
+                );
         }
     }
 }

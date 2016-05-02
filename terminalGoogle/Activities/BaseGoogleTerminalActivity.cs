@@ -19,6 +19,7 @@ namespace terminalGoogle.Actions
         {
             return GoogleAuthHelper.IsTokenInvalidation(ex);
         }
+
         public GoogleAuthDTO GetGoogleAuthToken(AuthorizationTokenDO authTokenDO = null)
         {
             return JsonConvert.DeserializeObject<GoogleAuthDTO>((authTokenDO ?? AuthorizationToken).Token);

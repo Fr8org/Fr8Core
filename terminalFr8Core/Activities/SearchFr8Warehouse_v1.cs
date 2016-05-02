@@ -26,6 +26,7 @@ using terminalFr8Core.Interfaces;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using TerminalBase.Services;
+using TerminalBase.Services.MT;
 using System.Text.RegularExpressions;
 using Hub.Infrastructure;
 using Utilities.Logging;
@@ -48,7 +49,7 @@ namespace terminalFr8Core.Actions
         public class ActionUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
-            public QueryBuilder QueryBuilder { get; set; }
+            public QueryBuilder2 QueryBuilder { get; set; }
 
             public ActionUi()
             {
@@ -74,7 +75,7 @@ namespace terminalFr8Core.Actions
                     Events = new List<ControlEvent> { new ControlEvent("onChange", "requestConfig") }
                 });
 
-                Controls.Add((QueryBuilder = new QueryBuilder
+                Controls.Add((QueryBuilder = new QueryBuilder2
                 {
                     Name = "QueryBuilder",
                     Value = null,
@@ -264,13 +265,21 @@ namespace terminalFr8Core.Actions
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(actvityDO))
             {
-                var designTimeQueryFields = GetFr8WarehouseFieldNames(fr8ObjectID);
+                // TODO: FR-3003, remove this.
+                // var designTimeQueryFields = GetFr8WarehouseFieldNames(fr8ObjectID);
+
+                var designTimeQueryFields = MTTypesHelper.GetFieldsByTypeId(Guid.Parse(fr8ObjectID));
                 var criteria = crateStorage.FirstOrDefault(d => d.Label == "Queryable Criteria");
                 if (criteria != null)
                 {
                     crateStorage.Remove(criteria);
                 }
-                crateStorage.Add(Data.Crates.Crate.FromContent("Queryable Criteria", new TypedFieldsCM(designTimeQueryFields)));
+                crateStorage.Add(
+                    Data.Crates.Crate.FromContent(
+                        "Queryable Criteria",
+                        new FieldDescriptionsCM(designTimeQueryFields)
+                    )
+                );
             }
         }
 
@@ -390,29 +399,30 @@ namespace terminalFr8Core.Actions
             }
         }
 
+        // TODO: FR-3003, remove this.
         // create the Query design time fields.
-        private List<TypedFieldDTO> GetFr8WarehouseFieldNames(string typeId)
-        {
-            List<TypedFieldDTO> designTimeQueryFields = new List<TypedFieldDTO>();
-
-            using (var unitWork = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                foreach (var field in unitWork.MultiTenantObjectRepository.ListTypePropertyReferences(Guid.Parse(typeId)))
-                {
-                    if (!designTimeQueryFields.Exists(d => d.Name == field.Name))
-                    {
-                        designTimeQueryFields.Add(new TypedFieldDTO()
-                        {
-                            FieldType = FieldType.String,
-                            Label = field.Name,
-                            Name = field.Name,
-                            Control = CreateTextBoxQueryControl(field.Name)
-                        });
-                    }
-                }
-            }
-            return designTimeQueryFields;
-        }
+        // private List<TypedFieldDTO> GetFr8WarehouseFieldNames(string typeId)
+        // {
+        //     List<TypedFieldDTO> designTimeQueryFields = new List<TypedFieldDTO>();
+        // 
+        //     using (var unitWork = ObjectFactory.GetInstance<IUnitOfWork>())
+        //     {
+        //         foreach (var field in unitWork.MultiTenantObjectRepository.ListTypePropertyReferences(Guid.Parse(typeId)))
+        //         {
+        //             if (!designTimeQueryFields.Exists(d => d.Name == field.Name))
+        //             {
+        //                 designTimeQueryFields.Add(new TypedFieldDTO()
+        //                 {
+        //                     FieldType = FieldType.String,
+        //                     Label = field.Name,
+        //                     Name = field.Name,
+        //                     Control = CreateTextBoxQueryControl(field.Name)
+        //                 });
+        //             }
+        //         }
+        //     }
+        //     return designTimeQueryFields;
+        // }
 
         private bool ButtonIsClicked(Button button)
         {

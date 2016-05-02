@@ -34,7 +34,7 @@ namespace terminalSalesforce.Actions
         {
             public DropDownList SalesforceObjectSelector { get; set; }
 
-            public QueryBuilder SalesforceObjectFilter { get; set; }
+            public QueryBuilder2 SalesforceObjectFilter { get; set; }
 
             public DropDownList MailSenderActivitySelector { get; set; }
 
@@ -49,7 +49,7 @@ namespace terminalSalesforce.Actions
                     Required = true,
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
-                SalesforceObjectFilter = new QueryBuilder
+                SalesforceObjectFilter = new QueryBuilder2
                 {
                     Name = nameof(SalesforceObjectFilter),
                     Label = "That meet the following conditions:",
@@ -57,7 +57,7 @@ namespace terminalSalesforce.Actions
                     Source = new FieldSourceDTO
                     {
                         Label = QueryFilterCrateLabel,
-                        ManifestType = CrateManifestTypes.StandardQueryFields
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
                 };
                 MailSenderActivitySelector = new DropDownList
@@ -262,11 +262,12 @@ namespace terminalSalesforce.Actions
             }
             //Prepare new query filters from selected object properties
             var selectedObjectProperties = await _salesforceManager.GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
-            var queryFilterCrate = Crate<TypedFieldsCM>.FromContent(
+            var queryFilterCrate = Crate<FieldDescriptionsCM>.FromContent(
                 QueryFilterCrateLabel,
-                new TypedFieldsCM(selectedObjectProperties.OrderBy(x => x.Key)
-                                                                  .Select(x => new TypedFieldDTO(x.Key, x.Value, FieldType.String, new TextBox { Name = x.Key }))),
-                AvailabilityType.Configuration);
+                new FieldDescriptionsCM(selectedObjectProperties),
+                AvailabilityType.Configuration
+            );
+
             CurrentActivityStorage.ReplaceByLabel(queryFilterCrate);
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
         }

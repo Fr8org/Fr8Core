@@ -47,13 +47,13 @@ namespace terminalDocuSign.Actions
         // This little class is storing information about how certian field displayed in Query Builder controls is query to the backed
         class FieldBackedRoutingInfo
         {
-            public readonly FieldType FieldType;
+            public readonly string FieldType;
             public readonly string DocusignQueryName;
             public readonly string MtDbPropertyName;
             public readonly Func<string, AuthorizationTokenDO, ControlDefinitionDTO> ControlFactory;
 
             public FieldBackedRoutingInfo(
-                FieldType fieldType,
+                string fieldType,
                 string docusignQueryName,
                 string mtDbPropertyName,
                 Func<string, AuthorizationTokenDO, ControlDefinitionDTO> controlFactory)
@@ -68,7 +68,7 @@ namespace terminalDocuSign.Actions
         public class ActivityUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
-            public QueryBuilder QueryBuilder { get; set; }
+            public QueryBuilder2 QueryBuilder { get; set; }
 
             public ActivityUi()
             {
@@ -90,14 +90,14 @@ namespace terminalDocuSign.Actions
 
                 string initialQuery = JsonConvert.SerializeObject(filterConditions);
 
-                Controls.Add((QueryBuilder = new QueryBuilder
+                Controls.Add((QueryBuilder = new QueryBuilder2
                 {
                     Name = "QueryBuilder",
                     Value = initialQuery,
                     Source = new FieldSourceDTO
                     {
                         Label = "Queryable Criteria",
-                        ManifestType = CrateManifestTypes.StandardQueryFields
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
                 }));
 
@@ -149,31 +149,31 @@ namespace terminalDocuSign.Actions
             {
                 {
                     "Envelope Text",
-                    new FieldBackedRoutingInfo(FieldType.String, "SearchText", null, CreateTextBoxQueryControl)
+                    new FieldBackedRoutingInfo(FieldType2.String, "SearchText", null, CreateTextBoxQueryControl)
                 },
                 {
                     "Folder",
-                    new FieldBackedRoutingInfo(FieldType.String, "Folder", null, CreateFolderDropDownListControl)
+                    new FieldBackedRoutingInfo(FieldType2.String, "Folder", null, CreateFolderDropDownListControl)
                 },
                 {
                     "Status",
-                    new FieldBackedRoutingInfo(FieldType.String, "Status", "Status", CreateStatusDropDownListControl)
+                    new FieldBackedRoutingInfo(FieldType2.String, "Status", "Status", CreateStatusDropDownListControl)
                 },
                 {
                     "CreateDate",
-                    new FieldBackedRoutingInfo(FieldType.Date, "CreatedDateTime", "CreateDate", CreateDatePickerQueryControl)
+                    new FieldBackedRoutingInfo(FieldType2.Date, "CreatedDateTime", "CreateDate", CreateDatePickerQueryControl)
                 },
                 {
                     "SentDate",
-                    new FieldBackedRoutingInfo(FieldType.Date, "SentDateTime", "SentDate", CreateDatePickerQueryControl)
+                    new FieldBackedRoutingInfo(FieldType2.Date, "SentDateTime", "SentDate", CreateDatePickerQueryControl)
                 },
                 {
                     "CompletedDate",
-                    new FieldBackedRoutingInfo(FieldType.Date, "CompletedDateTime", "CompletedDate", CreateDatePickerQueryControl)
+                    new FieldBackedRoutingInfo(FieldType2.Date, "CompletedDateTime", "CompletedDate", CreateDatePickerQueryControl)
                 },
                 {
                     "EnvelopeId",
-                    new FieldBackedRoutingInfo(FieldType.String, "EnvelopeId", "EnvelopeId", CreateTextBoxQueryControl)
+                    new FieldBackedRoutingInfo(FieldType2.String, "EnvelopeId", "EnvelopeId", CreateTextBoxQueryControl)
                 }
             };
         }
@@ -642,16 +642,16 @@ namespace terminalDocuSign.Actions
             return null;
         }
 
-        public TypedFieldDTO[] GetFieldListForQueryBuilder(AuthorizationTokenDO authToken)
+        public FieldDTO[] GetFieldListForQueryBuilder(AuthorizationTokenDO authToken)
         {
             return _queryBuilderFields
                 .Select(x =>
-                    new TypedFieldDTO(
-                        x.Key,
-                        x.Key,
-                        x.Value.FieldType,
-                        x.Value.ControlFactory(x.Key, authToken)
-                    )
+                    new FieldDTO()
+                    {
+                        Key = x.Key,
+                        Label = x.Key,
+                        FieldType = x.Value.FieldType
+                    }
                 )
                 .ToArray();
         }
@@ -703,7 +703,7 @@ namespace terminalDocuSign.Actions
         {
             yield return Data.Crates.Crate.FromContent(
                 "Queryable Criteria",
-                new TypedFieldsCM(GetFieldListForQueryBuilder(authToken))
+                new FieldDescriptionsCM(GetFieldListForQueryBuilder(authToken))
             );
 
             yield return Data.Crates.Crate.FromContent(
@@ -727,6 +727,7 @@ namespace terminalDocuSign.Actions
             }
             return ConfigurationRequestType.Followup;
         }
+
         /// <summary>
         /// This method provides documentation in two forms:
         /// SolutionPageDTO for general information and 

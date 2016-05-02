@@ -5,22 +5,25 @@ using StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Repositories.MultiTenant;
+using Data.States;
 
 namespace TerminalBase.Services.MT
 {
     public class MTTypesHelper
     {
-        public static IEnumerable<FieldDTO> GetFieldsByTypeId(Guid typeId)
+        public static IEnumerable<FieldDTO> GetFieldsByTypeId(
+            Guid typeId, AvailabilityType availability = AvailabilityType.NotSet)
         {
             var fields = new Dictionary<string, string>();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return GetFieldsByTypeId(uow, typeId);
+                return GetFieldsByTypeId(uow, typeId, availability);
             }
         }
 
-        public static IEnumerable<FieldDTO> GetFieldsByTypeId(IUnitOfWork uow, Guid typeId)
+        public static IEnumerable<FieldDTO> GetFieldsByTypeId(
+            IUnitOfWork uow, Guid typeId, AvailabilityType availability = AvailabilityType.NotSet)
         {
             return uow.MultiTenantObjectRepository
                 .ListTypePropertyReferences(typeId)
@@ -28,7 +31,8 @@ namespace TerminalBase.Services.MT
                 .Select(x => new FieldDTO()
                 {
                     Key = x.Name,
-                    FieldType = GetFieldType(x)
+                    FieldType = GetFieldType(x),
+                    Availability = availability
                 })
                 .ToList();
         }
