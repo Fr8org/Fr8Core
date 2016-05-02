@@ -133,7 +133,22 @@ namespace terminalSalesforce.Infrastructure
                 return curAuthTokenDO;
             }
 
-            await auth.TokenRefreshAsync(salesforceConsumerKey, refreshToken);
+            try
+            {
+                await auth.TokenRefreshAsync(salesforceConsumerKey, refreshToken);
+            }
+            catch (ForceException ex)
+            {
+                if (ex.Message.IndexOf("expired access/refresh token") > -1)
+                {
+                    throw new TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
             curAuthTokenDO.Token = auth.AccessToken;
             curAuthTokenDO.AdditionalAttributes = "refresh_token=" + auth.RefreshToken + ";instance_url=" + auth.InstanceUrl + ";api_version=" + auth.ApiVersion;
             return curAuthTokenDO;
