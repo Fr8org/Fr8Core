@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Data.Entity.Validation;
 using System.Linq;
@@ -23,7 +23,7 @@ namespace Data.Infrastructure
         {
             _context = context;
             _context.UnitOfWork = this;
-
+            
             // Create nested StructureMap container
             _container = container.GetNestedContainer();
 
@@ -73,8 +73,13 @@ namespace Data.Infrastructure
                 return _recipientRepository ?? (_recipientRepository = new RecipientRepository(this));
             }
         }
+        
+        private IProfileRepository _profileRepository;
+        public IProfileRepository ProfileRepository => _profileRepository ?? (_profileRepository = new ProfileRepository(this));
 
-
+        private IPermissionSetRepository _permissionSetRepository;
+        public IPermissionSetRepository PermissionSetRepository => _permissionSetRepository ?? (_permissionSetRepository = new PermissionSetRepository(this));
+        
         private SlipRepository _SlipRepository;
 
         public SlipRepository SlipRepository
@@ -105,7 +110,7 @@ namespace Data.Infrastructure
             }
         }
 
-
+        
         private CommunicationConfigurationRepository _communicationConfigurationRepository;
 
         public CommunicationConfigurationRepository CommunicationConfigurationRepository
@@ -146,17 +151,17 @@ namespace Data.Infrastructure
             }
         }
 
-        /*
-                private EnvelopeRepository _envelopeRepository;
+/*
+        private EnvelopeRepository _envelopeRepository;
 
-                public EnvelopeRepository EnvelopeRepository
-                {
-                    get
-                    {
-                        return _envelopeRepository ?? (_envelopeRepository = new EnvelopeRepository(this));
-                    }
-                }
-        */
+        public EnvelopeRepository EnvelopeRepository
+        {
+            get
+            {
+                return _envelopeRepository ?? (_envelopeRepository = new EnvelopeRepository(this));
+            }
+        }
+*/
 
 
         private EnvelopeRepository _envelopeRepository;
@@ -189,7 +194,7 @@ namespace Data.Infrastructure
             }
         }
 
-
+    
 
         private StoredFileRepository _storedFileRepository;
 
@@ -222,7 +227,7 @@ namespace Data.Infrastructure
         }
 
         private FactRepository _factRepository;
-
+        
         public FactRepository FactRepository
         {
             get
@@ -230,7 +235,7 @@ namespace Data.Infrastructure
                 return _factRepository ?? (_factRepository = new FactRepository(this));
             }
         }
-
+     
         private UserRepository _userRepository;
 
         public UserRepository UserRepository
@@ -382,36 +387,6 @@ namespace Data.Infrastructure
             }
         }
 
-        private ProfileNodeRepository _profileNodeRepository;
-
-        public ProfileNodeRepository ProfileNodeRepository
-        {
-            get
-            {
-                return _profileNodeRepository ?? (_profileNodeRepository = new ProfileNodeRepository(this));
-            }
-        }
-
-        private ProfileItemRepository _profileItemRepository;
-
-        public ProfileItemRepository ProfileItemRepository
-        {
-            get
-            {
-                return _profileItemRepository ?? (_profileItemRepository = new ProfileItemRepository(this));
-            }
-        }
-
-        private ProfileRepository _profileRepository;
-
-        public ProfileRepository ProfileRepository
-        {
-            get
-            {
-                return _profileRepository ?? (_profileRepository = new ProfileRepository(this));
-            }
-        }
-
         private ExpectedResponseRepository _expectedResponseRepository;
         public ExpectedResponseRepository ExpectedResponseRepository
         {
@@ -421,8 +396,8 @@ namespace Data.Infrastructure
             }
         }
 
-        private ActivityRepository _activityRepository;
-        public ActivityRepository ActivityRepository
+	  private ActivityRepository _activityRepository;
+	  public ActivityRepository ActivityRepository
         {
             get
             {
@@ -439,14 +414,14 @@ namespace Data.Infrastructure
             }
         }
 
-        private PlanNodeRepository _planNodeRepository;
-        public PlanNodeRepository PlanNodeRepository
-        {
-            get
-            {
-                return _planNodeRepository ?? (_planNodeRepository = new PlanNodeRepository(this));
-            }
-        }
+	  private PlanNodeRepository _planNodeRepository;
+	  public PlanNodeRepository PlanNodeRepository
+	  {
+		  get
+		  {
+			  return _planNodeRepository ?? (_planNodeRepository = new PlanNodeRepository(this));
+		  }
+	  }
 
         private SubPlanRepository _subPlanRepository;
 
@@ -478,17 +453,17 @@ namespace Data.Infrastructure
                 return _fileRepository ?? (_fileRepository = new FileRepository(this));
             }
         }
-
+        
         public IPlanRepository PlanRepository
         {
             get { return _container.GetInstance<PlanRepository>(); }
         }
 
-        public IMultiTenantObjectRepository MultiTenantObjectRepository
+         public IMultiTenantObjectRepository MultiTenantObjectRepository
         {
             get
             {
-                return _container.GetInstance<IMultiTenantObjectRepository>();
+               return _container.GetInstance<IMultiTenantObjectRepository>();
             }
         }
 
@@ -524,15 +499,15 @@ namespace Data.Infrastructure
             }
         }
 
-        private WebServiceRepository _webServiceRepository;
+	    private WebServiceRepository _webServiceRepository;
 
         public IWebServiceRepository WebServiceRepository
-        {
-            get
-            {
-                return _webServiceRepository ?? (_webServiceRepository = new WebServiceRepository(this));
-            }
-        }
+	    {
+		    get
+		    {
+			    return _webServiceRepository ?? (_webServiceRepository = new WebServiceRepository(this));
+		    }
+	    }
 
         private TagRepository _tagRepository;
 
@@ -672,7 +647,7 @@ namespace Data.Infrastructure
                 }
                 throw new Exception(String.Join(Environment.NewLine + Environment.NewLine, errorList) + Environment.NewLine, e);
             }
-
+            
             OnEntitiesAdded(new EntitiesStateEventArgs(this, addedEntities));
             OnEntitiesModified(new EntitiesStateEventArgs(this, modifiedEntities));
             OnEntitiesDeleted(new EntitiesStateEventArgs(this, deletedEntities));
@@ -689,12 +664,12 @@ namespace Data.Infrastructure
                 trackingChanges.TrackAdds(addedEntities.Where(x => entityType.IsInstanceOfType(x)));
                 trackingChanges.TrackDeletes(deletedEntities.Where(x => entityType.IsInstanceOfType(x)));
                 trackingChanges.TrackUpdates(modifiedEntities.Where(x => entityType.IsInstanceOfType(x)));
-
+                
                 trackingChanges.SaveChanges();
             }
         }
 
-        public bool IsEntityModified<TEntity>(TEntity entity)
+        public bool IsEntityModified<TEntity>(TEntity entity) 
             where TEntity : class
         {
             return _context.Entry(entity).State == EntityState.Modified;

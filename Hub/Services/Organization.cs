@@ -89,13 +89,14 @@ namespace Hub.Services
                 
             uow.SaveChanges();
 
-            //link adminRole with ManageInternalUsers Privilege, used for  add/edit users that belong to this organization
+            //link adminRole with ManageInternalUsers Permission, used for add/edit users that belong to this organization
             var securityObjectStorage = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
-            securityObjectStorage.InsertRolePrivilege(new RolePrivilege()
-                {
-                    Privilege = new PrivilegeDO() { Name = Privilege.ManageInternalUsers.ToString()},
-                    Role = new RoleDO() { RoleId = adminRole.Id, }
-                });
+            //todo: check this
+            //securityObjectStorage.InsertRolePermission(new RolePermission()
+            //    {
+            //        Permission = new PermissionDO() {  = Permission.ManageInternalUsers.ToString()},
+            //        Role = new RoleDO() { RoleId = adminRole.Id, }
+            //    });
 
             return organization;
         }

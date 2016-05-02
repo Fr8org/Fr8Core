@@ -37,7 +37,8 @@ namespace terminalSlack.Services
             //If we already called Connect() then we should just return the result of the operation
             if (Interlocked.CompareExchange(ref _isConnecting, 1, 0) == 0)
             {
-                Logger.GetLogger().Info("SlackClientWrapper: connecting to socket...");
+                //Logger.GetLogger().Info("SlackClientWrapper: connecting to socket...");
+                Logger.LogInfo($"SlackClientWrapper: connecting to socket...");
                 Client.Connect(OnLoginResponse);
                 Client.MessageReceived += ClientOnMessageReceived;
             }
@@ -49,7 +50,8 @@ namespace terminalSlack.Services
             //After we successfully login we recieve last message sent or recieved by current user so we should ignore it
             if (Interlocked.CompareExchange(ref _firstMessageIsSkipped, 1, 0) != 0)
             {
-                Logger.GetLogger().Info("SlackClientWrapper: message received");
+                //Logger.GetLogger().Info("SlackClientWrapper: message received");
+                Logger.LogInfo("SlackClientWrapper: message received");
                 OnMessageReceived(e);
             }
         }
@@ -58,7 +60,8 @@ namespace terminalSlack.Services
         /// </summary>
         public void Subscribe(Guid activityId)
         {
-            Logger.GetLogger().Info($"SlackClientWrapper: mark activity {activityId} as subscribed");
+            //Logger.GetLogger().Info($"SlackClientWrapper: mark activity {activityId} as subscribed");
+            Logger.LogInfo("SlackClientWrapper: message received");
             lock (_subscribedActivities)
             {
                 _subscribedActivities.Add(activityId);
@@ -69,7 +72,8 @@ namespace terminalSlack.Services
         /// </summary>
         public bool Unsubsribe(Guid activityId)
         {
-            Logger.GetLogger().Info($"SlackClientWrapper: mark activity {activityId} as unsubscribed");
+            //Logger.GetLogger().Info($"SlackClientWrapper: mark activity {activityId} as unsubscribed");
+            Logger.LogInfo($"SlackClientWrapper: mark activity {activityId} as unsubscribed");
             lock (_subscribedActivities)
             {
                 _subscribedActivities.Remove(activityId);
@@ -93,12 +97,14 @@ namespace terminalSlack.Services
             
             if (loginResponse.ok)
             {
-                Logger.GetLogger().Info("SlackClientWrapper: received succesfull login response");
+                //Logger.GetLogger().Info("SlackClientWrapper: received succesfull login response");
+                Logger.LogInfo("SlackClientWrapper: received succesfull login response");
                 ClientConnectOperation.SetResult(0);
             }
             else
             {
-                Logger.GetLogger().Info($"SlackClientWrapper: recevied failed login response, error is {loginResponse.error}");
+                //Logger.GetLogger().Info($"SlackClientWrapper: recevied failed login response, error is {loginResponse.error}");
+                Logger.LogError($"SlackClientWrapper: recevied failed login response, error is {loginResponse.error}");
                 ClientConnectOperation.SetException(new ApplicationException($"Failed to start Slack RTM session. Error code - {loginResponse.error}"));
             }
         }
@@ -116,20 +122,24 @@ namespace terminalSlack.Services
                 //This means Connect() method was called - close socket
                 try
                 {
-                    Logger.GetLogger().Info("SlackClientWrapper: inside Dispose() - trying to close socket...");
+                    //Logger.GetLogger().Info("SlackClientWrapper: inside Dispose() - trying to close socket...");
+                    Logger.LogInfo("SlackClientWrapper: inside Dispose() - trying to close socket...");
                     Client.CloseSocket();
                     cancelTask = true;
-                    Logger.GetLogger().Info("SlackClientWrapper: socket was closed");
+                    //Logger.GetLogger().Info("SlackClientWrapper: socket was closed");
+                    Logger.LogInfo("SlackClientWrapper: socket was closed");
                 }
                 catch (Exception ex)
                 {
-                    Logger.GetLogger().Info("Failed to gracefully shutdown Slack connection", ex);
+                    //Logger.GetLogger().Info("Failed to gracefully shutdown Slack connection", ex);
+                    Logger.LogError($"Failed to gracefully shutdown Slack connection {ex}");
                 }
             }
             if (cancelTask && !ClientConnectOperation.Task.IsCompleted)
             {
                 ClientConnectOperation.SetCanceled();
-                Logger.GetLogger().Info("SlackClientWrapper: subscription task was cancelled");
+                //Logger.GetLogger().Info("SlackClientWrapper: subscription task was cancelled");
+                Logger.LogWarning("SlackClientWrapper: subscription task was cancelled");
             }
         }
     }

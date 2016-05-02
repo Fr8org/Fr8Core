@@ -14,12 +14,6 @@ namespace Data.Repositories
         {
 
         }
-        public override void Add(Fr8AccountDO entity)
-        {
-            base.Add(entity);
-            //AddDefaultCalendar(entity);
-            //AddDefaultProfile(entity);
-        }
 
         public Fr8AccountDO UpdateUserCredentials(String emailAddress, String userName = null, String password = null)
         {
@@ -98,21 +92,5 @@ namespace Data.Repositories
         //        curUser.Calendars.Add(curCalendar);
         //    }
         //}
-
-
-        public void AddDefaultProfile(Fr8AccountDO curDockyardAccount)
-        {
-            if (curDockyardAccount == null)
-                throw new ArgumentNullException("curDockyardAccount");
-
-            if (!curDockyardAccount.Profiles.Any())
-            {
-                var defaultProfile = new ProfileDO() {Name = "Default Profile", DockyardAccount = curDockyardAccount};
-                defaultProfile.ProfileNodes.Add(new ProfileNodeDO { Name = "Communications", Profile = defaultProfile, ProfileID = defaultProfile.Id});
-                defaultProfile.ProfileNodes.Add(new ProfileNodeDO { Name = "Locations", Profile = defaultProfile, ProfileID = defaultProfile.Id });
-                defaultProfile.ProfileNodes.Add(new ProfileNodeDO { Name = "Travel", Profile = defaultProfile, ProfileID = defaultProfile.Id });
-                curDockyardAccount.Profiles.Add(defaultProfile);
-            }
-        }
     }
 }

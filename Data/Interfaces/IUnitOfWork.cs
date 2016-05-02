@@ -41,17 +41,14 @@ namespace Data.Interfaces
         //QuestionResponseRepository QuestionResponseRepository { get; }
         IAuthorizationTokenRepository AuthorizationTokenRepository { get; }
         LogRepository LogRepository { get; }
-        ProfileNodeRepository ProfileNodeRepository { get; }
-        ProfileItemRepository ProfileItemRepository { get; }
-        ProfileRepository ProfileRepository { get; }
         UserStatusRepository UserStatusRepository { get; }
         //NegotiationAnswerEmailRepository NegotiationAnswerEmailRepository { get; }
         ExpectedResponseRepository ExpectedResponseRepository { get; }
-
+        
         SlipRepository SlipRepository { get; }
         //ActivityRepository ActivityRepository { get; }
         ActivityTemplateRepository ActivityTemplateRepository { get; }
-
+    
         IActivityDescriptionRepository ActivityDescriptionRepository { get; }
         IActivityTransitionRepository ActivityTransitionRepository { get; }
         IPlanDescriptionsRepository PlanDescriptionsRepository { get; }
@@ -60,7 +57,10 @@ namespace Data.Interfaces
         ICriteriaRepository CriteriaRepository { get; }
 
         IFileRepository FileRepository { get; }
+        IProfileRepository ProfileRepository { get; }
+        IPermissionSetRepository PermissionSetRepository { get; }
 
+        
         IPlanRepository PlanRepository { get; }
         IMultiTenantObjectRepository MultiTenantObjectRepository { get; }
 
@@ -68,14 +68,14 @@ namespace Data.Interfaces
         ITerminalSubscriptionRepository TerminalSubscriptionRepository { get; }
 
         ISubscriptionRepository SubscriptionRepository { get; }
-        IWebServiceRepository WebServiceRepository { get; }
+		IWebServiceRepository WebServiceRepository { get; }
 
         ITagRepository TagRepository { get; }
         IFileTagsRepository FileTagsRepository { get; }
-
+        
         IOrganizationRepository OrganizationRepository { get; }
 
-        /// <summary>
+	    /// <summary>
         /// Call this to commit the unit of work
         /// </summary>
         void Commit();
