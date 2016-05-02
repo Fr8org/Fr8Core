@@ -104,7 +104,7 @@ namespace terminalGoogle.Actions
                 .AddField("Period of Availability");
         }
 
-        protected override async Task Activate()
+        public async Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             var googleAuth = GetGoogleAuthToken();
             //get form id
@@ -113,17 +113,31 @@ namespace terminalGoogle.Actions
             if (string.IsNullOrEmpty(formId))
                 throw new ArgumentNullException("Google Form selected is empty. Please select google form to receive.");
 
-            var scriptUrl = await _googleDrive.CreateFr8TriggerForDocument(googleAuth, formId);
-            await HubCommunicator.NotifyUser(new TerminalNotificationDTO
+            bool triggerEvent = false;
+            try
             {
-                Type = "Success",
-                ActivityName = "Monitor_Form_Responses",
-                ActivityVersion = "1",
-                TerminalName = "terminalGoogle",
-                TerminalVersion = "1",
-                Message = "You need to create fr8 trigger on current form please go to this url and run Initialize function manually. Ignore this message if you completed this step before. " + scriptUrl,
-                Subject = "Trigger creation URL"
-            }, CurrentFr8UserId);
+                triggerEvent = await _googleDrive.CreateFr8TriggerForDocument(googleAuth, formId, CurrentFr8UserId);
+            }
+            finally
+            {
+                if (!triggerEvent)
+                {
+                    //in case of fail as a backup plan use old manual script notification
+                    var scriptUrl = await _googleDrive.CreateManualFr8TriggerForDocument(googleAuth, formId);
+                    await HubCommunicator.NotifyUser(new TerminalNotificationDTO
+                    {
+                        Type = "Success",
+                        ActivityName = "Monitor_Form_Responses",
+                        ActivityVersion = "1",
+                        TerminalName = "terminalGoogle",
+                        TerminalVersion = "1",
+                        Message = "You need to create fr8 trigger on current form please go to this url and run Initialize function manually. Ignore this message if you completed this step before. " + scriptUrl,
+                        Subject = "Trigger creation URL"
+                    }, CurrentFr8UserId);
+                }
+            }
+
+            return await Task.FromResult(curActivityDO);
         }
 
         protected override Task RunCurrentActivity()

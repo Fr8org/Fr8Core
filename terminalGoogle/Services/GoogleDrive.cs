@@ -8,12 +8,17 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
+using System.Web;
+using Google.Apis.Requests;
 using Google.Apis.Script.v1;
 using Google.Apis.Script.v1.Data;
+using Hub.Managers;
 using terminalGoogle.DataTransferObjects;
+using TerminalBase;
 using Utilities.Configuration.Azure;
 
 namespace terminalGoogle.Services
@@ -122,58 +127,70 @@ namespace terminalGoogle.Services
 
             return scriptsService;
         }
-        /*
-        public async Task CreateFr8TriggerForDocument(GoogleAuthDTO authDTO, string formId)
+        
+        public async Task<bool> CreateFr8TriggerForDocument(GoogleAuthDTO authDTO, string formId, string email)
         {
-            var fr8TriggerScriptId = CloudConfigurationManager.GetSetting("Fr8TriggerScript");
-            var scriptsService = await CreateScriptsService(authDTO);
-
-            //let's run our initialize function from the script
-            ExecutionRequest executionRequest = new ExecutionRequest { Function = "CreateTrigger", Parameters = new List<object> { formId } };
-            ScriptsResource.RunRequest runReq = scriptsService.Scripts.Run(executionRequest, fr8TriggerScriptId);
             try
             {
-                // Make the API request.
-                Operation op = runReq.Execute();
+                var driveService = await CreateDriveService(authDTO);
 
-                if (op.Error != null)
+                //allow edit permissions to our main google account on current form in Google Drive 
+                var batch = new BatchRequest(driveService);
+                BatchRequest.OnResponse<Permission> callback = delegate (
+                    Permission permission,
+                    RequestError error,
+                    int index,
+                    HttpResponseMessage message)
                 {
-                    // The API executed, but the script returned an error.
-                    // Extract the first (and only) set of error details
-                    // as a IDictionary. The values of this dictionary are
-                    // the script's 'errorMessage' and 'errorType', and an
-                    // array of stack trace elements. Casting the array as
-                    // a JSON JArray allows the trace elements to be accessed
-                    // directly.
-                    IDictionary<string, object> error = op.Error.Details[0];
-                    Console.WriteLine("Script error message: {0}", error["errorMessage"]);
-                    if (error["scriptStackTraceElements"] != null)
+                    if (error != null)
                     {
-                        // There may not be a stacktrace if the script didn't
-                        // start executing.
-                        Console.WriteLine("Script error stacktrace:");
-                        Newtonsoft.Json.Linq.JArray st =
-                            (Newtonsoft.Json.Linq.JArray)error["scriptStackTraceElements"];
-                        foreach (var trace in st)
-                        {
-                            Console.WriteLine(
-                                    "\t{0}: {1}",
-                                    trace["function"],
-                                    trace["lineNumber"]);
-                        }
+                        // Handle error
+                        throw new ApplicationException($"Problem with Google Drive Permission on creating Fr8Trigger: {error.Message} ");
                     }
-                }
+                };
+                Permission userPermission = new Permission();
+                userPermission.Type = "user";
+                userPermission.Role = "writer";
+                userPermission.Value = CloudConfigurationManager.GetSetting("GoogleMailAccount");
+                var request = driveService.Permissions.Insert(userPermission, formId);
+                request.Fields = "id";
+                batch.Queue(request, callback);
+
+                await batch.ExecuteAsync();
+
+                // run apps script deployed as web app to create trigger for this form
+                var flowData = _googleAuth.CreateFlowMetadata(authDTO, "", CloudConfigurationManager.GetSetting("GoogleRedirectUri"));
+
+                var appScriptUrl = CloudConfigurationManager.GetSetting("GoogleAppScriptWebApp");
+                var formEventWebServerUrl = CloudConfigurationManager.GetSetting("GoogleFormEventWebServerUrl");
+
+                appScriptUrl = string.Format(appScriptUrl + "?formId={0}&endpoint={1}&email={2}", formId, formEventWebServerUrl, email);
+
+                HttpClient client = new HttpClient();
+                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer",
+                    authDTO.AccessToken);
+
+                //check received response
+                var responseMessage = await client.GetAsync(new Uri(appScriptUrl));
+                var contents = await responseMessage.Content.ReadAsStringAsync();
+
+                return contents == "OK" ? await Task.FromResult(true) : await Task.FromResult(false);
             }
-            catch (Google.GoogleApiException e)
+            catch (Exception e)
             {
-                // The API encountered a problem before the script
-                // started executing.
-                Console.WriteLine("Error calling API:\n{0}", e);
+                //in case of error generate script link for user
+                throw new Exception(e.Message);
             }
         }
-        */
-        
-        public async Task<string> CreateFr8TriggerForDocument(GoogleAuthDTO authDTO, string formId, string desription = "Script uploaded from Fr8 application")
+
+        /// <summary>
+        /// This is manual approach for creating Fr8 trigger for some document, mainly used as backup plan for automatic apps script run
+        /// </summary>
+        /// <param name="authDTO"></param>
+        /// <param name="formId"></param>
+        /// <param name="desription"></param>
+        /// <returns></returns>
+        public async Task<string> CreateManualFr8TriggerForDocument(GoogleAuthDTO authDTO, string formId, string desription = "Script uploaded from Fr8 application")
         {
             string response = "";
             try
@@ -200,7 +217,7 @@ namespace terminalGoogle.Services
                     {
                         content = reader.ReadToEnd();
                     }
-                    
+
                     content = content.Replace("@ID", formId);
                     content = content.Replace("@ENDPOINT", CloudConfigurationManager.GetSetting("GoogleFormEventWebServerUrl"));
                     byte[] contentAsBytes = Encoding.UTF8.GetBytes(content);
@@ -219,18 +236,16 @@ namespace terminalGoogle.Services
                     }
                     else
                         response = existingFileLink;
-
-                    
                 }
             }
             catch (Exception e)
             {
                 throw new Exception(e.Message);
             }
-            
+
             return await Task.FromResult(response);
         }
-        
+
 
         public bool FileExist(DriveService driveService, string filename, out string link)
         {
