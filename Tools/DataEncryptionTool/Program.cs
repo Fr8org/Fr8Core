@@ -3,8 +3,11 @@ using System.Collections.Generic;
 using System.Configuration;
 using System.Data.SqlClient;
 using System.Linq;
+using System.Text;
 using Data.Infrastructure.StructureMap;
+using Data.Interfaces;
 using Data.Repositories.Encryption;
+using Data.Repositories.SqlBased;
 using StructureMap;
 
 namespace DataEncryptionTool
@@ -28,11 +31,12 @@ namespace DataEncryptionTool
         {
             var arguments = new Dictionary<string, Argument>
             {
-                {"connectionString", new Argument (false)},
-                {"kvClientId", new Argument (false)},
-                {"kvSecret", new Argument (false)},
-                {"kvUrl", new Argument (false)},
-                {"overrideDbName", new Argument (true)}
+                {"connectionString", new Argument(false)},
+                {"kvClientId", new Argument(false)},
+                {"kvSecret", new Argument(false)},
+                {"kvUrl", new Argument(false)},
+                {"overrideDbName", new Argument(true)},
+                {"encryptionProvider", new Argument(true)}
             };
             
             for (var i = 0; i < args?.Length; i ++)
@@ -58,16 +62,119 @@ namespace DataEncryptionTool
 
             using (var container = new Container(new DatabaseStructureMapBootStrapper.LiveMode()))
             {
-                Run(container);
+                if (arguments["encryptionProvider"].HasValue)
+                {
+                    var encyptionProviderName = arguments["encryptionProvider"].Value;
+                    var encryptor = container.GetAllInstances<IEncryptionProvider>().FirstOrDefault(x => x.GetType().Name == encyptionProviderName);
+
+                    if (encryptor == null)
+                    { 
+                        Console.WriteLine($"Unable to find encryption provider {encyptionProviderName}");
+                        return 1;
+                    }
+
+                    container.Configure(x => { x.For<IEncryptionProvider>().Use(encryptor); });
+                }
+
+                EncryptActionStorage(container);
             }
             
             return 0;
         }
 
 
-        private static void Run(IContainer container)
+        private static void EncryptActionStorage(IContainer container)
         {
             var securityService = container.GetInstance<IEncryptionService>();
+            var connectionProvider = container.GetInstance<ISqlConnectionProvider>();
+            var cs = (string)connectionProvider.ConnectionInfo;
+
+            using (var connection = new SqlConnection(cs))
+            {
+                var ids = new List<Guid>();
+
+                connection.Open();
+
+                using (var command = new SqlCommand("select Id from dbo.Actions"))
+                {
+                    command.Connection = connection;
+
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            var id = reader["Id"];
+
+                            ids.Add((Guid) id);
+                        }
+                    }
+                }
+
+                int batchSize = 2000;
+                var encryptedStorage = new List<KeyValuePair<Guid, byte[]>>();
+
+                for (int i = 0; i < ids.Count; i += batchSize)
+                {
+                    var batch = ReadBatch(connection, ids, i, batchSize);
+
+                    encryptedStorage.Clear();
+
+                    foreach (var item in batch)
+                    {
+                        encryptedStorage.Add(new KeyValuePair<Guid, byte[]>(item.Item1, securityService.EncryptData(item.Item2, item.Item3)));
+                    }
+
+                    UpdateBatch(connection, encryptedStorage);
+                }
+            }
+
+        }
+
+        private static void UpdateBatch(SqlConnection connection, List<KeyValuePair<Guid, byte[]>> updatedData)
+        {
+            using (var command = new SqlCommand())
+            {
+                StringBuilder updateCommandText = new StringBuilder();
+
+                for (int index = 0; index < updatedData.Count; index++)
+                {
+                    var keyValuePair = updatedData[index];
+                    updateCommandText.AppendFormat("update dbo.Actions set EncryptedCrateStorage = @storage{0} where Id = '{1}'", index, keyValuePair.Key);
+                    command.Parameters.AddWithValue("@storage" + index, keyValuePair.Value);
+                }
+
+                command.CommandText = updateCommandText.ToString();
+                
+                command.Connection = connection;
+
+                command.ExecuteNonQuery();
+            }
+        }
+
+
+        private static List<Tuple<Guid, string, string>> ReadBatch(SqlConnection connection, List<Guid> ids, int offset, int batchSize)
+        {
+            var results = new List<Tuple<Guid, string, string>>();
+
+            using (var command = new SqlCommand("select Actions.Id, Fr8AccountId, CrateStorage from dbo.Actions inner join PlanNodes on PlanNodes.Id = Actions.Id where " + string.Join(" OR ", ids.Skip(offset).Take(batchSize).Select(x => $"Actions.Id='{x}'"))))
+            { 
+                command.Connection = connection;
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var accountId = reader["Fr8AccountId"];
+                        var storage = reader["CrateStorage"];
+
+                        results.Add(new Tuple<Guid, string, string>((Guid) reader["Id"],
+                            accountId != DBNull.Value ? (string) accountId : null,
+                            storage != DBNull.Value ? (string) storage : null));
+                    }
+                }
+            }
+
+            return results;
         }
 
         private static void UpdateConfiguration(Dictionary<string, Argument> arguments)

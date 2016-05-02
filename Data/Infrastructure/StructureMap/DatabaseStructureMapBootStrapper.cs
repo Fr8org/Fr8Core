@@ -86,7 +86,7 @@ namespace Data.Infrastructure.StructureMap
                             break;
 
                         default:
-                            throw new NotSupportedException(string.Format("Unsupported AuthorizationTokenStorageMode = {0}", mode));
+                            throw new NotSupportedException($"Unsupported AuthorizationTokenStorageMode = {mode}");
                     }
                 }
                 else
@@ -102,8 +102,24 @@ namespace Data.Infrastructure.StructureMap
                 For<ISecurityObjectsStorageProvider>().Use<SqlSecurityObjectsStorageProvider>();
                 For<ISecurityObjectsStorageProvider>().DecorateAllWith<SecurityObjectsStorage>();
                 
-                For<IEncryptionProvider>().Use<RijndaelEncryptionProviderWithCompressionV1>().Singleton(); 
-                
+                var defaultEncryptionProvider = CloudConfigurationManager.GetSetting("DefaultEncryptionProvider");
+
+                if (!string.IsNullOrWhiteSpace(defaultEncryptionProvider))
+                {
+                    var providerType = Type.GetType(defaultEncryptionProvider, false);
+
+                    if (providerType == null)
+                    {
+                        throw new NotSupportedException($"Encryption provider {defaultEncryptionProvider} was not found.");
+                    }
+
+                    For(typeof(IEncryptionProvider)).Use(providerType);
+                }
+                else
+                {
+                    For<IEncryptionProvider>().Use<RijndaelEncryptionProviderWithCompressionV1>().Singleton();
+                }
+
                 DataAutoMapperBootStrapper.ConfigureAutoMapper();
             }
         }
