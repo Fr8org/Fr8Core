@@ -10,8 +10,8 @@ namespace Hub.Interfaces
 {
     public interface IPlanDescription
     {
-        PlanDescriptionDTO Save(Guid planId, string curFr8UserId);
+        PlanDescriptionDTO SavePlan(Guid planId, string curFr8UserId);
         List<PlanDescriptionDTO> GetDescriptions(string userId);
-        string BuildAPlan(int planDescriptionId, string userId);
+        string LoadPlan(int planDescriptionId, string userId);
     }
 }

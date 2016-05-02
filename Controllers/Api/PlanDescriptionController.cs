@@ -34,7 +34,7 @@ namespace HubWeb.Controllers
 #endif
         public async Task<IHttpActionResult> Post(Guid planId, string userId)
         {
-            var result = _planDescription.Save(planId, userId);
+            var result = _planDescription.SavePlan(planId, userId);
             return Ok(result);
         }
 
@@ -46,7 +46,7 @@ namespace HubWeb.Controllers
 #endif
         public async Task<IHttpActionResult> Create(int planDescriptionId, string userId)
         {
-            var result = _planDescription.BuildAPlan(planDescriptionId, userId);
+            var result = _planDescription.LoadPlan(planDescriptionId, userId);
             return Ok(result);
         }
 
