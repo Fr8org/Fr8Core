@@ -181,7 +181,7 @@ namespace terminalGoogle.Actions
                                                                    : ConfigurationControls.WorksheetList.Value);
                 var columnHeaders = await _googleApi.GetWorksheetHeaders(selectedSpreasheetWorksheet.Key, selectedSpreasheetWorksheet.Value, googleAuth);
                 var columnHeadersCrate = Crate.FromContent(ColumnHeadersCrateLabel,
-                                                           new FieldDescriptionsCM(columnHeaders.Select(x => new FieldDTO(x.Key, x.Key, AvailabilityType.Always))),
+                                                           new FieldDescriptionsCM(columnHeaders.Select(x => new FieldDTO(x.Key, x.Key, AvailabilityType.Always) { Label = RunTimeCrateLabel})),
                                                            AvailabilityType.Always);
                 CurrentActivityStorage.ReplaceByLabel(columnHeadersCrate);
                 SelectedSpreadsheet = selectedSpreasheetWorksheet;

@@ -77,15 +77,9 @@ namespace Hub.Services
         public IncomingCratesDTO GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability)
         {
             var fields = GetCrateManifestsByDirection<FieldDescriptionsCM>(activityId, direction, AvailabilityType.NotSet);
+
             var crates = GetCrateManifestsByDirection<CrateDescriptionCM>(activityId, direction, AvailabilityType.NotSet);
             var availableData = new IncomingCratesDTO();
-            for (int i = 0; i < crates.Count; i++)
-            {
-                for (int e = 0; e < fields[i].Fields.Count; e++)
-                {
-                    fields[i].Fields[e].Label = crates[i].CrateDescriptions[0].Label;
-                }
-            }
             availableData.AvailableFields.AddRange(fields.SelectMany(x => x.Fields).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
             availableData.AvailableFields.AddRange(crates.SelectMany(x => x.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0).SelectMany(x => x.Fields));
             availableData.AvailableCrates.AddRange(crates.SelectMany(x => x.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));

@@ -56,7 +56,7 @@ namespace terminalSalesforce.Services
             return table;
         }
 
-        public async Task<List<FieldDTO>> GetProperties(SalesforceObjectType type, AuthorizationTokenDO authTokenDO, bool updatableOnly = false)
+        public async Task<List<FieldDTO>> GetProperties(SalesforceObjectType type, AuthorizationTokenDO authTokenDO, bool updatableOnly = false, string label = null)
         {
             var responce = (JObject)await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.DescribeAsync<object>(type.ToString()), authTokenDO);
             var objectFields = new List<FieldDTO>();
@@ -89,7 +89,8 @@ namespace terminalSalesforce.Services
                                         IsRequired = fieldDescription.Value<bool>("nillable") == false &&
                                                      fieldDescription.Value<bool>("defaultedOnCreate") == false &&
                                                      fieldDescription.Value<bool>("updateable") == true,
-                                        Availability = AvailabilityType.RunTime
+                                        Availability = AvailabilityType.RunTime,
+                                        Label = label
                                     }).OrderBy(field => field.Key);
                 objectFields.AddRange(fields);
             }
