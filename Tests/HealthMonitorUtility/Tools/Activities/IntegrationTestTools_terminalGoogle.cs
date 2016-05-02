@@ -36,7 +36,7 @@ namespace terminaBaselTests.Tools.Activities
         /// <param name="newSpeadsheetName">name of the spreadsheet that need to be created on Run Save_To_Google_Sheet activity</param>
         /// <returns></returns>
         public async Task<ActivityDTO> AddAndConfigureSaveToGoogleSheet(PlanDTO plan,
-                                                                        int ordering,string manifestTypeToUse,
+                                                                        int ordering, string manifestTypeToUse,
                                                                         string crateDescriptionLabelToUse,
                                                                         string newSpeadsheetName)
         {
@@ -79,7 +79,7 @@ namespace terminaBaselTests.Tools.Activities
         /// <param name="spreadsheetName">name of the spreadsheet use in configure procees</param>
         /// <param name="includeFixtureAuthToken">Use fixture data as google auth token</param>
         /// <returns>Configured ActivityDTO for Get_Google_Sheet_Data</returns>
-        public async Task<ActivityDTO> AddAndConfigureGetFromGoogleSheet(PlanDTO plan,int ordering, string spreadsheetName, bool includeFixtureAuthToken)
+        public async Task<ActivityDTO> AddAndConfigureGetFromGoogleSheet(PlanDTO plan, int ordering, string spreadsheetName, bool includeFixtureAuthToken)
         {
             var activityName = "Get_Google_Sheet_Data";
 
@@ -130,7 +130,7 @@ namespace terminaBaselTests.Tools.Activities
                     Assert.IsNotNullOrEmpty(worksheetUri, $"Default Google account doesn't contain worksheet '{worksheetName}' for the spreadsheet '{spreadsheetName}'");
                     activityUi.WorksheetList.selectedKey = worksheetName;
                     activityUi.WorksheetList.Value = worksheetUri;
-                    
+
                     crateStorage.Add(Crate<StandardConfigurationControlsCM>.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
                 }
             }
@@ -156,6 +156,45 @@ namespace terminaBaselTests.Tools.Activities
         /// <param name="activityName"></param>
         /// <returns></returns>
         private async Task<ActivityDTO> AddGoogleActivityToPlan(PlanDTO plan, int ordering, ActivityCategory activityCategory, string activityName)
+        {
+            var googleActivityDTO = FixtureData.Get_Google_Sheet_Data_v1_InitialConfiguration();
+            var activityCategoryParam = new[] { activityCategory };
+            var activityTemplates = await _baseHubITest.HttpPostAsync<ActivityCategory[], List<WebServiceActivitySetDTO>>(
+                                                                                                                          _baseHubITest.GetHubApiBaseUrl() + "webservices/activities", activityCategoryParam);
+            var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == activityName);
+            googleActivityDTO.ActivityTemplate = apmActivityTemplate;
+
+            //connect current activity with a plan
+            var subPlan = plan.Plan.SubPlans.FirstOrDefault();
+            googleActivityDTO.ParentPlanNodeId = subPlan.SubPlanId;
+            googleActivityDTO.RootPlanNodeId = plan.Plan.Id;
+            googleActivityDTO.Ordering = ordering;
+
+            //call initial configuration to server
+            googleActivityDTO = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/save", googleActivityDTO);
+            googleActivityDTO.AuthToken = FixtureData.GetGoogleAuthorizationToken();
+            googleActivityDTO = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/configure", googleActivityDTO);
+            var initialcrateStorage = _baseHubITest.Crate.FromDto(googleActivityDTO.CrateStorage);
+
+            var stAuthCrate = initialcrateStorage.CratesOfType<StandardAuthenticationCM>().FirstOrDefault();
+            bool defaulGoogleAuthTokenExists = stAuthCrate == null;
+
+            Assert.AreEqual(true, defaulGoogleAuthTokenExists, $"{activityName}: GoogleService require authentication. They might be a problem with default authentication tokens and KeyVault authorization mode");
+
+            initialcrateStorage = _baseHubITest.Crate.FromDto(googleActivityDTO.CrateStorage);
+            Assert.True(initialcrateStorage.CratesOfType<StandardConfigurationControlsCM>().Any(), $"{activityName}: Crate StandardConfigurationControlsCM is missing in API response.");
+            return googleActivityDTO;
+        }
+        /// <summary>
+        /// Add new Google Activity to a existing plan. Create the activity based on a activity template, set activity ordering and call initial configuration
+        /// with associated Google Auth Token
+        /// </summary>
+        /// <param name="plan"></param>
+        /// <param name="ordering"></param>
+        /// <param name="activityCategory"></param>
+        /// <param name="activityName"></param>
+        /// <returns></returns>
+        private async Task<ActivityDTO> AddMonitorFormResponsesActivityToPlan(PlanDTO plan, int ordering, ActivityCategory activityCategory, string activityName)
         {
             var googleActivityDTO = FixtureData.Get_Google_Sheet_Data_v1_InitialConfiguration();
             var activityCategoryParam = new[] { activityCategory };

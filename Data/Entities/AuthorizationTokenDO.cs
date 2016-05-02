@@ -32,6 +32,8 @@ namespace Data.Entities
 
         public String ExternalAccountId { get; set; }
 
+        public String ExternalDomainId { get; set; }
+
         /// <summary>
         /// State-token parameter, that is sent to exteral auth service,
         /// and returned back when auth is completed.

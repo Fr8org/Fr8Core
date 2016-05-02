@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Repositories.MultiTenant;
 using Data.Repositories.Security.Entities;
@@ -14,7 +15,7 @@ namespace Data.Repositories.Security.StorageImpl
 {
     class InMemorySecurityObjectsStorageProvider : ISecurityObjectsStorageProvider
     {
-        private static readonly List<ObjectRolePrivilegesDO> ObjectRolePrivileges = new List<ObjectRolePrivilegesDO>();
+        private static readonly List<ObjectRolePermissionsWrapper> ObjectRolePermissions = new List<ObjectRolePermissionsWrapper>();
         private string roleName;
         private Guid readRolePrivilegeId;
         private Guid editRolePrivilegeID;
@@ -27,99 +28,99 @@ namespace Data.Repositories.Security.StorageImpl
             editRolePrivilegeID = Guid.Parse("7cb466dc-8fed-4791-a1ba-09f9135416db");
         }
 
-        public List<RolePrivilege> GetRolePrivilegesForFr8Account(Guid fr8AccountId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public ObjectRolePrivilegesDO GetRolePrivilegesForSecuredObject(string dataObjectId)
-        {
-            lock (ObjectRolePrivileges)
-            {
-                return ObjectRolePrivileges.FirstOrDefault(x => x.ObjectId == dataObjectId);
-            }
-        }
-
-        public int InsertObjectRolePrivilege(string dataObjectId, Guid rolePrivilegeId, string dataObjectType,
+        public int InsertObjectRolePermission(string dataObjectId, Guid rolePrivilegeId, string dataObjectType,
             string propertyName = null)
         {
-            lock (ObjectRolePrivileges)
+            lock (ObjectRolePermissions)
             {
                 if (string.IsNullOrEmpty(propertyName))
                 {
-                    ObjectRolePrivileges.Add(new ObjectRolePrivilegesDO() { ObjectId = dataObjectId,
-                        RolePrivileges = new List<RolePrivilege>() { new RolePrivilege { Id = rolePrivilegeId,
-                            Privilege = new PrivilegeDO() {Name = Privilege.ReadObject.ToString() }
-                        ,Role = new RoleDO() { RoleName = roleName, } } } });
+                    //ObjectRolePermissions.Add(new ObjectRolePermissionsWrapper() { ObjectId = dataObjectId,
+                    //    RolePermissions = new List<RolePermission>() { new RolePermission { Id = rolePrivilegeId,
+                    //        PermissionSet = new PermissionSetDO() {}
+                    //    ,Role = new RoleDO() { RoleName = roleName, } } } });
                 }
                 else
                 {
-                    var objectRolePrivileges = new ObjectRolePrivilegesDO()
-                    {
-                        ObjectId = dataObjectId,
-                        Properties = new Dictionary<string, List<RolePrivilege>>()
-                    };
-                    objectRolePrivileges.Properties.Add(propertyName, new List<RolePrivilege>() { new RolePrivilege { Id = rolePrivilegeId,
-                        Privilege = new PrivilegeDO() {Name = Privilege.ReadObject.ToString() },
-                        Role = new RoleDO() { RoleName = roleName } } });
+                    //var objectRolePermissions = new ObjectRolePermissionsDO()
+                    //{
+                    //    ObjectId = dataObjectId,
+                    //    Properties = new Dictionary<string, List<RolePermission>>()
+                    //};
+                    //objectRolePermissions.Properties.Add(propertyName, new List<RolePermission>() { new RolePermission { Id = rolePrivilegeId,
+                    //        PermissionSet = new PermissionSetDO() {},
+                    //    Role = new RoleDO() { RoleName = roleName } } });
                 }
                     
                 return 1;
             }
         }
 
-        public int InsertRolePrivilege(RolePrivilege rolePrivilege)
+        public int InsertRolePermission(RolePermission rolePrivilege)
         {
             throw new NotImplementedException();
         }
 
-        public int RemoveObjectRolePrivilege(string dataObjectId, Guid rolePrivilegeId, string propertyName = null)
+        public int RemoveObjectRolePermission(string dataObjectId, Guid rolePrivilegeId, string propertyName = null)
         {
             throw new NotImplementedException();
         }
 
         public void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType)
         {
-            lock (ObjectRolePrivileges)
+            lock (ObjectRolePermissions)
             {
-                var objectRolePrivilege = new ObjectRolePrivilegesDO()
-                {
-                    ObjectId = dataObjectId,
-                    RolePrivileges = new List<RolePrivilege>()
-                    {
-                        new RolePrivilege()
-                        {
-                            Privilege = new PrivilegeDO() { Name = Privilege.ReadObject.ToString()},
-                            Role = new RoleDO()
-                            {
-                                RoleName = roleName,
-                            }
-                        },
-                        new RolePrivilege()
-                        {
-                            Privilege = new PrivilegeDO() { Name = Privilege.EditObject.ToString()},
-                            Role = new RoleDO()
-                            {
-                                RoleName = roleName
-                            } 
-                        },
-                        new RolePrivilege()
-                        {
-                            Privilege = new PrivilegeDO() { Name = Privilege.DeleteObject.ToString()},
-                            Role = new RoleDO()
-                            {
-                                RoleName = roleName
-                            }
-                        }
-                    }
-                };
-                ObjectRolePrivileges.Add(objectRolePrivilege);
+                //var objectRolePrivilege = new ObjectRolePermissionsDO()
+                //{
+                //    ObjectId = dataObjectId,
+                //    RolePermissions = new List<RolePermission>()
+                //    {
+                //        new RolePermission()
+                //        {
+                //            PermissionSet = new PermissionSetDO() {},
+                //            Role = new RoleDO()
+                //            {
+                //                RoleName = roleName,
+                //            }
+                //        },
+                //        new RolePermission()
+                //        {
+                //            PermissionSet = new PermissionSetDO() {},
+                //            Role = new RoleDO()
+                //            {
+                //                RoleName = roleName
+                //            } 
+                //        },
+                //        new RolePermission()
+                //        {
+                //            PermissionSet = new PermissionSetDO() {},
+                //            Role = new RoleDO()
+                //            {
+                //                RoleName = roleName
+                //            }
+                //        }
+                //    }
+                //};
+                //ObjectRolePermissions.Add(objectRolePrivilege);
             }
         }
 
-        public int UpdateRolePrivilege(RolePrivilege rolePrivilege)
+        public int UpdateRolePermission(RolePermission rolePermissions)
         {
             throw new NotImplementedException();
+        }
+
+        public List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, List<string> roleNames)
+        {
+            return new List<int>();
+        }
+
+        public ObjectRolePermissionsWrapper GetRecordBasedPermissionSetForObject(string dataObjectId)
+        {
+            lock (ObjectRolePermissions)
+            {
+                return ObjectRolePermissions.FirstOrDefault(x => x.ObjectId == dataObjectId);
+            }
         }
     }
 }

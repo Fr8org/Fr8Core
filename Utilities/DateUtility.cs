@@ -68,6 +68,50 @@ namespace Utilities
         {
             return TimeAgo((DateTimeOffset) dt);
         }
+
+
+        public static DateTime? CalculateDayBucket(DateTime? createDate)
+        {
+            if (!createDate.HasValue)
+            {
+                return null;
+            }
+
+            return createDate.Value.Date;
+        }
+
+        public static DateTime? CalculateWeekBucket(DateTime? createDate)
+        {
+            if (!createDate.HasValue)
+            {
+                return null;
+            }
+
+            var date = createDate.Value.Date;
+            return date.AddDays(-1 * (int)date.DayOfWeek);
+        }
+
+        public static DateTime? CalculateMonthBucket(DateTime? createDate)
+        {
+            if (!createDate.HasValue)
+            {
+                return null;
+            }
+
+            var date = createDate.Value.Date;
+            return date.AddDays(-date.Day + 1);
+        }
+
+        public static DateTime? CalculateYearBucket(DateTime? createDate)
+        {
+            if (!createDate.HasValue)
+            {
+                return null;
+            }
+
+            var date = createDate.Value.Date;
+            return date.AddDays(-date.DayOfYear + 1);
+        }
     }
 
     public struct DateRange

@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
-using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
-using Hub.Interfaces;
 using Hub.Managers;
 using StructureMap;
 using terminalDocuSign.Interfaces;
@@ -19,7 +18,7 @@ using Data.Constants;
 using terminalDocuSign.Services.New_Api;
 using Utilities.Configuration.Azure;
 using Utilities;
-using Hub.Managers.APIManagers.Transmitters.Restful;
+using Utilities.Logging;
 
 namespace terminalDocuSign.Services
 {
@@ -35,6 +34,7 @@ namespace terminalDocuSign.Services
         private readonly IncidentReporter _alertReporter;
 
         private readonly string DevConnectName = "(dev) Fr8 Company DocuSign integration";
+        private readonly string DemoConnectName = "(demo) Fr8 Company DocuSign integration";
         private readonly string ProdConnectName = "Fr8 Company DocuSign integration";
         private readonly string TemporaryConnectName = "int-tests-Fr8";
 
@@ -56,6 +56,7 @@ namespace terminalDocuSign.Services
         /// </summary>
         public async Task CreatePlan_MonitorAllDocuSignEvents(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
+            Logger.LogInfo($"Create MADSE called {curFr8UserId}");
             string currentPlanId = await FindAndActivateExistingPlan(curFr8UserId, "MonitorAllDocuSignEvents", authTokenDTO);
             if (string.IsNullOrEmpty(currentPlanId))
                 await CreateAndActivateNewMADSEPlan(curFr8UserId, authTokenDTO);
@@ -64,18 +65,19 @@ namespace terminalDocuSign.Services
         //only create a connect when running on dev/production
         public void CreateConnect(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
+            Logger.LogInfo($"CreateConnect called {curFr8UserId}");
             var authTokenDO = new AuthorizationTokenDO() { Token = authTokenDTO.Token, ExternalAccountId = authTokenDTO.ExternalAccountId };
             var config = _docuSignManager.SetUp(authTokenDO);
 
             string terminalUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint");
             string prodUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultProductionUrl");
             string devUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultDevUrl");
+            string demoUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultDemoUrl");
 
             string connectName = "";
             string connectId = "";
-
-
-            Console.WriteLine("Connect creation: terminalUrl = {0}", terminalUrl);
+           
+            Logger.LogInfo($"CreateConnect terminalUrl {terminalUrl}", DocuSignManager.DocusignTerminalName);
             if (!string.IsNullOrEmpty(terminalUrl))
             {
                 if (terminalUrl.Contains(devUrl, StringComparison.InvariantCultureIgnoreCase))
@@ -89,17 +91,27 @@ namespace terminalDocuSign.Services
                 }
                 else
                     if (terminalUrl.Contains(prodUrl, StringComparison.InvariantCultureIgnoreCase))
+                {
                     connectName = ProdConnectName;
-
+                }
+                else 
+                    if (terminalUrl.Contains(demoUrl, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    connectName = DemoConnectName;
+                }
+                else
+                {
+                    Logger.LogInfo($"Unable to set connectName from {terminalUrl}", DocuSignManager.DocusignTerminalName);
+                }                    
 
                 string publishUrl = terminalUrl + "/terminals/terminalDocuSign/events";
 
-                Console.WriteLine("Connect creation: publishUrl = {0}", publishUrl);
+                Logger.LogInfo("Connect creation: publishUrl = {0}", DocuSignManager.DocusignTerminalName);
 
                 if (!string.IsNullOrEmpty(connectName))
                 {
                     connectId = _docuSignConnect.CreateOrActivateConnect(config, connectName, publishUrl);
-                    Console.WriteLine("Created connect named {0} pointing to {1} with id {2}", connectName, publishUrl, connectId);
+                    Logger.LogInfo($"Created connect named {connectName} pointing to {publishUrl} with id {connectId}", DocuSignManager.DocusignTerminalName);
                 }
                 else
                 {
@@ -112,8 +124,11 @@ namespace terminalDocuSign.Services
                     }
 
                     connectId = _docuSignConnect.CreateConnect(config, TemporaryConnectName, publishUrl);
-                    Console.WriteLine("Created connect named {0} pointing to {1} with id {2}", TemporaryConnectName, publishUrl, connectId);
+                    Logger.LogInfo($"Created connect named {TemporaryConnectName} pointing to {publishUrl} with id {connectId}", DocuSignManager.DocusignTerminalName);
                 }
+            } else
+            {
+                Logger.LogInfo($"terminalUrl is empty, no work has been done in DocuSignPlan.CreateConnect: prodUrl -> {prodUrl}, devUrl -> {devUrl}, demoUrl -> {demoUrl}");
             }
         }
 
@@ -177,7 +192,7 @@ namespace terminalDocuSign.Services
                                 await _hubCommunicator.ApplyNewToken(firstActivity.Id, Guid.Parse(authTokenDTO.Id), curFr8UserId);
                                 var existingPlanDO = Mapper.Map<PlanDO>(existingPlan.Plan);
                                 await _hubCommunicator.ActivatePlan(existingPlanDO, curFr8UserId);
-                                Console.WriteLine("#### Existing MADSE plan activated with planId: " + existingPlanDO.RootPlanNodeId);
+                                Logger.LogInfo($"#### Existing MADSE plan activated with planId: {existingPlanDO.Id}", DocuSignManager.DocusignTerminalName);
                                 return existingPlan.Plan.Id.to_S();
                             }
                         }
@@ -187,7 +202,7 @@ namespace terminalDocuSign.Services
                     if (plans.ContainsKey(false))
                     {
                         List<PlanDTO> obsoletePlans = plans[false];
-                        Console.WriteLine("#### Found " + obsoletePlans.Count + " obsolete MADSE plans");
+                        Logger.LogInfo($"#### Found {obsoletePlans.Count} obsolete MADSE plans", DocuSignManager.DocusignTerminalName);
                         foreach (var obsoletePlan in obsoletePlans)
                         {
                             await _hubCommunicator.DeletePlan(obsoletePlan.Plan.Id, curFr8UserId);
@@ -215,6 +230,7 @@ namespace terminalDocuSign.Services
             var activityTemplates = await _hubCommunicator.GetActivityTemplates(null, curFr8UserId);
             var recordDocusignEventsTemplate = GetActivityTemplate(activityTemplates, "Prepare_DocuSign_Events_For_Storage");
             var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "SaveToFr8Warehouse");
+            Debug.WriteLine($"Calling create and configure with params {recordDocusignEventsTemplate} {curFr8UserId} {monitorDocusignPlan}");
             await _hubCommunicator.CreateAndConfigureActivity(recordDocusignEventsTemplate.Id,
                 curFr8UserId, "Record DocuSign Events", 1, monitorDocusignPlan.Plan.StartingSubPlanId, false, new Guid(authTokenDTO.Id));
             var storeMTDataActivity = await _hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id,
@@ -225,7 +241,7 @@ namespace terminalDocuSign.Services
             var planDO = Mapper.Map<PlanDO>(monitorDocusignPlan.Plan);
             await _hubCommunicator.ActivatePlan(planDO, curFr8UserId);
 
-            Console.WriteLine("#### New MADSE plan activated with planId: " + planDO.RootPlanNodeId);
+            Logger.LogInfo($"#### New MADSE plan activated with planId: {planDO.RootPlanNodeId}", DocuSignManager.DocusignTerminalName);
         }
 
         private void SetSelectedCrates(ActivityDTO storeMTDataActivity)

@@ -98,7 +98,7 @@ namespace terminalSalesforce.Actions
 
             var objectPropertiesCrate = Crate<FieldDescriptionsCM>.FromContent(
                 SalesforceObjectFieldsCrateLabel,
-                new FieldDescriptionsCM(selectedObjectProperties),            
+                new FieldDescriptionsCM(selectedObjectProperties.Select(c => new FieldDTO(c.Key, c.Key))),            
                 AvailabilityType.RunTime);
             CurrentActivityStorage.ReplaceByLabel(objectPropertiesCrate);
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;

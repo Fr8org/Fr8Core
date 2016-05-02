@@ -8,9 +8,9 @@ namespace Data.Entities
     {
         private static readonly PropertyInfo[] TrackingProperties =
         {
-            typeof (SubPlanDO).GetProperty("Name"),
-            typeof (SubPlanDO).GetProperty("StartingSubPlan"),
-            typeof (SubPlanDO).GetProperty("NodeTransitions"),
+            typeof (SubPlanDO).GetProperty(nameof(Name)),
+            typeof (SubPlanDO).GetProperty(nameof(StartingSubPlan)),
+            typeof (SubPlanDO).GetProperty(nameof(NodeTransitions)),
         };
 
         public SubPlanDO(bool startingSubPlan)

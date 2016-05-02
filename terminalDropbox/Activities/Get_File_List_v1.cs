@@ -26,9 +26,9 @@ namespace terminalDropbox.Actions
             public DropDownList FileList { get; set; }
 
             public ActivityUi()
-            {
+        {
                 FileList = new DropDownList
-                {
+            {
                     Label = "Select a file",
                     Name = nameof(FileList),
                     Required = true,
@@ -57,18 +57,18 @@ namespace terminalDropbox.Actions
         }
 
         protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
-        {
+            {
             var fileList = await _dropboxService.GetFileList(GetDropboxAuthToken());
             ConfigurationControls.FileList.ListItems = fileList
                 .Select(filePath => new ListItem { Key = Path.GetFileName(filePath), Value = Path.GetFileName(filePath) }).ToList();
             runtimeCrateManager.MarkAvailableAtRuntime<StandardFileListCM>(RuntimeCrateLabel);
             CurrentActivityStorage.ReplaceByLabel(PackDropboxFileListCrate(fileList));
-        }
+            }
 
         private AuthorizationTokenDO GetDropboxAuthToken(AuthorizationTokenDO authTokenDO = null)
-        {
+            {
             return authTokenDO ?? AuthorizationToken;
-        }
+            }
 
         protected override async Task RunCurrentActivity()
         {
@@ -83,7 +83,7 @@ namespace terminalDropbox.Actions
             foreach (var filePath in fileList)
             {
                 var fileDesc = new StandardFileDescriptionCM()
-                {
+        {
                     Filename = Path.GetFileName(filePath),
                     Filetype = Path.GetExtension(filePath)
                 };
@@ -91,12 +91,12 @@ namespace terminalDropbox.Actions
 
                 fileDesc.DirectUrl = fileSharedUrl;
                 descriptionList.Add(fileDesc);
-            }
+        }
 
             return Crate<StandardFileListCM>.FromContent(
                 RuntimeCrateLabel,
                 new StandardFileListCM
-                {
+        {
                     FileList = descriptionList
                 },
                 AvailabilityType.Always);

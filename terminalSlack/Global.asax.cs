@@ -9,7 +9,8 @@ namespace terminalSlack
     {
         protected void Application_Start()
         {
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
+            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE)
+                                    .ConfigureSlackDependencies(StructureMapBootStrapper.DependencyType.LIVE);
             GlobalConfiguration.Configure(WebApiConfig.Register);
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             TerminalBootstrapper.ConfigureLive();

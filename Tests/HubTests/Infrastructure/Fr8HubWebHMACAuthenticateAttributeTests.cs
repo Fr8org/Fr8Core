@@ -7,6 +7,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http.Controllers;
 using System.Web.Http.Filters;
+using Hub.Infrastructure;
 using Hub.Interfaces;
 using Moq;
 using StructureMap;

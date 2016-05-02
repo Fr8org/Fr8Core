@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Configuration;
+using System.Diagnostics;
 using System.Linq;
 using System.Net.Http;
 using System.Text.RegularExpressions;
@@ -18,6 +19,7 @@ using Hub.Managers;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Interfaces;
 using Utilities.Configuration.Azure;
+using Utilities.Logging;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Infrastructure.DocuSignParserModels;
 
@@ -60,7 +62,9 @@ namespace terminalDocuSign.Services
                 }
             }
 
+
             //If this is a connect event
+            Debug.WriteLine($"Received external payload: {curExternalEventPayload}");
             if (curExternalEventPayload.Contains("DocuSignEnvelopeInformation"))
             {
                 Console.WriteLine("Connect event received by DocuSign terminal");

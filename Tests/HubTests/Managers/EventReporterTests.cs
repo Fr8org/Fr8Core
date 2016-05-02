@@ -41,21 +41,37 @@ namespace HubTests.Managers
         }
 
         [Test]
-        public void Should_can_take_null_Data_and_historyItemDO_when_composing_string()
+        public void Should_take_null_Data_and_historyItemDO_when_composing_string()
         {
-            var historyItem = UtilitiesTesting.Fixtures.FixtureData.TestFactDO();
-            historyItem.Data = null;
-
-            //act
             var message1 = _eventReporter.ComposeOutputString(null);
 
-
+            var historyItem = UtilitiesTesting.Fixtures.FixtureData.TestFactDO();
             historyItem.Data = null;
             historyItem.CreatedBy = null;
+
             var message2 = _eventReporter.ComposeOutputString(historyItem);
 
             Assert.IsNotEmpty(message1);
             Assert.IsNotEmpty(message2);
+        }
+
+        [Test]
+        public void Should_replace_Fr8UserId_with_CreatedById_for_FactDO()
+        {
+            var factDO = UtilitiesTesting.Fixtures.FixtureData.TestFactDO();
+            var id = "1234";
+            factDO.Fr8UserId = null;
+            factDO.CreatedByID = id;
+
+            var message1 = _eventReporter.ComposeOutputString(factDO);
+
+            factDO.Fr8UserId = "";
+
+            var message2 = _eventReporter.ComposeOutputString(factDO);
+            
+            Assert.IsTrue(message1.Contains(id));
+            Assert.IsTrue(message2.Contains(id));
+
         }
     }
 }

@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Constants;
@@ -7,10 +9,8 @@ using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
-using TerminalBase.BaseClasses;
 using terminalUtilities.Excel;
-using System;
-using System.IO;
+using TerminalBase.BaseClasses;
 
 namespace terminalExcel.Actions
 {
