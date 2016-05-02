@@ -80,6 +80,10 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
+        /// <summary>
+        /// Dropbox auth token
+        /// </summary>
+        /// <returns></returns>
         public static AuthorizationTokenDTO GetDropboxAuthorizationToken()
         {
             return new AuthorizationTokenDTO
