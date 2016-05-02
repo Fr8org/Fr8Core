@@ -6,25 +6,44 @@ using System.Data.Entity.Infrastructure;
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Repositories.Encryption;
 
 namespace Data.Repositories.Plan
 {
     public class PlanStorageProviderEf : IPlanStorageProvider
     {
         protected readonly IUnitOfWork Uow;
+        private readonly IEncryptionService _encryptionService;
         // Note repository Names are not renamed .....
         protected readonly PlanNodeRepository PlanNodes;
         protected readonly ActivityRepository ActivityRepository;
         protected readonly SubPlanRepository SubPlans;
         protected readonly PlansRepository Plans;
 
-        public PlanStorageProviderEf(IUnitOfWork uow)
+        public PlanStorageProviderEf(IUnitOfWork uow, IEncryptionService encryptionService)
         {
             Uow = uow;
+            _encryptionService = encryptionService;
             PlanNodes = new PlanNodeRepository(uow);
             ActivityRepository = new ActivityRepository(uow);
             SubPlans = new SubPlanRepository(uow);
             Plans = new PlansRepository(uow);
+        }
+
+        private ActivityDO CloneActivity(ActivityDO source)
+        {
+            var clone = (ActivityDO)source.Clone();
+
+            // for backward compatibility
+            // if we have encrypted data decrypt it, otherwise leave CrateStorage as is
+            if (source.EncryptedCrateStorage != null && source.EncryptedCrateStorage.Length != 0)
+            {
+                clone.CrateStorage = _encryptionService.DecryptString(source.Fr8AccountId, source.EncryptedCrateStorage);
+                // get rid of encrypted data representation to save space in memory.
+                clone.EncryptedCrateStorage = null;
+            }
+            
+            return clone;
         }
 
         private PlanNodeDO LoadPlanByPlanId(Guid planId)
@@ -39,7 +58,7 @@ namespace Data.Repositories.Plan
                 //throw new KeyNotFoundException("Unable to find plan not with id = " + planId);
             }
 
-            var actions = ActivityRepository.GetQuery().Where(x => x.RootPlanNodeId == planId).Include(x => x.Fr8Account).AsEnumerable().Select(x => x.Clone()).ToArray();
+            var actions = ActivityRepository.GetQuery().Where(x => x.RootPlanNodeId == planId).Include(x => x.Fr8Account).AsEnumerable().Select(CloneActivity).ToArray();
             var subPlans = SubPlans.GetQuery().Where(x => x.RootPlanNodeId == planId).Include(x => x.Fr8Account).AsEnumerable().Select(x => x.Clone()).ToArray();
 
             if (actions.Length == 0 && subPlans.Length == 0)
@@ -174,6 +193,12 @@ namespace Data.Repositories.Plan
                 var entity = planNodeDo.Clone();
 
                 ClearNavigationProperties(entity);
+
+                if (entity is ActivityDO)
+                {
+                    EncryptActivityCrateStorage((ActivityDO)entity);
+                }
+
                 PlanNodes.Add(entity);
             }
             
@@ -182,6 +207,11 @@ namespace Data.Repositories.Plan
                 var entryStub = changedObject.Node.Clone();
 
                 ClearNavigationProperties(entryStub);
+
+                if (entryStub is ActivityDO)
+                {
+                    UpdateEncryptedActivityCrateStorage((ActivityDO)entryStub, changedObject);
+                }
 
                 var key = objectContext.CreateEntityKey("PlanNodeDOes", entryStub);
                 if (!objectContext.ObjectStateManager.TryGetObjectStateEntry(key, out entry))
@@ -197,12 +227,37 @@ namespace Data.Repositories.Plan
                 {
                     foreach (var changedProperty in changedObject.ChangedProperties)
                     {
-                        changedProperty.SetValue(entry.Entity, changedProperty.GetValue(changedObject.Node));
+                        changedProperty.SetValue(entry.Entity, changedProperty.GetValue(entryStub));
                     }
                 }
             }
         }
-        
+
+        protected void UpdateEncryptedActivityCrateStorage(ActivityDO activity, PlanSnapshot.ChangedObject changedObject)
+        {
+            var crateStoragePropertyIndex = changedObject.ChangedProperties.FindIndex(x => x.Name == nameof(ActivityDO.CrateStorage));
+
+            // nothing to update
+            if (crateStoragePropertyIndex < 0)
+            {
+                return;
+            }
+            
+            // update EncrypredCrateStorage
+            changedObject.ChangedProperties.Add(typeof(ActivityDO).GetProperty(nameof(ActivityDO.EncryptedCrateStorage)));
+            
+            // we should never update CrateStorage property
+            changedObject.ChangedProperties.RemoveAt(crateStoragePropertyIndex); 
+
+            EncryptActivityCrateStorage(activity);
+        }
+
+        protected void EncryptActivityCrateStorage(ActivityDO activity)
+        {
+            activity.EncryptedCrateStorage = _encryptionService.EncryptData(activity.Fr8AccountId, activity.CrateStorage);
+            activity.CrateStorage = null; 
+        }
+
         //we do this not to accidentatlly add duplicates
         protected void ClearNavigationProperties(PlanNodeDO entity)
         {

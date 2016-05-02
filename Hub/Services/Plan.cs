@@ -355,8 +355,9 @@ namespace Hub.Services
         public List<PlanDO> MatchEvents(List<PlanDO> curPlans, EventReportCM curEventReport)
         {
             List<PlanDO> subscribingPlans = new List<PlanDO>();
-
-            foreach (var curPlan in curPlans)
+            //If event source knows which plans to run we should respect that
+            var fileredPlans = curEventReport.PlansAffected?.Count > 0 ? curPlans.Where(x => curEventReport.PlansAffected.Contains(x.Id)) : curPlans;
+            foreach (var curPlan in fileredPlans)
             {
                 //get the 1st activity
                 var actionDO = GetFirstActivityWithEventSubscriptions(curPlan.Id);

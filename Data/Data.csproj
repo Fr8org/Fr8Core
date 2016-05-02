@@ -265,6 +265,7 @@
     <Compile Include="Entities\AspNetUserClaimDO.cs" />
     <Compile Include="Entities\EncryptedAuthorizationData.cs" />
     <Compile Include="Entities\OrganizationDO.cs" />
+    <Compile Include="Entities\PermissionSetDO.cs" />
     <Compile Include="Entities\PlanNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
     <Compile Include="Entities\TerminalSubscriptionDO.cs" />
@@ -731,6 +732,14 @@
     <Compile Include="Migrations\201604272231431_AddExternalDomainIdToAuthorizationToken.Designer.cs">
       <DependentUpon>201604272231431_AddExternalDomainIdToAuthorizationToken.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201604292019158_Security_Infrastructure.cs" />
+    <Compile Include="Migrations\201604292019158_Security_Infrastructure.Designer.cs">
+      <DependentUpon>201604292019158_Security_Infrastructure.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201605020854120_EncryptedCrateStorageAdded.cs" />
+    <Compile Include="Migrations\201605020854120_EncryptedCrateStorageAdded.Designer.cs">
+      <DependentUpon>201605020854120_EncryptedCrateStorageAdded.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -740,8 +749,20 @@
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryStub.cs" />
     <Compile Include="Repositories\Authorization\IAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\Authorization\KeyVaultAuthorizationTokenRepository.cs" />
+    <Compile Include="Repositories\ProfileRepository.cs" />
     <Compile Include="Repositories\Cache\ICacheExpirationStrategy.cs" />
     <Compile Include="Repositories\Cache\IExpirationToken.cs" />
+    <Compile Include="Repositories\Encryption\IEncryptionProvider.cs" />
+    <Compile Include="Repositories\Encryption\IEncryptionService.cs" />
+    <Compile Include="Repositories\Encryption\Impl\Compressor\CompressingEncryptionProvider.cs" />
+    <Compile Include="Repositories\Encryption\Impl\EncryptionProviderIds.cs" />
+    <Compile Include="Repositories\Encryption\Impl\EncryptionService.cs" />
+    <Compile Include="Repositories\Encryption\Impl\Bypass\BypassEncryptionProvider.cs" />
+    <Compile Include="Repositories\Encryption\Impl\Rijndael\EncryptionKey.cs" />
+    <Compile Include="Repositories\Encryption\Impl\Rijndael\IEncryptionKeyProvider.cs" />
+    <Compile Include="Repositories\Encryption\Impl\KeyVault\KeyVaultEncryptionKeyProvider.cs" />
+    <Compile Include="Repositories\Encryption\Impl\Rijndael\RijndaelEncryptionProviderV1.cs" />
+    <Compile Include="Repositories\Encryption\Impl\Rijndael\RijndaelEncryptionProviderWithCompressionV1.cs" />
     <Compile Include="Repositories\FileTagsRepository.cs" />
     <Compile Include="Interfaces\IMultiTenantObjectRepository.cs" />
     <Compile Include="Repositories\MultiTenant\Ast\AstNode.cs" />
@@ -784,6 +805,7 @@
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\AstToSqlConverter.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtObjectsStorage.cs" />
     <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtTypeStorageProvider.cs" />
+    <Compile Include="Repositories\PermissionSetRepository.cs" />
     <Compile Include="Repositories\Plan\Expiration.cs" />
     <Compile Include="Repositories\Plan\IPlanCache.cs" />
     <Compile Include="Repositories\Plan\PlanStorage.cs" />
@@ -798,10 +820,10 @@
     <Compile Include="Repositories\Plan\Internal\PlanNodeRepository.cs" />
     <Compile Include="Repositories\FileRepository.cs" />
     <Compile Include="Repositories\Cache\SlidingExpirationStrategy.cs" />
-    <Compile Include="Repositories\Security\Entities\ObjectRolePrivilegesDO.cs" />
-    <Compile Include="Repositories\Security\Entities\PrivilegeDO.cs" />
+    <Compile Include="Repositories\Security\Entities\ObjectRolePermissionsWrapper.cs" />
+    <Compile Include="Entities\ProfileDO.cs" />
     <Compile Include="Repositories\Security\Entities\RoleDO.cs" />
-    <Compile Include="Repositories\Security\Entities\RolePrivilegePOCO.cs" />
+    <Compile Include="Repositories\Security\Entities\RolePermission.cs" />
     <Compile Include="Repositories\Security\ISecurityObjectsStorageProvider.cs" />
     <Compile Include="Repositories\Security\StorageImpl\InMemorySecurityObjectsStorageProvider.cs" />
     <Compile Include="Repositories\SqlBased\ISqlConnectionProvider.cs" />
@@ -809,9 +831,8 @@
     <Compile Include="Repositories\Security\StorageImpl\Cache\ISecurityObjectsCache.cs" />
     <Compile Include="Repositories\Security\StorageImpl\Cache\SecurityObjectsCache.cs" />
     <Compile Include="Repositories\Security\StorageImpl\Cache\SecurityObjectsStorage.cs" />
-    <Compile Include="Repositories\Security\StorageImpl\SqlBased\SqlConnectionProvider.cs" />
-    <Compile Include="Repositories\Security\StorageImpl\SqlBased\SqlSecurityObjectsStorageProvider.cs" />
     <Compile Include="Repositories\SqlBased\SqlConnectionProvider.cs" />
+    <Compile Include="Repositories\Security\StorageImpl\SqlBased\SqlSecurityObjectsStorageProvider.cs" />
     <Compile Include="Repositories\TagRepository.cs" />
     <Compile Include="Repositories\TerminalRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
@@ -825,8 +846,6 @@
     <Compile Include="States\AvailabilityType.cs" />
     <Compile Include="States\CrateDirection.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
-    <Compile Include="Entities\CTE\ProfileNodeAncestorsCTE.cs" />
-    <Compile Include="Entities\CTE\ProfileNodeDescendantsCTE.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
     <Compile Include="Entities\EnvelopeDO.cs" />
     <Compile Include="Entities\TerminalDO.cs" />
@@ -841,9 +860,6 @@
     <Compile Include="Entities\ExpectedResponseDO.cs" />
     <Compile Include="Entities\InvitationDO.cs" />
     <Compile Include="Entities\LogDO.cs" />
-    <Compile Include="Entities\ProfileDO.cs" />
-    <Compile Include="Entities\ProfileItemDO.cs" />
-    <Compile Include="Entities\ProfileNodeDO.cs" />
     <Compile Include="Infrastructure\StructureMap\ISecurityServices.cs" />
     <Compile Include="Infrastructure\StructureMap\MockedSecurityServices.cs" />
     <Compile Include="Interfaces\IBookingRequestDO.cs" />
@@ -866,17 +882,15 @@
     <Compile Include="Repositories\ContainerRepository.cs" />
     <Compile Include="Repositories\MetaflowRepository.cs" />
     <Compile Include="Repositories\ExpectedResponseRepository.cs" />
-    <Compile Include="Repositories\ProfileNodeItemRepository.cs" />
-    <Compile Include="Repositories\ProfileRepository.cs" />
     <Compile Include="Repositories\LogRepository.cs" />
     <Compile Include="Repositories\Authorization\SqlAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\InvitationRepository.cs" />
-    <Compile Include="Repositories\ProfileNodeRepository.cs" />
     <Compile Include="Repositories\UserStatusRepository.cs" />
     <Compile Include="States\AccessLevel.cs" />
     <Compile Include="States\PlanVisibility.cs" />
-    <Compile Include="States\Privileges.cs" />
+    <Compile Include="States\PermissionType.cs" />
     <Compile Include="States\SubscriptionState.cs" />
+    <Compile Include="States\Templates\_PermissionTypeTemplate.cs" />
     <Compile Include="States\Templates\_SubscriptionStateTemplate.cs" />
     <Compile Include="States\TerminalStatus.cs" />
     <Compile Include="States\ContainerState.cs" />
@@ -1271,6 +1285,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604272231431_AddExternalDomainIdToAuthorizationToken.resx">
       <DependentUpon>201604272231431_AddExternalDomainIdToAuthorizationToken.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201604292019158_Security_Infrastructure.resx">
+      <DependentUpon>201604292019158_Security_Infrastructure.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605020854120_EncryptedCrateStorageAdded.resx">
+      <DependentUpon>201605020854120_EncryptedCrateStorageAdded.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

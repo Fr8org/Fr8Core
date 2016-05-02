@@ -12,19 +12,26 @@ namespace Hub.Security
 {
     /// <summary>
     /// AOP Interceptor used to invoke some code on all methods/properties that has been decorated with AuthorizeActivitiyAttribute.
-    /// This method will extract needed data from attribute and method/property that is invocation target and will check if user has privileges to do some activity on invocation target.
+    /// This method will extract needed data from attribute and method/property that is invocation target and will check if user has permissions to do some activity on invocation target.
     /// Config: Lifecycle of interceptor is configured inside StructureMap bootstrapper. For new classes that will have security checks add the dynamic proxy generator as decorator:
     /// Example: For<IActivity>().Use<Activity>().DecorateWith(z => dynamicProxy.CreateInterfaceProxyWithTarget(z, new AuthorizeActivityInterceptor()));
     /// </summary>
     public class AuthorizeActivityInterceptor : IInterceptor
     {
+        private ISecurityServices _securityServices;
+
+        public AuthorizeActivityInterceptor(ISecurityServices securityServices)
+        {
+            _securityServices = securityServices;
+        }
+
         public void Intercept(IInvocation invocation)
         {
             AuthorizeActivity(invocation);
         }
 
         /// <summary>
-        /// On Method call, this functionality is invoked. Get needed data about privilege and secured object target that need to be authorized
+        /// On Method call, this functionality is invoked. Get needed data about permission and secured object target that need to be authorized
         /// </summary>
         /// <param name="invocation"></param>
         private void AuthorizeActivity(IInvocation invocation)
@@ -65,7 +72,7 @@ namespace Hub.Security
         /// <param name="authorizeAttribute"></param>
         private void AuthorizeMethodInvocation(IInvocation invocation, AuthorizeActivityAttribute authorizeAttribute)
         {
-            foreach (var parameter in MapParameters(invocation.Arguments, invocation.Method.GetParameters(), authorizeAttribute.ObjectType))
+            foreach (var parameter in MapParameters(invocation.Arguments, invocation.Method.GetParameters(), authorizeAttribute.ParamType))
             {
                 string objectId;
                 if (parameter is Guid || parameter is string)
@@ -76,17 +83,16 @@ namespace Hub.Security
                 {
                     //todo: in case of requirement for objects not inherited from BaseObject, create a new property inside AuthorizeActivityAttribute that will set object inner propertyName in case of this "Id"  
                     var property = parameter.GetType().GetProperty("Id");
-                    objectId = property.GetValue(invocation.Proxy).ToString();
+                    objectId = property.GetValue(parameter).ToString();
                 }
-                
-                ISecurityServices securityServices = ObjectFactory.GetInstance<ISecurityServices>();
-                if (securityServices.AuthorizeActivity(authorizeAttribute.Privilege, objectId))
+               
+                if (_securityServices.AuthorizeActivity(authorizeAttribute.Permission, objectId, authorizeAttribute.TargetType.Name))
                 {
                     invocation.Proceed();
                 }
                 else
                 {
-                    throw new HttpException(401, "You are not authorized to perform this activity!");
+                    throw new HttpException(403, "You are not authorized to perform this activity!");
                 }
             }
         }
@@ -112,15 +118,14 @@ namespace Hub.Security
                 invocation.Proceed();
             }
 
-            ISecurityServices securityServices = ObjectFactory.GetInstance<ISecurityServices>();
-            if (securityServices.AuthorizeActivity(authorizeAttribute.Privilege, objectId))
+            if (_securityServices.AuthorizeActivity(authorizeAttribute.Permission, objectId, authorizeAttribute.TargetType.Name))
             {
                 invocation.Proceed();
                 return;
             }
             else
             {
-                throw new HttpException(401, "You are not authorized to perform this activity!");
+                throw new HttpException(403, "You are not authorized to perform this activity!");
             }
         }
 

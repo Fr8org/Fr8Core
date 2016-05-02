@@ -6,7 +6,7 @@ namespace Data.Interfaces
     public interface IAspNetRolesDO : IBaseDO
     {
         String Id { get; set; }
-        String Name { get; set; }        
+        String Name { get; set; }
     }
 }
         
