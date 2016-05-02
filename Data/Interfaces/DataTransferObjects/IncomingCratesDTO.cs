@@ -5,10 +5,10 @@ namespace Data.Interfaces.DataTransferObjects
 {
     public class IncomingCratesDTO
     {
-        [JsonProperty("availableFields")]
-        public readonly List<FieldDTO> AvailableFields = new List<FieldDTO>();
+        [JsonProperty("incomingFields")]
+        public readonly List<FieldDTO> IncomingFields = new List<FieldDTO>();
 
-        [JsonProperty("availableCrates")]
-        public readonly List<CrateDescriptionDTO> AvailableCrates = new List<CrateDescriptionDTO>();
+        [JsonProperty("incomingCrates")]
+        public readonly List<CrateDescriptionDTO> IncomingCrates = new List<CrateDescriptionDTO>();
     }
 }

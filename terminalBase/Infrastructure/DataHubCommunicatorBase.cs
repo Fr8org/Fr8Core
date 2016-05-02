@@ -188,7 +188,7 @@ namespace TerminalBase.Infrastructure
             var mergedFields = new FieldDescriptionsCM();
             var availableData = await GetAvailableData(activityDO, direction, availability, userId);
 
-            mergedFields.Fields.AddRange(availableData.AvailableFields);
+            mergedFields.Fields.AddRange(availableData.IncomingFields);
 
             return mergedFields;
         }
@@ -199,9 +199,9 @@ namespace TerminalBase.Infrastructure
             var crates = await GetCratesByDirection<CrateDescriptionCM>(activityDO, direction, userId);
             var availableData = new IncomingCratesDTO();
 
-            availableData.AvailableFields.AddRange(fields.SelectMany(x => x.Content.Fields).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
-            availableData.AvailableFields.AddRange(crates.SelectMany(x => x.Content.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0).SelectMany(x => x.Fields));
-            availableData.AvailableCrates.AddRange(crates.SelectMany(x => x.Content.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
+            availableData.IncomingFields.AddRange(fields.SelectMany(x => x.Content.Fields).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
+            availableData.IncomingFields.AddRange(crates.SelectMany(x => x.Content.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0).SelectMany(x => x.Fields));
+            availableData.IncomingCrates.AddRange(crates.SelectMany(x => x.Content.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
 
             return availableData;
         }

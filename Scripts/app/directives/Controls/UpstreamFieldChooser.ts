@@ -115,7 +115,6 @@ module dockyard.directives.upstreamDataChooser {
                         });
                         modalInstance.result.then(function (selectedItem) {
                             $scope.field.value = selectedItem;
-                            //(<any>$(".modal-content")).parent().css({ 'max-height': 0})
                         })
                     }
                 }
@@ -136,7 +135,7 @@ module dockyard.directives.upstreamDataChooser {
                         .then((data: any) => {
                             var listItems: Array<model.DropDownListItem> = [];
 
-                            angular.forEach(<Array<any>>data.availableFields, it => {
+                            angular.forEach(<Array<any>>data.incomingFields, it => {
                                     var i, j;
                                     var found = false;
                                     for (i = 0; i < listItems.length; ++i) {
