@@ -4,12 +4,11 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
-using AutoMapper.Internal;
 using Data.Entities;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using ServiceStack.Text;
-using SlackAPI;
 using terminalSlack.Interfaces;
+using terminalSlack.RtmClient;
 using Utilities.Configuration.Azure;
 using Utilities.Logging;
 
@@ -59,15 +58,15 @@ namespace terminalSlack.Services
                     //Logger.GetLogger().Info("SlackEventManager: creating new subscription and opening socket");
                     Logger.LogInfo("SlackEventManager: creating new subscription and opening socket");
                     //This team doesn't have subscription yet - create a new subscription
-                    client = new SlackClientWrapper(token.Token, token.ExternalDomainId);
+                    client = new SlackClientWrapper(token.Token);
                     client.MessageReceived += OnMessageReceived;
-                    client.Connect();
                     _clientsByTeamId.Add(teamId, client);
-                    client.ClientConnectOperation.Task.ContinueWith(x => OnSubscriptionFailed(client), TaskContinuationOptions.NotOnRanToCompletion);
                 }
                 client.Subscribe(activityId);
                 _teamIdByActivity[activityId] = teamId;
-                return client.ClientConnectOperation.Task;
+                var result = client.Connect();
+                result.ContinueWith(x => { if (x.IsFaulted) OnSubscriptionFailed(client); }, TaskContinuationOptions.OnlyOnFaulted);
+                return result;
             }
         }
 
@@ -81,7 +80,7 @@ namespace terminalSlack.Services
                 {
                     _teamIdByActivity.Remove(acitivityId);
                 }
-                _clientsByTeamId.Remove(client.TeamId);
+                _clientsByTeamId.Remove(client.SlackData.Team.Id);
                 client.Dispose();
             }
         }
@@ -108,7 +107,7 @@ namespace terminalSlack.Services
                     if (client.Unsubsribe(activityId))
                     {
                         //Logger.GetLogger().Info("SlackEventManager: unsubscribing closes socket");
-                        Logger.LogInfo($"SlackEventManager: unsubscribing closes socket, ActivitieId's = {String.Join(", ",client.SubscribedActivities)}");
+                        Logger.LogInfo($"SlackEventManager: unsubscribing closes socket, ActivitieId's = {string.Join(", ",client.SubscribedActivities)}");
                         _clientsByTeamId.Remove(existingTeamId);
                         client.MessageReceived -= OnMessageReceived;
                         client.Dispose();
@@ -136,26 +135,26 @@ namespace terminalSlack.Services
             }
         }
 
-        private async void OnMessageReceived(object sender, MessageReceivedEventArgs e)
+        private async void OnMessageReceived(object sender, DataEventArgs<WrappedMessage> e)
         {
             //Logger.GetLogger().Info("SlackEventManager: message is received");
-            Logger.LogInfo($"SlackEventManager: message is received. Slack UserName = {e.WrappedMessage.UserName}");
+            Logger.LogInfo($"SlackEventManager: message is received. Slack UserName = {e.Data.UserId}");
             //The naming conventions of message property is for backwards compatibility with existing event processing logic
-            var valuePairs = new List<KeyValuePair<string, string>>(8)
+            var valuePairs = new List<KeyValuePair<string, string>>
                              {
-                                 new KeyValuePair<string, string>("team_id", e.WrappedMessage.TeamId),
-                                 new KeyValuePair<string, string>("team_domain", e.WrappedMessage.TeamName),
-                                 new KeyValuePair<string, string>("channel_id", e.WrappedMessage.ChannelId),
-                                 new KeyValuePair<string, string>("channel_name", e.WrappedMessage.ChannelName),
-                                 new KeyValuePair<string, string>("timestamp", e.WrappedMessage.Timestamp.ToUniversalTime().ToUnixTime().ToString()),
-                                 new KeyValuePair<string, string>("user_id", e.WrappedMessage.UserId),
-                                 new KeyValuePair<string, string>("user_name", e.WrappedMessage.UserName),
-                                 new KeyValuePair<string, string>("text", e.WrappedMessage.Text)
+                                 new KeyValuePair<string, string>("team_id", e.Data.TeamId),
+                                 new KeyValuePair<string, string>("team_domain", e.Data.TeamName),
+                                 new KeyValuePair<string, string>("channel_id", e.Data.ChannelId),
+                                 new KeyValuePair<string, string>("channel_name", e.Data.ChannelName),
+                                 new KeyValuePair<string, string>("timestamp", e.Data.Timestamp.ToUniversalTime().ToUnixTime().ToString()),
+                                 new KeyValuePair<string, string>("user_id", e.Data.UserId),
+                                 new KeyValuePair<string, string>("user_name", e.Data.UserName),
+                                 new KeyValuePair<string, string>("text", e.Data.Text)
                              };
             var encodedMessage = string.Join("&", valuePairs.Where(x => !string.IsNullOrWhiteSpace(x.Value)).Select(x => $"{x.Key}={HttpUtility.UrlEncode(x.Value)}"));
             try
             {
-                await _resfultClient.PostAsync(_eventsUri, content: encodedMessage);
+                await _resfultClient.PostAsync(_eventsUri, content: encodedMessage).ConfigureAwait(false);
             }
             catch (Exception ex)
             {

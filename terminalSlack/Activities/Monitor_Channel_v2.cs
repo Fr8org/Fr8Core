@@ -79,7 +79,7 @@ namespace terminalSlack.Actions
 
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
-            ConfigurationControls.ChannelList.ListItems = (await _slackIntegration.GetChannelList(AuthorizationToken.Token))
+            ConfigurationControls.ChannelList.ListItems = (await _slackIntegration.GetChannelList(AuthorizationToken.Token).ConfigureAwait(false))
                 .OrderBy(x => x.Key)
                 .Select(x => new ListItem { Key = $"#{x.Key}", Value = x.Value })
                 .ToList();
@@ -152,8 +152,7 @@ namespace terminalSlack.Actions
                 {
                     throw new ActivityExecutionException("Your authorization doesn't contain info about your Slack team. Please reauthorize with Slack to update your team info");
                 }
-                //Try not to wait on this (test measure)
-                ObjectFactory.GetInstance<ISlackEventManager>().Subscribe(AuthorizationToken, CurrentActivity.Id);
+                await ObjectFactory.GetInstance<ISlackEventManager>().Subscribe(AuthorizationToken, CurrentActivity.Id).ConfigureAwait(false);
                 RequestHubExecutionTermination("Plan successfully activated. It will wait and respond to specified Slack postings");
             }
         }
