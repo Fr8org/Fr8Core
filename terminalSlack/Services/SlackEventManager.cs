@@ -39,8 +39,6 @@ namespace terminalSlack.Services
 
         public Task Subscribe(AuthorizationTokenDO token, Guid planId)
         {
-            //Logger.GetLogger().Info($"SlackEventManager: subscribing on thread {Thread.CurrentThread.ManagedThreadId}");
-            Logger.LogInfo($"SlackEventManager: subscribing on thread {Thread.CurrentThread.ManagedThreadId}, PlanId = {planId}");
             lock (_locker)
             {
                 if (_disposed)
@@ -55,12 +53,13 @@ namespace terminalSlack.Services
                 if (!_clientsByUserName.TryGetValue(userName, out client))
                 {
                     //Logger.GetLogger().Info("SlackEventManager: creating new subscription and opening socket");
-                    Logger.LogInfo("SlackEventManager: creating new subscription and opening socket");
+                    Logger.LogInfo($"SlackEventManager: creating new subscription and opening socket for user {token.ExternalAccountId}");
                     //This user doesn't have subscription yet - create a new subscription
                     client = new SlackClientWrapper(token.Token);
                     client.MessageReceived += OnMessageReceived;
                     _clientsByUserName.Add(userName, client);
                 }
+                Logger.LogInfo($"SlackEventManager: subscribing Plan {planId} to events from user {token.ExternalAccountId}");
                 client.Subscribe(planId);
                 _accountsByPlanId[planId] = userName;
                 var result = client.Connect();
@@ -72,7 +71,7 @@ namespace terminalSlack.Services
         private void OnSubscriptionFailed(SlackClientWrapper client)
         {
             //Logger.GetLogger().Info($"SlackEventManager: subscription fail on thread {Thread.CurrentThread.ManagedThreadId}");
-            Logger.LogWarning($"SlackEventManager: subscription fail on thread {Thread.CurrentThread.ManagedThreadId}. PlanId's = {String.Join(", ", client.SubscribedPlans)}");
+            Logger.LogWarning($"SlackEventManager: subscription fail. PlanId's = {String.Join(", ", client.SubscribedPlans)}");
             lock (_locker)
             {
                 foreach (var planId in client.SubscribedPlans)
@@ -149,8 +148,7 @@ namespace terminalSlack.Services
                                  new KeyValuePair<string, string>("timestamp", e.Data.Timestamp),
                                  new KeyValuePair<string, string>("user_id", e.Data.UserId),
                                  new KeyValuePair<string, string>("user_name", e.Data.UserName),
-                                 new KeyValuePair<string, string>("text", e.Data.Text),
-                                 new KeyValuePair<string, string>("plans_affected", string.Join(",", client.SubscribedPlans))
+                                 new KeyValuePair<string, string>("text", e.Data.Text)
                              };
             var encodedMessage = string.Join("&", valuePairs.Where(x => !string.IsNullOrWhiteSpace(x.Value)).Select(x => $"{x.Key}={HttpUtility.UrlEncode(x.Value)}"));
             try

@@ -21,6 +21,7 @@ using Data.Exceptions;
 using Utilities;
 using Hub.Managers;
 using Hangfire;
+using Utilities.Logging;
 
 namespace Hub.Services
 {
@@ -125,6 +126,7 @@ namespace Hub.Services
                 .Where(pt => pt.Fr8AccountId == curDockyardAccount.Id && pt.PlanState == PlanState.Active).ToList();
             var subscribingPlans = _plan.MatchEvents(initialPlansList, eventReportMS);
 
+            Logger.LogInfo($"Upon receiving event for ExternalAccountId = '{eventReportMS.ExternalAccountId}' {subscribingPlans.Count} of {initialPlansList.Count} will be notified");
             //When there's a match, it means that it's time to launch a new Process based on this Plan, 
             //so make the existing call to Plan#LaunchProcess.
             _plan.Enqueue(

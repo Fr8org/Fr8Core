@@ -28,8 +28,6 @@ namespace terminalSlack.Services
             {
                 return null;
             }
-            var plansAffectedString = payloadFields.FirstOrDefault(x => x.Key == "plans_affected")?.Value;
-            var plansAffected = ParsePlansAffected(plansAffectedString);
             var eventReportContent = new EventReportCM
             {
                 EventNames = "Slack Outgoing Message",
@@ -39,7 +37,6 @@ namespace terminalSlack.Services
                 //Now plans won't be run for entire team but rather for specific user again
                 //ExternalDomainId = teamId,
                 Manufacturer = "Slack",
-                PlansAffected = plansAffected
             };
             var curEventReport = Crate.FromContent("Standard Event Report", eventReportContent);
             return Task.FromResult(curEventReport);

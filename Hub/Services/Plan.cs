@@ -26,6 +26,7 @@ using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects.Helpers;
 using Data.Repositories.Plan;
 using Hub.Managers.APIManagers.Transmitters.Restful;
+using Utilities.Logging;
 
 namespace Hub.Services
 {
@@ -355,9 +356,7 @@ namespace Hub.Services
         public List<PlanDO> MatchEvents(List<PlanDO> curPlans, EventReportCM curEventReport)
         {
             List<PlanDO> subscribingPlans = new List<PlanDO>();
-            //If event source knows which plans to run we should respect that
-            var fileredPlans = curEventReport.PlansAffected?.Count > 0 ? curPlans.Where(x => curEventReport.PlansAffected.Contains(x.Id)) : curPlans;
-            foreach (var curPlan in fileredPlans)
+            foreach (var curPlan in curPlans)
             {
                 //get the 1st activity
                 var actionDO = GetFirstActivityWithEventSubscriptions(curPlan.Id);
@@ -387,7 +386,6 @@ namespace Hub.Services
                     }
                 }
             }
-
             return subscribingPlans;
         }
 
