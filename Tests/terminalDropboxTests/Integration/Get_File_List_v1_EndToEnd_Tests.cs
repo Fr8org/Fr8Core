@@ -95,7 +95,6 @@ namespace terminalDropboxTests.Integration
                 await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
             }
 
-
         }
     }
 }
