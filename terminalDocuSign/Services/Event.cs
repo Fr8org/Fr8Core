@@ -62,6 +62,7 @@ namespace terminalDocuSign.Services
                 }
             }
 
+
             //If this is a connect event
             Debug.WriteLine($"Received external payload: {curExternalEventPayload}");
             if (curExternalEventPayload.Contains("DocuSignEnvelopeInformation"))
