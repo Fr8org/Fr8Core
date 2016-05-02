@@ -164,7 +164,7 @@ namespace terminalGoogleTests.Integration
             Assert.Greater(formID.PayloadObjects.SelectMany(s => s.PayloadObject).Count(), 0);
         }
 
-        [Test, Category("Integration.terminalGoogle")]
+        [Test, Category("Integration.terminalGoogle"), Ignore]
         public async Task Monitor_Form_Responses_Activate_Returns_ActivityDTO()
         {
             //Arrange
