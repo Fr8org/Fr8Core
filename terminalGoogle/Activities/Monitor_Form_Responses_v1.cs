@@ -116,7 +116,7 @@ namespace terminalGoogle.Actions
             bool triggerEvent = false;
             try
             {
-                triggerEvent = await _googleDrive.CreateFr8TriggerForDocument(googleAuth, formId, CurrentFr8UserId);
+                triggerEvent = await _googleDrive.CreateFr8TriggerForDocument(googleAuth, formId, CurrentFr8UserEmail);
             }
             finally
             {
