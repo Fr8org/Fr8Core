@@ -205,7 +205,6 @@ namespace Hub.Services
             {
                 ActivityTemplateId = firstActivity.ActivityTemplateId,
                 Name = firstActivity.Label,
-                Status = ActivityDescriptionStatus.Primary,
                 Version = template.Version,
                 CrateStorage = firstActivity.CrateStorage
             };

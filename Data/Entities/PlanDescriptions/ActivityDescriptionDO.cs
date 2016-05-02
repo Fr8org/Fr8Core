@@ -20,10 +20,7 @@ namespace Data.Entities
 
         public ActivityTemplateDO ActivityTemplate { get; set; }
 
-        public ActivityDescriptionStatus Status { get; set; }
-
         public string CrateStorage { get; set; }
     }
-
-    public enum ActivityDescriptionStatus { Primary, Inactive, Unavailable, Active }
+    
 }

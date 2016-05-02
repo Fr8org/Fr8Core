@@ -411,9 +411,9 @@
     <Compile Include="Interfaces\Manifests\EventReportCM.cs" />
     <Compile Include="Interfaces\Manifests\EventSubscriptionCM.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PlanDTO.cs" />
-    <Compile Include="Migrations\201604291525298_PlanDescription.cs" />
-    <Compile Include="Migrations\201604291525298_PlanDescription.Designer.cs">
-      <DependentUpon>201604291525298_PlanDescription.cs</DependentUpon>
+    <Compile Include="Migrations\201605021130378_PlanDescription.cs" />
+    <Compile Include="Migrations\201605021130378_PlanDescription.Designer.cs">
+      <DependentUpon>201605021130378_PlanDescription.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\PlanDescriptions\ActivityDescriptionRepository.cs" />
     <Compile Include="Repositories\PlanDescriptions\ActivityTransitionRepository.cs" />
@@ -1288,11 +1288,11 @@
     <EmbeddedResource Include="Migrations\201604272231431_AddExternalDomainIdToAuthorizationToken.resx">
       <DependentUpon>201604272231431_AddExternalDomainIdToAuthorizationToken.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201604291525298_PlanDescription.resx">
-      <DependentUpon>201604291525298_PlanDescription.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604292019158_Security_Infrastructure.resx">
       <DependentUpon>201604292019158_Security_Infrastructure.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605021130378_PlanDescription.resx">
+      <DependentUpon>201605021130378_PlanDescription.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
