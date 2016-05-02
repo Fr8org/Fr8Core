@@ -104,7 +104,7 @@ namespace terminalGoogle.Actions
                 .AddField("Period of Availability");
         }
 
-        public async Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task Activate()
         {
             var googleAuth = GetGoogleAuthToken();
             //get form id
@@ -136,8 +136,6 @@ namespace terminalGoogle.Actions
                     }, CurrentFr8UserId);
                 }
             }
-
-            return await Task.FromResult(curActivityDO);
         }
 
         protected override Task RunCurrentActivity()
