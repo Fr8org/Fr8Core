@@ -183,7 +183,23 @@ namespace terminalGoogle.Actions
             var selectedWorksheet = ConfigurationControls.WorksheetList == null
                 ? string.Empty
                 : ConfigurationControls.WorksheetList.Value;
-            var data = (await _googleApi.GetData(selectedSpreadsheet, selectedWorksheet, GetGoogleAuthToken())).ToList();
+            List<TableRowDTO> data;
+            try
+            {
+                data = (await _googleApi.GetData(selectedSpreadsheet, selectedWorksheet, GetGoogleAuthToken())).ToList();
+            }
+            catch (GDataRequestException ex)
+            {
+                if (ex?.InnerException.Message.IndexOf("(401) Unauthorized") > -1)
+                {
+                    throw new TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
             var hasHeaderRow = false;
             //Adding header row if possible
             if (data.Count > 0)
