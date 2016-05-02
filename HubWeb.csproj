@@ -445,7 +445,6 @@
     <Compile Include="Controllers\ControllerExtensions.cs" />
     <Compile Include="Controllers\Helpers\DemoExtensions.cs" />
     <Compile Include="Controllers\HomeController.cs" />
-    <Compile Include="Controllers\ProfileController.cs" />
     <Compile Include="Controllers\Api\ReportController.cs" />
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="ExceptionHandling\MvcHandleErrorAttribute.cs" />
@@ -453,7 +452,6 @@
     <Compile Include="Infrastructure\FileActionResult.cs" />
     <Compile Include="Infrastructure\Fr8HubWebHMACAuthenticateAttribute.cs" />
     <Compile Include="Infrastructure\Fr8Identity.cs" />
-    <Compile Include="Infrastructure\Fr8Principle.cs" />
     <Compile Include="Infrastructure\HtmlHelpers.cs" />
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="ViewModels\AuthenticationErrorVM.cs" />
@@ -478,7 +476,6 @@
     <Compile Include="ViewModels\PayloadVM.cs" />
     <Compile Include="ViewModels\ProcessCreateEventVM.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
-    <Compile Include="ViewModels\ProfileVM.cs" />
     <Compile Include="ViewModels\ResetPasswordVM.cs" />
     <Compile Include="ViewModels\SendEmailVM.cs" />
     <Compile Include="ViewModels\UserProfilesVM.cs" />
@@ -489,6 +486,7 @@
   <ItemGroup>
     <Content Include="Api\EventResponse.aspx" />
     <Content Include="Api\GetEmailHTML.aspx" />
+    <Content Include="Content\css\CDNRelatedStyles.css" />
     <Content Include="Content\css\dockyard\authentication-dialog.css" />
     <Content Include="Content\css\dockyard\container-transition.css" />
     <Content Include="Content\css\dockyard\query-builder.css" />

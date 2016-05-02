@@ -11,7 +11,7 @@ namespace Data.Infrastructure.Security
     /// In case attribute is used on properties, We don't need to set ObjectType because interceptor will look inside current object to find key property
     ///    reflect current property to look for Key item of type Guid 
     /// Example :  
-    ///          [AuthorizeActivity(Privilege = Privilege.ReadObject, ObjectType = typeOf(PlanDO)]
+    ///          [AuthorizeActivity(Permission = Permission.ReadObject, ObjectType = typeOf(PlanDO)]
     ///          public PlanDO Copy(IUnitOfWork uow, PlanDO curPlanDO, string name) {
     /// so we can know to look for second parameter and to find inside of curPlanDO object his Id value
     /// </summary>
@@ -20,20 +20,25 @@ namespace Data.Infrastructure.Security
     {
         public AuthorizeActivityAttribute()
         {
-            ObjectType = typeof(Guid);
-            Privilege = Privilege.ReadObject;
+            ParamType = typeof(Guid);
+            Permission = PermissionType.ReadObject;
         }
 
         /// <summary>
-        /// Privilege name that must be checked for authorization
+        /// Permission name that must be checked for authorization 
         /// </summary>
-        public Privilege Privilege { get; set; }
+        public PermissionType Permission { get; set; }
 
         /// <summary>
         /// Type of the argument/parameter where dataObjectId is located. 
         /// Default values is Guid, and could be used with BaseObjects that contains key as Id 
         /// </summary>
-        public Type ObjectType { get; set; }
+        public Type ParamType { get; set; }
+
+        /// <summary>
+        /// Global Object type for whom we are checking granted permissions
+        /// </summary>
+        public Type TargetType { get; set; }
 
         /// <summary>
         /// Attribute is set on a property

@@ -17,7 +17,6 @@ namespace Data.Entities
     {
         public Fr8AccountDO()
         {
-            Profiles = new List<ProfileDO>();
             Subscriptions = new List<SubscriptionDO>();
             SecurityStamp = Guid.NewGuid().ToString();
         }
@@ -47,9 +46,6 @@ namespace Data.Entities
         [Required, ForeignKey("UserStateTemplate"), DefaultValue(UserState.Active)]
         public int? State { get; set; }
         public virtual _UserStateTemplate UserStateTemplate { get; set; }
-
-        [InverseProperty("DockyardAccount")]
-        public virtual IList<ProfileDO> Profiles { get; set; }
 
         [InverseProperty("DockyardAccount")]
         public virtual IList<SubscriptionDO> Subscriptions { get; set; }
