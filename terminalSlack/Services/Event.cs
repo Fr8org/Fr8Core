@@ -34,7 +34,7 @@ namespace terminalSlack.Services
                 EventNames = "Slack Outgoing Message",
                 ContainerDoId = "",
                 EventPayload = WrapPayloadDataCrate(payloadFields),
-                ExternalAccountId = userName,
+                ExternalAccountId = userName, 
                 //Now plans won't be run for entire team but rather for specific user again
                 //ExternalDomainId = teamId,
                 Manufacturer = "Slack",
