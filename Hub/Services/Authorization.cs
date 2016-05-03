@@ -604,6 +604,21 @@ namespace Hub.Services
                 }
             }
         }
+        
+        public void UpdateToken(AuthorizationTokenDO authorizationTokenDO)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var authToken = uow.AuthorizationTokenRepository
+                    .GetPublicDataQuery()
+                    .SingleOrDefault(x => x.Id == authorizationTokenDO.Id);
+
+                if (authToken == null)
+                    return;
+                authToken.ExternalAccountId = authorizationTokenDO.ExternalAccountId;
+                authToken.Token = authorizationTokenDO.Token;
+            }
+        }
 
         private void RemoveToken(IUnitOfWork uow, AuthorizationTokenDO authToken)
         {

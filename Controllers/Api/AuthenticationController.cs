@@ -56,16 +56,8 @@ namespace HubWeb.Controllers
 
             return Ok(new
             {
-                TerminalId =
-                    response.AuthorizationToken != null
-                        ? response.AuthorizationToken.TerminalID
-                        : (int?)null,
-
-                AuthTokenId =
-                    response.AuthorizationToken != null
-                        ? response.AuthorizationToken.Id.ToString()
-                        : null,
-
+                TerminalId = response.AuthorizationToken?.TerminalID,
+                AuthTokenId = response.AuthorizationToken?.Id.ToString(),
                 Error = response.Error
             });
         }
@@ -74,7 +66,7 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         [ActionName("initial_url")]
         public async Task<IHttpActionResult> GetOAuthInitiationURL(
-            [FromUri(Name = "id")] int terminalId)
+            [FromUri(Name = "id")]int terminalId)
         {
             Fr8AccountDO account;
             TerminalDO terminal;
@@ -131,7 +123,10 @@ namespace HubWeb.Controllers
         [HttpGet]
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> GetAuthToken([FromUri]string curFr8UserId, [FromUri]string externalAccountId, [FromUri] string terminalId)
+        public async Task<IHttpActionResult> GetAuthToken(
+            [FromUri]string curFr8UserId,
+            [FromUri]string externalAccountId,
+            [FromUri]string terminalId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -140,6 +135,15 @@ namespace HubWeb.Controllers
                 if (token != null)
                     return Ok(token);
             }
+            return Ok();
+        }
+
+        [HttpPost]
+        [Fr8ApiAuthorize]
+        [Fr8HubWebHMACAuthenticate]
+        public async Task<IHttpActionResult> UpdateToken(AuthorizationTokenDO authorizationTokenDO)
+        {
+            _authorization.UpdateToken(authorizationTokenDO);
             return Ok();
         }
     }
