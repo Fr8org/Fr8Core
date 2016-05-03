@@ -28,6 +28,7 @@ namespace Data.Migrations
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
+                        TransitionId = c.Guid(nullable: false),
                         Transition = c.Int(nullable: false),
                         ActivityDescriptionId = c.Int(),
                         PlanDescriptionId = c.Int(),
