@@ -561,6 +561,7 @@ namespace Hub.Services
 
         public static async Task LaunchProcess(Guid curPlan, params Crate[] curPayload)
         {
+            Logger.LogInfo($"Starting executing plan {curPlan} as a reaction to external event");
             if (curPlan == default(Guid))
             {
                 throw new ArgumentException("Invalid pland id.", nameof(curPlan));
@@ -570,11 +571,12 @@ namespace Hub.Services
             // this exception should be already logged somewhere
             try
             {
-            await ObjectFactory.GetInstance<IPlan>().Run(curPlan, curPayload);
-        }
+                await ObjectFactory.GetInstance<IPlan>().Run(curPlan, curPayload);
+            }
             catch
             {
             }
+            Logger.LogInfo($"Finished executing plan {curPlan} as a reaction to external event");
         }
 
         public async Task<ContainerDO> Run(Guid planId, params Crate[] curPayload)
