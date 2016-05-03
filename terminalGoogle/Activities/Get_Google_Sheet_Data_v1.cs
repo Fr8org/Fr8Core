@@ -60,7 +60,6 @@ namespace terminalGoogle.Actions
 
             public void HideWorksheetList()
             {
-
                 WorksheetList.IsHidden = true;
                 UpdateDescription();
             }
