@@ -352,11 +352,11 @@ namespace terminalGoogleTests.Integration
             switch (spreadsheet)
             {
                 case "Row_And_Column":
-                    return new Tuple<string, string>("Row_And_Column", "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1zG93EWaycPyCdM9OJf03C2knK9Neu09OutAl2p7NZbw");
+                    return new Tuple<string, string>("Row_And_Column", "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1RgskCZyY_lKj5DsweJvut5wDVHVXcmxj90LPxUuwivA");
                 case "Row_Only":
-                    return new Tuple<string, string>("Row_Only", "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1pzbssu5vuCqv5LMTdIQ7SCqVFaQR0_d7MnB7oGonzf0");
+                    return new Tuple<string, string>("Row_Only", "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1KjUeDKo-1TmI8w5pjXWhy_uBZb3mEtVW1fSF_ytrHJI");
                 case "Column_Only":
-                    return new Tuple<string, string>("Column_Only", "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1o0cle_rnfVtmeLqDDeF40dRWKL6FSCuQz5E84pcCpTs");
+                    return new Tuple<string, string>("Column_Only", "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1K4SbUWSd5TYrF2Uk5P9n1bxuBse1dquFqrPiUsWOvqI");
                 case "Empty_First_Row":
                     return new Tuple<string, string>("Empty_First_Row", "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1Nzf_s2OyZTxG8ppxzvypH6s1ePvUT_ALPffZchuM14o");
                 default:
