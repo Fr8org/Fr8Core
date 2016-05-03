@@ -11,7 +11,7 @@ using ServiceStack;
 
 namespace terminalSalesforce.Actions
 {
-    public class Monitor_Salesforce_Event_v1 : EnhancedTerminalActivity<Monitor_Salesforce_Event_v1.ActivityUi>
+    public class Monitor_Salesforce_Event_v1 : BaseSalesforceTerminalActivity<Monitor_Salesforce_Event_v1.ActivityUi>
     {
         private const string CreatedEventname = "Created";
         private const string UpdatedEventname = "Updated";
@@ -66,7 +66,7 @@ namespace terminalSalesforce.Actions
 
         readonly ISalesforceManager _salesforceManager;
 
-        public Monitor_Salesforce_Event_v1() : base(true)
+        public Monitor_Salesforce_Event_v1()
         {
             _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
         }

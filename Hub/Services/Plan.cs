@@ -355,8 +355,9 @@ namespace Hub.Services
         public List<PlanDO> MatchEvents(List<PlanDO> curPlans, EventReportCM curEventReport)
         {
             List<PlanDO> subscribingPlans = new List<PlanDO>();
-
-            foreach (var curPlan in curPlans)
+            //If event source knows which plans to run we should respect that
+            var fileredPlans = curEventReport.PlansAffected?.Count > 0 ? curPlans.Where(x => curEventReport.PlansAffected.Contains(x.Id)) : curPlans;
+            foreach (var curPlan in fileredPlans)
             {
                 //get the 1st activity
                 var actionDO = GetFirstActivityWithEventSubscriptions(curPlan.Id);
@@ -661,7 +662,6 @@ namespace Hub.Services
                 //we should clone this plan for current user
                 //let's clone the plan entirely
                 var clonedPlan = (PlanDO)PlanTreeHelper.CloneWithStructure(targetPlan);
-                clonedPlan.Name = clonedPlan.Name + " - " + "Customized for User " + currentUser.UserName;
                 clonedPlan.Description = clonedPlan.Name + " - " + "Customized for User " + currentUser.UserName + " on " + DateTime.Now;
                 clonedPlan.PlanState = PlanState.Inactive;
                 clonedPlan.Tag = cloneTag;

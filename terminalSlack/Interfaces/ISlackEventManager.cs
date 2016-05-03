@@ -6,8 +6,8 @@ namespace terminalSlack.Interfaces
 {
     public interface ISlackEventManager : IDisposable
     {
-        Task Subscribe(AuthorizationTokenDO token, Guid activityId);
+        Task Subscribe(AuthorizationTokenDO token, Guid planId);
 
-        void Unsubscribe(Guid activityId);
+        void Unsubscribe(Guid planId);
     }
 }

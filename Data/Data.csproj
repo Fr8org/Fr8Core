@@ -752,6 +752,10 @@
     <Compile Include="Migrations\201604292019158_Security_Infrastructure.Designer.cs">
       <DependentUpon>201604292019158_Security_Infrastructure.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201605020854120_EncryptedCrateStorageAdded.cs" />
+    <Compile Include="Migrations\201605020854120_EncryptedCrateStorageAdded.Designer.cs">
+      <DependentUpon>201605020854120_EncryptedCrateStorageAdded.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -764,6 +768,17 @@
     <Compile Include="Repositories\ProfileRepository.cs" />
     <Compile Include="Repositories\Cache\ICacheExpirationStrategy.cs" />
     <Compile Include="Repositories\Cache\IExpirationToken.cs" />
+    <Compile Include="Repositories\Encryption\IEncryptionProvider.cs" />
+    <Compile Include="Repositories\Encryption\IEncryptionService.cs" />
+    <Compile Include="Repositories\Encryption\Impl\Compressor\CompressingEncryptionProvider.cs" />
+    <Compile Include="Repositories\Encryption\Impl\EncryptionProviderIds.cs" />
+    <Compile Include="Repositories\Encryption\Impl\EncryptionService.cs" />
+    <Compile Include="Repositories\Encryption\Impl\Bypass\BypassEncryptionProvider.cs" />
+    <Compile Include="Repositories\Encryption\Impl\Rijndael\EncryptionKey.cs" />
+    <Compile Include="Repositories\Encryption\Impl\Rijndael\IEncryptionKeyProvider.cs" />
+    <Compile Include="Repositories\Encryption\Impl\KeyVault\KeyVaultEncryptionKeyProvider.cs" />
+    <Compile Include="Repositories\Encryption\Impl\Rijndael\RijndaelEncryptionProviderV1.cs" />
+    <Compile Include="Repositories\Encryption\Impl\Rijndael\RijndaelEncryptionProviderWithCompressionV1.cs" />
     <Compile Include="Repositories\FileTagsRepository.cs" />
     <Compile Include="Interfaces\IMultiTenantObjectRepository.cs" />
     <Compile Include="Repositories\MultiTenant\Ast\AstNode.cs" />
@@ -832,9 +847,8 @@
     <Compile Include="Repositories\Security\StorageImpl\Cache\ISecurityObjectsCache.cs" />
     <Compile Include="Repositories\Security\StorageImpl\Cache\SecurityObjectsCache.cs" />
     <Compile Include="Repositories\Security\StorageImpl\Cache\SecurityObjectsStorage.cs" />
-    <Compile Include="Repositories\Security\StorageImpl\SqlBased\SqlConnectionProvider.cs" />
-    <Compile Include="Repositories\Security\StorageImpl\SqlBased\SqlSecurityObjectsStorageProvider.cs" />
     <Compile Include="Repositories\SqlBased\SqlConnectionProvider.cs" />
+    <Compile Include="Repositories\Security\StorageImpl\SqlBased\SqlSecurityObjectsStorageProvider.cs" />
     <Compile Include="Repositories\TagRepository.cs" />
     <Compile Include="Repositories\TerminalRepository.cs" />
     <Compile Include="Repositories\SubscriptionRepository.cs" />
@@ -1290,6 +1304,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201604292019158_Security_Infrastructure.resx">
       <DependentUpon>201604292019158_Security_Infrastructure.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605020854120_EncryptedCrateStorageAdded.resx">
+      <DependentUpon>201605020854120_EncryptedCrateStorageAdded.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201605021130378_PlanDescription.resx">
       <DependentUpon>201605021130378_PlanDescription.cs</DependentUpon>
