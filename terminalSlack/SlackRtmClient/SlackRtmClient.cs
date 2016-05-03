@@ -103,12 +103,12 @@ namespace terminalSlack.RtmClient
 
         private void SocketOnOnError(object sender, ErrorEventArgs e)
         {
-            Logger.LogError($"Socket reported an error. Message - {e.Message}. Exception - {e.Exception}. Is connection alive - {(sender as WebSocket).IsAlive}");
+            Logger.LogError($"SlackRtmClient: Socket reported an error. Message - {e.Message}. Exception - {e.Exception}. Is connection alive - {(sender as WebSocket).IsAlive}");
         }
 
         private void SocketOnOnClose(object sender, CloseEventArgs e)
         {
-            Logger.LogInfo($"Socked was closed. Code - {e.Code}. Reason - {e.Reason}. WasClean - {e.WasClean}. Is connection alive - {(sender as WebSocket).IsAlive}");
+            Logger.LogInfo($"SlackRtmClient: Socked was closed. Code - {e.Code}. Reason - {e.Reason}. WasClean - {e.WasClean}. Is connection alive - {(sender as WebSocket).IsAlive}");
         }
 
         private void SocketOnOnMessage(object sender, MessageEventArgs e)
