@@ -91,6 +91,7 @@ namespace terminalGoogle.Actions
             {
                 var storedValues = CurrentActivityStorage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == ConfigurationCrateLabel)?.Content;
                 return storedValues?.Fields.First();
+
             }
             set
             {
