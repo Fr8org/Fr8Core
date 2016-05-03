@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using Data.Entities;
@@ -43,7 +42,6 @@ namespace terminalSlack.Services
             {
                 if (_disposed)
                 {
-                    //Logger.GetLogger().Info("SlackEventManager: can't subscribe to disposed object");
                     Logger.LogWarning($"SlackEventManager: can't subscribe to disposed object. User = {token.ExternalAccountId}, PlanId = {planId}");
                     return Task.FromResult(0);
                 }
@@ -52,7 +50,6 @@ namespace terminalSlack.Services
                 var userName = token.ExternalAccountId;
                 if (!_clientsByUserName.TryGetValue(userName, out client))
                 {
-                    //Logger.GetLogger().Info("SlackEventManager: creating new subscription and opening socket");
                     Logger.LogInfo($"SlackEventManager: creating new subscription and opening socket for user {token.ExternalAccountId}");
                     //This user doesn't have subscription yet - create a new subscription
                     client = new SlackClientWrapper(token.Token, userName);
@@ -74,7 +71,6 @@ namespace terminalSlack.Services
 
         private void OnSubscriptionFailed(SlackClientWrapper client, string externalAccountId, AggregateException exception)
         {
-            //Logger.GetLogger().Info($"SlackEventManager: subscription fail on thread {Thread.CurrentThread.ManagedThreadId}");
             Logger.LogWarning($"SlackEventManager: subscription fail for user {externalAccountId}. Exception - {exception}");
             lock (_locker)
             {
@@ -139,7 +135,6 @@ namespace terminalSlack.Services
 
         private async void OnMessageReceived(object sender, DataEventArgs<WrappedMessage> e)
         {
-            //Logger.GetLogger().Info("SlackEventManager: message is received");
             Logger.LogInfo($"SlackEventManager: message '{e.Data.Text}' is received from {e.Data.UserName}");
             //The naming conventions of message property is for backwards compatibility with existing event processing logic
             var client = (SlackClientWrapper)sender;
@@ -152,7 +147,8 @@ namespace terminalSlack.Services
                                  new KeyValuePair<string, string>("timestamp", e.Data.Timestamp),
                                  new KeyValuePair<string, string>("user_id", e.Data.UserId),
                                  new KeyValuePair<string, string>("user_name", e.Data.UserName),
-                                 new KeyValuePair<string, string>("text", e.Data.Text)
+                                 new KeyValuePair<string, string>("text", e.Data.Text),
+                                 new KeyValuePair<string, string>("owner_name", client.UserName)
                              };
             var encodedMessage = string.Join("&", valuePairs.Where(x => !string.IsNullOrWhiteSpace(x.Value)).Select(x => $"{x.Key}={HttpUtility.UrlEncode(x.Value)}"));
             try
