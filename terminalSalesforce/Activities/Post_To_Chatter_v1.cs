@@ -14,7 +14,7 @@ using Data.States;
 
 namespace terminalSalesforce.Actions
 {
-    public class Post_To_Chatter_v1 : EnhancedTerminalActivity<Post_To_Chatter_v1.ActivityUi>
+    public class Post_To_Chatter_v1 : BaseSalesforceTerminalActivity<Post_To_Chatter_v1.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -68,7 +68,7 @@ namespace terminalSalesforce.Actions
 
         private readonly ISalesforceManager _salesforceManager;
 
-        public Post_To_Chatter_v1() : base(true)
+        public Post_To_Chatter_v1()
         {
             _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
             ActivityName = "Post to Chatter";

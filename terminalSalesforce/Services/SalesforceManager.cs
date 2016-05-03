@@ -247,9 +247,10 @@ namespace terminalSalesforce.Services
             };
         }
 
-        private async Task<TResult> ExecuteClientOperationWithTokenRefresh<TClient, TResult>(Func<AuthorizationTokenDO, bool, Task<TClient>> clientProvider,
-                                                                                             Func<TClient, Task<TResult>> operation,
-                                                                                             AuthorizationTokenDO authTokenDO)
+        private async Task<TResult> ExecuteClientOperationWithTokenRefresh<TClient, TResult>(
+            Func<AuthorizationTokenDO, bool, Task<TClient>> clientProvider,
+            Func<TClient, Task<TResult>> operation,
+            AuthorizationTokenDO authTokenDO)
         {
             var client = await clientProvider(authTokenDO, false);
             var retried = false;
