@@ -27,6 +27,7 @@ using Data.Interfaces.DataTransferObjects.Helpers;
 using Data.Repositories.Plan;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Utilities.Logging;
+using Utilities.Interfaces;
 
 namespace Hub.Services
 {
