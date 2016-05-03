@@ -26,7 +26,7 @@ namespace terminalGoogleTests.Integration
         {
             return new AuthorizationTokenDTO()
             {
-                Token = @"{""AccessToken"":""ya29.PwJez2aHwjGxsxcho6TfaFseWjPbi1ThgINsgiawOKLlzyIgFJHkRdq76YrnuiGT3jhr"",""RefreshToken"":""1/HVhoZXzxFrPyC0JVlbEIF_VOBDm_IhrKoLKnt6QpyFRIgOrJDtdun6zK6XiATCKT"",""Expires"":""2015-12-03T11:12:43.0496208+08:00""}"
+                Token = @"{""AccessToken"":""ya29.CjHXAnhqySXYWbq-JE3Nqpq18L_LGYw3xx_T-lD6jeQd6C2mMoKzQhTWRWFSkPcX-pH_"",""RefreshToken"":""1/ZmUihiXxjwiVd-kQe46hDXKB95VaHM5yP-6bfrS-EUUMEudVrK5jSpoR30zcRFq6"",""Expires"":""2017-11-28T13:29:12.653075+05:00""}"
             };
         }
 
@@ -34,7 +34,7 @@ namespace terminalGoogleTests.Integration
         {
             return new AuthorizationTokenDTO()
             {
-                Token = @"{""AccessToken"":""ya29..vgKE_04Ry1xJ-farOLQrnF29vwpxpxlOl1LA4v7XFZfy5IhHBSFygN_qpACY80ii2g"",""RefreshToken"":""1/H43YmerKPRmMoiUk1wlCvJfTRRFMiXonIXUY3ulebRE"",""Expires"":""2017-11-28T13:29:12.653075+05:00""}"
+                Token = @"{""AccessToken"":""ya29.CjHXAnhqySXYWbq-JE3Nqpq18L_LGYw3xx_T-lD6jeQd6C2mMoKzQhTWRWFSkPcX-pH_"",""RefreshToken"":""1/ZmUihiXxjwiVd-kQe46hDXKB95VaHM5yP-6bfrS-EUUMEudVrK5jSpoR30zcRFq6"",""Expires"":""2017-11-28T13:29:12.653075+05:00""}"
             };
         }
 
