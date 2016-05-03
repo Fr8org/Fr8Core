@@ -40,9 +40,6 @@ namespace Data.Interfaces
         //QuestionResponseRepository QuestionResponseRepository { get; }
         IAuthorizationTokenRepository AuthorizationTokenRepository { get; }
         LogRepository LogRepository { get; }
-        ProfileNodeRepository ProfileNodeRepository { get; }
-        ProfileItemRepository ProfileItemRepository { get; }
-        ProfileRepository ProfileRepository { get; }
         UserStatusRepository UserStatusRepository { get; }
         //NegotiationAnswerEmailRepository NegotiationAnswerEmailRepository { get; }
         ExpectedResponseRepository ExpectedResponseRepository { get; }
@@ -54,7 +51,10 @@ namespace Data.Interfaces
         ICriteriaRepository CriteriaRepository { get; }
 
         IFileRepository FileRepository { get; }
-        
+        IProfileRepository ProfileRepository { get; }
+        IPermissionSetRepository PermissionSetRepository { get; }
+
+
         IPlanRepository PlanRepository { get; }
         IMultiTenantObjectRepository MultiTenantObjectRepository { get; }
 

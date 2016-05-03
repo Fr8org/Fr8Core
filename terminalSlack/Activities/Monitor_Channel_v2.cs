@@ -11,6 +11,7 @@ using StructureMap;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 using TerminalBase.BaseClasses;
+using Utilities.Logging;
 
 namespace terminalSlack.Actions
 {
@@ -78,7 +79,7 @@ namespace terminalSlack.Actions
 
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
-            ConfigurationControls.ChannelList.ListItems = (await _slackIntegration.GetChannelList(AuthorizationToken.Token))
+            ConfigurationControls.ChannelList.ListItems = (await _slackIntegration.GetChannelList(AuthorizationToken.Token).ConfigureAwait(false))
                 .OrderBy(x => x.Key)
                 .Select(x => new ListItem { Key = $"#{x.Key}", Value = x.Value })
                 .ToList();
@@ -147,18 +148,14 @@ namespace terminalSlack.Actions
                 {
                     throw new ActivityExecutionException("At least one of the monitoring options must be selected");
                 }
-                if (string.IsNullOrEmpty(AuthorizationToken.ExternalDomainId))
-                {
-                    throw new ActivityExecutionException("Your authorization doesn't contain info about your Slack team. Please reauthorize with Slack to update your team info");
-                }
-                await ObjectFactory.GetInstance<ISlackEventManager>().Subscribe(AuthorizationToken, CurrentActivity.Id);
+                await ObjectFactory.GetInstance<ISlackEventManager>().Subscribe(AuthorizationToken, CurrentActivity.RootPlanNodeId.Value).ConfigureAwait(false);
                 RequestHubExecutionTermination("Plan successfully activated. It will wait and respond to specified Slack postings");
             }
         }
 
         protected override Task Deactivate()
         {
-            ObjectFactory.GetInstance<ISlackEventManager>().Unsubscribe(CurrentActivity.Id);
+            ObjectFactory.GetInstance<ISlackEventManager>().Unsubscribe(CurrentActivity.RootPlanNodeId.Value);
             return base.Deactivate();
         }
 

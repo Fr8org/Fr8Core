@@ -1,79 +1,78 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using ServiceStack;
-using SlackAPI;
+using ServiceStack.Text;
+using terminalSlack.RtmClient;
+using terminalSlack.RtmClient.Entities;
+using terminalSlack.RtmClient.Events;
 using Utilities.Logging;
 
 namespace terminalSlack.Services
 {
     internal sealed class SlackClientWrapper : IDisposable
     {
-        public SlackSocketClient Client { get; set; }
+        public SlackRtmClient Client { get; set; }
 
-        public string TeamId { get; private set; }
-
-        public TaskCompletionSource<int> ClientConnectOperation { get; set; }
+        public LoginResponse SlackData { get; set; }
 
         private readonly HashSet<Guid> _subscribedActivities;
 
-        private int _isConnecting;
+        public event EventHandler<DataEventArgs<WrappedMessage>> MessageReceived;
 
-        public event EventHandler<MessageReceivedEventArgs> MessageReceived = delegate { };
-
-        private int _firstMessageIsSkipped;
-
-        public SlackClientWrapper(string oAuthToken, string teamId)
+        public SlackClientWrapper(string oAuthToken)
         {
-            Client = new SlackSocketClient(oAuthToken);
-            ClientConnectOperation = new TaskCompletionSource<int>();
+            Client = new SlackRtmClient(oAuthToken);
+            Client.MessageReceived += ClientOnMessageReceived;
             _subscribedActivities = new HashSet<Guid>();
-            TeamId = teamId;
         }
 
-        public Task Connect()
+        public async Task Connect()
         {
-            //If we already called Connect() then we should just return the result of the operation
-            if (Interlocked.CompareExchange(ref _isConnecting, 1, 0) == 0)
+            var result = await Client.ConnectAsync(CancellationToken.None).ConfigureAwait(false);
+            if (SlackData == null)
             {
-                Client.Connect(OnLoginResponse);
-                Client.MessageReceived += ClientOnMessageReceived;
+                //This delay is to skip processing of latest message that is received immediately after connect (this is likely a feature of RTM when it send you the latest message
+                //sent or received by token owner)
+                //I asked a question on SO http://stackoverflow.com/questions/36972563/how-to-stop-slack-from-sending-last-message-after-starting-rtm-session
+                //track this to see if this message can be ignored completely
+                await Task.Delay(TimeSpan.FromSeconds(1.0)).ConfigureAwait(false);
+                SlackData = result;
             }
-            return ClientConnectOperation.Task;
-        }
-
-        private void ClientOnMessageReceived(object sender, MessageReceivedEventArgs e)
-        {
-            //After we successfully login we recieve last message sent or recieved by current user so we should ignore it
-            if (Interlocked.CompareExchange(ref _firstMessageIsSkipped, 1, 0) != 0)
+            if (!result.Ok)
             {
-                OnMessageReceived(e);
+                throw new ApplicationException($"Failed to connect to Slack. Error code - '{result.Error.Code}', error message - '{result.Error.Message}'");
             }
         }
         /// <summary>
-        /// Adds specified activity Id to subscription list
+        /// Adds specified plan Id to subscription list
         /// </summary>
-        public void Subscribe(Guid activityId)
+        public void Subscribe(Guid planId)
         {
+            //Logger.GetLogger().Info($"SlackClientWrapper: mark plan {planId} as subscribed");
+            Logger.LogInfo("SlackClientWrapper: message received");
             lock (_subscribedActivities)
             {
-                _subscribedActivities.Add(activityId);
+                _subscribedActivities.Add(planId);
             }
         }
         /// <summary>
-        /// Removes specified activity Id from subscription list and returns value indicating whether any active subscription stil exists
+        /// Removes specified plan Id from subscription list and returns value indicating whether any active subscription stil exists
         /// </summary>
-        public bool Unsubsribe(Guid activityId)
+        public bool Unsubsribe(Guid planId)
         {
+            //Logger.GetLogger().Info($"SlackClientWrapper: mark plan {planId} as unsubscribed");
+            Logger.LogInfo($"SlackClientWrapper: mark plan {planId} as unsubscribed");
             lock (_subscribedActivities)
             {
-                _subscribedActivities.Remove(activityId);
+                _subscribedActivities.Remove(planId);
                 return _subscribedActivities.Count == 0;
             }
         }
 
-        public IEnumerable<Guid> SubscribedActivities
+        public IEnumerable<Guid> SubscribedPlans
         {
             get
             {
@@ -84,43 +83,49 @@ namespace terminalSlack.Services
             }
         }
 
-        private void OnLoginResponse(LoginResponse loginResponse)
+        private void ClientOnMessageReceived(object sender, DataEventArgs<Message> e)
         {
-            if (loginResponse.ok)
+            if (SlackData == null)
             {
-                ClientConnectOperation.SetResult(0);
+                return;
             }
-            else
+            MessageReceived?.Invoke(this, new DataEventArgs<WrappedMessage>(new WrappedMessage
             {
-                ClientConnectOperation.SetException(new ApplicationException($"Failed to start Slack RTM session. Error code - {loginResponse.error}"));
-            }
-        }
-
-        private void OnMessageReceived(MessageReceivedEventArgs e)
-        {
-            MessageReceived(this, e);
+                TeamId = SlackData.Team.Id,
+                TeamName = SlackData.Team.Name,
+                Timestamp = e.Data.Timestamp,
+                ChannelId = e.Data.ChannelId,
+                ChannelName = SlackData.Channels.FirstOrDefault(x => x.Id == e.Data.ChannelId)?.Name,
+                UserName = SlackData.Users.FirstOrDefault(x => x.Id == e.Data.UserId)?.Name,
+                Text = e.Data.Text,
+                UserId = e.Data.UserId
+            }));
         }
 
         public void Dispose()
         {
-            var cancelTask = false;
-            if (Interlocked.CompareExchange(ref _isConnecting, 1, 0) == 1)
-            {
-                //This means Connect() method was called - close socket
-                try
-                {
-                    Client.CloseSocket();
-                    cancelTask = true;
-                }
-                catch (Exception ex)
-                {
-                    Logger.GetLogger().Info("Failed to gracefully shutdown Slack connection", ex);
-                }
-            }
-            if (cancelTask && !ClientConnectOperation.Task.IsCompleted)
-            {
-                ClientConnectOperation.SetCanceled();
-            }
+            Client.MessageReceived -= ClientOnMessageReceived;
+            Client.Dispose();
         }
+    }
+
+    public class WrappedMessage
+    {
+        public string UserId { get; set; }
+
+        public string UserName { get; set; }
+
+        public string ChannelId { get; set; }
+
+        public string ChannelName { get; set; }
+
+        public string TeamId { get; set; }
+
+        public string TeamName { get; set; }
+
+        public string Timestamp { get; set; }
+
+        public string Text { get; set; }
+
     }
 }

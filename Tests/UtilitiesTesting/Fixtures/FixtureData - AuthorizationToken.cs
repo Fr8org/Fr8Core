@@ -80,11 +80,15 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
+        /// <summary>
+        /// Dropbox auth token
+        /// </summary>
+        /// <returns> </returns>
         public static AuthorizationTokenDTO GetDropboxAuthorizationToken()
         {
             return new AuthorizationTokenDTO
             {
-                Token = @"bLgeJYcIkHAAAAAAAAAAFf6hjXX_RfwsFNTfu3z00zrH463seBYMNqBaFpbfBmqf"
+                Token = @"odQGb-zMEiAAAAAAAAAANnouWOHmMTge7bJxucikAlb8sEXaMDAXXFdowLFBSyTn"
             };
         }
     }
