@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Newtonsoft.Json.Linq;
-using terminalGoogleTests.Unit;
 using TerminalBase.BaseClasses;
 
 namespace terminalGoogleTests.Integration
@@ -21,10 +20,7 @@ namespace terminalGoogleTests.Integration
     public class Monitor_Form_Responses_v1_Tests : BaseTerminalIntegrationTest
     {
         private string ActivityName = "Monitor_Form_Responses_v1";
-        public override string TerminalName
-        {
-            get { return "terminalGoogle"; }
-        }
+        public override string TerminalName => "terminalGoogle";
 
         /// <summary>
         /// Validate correct crate-storage structure in initial configuration response.
@@ -211,7 +207,7 @@ namespace terminalGoogleTests.Integration
         [Test, Category("Integration.terminalGoogle")]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Operational state crate is not found""}",
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No Operational State Crate found.""}",
             MatchType = MessageMatch.Contains
             )]
         public async Task Monitor_Form_Responses_Run_WithInvalidPapertrailUrl_ShouldThrowException()
@@ -277,6 +273,6 @@ namespace terminalGoogleTests.Integration
             var controls = crateStorage.CratesOfType<StandardConfigurationControlsCM>().Single().Content.Controls;
             var ddlb = (DropDownList)controls.SingleOrDefault(c => c.Type == ControlTypes.DropDownList);
             return ddlb;
-        }
+    }
     }
 }
