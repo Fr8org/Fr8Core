@@ -238,6 +238,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activities\ActivitiesHelper.cs" />
+    <Compile Include="Activities\BaseSalesforceTerminalActivity.cs" />
     <Compile Include="Activities\Mail_Merge_From_Salesforce_v1.cs" />
     <Compile Include="Activities\Monitor_Salesforce_Event_v1.cs" />
     <Compile Include="Activities\Post_To_Chatter_v2.cs" />
@@ -268,6 +269,7 @@
     </Compile>
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Services\Event.cs" />
+    <Compile Include="Services\SalesforceAuthHelper.cs" />
     <Compile Include="Services\SalesforceManager.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="StructureMapConfiguration.cs" />

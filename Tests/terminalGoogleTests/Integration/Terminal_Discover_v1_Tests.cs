@@ -17,10 +17,7 @@ namespace terminalGoogleTests.Integration
     [Explicit]
     public class Terminal_Discover_v1_Tests : BaseTerminalIntegrationTest
     {
-        public override string TerminalName
-        {
-            get { return "terminalGoogle"; }
-        }
+        public override string TerminalName => "terminalGoogle";
 
         /// <summary>
         /// Validate correct crate-storage structure in initial configuration response.

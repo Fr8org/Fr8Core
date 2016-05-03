@@ -1,4 +1,5 @@
-﻿using StructureMap;
+﻿using System;
+using StructureMap;
 using System.Threading.Tasks;
 using TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
@@ -8,6 +9,7 @@ using Data.Control;
 using Data.Interfaces.Manifests;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using Data.States;
 using Newtonsoft.Json;
 using ServiceStack;
@@ -15,7 +17,7 @@ using Data.Helpers;
 
 namespace terminalSalesforce.Actions
 {
-    public class Post_To_Chatter_v2 : EnhancedTerminalActivity<Post_To_Chatter_v2.ActivityUi>
+    public class Post_To_Chatter_v2 : BaseSalesforceTerminalActivity<Post_To_Chatter_v2.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -102,7 +104,7 @@ namespace terminalSalesforce.Actions
 
         private readonly ISalesforceManager _salesforceManager;
 
-        public Post_To_Chatter_v2() : base(true)
+        public Post_To_Chatter_v2()
         {
             _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
             ActivityName = "Post to Chatter";
@@ -192,9 +194,14 @@ namespace terminalSalesforce.Actions
                 {
                     throw new ActivityExecutionException("Upstream crates doesn't contain value for feed parent Id");
                 }
-                var feedId = await _salesforceManager.PostToChatter(feedText, incomingChatterId, AuthorizationToken);
+                var feedId = await _salesforceManager.PostToChatter(StripHTML(feedText), incomingChatterId, AuthorizationToken);
                 CurrentPayloadStorage.Add(Crate.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM(new FieldDTO(FeedIdKeyName, feedId))));
             }
+        }
+
+        public static string StripHTML(string input)
+        {
+            return Regex.Replace(input, "<.*?>", String.Empty);
         }
 
         #region Controls properties wrappers

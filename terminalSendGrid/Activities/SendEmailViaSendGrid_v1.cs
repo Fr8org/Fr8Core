@@ -3,18 +3,17 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
-using StructureMap;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using Data.States;
-
-using Hub.Managers;
-using TerminalBase.Infrastructure;
-using TerminalBase.BaseClasses;
-using Utilities;
-using terminalSendGrid.Infrastructure;
 using Data.Interfaces.Manifests;
-using System.Linq;
+using Data.States;
+using Hub.Managers;
+using StructureMap;
+using terminalSendGrid.Infrastructure;
+using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
+using Utilities;
+
 namespace terminalSendGrid.Actions
 {
     public class SendEmailViaSendGrid_v1 : BaseTerminalActivity

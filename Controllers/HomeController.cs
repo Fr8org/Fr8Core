@@ -186,7 +186,8 @@ namespace HubWeb.Controllers
             catch (System.Exception ex)
             {
                 result = "Something went wrong with our effort to send this message. Sorry! Please try emailing your message directly to info@kwasant.com";
-                Logger.GetLogger().Error("Error processing a home page email form submission.", ex);
+                //Logger.GetLogger().Error("Error processing a home page email form submission.", ex);
+                Logger.LogError($"Error processing a home page email form submission. Name = {name}; EmailId = {emailId}; Exception = {ex}");
             }
             return Content(result);
         }

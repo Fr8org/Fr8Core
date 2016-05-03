@@ -1,10 +1,12 @@
-    var gulp = require('gulp');
+var gulp = require('gulp');
 var bower = require('gulp-bower');
 var concat = require('gulp-concat');
 var path = require('path');
 var child_process = require('child_process');
 var sourcemaps = require('gulp-sourcemaps');
 var templateCache = require('gulp-angular-templatecache');
+var argv = require('yargs').argv;
+var gutil = require('gulp-util');
 
 gulp.task('bower', function (done) {
     return bower({ layout: "byComponent" });
@@ -56,6 +58,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/model/SolutionDTO.js',
         'Scripts/app/model/AlertDTO.js',
         'Scripts/app/model/SubordinateSubplan.js',
+        'Scripts/app/model/HistoryDTO.js',
         'Scripts/app/services/CrateHelper.js',
         'Scripts/app/services/AuthService.js',
         'Scripts/app/services/ConfigureTrackerService.js',
@@ -63,6 +66,8 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/StringService.js',
         'Scripts/app/services/LocalIdentityGenerator.js',
         'Scripts/app/services/ReportService.js',
+        'Scripts/app/services/OrganizationService.js',
+        'Scripts/app/services/FileService.js',
         'Scripts/app/services/ManageFileService.js',
         'Scripts/app/services/FileDetailsService.js',
         'Scripts/app/services/ContainerService.js',
@@ -150,6 +155,8 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/TerminalFormController.js',
         'Scripts/app/controllers/SolutionListController.js',
         'Scripts/app/controllers/NotifierController.js',
+        'Scripts/app/controllers/OrganizationController.js',
+        'Scripts/app/controllers/KioskModeOrganizationHeaderController.js',
         'Scripts/app/controllers/PlanActionsDialogController.js',
         'Scripts/app/controllers/FindObjectsController.js',
         'Scripts/app/controllers/FindObjectsResultsController.js',
@@ -392,15 +399,20 @@ function getProtractorBinary(binaryName){
 }
 
 gulp.task('update-web-driver', function(done){
-    child_process.spawnSync(getProtractorBinary('webdriver-manager'), ['update'], {
+    return child_process.spawnSync(getProtractorBinary('webdriver-manager'), ['update'], {
         stdio: 'inherit'
     });
 });
 
 gulp.task('protractor-run', function (done) {
-    child_process.spawnSync(getProtractorBinary('protractor'),  ['Scripts\\tests\\e2e\\conf.js'] ,{
+    gutil.log('Using base url: ' + argv.baseUrl);
+    var result = child_process.spawnSync(getProtractorBinary('protractor'),  ['--baseUrl='+argv.baseUrl, 'Scripts\\tests\\e2e\\conf.js'] ,{
         stdio: 'inherit'
     });
+
+    if (result.status !== 0) {
+        process.exit(1);
+    }
 });
 gulp.task('default', ['bower', 'concattemplates', 'cdnizer-js', 'cdnizer-css']);
 

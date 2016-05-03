@@ -1,15 +1,13 @@
 ﻿using System;
-using System.Linq;
 using System.Threading.Tasks;
 using Data.Control;
-using Data.Crates;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
+using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 using StructureMap;
 using terminalQuickBooks.Interfaces;
 using JournalEntry = terminalQuickBooks.Services.JournalEntry;

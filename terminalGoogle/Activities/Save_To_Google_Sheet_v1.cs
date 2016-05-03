@@ -1,20 +1,20 @@
-﻿using Data.Entities;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Constants;
-using TerminalBase.BaseClasses;
+using Data.Control;
+using Data.Crates;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
+using Data.Interfaces.Manifests.Helpers;
+using Data.States;
+using Newtonsoft.Json;
+using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
-using Data.Interfaces.Manifests;
-using Data.Interfaces.DataTransferObjects;
-using Data.Crates;
-using Data.States;
-using Data.Control;
-using Data.Interfaces.Manifests.Helpers;
-using StructureMap;
+using TerminalBase.BaseClasses;
 
 namespace terminalGoogle.Actions
 {
@@ -132,27 +132,18 @@ namespace terminalGoogle.Actions
         private const string SelectedSpreadsheetCrateLabel = "Selected Spreadsheet";
 
         private readonly IGoogleSheet _googleSheet;
+        private readonly IGoogleIntegration _googleIntegration;
 
         public Save_To_Google_Sheet_v1()
         {
             _googleSheet = ObjectFactory.GetInstance<IGoogleSheet>();
+            _googleIntegration = ObjectFactory.GetInstance<IGoogleIntegration>();
             ActivityName = "Save To Google Sheet";
         }
 
         private GoogleAuthDTO GetGoogleAuthToken(AuthorizationTokenDO authTokenDO = null)
         {
             return JsonConvert.DeserializeObject<GoogleAuthDTO>((authTokenDO ?? AuthorizationToken).Token);
-        }
-
-        public override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
-        {
-            if (base.NeedsAuthentication(authTokenDO))
-            {
-                return true;
-            }
-            var token = GetGoogleAuthToken(authTokenDO);
-            // we may also post token to google api to check its validity
-            return token.Expires - DateTime.Now < TimeSpan.FromMinutes(5) && string.IsNullOrEmpty(token.RefreshToken);
         }
 
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)

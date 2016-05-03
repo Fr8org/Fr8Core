@@ -38,7 +38,6 @@ namespace terminalQuickBooksTests.Integration
             //Assert
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             var curTextBlock = (TextBlock)crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0];
             Assert.AreEqual("Create a Journal Entry", curTextBlock.Label);
@@ -61,7 +60,6 @@ namespace terminalQuickBooksTests.Integration
             //Assert
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             var curTextBlock = (TextBlock)crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0];
             Assert.AreEqual("Create a Journal Entry", curTextBlock.Label);

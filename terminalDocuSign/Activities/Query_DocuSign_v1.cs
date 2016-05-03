@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Constants;
@@ -12,8 +11,6 @@ using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
 using Newtonsoft.Json;
-using StructureMap;
-using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
 using TerminalBase.Infrastructure;

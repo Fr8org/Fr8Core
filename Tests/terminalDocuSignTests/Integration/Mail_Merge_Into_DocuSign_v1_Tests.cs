@@ -147,7 +147,6 @@ namespace terminalDocuSignTests.Integration
 
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             AssertCrateTypes(crateStorage);
@@ -170,7 +169,6 @@ namespace terminalDocuSignTests.Integration
           
             //Assert.NotNull(responseActionDTO);
             //Assert.NotNull(responseActionDTO.CrateStorage);
-            //Assert.NotNull(responseActionDTO.CrateStorage.Crates);
             //Assert.AreEqual(1, responseActionDTO.ChildrenActions.Length);
 
             //// Assert that Selected child Action is present
@@ -193,7 +191,6 @@ namespace terminalDocuSignTests.Integration
 
             //Assert.NotNull(responseActionDTO);
             //Assert.NotNull(responseActionDTO.CrateStorage);
-            //Assert.NotNull(responseActionDTO.CrateStorage.Crates);
             //Assert.AreEqual(1, responseActionDTO.ChildrenActions.Length);
 
             //// Assert that Selected child Action is present

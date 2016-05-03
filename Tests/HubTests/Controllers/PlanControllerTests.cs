@@ -155,9 +155,8 @@ namespace HubTests.Controllers
                 // }
                 PlanController.Post(PlanDto);
             }
-
             //Act
-            var actionResult = PlanController.Get() as OkNegotiatedContentResult<PlanEmptyDTO[]>;
+            var actionResult = PlanController.Get() as OkNegotiatedContentResult<IList<PlanEmptyDTO>>;
 
             //Assert
             Assert.NotNull(actionResult);
