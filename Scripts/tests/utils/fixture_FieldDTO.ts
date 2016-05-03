@@ -38,9 +38,9 @@ module dockyard.tests.utils.fixtures {
 
         public static dropDownListBox: model.DropDownList = {
             listItems: [
-                { key: 'test1', fieldType: null, selected: false, value: 'value1', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null },
-                { key: 'test2', fieldType: null, selected: false, value: 'value2', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null },
-                { key: 'test3', fieldType: null, selected: false, value: 'value3', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null }
+                { key: 'test1', data: null, fieldType: null, selected: false, value: 'value1', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null },
+                { key: 'test2', data: null, fieldType: null, selected: false, value: 'value2', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null },
+                { key: 'test3', data: null, fieldType: null, selected: false, value: 'value3', tags: null, availability: model.AvailabilityType.Configuration, sourceCrateLabel: null, sourceCrateManifest: null }
             ],
             source: {
                 manifestType: 'testManifest',
@@ -168,7 +168,8 @@ module dockyard.tests.utils.fixtures {
                     availability: model.AvailabilityType.Configuration,
                     sourceCrateLabel: null,
                     sourceCrateManifest: null,
-                    fieldType: null
+                    fieldType: null,
+                    data: null
                 },
                 {
                     key: 'test2',
@@ -178,7 +179,8 @@ module dockyard.tests.utils.fixtures {
                     availability: model.AvailabilityType.Configuration,
                     sourceCrateLabel: null,
                     sourceCrateManifest: null,
-                    fieldType: null
+                    fieldType: null,
+                    data: null
                 },
                 {
                     key: 'test3',
@@ -188,7 +190,8 @@ module dockyard.tests.utils.fixtures {
                     availability: model.AvailabilityType.Configuration,
                     sourceCrateLabel: null,
                     sourceCrateManifest: null,
-                    fieldType: null
+                    fieldType: null,
+                    data: null
                 }],
             name: 'test name',
             fieldLabel: 'test label',

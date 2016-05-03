@@ -68,7 +68,7 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 Version = "1",
-                MinPaneWidth = 420,
+                MinPaneWidth = 550,
                 WebService = webService
             });
 
@@ -309,7 +309,7 @@ namespace terminalFr8Core.Controllers
                 NeedsAuthentication = false,
                 Terminal = terminal,
                 WebService = webService,
-                MinPaneWidth = 350,
+                MinPaneWidth = 550,
                 Tags = Tags.AggressiveReload
             });
 

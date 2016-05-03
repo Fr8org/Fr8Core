@@ -51,6 +51,7 @@ namespace terminalSalesforce.Actions
         public const string QueryFilterCrateLabel = "Queryable Criteria";
 
         public const string RuntimeDataCrateLabel = "Table from Salesforce Get Data";
+        public const string PayloadDataCrateLabel = "Payload from Salesforce Get Data";
 
         public const string SalesforceObjectFieldsCrateLabel = "Salesforce Object Fields";
 
@@ -134,6 +135,15 @@ namespace terminalSalesforce.Actions
                     parsedCondition,
                     AuthorizationToken
                 );
+
+            CurrentPayloadStorage.Add(
+                Crate<StandardPayloadDataCM>
+                    .FromContent(
+                        PayloadDataCrateLabel,
+                        resultObjects.ToPayloadData(),
+                        AvailabilityType.RunTime
+                    )
+            );
 
             CurrentPayloadStorage.Add(
                 Crate<StandardTableDataCM>

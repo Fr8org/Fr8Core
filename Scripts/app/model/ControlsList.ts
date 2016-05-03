@@ -72,6 +72,12 @@
         }
     }
 
+    export enum FieldType {
+        String = 0,
+        Date = 1,
+        PickList = 2
+    }
+
     export class FieldDTO {
         public key: string;
         public value: string;
@@ -79,6 +85,7 @@
         public tags: string;
         public sourceCrateLabel: string;
         public fieldType: string;
+        public data: any;
         public sourceCrateManifest: {
             Id: string;
             Type: string;
