@@ -129,7 +129,7 @@ namespace terminalSalesforceTests.Actions
 
             //Assert
             var stroage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(resultPayload);
-            Assert.AreEqual(2, stroage.Count, "Number of Payload crates not populated correctly");
+            Assert.AreEqual(3, stroage.Count, "Number of Payload crates not populated correctly");
 
             Assert.IsNotNull(stroage.CratesOfType<StandardTableDataCM>().Single(), "Not able to get the required salesforce object");
         }
