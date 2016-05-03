@@ -18,13 +18,16 @@ namespace terminalSlack.Services
 
         public LoginResponse SlackData { get; set; }
 
+        public string UserName { get; set; }
+
         private readonly HashSet<Guid> _subscribedActivities;
 
         public event EventHandler<DataEventArgs<WrappedMessage>> MessageReceived;
 
-        public SlackClientWrapper(string oAuthToken)
+        public SlackClientWrapper(string oAuthToken, string userName)
         {
             Client = new SlackRtmClient(oAuthToken);
+            UserName = userName;
             Client.MessageReceived += ClientOnMessageReceived;
             _subscribedActivities = new HashSet<Guid>();
         }
@@ -51,8 +54,6 @@ namespace terminalSlack.Services
         /// </summary>
         public void Subscribe(Guid planId)
         {
-            //Logger.GetLogger().Info($"SlackClientWrapper: mark plan {planId} as subscribed");
-            Logger.LogInfo("SlackClientWrapper: message received");
             lock (_subscribedActivities)
             {
                 _subscribedActivities.Add(planId);
@@ -63,8 +64,6 @@ namespace terminalSlack.Services
         /// </summary>
         public bool Unsubsribe(Guid planId)
         {
-            //Logger.GetLogger().Info($"SlackClientWrapper: mark plan {planId} as unsubscribed");
-            Logger.LogInfo($"SlackClientWrapper: mark plan {planId} as unsubscribed");
             lock (_subscribedActivities)
             {
                 _subscribedActivities.Remove(planId);
@@ -87,6 +86,11 @@ namespace terminalSlack.Services
         {
             if (SlackData == null)
             {
+                return;
+            }
+            if (e.Data.IsHidden)
+            {
+                Logger.LogInfo($"SlackClientWrapper: hidden message is received for user {UserName} and won't go further");
                 return;
             }
             MessageReceived?.Invoke(this, new DataEventArgs<WrappedMessage>(new WrappedMessage
