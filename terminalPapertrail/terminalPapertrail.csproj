@@ -244,6 +244,22 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Service References\Application Insights\ConnectedService.json" />
+    <Content Include="..\Config\log4net.terminals.config">
+      <Link>log4net.terminals.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Config\log4net.terminals.Demo.config">
+      <Link>log4net.terminals.Demo.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Config\log4net.terminals.Dev.config">
+      <Link>log4net.terminals.Dev.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Config\log4net.terminals.Release.config">
+      <Link>log4net.terminals.Release.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="ApplicationInsights.Debug.config">
       <DependentUpon>ApplicationInsights.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
@@ -260,10 +276,6 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <Content Include="Properties\SlowCheetah\SlowCheetah.Transforms.targets" />
-    <Content Include="log4net.terminals.Dev.config" />
-    <Content Include="log4net.terminals.config" />
-    <Content Include="log4net.terminals.Demo.config" />
-    <Content Include="log4net.terminals.Release.config" />
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -380,13 +392,12 @@
   </Target>
   -->
   <ItemGroup>
-    <Log4netConfigFiles Include="..\Config\*.terminals.*"/>
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.config" />
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.Demo.config" />
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.Dev.config" />
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.Release.config" />
   </ItemGroup>
-
   <Target Name="BeforeBuild">
-    <Copy
-        SourceFiles="@(Log4NetConfigFiles)"
-        DestinationFolder="."
-         />
+    <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
   </Target>
 </Project>
