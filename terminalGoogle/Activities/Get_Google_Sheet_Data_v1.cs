@@ -77,6 +77,7 @@ namespace terminalGoogle.Actions
         private const string ColumnHeadersCrateLabel = "Spreadsheet Column Headers";
 
         private readonly IGoogleSheet _googleApi;
+        private readonly IGoogleIntegration _googleIntegration;
 
         public Get_Google_Sheet_Data_v1()
         {
@@ -102,6 +103,11 @@ namespace terminalGoogle.Actions
                 var newValues = Crate.FromContent(ConfigurationCrateLabel, new FieldDescriptionsCM(value), AvailabilityType.Configuration);
                 CurrentActivityStorage.ReplaceByLabel(newValues);
             }
+        }
+
+        private GoogleAuthDTO GetGoogleAuthToken(AuthorizationTokenDO authTokenDO = null)
+        {
+            return JsonConvert.DeserializeObject<GoogleAuthDTO>((authTokenDO ?? AuthorizationToken).Token);
         }
 
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
@@ -200,16 +206,6 @@ namespace terminalGoogle.Actions
             }
             CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel,
                 new StandardTableDataCM { Table = data, FirstRowHeaders = hasHeaderRow }));
-        }
-        public override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
-        {
-            if (base.NeedsAuthentication(authTokenDO))
-            {
-                return true;
-            }
-            var token = GetGoogleAuthToken(authTokenDO);
-            // we may also post token to google api to check its validity
-            return token.Expires - DateTime.Now < TimeSpan.FromMinutes(5) && string.IsNullOrEmpty(token.RefreshToken);
         }
     }
 }
