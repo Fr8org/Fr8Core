@@ -95,7 +95,9 @@ module dockyard.directives.upstreamDataChooser {
                                             'min-height': () => { return $(".modal-header").height()},
                                             'max-height': () => {
                                                 var curHeight = $(".modal-content").height();
-                                                return curHeight;
+                                                if (curHeight > 85) {
+                                                    return curHeight;   
+                                                }                                                
                                             }
                                         })
                                         .resizable().draggable()
