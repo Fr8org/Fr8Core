@@ -1,4 +1,6 @@
-﻿using Data.Constants;
+﻿using System;
+using System.Collections.Generic;
+using Data.Constants;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json.Linq;
@@ -15,6 +17,8 @@ namespace Data.Interfaces.Manifests
         public ICrateStorage EventPayload { get; set; }
         public string Manufacturer { get; set; }
         public string Source { get; set; }
+
+        public List<Guid> PlansAffected { get; set; }
 
         public EventReportCM()
             : base(MT.StandardEventReport)
@@ -35,6 +39,8 @@ namespace Data.Interfaces.Manifests
             public string ExternalDomainId { get; set; }
             public CrateStorageDTO EventPayload { get; set; }
             public string Manufacturer { get; set; }
+
+            public List<Guid> PlansAffected { get; set; }
         }
 
         private ICrateStorageSerializer _storageSerizlier;
@@ -56,7 +62,8 @@ namespace Data.Interfaces.Manifests
                 ExternalAccountId = proxy.ExternalAccountId,
                 ExternalDomainId = proxy.ExternalDomainId,
                 EventPayload = storage,
-                Manufacturer = proxy.Manufacturer
+                Manufacturer = proxy.Manufacturer,
+                PlansAffected = proxy.PlansAffected
             };
         }
 
@@ -71,7 +78,8 @@ namespace Data.Interfaces.Manifests
                 ExternalAccountId = e.ExternalAccountId,
                 ExternalDomainId = e.ExternalDomainId,
                 Manufacturer = e.Manufacturer,
-                EventPayload = _storageSerizlier.ConvertToDto(e.EventPayload)
+                EventPayload = _storageSerizlier.ConvertToDto(e.EventPayload),
+                PlansAffected = e.PlansAffected
             };
 
             return JToken.FromObject(proxy);

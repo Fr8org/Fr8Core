@@ -8,14 +8,20 @@ $errorMessage = "An error while executing the query. Please check connection str
 
 $commandText = "
 if object_id('tempdb..#Nodes') is not null
-    drop table #Nodes
+    drop table #Nodes;
 
-select cp.Id into #Nodes from Plans p 
-	inner join PlanNodes pn on p.Id = pn.Id  
-	inner join [AspNetUsers] on AspNetUsers.Id = pn.Fr8AccountId 
-	inner join PlanNodes cp on cp.RootPlanNodeId = p.Id
-    where UserName = 'integration_test_runner@fr8.company' 
-
+WITH NodeTree1 AS (
+    SELECT seedNodes.Id
+    FROM PlanNodes seedNodes
+		inner join [AspNetUsers] on AspNetUsers.Id = seedNodes.Fr8AccountId 
+	    where UserName = 'integration_test_runner@fr8.company'
+    UNION ALL
+    SELECT r.Id
+    FROM PlanNodes r
+    INNER JOIN NodeTree1 rt ON rt.Id = r.ParentPlanNodeId
+)
+select distinct (NodeTree1.Id) into #Nodes from NodeTree1 left join PlanNodes on NodeTree1.Id = PlanNodes.Id order by NodeTree1.Id;
+ 
 update p set p.ParentPlanNodeId = null, p.RootPlanNodeId = null from PlanNodes p 
 	inner join #Nodes cp on cp.Id = p.Id
 

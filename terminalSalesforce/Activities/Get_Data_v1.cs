@@ -15,7 +15,7 @@ using ServiceStack;
 
 namespace terminalSalesforce.Actions
 {
-    public class Get_Data_v1 : EnhancedTerminalActivity<Get_Data_v1.ActivityUi>
+    public class Get_Data_v1 : BaseSalesforceTerminalActivity<Get_Data_v1.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -56,7 +56,7 @@ namespace terminalSalesforce.Actions
 
         private readonly ISalesforceManager _salesforceManager;
 
-        public Get_Data_v1() : base(true)
+        public Get_Data_v1()
         {
             _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
             ActivityName = "Get Data from Salesforce";
@@ -64,9 +64,10 @@ namespace terminalSalesforce.Actions
 
         protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
-            ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager.GetSalesforceObjectTypes()
-                                                                                .Select(x => new ListItem() { Key = x.Key, Value = x.Key })
-                                                                                .ToList();
+            ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager
+                .GetSalesforceObjectTypes()
+                .Select(x => new ListItem() { Key = x.Key, Value = x.Key })
+                .ToList();
             runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
             return Task.FromResult(true);
         }
@@ -88,7 +89,8 @@ namespace terminalSalesforce.Actions
                 return;
             }
             //Prepare new query filters from selected object properties
-            var selectedObjectProperties = await _salesforceManager.GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
+            var selectedObjectProperties = await _salesforceManager
+                .GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
             var queryFilterCrate = Crate<FieldDescriptionsCM>.FromContent(
                 QueryFilterCrateLabel,
                 new FieldDescriptionsCM(selectedObjectProperties),
@@ -105,7 +107,9 @@ namespace terminalSalesforce.Actions
             var salesforceObject = ConfigurationControls.SalesforceObjectSelector.selectedKey;
             if (string.IsNullOrEmpty(salesforceObject))
             {
-                throw new ActivityExecutionException("No Salesforce object is selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                throw new ActivityExecutionException(
+                    "No Salesforce object is selected", 
+                    ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
             var salesforceObjectFields = CurrentActivityStorage
                 .FirstCrate<FieldDescriptionsCM>(x => x.Label == QueryFilterCrateLabel)

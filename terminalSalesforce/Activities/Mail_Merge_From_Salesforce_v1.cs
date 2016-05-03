@@ -22,7 +22,7 @@ using ServiceStack;
 
 namespace terminalSalesforce.Actions
 {
-    public class Mail_Merge_From_Salesforce_v1 : EnhancedTerminalActivity<Mail_Merge_From_Salesforce_v1.ActivityUi>
+    public class Mail_Merge_From_Salesforce_v1 : BaseSalesforceTerminalActivity<Mail_Merge_From_Salesforce_v1.ActivityUi>
     {
 
         private const string SolutionName = "Mail Merge From Salesforce";
@@ -85,7 +85,7 @@ namespace terminalSalesforce.Actions
 
         private readonly ISalesforceManager _salesforceManager;
 
-        public Mail_Merge_From_Salesforce_v1() : base(true)
+        public Mail_Merge_From_Salesforce_v1()
         {
             ActivityName = "Mail Merge from Salesforce";
             _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();

@@ -10,6 +10,7 @@ using terminaBaselTests.Tools.Activities;
 using terminaBaselTests.Tools.Plans;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services;
+using terminalGoogle.Services.Authorization;
 
 namespace terminalIntegrationTests.EndToEnd
 {
