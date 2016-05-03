@@ -13,6 +13,7 @@ using terminalGoogle.Services;
 using Hub.Managers;
 using StructureMap;
 using Hub.StructureMap;
+using terminalGoogle.Services.Authorization;
 
 namespace terminalGoogle
 {

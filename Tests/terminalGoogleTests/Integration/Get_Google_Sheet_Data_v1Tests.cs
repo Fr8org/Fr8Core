@@ -1,34 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using Data.Crates;
-using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using Hub.Managers;
-using Newtonsoft.Json;
 using NUnit.Framework;
-using StructureMap;
-using terminalGoogle.DataTransferObjects;
-using terminalGoogle.Services;
-using terminalGoogleTests.Unit;
+
 
 namespace terminalGoogleTests.Integration
 {
     /// <summary>
-    /// Mark test case class with [Explicit] attiribute.
+    /// Mark test case class with [Explicit] attribute.
     /// It prevents test case from running when CI is building the solution,
     /// but allows to trigger that class from HealthMonitor.
     /// </summary>
     [Explicit]
     public class Get_Google_Sheet_Data_v1Tests : BaseTerminalIntegrationTest
     {
-        public override string TerminalName
-        {
-            get { return "terminalGoogle"; }
-        }
+        public override string TerminalName => "terminalGoogle";
 
         /////////////
         /// Initial Configuration Tests Begin
@@ -114,7 +104,7 @@ namespace terminalGoogleTests.Integration
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
             var requestActionDTO = fixture.Get_Google_Sheet_Data_v1_Followup_Configuration_Request_ActivityDTO_With_Crates();
 
-            ////Act
+            //Act
             fixture.Get_Google_Sheet_Data_v1_AddPayload(requestActionDTO, "Column_Only");
             var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
             //As the ActionDTO is preconfigured configure url actually calls the follow up configuration
