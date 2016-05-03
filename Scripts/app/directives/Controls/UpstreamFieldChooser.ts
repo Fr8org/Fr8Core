@@ -133,7 +133,7 @@ module dockyard.directives.upstreamDataChooser {
 
                 var getUpstreamFields = () => {
                     UpstreamExtractor
-                        .getAvailableData($scope.currentAction.id, 'Field Description')
+                        .getAvailableData($scope.currentAction.id, 'NotSet')
                         .then((data: any) => {
                             var listItems: Array<model.DropDownListItem> = [];
 

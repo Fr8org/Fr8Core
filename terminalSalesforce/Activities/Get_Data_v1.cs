@@ -88,7 +88,7 @@ namespace terminalSalesforce.Actions
                 return;
             }
             //Prepare new query filters from selected object properties
-            var selectedObjectProperties = await _salesforceManager.GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken,false, RuntimeDataCrateLabel);
+            var selectedObjectProperties = await _salesforceManager.GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
             var queryFilterCrate = Crate<TypedFieldsCM>.FromContent(
                 QueryFilterCrateLabel,
                 new TypedFieldsCM(selectedObjectProperties.OrderBy(x => x.Key)
@@ -98,7 +98,7 @@ namespace terminalSalesforce.Actions
 
             var objectPropertiesCrate = Crate<FieldDescriptionsCM>.FromContent(
                 SalesforceObjectFieldsCrateLabel,
-                new FieldDescriptionsCM(selectedObjectProperties.Select(c => new FieldDTO(c.Key, c.Key))),            
+                new FieldDescriptionsCM(selectedObjectProperties.Select(c => new FieldDTO(c.Key, c.Key) { Label = RuntimeDataCrateLabel })),            
                 AvailabilityType.RunTime);
             CurrentActivityStorage.ReplaceByLabel(objectPropertiesCrate);
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
