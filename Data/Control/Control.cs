@@ -463,7 +463,7 @@ namespace Data.Control
                     return null;
             }
         }
-            }
+    }
 
     public class Button : ControlDefinitionDTO
     {
@@ -660,6 +660,14 @@ namespace Data.Control
 
     public class ContainerTransitionField
     {
+        public ContainerTransitionField()
+        {
+            this.Id = new Guid();
+        }
+
+        [JsonProperty("id")]
+        public Guid Id { get; set; }
+
         [JsonProperty("conditions")]
         public List<FilterConditionDTO> Conditions { get; set; }
 
