@@ -14,6 +14,8 @@ using Utilities;
 using System.Net.Http;
 using System.Linq;
 using System.Net.Http.Headers;
+using System.Web;
+using Microsoft.AspNet.Identity;
 
 namespace TerminalBase.BaseClasses
 {
@@ -112,7 +114,7 @@ namespace TerminalBase.BaseClasses
             baseTerminalAction.HubCommunicator = new ExplicitDataHubCommunicator(explicitData);
         }
 
-        private void SetCurrentUser(object curObject, string userId)
+        private void SetCurrentUser(object curObject, string userId, string userEmail)
         {
             var baseTerminalAction = curObject as BaseTerminalActivity;
 
@@ -121,7 +123,7 @@ namespace TerminalBase.BaseClasses
                 return;
             }
 
-            baseTerminalAction.SetCurrentUser(userId);
+            baseTerminalAction.SetCurrentUser(userId, userEmail);
         }
 
         private void ConfigureHubCommunicator(object curObject, string terminalName)
@@ -207,9 +209,10 @@ namespace TerminalBase.BaseClasses
             var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
 
             Task<ActivityDO> response;
-            var currentUserId = curAuthTokenDO != null ? curAuthTokenDO.UserID : null;
+            var currentUserId = curAuthTokenDO?.UserID;
+            var currentUserEmail = curAuthTokenDO?.ExternalAccountId;
             //Set Current user of action
-            SetCurrentUser(curObject, currentUserId);
+            SetCurrentUser(curObject, currentUserId, currentUserEmail);
             ConfigureHubCommunicator(curObject, curTerminal);
             try
             {
