@@ -7,13 +7,18 @@ namespace Data.Entities
 {
     public class ActivityDO : PlanNodeDO
 	{
+        //Yes, we don't want to add this property to TrackingProperties or clone its value in CopyProperties.
+        public byte[] EncryptedCrateStorage { get; set; }
+
         public string CrateStorage { get; set; }
+
         public string Label { get; set; }
 
         [ForeignKey("ActivityTemplate")]
         public Guid ActivityTemplateId { get; set; }
 
         public virtual ActivityTemplateDO ActivityTemplate { get; set; }
+
         public string currentView { get; set; }
 
         [ForeignKey("AuthorizationToken")]
@@ -29,10 +34,10 @@ namespace Data.Entities
 
         private static readonly PropertyInfo[] TrackingProperties = 
         {
-            typeof(ActivityDO).GetProperty("CrateStorage"),
-            typeof(ActivityDO).GetProperty("Label"),
-            typeof(ActivityDO).GetProperty("ActivityTemplateId"),
-            typeof(ActivityDO).GetProperty("AuthorizationTokenId"),
+            typeof(ActivityDO).GetProperty(nameof(CrateStorage)),
+            typeof(ActivityDO).GetProperty(nameof(Label)),
+            typeof(ActivityDO).GetProperty(nameof(ActivityTemplateId)),
+            typeof(ActivityDO).GetProperty(nameof(AuthorizationTokenId)),
         };
 
         protected override IEnumerable<PropertyInfo> GetTrackingProperties()
@@ -59,22 +64,5 @@ namespace Data.Entities
             ActivityTemplateId = activity.ActivityTemplateId;
             currentView = activity.currentView;
         }
-
-        //        public CrateStorageDTO CrateStorageDTO()
-        //        {
-        //            return JsonConvert.DeserializeObject<CrateStorageDTO>(this.CrateStorage);
-        //        }
-        //
-        //        public void UpdateCrateStorageDTO(List<CrateDTO> curCratesDTO)
-        //        {
-        //            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
-        //
-        //            if(!String.IsNullOrEmpty(CrateStorage))//if crateStorage is not empty deserialize it
-        //                crateStorageDTO = CrateStorageDTO();
-        //
-        //            crateStorageDTO.CrateDTO.AddRange(curCratesDTO);
-        //
-        //            this.CrateStorage = JsonConvert.SerializeObject(crateStorageDTO);
-        //        }
     }
 }

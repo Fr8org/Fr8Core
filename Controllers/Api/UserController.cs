@@ -245,37 +245,6 @@ namespace HubWeb.Controllers
                 return "";
         }
 
-        //public ActionResult FindUser()
-        //{
-        //    return View();
-        //}
-
-        //[HttpPost]
-        //public ActionResult Search(String firstName, String lastName, String emailAddress, int[] states)
-        //{
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        var users = uow.UserRepository.GetQuery();
-        //        if (!String.IsNullOrWhiteSpace(firstName))
-        //            users = users.Where(u => u.FirstName.Contains(firstName));
-        //        if (!String.IsNullOrWhiteSpace(lastName))
-        //            users = users.Where(u => u.LastName.Contains(lastName));
-        //        if (!String.IsNullOrWhiteSpace(emailAddress))
-        //            users = users.Where(u => u.EmailAddress.Address.Contains(emailAddress));
-
-        //        users = users.Where(u => states.Contains(u.State.Value));
-
-        //        return Json(users.ToList().Select(u => new
-        //        {
-        //            Id = u.Id,
-        //            FirstName = u.FirstName,
-        //            LastName = u.LastName,
-        //            EmailAddress = u.EmailAddress.Address
-        //        }).ToList()
-        //        );
-        //    }
-        //}
-
         private UserVM CreateUserVM(Fr8AccountDO u, IUnitOfWork uow)
         {
             return new UserVM
