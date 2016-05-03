@@ -980,7 +980,6 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Fr8Event.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\QueryBuilder.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\QueryBuilderCondition.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\--TO-BE-REMOVED--QueryBuilderCondition.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\SelectData.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\SourceableCriteria.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\CrateChooser.ts" />
@@ -1157,7 +1156,6 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Duration.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RunPlanButton.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ManagePlan.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\--TO-BE-REMOVED--QueryBuilder.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextSource.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FieldList.ts" />
@@ -1243,11 +1241,9 @@
     <TypeScriptCompile Include="Scripts\app\controllers\PlanBuilderController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\PlanListController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\EventArgsBase.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\--TO-BE-REMOVED--FilterPane.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\PaneConfigureAction.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\Messages.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\PaneWorkflowDesigner.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\--TO-BE-REMOVED--QueryBuilderWidget.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\PlanFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\directives.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IAppRootScope.ts" />

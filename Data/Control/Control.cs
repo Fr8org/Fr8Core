@@ -33,8 +33,6 @@ namespace Data.Control
         public const string CheckBox = "CheckBox";
         public const string DropDownList = "DropDownList";
         public const string RadioButtonGroup = "RadioButtonGroup";
-        // TODO: FR-3003, remove this.
-        // public const string FilterPane = "FilterPane";
         public const string FilterPane = "FilterPane";
         public const string MappingPane = "MappingPane";
         public const string TextBlock = "TextBlock";
@@ -44,8 +42,6 @@ namespace Data.Control
         public const string Button = "Button";
         public const string TextSource = "TextSource";
         public const string TextArea = "TextArea";
-        // TODO: FR-3003, remove this.
-        // public const string QueryBuilder = "QueryBuilder";
         public const string QueryBuilder = "QueryBuilder";
         public const string ManagePlan = "ManagePlan";
         public const string Duration = "Duration";
@@ -187,16 +183,6 @@ namespace Data.Control
         }
     }
 
-    // TODO: FR-3003, remove this.
-    // public class QueryBuilder : ControlDefinitionDTO
-    // {
-    //     public QueryBuilder()
-    //     {
-    //         Type = ControlTypes.QueryBuilder;
-    //     }
-    // }
-
-    // TODO: FR-3003, rename this to QueryBuilder.
     public class QueryBuilder : ControlDefinitionDTO
     {
         public QueryBuilder()
@@ -328,18 +314,6 @@ namespace Data.Control
             return MetaDescriptions.Select(m => m.CreateControl()).ToList();
         }
     }
-
-    // TODO: FR-3003, remove this.
-    // public class FilterPane : ControlDefinitionDTO
-    // {
-    //     [JsonProperty("fields")]
-    //     public List<FilterPaneField> Fields { get; set; }
-    // 
-    //     public FilterPane()
-    //     {
-    //         Type = ControlTypes.FilterPane;
-    //     }
-    // }
 
     public class FilterPane : ControlDefinitionDTO
     {

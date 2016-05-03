@@ -42,11 +42,11 @@ namespace TerminalBase.Services.MT
             if (propReference.PropertyClrType == typeof(DateTime)
                 || propReference.PropertyClrType == typeof(DateTime?))
             {
-                return FieldType2.Date;
+                return FieldType.Date;
             }
             else
             {
-                return FieldType2.String;
+                return FieldType.String;
             }
         }
     }

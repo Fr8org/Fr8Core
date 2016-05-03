@@ -14,12 +14,6 @@ namespace Data.Interfaces.Manifests
             get { return ManifestDiscovery.Default.GetManifestType<StandardConfigurationControlsCM>().Type; }
         }
 
-        // TODO: FR-3003, remove this.
-        // public static string StandardQueryFields
-        // {
-        //     get { return ManifestDiscovery.Default.GetManifestType<TypedFieldsCM>().Type; }
-        // }
-
         public static string StandardTableData
         {
             get { return ManifestDiscovery.Default.GetManifestType<StandardTableDataCM>().Type; }

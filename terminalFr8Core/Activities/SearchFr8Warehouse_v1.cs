@@ -265,9 +265,6 @@ namespace terminalFr8Core.Actions
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(actvityDO))
             {
-                // TODO: FR-3003, remove this.
-                // var designTimeQueryFields = GetFr8WarehouseFieldNames(fr8ObjectID);
-
                 var designTimeQueryFields = MTTypesHelper.GetFieldsByTypeId(Guid.Parse(fr8ObjectID));
                 var criteria = crateStorage.FirstOrDefault(d => d.Label == "Queryable Criteria");
                 if (criteria != null)
@@ -398,31 +395,6 @@ namespace terminalFr8Core.Actions
                 return warehouseTypes;
             }
         }
-
-        // TODO: FR-3003, remove this.
-        // create the Query design time fields.
-        // private List<TypedFieldDTO> GetFr8WarehouseFieldNames(string typeId)
-        // {
-        //     List<TypedFieldDTO> designTimeQueryFields = new List<TypedFieldDTO>();
-        // 
-        //     using (var unitWork = ObjectFactory.GetInstance<IUnitOfWork>())
-        //     {
-        //         foreach (var field in unitWork.MultiTenantObjectRepository.ListTypePropertyReferences(Guid.Parse(typeId)))
-        //         {
-        //             if (!designTimeQueryFields.Exists(d => d.Name == field.Name))
-        //             {
-        //                 designTimeQueryFields.Add(new TypedFieldDTO()
-        //                 {
-        //                     FieldType = FieldType.String,
-        //                     Label = field.Name,
-        //                     Name = field.Name,
-        //                     Control = CreateTextBoxQueryControl(field.Name)
-        //                 });
-        //             }
-        //         }
-        //     }
-        //     return designTimeQueryFields;
-        // }
 
         private bool ButtonIsClicked(Button button)
         {

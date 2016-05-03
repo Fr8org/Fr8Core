@@ -230,51 +230,5 @@ namespace terminalFr8Core.Actions
                     .ToList();
             }
         }
-
-        // TODO: FR-3003, remove this.
-        // private IEnumerable<TypedFieldDTO> GetFieldsByTypeId(Guid typeId)
-        // {
-        //     var fields = new Dictionary<string, string>();
-        // 
-        //     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //     {
-        //         return uow.MultiTenantObjectRepository
-        //             .ListTypePropertyReferences(typeId)
-        //             .OrderBy(x => x.Name)
-        //             .Select(x =>
-        //                 new TypedFieldDTO(
-        //                     x.Name,
-        //                     x.Name,
-        //                     FieldType.String,
-        //                     CreateQueryControlByPropertyReference(x)
-        //                 )
-        //             );
-        //     }
-        // }
-
-        // TODO: FR-3003, remove this.
-        // private ControlDefinitionDTO CreateQueryControlByPropertyReference(
-        //     MtTypePropertyReference propReference)
-        // {
-        //     ControlDefinitionDTO control;
-        // 
-        //     if (propReference.PropertyClrType == typeof(DateTime)
-        //         || propReference.PropertyClrType == typeof(DateTime?))
-        //     {
-        //         control = new DatePicker()
-        //         {
-        //             Name = "QueryField_" + propReference.Name
-        //         };
-        //     }
-        //     else
-        //     {
-        //         control = new TextBox()
-        //         {
-        //             Name = "QueryField_" + propReference.Name
-        //         };
-        //     }
-        // 
-        //     return control;
-        // }
     }
 }

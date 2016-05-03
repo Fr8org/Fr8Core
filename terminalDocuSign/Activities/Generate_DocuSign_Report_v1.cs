@@ -149,31 +149,31 @@ namespace terminalDocuSign.Actions
             {
                 {
                     "Envelope Text",
-                    new FieldBackedRoutingInfo(FieldType2.String, "SearchText", null, CreateTextBoxQueryControl)
+                    new FieldBackedRoutingInfo(FieldType.String, "SearchText", null, CreateTextBoxQueryControl)
                 },
                 {
                     "Folder",
-                    new FieldBackedRoutingInfo(FieldType2.String, "Folder", null, CreateFolderDropDownListControl)
+                    new FieldBackedRoutingInfo(FieldType.String, "Folder", null, CreateFolderDropDownListControl)
                 },
                 {
                     "Status",
-                    new FieldBackedRoutingInfo(FieldType2.String, "Status", "Status", CreateStatusDropDownListControl)
+                    new FieldBackedRoutingInfo(FieldType.String, "Status", "Status", CreateStatusDropDownListControl)
                 },
                 {
                     "CreateDate",
-                    new FieldBackedRoutingInfo(FieldType2.Date, "CreatedDateTime", "CreateDate", CreateDatePickerQueryControl)
+                    new FieldBackedRoutingInfo(FieldType.Date, "CreatedDateTime", "CreateDate", CreateDatePickerQueryControl)
                 },
                 {
                     "SentDate",
-                    new FieldBackedRoutingInfo(FieldType2.Date, "SentDateTime", "SentDate", CreateDatePickerQueryControl)
+                    new FieldBackedRoutingInfo(FieldType.Date, "SentDateTime", "SentDate", CreateDatePickerQueryControl)
                 },
                 {
                     "CompletedDate",
-                    new FieldBackedRoutingInfo(FieldType2.Date, "CompletedDateTime", "CompletedDate", CreateDatePickerQueryControl)
+                    new FieldBackedRoutingInfo(FieldType.Date, "CompletedDateTime", "CompletedDate", CreateDatePickerQueryControl)
                 },
                 {
                     "EnvelopeId",
-                    new FieldBackedRoutingInfo(FieldType2.String, "EnvelopeId", "EnvelopeId", CreateTextBoxQueryControl)
+                    new FieldBackedRoutingInfo(FieldType.String, "EnvelopeId", "EnvelopeId", CreateTextBoxQueryControl)
                 }
             };
         }

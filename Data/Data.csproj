@@ -324,7 +324,6 @@
     <Compile Include="Interfaces\DataTransferObjects\ManageAuthTokenDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ManifestDescriptionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\MappingFieldConfigurationDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\QueryFieldDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\StandardAccountingTransactionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalDiscoveryDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityProcessResultDTO.cs" />
@@ -392,7 +391,6 @@
     <Compile Include="Interfaces\Manifests\StandardLoggingCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardParsingRecordCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardQueryCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardQueryFieldsCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardRoutingDirectiveCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFileDescriptionCM.cs" />
     <Compile Include="Interfaces\Manifests\OperationalStateCM.cs" />

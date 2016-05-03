@@ -317,7 +317,7 @@ namespace terminalDocuSign.Actions
                     {
                         Key = "Status",
                         Label = "Status",
-                        FieldType = FieldType2.String
+                        FieldType = FieldType.String
                     });
                 var queryFieldsCrate = Data.Crates.Crate.FromContent("Queryable Criteria", queryableCriteria);
                 crateStorage.RemoveByLabel("Queryable Criteria");
@@ -372,10 +372,6 @@ namespace terminalDocuSign.Actions
                     Conditions = conditions
                 });
 
-
-                // TODO: FR-3003, remove this.
-                // var queryCriteria = Data.Crates.Crate.FromContent("Queryable Criteria", new TypedFieldsCM(GetFieldsByObjectId(selectedObject.Id)));
-
                 var queryCriteria = Data.Crates.Crate.FromContent(
                     "Queryable Criteria",
                     new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(selectedObject.Id))
@@ -383,33 +379,6 @@ namespace terminalDocuSign.Actions
                 crateStorage.Add(queryCriteria);
             }
         }
-
-        // TODO: FR-3003, remove this.
-        // private IEnumerable<TypedFieldDTO> GetFieldsByObjectId(Guid typeId)
-        // {
-        //     var fields = new List<FieldDTO>();
-        // 
-        //     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //     {
-        //         foreach (var field in uow.MultiTenantObjectRepository.ListTypePropertyReferences(typeId).OrderBy(x => x.Name))
-        //         {
-        //             fields.Add(new FieldDTO(field.Name, field.Name));
-        //         }
-        //     }
-        // 
-        //     return fields.OrderBy(x => x.Key)
-        //         .Select(x =>
-        //             new TypedFieldDTO(
-        //                 x.Key,
-        //                 x.Key,
-        //                 FieldType.String,
-        //                 new TextBox()
-        //                 {
-        //                     Name = "QueryField_" + x.Key
-        //                 }
-        //             )
-        //         );
-        // }
 
         private MtTypeReference GetMtType(Type clrType)
         {

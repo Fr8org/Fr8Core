@@ -213,18 +213,17 @@ namespace UtilitiesTesting.Fixtures
                 Label = "Mapping Pane"
             };
 
-            // TODO: FR-3003, remove this.
-            // var fieldFilterPane = new FilterPane()
-            // {
-            //     Label = "Execute Actions If:",
-            //     Name = "Selected_Filter",
-            //     Required = true,
-            //     Source = new FieldSourceDTO
-            //     {
-            //         Label = "Queryable Criteria",
-            //         ManifestType = CrateManifestTypes.StandardDesignTimeFields
-            //     }
-            // };
+            var fieldFilterPane = new FilterPane()
+            {
+                Label = "Execute Actions If:",
+                Name = "Selected_Filter",
+                Required = true,
+                Source = new FieldSourceDTO
+                {
+                    Label = "Queryable Criteria",
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
+                }
+            };
 
             var mappingPane = new MappingPane()
             {
@@ -246,8 +245,7 @@ namespace UtilitiesTesting.Fixtures
                 textboxControl,
                 textblockControl,
                 filepickerControl,
-                // TODO: FR-3003, remove this.
-                // fieldFilterPane,
+                fieldFilterPane,
                 mappingPane,
                 checkboxControl
             };
