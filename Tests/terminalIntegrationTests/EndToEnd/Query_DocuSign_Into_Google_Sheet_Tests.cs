@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Interfaces;
@@ -10,6 +11,7 @@ using terminaBaselTests.Tools.Activities;
 using terminaBaselTests.Tools.Plans;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services;
+using terminalGoogle.Services.Authorization;
 
 namespace terminalIntegrationTests.EndToEnd
 {
@@ -32,7 +34,7 @@ namespace terminalIntegrationTests.EndToEnd
             googleActivityConfigurator = new IntegrationTestTools_terminalGoogle(this);
         }
 
-        [Test, Category("Integration.terminalGoogle")]
+        [Test, Category("Integration.terminalGoogle"), Ignore]
         public async Task Query_DocuSign_Into_Google_Sheet_End_To_End()
         {
             var terminalGoogleTools = new terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalGoogle(this);
@@ -47,10 +49,11 @@ namespace terminalIntegrationTests.EndToEnd
 
             //configure a save_to google activity
             var newSpeadsheetName = Guid.NewGuid().ToString();
-            await googleActivityConfigurator.AddAndConfigureSaveToGoogleSheet(thePlan, 2, "Docusign Envelope", "DocuSign Envelope Data", newSpeadsheetName);
-
             var googleSheetApi = new GoogleSheet(new GoogleIntegration());
             var spreadsheetId = await googleSheetApi.CreateSpreadsheet(newSpeadsheetName, defaultGoogleAuthToken);
+
+            await googleActivityConfigurator.AddAndConfigureSaveToGoogleSheet(thePlan, 2, "Docusign Envelope", "DocuSign Envelope Data", newSpeadsheetName);
+            
 
             try
             {

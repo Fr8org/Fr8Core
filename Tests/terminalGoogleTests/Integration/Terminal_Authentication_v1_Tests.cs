@@ -1,27 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Net;
 using System.Threading.Tasks;
 using Data.Interfaces.DataTransferObjects;
 using HealthMonitor.Utility;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
+using terminalGoogle.DataTransferObjects;
+using terminalGoogle.Services.Authorization;
 
-namespace terminalDocuSignTests.Integration
+namespace terminalGoogleTests.Integration
 {
     [Explicit]
+    [Category("Integration.Authentication.terminalGoogle")]
     public class Terminal_Authentication_v1_Tests : BaseTerminalIntegrationTest
     {
-        public override string TerminalName
-        {
-            get { return "terminalGoogle"; }
-        }
+        public override string TerminalName => "terminalGoogle";
 
         /// <summary>
         /// Make sure http call fails with invalid authentication
         /// </summary>
-        [Test, Category("Integration.Authentication.terminalGoogle")]
+        [Test]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
             ExpectedMessage = @"Authorization has been denied for this request.",
@@ -39,6 +38,26 @@ namespace terminalDocuSignTests.Integration
             };
             //lets modify hmacHeader
             await RestfulServiceClient.PostAsync<string, ActivityDTO>(uri, "testContent", null, hmacHeader);
+        }
+
+        [Test]
+        [TestCase("foo", "bar", "12/31/9999")]
+        [TestCase("valid_token", "refresh_token", "01/20/2001")]
+        public async Task ShouldReturnFalse_WhenTokenInvalid(string accessToken, string refreshToken, DateTime expires)
+        {
+            // Arrange
+            var invalidToken = new GoogleAuthDTO
+            {
+                 AccessToken= accessToken,
+                 RefreshToken = refreshToken,
+                 Expires = expires
+            };
+            var sut = new GoogleIntegration();
+            
+            // Act
+            var result = await sut.IsTokenInfoValid(invalidToken);
+            // Assert
+            Assert.False(result);
         }
     }
 }

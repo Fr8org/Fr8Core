@@ -238,6 +238,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activities\ActivitiesHelper.cs" />
+    <Compile Include="Activities\BaseSalesforceTerminalActivity.cs" />
     <Compile Include="Activities\Mail_Merge_From_Salesforce_v1.cs" />
     <Compile Include="Activities\Monitor_Salesforce_Event_v1.cs" />
     <Compile Include="Activities\Post_To_Chatter_v2.cs" />
@@ -268,6 +269,7 @@
     </Compile>
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Services\Event.cs" />
+    <Compile Include="Services\SalesforceAuthHelper.cs" />
     <Compile Include="Services\SalesforceManager.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="StructureMapConfiguration.cs" />
@@ -282,6 +284,18 @@
     </Content>
     <Content Include="..\Config\log4net.terminals.config">
       <Link>log4net.terminals.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Config\log4net.terminals.Demo.config">
+      <Link>log4net.terminals.Demo.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Config\log4net.terminals.Dev.config">
+      <Link>log4net.terminals.Dev.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Config\log4net.terminals.Release.config">
+      <Link>log4net.terminals.Release.config</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="ApplicationInsights.Debug.config">
@@ -410,7 +424,7 @@
   </Target>
   -->
   <ItemGroup>
-    <Log4netConfigFiles Include="..\Config\*.terminals.*" />
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.*" />
   </ItemGroup>
   <Target Name="BeforeBuild">
     <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />

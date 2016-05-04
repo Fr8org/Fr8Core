@@ -26,6 +26,7 @@ using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects.Helpers;
 using Data.Repositories.Plan;
 using Hub.Managers.APIManagers.Transmitters.Restful;
+using Utilities.Logging;
 
 namespace Hub.Services
 {
@@ -355,9 +356,7 @@ namespace Hub.Services
         public List<PlanDO> MatchEvents(List<PlanDO> curPlans, EventReportCM curEventReport)
         {
             List<PlanDO> subscribingPlans = new List<PlanDO>();
-            //If event source knows which plans to run we should respect that
-            var fileredPlans = curEventReport.PlansAffected?.Count > 0 ? curPlans.Where(x => curEventReport.PlansAffected.Contains(x.Id)) : curPlans;
-            foreach (var curPlan in fileredPlans)
+            foreach (var curPlan in curPlans)
             {
                 //get the 1st activity
                 var actionDO = GetFirstActivityWithEventSubscriptions(curPlan.Id);
@@ -387,7 +386,6 @@ namespace Hub.Services
                     }
                 }
             }
-
             return subscribingPlans;
         }
 
@@ -529,6 +527,7 @@ namespace Hub.Services
 
         public static async Task LaunchProcess(Guid curPlan, params Crate[] curPayload)
         {
+            Logger.LogInfo($"Starting executing plan {curPlan} as a reaction to external event");
             if (curPlan == default(Guid))
             {
                 throw new ArgumentException("Invalid pland id.", nameof(curPlan));
@@ -538,11 +537,12 @@ namespace Hub.Services
             // this exception should be already logged somewhere
             try
             {
-            await ObjectFactory.GetInstance<IPlan>().Run(curPlan, curPayload);
-        }
+                await ObjectFactory.GetInstance<IPlan>().Run(curPlan, curPayload);
+            }
             catch
             {
             }
+            Logger.LogInfo($"Finished executing plan {curPlan} as a reaction to external event");
         }
 
         public async Task<ContainerDO> Run(Guid planId, params Crate[] curPayload)
@@ -628,7 +628,6 @@ namespace Hub.Services
                 //we should clone this plan for current user
                 //let's clone the plan entirely
                 var clonedPlan = (PlanDO)PlanTreeHelper.CloneWithStructure(targetPlan);
-                clonedPlan.Name = clonedPlan.Name + " - " + "Customized for User " + currentUser.UserName;
                 clonedPlan.Description = clonedPlan.Name + " - " + "Customized for User " + currentUser.UserName + " on " + DateTime.Now;
                 clonedPlan.PlanState = PlanState.Inactive;
                 clonedPlan.Tag = cloneTag;

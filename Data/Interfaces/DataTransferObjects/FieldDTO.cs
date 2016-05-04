@@ -10,6 +10,9 @@ namespace Data.Interfaces.DataTransferObjects
     [System.Diagnostics.DebuggerDisplay("Key = '{Key}', Value = '{Value}'")]
     public class FieldDTO : System.ICloneable
     {
+        public const string Data_AllowableValues = "allowableValues";
+
+
         [JsonProperty("key")]
         public string Key { get; set; }
 

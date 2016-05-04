@@ -7,14 +7,14 @@ using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.DataTransferObjects.Helpers;
 using Data.Interfaces.Manifests;
 using Data.States;
-using Hub.Managers;
 using Newtonsoft.Json;
+using TerminalBase.BaseClasses;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services;
-using TerminalBase.BaseClasses;
+using StructureMap;
+using terminalGoogle.Interfaces;
 
 namespace terminalGoogle.Actions
 {
@@ -39,6 +39,8 @@ namespace terminalGoogle.Actions
         }
         private readonly GoogleDrive _googleDrive;
         private readonly GoogleAppScript _googleAppScript;
+
+        private readonly IGoogleIntegration _googleIntegration;
         private const string ConfigurationCrateLabel = "Selected_Google_Form";
         private const string RunTimeCrateLabel = "Google Form Payload Data";
         private const string EventSubscriptionsCrateLabel = "Standard Event Subscriptions";
@@ -65,7 +67,9 @@ namespace terminalGoogle.Actions
         {
             _googleDrive = new GoogleDrive();
             _googleAppScript = new GoogleAppScript();
+            _googleIntegration = ObjectFactory.GetInstance<IGoogleIntegration>();
         }
+
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
             var googleAuth = GetGoogleAuthToken();
@@ -113,17 +117,29 @@ namespace terminalGoogle.Actions
             if (string.IsNullOrEmpty(formId))
                 throw new ArgumentNullException("Google Form selected is empty. Please select google form to receive.");
 
-            var scriptUrl = await _googleDrive.CreateFr8TriggerForDocument(googleAuth, formId);
-            await HubCommunicator.NotifyUser(new TerminalNotificationDTO
+            bool triggerEvent = false;
+            try
             {
-                Type = "Success",
-                ActivityName = "Monitor_Form_Responses",
-                ActivityVersion = "1",
-                TerminalName = "terminalGoogle",
-                TerminalVersion = "1",
-                Message = "You need to create fr8 trigger on current form please go to this url and run Initialize function manually. Ignore this message if you completed this step before. " + scriptUrl,
-                Subject = "Trigger creation URL"
-            }, CurrentFr8UserId);
+                triggerEvent = await _googleDrive.CreateFr8TriggerForDocument(googleAuth, formId, CurrentFr8UserEmail);
+            }
+            finally
+            {
+                if (!triggerEvent)
+                {
+                    //in case of fail as a backup plan use old manual script notification
+                    var scriptUrl = await _googleDrive.CreateManualFr8TriggerForDocument(googleAuth, formId);
+                    await HubCommunicator.NotifyUser(new TerminalNotificationDTO
+                    {
+                        Type = "Success",
+                        ActivityName = "Monitor_Form_Responses",
+                        ActivityVersion = "1",
+                        TerminalName = "terminalGoogle",
+                        TerminalVersion = "1",
+                        Message = "You need to create fr8 trigger on current form please go to this url and run Initialize function manually. Ignore this message if you completed this step before. " + scriptUrl,
+                        Subject = "Trigger creation URL"
+                    }, CurrentFr8UserId);
+                }
+            }
         }
 
         protected override Task RunCurrentActivity()
@@ -151,16 +167,6 @@ namespace terminalGoogle.Actions
             CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(formResponseFields)));
             return Task.FromResult(0);
         }
-        public override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
-        {
-            if (authTokenDO == null) return true;
-            if (!base.NeedsAuthentication(authTokenDO))
-                return false;
-            var token = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
-            // we may also post token to google api to check its validity
-            return (token.Expires - DateTime.Now > TimeSpan.FromMinutes(5) ||
-                    !string.IsNullOrEmpty(token.RefreshToken));
-        }
 
         private Crate CreateEventSubscriptionCrate()
         {
@@ -174,6 +180,7 @@ namespace terminalGoogle.Actions
                 subscriptions.ToArray()
                 );
         }
+
         private List<FieldDTO> CreatePayloadFormResponseFields(List<FieldDTO> payloadfields)
         {
             List<FieldDTO> formFieldResponse = new List<FieldDTO>();

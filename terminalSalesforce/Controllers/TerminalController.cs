@@ -58,7 +58,7 @@ namespace terminalSalesforce.Controllers
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 Category = ActivityCategory.Receivers,
-                MinPaneWidth = 330,
+                MinPaneWidth = 550,
                 WebService = webService,
                 Tags = Tags.TableDataGenerator
             });

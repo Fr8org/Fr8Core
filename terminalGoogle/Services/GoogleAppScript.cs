@@ -8,6 +8,7 @@ using Google.Apis.Script.v1;
 using Google.Apis.Script.v1.Data;
 using Google.Apis.Services;
 using terminalGoogle.DataTransferObjects;
+using terminalGoogle.Services.Authorization;
 using Utilities.Configuration.Azure;
 
 namespace terminalGoogle.Services
