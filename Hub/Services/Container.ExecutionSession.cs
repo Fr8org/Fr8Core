@@ -179,6 +179,10 @@ namespace Hub.Services
                     {
                         throw new ActivityExecutionException(e.ContainerDTO, Mapper.Map<ActivityDO, ActivityDTO>((ActivityDO) currentNode), e.Message, e);
                     }
+                    catch (InvalidTokenRuntimeException)
+                    {
+                        throw;
+                    }
                     catch (Exception e)
                     {
                         var curActivity = currentNode as ActivityDO;
@@ -258,9 +262,19 @@ namespace Hub.Services
                 switch (opCode)
                 {
                     case ActivityResponse.Error:
+                        var currentActivity = _uow.PlanRepository.GetById<ActivityDO>(topFrame.NodeId);
                         ErrorDTO error = activityResponse.TryParseErrorDTO(out error) ? error : null;
-                        throw new ErrorResponseException(Mapper.Map<ContainerDO, ContainerDTO>(_container), error?.Message);
-
+                        var errorCode = (ActivityErrorCode)Enum.Parse(typeof(ActivityErrorCode), error.ErrorCode);
+                        if (errorCode == ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID)
+                        {
+                            throw new InvalidTokenRuntimeException(Mapper.Map<ActivityDO, ActivityDTO>(currentActivity), 
+                                Mapper.Map<ContainerDO, ContainerDTO>(_container), 
+                                error?.Message ?? string.Empty);
+                        }
+                        else
+                        {
+                            throw new ErrorResponseException(Mapper.Map<ContainerDO, ContainerDTO>(_container), error?.Message);
+                        }
                     case ActivityResponse.ExecuteClientActivity:
                         break;
 
@@ -307,10 +321,10 @@ namespace Hub.Services
                             throw new InvalidOperationException($"Unable to find node {id}");
                         }
 
-                        currentNode = _uow.PlanRepository.GetById<PlanNodeDO>(topFrame.NodeId);
 
                         // @alexavrutin here: commented this block since this check broke Test and Branch in Kiosk mode 
                         // when a new plan is being created. 
+                        // currentNode = _uow.PlanRepository.GetById<PlanNodeDO>(topFrame.NodeId);
                         //if (currentNode.RootPlanNodeId != targetNode.RootPlanNodeId)
                         //{
                         //    throw new InvalidOperationException("Can't jump to the subplan from different plan. Instead, use Jump to Plan.");
