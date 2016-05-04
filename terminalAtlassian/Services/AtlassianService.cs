@@ -28,24 +28,6 @@ namespace terminalAtlassian.Services
 
         public bool IsValidUser(CredentialsDTO curCredential)
         {
-            /*
-            var base64Credentials = Convert.ToBase64String(Encoding.ASCII.GetBytes(string.Format("{0}:{1}", curCredential.Username, curCredential.Password)));
-            var headers = new Dictionary<string, string>()
-            {
-                { System.Net.HttpRequestHeader.Authorization.ToString(), string.Format("Basic {0}", base64Credentials) },
-                { System.Net.HttpRequestHeader.Accept.ToString(), "application/json" }
-            };
-            try {
-                var response = _client.GetAsync(new Uri(curCredential.Domain), null, headers).Result;
-            }
-            catch {
-                return false;
-            }
-
-            return true;
-            */
-            
-
             using (HttpClient client = new HttpClient())
             {
                 client.DefaultRequestHeaders.Accept.Add(
@@ -75,8 +57,61 @@ namespace terminalAtlassian.Services
         public List<FieldDTO> GetJiraIssue(string jiraKey, AuthorizationTokenDO authorizationTokenDO)
         {
             Jira jira = CreateRestClient(authorizationTokenDO.Token);
+
             var issue = jira.GetIssue(jiraKey);
             return CreateKeyValuePairList(issue);
+        }
+
+        public List<FieldDTO> GetProjects(AuthorizationTokenDO authToken)
+        {
+            var jira = CreateRestClient(authToken.Token);
+
+            var projects = jira.GetProjects();
+            var result = projects
+                .Select(x => new FieldDTO()
+                    {
+                        Key = x.Name,
+                        Value = x.Key
+                    }
+                )
+                .ToList();
+
+            return result;
+        }
+
+        public List<FieldDTO> GetIssueTypes(string projectKey,
+            AuthorizationTokenDO authToken)
+        {
+            var jira = CreateRestClient(authToken.Token);
+
+            var issueTypes = jira.GetIssueTypes(projectKey);
+            var result = issueTypes
+                .Select(x => new FieldDTO()
+                    {
+                        Key = x.Name,
+                        Value = x.Id
+                    }
+                )
+                .ToList();
+
+            return result;
+        }
+
+        public List<FieldDTO> GetCustomFields(AuthorizationTokenDO authToken)
+        {
+            var jira = CreateRestClient(authToken.Token);
+            var customFields = jira.GetCustomFields();
+
+            var result = customFields
+                .Select(x => new FieldDTO()
+                    {
+                        Key = x.Name,
+                        Value = x.Id
+                    }
+                )
+                .ToList();
+
+            return result;
         }
 
         private List<FieldDTO> CreateKeyValuePairList(Issue curIssue)
