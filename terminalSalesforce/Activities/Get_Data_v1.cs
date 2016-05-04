@@ -91,12 +91,19 @@ namespace terminalSalesforce.Actions
             }
             //Prepare new query filters from selected object properties
             var selectedObjectProperties = await _salesforceManager
-                .GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken,false,RuntimeDataCrateLabel);
+                .GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
             var queryFilterCrate = Crate<FieldDescriptionsCM>.FromContent(
                 QueryFilterCrateLabel,
                 new FieldDescriptionsCM(selectedObjectProperties),
                 AvailabilityType.Configuration);
             CurrentActivityStorage.ReplaceByLabel(queryFilterCrate);
+
+
+            var objectPropertiesCrate = Crate<FieldDescriptionsCM>.FromContent(
+            SalesforceObjectFieldsCrateLabel,
+            new FieldDescriptionsCM(selectedObjectProperties.Select(c => new FieldDTO(c.Key, c.Key) { Label = RuntimeDataCrateLabel })),
+            AvailabilityType.RunTime);
+            CurrentActivityStorage.ReplaceByLabel(objectPropertiesCrate);
 
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
             //Publish information for downstream activities
