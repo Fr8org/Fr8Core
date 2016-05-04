@@ -34,27 +34,32 @@ namespace terminalSlack.Actions
             {
                 MonitorDirectMessagesOption = new CheckBox
                 {
-                    Label = "Monitor direct messages to me and my group conversations"
+                    Label = "Monitor my direct messages and group conversations",
+                    Name = nameof(MonitorDirectMessagesOption)
                 };
                 MonitorChannelsOption = new CheckBox
                 {
                     Label = "Monitor channels",
+                    Name = nameof(MonitorChannelsOption),
                     Selected = true
                 };
                 AllChannelsOption = new RadioButtonOption
                 {
                     Value = "All",
+                    Name = nameof(AllChannelsOption),
                     Selected = true
                 };
                 ChannelList = new DropDownList();
                 SpecificChannelOption = new RadioButtonOption
                 {
                     Controls = new List<ControlDefinitionDTO> { ChannelList },
+                    Name = nameof(SpecificChannelOption),
                     Value = "Select channel"
                 };
                 ChannelSelectionGroup = new RadioButtonGroup
                 {
                     GroupName = nameof(ChannelSelectionGroup),
+                    Name = nameof(ChannelSelectionGroup),
                     Radios = new List<RadioButtonOption> { AllChannelsOption, SpecificChannelOption },
                     Label = "Monitor which channels?"
                 };
@@ -72,7 +77,7 @@ namespace terminalSlack.Actions
 
         public Monitor_Channel_v2() : base(true)
         {
-            _slackIntegration = new SlackIntegration();
+            _slackIntegration = ObjectFactory.GetInstance<ISlackIntegration>();
             ActivityName = "Monitor Slack Messages";
         }
 

@@ -14,6 +14,7 @@ using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
 using Hub.Managers;
 using ServiceStack;
+using Salesforce.Common;
 
 namespace terminalSalesforce.Actions
 {
@@ -25,7 +26,7 @@ namespace terminalSalesforce.Actions
         ISalesforceManager _salesforce = new SalesforceManager();
 
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {   
+        {
             if (CheckAuthentication(curActivityDO, authTokenDO))
             {
                 return curActivityDO;
@@ -69,11 +70,11 @@ namespace terminalSalesforce.Actions
                 return await Task.FromResult(curActivityDO);
             }
 
-            if(CrateManager.GetStorage(curActivityDO).CratesOfType<FieldDescriptionsCM>().Any(x => x.Label.EndsWith(" - " + chosenObject)))
+            if (CrateManager.GetStorage(curActivityDO).CratesOfType<FieldDescriptionsCM>().Any(x => x.Label.EndsWith(" - " + chosenObject)))
             {
                 return await Task.FromResult(curActivityDO);
             }
-                
+
 
             var chosenObjectFieldsList = await _salesforce.GetProperties(chosenObject.ToEnum<SalesforceObjectType>(), authTokenDO, true);
 
@@ -81,12 +82,12 @@ namespace terminalSalesforce.Actions
             {
                 //clear any existing TextSources. This is required when user changes the object in DDLB
                 GetConfigurationControls(crateStorage).Controls.RemoveAll(ctl => ctl is TextSource);
-                chosenObjectFieldsList.ToList().ForEach(selectedObjectField => 
+                chosenObjectFieldsList.ToList().ForEach(selectedObjectField =>
                     AddTextSourceControl(crateStorage, selectedObjectField.Value, selectedObjectField.Key, string.Empty, requestUpstream: true));
 
                 //create design time fields for the downstream activities.
                 crateStorage.RemoveByLabelPrefix("Salesforce Object Fields - ");
-                crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Salesforce Object Fields - " + chosenObject, 
+                crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Salesforce Object Fields - " + chosenObject,
                                                                                 chosenObjectFieldsList.ToList(), AvailabilityType.Configuration));
             }
 
@@ -108,7 +109,7 @@ namespace terminalSalesforce.Actions
                 var requiredFieldControlsList = GetConfigurationControls(crateStorage)
                                                     .Controls.OfType<TextSource>()
                                                     .Where(c => requiredFieldsList.Any(f => f.Key.Equals(c.Name)));
-                
+
                 //for each required field's control, check its value source
                 requiredFieldControlsList.ToList().ForEach(c =>
                 {
@@ -140,13 +141,22 @@ namespace terminalSalesforce.Actions
 
                 //get all text sources
                 var fieldControlsList = GetConfigurationControls(crateStorage).Controls.OfType<TextSource>();
-                
+
                 var payloadStorage = CrateManager.FromDto(payloadCrates.CrateStorage);
 
                 //get <Field> <Value> key value pair for the non empty field
                 var jsonInputObject = ActivitiesHelper.GenerateSalesforceObjectDictionary(fieldsList, fieldControlsList, payloadStorage);
 
-                var result = await _salesforce.Create(chosenObject.ToEnum<SalesforceObjectType>(), jsonInputObject, authTokenDO);
+                string result;
+
+                try
+                {
+                    result = await _salesforce.Create(chosenObject.ToEnum<SalesforceObjectType>(), jsonInputObject, authTokenDO);
+                }
+                catch (TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException ex)
+                {
+                    return InvalidTokenError(payloadCrates);
+                }
 
                 if (!string.IsNullOrEmpty(result))
                 {

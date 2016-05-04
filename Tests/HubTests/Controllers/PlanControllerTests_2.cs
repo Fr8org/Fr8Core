@@ -68,7 +68,9 @@ namespace HubTests.Controllers
 
                 plan.PlanState = PlanState.Active;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
-
+                var userAcct = FixtureData.TestUser1();
+                uow.UserRepository.Add(userAcct);
+                plan.Fr8Account = userAcct;
                 uow.SaveChanges();
 
                 var controller = new PlansController();

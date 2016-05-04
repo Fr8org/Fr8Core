@@ -147,7 +147,6 @@ namespace terminalExcel.Actions
 
         protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
         {
-
             //If different existing spreadsheet is selected then we have to load worksheet list for it
             if (ConfigurationControls.UseExistingSpreadsheetOption.Selected && !string.IsNullOrEmpty(ConfigurationControls.ExistingSpreadsheetsList.Value))
             {

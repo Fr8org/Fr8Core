@@ -100,6 +100,10 @@ namespace terminalYammer.Services
                 {
                     return true;
                 }
+                if (response.StatusCode == System.Net.HttpStatusCode.Unauthorized)
+                {
+                    throw new TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException();
+                }
                 return false;
             }
         }

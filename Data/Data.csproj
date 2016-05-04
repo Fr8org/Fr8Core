@@ -701,6 +701,7 @@
     <Compile Include="Repositories\WebServiceRepository.cs" />
     <Compile Include="States\ActivityTemplateState.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
+    <Compile Include="States\NotificationChannel.cs" />
     <Compile Include="States\CrateDirection.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />

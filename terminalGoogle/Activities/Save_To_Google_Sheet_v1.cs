@@ -15,6 +15,7 @@ using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
 using TerminalBase.BaseClasses;
+using Google.GData.Client;
 
 namespace terminalGoogle.Actions
 {
@@ -216,9 +217,23 @@ namespace terminalGoogle.Actions
                 throw new ActivityExecutionException($"Failed to run {ActivityName} because specified upstream crate was not found in payload");
             }
             var tableToSave = StandardTableDataCMTools.ExtractPayloadCrateDataToStandardTableData(crateToProcess);
-            var spreadsheetUri = await GetOrCreateSpreadsheet();
-            var worksheetUri = await GetOrCreateWorksheet(spreadsheetUri);
-            await _googleSheet.WriteData(spreadsheetUri, worksheetUri, tableToSave, GetGoogleAuthToken());
+            try
+            {
+                var spreadsheetUri = await GetOrCreateSpreadsheet();
+                var worksheetUri = await GetOrCreateWorksheet(spreadsheetUri);
+                await _googleSheet.WriteData(spreadsheetUri, worksheetUri, tableToSave, GetGoogleAuthToken());
+            }
+            catch (GDataRequestException ex)
+            {
+                if (ex?.InnerException.Message.IndexOf("(401) Unauthorized") > -1)
+                {
+                    throw new TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException();
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
         private async Task<string> GetOrCreateWorksheet(string spreadsheetUri)

@@ -16,6 +16,7 @@ using System.IO;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using TerminalBase.Errors;
 
 namespace terminalDocuSign.Services.New_Api
 {
@@ -55,8 +56,15 @@ namespace terminalDocuSign.Services.New_Api
             if (string.IsNullOrEmpty(docuSignAuthDTO.AccountId)) //we deal with and old token, that don't have accountId yet
             {
                 AuthenticationApi authApi = new AuthenticationApi(conf);
+                try
+                {
                 LoginInformation loginInfo = authApi.Login();
                 result.AccountId = loginInfo.LoginAccounts[0].AccountId; //it seems that althought one DocuSign account can have multiple users - only one is returned, the one that oAuth token was created for
+            }
+                catch (Exception ex)
+                {
+                    throw new AuthorizationTokenExpiredOrInvalidException();
+                }
             }
 
             return result;
@@ -225,6 +233,8 @@ namespace terminalDocuSign.Services.New_Api
 
         private static IEnumerable<FieldDTO> GetRecipientsAndTabs(DocuSignApiConfiguration conf, object api, string id)
         {
+            try
+            {
             var result = new List<FieldDTO>();
             var recipients = GetRecipients(conf, api, id);
             result.AddRange(MapRecipientsToFieldDTO(recipients));
@@ -234,6 +244,11 @@ namespace terminalDocuSign.Services.New_Api
             }
 
             return result;
+        }
+            catch (Exception ex)
+            {
+                throw new AuthorizationTokenExpiredOrInvalidException();
+            }
         }
 
         private static Recipients GetRecipients(DocuSignApiConfiguration conf, object api, string id)

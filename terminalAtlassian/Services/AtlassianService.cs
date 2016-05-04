@@ -10,7 +10,7 @@ using StructureMap;
 using Data.Entities;
 using Fr8Data.DataTransferObjects;
 using Hub.Managers.APIManagers.Transmitters.Restful;
-
+using TerminalBase.Errors;
 using terminalAtlassian.Interfaces;
 
 namespace terminalAtlassian.Services
@@ -74,8 +74,23 @@ namespace terminalAtlassian.Services
         public List<FieldDTO> GetJiraIssue(string jiraKey, AuthorizationTokenDO authorizationTokenDO)
         {
             Jira jira = CreateRestClient(authorizationTokenDO.Token);
-            var issue = jira.GetIssue(jiraKey);
-            return CreateKeyValuePairList(issue);
+
+            try
+            {
+                var issue = jira.GetIssue(jiraKey);
+                return CreateKeyValuePairList(issue);
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.IndexOf("Unauthorized (401)") > -1)
+                {
+                    throw new AuthorizationTokenExpiredOrInvalidException("Please make sure that username, password and domain are correct.");
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
         private List<FieldDTO> CreateKeyValuePairList(Issue curIssue)
@@ -90,8 +105,11 @@ namespace terminalAtlassian.Services
         private Jira CreateRestClient(string token)
         {
             var credentialsDTO = JsonConvert.DeserializeObject<CredentialsDTO>(token);
-            // credentialsDTO.Domain = credentialsDTO.Domain.Replace("http://", "https://");
-
+            credentialsDTO.Domain = credentialsDTO.Domain.Replace("http://", "https://");
+            if (!credentialsDTO.Domain.StartsWith("https://"))
+            {
+                credentialsDTO.Domain = "https://" + credentialsDTO.Domain;
+            }
             return Jira.CreateRestClient(credentialsDTO.Domain, credentialsDTO.Username, credentialsDTO.Password);
         }
     }

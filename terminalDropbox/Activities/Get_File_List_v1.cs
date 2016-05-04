@@ -11,6 +11,7 @@ using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using TerminalBase.Errors;
 
 namespace terminalDropbox.Actions
 {
@@ -67,7 +68,15 @@ namespace terminalDropbox.Actions
 
         protected override async Task RunCurrentActivity()
         {
-            var fileNames = await _dropboxService.GetFileList(GetDropboxAuthToken());
+            IList<string> fileNames;
+            try
+            {
+                fileNames = await _dropboxService.GetFileList(GetDropboxAuthToken());
+            }
+            catch (Dropbox.Api.AuthException)
+            {
+                throw new AuthorizationTokenExpiredOrInvalidException();
+            }
             var dropboxFileList = PackDropboxFileListCrate(fileNames);
             CurrentPayloadStorage.Add(dropboxFileList);
         }

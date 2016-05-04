@@ -139,17 +139,17 @@ namespace terminalDocuSign.Actions
             {
                 if (curDocumentation.Contains("ExplainExtractData"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution work with DocuSign envelops"));
+                    return Task.FromResult(GenerateDocumentationResponse(@"This solution work with DocuSign envelops"));
                 }
                 if (curDocumentation.Contains("ExplainService"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                    return Task.FromResult(GenerateDocumentationResponse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }
-                return Task.FromResult(GenerateErrorRepsonse("Unknown contentPath"));
+                return Task.FromResult(GenerateErrorResponse("Unknown contentPath"));
             }
             return
                 Task.FromResult(
-                    GenerateErrorRepsonse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+                    GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
 
         #region Private Methods

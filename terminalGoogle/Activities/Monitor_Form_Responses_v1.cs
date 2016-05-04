@@ -151,7 +151,7 @@ namespace terminalGoogle.Actions
             if (payloadFields == null)
             {
                 RequestHubExecutionTermination();
-                return Task.FromResult(0); ;
+                return Task.FromResult(0);
             }
             var formResponseFields = CreatePayloadFormResponseFields(payloadFields);
 

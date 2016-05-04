@@ -30,7 +30,7 @@ namespace terminalSlack.Actions
         public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(activityDO, containerId);
-            string message; 
+            string message;
 
             if (NeedsAuthentication(authTokenDO))
             {
@@ -55,9 +55,15 @@ namespace terminalSlack.Actions
                 return Error(payloadCrates, "Cannot get selected field value from TextSource control in activity. Detailed information: " + ex.Message);
             }
 
-
-            await _slackIntegration.PostMessageToChat(authTokenDO.Token,
-                actionChannelId, StripHTML(message));
+            try
+            {
+                await _slackIntegration.PostMessageToChat(authTokenDO.Token,
+                    actionChannelId, StripHTML(message));
+            }
+            catch (TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException)
+            {
+                return InvalidTokenError(payloadCrates);
+            }
 
             return Success(payloadCrates);
         }
@@ -104,12 +110,12 @@ namespace terminalSlack.Actions
         {
             var oauthToken = authTokenDO.Token;
             var configurationCrate = PackCrate_ConfigurationControls();
-           await FillSlackChannelsSource(configurationCrate, "Selected_Slack_Channel", oauthToken);
+            await FillSlackChannelsSource(configurationCrate, "Selected_Slack_Channel", oauthToken);
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Clear();
-                crateStorage.Add(configurationCrate);             
+                crateStorage.Add(configurationCrate);
                 //crateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO, "Available Fields"));
             }
             return curActivityDO;
