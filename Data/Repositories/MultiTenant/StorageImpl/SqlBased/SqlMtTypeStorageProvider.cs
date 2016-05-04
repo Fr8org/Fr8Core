@@ -4,8 +4,8 @@ using System.Configuration;
 using System.Data;
 using System.Data.SqlClient;
 using System.Linq;
-using Data.Crates;
 using Data.Repositories.SqlBased;
+using Fr8Data.Crates;
 
 namespace Data.Repositories.MultiTenant.Sql
 {

@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using Data.Interfaces.Manifests;
+using Fr8Data.Manifests;
 
 namespace Data.Repositories.MultiTenant.Queryable
 {
