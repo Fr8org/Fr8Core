@@ -8,18 +8,18 @@ using Hub.Exceptions;
 using HubWeb.Controllers.Helpers;
 using Microsoft.AspNet.Identity;
 using StructureMap;
-using Data.Entities;
-using Data.Infrastructure.StructureMap;
-using Data.Interfaces;
-using Data.States;
 using Hub.Interfaces;
 using System.Threading.Tasks;
+using Data.Entities;
 using HubWeb.ViewModels;
 using Newtonsoft.Json;
 using Hub.Managers;
 using Utilities.Interfaces;
 using HubWeb.Infrastructure;
 using Data.Infrastructure;
+using Data.Infrastructure.StructureMap;
+using Data.Interfaces;
+using Data.States;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.DataTransferObjects.Helpers;
@@ -455,7 +455,7 @@ namespace HubWeb.Controllers
                     //this response contains details about the error that happened on some terminal and need to be shown to client
                     if (exception.ContainerDTO != null)
                     {
-                        exception.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
+                        exception.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Fr8Data.Constants.PlanType.Ongoing : Fr8Data.Constants.PlanType.RunOnce;
                     }
                     // Do not notify -- it happens in Plan.cs
                     throw;
