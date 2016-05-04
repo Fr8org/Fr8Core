@@ -402,6 +402,7 @@
     <Compile Include="Services\Subscription.cs" />
     <Compile Include="Services\Time.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
+    <Compile Include="Utilization\UtilizationMonitoringService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj">
