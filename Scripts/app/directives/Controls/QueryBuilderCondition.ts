@@ -3,7 +3,7 @@
 
     export interface IQueryBuilderConditionScope extends ng.IScope {
         currentAction: model.ActivityDTO;
-        fields: Array<IQueryField>;
+        fields: Array<model.FieldDTO>;
         operators: Array<IQueryOperator>;
         condition: IQueryCondition;
         isSingle: boolean;
@@ -41,6 +41,38 @@
 
                     var configurationControl = null;
 
+                    var createControl = (condition: IQueryCondition): model.ControlDefinitionDTO => {
+                        var control;
+
+                        debugger;
+
+                        if ($scope.condition.field.fieldType === model.FieldType[model.FieldType.Date]) {
+                            control = new model.DatePicker();
+                            control.value = condition.value;
+                        }
+                        else if ($scope.condition.field.fieldType === model.FieldType[model.FieldType.PickList]
+                            && $scope.condition.field.data['allowableValues']) {
+                            control = new model.DropDownList();
+
+                            var listItems: Array<model.DropDownListItem> = [];
+                            angular.forEach(
+                                $scope.condition.field.data['allowableValues'],
+                                (item) => {
+                                    listItems.push(new model.DropDownListItem(item.key, item.value));
+                                }
+                            );
+
+                            control.listItems = listItems;
+                        }
+                        // All other field types.
+                        else {
+                            control = new model.TextBox();
+                            control.value = condition.value;
+                        }
+
+                        return control;
+                    };
+
                     var attachControl = () => {
                         if (configurationControl) {
                             configurationControl.scope.$destroy();
@@ -55,14 +87,10 @@
                         }
 
                         var configurationControlScope = $scope.$new();
-                        (<any>configurationControlScope).control =
-                            angular.copy($scope.condition.field.control);
-
-                        (<any>configurationControlScope).control.selectedKey = $scope.condition.value;
-                        (<any>configurationControlScope).control.value = $scope.condition.value;
+                        (<any>configurationControlScope).control = createControl($scope.condition);
                         (<any>configurationControlScope).currentAction = $scope.currentAction;
 
-                        $scope.hasConfigurationControl = true;
+                        $scope.hasConfigurationControl = true; 
 
                         $compile('<configuration-control current-action="currentAction" field="control" />')
                             (configurationControlScope, (markup, scope) => {
