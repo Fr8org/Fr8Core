@@ -46,30 +46,41 @@ namespace HubWeb.Controllers
 
             return Ok(curActivityTemplateDTO);
         }
+       
 
         [ActionName("upstream")]
-        [ResponseType(typeof(List<PlanNodeDO>))]
+        [ResponseType(typeof(List<ActivityDTO>))]
+        [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
         public IHttpActionResult GetUpstreamActivities(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var activityDO = uow.PlanRepository.GetById<ActivityDO>(id);
-                var upstreamActivities = _activity.GetUpstreamActivities(uow, activityDO);
-                return Ok(upstreamActivities);
+                var upstreamActions = _activity
+                    .GetUpstreamActivities(uow, activityDO)
+                    .OfType<ActivityDO>()
+                    .Select(x => Mapper.Map<ActivityDTO>(x))
+                    .ToList();
+
+                return Ok(upstreamActions);
             }
         }
-
         [ActionName("downstream")]
-        [ResponseType(typeof(List<PlanNodeDO>))]
-        [Fr8ApiAuthorize]
+        [ResponseType(typeof(List<ActivityDTO>))]
+        [Fr8HubWebHMACAuthenticate]
         public IHttpActionResult GetDownstreamActivities(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 ActivityDO activityDO = uow.PlanRepository.GetById<ActivityDO>(id);
-                var downstreamActivities = _activity.GetDownstreamActivities(uow, activityDO);
-                return Ok(downstreamActivities);
+                var downstreamActions = _activity
+                    .GetDownstreamActivities(uow, activityDO)
+                    .OfType<ActivityDO>()
+                    .Select(x => Mapper.Map<ActivityDTO>(x))
+                    .ToList();
+
+                return Ok(downstreamActions);
             }
         }
 
@@ -80,7 +91,7 @@ namespace HubWeb.Controllers
         {
             return Ok(_activity.GetAvailableData(id, direction, availability));
         }
-        
+
         [ActionName("available")]
         [ResponseType(typeof(IEnumerable<ActivityTemplateCategoryDTO>))]
         [AllowAnonymous]
