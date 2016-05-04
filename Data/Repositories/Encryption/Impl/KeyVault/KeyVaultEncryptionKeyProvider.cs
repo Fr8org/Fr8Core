@@ -26,8 +26,16 @@ namespace Data.Repositories.Encryption.Impl.KeyVault
             _sqlConnectionProvider = sqlConnectionProvider;
 
             _randomNumber = new RNGCryptoServiceProvider();
-            _client = new KeyVaultClient(GetAccessToken);
-            _clientCredentials = new ClientCredential(CloudConfigurationManager.GetSetting("KeyVaultClientId"), CloudConfigurationManager.GetSetting("KeyVaultClientSecret"));
+            
+            var clientId = CloudConfigurationManager.GetSetting("KeyVaultClientId");
+            var clientSecret = CloudConfigurationManager.GetSetting("KeyVaultClientSecret");
+
+            if (!string.IsNullOrWhiteSpace(clientId) && !string.IsNullOrWhiteSpace(clientSecret))
+            {
+                _clientCredentials = new ClientCredential(clientId, clientSecret);
+                _client = new KeyVaultClient(GetAccessToken);
+            }
+
             _keyVaultUrl = CloudConfigurationManager.GetSetting("KeyVaultUrl");
 
             int timeout;
@@ -81,7 +89,14 @@ namespace Data.Repositories.Encryption.Impl.KeyVault
 
             task.Wait(_maxWaitTimeout);
         }
-        
+
+        private void ValidateCredentials()
+        {
+            if (_clientCredentials == null)
+            {
+                throw new NotSupportedException("KeyVault encryption key provider can't be used here. Provide correct KeyVaultClientId, KeyVaultClientSecret and KeyVaultUrl settings first.");
+            }
+        }
 
         public Task<string> GetAccessToken(string authority, string resource, string scope)
         {
@@ -95,6 +110,8 @@ namespace Data.Repositories.Encryption.Impl.KeyVault
 
         public EncryptionKey GetEncryptionKey(string peerId, int keyLength, int ivLength)
         {
+            ValidateCredentials();
+
             using (var connection = new SqlConnection { ConnectionString = (string)_sqlConnectionProvider.ConnectionInfo })
             {
                 connection.Open();
