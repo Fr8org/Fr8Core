@@ -1,24 +1,17 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using Data.Control;
 using Data.Crates;
 using Hub.Managers;
-using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Hub.Interfaces;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using Data.Repositories;
-using System.Reflection;
 using Data.States;
 
 namespace terminalFr8Core.Actions
