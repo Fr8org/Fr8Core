@@ -26,6 +26,7 @@ namespace terminalSlack
         public static void ConfigureLive(ConfigurationExpression configurationExpression)
         {
             configurationExpression.For<ISlackEventManager>().Use<SlackEventManager>().Singleton();
+            configurationExpression.For<ISlackIntegration>().Use<SlackIntegration>().Singleton();
         }
     }
 }
