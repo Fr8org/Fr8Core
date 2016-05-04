@@ -457,6 +457,7 @@ namespace HubWeb.Controllers
                     {
                         exception.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Fr8Data.Constants.PlanType.Ongoing : Fr8Data.Constants.PlanType.RunOnce;
                     }
+
                     // Do not notify -- it happens in Plan.cs
                     throw;
                 }
