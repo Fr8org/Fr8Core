@@ -73,43 +73,6 @@ namespace HubWeb.Controllers
             }
         }
 
-        // TODO: after DO-1214 is completed, this method must be removed.
-        [ActionName("upstream_actions")]
-        [ResponseType(typeof(List<ActivityDTO>))]
-        [Fr8HubWebHMACAuthenticate]
-        public IHttpActionResult GetUpstreamActions(Guid id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var activityDO = uow.PlanRepository.GetById<ActivityDO>(id);
-                var upstreamActions = _activity
-                    .GetUpstreamActivities(uow, activityDO)
-                    .OfType<ActivityDO>()
-                    .Select(x => Mapper.Map<ActivityDTO>(x))
-                    .ToList();
-
-                return Ok(upstreamActions);
-            }
-        }
-        // TODO: after DO-1214 is completed, this method must be removed.
-        [ActionName("downstream_actions")]
-        [ResponseType(typeof(List<ActivityDTO>))]
-        [Fr8HubWebHMACAuthenticate]
-        public IHttpActionResult GetDownstreamActions(Guid id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                ActivityDO activityDO = uow.PlanRepository.GetById<ActivityDO>(id);
-                var downstreamActions = _activity
-                    .GetDownstreamActivities(uow, activityDO)
-                    .OfType<ActivityDO>()
-                    .Select(x => Mapper.Map<ActivityDTO>(x))
-                    .ToList();
-
-                return Ok(downstreamActions);
-            }
-        }
-        
         [HttpGet]
         [ActionName("available_data")]
         [Fr8HubWebHMACAuthenticate]
