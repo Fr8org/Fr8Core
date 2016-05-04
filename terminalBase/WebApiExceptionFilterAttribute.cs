@@ -39,7 +39,7 @@ namespace TerminalBase
 
             HttpStatusCode statusCode = HttpStatusCode.InternalServerError;
 
-            if (curTerminalError is AuthorizationTokenExpiredException)
+            if (curTerminalError is AuthorizationTokenExpiredOrInvalidException)
             {
                 statusCode = (HttpStatusCode)419;
             }
@@ -47,7 +47,7 @@ namespace TerminalBase
             {
                 foreach (var innerEx in ((AggregateException)curTerminalError).InnerExceptions)
                 {
-                    if (innerEx is AuthorizationTokenExpiredException)
+                    if (innerEx is AuthorizationTokenExpiredOrInvalidException)
                     {
                         statusCode = (HttpStatusCode)419;
                     }
