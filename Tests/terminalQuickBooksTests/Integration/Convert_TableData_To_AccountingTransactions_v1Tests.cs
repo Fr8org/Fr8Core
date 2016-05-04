@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using Hub.Managers;
 using NUnit.Framework;
 using terminalQuickBooksTests.Fixtures;
 using System.Globalization;
+using System.Linq;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 
 namespace terminalQuickBooksTests.Integration
 {
@@ -41,7 +39,7 @@ namespace terminalQuickBooksTests.Integration
             AddUpstreamCrate(dataDTO, curTableDataCrate, "DocuSignTableDataMappedToQuickbooks");
             using (var crateStorage = Crate.GetUpdatableStorage(dataDTO.ActivityDTO))
             {
-                crateStorage.Add(Data.Crates.Crate.FromContent("ChartOfAccounts", curAccountsCrate));
+                crateStorage.Add(Fr8Data.Crates.Crate.FromContent("ChartOfAccounts", curAccountsCrate));
             }
             //Act
             var firstResponseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
@@ -70,7 +68,7 @@ namespace terminalQuickBooksTests.Integration
                 var memoTextBox = controls.FindByName("Transaction_Memo");
                 memoTextBox.Value = "The testing transactions";
                 crateStorage.Remove<StandardAccountingTransactionCM>();
-                crateStorage.Add(Data.Crates.Crate.FromContent("StandardConfigurationControlsCM", controls));
+                crateStorage.Add(Fr8Data.Crates.Crate.FromContent("StandardConfigurationControlsCM", controls));
                 AddOperationalStateCrate(dataDTO, new OperationalStateCM());
             }
             var payloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);

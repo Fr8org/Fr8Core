@@ -1,25 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http.Results;
-using AutoMapper;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using NUnit.Framework;
-using Newtonsoft.Json;
-using StructureMap;
-using Data.Constants;
-using Data.Crates;
-using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Interfaces;
 using Hub.Managers;
-using HubWeb.Controllers;
-using Utilities;
 using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
-using terminalAzure;
 
 namespace terminalIntegrationTests
 {

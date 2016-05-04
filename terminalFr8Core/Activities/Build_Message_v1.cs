@@ -1,14 +1,14 @@
-﻿using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using TerminalBase.BaseClasses;
-using Data.Interfaces.Manifests;
-using Data.Control;
-using Data.States;
 using System.Text.RegularExpressions;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace terminalFr8Core.Actions
 {

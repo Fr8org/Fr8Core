@@ -2,7 +2,7 @@
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.Controllers;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 
 namespace HubWeb
 {

@@ -1,17 +1,16 @@
-﻿using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using HealthMonitor.Utility;
+﻿using HealthMonitor.Utility;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Hub.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Data.States;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace terminalDocuSignTests.Integration
 {

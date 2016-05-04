@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
-using terminalSlack.Actions;
 using terminalSlack.Interfaces;
 using UtilitiesTesting;
 

@@ -4,21 +4,18 @@ using System.Linq;
 using System.Threading.Tasks;
 using Data.Interfaces;
 using Newtonsoft.Json;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Hub.Managers;
 using StructureMap;
-using terminalDocuSign.DataTransferObjects;
-using terminalDocuSign.Services;
 using TerminalBase.Infrastructure;
 using TerminalBase.Services.MT;
 using Data.States;
 using Data.Repositories.MultiTenant;
-using terminalDocuSign.Actions;
-using terminalDocuSign.Services.New_Api;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace terminalDocuSign.Actions
 {
@@ -319,7 +316,7 @@ namespace terminalDocuSign.Actions
                         Label = "Status",
                         FieldType = FieldType.String
                     });
-                var queryFieldsCrate = Data.Crates.Crate.FromContent("Queryable Criteria", queryableCriteria);
+                var queryFieldsCrate = Fr8Data.Crates.Crate.FromContent("Queryable Criteria", queryableCriteria);
                 crateStorage.RemoveByLabel("Queryable Criteria");
                 crateStorage.Add(queryFieldsCrate);
             }
@@ -372,7 +369,7 @@ namespace terminalDocuSign.Actions
                     Conditions = conditions
                 });
 
-                var queryCriteria = Data.Crates.Crate.FromContent(
+                var queryCriteria = Fr8Data.Crates.Crate.FromContent(
                     "Queryable Criteria",
                     new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(selectedObject.Id))
                 );
@@ -465,7 +462,7 @@ namespace terminalDocuSign.Actions
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                crateStorage.Add(Data.Crates.Crate.FromContent("Track DocuSign Recipients Payload Data", new StandardPayloadDataCM(runTimePayloadData)));
+                crateStorage.Add(Fr8Data.Crates.Crate.FromContent("Track DocuSign Recipients Payload Data", new StandardPayloadDataCM(runTimePayloadData)));
             }
 
 

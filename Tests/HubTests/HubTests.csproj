@@ -324,6 +324,10 @@
     <Compile Include="Wrapper\DcousingAccountTest.cs" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\..\Fr8Data\Fr8Data.csproj">
+      <Project>{a3178d71-a2c3-45b9-8334-adcc7c313541}</Project>
+      <Name>Fr8Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Daemons\Daemons.csproj">
       <Project>{b15ea73e-e0d0-4604-bcfc-ddafb67f872d}</Project>
       <Name>Daemons</Name>

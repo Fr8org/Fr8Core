@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Fr8Data.DataTransferObjects;
 using Newtonsoft.Json.Linq;
 using StructureMap;
-using Data.Interfaces.DataTransferObjects;
 using terminalSlack.Interfaces;
 using Utilities.Configuration.Azure;
 using Hub.Managers.APIManagers.Transmitters.Restful;
-using Newtonsoft.Json;
 
 namespace terminalSlack.Services
 {

@@ -1,30 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Formatting;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using Hub.Managers;
 using StructureMap;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Utilities.Configuration.Azure;
-using Data.Constants;
-using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using AutoMapper;
 using System.Configuration;
-using Data.Interfaces;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace TerminalBase.Infrastructure
 {

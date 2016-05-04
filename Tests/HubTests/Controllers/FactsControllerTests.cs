@@ -1,7 +1,6 @@
 ﻿using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using HubTests.Controllers.Api;
 using HubWeb.Controllers.Api;
 using NUnit.Framework;
@@ -9,6 +8,7 @@ using StructureMap;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http.Results;
+using Fr8Data.DataTransferObjects;
 using UtilitiesTesting.Fixtures;
 
 namespace HubTests.Controllers

@@ -1,26 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
 using AutoMapper.Internal;
 using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;
 using Data.Entities;
-using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Fr8Data.DataTransferObjects;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Authorizers;
 using Hub.Services;
 using HubWeb.ViewModels;
-using Microsoft.AspNet.Identity;
 using Utilities;
-using Utilities.Logging;
 
 namespace HubWeb.Controllers
 {

@@ -1,21 +1,16 @@
-﻿using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Hub.Managers;
-using Newtonsoft.Json;
+﻿using Data.Entities;
 using StructureMap;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Control;
-using Data.Interfaces.Manifests;
-using Data.States;
 using terminalDropbox.Interfaces;
 using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 using terminalDropbox.Services;
 using System.IO;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace terminalDropbox.Actions
 {

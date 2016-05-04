@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using System.Threading.Tasks;
-using Data.Crates;
-using Data.States;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace Hub.Interfaces
 {

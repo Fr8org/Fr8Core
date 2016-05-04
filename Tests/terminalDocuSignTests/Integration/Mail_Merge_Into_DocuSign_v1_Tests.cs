@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using NUnit.Framework;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using terminalDocuSignTests.Fixtures;
 
 namespace terminalDocuSignTests.Integration
@@ -68,7 +65,7 @@ namespace terminalDocuSignTests.Integration
                    Name = "Get Google Sheet Data",
                    Label = "Get Google Sheet Data",
                    Tags = "Table Data Generator",
-                   Category = Data.States.ActivityCategory.Receivers
+                   Category = Fr8Data.States.ActivityCategory.Receivers
                }
            );
         }

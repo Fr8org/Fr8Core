@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Data.Control;
-using Data.Interfaces.Manifests;
+using Fr8Data.Control;
+using Fr8Data.Manifests;
 using TerminalBase.BaseClasses;
 
 namespace terminalTest.Actions

@@ -1,12 +1,10 @@
 ﻿using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using HubWeb.Controllers.Helpers;
 using StructureMap;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
+using Fr8Data.DataTransferObjects;
 using InternalInterface = Hub.Interfaces;
 
 namespace HubWeb.Controllers.Api

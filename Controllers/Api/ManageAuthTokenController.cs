@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
-using AutoMapper;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 using Hub.Interfaces;
-using Hub.Services;
 using HubWeb.Infrastructure;
 
 namespace HubWeb.Controllers.Api

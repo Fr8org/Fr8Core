@@ -6,33 +6,22 @@ using System.Threading.Tasks;
 using System.Web.Http.Results;
 using AutoMapper;
 using NUnit.Framework;
-using Newtonsoft.Json;
 using StructureMap;
-using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
 using HubWeb.Controllers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using terminalAzure;
-using terminalDocuSign;
 using terminalDocuSign.Infrastructure.AutoMapper;
 using terminalDocuSign.Infrastructure.StructureMap;
-using terminalDocuSign.Tests.Fixtures;
 using TerminalBase.Infrastructure;
-
 using DependencyType = Hub.StructureMap.StructureMapBootStrapper.DependencyType;
-using terminalDocuSign.Infrastructure.StructureMap;
-using terminalDocuSign.Infrastructure.AutoMapper;
-using System.Security.Principal;
-using Data.Control;
-using Data.Crates;
-using Hub.Managers;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 
 namespace terminalIntegrationTests
 {

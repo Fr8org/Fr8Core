@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
-using Data.Crates;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
-using Data.Interfaces.Manifests;
 
 namespace Hub.Services
 {
@@ -93,7 +94,7 @@ namespace Hub.Services
             CrateDirection direction,
             AvailabilityType availability,
             bool includeCratesFromActivity = true
-                ) where T : Data.Interfaces.Manifests.Manifest
+                ) where T : Fr8Data.Manifests.Manifest
         {
             Func<Crate<T>, bool> cratePredicate;
 
@@ -325,7 +326,7 @@ namespace Hub.Services
             IEnumerable<ActivityTemplateDTO> curActivityTemplates;
             curActivityTemplates = _activityTemplate
                 .GetAll()
-                .Where(at => at.Category == Data.States.ActivityCategory.Solution
+                .Where(at => at.Category == ActivityCategory.Solution
                     && at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
                 .OrderBy(t => t.Category)
                 .Select(Mapper.Map<ActivityTemplateDTO>)

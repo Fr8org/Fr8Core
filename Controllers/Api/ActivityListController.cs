@@ -1,16 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using System.Web.Http;
-using System.Web.Http.Description;
-using System.Web.Http.Results;
-using AutoMapper;
-using StructureMap;
-using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Hub.Interfaces;
-using Hub.Services;
-using HubWeb.ViewModels;
+﻿using System.Web.Http;
 
 namespace HubWeb.Controllers
 {

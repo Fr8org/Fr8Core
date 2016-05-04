@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using System.Web.Http.Routing;
+using Fr8Data.DataTransferObjects;
 using Microsoft.Owin.Hosting;
 using Owin;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
-using Data.Entities;
 
 namespace terminalFr8CoreTests.Fixtures
 {

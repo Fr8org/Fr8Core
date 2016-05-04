@@ -1,7 +1,7 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using Data.States;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.States;
 
 namespace terminalSlackTests.Fixtures
 {

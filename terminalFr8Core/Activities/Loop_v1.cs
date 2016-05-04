@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
-using Data.Helpers;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Helpers;
+using Fr8Data.Manifests;
 using Hub.Managers;
 using Newtonsoft.Json.Linq;
 using TerminalBase;
@@ -216,7 +216,7 @@ namespace terminalFr8Core.Actions
                     using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                     {
                         crateStorage.RemoveByLabel("Available Labels");
-                        crateStorage.Add(Data.Crates.Crate.FromContent("Available Labels",
+                        crateStorage.Add(Fr8Data.Crates.Crate.FromContent("Available Labels",
                             new FieldDescriptionsCM() { Fields = labelList }));
                     }
                 }

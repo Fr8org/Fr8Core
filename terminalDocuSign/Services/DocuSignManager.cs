@@ -1,8 +1,4 @@
-﻿using Data.Control;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
+﻿using Data.Entities;
 using DocuSign.eSign.Api;
 using DocuSign.eSign.Client;
 using DocuSign.eSign.Model;
@@ -12,12 +8,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Web;
 using Data.Validations;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services.NewApi;
 using Utilities.Configuration.Azure;
 using System.IO;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace terminalDocuSign.Services.New_Api
 {

@@ -3,9 +3,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
-using Data.Constants;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
 using TerminalBase.Infrastructure;
 using Newtonsoft.Json;
 using Data.Infrastructure;
@@ -14,8 +12,8 @@ using Utilities;
 using System.Net.Http;
 using System.Linq;
 using System.Net.Http.Headers;
-using System.Web;
-using Microsoft.AspNet.Identity;
+using Fr8Data.Constants;
+using Fr8Data.DataTransferObjects;
 
 namespace TerminalBase.BaseClasses
 {

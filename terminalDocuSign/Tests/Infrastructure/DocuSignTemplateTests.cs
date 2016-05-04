@@ -1,31 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using Data.Interfaces;
-
-
-using NUnit.Framework;
-using Utilities;
-using Utilities.Configuration.Azure;
-
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
-using Data.Interfaces.DataTransferObjects;
-using Data.Migrations;
-using Newtonsoft.Json;
-using StructureMap;
-using terminalDocuSign.Interfaces;
-using terminalDocuSign.Services;
-using terminalDocuSign;
-using terminalDocuSign.Infrastructure.AutoMapper;
-using terminalDocuSign.Infrastructure.StructureMap;
-
-using DependencyType = Hub.StructureMap.StructureMapBootStrapper.DependencyType;
-using terminalDocuSign.DataTransferObjects;
-using terminalDocuSign.Infrastructure;
-using terminalDocuSign.Tests.Fixtures;
-
-namespace terminalDocuSign.Tests.Infrastructure
+﻿namespace terminalDocuSign.Tests.Infrastructure
 {
     //[TestFixture]
     //[Category("DocuSignTemplate")]

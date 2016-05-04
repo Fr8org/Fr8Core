@@ -1,24 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
-using System.Xml;
 using System.Web.Http;
-using Data.Constants;
-using Data.Crates;
+using Fr8Data.Constants;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using StructureMap;
-using Data.Crates.Helpers;
-using Data.Infrastructure;
-using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using Hub.Services;
 using Newtonsoft.Json;
-using System.Xml.Linq;
-using Data.Interfaces.Manifests;
-using Hangfire;
 using Utilities.Logging;
 
 namespace HubWeb.Controllers

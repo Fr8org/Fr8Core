@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 
 namespace TerminalBase.Services
 {

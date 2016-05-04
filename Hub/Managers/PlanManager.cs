@@ -1,19 +1,17 @@
 ﻿using AutoMapper;
-using Data.Control;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Interfaces;
 using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Data.Crates;
-using Utilities.Configuration.Azure;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Utilities.Logging;
 
 namespace Hub.Managers
