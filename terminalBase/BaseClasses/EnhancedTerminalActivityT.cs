@@ -15,6 +15,7 @@ using Data.States;
 using Hub.Managers;
 using TerminalBase.Infrastructure;
 using Newtonsoft.Json.Linq;
+using TerminalBase.Errors;
 
 namespace TerminalBase.BaseClasses
 {
@@ -298,6 +299,10 @@ namespace TerminalBase.BaseClasses
                     {
                         Success();
                     }
+                }
+                catch (AuthorizationTokenExpiredOrInvalidException ex)
+                {
+                    ErrorInvalidToken(ex.Message);
                 }
                 catch (ActivityExecutionException ex)
                 {
@@ -722,6 +727,18 @@ namespace TerminalBase.BaseClasses
             SetResponse(ActivityResponse.Error);
             OperationalState.CurrentActivityErrorCode = errorCode;
             OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, ErrorType.Generic, errorCode.ToString(), null, null, null));
+        }
+
+        /**********************************************************************************/
+        /// <summary>
+        /// returns error to hub
+        /// </summary>
+        protected void ErrorInvalidToken(string instructionsToUser = null)
+        {
+            SetResponse(ActivityResponse.Error);
+            var errorCode = ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID;
+            OperationalState.CurrentActivityErrorCode = errorCode;
+            OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(instructionsToUser, ErrorType.Authentication, errorCode.ToString(), null, null, null));
         }
 
         /**********************************************************************************/

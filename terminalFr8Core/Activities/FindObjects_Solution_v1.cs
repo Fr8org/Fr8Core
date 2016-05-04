@@ -378,7 +378,7 @@ namespace terminalFr8Core.Actions
             }
             return
                 Task.FromResult(
-                    GenerateErrorRepsonse("Unknown displayMechanism: we currently support MainPage cases"));
+                    GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage cases"));
         }
     }
 }

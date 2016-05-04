@@ -15,7 +15,7 @@ using ServiceStack;
 
 namespace terminalSalesforce.Actions
 {
-    public class Get_Data_v1 : EnhancedTerminalActivity<Get_Data_v1.ActivityUi>
+    public class Get_Data_v1 : BaseSalesforceTerminalActivity<Get_Data_v1.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -40,7 +40,7 @@ namespace terminalSalesforce.Actions
                     Source = new FieldSourceDTO
                     {
                         Label = QueryFilterCrateLabel,
-                        ManifestType = CrateManifestTypes.StandardQueryFields
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
                 };
                 Controls.Add(SalesforceObjectSelector);
@@ -51,12 +51,13 @@ namespace terminalSalesforce.Actions
         public const string QueryFilterCrateLabel = "Queryable Criteria";
 
         public const string RuntimeDataCrateLabel = "Table from Salesforce Get Data";
+        public const string PayloadDataCrateLabel = "Payload from Salesforce Get Data";
 
         public const string SalesforceObjectFieldsCrateLabel = "Salesforce Object Fields";
 
         private readonly ISalesforceManager _salesforceManager;
 
-        public Get_Data_v1() : base(true)
+        public Get_Data_v1()
         {
             _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
             ActivityName = "Get Data from Salesforce";
@@ -64,9 +65,10 @@ namespace terminalSalesforce.Actions
 
         protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
-            ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager.GetSalesforceObjectTypes()
-                                                                                .Select(x => new ListItem() { Key = x.Key, Value = x.Key })
-                                                                                .ToList();
+            ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager
+                .GetSalesforceObjectTypes()
+                .Select(x => new ListItem() { Key = x.Key, Value = x.Key })
+                .ToList();
             runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
             return Task.FromResult(true);
         }
@@ -88,11 +90,11 @@ namespace terminalSalesforce.Actions
                 return;
             }
             //Prepare new query filters from selected object properties
-            var selectedObjectProperties = await _salesforceManager.GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
-            var queryFilterCrate = Crate<TypedFieldsCM>.FromContent(
+            var selectedObjectProperties = await _salesforceManager
+                .GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
+            var queryFilterCrate = Crate<FieldDescriptionsCM>.FromContent(
                 QueryFilterCrateLabel,
-                new TypedFieldsCM(selectedObjectProperties.OrderBy(x => x.Key)
-                                                                  .Select(x => new TypedFieldDTO(x.Key, x.Value, FieldType.String, new TextBox { Name = x.Key }))),
+                new FieldDescriptionsCM(selectedObjectProperties),
                 AvailabilityType.Configuration);
             CurrentActivityStorage.ReplaceByLabel(queryFilterCrate);
 
@@ -111,13 +113,16 @@ namespace terminalSalesforce.Actions
             var salesforceObject = ConfigurationControls.SalesforceObjectSelector.selectedKey;
             if (string.IsNullOrEmpty(salesforceObject))
             {
-                throw new ActivityExecutionException("No Salesforce object is selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                throw new ActivityExecutionException(
+                    "No Salesforce object is selected", 
+                    ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
             var salesforceObjectFields = CurrentActivityStorage
-                                            .FirstCrate<TypedFieldsCM>(x => x.Label == QueryFilterCrateLabel)
-                                            .Content
-                                            .Fields
-                                            .Select(x => x.Name);
+                .FirstCrate<FieldDescriptionsCM>(x => x.Label == QueryFilterCrateLabel)
+                .Content
+                .Fields
+                .Select(x => x.Key);
+
             var filterValue = ConfigurationControls.SalesforceObjectFilter.Value;
             var filterDataDTO = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(filterValue);
             //If without filter, just get all selected objects
@@ -128,8 +133,31 @@ namespace terminalSalesforce.Actions
                 parsedCondition = ParseConditionToText(filterDataDTO);
             }
 
-            var resultObjects = await _salesforceManager.Query(salesforceObject.ToEnum<SalesforceObjectType>(), salesforceObjectFields, parsedCondition, AuthorizationToken);
-            CurrentPayloadStorage.Add(Crate<StandardTableDataCM>.FromContent(RuntimeDataCrateLabel, resultObjects, AvailabilityType.RunTime));
+            var resultObjects = await _salesforceManager
+                .Query(
+                    salesforceObject.ToEnum<SalesforceObjectType>(),
+                    salesforceObjectFields,
+                    parsedCondition,
+                    AuthorizationToken
+                );
+
+            CurrentPayloadStorage.Add(
+                Crate<StandardPayloadDataCM>
+                    .FromContent(
+                        PayloadDataCrateLabel,
+                        resultObjects.ToPayloadData(),
+                        AvailabilityType.RunTime
+                    )
+            );
+
+            CurrentPayloadStorage.Add(
+                Crate<StandardTableDataCM>
+                    .FromContent(
+                        RuntimeDataCrateLabel,
+                        resultObjects,
+                        AvailabilityType.RunTime
+                    )
+                );
         }
     }
 }

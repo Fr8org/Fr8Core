@@ -46,6 +46,22 @@ namespace Data.Interfaces.Manifests
         {
             return Table[0];
         }
+
+        public StandardPayloadDataCM ToPayloadData()
+        {
+            var result = new StandardPayloadDataCM();
+
+            var payloadObjects = DataRows
+                .Select(x => new PayloadObjectDTO()
+                {
+                    PayloadObject = x.Row.Select(y => y.Cell).ToList()
+                })
+                .ToList();
+
+            result.PayloadObjects = payloadObjects;
+
+            return result;
+        }
     }
 
     public class TableRowDTO

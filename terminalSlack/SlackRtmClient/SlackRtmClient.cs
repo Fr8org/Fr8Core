@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using terminalSlack.RtmClient.Entities;
 using terminalSlack.RtmClient.Events;
 using WebSocketSharp;
+using Logger = Utilities.Logging.Logger;
 
 namespace terminalSlack.RtmClient
 {
@@ -89,6 +90,8 @@ namespace terminalSlack.RtmClient
                 var loginResponse = JToken.Parse(responseContent).ToObject<LoginResponse>();
                 _socket = new WebSocket(loginResponse.Url);
                 _socket.OnMessage += SocketOnOnMessage;
+                _socket.OnClose += SocketOnOnClose; 
+                _socket.OnError += SocketOnOnError;
                 _outgoingMessages = new BlockingCollection<EventBase>(new ConcurrentQueue<EventBase>());
                 await Task.Run(() => _socket.Connect(), token).ConfigureAwait(false);
                 //We don't wait for this as this is an infinite processing loop. This is ran in separate task as it will block the running thread if no messages to send
@@ -96,6 +99,16 @@ namespace terminalSlack.RtmClient
                 //Task.Run(async () => await RunOutgoingMessageProcessing(token).ConfigureAwait(false), token);
                 return loginResponse;
             }
+        }
+
+        private void SocketOnOnError(object sender, ErrorEventArgs e)
+        {
+            Logger.LogError($"SlackRtmClient: Socket reported an error. Message - {e.Message}. Exception - {e.Exception}. Is connection alive - {(sender as WebSocket).IsAlive}");
+        }
+
+        private void SocketOnOnClose(object sender, CloseEventArgs e)
+        {
+            Logger.LogInfo($"SlackRtmClient: Socked was closed. Code - {e.Code}. Reason - {e.Reason}. WasClean - {e.WasClean}. Is connection alive - {(sender as WebSocket).IsAlive}");
         }
 
         private void SocketOnOnMessage(object sender, MessageEventArgs e)

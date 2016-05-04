@@ -21,6 +21,7 @@ using Data.Crates;
 using Data.States;
 using terminalFr8Core.Infrastructure;
 using TerminalBase.Services;
+using TerminalBase.Services.MT;
 
 namespace terminalFr8Core.Actions
 {
@@ -104,7 +105,7 @@ namespace terminalFr8Core.Actions
                                     Source = new FieldSourceDTO
                                     {
                                         Label = "Queryable Criteria",
-                                        ManifestType = CrateManifestTypes.StandardQueryFields
+                                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
                                     }
                                 })
                             }
@@ -197,11 +198,12 @@ namespace terminalFr8Core.Actions
                     crateStorage.Add(
                         Crate.FromContent(
                             "Queryable Criteria",
-                            new TypedFieldsCM(GetFieldsByTypeId(selectedObjectId))
+                            new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(selectedObjectId))
                         )
                     );
                 }
             }
+
             return Task.FromResult(curActivityDO);
         }
 
@@ -403,28 +405,6 @@ namespace terminalFr8Core.Actions
 
                 return row;
             };
-        }
-
-        private IEnumerable<TypedFieldDTO> GetFieldsByTypeId(Guid typeId)
-        {
-            var fields = new Dictionary<string, string>();
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-
-                return uow.MultiTenantObjectRepository.ListTypePropertyReferences(typeId).OrderBy(x => x.Name)
-                    .Select(x =>
-                        new TypedFieldDTO(
-                            x.Name,
-                            x.Name,
-                            FieldType.String,
-                            new TextBox()
-                            {
-                                Name = "QueryField_" + x.Name
-                            }
-                            )
-                    );
-            }
         }
 
         #region Fill Source

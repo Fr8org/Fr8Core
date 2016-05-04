@@ -15,6 +15,7 @@ using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Newtonsoft.Json;
 using StructureMap;
+using Hub.Exceptions;
 
 namespace Hub.Services
 {
@@ -85,6 +86,15 @@ namespace Hub.Services
                         Token = authToken.Token,
                         AdditionalAttributes = authToken.AdditionalAttributes
                     };
+                }
+                else
+                {
+                    throw new InvalidTokenRuntimeException(activityDTO);
+                }
+
+                if (String.IsNullOrEmpty(authToken.Token))
+                {
+                    throw new InvalidTokenRuntimeException(activityDTO);
                 }
             }
 
