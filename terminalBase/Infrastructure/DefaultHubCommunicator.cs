@@ -116,8 +116,8 @@ namespace TerminalBase.Infrastructure
         public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDO activityDO, CrateDirection direction, string userId)
         {
             var directionSuffix = (direction == CrateDirection.Upstream)
-                ? "upstream_activities/"
-                : "downstream_activities/";
+                ? "upstream/"
+                : "downstream/";
 
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/"
@@ -141,8 +141,8 @@ namespace TerminalBase.Infrastructure
         public async Task<List<Crate>> GetCratesByDirection(ActivityDO activityDO, CrateDirection direction, string userId)
         {
             var directionSuffix = (direction == CrateDirection.Upstream)
-                ? "upstream_activities/"
-                : "downstream_activities/";
+                ? "upstream/"
+                : "downstream";
 
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/"
