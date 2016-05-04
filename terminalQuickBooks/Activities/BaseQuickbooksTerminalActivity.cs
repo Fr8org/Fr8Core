@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Newtonsoft.Json;
 using terminalQuickBooks.Infrastructure;
 using TerminalBase.BaseClasses;
 
@@ -16,6 +19,11 @@ namespace terminalQuickBooks.Actions
         protected override bool IsTokenInvalidation(Exception ex)
         {
             return ex is TerminalQuickbooksTokenExpiredException;
+        }
+
+        public AuthorizationTokenDO GetQuickbooksAuthToken(AuthorizationTokenDO authTokenDO = null)
+        {
+            return JsonConvert.DeserializeObject<AuthorizationTokenDO>((authTokenDO ?? AuthorizationToken).Token);
         }
     }
 }
