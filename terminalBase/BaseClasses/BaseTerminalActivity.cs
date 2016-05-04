@@ -39,6 +39,7 @@ namespace TerminalBase.BaseClasses
         private const string RuntimeAvailableCratesLabel = "Runtime Available Crates";
         protected static readonly string ConfigurationControlsLabel = "Configuration_Controls";
         public string CurrentFr8UserId { get; set; }
+        public string CurrentFr8UserEmail { get; set; }
         protected string ActivityName { get; set; }
 
         private List<ActivityTemplateDTO> _activityTemplateCache = null;
@@ -64,9 +65,10 @@ namespace TerminalBase.BaseClasses
             ActivityName = activityName;
         }
 
-        public void SetCurrentUser(string userId)
+        public void SetCurrentUser(string userId, string userEmail)
         {
             CurrentFr8UserId = userId;
+            CurrentFr8UserEmail = userEmail;
         }
 
         /// <summary>

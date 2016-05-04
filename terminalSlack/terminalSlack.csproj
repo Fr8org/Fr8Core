@@ -187,6 +187,7 @@
     <Compile Include="Activities\Monitor_Channel_v1.cs" />
     <Compile Include="Activities\Monitor_Channel_v2.cs" />
     <Compile Include="Activities\Publish_To_Slack_v1.cs" />
+    <Compile Include="Activities\Publish_To_Slack_v2.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\ActivityController.cs" />
     <Compile Include="Controllers\AuthenticationController.cs" />

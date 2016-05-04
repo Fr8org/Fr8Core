@@ -100,6 +100,7 @@ namespace Hub.Services
                                                     || c.ObjectId.Contains(historyQueryDTO.Filter)
                                                     || c.Activity.Contains(historyQueryDTO.Filter)
                                                     || c.Component.Contains(historyQueryDTO.Filter)
+                                                    || c.Fr8UserId.Contains(historyQueryDTO.Filter)
                                                 );
             }
 
