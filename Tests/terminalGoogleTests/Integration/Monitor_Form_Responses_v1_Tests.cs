@@ -207,7 +207,7 @@ namespace terminalGoogleTests.Integration
         [Test, Category("Integration.terminalGoogle")]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No Operational State Crate found.""}",
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Operational state crate is not found""}",
             MatchType = MessageMatch.Contains
             )]
         public async Task Monitor_Form_Responses_Run_WithInvalidPapertrailUrl_ShouldThrowException()
