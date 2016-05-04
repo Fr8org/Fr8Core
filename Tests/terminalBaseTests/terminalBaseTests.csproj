@@ -160,13 +160,13 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\Fr8Data\Fr8Data.csproj">
-      <Project>{a3178d71-a2c3-45b9-8334-adcc7c313541}</Project>
-      <Name>Fr8Data</Name>
-    </ProjectReference>
     <ProjectReference Include="..\..\Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Fr8Data\Fr8Data.csproj">
+      <Project>{a3178d71-a2c3-45b9-8334-adcc7c313541}</Project>
+      <Name>Fr8Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
