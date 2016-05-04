@@ -30,7 +30,6 @@ namespace terminalTests.Fixtures
             };
 
             return new Fr8DataDTO { ActivityDTO = activityDTO };
-
         }
 
         public static PayloadDTO PayloadWithOnlyOperationalState()
