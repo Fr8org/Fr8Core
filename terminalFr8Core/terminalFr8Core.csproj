@@ -201,6 +201,7 @@
   <ItemGroup>
     <Compile Include="Activities\CollectData_v1.cs" />
     <Compile Include="Activities\FilterObjectListByIncomingMessage_v1.cs" />
+    <Compile Include="Activities\GetDataFromFr8Warehouse_v1.cs" />
     <Compile Include="Activities\Monitor_Fr8_Events_v1.cs" />
     <Compile Include="Activities\Process_Personnel_Report_v1.cs" />
     <Compile Include="Activities\QueryFr8Warehouse_v1.cs" />
@@ -373,12 +374,9 @@
     <SlowCheetahTargets Condition=" '$(SlowCheetah_EnableImportFromNuGet)'=='true' and Exists('$(SlowCheetah_NuGetImportPath)') ">$(SlowCheetah_NuGetImportPath)</SlowCheetahTargets>
   </PropertyGroup>
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
-
-
   <ItemGroup>
     <Log4netConfigFiles Include="..\Config\log4net.terminals.*" />
   </ItemGroup>
-
   <Target Name="BeforeBuild">
     <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
   </Target>
