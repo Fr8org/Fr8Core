@@ -30,13 +30,13 @@ namespace terminalTest.Actions
             }
         }
 
-        protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Initialize(CrateSignaller crateSignaller)
         {
             ConfigurationControls.TextBlock.Value = CurrentActivity.Id.ToString();
             return Task.FromResult(0);
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Configure(CrateSignaller crateSignaller)
         {
             if (ConfigurationControls.AddChild.Clicked)
             {
