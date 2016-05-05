@@ -11,10 +11,8 @@ namespace Hub.Exceptions
 {
     public class ActivityExecutionException : Exception
     {
-        public ActivityDTO FailedActivityDTO { get; private set; }
-        public ContainerDTO ContainerDTO { get; private set; }
-
-        private string message;
+        public ActivityDTO FailedActivityDTO { get; protected set; }
+        public ContainerDTO ContainerDTO { get; protected set; }
 
         public string ErrorMessage
         {
@@ -28,18 +26,24 @@ namespace Hub.Exceptions
         {
         }
 
-        public ActivityExecutionException(string errorMessage, Exception innerException)
-            : base(errorMessage ?? string.Empty, innerException)
+        public ActivityExecutionException(ActivityDTO activityDTO, ContainerDTO containerDTO, string message) : base(message)
+        {
+            FailedActivityDTO = activityDTO;
+            ContainerDTO = containerDTO;
+
+        }
+
+        public ActivityExecutionException(string message, Exception innerException)
+            : base(message ?? string.Empty, innerException)
         {
            
         }
 
-        public ActivityExecutionException(ContainerDTO containerDTO, ActivityDTO activityDTO, string errorMessage, Exception innerException)
-            : base(string.IsNullOrEmpty(errorMessage) ? innerException.Message: errorMessage, innerException)
+        public ActivityExecutionException(ContainerDTO containerDTO, ActivityDTO activityDTO, string message, Exception innerException)
+            : base(string.IsNullOrEmpty(message) ? innerException.Message: message, innerException)
         {
             ContainerDTO = containerDTO;
             FailedActivityDTO = activityDTO;
-            message = errorMessage;
         }
 
         protected ActivityExecutionException(SerializationInfo info, StreamingContext context)
@@ -47,15 +51,15 @@ namespace Hub.Exceptions
         {
         }
 
-        private string GetErrorMessage()
+        protected virtual string GetErrorMessage()
         {
-            if (!string.IsNullOrEmpty(message))
+            if (!string.IsNullOrEmpty(Message))
             {
-                return String.Format("Failed to run activity \"{0}\". {1}", FailedActivityDTO.Label, message);
+                return String.Format("Failed to run activity \"{0}\". {1}", FailedActivityDTO?.Label, Message);
             }
             else
             {
-                return String.Format("Failed to run activity \"{0}\". Please, make sure it is set up correctly.", FailedActivityDTO.Label);
+                return String.Format("Failed to run activity \"{0}\". Please, make sure it is set up correctly.", FailedActivityDTO?.Label);
             }            
         }
     }

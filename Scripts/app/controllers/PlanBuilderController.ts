@@ -155,6 +155,14 @@ module dockyard.controllers {
 
             }
 
+            $scope.$watch(function () {
+                return $(".resizable").width();
+            }, function (newVal, oldVal) {
+                if (newVal !== oldVal) {
+                    $(".designer-header-fixed").width(newVal);
+                }
+            })
+
             //Group: which group action is dropped to
             //actionId: id of dropped action
             //dropped index
@@ -204,28 +212,6 @@ module dockyard.controllers {
                 });
 
             };
-
-
-            var currentState: number;
-            $scope.$watch('current.plan.planState', () => {
-                if ($scope.current.plan) {
-                    if (currentState === undefined) currentState = $scope.current.plan.planState;
-
-                    if (currentState !== $scope.current.plan.planState) {
-                        if ($scope.current.plan.planState === model.PlanState.Inactive) {
-                            PlanService.deactivate({ planId: $scope.current.plan.id });
-                        } else if ($scope.current.plan.planState === model.PlanState.Active) {
-                            PlanService.activate(<any>{ planId: $scope.current.plan.id, planBuilderActivate: true })
-                                .$promise.then((result) => {
-                                    if (result != null && result.status === "validation_error") {
-                                        this.renderActions(result.activitiesCollection);
-                                        $scope.current.plan.planState = model.PlanState.Inactive;
-                                    }
-                                });
-                        }
-                    }
-                }
-            });
 
             this.processState($state);
         }

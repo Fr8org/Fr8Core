@@ -218,7 +218,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                         if ($stateParams['viewMode'] === 'kiosk') {
                             return "/AngularTemplate/KioskModeOrganizationHeader";
                         }
-                        return "/AngularTemplate/Header";
+                        return "/AngularTemplate/MiniHeader";
                     }
                 }
             },

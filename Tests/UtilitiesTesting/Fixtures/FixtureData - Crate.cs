@@ -238,8 +238,6 @@ namespace UtilitiesTesting.Fixtures
                 Name = "Event_Envelope_Sent"
             };
 
-
-
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
                 fieldSelectDocusignTemplateDTO,

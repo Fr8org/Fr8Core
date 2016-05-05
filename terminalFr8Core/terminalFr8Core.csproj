@@ -14,7 +14,7 @@
     <RootNamespace>terminalFr8Core</RootNamespace>
     <AssemblyName>terminalFr8Core</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -212,7 +212,6 @@
     <Compile Include="Activities\GetFileFromFr8Store_v1.cs" />
     <Compile Include="Activities\SearchFr8Warehouse_v1.cs" />
     <Compile Include="Activities\ExtractTableField_v1.cs" />
-    <Compile Include="Activities\Show_Report_Onscreen_v2.cs" />
     <Compile Include="Activities\TestAndBranch_v1.cs" />
     <Compile Include="Activities\StoreFile_v1.cs" />
     <Compile Include="Activities\ConvertCrates_v1.cs" />
@@ -375,12 +374,9 @@
     <SlowCheetahTargets Condition=" '$(SlowCheetah_EnableImportFromNuGet)'=='true' and Exists('$(SlowCheetah_NuGetImportPath)') ">$(SlowCheetah_NuGetImportPath)</SlowCheetahTargets>
   </PropertyGroup>
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
-
-
   <ItemGroup>
     <Log4netConfigFiles Include="..\Config\log4net.terminals.*" />
   </ItemGroup>
-
   <Target Name="BeforeBuild">
     <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
   </Target>

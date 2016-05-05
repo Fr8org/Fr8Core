@@ -309,7 +309,7 @@
     <Compile Include="Interfaces\DataTransferObjects\CrateDescriptionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\EventLoggingDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\HistoryItemDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\QueryFieldType.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\FieldType.cs" />
     <Compile Include="Interfaces\DataTransferObjects\FieldValidationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityPayloadDTO.cs" />
@@ -332,7 +332,6 @@
     <Compile Include="Interfaces\DataTransferObjects\ManageAuthTokenDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ManifestDescriptionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\MappingFieldConfigurationDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\QueryFieldDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\StandardAccountingTransactionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalDiscoveryDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ActivityProcessResultDTO.cs" />
@@ -400,7 +399,6 @@
     <Compile Include="Interfaces\Manifests\StandardLoggingCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardParsingRecordCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardQueryCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardQueryFieldsCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardRoutingDirectiveCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardFileDescriptionCM.cs" />
     <Compile Include="Interfaces\Manifests\OperationalStateCM.cs" />
@@ -860,6 +858,7 @@
     <Compile Include="States\ActivityTemplateState.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
     <Compile Include="States\AvailabilityType.cs" />
+    <Compile Include="States\NotificationChannel.cs" />
     <Compile Include="States\CrateDirection.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />

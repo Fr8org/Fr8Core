@@ -46,7 +46,7 @@ namespace terminalGoogleTests.Integration
 
             var crateStorage = Crate.FromDto(responseActivityDTO.CrateStorage);
             Assert.AreEqual(3, crateStorage.Count);
-            Assert.IsNotNull(crateStorage.FirstCrateOrDefault<CrateDescriptionCM>(x => x.Label == RuntimeCrateManager.RuntimeCrateDescriptionsCrateLabel), "ActivityDTO storage doesn't contain crate with Runtime Crates Descriptions.");
+            Assert.IsNotNull(crateStorage.FirstCrateOrDefault<CrateDescriptionCM>(x => x.Label == CrateSignaller.RuntimeCrateDescriptionsCrateLabel), "ActivityDTO storage doesn't contain crate with Runtime Crates Descriptions.");
             Assert.IsNotNull(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault(), "ActivityDTO storage doesn't contain crate with Standard Configuration Controls.");
             Assert.IsNotNull(crateStorage.CrateContentsOfType<EventSubscriptionCM>().SingleOrDefault(), "ActivityDTO storage doesn't contain crate with Event Subscription.");
         }
@@ -160,7 +160,7 @@ namespace terminalGoogleTests.Integration
             Assert.Greater(formID.PayloadObjects.SelectMany(s => s.PayloadObject).Count(), 0);
         }
 
-        [Test, Category("Integration.terminalGoogle")]
+        [Test, Category("Integration.terminalGoogle"), Ignore]
         public async Task Monitor_Form_Responses_Activate_Returns_ActivityDTO()
         {
             //Arrange
@@ -207,7 +207,7 @@ namespace terminalGoogleTests.Integration
         [Test, Category("Integration.terminalGoogle")]
         [ExpectedException(
             ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""No Operational State Crate found.""}",
+            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Operational state crate is not found""}",
             MatchType = MessageMatch.Contains
             )]
         public async Task Monitor_Form_Responses_Run_WithInvalidPapertrailUrl_ShouldThrowException()

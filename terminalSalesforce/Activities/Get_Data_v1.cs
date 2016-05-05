@@ -40,7 +40,7 @@ namespace terminalSalesforce.Actions
                     Source = new FieldSourceDTO
                     {
                         Label = QueryFilterCrateLabel,
-                        ManifestType = CrateManifestTypes.StandardQueryFields
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
                 };
                 Controls.Add(SalesforceObjectSelector);
@@ -51,6 +51,7 @@ namespace terminalSalesforce.Actions
         public const string QueryFilterCrateLabel = "Queryable Criteria";
 
         public const string RuntimeDataCrateLabel = "Table from Salesforce Get Data";
+        public const string PayloadDataCrateLabel = "Payload from Salesforce Get Data";
 
         public const string SalesforceObjectFieldsCrateLabel = "Salesforce Object Fields";
 
@@ -62,17 +63,17 @@ namespace terminalSalesforce.Actions
             ActivityName = "Get Data from Salesforce";
         }
 
-        protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Initialize(CrateSignaller crateSignaller)
         {
             ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager
                 .GetSalesforceObjectTypes()
                 .Select(x => new ListItem() { Key = x.Key, Value = x.Key })
                 .ToList();
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
+            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
             return Task.FromResult(true);
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Configure(CrateSignaller crateSignaller)
         {
             //If Salesforce object is empty then we should clear filters as they are no longer applicable
             var selectedObject = ConfigurationControls.SalesforceObjectSelector.selectedKey;
@@ -91,23 +92,15 @@ namespace terminalSalesforce.Actions
             //Prepare new query filters from selected object properties
             var selectedObjectProperties = await _salesforceManager
                 .GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
-            var queryFilterCrate = Crate<TypedFieldsCM>.FromContent(
+            var queryFilterCrate = Crate<FieldDescriptionsCM>.FromContent(
                 QueryFilterCrateLabel,
-                new TypedFieldsCM(
-                    selectedObjectProperties
-                    .OrderBy(x => x.Key)
-                    .Select(x => new TypedFieldDTO(x.Key, x.Value, FieldType.String, new TextBox { Name = x.Key }))),
+                new FieldDescriptionsCM(selectedObjectProperties),
                 AvailabilityType.Configuration);
             CurrentActivityStorage.ReplaceByLabel(queryFilterCrate);
 
-            var objectPropertiesCrate = Crate<FieldDescriptionsCM>.FromContent(
-                SalesforceObjectFieldsCrateLabel,
-                new FieldDescriptionsCM(selectedObjectProperties.Select(c => new FieldDTO(c.Key, c.Key))),            
-                AvailabilityType.RunTime);
-            CurrentActivityStorage.ReplaceByLabel(objectPropertiesCrate);
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
             //Publish information for downstream activities
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
+            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
         }
 
         protected override async Task RunCurrentActivity()
@@ -120,10 +113,11 @@ namespace terminalSalesforce.Actions
                     ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
             var salesforceObjectFields = CurrentActivityStorage
-                                            .FirstCrate<TypedFieldsCM>(x => x.Label == QueryFilterCrateLabel)
-                                            .Content
-                                            .Fields
-                                            .Select(x => x.Name);
+                .FirstCrate<FieldDescriptionsCM>(x => x.Label == QueryFilterCrateLabel)
+                .Content
+                .Fields
+                .Select(x => x.Key);
+
             var filterValue = ConfigurationControls.SalesforceObjectFilter.Value;
             var filterDataDTO = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(filterValue);
             //If without filter, just get all selected objects
@@ -134,15 +128,31 @@ namespace terminalSalesforce.Actions
                 parsedCondition = ParseConditionToText(filterDataDTO);
             }
 
-            var resultObjects = await _salesforceManager.Query(
-                salesforceObject.ToEnum<SalesforceObjectType>(), 
-                salesforceObjectFields, 
-                parsedCondition, 
-                AuthorizationToken);
-            CurrentPayloadStorage.Add(Crate<StandardTableDataCM>.FromContent(
-                RuntimeDataCrateLabel, 
-                resultObjects, 
-                AvailabilityType.RunTime));
+            var resultObjects = await _salesforceManager
+                .Query(
+                    salesforceObject.ToEnum<SalesforceObjectType>(),
+                    salesforceObjectFields,
+                    parsedCondition,
+                    AuthorizationToken
+                );
+
+            CurrentPayloadStorage.Add(
+                Crate<StandardPayloadDataCM>
+                    .FromContent(
+                        PayloadDataCrateLabel,
+                        resultObjects.ToPayloadData(),
+                        AvailabilityType.RunTime
+                    )
+            );
+
+            CurrentPayloadStorage.Add(
+                Crate<StandardTableDataCM>
+                    .FromContent(
+                        RuntimeDataCrateLabel,
+                        resultObjects,
+                        AvailabilityType.RunTime
+                    )
+                );
         }
     }
 }

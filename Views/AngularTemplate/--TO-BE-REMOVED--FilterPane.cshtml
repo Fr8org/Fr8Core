@@ -1,0 +1,32 @@
+﻿<div class="filter-pane">
+    <form>
+        <div>
+            <div class="radio">
+                <input type="radio"
+                       name="executionType_fp_{{uniqueDirectiveId}}"
+                       value="2"
+                       ng-model="executionType" 
+                       id="executionTypeRadio2_fp_{{uniqueDirectiveId}}"
+                       stop-click-propagation />
+                <label for="executionTypeRadio2_fp_{{uniqueDirectiveId}}" stop-click-propagation>Always proceed</label>
+            </div>
+            <div class="radio">
+                <input type="radio"
+                       name="executionType_fp_{{uniqueDirectiveId}}"
+                       value="1"
+                       ng-model="executionType" 
+                       id="executionTypeRadio1_fp_{{uniqueDirectiveId}}"
+                       stop-click-propagation />
+                <label for="executionTypeRadio1_fp_{{uniqueDirectiveId}}" stop-click-propagation>Proceed only if:</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <query-builder fields="fields"
+                           current-action="currentAction"
+                           rows="conditions"
+                           is-disabled="executionType == 2">
+            </query-builder>
+        </div>
+    </form>
+</div>

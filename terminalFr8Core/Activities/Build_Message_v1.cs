@@ -50,7 +50,7 @@ namespace terminalFr8Core.Actions
         {
         }
 
-        protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Initialize(CrateSignaller crateSignaller)
         {
             return Task.FromResult(0);
         }
@@ -61,9 +61,9 @@ namespace terminalFr8Core.Actions
                                      new StandardPayloadDataCM(new FieldDTO(ConfigurationControls.Name.Value, body)));
         }
 
-        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Configure(CrateSignaller crateSignaller)
         {
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardPayloadDataCM>(ActivityUi.RuntimeCrateLabel)
+            crateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ActivityUi.RuntimeCrateLabel)
                                .AddField(ConfigurationControls.Name.Value);
 
             return Task.FromResult(0);
