@@ -43,7 +43,7 @@ namespace terminalSlackTests.Integration
             Assert.NotNull(responseActionDTO.CrateStorage);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            Assert.IsNotNull(crateStorage.FirstCrateOrDefault<CrateDescriptionCM>(x => x.Label == RuntimeCrateManager.RuntimeCrateDescriptionsCrateLabel), "Activity storage doesn't contain crate with runtime crates descriptions");
+            Assert.IsNotNull(crateStorage.FirstCrateOrDefault<CrateDescriptionCM>(x => x.Label == CrateSignaller.RuntimeCrateDescriptionsCrateLabel), "Activity storage doesn't contain crate with runtime crates descriptions");
             Assert.IsNotNull(crateStorage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == Monitor_Channel_v1.SlackMessagePropertiesCrateLabel), "Activity storage doesn't contain crate with Slack message properties");
             Assert.IsNotNull(crateStorage.FirstCrateOrDefault<EventSubscriptionCM>(x => x.Label == Monitor_Channel_v1.EventSubscriptionsCrateLabel), "Activity storage doesn't contain crate with event subscriptions");
         }

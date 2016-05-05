@@ -22,15 +22,15 @@ namespace terminalTest.Actions
             }
         }
 
-        protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Initialize(CrateSignaller crateSignaller)
         {
             ConfigurationControls.Header.Value = CurrentActivity.Id.ToString();
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>("Table");
+            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>("Table");
 
             return Task.FromResult(0);
         }
 
-        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Configure(CrateSignaller crateSignaller)
         {
             return Task.FromResult(0);
         }

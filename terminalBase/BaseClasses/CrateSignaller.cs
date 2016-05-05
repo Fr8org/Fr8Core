@@ -8,7 +8,7 @@ using Data.States;
 
 namespace TerminalBase.BaseClasses
 {
-    public class RuntimeCrateManager
+    public class CrateSignaller
     {
         public class FieldConfigurator
         {
@@ -58,7 +58,7 @@ namespace TerminalBase.BaseClasses
         public const string RuntimeCrateDescriptionsCrateLabel = "Runtime Available Crates";
         private CrateDescriptionCM _runtimeAvailableData;
 
-        public RuntimeCrateManager(ICrateStorage crateStorage, string owner)
+        public CrateSignaller(ICrateStorage crateStorage, string owner)
         {
             _crateStorage = crateStorage;
             _owner = owner;
