@@ -115,7 +115,7 @@ namespace HubWeb.Controllers
         [Fr8HubWebHMACAuthenticate]
         public IHttpActionResult GetAvailableData(Guid id, CrateDirection direction = CrateDirection.Upstream, AvailabilityType availability = AvailabilityType.RunTime)
         {
-            return Ok(_activity.GetAvailableData(id, direction, availability));
+            return Ok(_activity.GetIncomingData(id, direction, availability));
         }
         
         [ActionName("available")]

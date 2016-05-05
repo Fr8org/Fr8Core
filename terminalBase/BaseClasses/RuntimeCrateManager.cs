@@ -35,6 +35,7 @@ namespace TerminalBase.BaseClasses
 
             public FieldConfigurator AddField(FieldDTO field)
             {
+                field.Label = _label;
                 field.SourceCrateLabel = _label;
                 field.SourceCrateManifest = _manifestType;
 
@@ -105,6 +106,7 @@ namespace TerminalBase.BaseClasses
                 {
                     fields.Add(new FieldDTO(memberAccessor.Name, AvailabilityType.RunTime)
                     {
+                        Label = label,
                         SourceCrateLabel = label,
                         SourceCrateManifest = manifestType
                     });

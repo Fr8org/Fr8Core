@@ -98,6 +98,13 @@ namespace terminalSalesforce.Actions
                 AvailabilityType.Configuration);
             CurrentActivityStorage.ReplaceByLabel(queryFilterCrate);
 
+
+            var objectPropertiesCrate = Crate<FieldDescriptionsCM>.FromContent(
+            SalesforceObjectFieldsCrateLabel,
+            new FieldDescriptionsCM(selectedObjectProperties.Select(c => new FieldDTO(c.Key, c.Key) { Label = RuntimeDataCrateLabel })),
+            AvailabilityType.RunTime);
+            CurrentActivityStorage.ReplaceByLabel(objectPropertiesCrate);
+
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
             //Publish information for downstream activities
             runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);

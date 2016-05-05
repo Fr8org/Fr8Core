@@ -48,7 +48,7 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        protected List<FieldDTO> CreateDocuSignEventFields(DocuSignEnvelopeCM_v2 envelope)
+        protected List<FieldDTO> CreateDocuSignEventFields(DocuSignEnvelopeCM_v2 envelope, string label = null)
         {
             string curRecipientEmail = "";
             string curRecipientUserName = "";
@@ -61,13 +61,13 @@ namespace terminalDocuSign.Actions
             }
 
             return new List<FieldDTO>{
-                new FieldDTO("CurrentRecipientEmail", curRecipientEmail, AvailabilityType.RunTime) { Tags = "EmailAddress" },
-                new FieldDTO("CurrentRecipientUserName", curRecipientUserName, AvailabilityType.RunTime) { Tags = "UserName" },
-                new FieldDTO("Status", envelope?.Status,  AvailabilityType.RunTime),
-                new FieldDTO("CreateDate",  envelope?.CreateDate?.ToString()) { Tags = "Date" },
-                new FieldDTO("SentDate", envelope?.SentDate?.ToString(), AvailabilityType.RunTime) { Tags = "Date" },
-                new FieldDTO("Subject", envelope?.Subject, AvailabilityType.RunTime),
-                new FieldDTO("EnvelopeId", envelope?.EnvelopeId, AvailabilityType.RunTime),
+                new FieldDTO("CurrentRecipientEmail", curRecipientEmail, AvailabilityType.RunTime) { Tags = "EmailAddress",Label = label },
+                new FieldDTO("CurrentRecipientUserName", curRecipientUserName, AvailabilityType.RunTime) { Tags = "UserName", Label = label },
+                new FieldDTO("Status", envelope?.Status,  AvailabilityType.RunTime) { Label = label},
+                new FieldDTO("CreateDate",  envelope?.CreateDate?.ToString()) { Tags = "Date",Label = label },
+                new FieldDTO("SentDate", envelope?.SentDate?.ToString(), AvailabilityType.RunTime) { Tags = "Date", Label = label },
+                new FieldDTO("Subject", envelope?.Subject, AvailabilityType.RunTime) { Label = label},
+                new FieldDTO("EnvelopeId", envelope?.EnvelopeId, AvailabilityType.RunTime) { Label = label},
             };
         }
 

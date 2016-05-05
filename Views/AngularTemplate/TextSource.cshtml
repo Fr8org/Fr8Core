@@ -17,7 +17,7 @@
             <input ng-click="onChange(field.name)" name="pca_chk_ts_{{uniqueDirectiveId}}" type="radio" id="pca__chk{{field.$$hashKey}}__crate{{uniqueDirectiveId}}" value="upstream" ng-model="field.valueSource" ng-click="field.value=''" stop-click-propagation/>
             <label for="pca__chk{{field.$$hashKey}}__crate{{uniqueDirectiveId}}" stop-click-propagation>this incoming value: <a href="/documentation/UpstreamCrates.html" class="documentation-link"><i class="fa fa-question-circle"></i></a></label>
             <div class="nested-controls" ng-if="field.valueSource == 'upstream'">
-                <drop-down-list-box current-action="currentAction" field='field' change='onChange'></drop-down-list-box>
+                <upstream-field-chooser class="upstream-field-chooser" field="field" current-action="currentAction" change='onChange'></upstream-field-chooser>
             </div>
         </div>
     </div>
