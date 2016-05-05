@@ -287,7 +287,7 @@ namespace TerminalBase.Infrastructure
                       + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/activities/create";
 
 
-            var postUrl = "?actionTemplateId={0}&createPlan={1}";
+            var postUrl = "?activityTemplateId={0}&createPlan={1}";
             var formattedPostUrl = string.Format(postUrl, templateId, createPlan ? "true" : "false");
 
             if (label != null)
