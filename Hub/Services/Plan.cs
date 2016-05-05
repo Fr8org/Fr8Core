@@ -20,6 +20,7 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.DataTransferObjects.Helpers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using Hub.Exceptions;
 using Utilities.Logging;
 using Utilities.Interfaces;
 
