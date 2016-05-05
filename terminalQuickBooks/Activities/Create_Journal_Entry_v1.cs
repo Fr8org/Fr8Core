@@ -1,5 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
 using System.Threading.Tasks;
+using Data.Control;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
@@ -22,23 +24,20 @@ namespace terminalQuickBooks.Actions
 
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
+            if (CurrentActivity.Id == Guid.Empty)
+                throw new ArgumentException("Configuration requires the submission of an Action that has a real ActionId");
+
             //get StandardAccountingTransactionCM
             var upstreamCrates = await GetCratesByDirection<StandardAccountingTransactionCM>(
                 CurrentActivity,
                 CrateDirection.Upstream);
-            if (upstreamCrates.Count == 0)
+            TextBlock textBlock;
+            if (upstreamCrates.Count > 0)
             {
-                CurrentPayloadStorage.Add(upstreamCrates.First());
-            }
-            else
-            {
-                Error(
-                    "When this Action runs, it will be expecting to find a Crate of Standard Accounting Transactions. " +
-                    "Right now, it doesn't detect any Upstream Actions that produce that kind of Crate. " +
-                    "Please add an activity upstream (to the left) of this action that does so.");
+                CurrentActivityStorage.Add(upstreamCrates.First());
             }
         }
-        
+
         protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
         {
             // No extra configuration required

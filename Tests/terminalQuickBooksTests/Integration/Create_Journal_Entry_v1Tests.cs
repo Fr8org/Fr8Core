@@ -39,11 +39,10 @@ namespace terminalQuickBooksTests.Integration
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            var curTextBlock = (TextBlock)crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0];
-            Assert.AreEqual("Create a Journal Entry", curTextBlock.Label);
-            Assert.AreEqual(curMessage, curTextBlock.Value);
-            Assert.AreEqual("alert alert-warning", curTextBlock.CssClass);
+            var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls;
+            Assert.AreEqual(0, controls.Count);
         }
+
         [Test, Category("Integration.terminalQuickBooks")]
         public async Task Create_Journal_Entry_Configuration_Check_With_Upstream_Crate()
         {
@@ -61,10 +60,8 @@ namespace terminalQuickBooksTests.Integration
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
-            var curTextBlock = (TextBlock)crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls[0];
-            Assert.AreEqual("Create a Journal Entry", curTextBlock.Label);
-            Assert.AreEqual("This Action doesn't require any configuration.", curTextBlock.Value);
-            Assert.AreEqual("well well-lg", curTextBlock.CssClass);
+            var upstream = crateStorage.CrateContentsOfType<StandardAccountingTransactionCM>().Single();
+            Assert.NotNull(upstream);
         }
     }
 }
