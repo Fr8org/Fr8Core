@@ -151,7 +151,7 @@ namespace HealthMonitor.Utility
             operationalStateCM.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
 
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalStateCM.CurrentActivityResponse.Type);
-            Assert.AreEqual(ActivityErrorCode.NO_AUTH_TOKEN_PROVIDED, operationalStateCM.CurrentActivityErrorCode);
+            Assert.AreEqual(ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID, operationalStateCM.CurrentActivityErrorCode);
             Assert.AreEqual("No AuthToken provided.", errorMessage.Message);
         }
 

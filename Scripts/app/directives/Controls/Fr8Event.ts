@@ -10,6 +10,7 @@ module dockyard.directives.button {
         eventType: string;
     }
 
+
     export function Fr8Event(): ng.IDirective {
 
 

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Interfaces;
@@ -48,10 +49,11 @@ namespace terminalIntegrationTests.EndToEnd
 
             //configure a save_to google activity
             var newSpeadsheetName = Guid.NewGuid().ToString();
-            await googleActivityConfigurator.AddAndConfigureSaveToGoogleSheet(thePlan, 2, "Docusign Envelope", "DocuSign Envelope Data", newSpeadsheetName);
-
             var googleSheetApi = new GoogleSheet(new GoogleIntegration());
             var spreadsheetId = await googleSheetApi.CreateSpreadsheet(newSpeadsheetName, defaultGoogleAuthToken);
+
+            await googleActivityConfigurator.AddAndConfigureSaveToGoogleSheet(thePlan, 2, "Docusign Envelope", "DocuSign Envelope Data", newSpeadsheetName);
+            
 
             try
             {

@@ -26,6 +26,7 @@ using terminalFr8Core.Interfaces;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using TerminalBase.Services;
+using TerminalBase.Services.MT;
 using System.Text.RegularExpressions;
 using Hub.Infrastructure;
 using Utilities.Logging;
@@ -202,7 +203,7 @@ namespace terminalFr8Core.Actions
             }
             return
                 Task.FromResult(
-                    GenerateErrorRepsonse("Unknown displayMechanism: we currently support MainPage cases"));
+                    GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage cases"));
         }
 
         protected async Task<ActivityDO> GenerateSolutionActivities(ActivityDO activityDO, string fr8ObjectID)
@@ -264,13 +265,18 @@ namespace terminalFr8Core.Actions
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(actvityDO))
             {
-                var designTimeQueryFields = GetFr8WarehouseFieldNames(fr8ObjectID);
+                var designTimeQueryFields = MTTypesHelper.GetFieldsByTypeId(Guid.Parse(fr8ObjectID));
                 var criteria = crateStorage.FirstOrDefault(d => d.Label == "Queryable Criteria");
                 if (criteria != null)
                 {
                     crateStorage.Remove(criteria);
                 }
-                crateStorage.Add(Data.Crates.Crate.FromContent("Queryable Criteria", new TypedFieldsCM(designTimeQueryFields)));
+                crateStorage.Add(
+                    Data.Crates.Crate.FromContent(
+                        "Queryable Criteria",
+                        new FieldDescriptionsCM(designTimeQueryFields)
+                    )
+                );
             }
         }
 
@@ -388,30 +394,6 @@ namespace terminalFr8Core.Actions
                 
                 return warehouseTypes;
             }
-        }
-
-        // create the Query design time fields.
-        private List<TypedFieldDTO> GetFr8WarehouseFieldNames(string typeId)
-        {
-            List<TypedFieldDTO> designTimeQueryFields = new List<TypedFieldDTO>();
-
-            using (var unitWork = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                foreach (var field in unitWork.MultiTenantObjectRepository.ListTypePropertyReferences(Guid.Parse(typeId)))
-                {
-                    if (!designTimeQueryFields.Exists(d => d.Name == field.Name))
-                    {
-                        designTimeQueryFields.Add(new TypedFieldDTO()
-                        {
-                            FieldType = FieldType.String,
-                            Label = field.Name,
-                            Name = field.Name,
-                            Control = CreateTextBoxQueryControl(field.Name)
-                        });
-                    }
-                }
-            }
-            return designTimeQueryFields;
         }
 
         private bool ButtonIsClicked(Button button)
