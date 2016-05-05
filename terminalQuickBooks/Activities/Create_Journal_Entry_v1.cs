@@ -37,7 +37,6 @@ namespace terminalQuickBooks.Actions
                     "Right now, it doesn't detect any Upstream Actions that produce that kind of Crate. " +
                     "Please add an activity upstream (to the left) of this action that does so.");
             }
-
         }
         
         protected override Task Configure(RuntimeCrateManager runtimeCrateManager)

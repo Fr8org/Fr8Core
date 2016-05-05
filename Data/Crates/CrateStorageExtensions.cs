@@ -113,7 +113,7 @@ namespace Data.Crates
 
         /**********************************************************************************/
         /// <summary>
-        /// Returns all crates content of the give type.
+        /// Returns all crates content of the given type.
         /// </summary>
         /// <typeparam name="T"></typeparam>
         /// <returns></returns>
