@@ -196,7 +196,7 @@ namespace Data.Repositories.MultiTenant.Sql
             using (var connection = OpenConnection(connectionProvider))
             {
                 SqlCommand loadTypeCommand;
-
+                
                 // search type by manifest Id
                 if (ManifestDiscovery.Default.TryGetManifestType(clrType, out manifestType))
                 {

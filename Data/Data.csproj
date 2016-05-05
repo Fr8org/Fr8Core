@@ -601,6 +601,10 @@
     <Compile Include="Migrations\201605020854120_EncryptedCrateStorageAdded.Designer.cs">
       <DependentUpon>201605020854120_EncryptedCrateStorageAdded.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201605050942096_UpdateMTDatabaseWithNewCLRTypes.cs" />
+    <Compile Include="Migrations\201605050942096_UpdateMTDatabaseWithNewCLRTypes.Designer.cs">
+      <DependentUpon>201605050942096_UpdateMTDatabaseWithNewCLRTypes.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -1150,6 +1154,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201605020854120_EncryptedCrateStorageAdded.resx">
       <DependentUpon>201605020854120_EncryptedCrateStorageAdded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605050942096_UpdateMTDatabaseWithNewCLRTypes.resx">
+      <DependentUpon>201605050942096_UpdateMTDatabaseWithNewCLRTypes.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
