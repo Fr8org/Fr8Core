@@ -1,6 +1,8 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 using StructureMap;
 using Data.Control;
 using Data.Crates;
@@ -10,6 +12,7 @@ using Data.Interfaces.Manifests;
 using Data.States;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure.Behaviors;
+using terminalAtlassian.Interfaces;
 using terminalAtlassian.Services;
 
 namespace terminalAtlassian.Actions
@@ -145,6 +148,29 @@ namespace terminalAtlassian.Actions
                         Controls.Add(control);
                     }
                 }
+            }
+
+            public IEnumerable<FieldDTO> GetValues(ICrateStorage crateStorage)
+            {
+                var result = new List<FieldDTO>();
+
+                foreach (var control in Controls)
+                {
+                    if (control.Name.StartsWith("CustomField_"))
+                    {
+                        var textSource = (TextSource)control;
+
+                        var key = control.Name.Substring("CustomField_".Length);
+                        var value = textSource.GetValue(crateStorage);
+
+                        if (!string.IsNullOrEmpty(value))
+                        {
+                            result.Add(new FieldDTO(key, value));
+                        }
+                    }
+                }
+
+                return result;
             }
         }
 
@@ -288,9 +314,48 @@ namespace terminalAtlassian.Actions
         {
             ConfigurationControls.RestoreCustomFields(CurrentActivityStorage);
 
-            _atlassianService.CreateIssue();
+            var issueInfo = ExtractIssueInfo();
+            _atlassianService.CreateIssue(issueInfo, AuthorizationToken);
 
-            await Task.Yield();
+            var credentialsDTO = JsonConvert.DeserializeObject<CredentialsDTO>(AuthorizationToken.Token);
+
+            await PushUserNotification(new TerminalNotificationDTO
+            {
+                Type = "Success",
+                ActivityName = "Save_Jira_Issue",
+                ActivityVersion = "1",
+                TerminalName = "terminalAtlassian",
+                TerminalVersion = "1",
+                Message = "Created new jira issue: " + credentialsDTO.Domain + "/browse/" + issueInfo.Key,
+                Subject = "Jira issue created"
+            });
+        }
+
+        private IssueInfo ExtractIssueInfo()
+        {
+            var projectKey = ConfigurationControls.AvailableProjects.Value;
+            if (string.IsNullOrEmpty(projectKey))
+            {
+                throw new ApplicationException("Jira Project is not selected.");
+            }
+
+            var issueTypeKey = ConfigurationControls.AvailableIssueTypes.Value;
+            if (string.IsNullOrEmpty(issueTypeKey))
+            {
+                throw new ApplicationException("Jira Issue Type is not selected.");
+            }
+
+            var result = new IssueInfo()
+            {
+                ProjectKey = projectKey,
+                IssueTypeKey = issueTypeKey,
+                PriorityKey = ConfigurationControls.AvailablePriorities.Value,
+                Description = ConfigurationControls.Description.GetValue(CurrentPayloadStorage),
+                Summary = ConfigurationControls.Summary.GetValue(CurrentPayloadStorage),
+                CustomFields = ConfigurationControls.GetValues(CurrentPayloadStorage).ToList()
+            };
+
+            return result;
         }
 
         #endregion Runtime

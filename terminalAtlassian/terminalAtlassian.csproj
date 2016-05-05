@@ -191,6 +191,7 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Interfaces\IAtlassianService.cs" />
+    <Compile Include="Interfaces\IssueInfo.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Services\AtlassianService.cs" />

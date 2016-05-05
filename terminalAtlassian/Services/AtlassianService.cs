@@ -132,11 +132,49 @@ namespace terminalAtlassian.Services
             return result;
         }
 
-        public void CreateIssue(AuthorizationTokenDO authToken)
+        public void CreateIssue(IssueInfo issueInfo, AuthorizationTokenDO authToken)
         {
             var jira = CreateRestClient(authToken.Token);
 
-            var issue = jira.CreateIssue("FR");
+            var issueTypes = jira.GetIssueTypes(issueInfo.ProjectKey);
+            var issueType = issueTypes.FirstOrDefault(x => x.Id == issueInfo.IssueTypeKey);
+            if (issueType == null)
+            {
+                throw new ApplicationException("Invalid Jira Issue Type specified.");
+            }
+
+            var priorities = jira.GetIssuePriorities();
+            var priority = priorities.FirstOrDefault(x => x.Id == issueInfo.PriorityKey);
+            if (priority == null)
+            {
+                throw new ApplicationException("Invalid Jira Priority specified.");
+            }
+
+            var jiraCustomFields = jira.GetCustomFields();
+
+            var issue = jira.CreateIssue(issueInfo.ProjectKey);
+            issue.Type = issueType;
+            issue.Priority = priority;
+            issue.Summary = issueInfo.Summary;
+            issue.Description = issueInfo.Description;
+
+            if (issueInfo.CustomFields != null)
+            {
+                var customFieldsCollection = issue.CustomFields.ForEdit();
+                foreach (var customField in issueInfo.CustomFields)
+                {
+                    var jiraCustomField = jiraCustomFields.FirstOrDefault(x => x.Id == customField.Key);
+                    if (jiraCustomField == null)
+                    {
+                        throw new ApplicationException($"Invalid custom field {customField.Key}");
+                    }
+
+                    customFieldsCollection.Add(jiraCustomField.Name, customField.Value);
+                }
+            }
+
+            issue.SaveChanges();
+            issueInfo.Key = issue.Key.Value;
         }
         
         private List<FieldDTO> CreateKeyValuePairList(Issue curIssue)
