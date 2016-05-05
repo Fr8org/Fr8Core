@@ -10,6 +10,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Web;
 using Data.Validations;
@@ -17,6 +18,7 @@ using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services.NewApi;
 using Utilities.Configuration.Azure;
 using System.IO;
+using TerminalBase.Errors;
 
 namespace terminalDocuSign.Services.New_Api
 {
@@ -28,6 +30,8 @@ namespace terminalDocuSign.Services.New_Api
 
     public class DocuSignManager : IDocuSignManager
     {
+        public const string DocusignTerminalName = "terminalDocuSign";
+
         public DocuSignApiConfiguration SetUp(AuthorizationTokenDO authTokenDO)
         {
             string baseUrl = string.Empty;
@@ -54,8 +58,15 @@ namespace terminalDocuSign.Services.New_Api
             if (string.IsNullOrEmpty(docuSignAuthDTO.AccountId)) //we deal with and old token, that don't have accountId yet
             {
                 AuthenticationApi authApi = new AuthenticationApi(conf);
-                LoginInformation loginInfo = authApi.Login();
-                result.AccountId = loginInfo.LoginAccounts[0].AccountId; //it seems that althought one DocuSign account can have multiple users - only one is returned, the one that oAuth token was created for
+                try
+                {
+                    LoginInformation loginInfo = authApi.Login();
+                    result.AccountId = loginInfo.LoginAccounts[0].AccountId; //it seems that althought one DocuSign account can have multiple users - only one is returned, the one that oAuth token was created for
+                }
+                catch (Exception ex)
+                {
+                    throw new AuthorizationTokenExpiredOrInvalidException();
+                }
             }
 
             return result;
@@ -137,7 +148,7 @@ namespace terminalDocuSign.Services.New_Api
             envDef.EmailSubject = "Test message from Fr8";
             envDef.Status = "created";
 
-
+            Debug.WriteLine($"sending an envelope from template {curTemplateId} to {loginInfo}");
             var templateRecepients = templatesApi.ListRecipients(loginInfo.AccountId, curTemplateId);
 
             //adding file or applying template
@@ -147,7 +158,7 @@ namespace terminalDocuSign.Services.New_Api
                 //we create it with recipients once we've processed recipient values and tabs
                 envDef.Documents = new List<Document>() { new Document()
                 { DocumentBase64 = fileHandler.TextRepresentation, FileExtension = fileHandler.Filetype,
-                    DocumentId = "1", Name = fileHandler.Filename ?? Path.GetFileName(fileHandler.DockyardStorageUrl) ?? "document" } };
+                    DocumentId = "1", Name = fileHandler.Filename ?? Path.GetFileName(fileHandler.DirectUrl) ?? "document" } };
                 recipients = templateRecepients;
             }
             else
@@ -224,15 +235,22 @@ namespace terminalDocuSign.Services.New_Api
 
         private static IEnumerable<FieldDTO> GetRecipientsAndTabs(DocuSignApiConfiguration conf, object api, string id)
         {
-            var result = new List<FieldDTO>();
-            var recipients = GetRecipients(conf, api, id);
-            result.AddRange(MapRecipientsToFieldDTO(recipients));
-            foreach (var recipient in recipients.Signers)
+            try
             {
-                result.AddRange(GetTabs(conf, api, id, recipient));
-            }
+                var result = new List<FieldDTO>();
+                var recipients = GetRecipients(conf, api, id);
+                result.AddRange(MapRecipientsToFieldDTO(recipients));
+                foreach (var recipient in recipients.Signers)
+                {
+                    result.AddRange(GetTabs(conf, api, id, recipient));
+                }
 
-            return result;
+                return result;
+            }
+            catch (Exception ex)
+            {
+                throw new AuthorizationTokenExpiredOrInvalidException();
+            }
         }
 
         private static Recipients GetRecipients(DocuSignApiConfiguration conf, object api, string id)

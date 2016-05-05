@@ -35,5 +35,11 @@ namespace Utilities
         {
             _pusher?.Trigger(channelName, eventName, message);
         }
+
+        public void NotifyUser(string message, string eventName, string userName)
+        {
+            var pusherChannel = $"fr8pusher_{userName}";
+            Notify(pusherChannel, eventName, message);
+        }
     }
 }

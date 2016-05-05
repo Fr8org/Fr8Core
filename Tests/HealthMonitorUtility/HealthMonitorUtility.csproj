@@ -40,6 +40,15 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Demo|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Demo\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -80,10 +89,12 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SkipLocalAttribute.cs" />
     <Compile Include="Tools\Activities\IntegrationTestTools_terminalDocuSign.cs" />
+    <Compile Include="Tools\Activities\IntegrationTestTools_terminalDropbox.cs" />
     <Compile Include="Tools\Activities\IntegrationTestTools_terminalFr8.cs" />
     <Compile Include="Tools\Activities\IntegrationTestTools_terminalGoogle.cs" />
     <Compile Include="Tools\Plans\IntegrationTestTools.cs" />
     <Compile Include="Tools\Terminals\IntegrationTestTools_terminalDocuSign.cs" />
+    <Compile Include="Tools\Terminals\IntegrationTestTools_terminalDropbox.cs" />
     <Compile Include="Tools\Terminals\IntegrationTestTools_terminalGoogle.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>

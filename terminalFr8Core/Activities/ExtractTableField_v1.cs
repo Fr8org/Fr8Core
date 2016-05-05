@@ -142,7 +142,9 @@ namespace terminalFr8Core.Actions
                     var position = (DropDownList)cGroup.FirstOrDefault(c => c.Name == "extractValueFrom");
                     if (AreValuesSelected(chosenCell, position))
                     {
-                        extractedFields.Add(GetChosenField(chosenCell, position));
+                        var field = GetChosenField(chosenCell, position);
+                        field.Availability = AvailabilityType.RunTime;
+                        extractedFields.Add(field);
                     }
                 }
 
@@ -357,6 +359,7 @@ namespace terminalFr8Core.Actions
                 Label = "Find the cell labelled",
                 Name = "cellChooser",
                 Required = true,
+                HasRefreshButton = true,
                 Source = new FieldSourceDTO()
                 {
                     RequestUpstream = false,

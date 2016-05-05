@@ -9,20 +9,12 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Data.States;
 using HealthMonitor.Utility;
 using HealthMonitorUtility;
-using Hub.Services;
-using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
-using Utilities.Configuration.Azure;
-using terminalDocuSignTests.Fixtures;
 using Newtonsoft.Json;
-using terminalDocuSign.DataTransferObjects;
 using System.Diagnostics;
 using AutoMapper;
-using TerminalBase.Infrastructure;
-using Hub.Managers;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -31,7 +23,7 @@ namespace terminalDocuSignTests.Integration
     public class MonitorAllDocuSignEvents_Tests : BaseHubIntegrationTest
     {
         // private const string UserAccountName = "y.gnusin@gmail.com";
-        private const string UserAccountName = "IntegrationTestUser1";
+        private const string UserAccountName = "integration_test_runner@fr8.company";
         private const int MaxAwaitPeriod = 300000;
         private const int SingleAwaitPeriod = 10000;
 
@@ -50,10 +42,10 @@ namespace terminalDocuSignTests.Integration
             get { return UserAccountName; }
         }
 
-        protected override string TestUserPassword
+        /*protected override string TestUserPassword
         {
             get { return "123qwe"; }
-        }
+        }*/
 
 
         public override string TerminalName
@@ -91,7 +83,7 @@ namespace terminalDocuSignTests.Integration
                 await RecreateDefaultAuthToken(unitOfWork, testAccount, docuSignTerminal);
 
                 var mtDataCountBefore = unitOfWork.MultiTenantObjectRepository
-                    .AsQueryable<DocuSignEnvelopeCM>(testAccount.Id.ToString())
+                    .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id.ToString())
                     .Count();
 
                 //Set up DS
@@ -100,8 +92,11 @@ namespace terminalDocuSignTests.Integration
                 var docuSignManager = new DocuSignManager();
                 var loginInfo = docuSignManager.SetUp(authTokenDO);
 
+                //let's wait 10 seconds to ensure that MADSE plan was created/activated by re-authentication
+                await Task.Delay(SingleAwaitPeriod);
+
                 //send envelope
-                await SendDocuSignTestEnvelope(docuSignManager, loginInfo, authTokenDO);
+                SendDocuSignTestEnvelope(docuSignManager, loginInfo, authTokenDO);
 
                 var stopwatch = new Stopwatch();
                 stopwatch.Start();
@@ -112,8 +107,7 @@ namespace terminalDocuSignTests.Integration
                     await Task.Delay(SingleAwaitPeriod);
 
                     mtDataCountAfter = unitOfWork.MultiTenantObjectRepository
-                        .AsQueryable<DocuSignEnvelopeCM>(testAccount.Id.ToString())
-                        .Count();
+                        .AsQueryable<DocuSignEnvelopeCM_v2>(testAccount.Id.ToString()).Count();
 
                     if (mtDataCountBefore < mtDataCountAfter)
                     {
@@ -121,15 +115,15 @@ namespace terminalDocuSignTests.Integration
                     }
                 }
 
-
                 Assert.IsTrue(mtDataCountBefore < mtDataCountAfter,
-                    $"The number of MtData records for user {UserAccountName} remained unchanged within {MaxAwaitPeriod} miliseconds.");
+                    $"The number of MtData: ({mtDataCountAfter}) records for user {UserAccountName} remained unchanged within {MaxAwaitPeriod} miliseconds.");
             }
         }
 
         private async Task RecreateDefaultAuthToken(IUnitOfWork uow,
             Fr8AccountDO account, TerminalDO docuSignTerminal)
         {
+            Console.WriteLine($"Reauthorizing tokens for {account.EmailAddress.Address}");
             var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
                 _baseUrl + "manageauthtoken/"
             );
@@ -166,47 +160,6 @@ namespace terminalDocuSignTests.Integration
                 tokenResponse["authTokenId"],
                 "AuthTokenId is missing in API response."
             );
-
-            var tokenId = Guid.Parse(tokenResponse["authTokenId"].Value<string>());
-
-            AssignAuthTokens(uow, account, tokenId);
-        }
-
-        private void AssignAuthTokens(IUnitOfWork uow, Fr8AccountDO account, Guid tokenId)
-        {
-            var plan = uow.PlanRepository.GetPlanQueryUncached()
-                .SingleOrDefault(x => x.Fr8AccountId == account.Id
-                    && x.Name == "MonitorAllDocuSignEvents"
-                    && x.PlanState == PlanState.Active);
-            if (plan == null)
-            {
-                throw new ApplicationException("Could not find MonitorAllDocuSignEvents plan.");
-            }
-
-            var queue = new Queue<PlanNodeDO>();
-            queue.Enqueue(plan);
-
-            while (queue.Count > 0)
-            {
-                var planNode = queue.Dequeue();
-
-                var activity = planNode as ActivityDO;
-                if (activity != null)
-                {
-                    if (activity.ActivityTemplate.Terminal.Name == TerminalName
-                        && !activity.AuthorizationTokenId.HasValue)
-                    {
-                        activity.AuthorizationTokenId = tokenId;
-                    }
-                }
-
-                uow.PlanRepository.GetNodesQueryUncached()
-                    .Where(x => x.ParentPlanNodeId == planNode.Id)
-                    .ToList()
-                    .ForEach(x => queue.Enqueue(x));
-            }
-
-            uow.SaveChanges();
         }
 
         private async Task<AuthorizationTokenDTO> Authenticate()
@@ -229,7 +182,7 @@ namespace terminalDocuSignTests.Integration
             return docuSignToken;
         }
 
-        private async Task SendDocuSignTestEnvelope(DocuSignManager docuSignManager, DocuSignApiConfiguration loginInfo, AuthorizationTokenDO authTokenDO)
+        private  void SendDocuSignTestEnvelope(DocuSignManager docuSignManager, DocuSignApiConfiguration loginInfo, AuthorizationTokenDO authTokenDO)
         {
             var rolesList = new List<FieldDTO>()
             {

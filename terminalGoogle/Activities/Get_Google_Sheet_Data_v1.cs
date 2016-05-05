@@ -13,12 +13,12 @@ using Newtonsoft.Json;
 using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
-using terminalGoogle.Services;
 using TerminalBase.BaseClasses;
+using Google.GData.Client;
 
 namespace terminalGoogle.Actions
 {
-    public class Get_Google_Sheet_Data_v1 : EnhancedTerminalActivity<Get_Google_Sheet_Data_v1.ActivityUi>
+    public class Get_Google_Sheet_Data_v1 : BaseGoogleTerminalActivity<Get_Google_Sheet_Data_v1.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -77,9 +77,9 @@ namespace terminalGoogle.Actions
         private const string ColumnHeadersCrateLabel = "Spreadsheet Column Headers";
 
         private readonly IGoogleSheet _googleApi;
+        private readonly IGoogleIntegration _googleIntegration;
 
         public Get_Google_Sheet_Data_v1()
-           : base(true)
         {
             _googleApi = ObjectFactory.GetInstance<IGoogleSheet>();
         }
@@ -91,6 +91,7 @@ namespace terminalGoogle.Actions
             {
                 var storedValues = CurrentActivityStorage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == ConfigurationCrateLabel)?.Content;
                 return storedValues?.Fields.First();
+
             }
             set
             {
@@ -110,28 +111,33 @@ namespace terminalGoogle.Actions
             return JsonConvert.DeserializeObject<GoogleAuthDTO>((authTokenDO ?? AuthorizationToken).Token);
         }
 
-        public override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
-        {
-            if (base.NeedsAuthentication(authTokenDO))
-            {
-                return true;
-            }
-            var token = GetGoogleAuthToken(authTokenDO);
-            // we may also post token to google api to check its validity
-            return token.Expires - DateTime.Now < TimeSpan.FromMinutes(5) && string.IsNullOrEmpty(token.RefreshToken);
-        }
-
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
             var spreadsheets = await _googleApi.GetSpreadsheets(GetGoogleAuthToken());
             ConfigurationControls.SpreadsheetList.ListItems = spreadsheets.Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
+
             runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
         protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
         {
-            CurrentActivityStorage.RemoveByLabel(ColumnHeadersCrateLabel);
             var googleAuth = GetGoogleAuthToken();
+            var spreadsheets = await _googleApi.GetSpreadsheets(googleAuth);
+            ConfigurationControls.SpreadsheetList.ListItems = spreadsheets
+                .Select(x => new ListItem { Key = x.Value, Value = x.Key })
+                .ToList();
+
+            var selectedSpreadsheet = ConfigurationControls.SpreadsheetList.selectedKey;
+            if (!string.IsNullOrEmpty(selectedSpreadsheet))
+            {
+                if (ConfigurationControls.SpreadsheetList.ListItems.All(x => x.Key != selectedSpreadsheet))
+                {
+                    ConfigurationControls.SpreadsheetList.selectedKey = null;
+                    ConfigurationControls.SpreadsheetList.Value = null;
+                }
+            }
+
+            CurrentActivityStorage.RemoveByLabel(ColumnHeadersCrateLabel);
             //If spreadsheet selection is cleared we hide worksheet DDLB
             if (string.IsNullOrEmpty(ConfigurationControls.SpreadsheetList.selectedKey))
             {
@@ -169,27 +175,56 @@ namespace terminalGoogle.Actions
                                                            AvailabilityType.Always);
                 CurrentActivityStorage.ReplaceByLabel(columnHeadersCrate);
                 SelectedSpreadsheet = selectedSpreasheetWorksheet;
+
+                var table = await GetSelectedSpreadSheet();
+                var hasHeaderRow = TryAddHeaderRow(table);
+                CurrentActivityStorage.ReplaceByLabel(Crate.FromContent(RunTimeCrateLabel,new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
             }
             runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
-        protected override async Task RunCurrentActivity()
+        private async Task<List<TableRowDTO>> GetSelectedSpreadSheet()
         {
             var selectedSpreadsheet = ConfigurationControls.SpreadsheetList.Value;
             if (string.IsNullOrEmpty(selectedSpreadsheet))
             {
-                throw new ActivityExecutionException("Spreadsheet is not selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                return new List<TableRowDTO>();
             }
-            var selectedWorksheet = ConfigurationControls.WorksheetList == null ? string.Empty : ConfigurationControls.WorksheetList.Value;
-            var data = (await _googleApi.GetData(selectedSpreadsheet, selectedWorksheet, GetGoogleAuthToken())).ToList();
-            var hasHeaderRow = false;
-            //Adding header row if possible
-            if (data.Count > 0)
+            var selectedWorksheet = ConfigurationControls.WorksheetList == null
+                ? string.Empty
+                : ConfigurationControls.WorksheetList.Value;
+            return (await _googleApi.GetData(selectedSpreadsheet, selectedWorksheet, GetGoogleAuthToken())).ToList();
+        }
+
+        private bool TryAddHeaderRow(List<TableRowDTO> table)
+        {
+            if (table.Count < 1)
             {
-                data.Insert(0, new TableRowDTO { Row = data.First().Row.Select(x => new TableCellDTO { Cell = new FieldDTO(x.Cell.Key, x.Cell.Key) }).ToList() });
-                hasHeaderRow = true;
+                return false;
             }
-            CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM { Table = data, FirstRowHeaders = hasHeaderRow }));
+            table.Insert(0,
+                    new TableRowDTO
+                    {
+                        Row =
+                            table.First()
+                                .Row.Select(x => new TableCellDTO { Cell = new FieldDTO(x.Cell.Key, x.Cell.Key) })
+                                .ToList()
+                    });
+
+            return true;
+        }
+
+        protected override async Task RunCurrentActivity()
+        {
+            if (string.IsNullOrEmpty(ConfigurationControls.SpreadsheetList.Value))
+            {
+                throw new ActivityExecutionException("Spreadsheet is not selected",
+                    ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+            }
+           
+            var table = await GetSelectedSpreadSheet();
+            var hasHeaderRow = TryAddHeaderRow(table);
+            CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
         }
     }
 }

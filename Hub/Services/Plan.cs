@@ -19,17 +19,22 @@ using Hub.Interfaces;
 using InternalInterface = Hub.Interfaces;
 using Hub.Managers;
 using System.Threading.Tasks;
+using AutoMapper.QueryableExtensions;
 using Data.Constants;
 using Data.Crates;
 using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects.Helpers;
 using Data.Repositories.Plan;
 using Hub.Managers.APIManagers.Transmitters.Restful;
+using Utilities.Logging;
+using Utilities.Interfaces;
 
 namespace Hub.Services
 {
     public class Plan : IPlan
     {
+        private const int DEFAULT_PLAN_PAGE_SIZE = 10;
+        private const int MIN_PLAN_PAGE_SIZE = 5;
         // private readonly IProcess _process;
         private readonly InternalInterface.IContainer _container;
         private readonly Fr8Account _dockyardAccount;
@@ -37,9 +42,10 @@ namespace Hub.Services
         private readonly ICrateManager _crate;
         private readonly ISecurityServices _security;
         private readonly IJobDispatcher _dispatcher;
+        private readonly IPusherNotifier _pusher;
 
         public Plan(InternalInterface.IContainer container, Fr8Account dockyardAccount, IActivity activity,
-            ICrateManager crate, ISecurityServices security,  IJobDispatcher dispatcher)
+            ICrateManager crate, ISecurityServices security,  IJobDispatcher dispatcher, IPusherNotifier pusher)
         {
             _container = container;
             _dockyardAccount = dockyardAccount;
@@ -47,26 +53,64 @@ namespace Hub.Services
             _crate = crate;
             _security = security;
             _dispatcher = dispatcher;
+            _pusher = pusher;
         }
 
-        public IList<PlanDO> GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, bool isAdmin = false,
-            Guid? id = null, int? status = null, string category = "")
+        public PlanResultDTO GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, PlanQueryDTO planQueryDTO, bool isAdmin = false)
         {
+            //lets make sure our inputs are correct
+            planQueryDTO = planQueryDTO ?? new PlanQueryDTO();
+            planQueryDTO.Page = planQueryDTO.Page ?? 1;
+            planQueryDTO.Page = planQueryDTO.Page < 1 ? 1 : planQueryDTO.Page;
+            planQueryDTO.PlanPerPage = planQueryDTO.PlanPerPage ?? DEFAULT_PLAN_PAGE_SIZE;
+            planQueryDTO.PlanPerPage = planQueryDTO.PlanPerPage < MIN_PLAN_PAGE_SIZE ? MIN_PLAN_PAGE_SIZE : planQueryDTO.PlanPerPage;
+            planQueryDTO.IsDescending = planQueryDTO.IsDescending ?? true;
+
             var planQuery = unitOfWork.PlanRepository.GetPlanQueryUncached()
                 .Where(x => x.Visibility == PlanVisibility.Standard);
 
-            planQuery = (id == null
+            planQuery = planQueryDTO.Id == null
                 ? planQuery.Where(pt => pt.Fr8Account.Id == account.Id)
-                : planQuery.Where(pt => pt.Id == id && pt.Fr8Account.Id == account.Id));
+                : planQuery.Where(pt => pt.Id == planQueryDTO.Id && pt.Fr8Account.Id == account.Id);
 
-            if (!string.IsNullOrEmpty(category))
-                planQuery = planQuery.Where(c => c.Category == category);
-            else
-                planQuery = planQuery.Where(c => string.IsNullOrEmpty(c.Category));
+            planQuery = !string.IsNullOrEmpty(planQueryDTO.Category) 
+                ? planQuery.Where(c => c.Category == planQueryDTO.Category) 
+                : planQuery.Where(c => string.IsNullOrEmpty(c.Category));
 
-            return (status == null
+            if (!string.IsNullOrEmpty(planQueryDTO.Filter))
+            {
+                planQuery = planQuery.Where(c => c.Name.Contains(planQueryDTO.Filter) || c.Description.Contains(planQueryDTO.Filter));
+            }
+            
+            planQuery = planQueryDTO.Status == null
                 ? planQuery.Where(pt => pt.PlanState != PlanState.Deleted)
-                : planQuery.Where(pt => pt.PlanState == status)).ToList();
+                : planQuery.Where(pt => pt.PlanState == planQueryDTO.Status);
+
+            //lets allow ordering with just name for now
+            if (planQueryDTO.OrderBy == "name")
+            {
+                planQuery = planQueryDTO.IsDescending.Value
+                    ? planQuery.OrderByDescending(p => p.Name)
+                    : planQuery.OrderBy(p => p.Name);
+            }
+            else
+            {
+                planQuery = planQueryDTO.IsDescending.Value
+                    ? planQuery.OrderByDescending(p => p.LastUpdated)
+                    : planQuery.OrderBy(p => p.LastUpdated);
+            }
+
+            var totalPlanCountForCurrentCriterias = planQuery.Count();
+
+            planQuery = planQuery.Skip(planQueryDTO.PlanPerPage.Value * (planQueryDTO.Page.Value-1))
+                    .Take(planQueryDTO.PlanPerPage.Value);
+
+            return new PlanResultDTO
+            {
+                Plans = planQuery.ToList().Select(Mapper.Map<PlanEmptyDTO>).ToList(),
+                CurrentPage = planQueryDTO.Page.Value,
+                TotalPlanCount = totalPlanCountForCurrentCriterias
+            };
 
         }
 
@@ -315,7 +359,6 @@ namespace Hub.Services
         public List<PlanDO> MatchEvents(List<PlanDO> curPlans, EventReportCM curEventReport)
         {
             List<PlanDO> subscribingPlans = new List<PlanDO>();
-
             foreach (var curPlan in curPlans)
             {
                 //get the 1st activity
@@ -346,7 +389,6 @@ namespace Hub.Services
                     }
                 }
             }
-
             return subscribingPlans;
         }
 
@@ -462,6 +504,7 @@ namespace Hub.Services
         private async Task<ContainerDO> Run(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             var plan = uow.PlanRepository.GetById<PlanDO>(curContainerDO.PlanId);
+            var user = uow.UserRepository.GetByKey(plan.Fr8AccountId);
 
             if (plan.PlanState == PlanState.Deleted)
             {
@@ -478,6 +521,26 @@ namespace Hub.Services
             {
                 await _container.Run(uow, curContainerDO);
                 return curContainerDO;
+            }
+            catch (InvalidTokenRuntimeException ex)
+            {
+                string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with " +
+                        $"{ex?.FailedActivityDTO.ActivityTemplate.WebService.Name}. Plan execution has stopped. ";
+
+                errorMessage += $"Please re-authorize Fr8 to connect to {ex?.FailedActivityDTO.ActivityTemplate.WebService.Name} " +
+                        $"by clicking on the Settings dots in the upper " +
+                        $"right corner of the activity and then selecting Choose Authentication. ";
+
+                // Try getting specific the instructions provided by the terminal.
+                if (!String.IsNullOrEmpty(ex.Message))
+                {
+                    errorMessage += "Additional instructions from the terminal: ";
+                    errorMessage += ex.Message;
+                }
+
+                _pusher.NotifyUser(errorMessage, NotificationChannel.GenericFailure, user.UserName);
+                curContainerDO.State = State.Failed;
+                throw;
             }
             catch (Exception)
             {
@@ -522,11 +585,22 @@ namespace Hub.Services
 
         public static async Task LaunchProcess(Guid curPlan, params Crate[] curPayload)
         {
+            Logger.LogInfo($"Starting executing plan {curPlan} as a reaction to external event");
             if (curPlan == default(Guid))
             {
-                throw new ArgumentException(nameof(curPlan));
+                throw new ArgumentException("Invalid pland id.", nameof(curPlan));
             }
-            await ObjectFactory.GetInstance<IPlan>().Run(curPlan, curPayload);
+
+            // we "eat" this exception to make Hangfire thinks that everthying is good and job is completed
+            // this exception should be already logged somewhere
+            try
+            {
+                await ObjectFactory.GetInstance<IPlan>().Run(curPlan, curPayload);
+            }
+            catch
+            {
+            }
+            Logger.LogInfo($"Finished executing plan {curPlan} as a reaction to external event");
         }
 
         public async Task<ContainerDO> Run(Guid planId, params Crate[] curPayload)
@@ -534,16 +608,18 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curPlan = uow.PlanRepository.GetById<PlanDO>(planId);
+                string containerId="";
                 if (curPlan == null)
                     throw new ArgumentNullException("planId");
                 try
                 {
                     var curContainerDO = Create(uow, curPlan, curPayload);
+                    containerId = curContainerDO.Id.ToString();
                     return await Run(uow, curContainerDO);
                 }
                 catch (Exception ex)
                 {
-                    EventManager.ContainerFailed(curPlan, ex);
+                    EventManager.ContainerFailed(curPlan, ex, containerId);
                     throw;
                 }
             }
@@ -559,10 +635,17 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curContainerDO = uow.ContainerRepository.GetByKey(containerId);
+
+                if (curContainerDO == null)
+                {
+                    throw new Exception($"Can't continue container execution. Container {containerId} was not found.");
+                }
+
                 if (curContainerDO.State != State.Suspended)
                 {
-                    throw new ApplicationException("Attempted to Continue a Process that wasn't pending");
+                    throw new ApplicationException($"Attempted to Continue a Container {containerId} that wasn't in pending state. Container state is {curContainerDO.State}.");
                 }
+
                 //continue from where we left
                 return await Run(uow, curContainerDO);
             }
@@ -603,7 +686,6 @@ namespace Hub.Services
                 //we should clone this plan for current user
                 //let's clone the plan entirely
                 var clonedPlan = (PlanDO)PlanTreeHelper.CloneWithStructure(targetPlan);
-                clonedPlan.Name = clonedPlan.Name + " - " + "Customized for User " + currentUser.UserName;
                 clonedPlan.Description = clonedPlan.Name + " - " + "Customized for User " + currentUser.UserName + " on " + DateTime.Now;
                 clonedPlan.PlanState = PlanState.Inactive;
                 clonedPlan.Tag = cloneTag;

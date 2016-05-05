@@ -1,35 +1,29 @@
 ﻿using System;
 using System.Threading;
 using System.Threading.Tasks;
-using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Mvc;
+using Google.Apis.Auth.OAuth2.Responses;
 using Google.Apis.Auth.OAuth2.Web;
 using Hub.Managers.APIManagers.Authorizers;
 using terminalGoogle.DataTransferObjects;
 
-namespace terminalGoogle.Services
+namespace terminalGoogle.Services.Authorization
 {
     public class GoogleAuthorizer : IOAuthAuthorizer
     {
         class AuthResultAdapter : IOAuthAuthorizationResult
         {
             private readonly AuthorizationCodeWebApp.AuthResult _result;
-
+            
             public AuthResultAdapter(AuthorizationCodeWebApp.AuthResult result)
             {
                 _result = result;
             }
 
-            public bool IsAuthorized
-            {
-                get { return _result.Credential != null; }
-            }
+            public bool IsAuthorized => _result.Credential != null;
 
-            public string RedirectUri
-            {
-                get { return _result.RedirectUri; }
-            }
+            public string RedirectUri => _result.RedirectUri;
         }
 
         public FlowMetadata CreateFlowMetadata(string userId, string email = null, string callbackUrl = null)
@@ -82,7 +76,7 @@ namespace terminalGoogle.Services
             var flow = CreateFlow(userId);
             var tokenResponse = await flow.LoadTokenAsync(userId, cancellationToken);
             if (tokenResponse == null)
-                throw new UnauthorizedAccessException(string.Format("No token found for user '{0}'.", userId));
+                throw new UnauthorizedAccessException($"No token found for user '{userId}'.");
             await flow.RefreshTokenAsync(userId, tokenResponse.RefreshToken, cancellationToken);
         }
 
@@ -91,7 +85,7 @@ namespace terminalGoogle.Services
             var flow = CreateFlow(userId);
             var tokenResponse = await flow.LoadTokenAsync(userId, cancellationToken);
             if (tokenResponse == null)
-                throw new UnauthorizedAccessException(string.Format("No token found for user '{0}'.", userId));
+                throw new UnauthorizedAccessException($"No token found for user '{userId}'.");
             return tokenResponse.AccessToken;
         }
 
@@ -100,7 +94,7 @@ namespace terminalGoogle.Services
             var flow = CreateFlow(userId);
             var tokenResponse = await flow.LoadTokenAsync(userId, cancellationToken);
             if (tokenResponse == null)
-                throw new UnauthorizedAccessException(string.Format("No token found for user '{0}'.", userId));
+                throw new UnauthorizedAccessException($"No token found for user '{userId}'.");
             return tokenResponse.RefreshToken;
         }
     }

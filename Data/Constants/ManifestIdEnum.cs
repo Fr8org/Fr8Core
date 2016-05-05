@@ -109,7 +109,13 @@ namespace Data.Constants
         ExternalObjectHandles = 34,
 
         [Display(Name = "Salesforce Event")]
-        SalesforceEvent = 35
+        SalesforceEvent = 35,
+
+        [Display(Name = "Docusign Envelope v2")]
+        DocuSignEnvelope_v2 = 36,
+
+        [Display(Name = "Standard Business Fact")]
+        StandardBusinessFact = 37
     }
 }
 

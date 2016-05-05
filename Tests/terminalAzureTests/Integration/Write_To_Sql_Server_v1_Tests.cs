@@ -76,7 +76,6 @@ namespace terminalAzureTests.Integration
 
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             AssertConfigureCrate(crateStorage);
@@ -120,7 +119,6 @@ namespace terminalAzureTests.Integration
 
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
 
@@ -172,7 +170,6 @@ namespace terminalAzureTests.Integration
 
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             //There will be no DesignTimeCrate only Configuration crate
             Assert.AreEqual(1, crateStorage.Count);
@@ -214,7 +211,7 @@ namespace terminalAzureTests.Integration
                     new FieldDTO("Field1", "test physician"),
                     new FieldDTO("Field2", "teststring")
                 ),
-               "DocuSign Envelope Data"
+               "TableData"
             );
 
             var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, fr8DataDTO);

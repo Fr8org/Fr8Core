@@ -1,4 +1,7 @@
-﻿
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
@@ -8,16 +11,12 @@ using Hub.Managers;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using TerminalBase.Infrastructure;
 using terminalSalesforce;
 using terminalSalesforce.Actions;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
 using terminalSalesforceTests.Fixtures;
+using TerminalBase.Infrastructure;
 using UtilitiesTesting;
 
 namespace terminalSalesforceTests.Actions
@@ -50,11 +49,11 @@ namespace terminalSalesforceTests.Actions
             Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
             FieldDTO testField = new FieldDTO("Account", "TestAccount");
             salesforceIntegrationMock.Setup(
-                s => s.GetFields("Account", It.IsAny<AuthorizationTokenDO>(), false))
-                .Returns(() => Task.FromResult((IList<FieldDTO>)new List<FieldDTO> { testField }));
+                s => s.GetProperties(SalesforceObjectType.Account, It.IsAny<AuthorizationTokenDO>(), false))
+                .Returns(() => Task.FromResult(new List<FieldDTO> { testField }));
 
             salesforceIntegrationMock.Setup(
-                s => s.QueryObjects("Account", It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationTokenDO>()))
+                s => s.Query(SalesforceObjectType.Account, It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationTokenDO>()))
                 .Returns(() => Task.FromResult(new StandardTableDataCM()));
 
             _saveToSFDotCom_v1 = new Save_To_SalesforceDotCom_v1();
@@ -147,7 +146,7 @@ namespace terminalSalesforceTests.Actions
             Assert.IsTrue(newlyCreatedLead.Count == 1, "Lead is not saved successfully in Save to SF.com");
             Assert.IsTrue(!string.IsNullOrEmpty(newlyCreatedLead[0].Value), "Lead is not saved successfully in Save to SF.com");
 
-            var isDeleted = await new SalesforceManager().DeleteObject("Lead", newlyCreatedLead[0].Value, authToken);
+            var isDeleted = await new SalesforceManager().Delete(SalesforceObjectType.Lead, newlyCreatedLead[0].Value, authToken);
             Assert.IsTrue(isDeleted, "The newly created lead is not deleted upon completion");
         }
 

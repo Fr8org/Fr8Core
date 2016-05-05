@@ -1,12 +1,22 @@
 ﻿using Data.Interfaces.DataTransferObjects;
 using System;
 using System.Collections.Generic;
+using System.Threading.Tasks;
+using Data.Crates;
+using Data.Entities;
+using Data.Interfaces.Manifests;
 using Data.States;
+using Hub.Managers;
+using Moq;
+using StructureMap;
+using TerminalBase.Infrastructure;
 
 namespace terminalSlackTests.Fixtures
 {
     public class HealthMonitor_FixtureData
     {
+        private static readonly CrateManager CrateManager = new CrateManager();
+
         public static Fr8DataDTO Monitor_Channel_v1_InitialConfiguration_Fr8DataDTO()
         {
             var activityTemplate = Monitor_Channel_v1_ActivityTemplate();
@@ -106,6 +116,45 @@ namespace terminalSlackTests.Fixtures
                 ActivityTemplate = activityTemplate
             };
             return new Fr8DataDTO { ActivityDTO = activityDTO };
+        }
+
+        public static void ConfigureHubToReturnEmptyPayload()
+        {
+            var result = new PayloadDTO(Guid.Empty);
+            using (var storage = CrateManager.GetUpdatableStorage(result))
+            {
+                storage.Add(Crate.FromContent(string.Empty, new OperationalStateCM()));
+            }
+            ObjectFactory.Container.GetInstance<Mock<IHubCommunicator>>().Setup(x => x.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
+                               .Returns(Task.FromResult(result));
+        }
+
+        public static void ConfigureHubToReturnPayloadWithDirectMessageEvent()
+        {
+            var result = new PayloadDTO(Guid.Empty);
+            using (var storage = CrateManager.GetUpdatableStorage(result))
+            {
+                storage.Add(Crate.FromContent(string.Empty, new OperationalStateCM()));
+                var eventReport = new EventReportCM();
+                eventReport.EventPayload.Add(Crate.FromContent(string.Empty, new StandardPayloadDataCM(new FieldDTO("channel_id", "D001"), new FieldDTO("user_name", "notuser"))));
+                storage.Add(Crate.FromContent(string.Empty, eventReport));
+            }
+            ObjectFactory.Container.GetInstance<Mock<IHubCommunicator>>().Setup(x => x.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
+                               .Returns(Task.FromResult(result));
+        }
+
+        public static void ConfigureHubToReturnPayloadWithChannelMessageEvent()
+        {
+            var result = new PayloadDTO(Guid.Empty);
+            using (var storage = CrateManager.GetUpdatableStorage(result))
+            {
+                storage.Add(Crate.FromContent(string.Empty, new OperationalStateCM()));
+                var eventReport = new EventReportCM();
+                eventReport.EventPayload.Add(Crate.FromContent(string.Empty, new StandardPayloadDataCM(new FieldDTO("channel_id", "C001"), new FieldDTO("user_name", "notuser"))));
+                storage.Add(Crate.FromContent(string.Empty, eventReport));
+            }
+            ObjectFactory.Container.GetInstance<Mock<IHubCommunicator>>().Setup(x => x.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
+                               .Returns(Task.FromResult(result));
         }
     }
 }

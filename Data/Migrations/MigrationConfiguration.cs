@@ -5,6 +5,7 @@ using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Security;
 using System.Web;
 using Data.Crates;
 using Data.Repositories;
@@ -66,8 +67,8 @@ namespace Data.Migrations
                 AddRoles(uow);
                 AddAdmins(uow);
                 AddDockyardAccounts(uow);
-                AddProfiles(uow);
                 AddTestAccounts(uow);
+                AddDefaultProfiles(uow);
                 //Addterminals(uow);
 
                 //AddAuthorizationTokens(uow);
@@ -272,10 +273,25 @@ namespace Data.Migrations
             where TConstantDO : class, IStateTemplate<TConstantsType>, new()
         {
             FieldInfo[] constants = typeof(TConstantsType).GetFields();
-            var instructionsToAdd = (from constant in constants
-                                     let name = constant.Name
-                                     let value = constant.GetValue(null)
-                                     select creatorFunc((int)value, name)).ToList();
+            List<TConstantDO> instructionsToAdd;
+            if (typeof (TConstantsType).BaseType == typeof (Enum))
+            {
+                var enumValues = Enum.GetValues(typeof(TConstantsType)).Cast<TConstantsType>().ToList();
+
+                instructionsToAdd = (from constant in enumValues
+                    let name = constant.ToString()
+                    let value = constant
+                    select creatorFunc(Convert.ToInt32(value), name)).ToList();
+            }
+            else
+            {
+                instructionsToAdd = (from constant in constants
+                                         let name = constant.Name
+                                         let value = constant.GetValue(null)
+                                         select creatorFunc((int)value, name)).ToList();
+            }
+
+
 
             //First, we find rows in the DB that don't exist in our seeding. We delete those.
             //Then, we find rows in our seeding that don't exist in the DB. We create those ones (or update the name).
@@ -365,6 +381,7 @@ namespace Data.Migrations
             CreateAdmin("mvcdeveloper@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("maki.gjuroski@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("fr8system_monitor@fr8.company", "123qwe", unitOfWork);
+            CreateAdmin("teh.netaholic@gmail.com", "123qwe", unitOfWork);
 
             //CreateAdmin("eschebenyuk@gmail.com", "kate235", unitOfWork);
             //CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);
@@ -442,13 +459,6 @@ namespace Data.Migrations
             user.TestAccount = true;
 
             return user;
-        }
-
-        private void AddProfiles(IUnitOfWork uow)
-        {
-            var users = uow.UserRepository.GetAll().ToList();
-            foreach (var user in users)
-                uow.UserRepository.AddDefaultProfile(user);
         }
 
         private void AddSubscription(IUnitOfWork uow, Fr8AccountDO curAccount, TerminalDO curTerminal, int curAccessLevel)
@@ -712,6 +722,111 @@ namespace Data.Migrations
 
             uow.SaveChanges();
         }
+
+        public static void AddDefaultProfiles(IUnitOfWork uow)
+        {
+            //create 'System Administrator' Profile 
+            var profile = uow.ProfileRepository.GetQuery().FirstOrDefault(x => x.Name == "System Administrator");
+            if (profile == null)
+            {
+                profile = new ProfileDO()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "System Administrator",
+                    PermissionSets = new List<PermissionSetDO>()
+                };
+                uow.ProfileRepository.Add(profile);
+            }
+
+            //create 'Standard User' profile
+            var standardProfile = uow.ProfileRepository.GetQuery().FirstOrDefault(x => x.Name == "Standard User");
+            if (standardProfile == null)
+            {
+                standardProfile = new ProfileDO()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Standard User",
+                };
+                uow.ProfileRepository.Add(standardProfile);
+            }
+
+            //presave needed here for permissionSetPermissions table inserts
+            uow.SaveChanges();
+
+            profile.PermissionSets.Clear();
+            //default permissions for Plans and PlanNodes
+            profile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), true, profile.Id,"System Administrator Permission Set", uow));
+
+            //default permissions for ContainerDO
+            profile.PermissionSets.Add(AddPermissionSet(nameof(ContainerDO), true, profile.Id, "System Administrator Permission Set", uow));
+
+            //default permissions for Terminals
+            profile.PermissionSets.Add(AddPermissionSet(nameof(TerminalDO), true, profile.Id, "System Administrator Permission Set", uow));
+
+            //default permissions for Users
+            profile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), true, profile.Id, "System Administrator Permission Set", uow));
+
+            //update existing roles to have sys admin profile //todo: check this when Standard User profile start using in system
+            var roles = uow.AspNetRolesRepository.GetQuery().Where(x => x.ProfileId == null).ToList();
+            foreach (var role in roles)
+            {
+                role.ProfileId = profile.Id;
+            }
+            
+            standardProfile.PermissionSets.Clear();
+            //default permissions for Plans and PlanNodes
+            standardProfile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), false, standardProfile.Id, "Standard User Permission Set", uow));
+
+            //default permissions for ContainerDO
+            standardProfile.PermissionSets.Add(AddPermissionSet(nameof(ContainerDO), false, standardProfile.Id, "Standard User Permission Set", uow));
+
+            //default permissions for Terminals
+            standardProfile.PermissionSets.Add(AddPermissionSet(nameof(TerminalDO), false, standardProfile.Id, "Standard User Permission Set", uow));
+
+            //default permissions for Users
+            standardProfile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), false, standardProfile.Id, "Standard User Permission Set", uow));
+        }
+
+        private static PermissionSetDO AddPermissionSet(string objectType, bool isFullSet, Guid profileId, string name, IUnitOfWork uow)
+        {
+            var permissionSet = uow.PermissionSetRepository.GetQuery().FirstOrDefault(x => x.Name == name && x.ObjectType == objectType);
+
+            if (permissionSet == null)
+            {
+                permissionSet = new PermissionSetDO()
+                {
+                    Name = name,
+                    ProfileId = profileId,
+                    ObjectType = objectType,
+                    CreateDate = DateTimeOffset.Now,
+                    LastUpdated = DateTimeOffset.Now,
+                    HasFullAccess = isFullSet
+                };
+            }
+        
+            var repo = new GenericRepository<_PermissionTypeTemplate>(uow);
+
+            permissionSet.Permissions.Clear();
+            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x=>x.Id == (int) PermissionType.CreateObject));
+            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.ReadObject));
+            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.EditObject));
+            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.DeleteObject));
+            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.RunObject));
+            if (isFullSet)
+            {
+                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.ViewAllObjects));
+                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.ModifyAllObjects));
+            }
+
+            if (permissionSet.Id == Guid.Empty)
+            {
+                permissionSet.Id = Guid.NewGuid();
+                uow.PermissionSetRepository.Add(permissionSet);
+            }
+
+            return permissionSet;
+        }
+
     }
 }
 

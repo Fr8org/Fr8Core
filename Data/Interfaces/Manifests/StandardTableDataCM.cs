@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using Data.Interfaces.DataTransferObjects;
+using System.Linq;
 
 namespace Data.Interfaces.Manifests
 {
@@ -16,9 +17,50 @@ namespace Data.Interfaces.Manifests
         [ManifestField(IsHidden = true)]
         public bool FirstRowHeaders { get; set; }
 
+        [ManifestField(IsHidden = true)]
+        public bool HasDataRows
+        {
+            get
+            {
+                if (Table?.Count == 0)
+                {
+                    return false;
+                }
+                return Table.Count > 1 || (!FirstRowHeaders && Table.Count == 1);
+            }
+        }
+
+        public IEnumerable<TableRowDTO> DataRows
+        {
+            get
+            {
+                if (Table == null)
+                {
+                    return new TableRowDTO[0];
+                }
+                return Table.Skip(FirstRowHeaders ? 1 : 0);
+            }
+        }
+
         public TableRowDTO GetHeaderRow()
         {
             return Table[0];
+        }
+
+        public StandardPayloadDataCM ToPayloadData()
+        {
+            var result = new StandardPayloadDataCM();
+
+            var payloadObjects = DataRows
+                .Select(x => new PayloadObjectDTO()
+                {
+                    PayloadObject = x.Row.Select(y => y.Cell).ToList()
+                })
+                .ToList();
+
+            result.PayloadObjects = payloadObjects;
+
+            return result;
         }
     }
 

@@ -263,7 +263,7 @@ namespace TerminalBase.Infrastructure
 
         public Task NotifyUser(TerminalNotificationDTO notificationMessage, string userId)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(0);
         }
 
         public Task DeletePlan(Guid planId, string userId)
@@ -287,6 +287,16 @@ namespace TerminalBase.Infrastructure
         }
 
         public Task DeleteActivity(Guid curActivityId, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<CrateDTO>> GetStoredManifests(string currentFr8UserId, List<CrateDTO> cratesForMTRequest)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<AuthorizationTokenDTO> GetAuthToken(string authTokenId, string curFr8UserId)
         {
             throw new NotImplementedException();
         }

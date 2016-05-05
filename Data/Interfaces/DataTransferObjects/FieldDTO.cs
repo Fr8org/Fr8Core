@@ -1,19 +1,26 @@
-﻿using Data.Crates;
+﻿using System.Collections.Generic;
+using Data.Crates;
 using Data.Infrastructure.JsonNet;
 using Data.States;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace Data.Interfaces.DataTransferObjects
 {
-    [JsonConverter(typeof(FieldConverter))]
     [System.Diagnostics.DebuggerDisplay("Key = '{Key}', Value = '{Value}'")]
     public class FieldDTO : System.ICloneable
     {
+        public const string Data_AllowableValues = "allowableValues";
+
+
         [JsonProperty("key")]
         public string Key { get; set; }
 
         [JsonProperty("value")]
         public string Value { get; set; }
+
+        [JsonProperty("label")]
+        public string Label { get; set; }
 
         [JsonProperty("fieldType")]
         public string FieldType { get; set; }
@@ -21,18 +28,21 @@ namespace Data.Interfaces.DataTransferObjects
         [JsonProperty("isRequired")]
         public bool IsRequired { get; set; }
 
-        [JsonProperty("tags")]
+        [JsonProperty("tags", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public string Tags { get; set; }
 
-        [JsonProperty("availability")]
+        [JsonProperty("availability", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public AvailabilityType Availability { get; set; }
 
-        [JsonProperty("sourceCrateManifest")]
+        [JsonProperty("sourceCrateManifest", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public CrateManifestType SourceCrateManifest { get; set; }
 
-        [JsonProperty("sourceCrateLabel")]
+        [JsonProperty("sourceCrateLabel", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public string SourceCrateLabel { get; set; }
 
+        [JsonProperty("data", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
+        public Dictionary<string, JToken> Data { get; set; }
+        
         public FieldDTO()
         {
             //Availability = AvailabilityType.Configuration;
@@ -64,20 +74,45 @@ namespace Data.Interfaces.DataTransferObjects
 
         public FieldDTO Clone()
         {
-            return new FieldDTO()
+            return new FieldDTO
             {
-                Key = this.Key,
-                Value = this.Value,
-                Tags = this.Tags,
-                Availability = this.Availability,
-                SourceCrateManifest = this.SourceCrateManifest,
-                SourceCrateLabel = this.SourceCrateLabel
+                Key = Key,
+                Value = Value,
+                Tags = Tags,
+                Label = Label,
+                Data = new Dictionary<string, JToken>(Data),
+                Availability = Availability,
+                SourceCrateManifest = SourceCrateManifest,
+                SourceCrateLabel = SourceCrateLabel
+                
             };
         }
 
         object System.ICloneable.Clone()
         {
             return Clone();
+        }
+
+        public T GetData<T>(string key)
+        {
+            JToken value;
+
+            if (Data == null || !Data.TryGetValue(key, out value))
+            {
+                return default(T);
+            }
+
+            return value.ToObject<T>();
+        }
+
+        public void SetData(string key, object value)
+        {
+            if (Data == null)
+            {
+                Data = new Dictionary<string, JToken>();
+            }
+
+            Data[key] = JToken.FromObject(value);
         }
     }
 }

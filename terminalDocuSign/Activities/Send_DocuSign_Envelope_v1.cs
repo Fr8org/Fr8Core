@@ -12,6 +12,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
+using terminalDocuSign.Actions;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
 using TerminalBase.Infrastructure;
@@ -291,7 +292,7 @@ namespace terminalDocuSign.Actions
 
             //Create Text Source controls for TABS
             var textSourceFields = new List<string>();
-            textSourceFields = envelopeDataDTO.Where(x => x.Type == ControlTypes.TextBox).Select(x => x.Name).ToList();
+            textSourceFields = envelopeDataDTO.Where(x => x.Fr8DisplayType == ControlTypes.TextBox).Select(x => x.Name).ToList();
             var mappingBehavior = new TextSourceMappingBehavior(
                 crateStorage,
                 "Mapping",
@@ -305,7 +306,7 @@ namespace terminalDocuSign.Actions
             var radioButtonGroupBehavior = new RadioButtonGroupMappingBehavior(crateStorage, "RadioGroupMapping");
 
             radioButtonGroupBehavior.Clear();
-            foreach (var item in envelopeDataDTO.Where(x => x.Type == ControlTypes.RadioButtonGroup).ToList())
+            foreach (var item in envelopeDataDTO.Where(x => x.Fr8DisplayType == ControlTypes.RadioButtonGroup).ToList())
             {
                 var radioButtonGroupDTO = item as DocuSignMultipleOptionsTabDTO;
                 if (radioButtonGroupDTO == null) continue;
@@ -321,7 +322,7 @@ namespace terminalDocuSign.Actions
             //create checkbox controls
             var checkBoxMappingBehavior = new CheckBoxMappingBehavior(crateStorage, "CheckBoxMapping");
             checkBoxMappingBehavior.Clear();
-            foreach (var item in envelopeDataDTO.Where(x => x.Type == ControlTypes.CheckBox).ToList())
+            foreach (var item in envelopeDataDTO.Where(x => x.Fr8DisplayType == ControlTypes.CheckBox).ToList())
             {
                 checkBoxMappingBehavior.Append(item.Name, item.Name);
             }
@@ -329,7 +330,7 @@ namespace terminalDocuSign.Actions
             //create dropdown controls
             var dropdownListMappingBehavior = new DropDownListMappingBehavior(crateStorage, "DropDownMapping");
             dropdownListMappingBehavior.Clear();
-            foreach (var item in envelopeDataDTO.Where(x => x.Type == ControlTypes.DropDownList).ToList())
+            foreach (var item in envelopeDataDTO.Where(x => x.Fr8DisplayType == ControlTypes.DropDownList).ToList())
             {
                 var dropDownListDTO = item as DocuSignMultipleOptionsTabDTO;
                 if (dropDownListDTO == null) continue;

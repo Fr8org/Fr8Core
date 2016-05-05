@@ -42,6 +42,15 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Demo|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Demo\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AutoMapper, Version=4.0.4.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -137,6 +146,8 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Integration\ConnectToSql_v1_Tests.cs" />
+    <Compile Include="Integration\GetDataFromFr8Warehouse_v1_Tests.cs" />
+    <Compile Include="Unit\FilterObjectListByIncomingMessage_v1Tests.cs" />
     <Compile Include="Integration\SaveToFr8Warehouse_v1_Tests.cs" />
     <Compile Include="Integration\ExecuteSql_v1_Tests.cs" />
     <Compile Include="Integration\Monitor_Fr8_Events_v1_Tests.cs" />

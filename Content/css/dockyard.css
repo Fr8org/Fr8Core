@@ -692,77 +692,6 @@ div.action-header {
     margin-bottom: 0;
 }
 
-/* Query Builder */
-.query-builder-table {
-    margin-left: 27px;
-    margin-bottom: 5px;
-    width: calc(100% - 25px);
-}
-
-    .query-builder-table td:first-of-type,
-    .query-builder-table th:first-of-type {
-        padding-left: 0;
-    }
-
-    .query-builder-table tbody,
-    .query-builder-table thead {
-        display: block;
-    }
-
-    .query-builder-table tbody {
-        /*max-height: 296px;
-        overflow-y: auto;*/
-    }
-
-        .query-builder-table tbody tr.no-border td {
-            border-top: none;
-            padding: 0;
-        }
-
-    .query-builder-table input[type=text].invalid {
-        border: 1px solid red;
-    }
-
-    .query-builder-table div.invalid-hint {
-        font-size: 1em;
-        color: #FF0000;
-        text-align: right;
-    }
-
-.query-builder-add-button {
-    margin-left: 27px;
-}
-
-.query-builder-table .form-control {
-    padding: 0;
-    height: 25px;
-}
-
-.query-builder-delete-button {
-    cursor: pointer;
-    margin-top: 4px;
-}
-
-.query-builder-table date-picker .btn.btn-default {
-    padding: 1px 3px 2px 3px;
-    border: 1px solid #acacac;
-}
-
-ul.dropdown-menu {
-    padding: 3px 3px 10px 2px;
-}
-
-.table-delete-button {
-    width: 15px;
-    height: 15px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-form.internal-authenticate-form {
-    padding: 10px;
-}
-
 /* Configure Action Pane */
 .nested-controls {
     margin-left: 6%;
@@ -862,9 +791,9 @@ input[type=radio]:checked ~ label .control-label-hidden {
 
 .drop-down-list-box-container {
     height: 26px;
-    width: 100%;
     margin-bottom: 5px;
 }
+
 
 
 /* Fixing for the angular ui-select bug. Remove after the fix is pushed and library is updated (reference: https://github.com/angular-ui/ui-select/issues/453) */
@@ -1215,7 +1144,7 @@ i.activity-stream-font {
     display: block;
 }
 
-.expanded {
+.collapsed {
     max-height: 1000px;
     -o-transition: all .6s ease;   
     -webkit-transition: all .6s ease;
@@ -1223,7 +1152,7 @@ i.activity-stream-font {
 	transition: all .6s ease;
 }
 
-.collapsed {
+.expanded {
     max-height: 0px;
     overflow: hidden;
     -o-transition: all .3s ease;   
@@ -1269,4 +1198,44 @@ footer p {
 
 .md-open-menu-container {
     z-index: 1001;
+}
+
+.dataTable td {
+  word-break: break-all;
+}
+
+.md-table-fr8-button {
+    margin: 10px 2px !important;
+}
+
+.md-table-pagination .label {
+    padding: 0 24px;
+    font-size: 12px;
+    color: rgba(0,0,0,.54);
+}
+
+.column-spacer {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+}
+
+.material-fa-icon {
+    font-size: 22px !important;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.color-row {
+    background-color: #AAAAAA;
+    background-color: rgba(0,0,0,.12);
+}
+
+.high-priority-row {
+    background-color: #FF0000;
+    background-color: rgba(255,0,0,.09);
+}
+
+.delete-button{
+     width:15px;
+     margin-top:10px;
 }

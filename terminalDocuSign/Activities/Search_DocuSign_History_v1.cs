@@ -11,6 +11,7 @@ using Data.Interfaces.Manifests;
 using Hub.Managers;
 using Newtonsoft.Json;
 using StructureMap;
+using terminalDocuSign.Actions;
 using terminalDocuSign.DataTransferObjects;
 using TerminalBase.Infrastructure;
 using terminalDocuSign.Services;

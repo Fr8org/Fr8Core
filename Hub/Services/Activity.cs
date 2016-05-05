@@ -169,7 +169,7 @@ namespace Hub.Services
             }
         }
 
-        //[AuthorizeActivity(Privilege = Privilege.ReadObject, ObjectType = typeof(Guid))]
+        [AuthorizeActivity(Permission = PermissionType.ReadObject, ParamType = typeof(Guid), TargetType = typeof(PlanNodeDO))]
         public ActivityDO GetById(IUnitOfWork uow, Guid id)
         {
             return uow.PlanRepository.GetById<ActivityDO>(id);
@@ -259,8 +259,6 @@ namespace Hub.Services
             {
                 var message = "Cannot configure activity when plan is deleted";
 
-
-
                 EventManager.TerminalConfigureFailed(
                    _activityTemplate.GetTerminalUrl(curActivityDO.ActivityTemplateId),
                     JsonConvert.SerializeObject(Mapper.Map<ActivityDTO>(curActivityDO)),
@@ -330,6 +328,7 @@ namespace Hub.Services
             return curActivityDO;
         }
 
+        [AuthorizeActivity(Permission = PermissionType.EditObject, ParamType = typeof(ActivityDO), TargetType = typeof(PlanNodeDO))]
         public async Task<ActivityDTO> Configure(IUnitOfWork uow,
             string userId, ActivityDO curActivityDO, bool saveResult = true)
         {
@@ -362,6 +361,7 @@ namespace Hub.Services
             return submittedActivity;
         }
 
+        [AuthorizeActivity(Permission = PermissionType.DeleteObject, ParamType = typeof(Guid), TargetType = typeof(PlanNodeDO))]
         public void Delete(Guid id)
         {
             //we are using Kludge solution for now
@@ -410,6 +410,7 @@ namespace Hub.Services
             }
         }
 
+        [AuthorizeActivity(Permission = PermissionType.RunObject, ParamType = typeof(ActivityDO), TargetType = typeof(PlanNodeDO))]
         public async Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActivityExecutionMode curActionExecutionMode, ContainerDO curContainerDO)
         {
             if (curActivityDO == null)
@@ -460,6 +461,7 @@ namespace Hub.Services
             }
         }
 
+        [AuthorizeActivity(Permission = PermissionType.EditObject, ParamType = typeof(ActivityDO), TargetType = typeof(PlanNodeDO))]
         public async Task<ActivityDTO> Activate(ActivityDO curActivityDO)
         {
             try

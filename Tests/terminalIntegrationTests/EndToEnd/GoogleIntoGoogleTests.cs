@@ -2,10 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Crates;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
+using Hub.Managers;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
@@ -13,6 +15,7 @@ using terminaBaselTests.Tools.Activities;
 using terminaBaselTests.Tools.Plans;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services;
+using terminalGoogle.Services.Authorization;
 
 namespace terminalIntegrationTests.EndToEnd
 {
@@ -127,12 +130,11 @@ namespace terminalIntegrationTests.EndToEnd
             {
                 var validToken = uow.AuthorizationTokenRepository.FindTokenById(authorizationTokenId);
 
-                Assert.IsNotNull(validToken, "Reading default google token from AuthorizationTokenRepository failed. Please provide default account for authenticating terminalGoogle.");
+                Assert.IsNotNull(validToken, "Reading default google token from AuthorizationTokenRepository failed. " +
+                                             "Please provide default account for authenticating terminalGoogle.");
 
                 return JsonConvert.DeserializeObject<GoogleAuthDTO>((validToken).Token);
             }
         }
-
-
     }
 }

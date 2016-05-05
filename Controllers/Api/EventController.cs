@@ -19,6 +19,7 @@ using Newtonsoft.Json;
 using System.Xml.Linq;
 using Data.Interfaces.Manifests;
 using Hangfire;
+using Utilities.Logging;
 
 namespace HubWeb.Controllers
 {
@@ -29,7 +30,7 @@ namespace HubWeb.Controllers
     {
         private readonly IEvent _event;
         private readonly ICrateManager _crate;
-      
+        private IJobDispatcher _jobDispatcher;
 
         private delegate void EventRouter(LoggingDataCm loggingDataCm);
 
@@ -37,7 +38,7 @@ namespace HubWeb.Controllers
         {
             _event = ObjectFactory.GetInstance<IEvent>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
-            
+            _jobDispatcher = ObjectFactory.GetInstance<IJobDispatcher>();
         }
 
         private EventRouter GetEventRouter(EventCM eventCm)
@@ -79,7 +80,7 @@ namespace HubWeb.Controllers
             {
                 if (crateDTO.ManifestType.Id != (int)MT.LoggingData)
                 {
-                    errorMsgList.Add("Don't know how to process an EventReport with the Contents: " +  JsonConvert.SerializeObject(_crate.ToDto(crateDTO)));
+                    errorMsgList.Add("Don't know how to process an EventReport with the Contents: " + JsonConvert.SerializeObject(_crate.ToDto(crateDTO)));
                     continue;
                 }
 
@@ -93,7 +94,7 @@ namespace HubWeb.Controllers
             }
 
             return Ok();
-            
+
         }
 
         public static void ProcessEventsInternal(CrateDTO raw)
@@ -101,7 +102,7 @@ namespace HubWeb.Controllers
             var curCrateStandardEventReport = ObjectFactory.GetInstance<ICrateManager>().FromDto(raw);
             var eventTask = ObjectFactory.GetInstance<IEvent>().ProcessInboundEvents(curCrateStandardEventReport);
             Task.WaitAll(eventTask);
-        } 
+        }
 
         [HttpPost]
         [ActionName("processevents")]
@@ -121,17 +122,19 @@ namespace HubWeb.Controllers
                 throw new ArgumentNullException("CrateDTO Content is empty.");
 
             var eventReportMS = curCrateStandardEventReport.Get<EventReportCM>();
+            Logger.LogInfo($"Crate {raw.Id} with incoming event '{eventReportMS.EventNames}' is received for external account '{eventReportMS.ExternalAccountId}'");
+
 
             if (eventReportMS.EventPayload == null)
             {
                 throw new ArgumentException("EventReport can't have a null payload");
             }
-            if (eventReportMS.ExternalAccountId == null)
+            if (string.IsNullOrEmpty(eventReportMS.ExternalAccountId) && string.IsNullOrEmpty(eventReportMS.ExternalDomainId))
             {
-                throw new ArgumentException("EventReport can't have a null ExternalAccountId");
+                throw new ArgumentException("EventReport can't have both ExternalAccountId and ExternalDomainId empty");
             }
 
-            BackgroundJob.Enqueue(() => ProcessEventsInternal(raw));
+            _jobDispatcher.Enqueue(() => ProcessEventsInternal(raw));
             return Ok();
         }
     }

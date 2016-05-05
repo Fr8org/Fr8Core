@@ -39,7 +39,7 @@ namespace TerminalBase
 
             HttpStatusCode statusCode = HttpStatusCode.InternalServerError;
 
-            if (curTerminalError is AuthorizationTokenExpiredException)
+            if (curTerminalError is AuthorizationTokenExpiredOrInvalidException)
             {
                 statusCode = (HttpStatusCode)419;
             }
@@ -47,7 +47,7 @@ namespace TerminalBase
             {
                 foreach (var innerEx in ((AggregateException)curTerminalError).InnerExceptions)
                 {
-                    if (innerEx is AuthorizationTokenExpiredException)
+                    if (innerEx is AuthorizationTokenExpiredOrInvalidException)
                     {
                         statusCode = (HttpStatusCode)419;
                     }
@@ -65,8 +65,14 @@ namespace TerminalBase
                 properties.Add("Terminal", terminalName);
                 new TelemetryClient().TrackException(curTerminalError, properties);
 
+                string userId = null;
+                if(!String.IsNullOrEmpty(actionExecutedContext.ActionContext.ControllerContext.RequestContext.Principal.Identity.AuthenticationType))
+                {
+                    userId = actionExecutedContext.ActionContext.ControllerContext.RequestContext.Principal.Identity.AuthenticationType;
+                }
+
                 //POST event to fr8 about this terminal error
-                new BaseTerminalController().ReportTerminalError(terminalName, curTerminalError);
+                new BaseTerminalController().ReportTerminalError(terminalName, curTerminalError,userId);
             }
 
             //prepare the response JSON based on the exception type

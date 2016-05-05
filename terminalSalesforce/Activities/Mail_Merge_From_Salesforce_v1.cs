@@ -18,10 +18,11 @@ using Data.Interfaces;
 using Utilities.Configuration.Azure;
 using Hub.Managers;
 using Data.Constants;
+using ServiceStack;
 
 namespace terminalSalesforce.Actions
 {
-    public class Mail_Merge_From_Salesforce_v1 : EnhancedTerminalActivity<Mail_Merge_From_Salesforce_v1.ActivityUi>
+    public class Mail_Merge_From_Salesforce_v1 : BaseSalesforceTerminalActivity<Mail_Merge_From_Salesforce_v1.ActivityUi>
     {
 
         private const string SolutionName = "Mail Merge From Salesforce";
@@ -44,19 +45,19 @@ namespace terminalSalesforce.Actions
                 SalesforceObjectSelector = new DropDownList
                 {
                     Name = nameof(SalesforceObjectSelector),
-                    Label = "Get Which Object?",
+                    Label = "Get all objects of type:",
                     Required = true,
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
                 SalesforceObjectFilter = new QueryBuilder
                 {
                     Name = nameof(SalesforceObjectFilter),
-                    Label = "Meeting Which Conditions?",
+                    Label = "That meet the following conditions:",
                     Required = true,
                     Source = new FieldSourceDTO
                     {
                         Label = QueryFilterCrateLabel,
-                        ManifestType = CrateManifestTypes.StandardQueryFields
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
                 };
                 MailSenderActivitySelector = new DropDownList
@@ -84,7 +85,7 @@ namespace terminalSalesforce.Actions
 
         private readonly ISalesforceManager _salesforceManager;
 
-        public Mail_Merge_From_Salesforce_v1() : base(true)
+        public Mail_Merge_From_Salesforce_v1()
         {
             ActivityName = "Mail Merge from Salesforce";
             _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
@@ -260,19 +261,20 @@ namespace terminalSalesforce.Actions
                 return;
             }
             //Prepare new query filters from selected object properties
-            var selectedObjectProperties = await _salesforceManager.GetFields(selectedObject, AuthorizationToken);
-            var queryFilterCrate = Crate<TypedFieldsCM>.FromContent(
+            var selectedObjectProperties = await _salesforceManager.GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
+            var queryFilterCrate = Crate<FieldDescriptionsCM>.FromContent(
                 QueryFilterCrateLabel,
-                new TypedFieldsCM(selectedObjectProperties.OrderBy(x => x.Key)
-                                                                  .Select(x => new TypedFieldDTO(x.Key, x.Value, FieldType.String, new TextBox { Name = x.Key }))),
-                AvailabilityType.Configuration);
+                new FieldDescriptionsCM(selectedObjectProperties),
+                AvailabilityType.Configuration
+            );
+
             CurrentActivityStorage.ReplaceByLabel(queryFilterCrate);
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
         }
 
         protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
         {
-            ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager.GetObjectDescriptions().Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
+            ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager.GetSalesforceObjectTypes().Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
             var activityTemplates = await HubCommunicator.GetActivityTemplates(ActivityTemplate.EmailDelivererTag, CurrentFr8UserId);
             activityTemplates.Sort((x, y) => x.Name.CompareTo(y.Name));
             ConfigurationControls.MailSenderActivitySelector.ListItems = activityTemplates
@@ -305,17 +307,17 @@ namespace terminalSalesforce.Actions
             {
                 if (curDocumentation.Contains("ExplainMailMerge"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution helps you to work with email and move data from them to DocuSign service"));
+                    return Task.FromResult(GenerateDocumentationResponse(@"This solution helps you to work with email and move data from them to DocuSign service"));
                 }
                 if (curDocumentation.Contains("ExplainService"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                    return Task.FromResult(GenerateDocumentationResponse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }
-                return Task.FromResult(GenerateErrorRepsonse("Unknown contentPath"));
+                return Task.FromResult(GenerateErrorResponse("Unknown contentPath"));
             }
             return
                 Task.FromResult(
-                    GenerateErrorRepsonse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+                    GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }

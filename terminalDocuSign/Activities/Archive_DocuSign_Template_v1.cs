@@ -1,21 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Newtonsoft.Json;
+using Data.Constants;
 using Data.Control;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
-using terminalDocuSign.DataTransferObjects;
-using terminalDocuSign.Services;
+using terminalDocuSign.Actions;
 using TerminalBase.Infrastructure;
-using Data.Constants;
-using Data.Crates;
 using Utilities;
 
 namespace terminalDocuSign.Actions
@@ -254,17 +250,17 @@ namespace terminalDocuSign.Actions
             {
                 if (curDocumentation.Contains("ExplainArchiveTemplate"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution work with DocuSign templates"));
+                    return Task.FromResult(GenerateDocumentationResponse(@"This solution work with DocuSign templates"));
                 }
                 if (curDocumentation.Contains("ExplainService"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                    return Task.FromResult(GenerateDocumentationResponse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }
-                return Task.FromResult(GenerateErrorRepsonse("Unknown contentPath"));
+                return Task.FromResult(GenerateErrorResponse("Unknown contentPath"));
             }
             return
                 Task.FromResult(
-                    GenerateErrorRepsonse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+                    GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }

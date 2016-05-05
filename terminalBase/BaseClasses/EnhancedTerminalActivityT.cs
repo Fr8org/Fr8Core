@@ -14,6 +14,8 @@ using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
 using TerminalBase.Infrastructure;
+using Newtonsoft.Json.Linq;
+using TerminalBase.Errors;
 
 namespace TerminalBase.BaseClasses
 {
@@ -91,43 +93,61 @@ namespace TerminalBase.BaseClasses
             return false;
         }
 
+        protected virtual bool IsTokenInvalidation(Exception ex)
+        {
+            return false;
+        }
+
         /**********************************************************************************/
 
         public sealed override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            if (AuthorizeIfNecessary(curActivityDO, authTokenDO))
+            try
             {
+                if (AuthorizeIfNecessary(curActivityDO, authTokenDO))
+                {
+                    return curActivityDO;
+                }
+
+                AuthorizationToken = authTokenDO;
+                CurrentActivity = curActivityDO;
+
+                UpstreamQueryManager = new UpstreamQueryManager(CurrentActivity, HubCommunicator, CurrentFr8UserId);
+
+                using (var storage = CrateManager.GetUpdatableStorage(CurrentActivity))
+                {
+                    CurrentActivityStorage = storage;
+
+                    var configurationType = GetConfigurationRequestType();
+                    var runtimeCrateManager = new RuntimeCrateManager(CurrentActivityStorage, CurrentActivity.Name);
+
+                    switch (configurationType)
+                    {
+                        case ConfigurationRequestType.Initial:
+                            await InitialConfiguration(runtimeCrateManager);
+                            break;
+
+                        case ConfigurationRequestType.Followup:
+                            await FollowupConfiguration(runtimeCrateManager);
+                            break;
+
+                        default:
+                            throw new ArgumentOutOfRangeException($"Unsupported configuration type: {configurationType}");
+                    }
+                }
+
                 return curActivityDO;
             }
-
-            AuthorizationToken = authTokenDO;
-            CurrentActivity = curActivityDO;
-
-            UpstreamQueryManager = new UpstreamQueryManager(CurrentActivity, HubCommunicator, CurrentFr8UserId);
-            
-            using (var storage = CrateManager.GetUpdatableStorage(CurrentActivity))
+            catch (Exception ex)
             {
-                CurrentActivityStorage = storage;
-
-                var configurationType = GetConfigurationRequestType();
-                var runtimeCrateManager = new RuntimeCrateManager(CurrentActivityStorage, CurrentActivity.Name);
-
-                switch (configurationType)
+                if (IsTokenInvalidation(ex))
                 {
-                    case ConfigurationRequestType.Initial:
-                        await InitialConfiguration(runtimeCrateManager);
-                        break;
-
-                    case ConfigurationRequestType.Followup:
-                        await FollowupConfiguration(runtimeCrateManager);
-                        break;
-
-                    default:
-                        throw new ArgumentOutOfRangeException($"Unsupported configuration type: {configurationType}");
+                    AddAuthenticationCrate(curActivityDO, true);
+                    return curActivityDO;
                 }
-            }
 
-            return curActivityDO;
+                throw;
+            }
         }
 
         /**********************************************************************************/
@@ -248,6 +268,7 @@ namespace TerminalBase.BaseClasses
 
             _isRunTime = true;
 
+            var activityStorageContents = CurrentActivity.CrateStorage;
             using (var payloadstorage = CrateManager.GetUpdatableStorage(processPayload))
             using (var activityStorage = CrateManager.GetUpdatableStorage(CurrentActivity))
             {
@@ -279,6 +300,10 @@ namespace TerminalBase.BaseClasses
                         Success();
                     }
                 }
+                catch (AuthorizationTokenExpiredOrInvalidException ex)
+                {
+                    ErrorInvalidToken(ex.Message);
+                }
                 catch (ActivityExecutionException ex)
                 {
                     Error(ex.Message, ex.ErrorCode);
@@ -292,7 +317,19 @@ namespace TerminalBase.BaseClasses
                     Error(ex.Message);
                 }
             }
-
+            try
+            {
+                var previousActivityStorage = JToken.Parse(activityStorageContents);
+                var currentActivityStorage = JToken.Parse(CurrentActivity.CrateStorage);
+                if (!JToken.DeepEquals(previousActivityStorage, currentActivityStorage))
+                {
+                    await HubCommunicator.SaveActivity(CurrentActivity, CurrentFr8UserId);
+                }
+            }
+            catch (Exception ex)
+            {
+                Error(ex.Message);
+            }
             return processPayload;
         }
         
@@ -690,6 +727,18 @@ namespace TerminalBase.BaseClasses
             SetResponse(ActivityResponse.Error);
             OperationalState.CurrentActivityErrorCode = errorCode;
             OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, ErrorType.Generic, errorCode.ToString(), null, null, null));
+        }
+
+        /**********************************************************************************/
+        /// <summary>
+        /// returns error to hub
+        /// </summary>
+        protected void ErrorInvalidToken(string instructionsToUser = null)
+        {
+            SetResponse(ActivityResponse.Error);
+            var errorCode = ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID;
+            OperationalState.CurrentActivityErrorCode = errorCode;
+            OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(instructionsToUser, ErrorType.Authentication, errorCode.ToString(), null, null, null));
         }
 
         /**********************************************************************************/

@@ -103,7 +103,8 @@ namespace Hub.Managers
             }
             catch (Exception e)
             {
-                Logger.GetLogger().Error("Error while creating the Fr8 monitor Plan " + e.Message, e);
+                //Logger.GetLogger().Error("Error while creating the Fr8 monitor Plan " + e.Message, e);
+                Logger.LogError($"Error while creating the Fr8 monitor Plan. Fr8UserId = {curFr8UserId} Exception = {e}");
                 throw;
             }
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Interfaces.DataTransferObjects;
+using Newtonsoft.Json;
 
 namespace terminalSlack.Interfaces
 {
@@ -9,11 +10,22 @@ namespace terminalSlack.Interfaces
     {
         string CreateAuthUrl(string externalStateToken);
         Task<string> GetOAuthToken(string code);
-        Task<string> GetUserId(string oauthToken);
-        Task<string> GetUserName(string oauthToken);
+        Task<UserInfo> GetUserInfo(string oauthToken);
         Task<List<FieldDTO>> GetChannelList(string oauthToken, bool includeArchived = false);
         Task<List<FieldDTO>> GetUserList(string oauthToken);
         Task<List<FieldDTO>> GetAllChannelList(string oauthToken);
         Task<bool> PostMessageToChat(string oauthToken, string channelId, string message);
+    }
+
+    public class UserInfo
+    {
+        [JsonProperty("user_id")]
+        public string UserId { get; set; }
+        [JsonProperty("user")]
+        public string UserName { get; set; }
+        [JsonProperty("team_id")]
+        public string TeamId { get; set; }
+        [JsonProperty("team")]
+        public string TeamName { get; set; }
     }
 }

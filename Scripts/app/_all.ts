@@ -49,8 +49,6 @@
 /// <reference path="directives/paneworkflowdesigner/messages.ts" />
 /// <reference path="directives/paneworkflowdesigner/paneworkflowdesigner.ts" />
 
-/// <reference path="directives/querybuilderwidget.ts" />
-
 
 /*
     CONTROLLERS

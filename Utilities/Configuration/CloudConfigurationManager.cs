@@ -19,7 +19,7 @@ using System.Globalization;
 namespace Utilities.Configuration.Azure
 {
     /// <summary>
-    /// Configuration manager for accessing Microsoft Azure sett    ings.
+    /// Configuration manager for accessing Microsoft Azure settings.
     /// </summary>
     public static class CloudConfigurationManager
     {

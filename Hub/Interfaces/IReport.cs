@@ -5,12 +5,13 @@ using System.Text;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 
 namespace Hub.Interfaces
 {
     public interface IReport
     {
-        IList<FactDO> GetAllFacts(IUnitOfWork uow);
-        List<IncidentDO> GetAllIncidents(IUnitOfWork uow);
+        HistoryResultDTO<IncidentDTO> GetIncidents(IUnitOfWork uow, HistoryQueryDTO historyQueryDTO);
+        HistoryResultDTO<FactDTO> GetFacts(IUnitOfWork uow, HistoryQueryDTO historyQueryDTO);
     }
 }

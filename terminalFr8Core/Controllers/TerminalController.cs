@@ -6,6 +6,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Utilities.Configuration.Azure;
 using Data.Interfaces.Manifests;
+using Data.Constants;
 
 namespace terminalFr8Core.Controllers
 {
@@ -69,7 +70,7 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 Version = "1",
-                MinPaneWidth = 420,
+                MinPaneWidth = 550,
                 WebService = webService
             });
 
@@ -82,7 +83,7 @@ namespace terminalFr8Core.Controllers
                 Version = "1",
                 MinPaneWidth = 330,
                 WebService = webService,
-                Tags = "internal"
+                Tags = Tags.Internal
             });
 
             result.Add(new ActivityTemplateDTO
@@ -91,7 +92,7 @@ namespace terminalFr8Core.Controllers
                 Label = "Map Fields",
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
-                Tags = "AggressiveReload,internal",
+                Tags = $"{Tags.AggressiveReload},{Tags.Internal}",
                 Version = "1",
                 MinPaneWidth = 380,
                 WebService = webService
@@ -128,7 +129,7 @@ namespace terminalFr8Core.Controllers
                 WebService = webService,
                 Version = "1",
                 MinPaneWidth = 330,
-                Tags = "internal"
+                Tags = Tags.Internal
             });
 
             result.Add(new ActivityTemplateDTO
@@ -139,7 +140,7 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1",
-                Tags = "internal"
+                Tags = Tags.Internal
             });
 
             result.Add(new ActivityTemplateDTO
@@ -150,7 +151,7 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1",
-                Tags = "internal"
+                Tags = Tags.Internal
             });
 
             result.Add(new ActivityTemplateDTO
@@ -161,7 +162,7 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1",
-                Tags = "internal"
+                Tags = Tags.Internal
             });
 
             result.Add(new ActivityTemplateDTO
@@ -172,7 +173,7 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1",
-                Tags = "internal"
+                Tags = Tags.Internal
             });
 
             result.Add(new ActivityTemplateDTO()
@@ -197,7 +198,7 @@ namespace terminalFr8Core.Controllers
                 Version = "1",
                 MinPaneWidth = 330,
                 Type = ActivityType.Loop,
-                Tags = "AggressiveReload"
+                Tags = Tags.AggressiveReload
             });
 
             result.Add(new ActivityTemplateDTO()
@@ -234,11 +235,22 @@ namespace terminalFr8Core.Controllers
                 MinPaneWidth = 550
             });
 
+            result.Add(new ActivityTemplateDTO()
+            {
+                Name = "GetDataFromFr8Warehouse",
+                Label = "Get Data From Fr8 Warehouse",
+                Category = ActivityCategory.Processors,
+                Terminal = terminal,
+                WebService = webService,
+                Version = "1",
+                MinPaneWidth = 550
+            });
+
             result.Add(new ActivityTemplateDTO
             {
                 Name = "Show_Report_Onscreen",
                 Label = "Show Report Onscreen",
-                Version = "1",
+                Version = "2",
                 Category = ActivityCategory.Processors,
                 NeedsAuthentication = false,
                 Terminal = terminal,
@@ -256,7 +268,7 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 MinPaneWidth = 380,
                 WebService = webService,
-                Tags = "internal"
+                Tags = Tags.Internal
             });
 
             result.Add(new ActivityTemplateDTO()
@@ -292,7 +304,7 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 MinPaneWidth = 400,
-                Tags = "HideChildren"
+                Tags = Tags.HideChildren
             });
 
             result.Add(new ActivityTemplateDTO
@@ -304,8 +316,8 @@ namespace terminalFr8Core.Controllers
                 NeedsAuthentication = false,
                 Terminal = terminal,
                 WebService = webService,
-                MinPaneWidth = 350,
-                Tags = "AggressiveReload"
+                MinPaneWidth = 550,
+                Tags = Tags.AggressiveReload
             });
 
             result.Add(new ActivityTemplateDTO
@@ -324,6 +336,18 @@ namespace terminalFr8Core.Controllers
             {
                 Name = "CollectData",
                 Label = "Collect Data",
+                Version = "1",
+                Category = ActivityCategory.Processors,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                WebService = webService,
+                MinPaneWidth = 400
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "FilterObjectListByIncomingMessage",
+                Label = "Filter Object List by Incoming Message",
                 Version = "1",
                 Category = ActivityCategory.Processors,
                 NeedsAuthentication = false,

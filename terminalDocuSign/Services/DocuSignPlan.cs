@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
-using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
-using Hub.Interfaces;
 using Hub.Managers;
 using StructureMap;
 using terminalDocuSign.Interfaces;
@@ -19,6 +18,7 @@ using Data.Constants;
 using terminalDocuSign.Services.New_Api;
 using Utilities.Configuration.Azure;
 using Utilities;
+using Utilities.Logging;
 
 namespace terminalDocuSign.Services
 {
@@ -34,8 +34,10 @@ namespace terminalDocuSign.Services
         private readonly IncidentReporter _alertReporter;
 
         private readonly string DevConnectName = "(dev) Fr8 Company DocuSign integration";
+        private readonly string DemoConnectName = "(demo) Fr8 Company DocuSign integration";
         private readonly string ProdConnectName = "Fr8 Company DocuSign integration";
         private readonly string TemporaryConnectName = "int-tests-Fr8";
+
 
         public DocuSignPlan()
         {
@@ -54,28 +56,28 @@ namespace terminalDocuSign.Services
         /// </summary>
         public async Task CreatePlan_MonitorAllDocuSignEvents(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
-            CreateConnect(curFr8UserId, authTokenDTO);
-            if (!(await FindAndActivateExistingPlan(curFr8UserId, authTokenDTO)))
-                await CreateAndActivateNewPlan(curFr8UserId, authTokenDTO);
+            Logger.LogInfo($"Create MADSE called {curFr8UserId}");
+            string currentPlanId = await FindAndActivateExistingPlan(curFr8UserId, "MonitorAllDocuSignEvents", authTokenDTO);
+            if (string.IsNullOrEmpty(currentPlanId))
+                await CreateAndActivateNewMADSEPlan(curFr8UserId, authTokenDTO);
         }
 
-
-
         //only create a connect when running on dev/production
-        private void CreateConnect(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
+        public void CreateConnect(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
+            Logger.LogInfo($"CreateConnect called {curFr8UserId}");
             var authTokenDO = new AuthorizationTokenDO() { Token = authTokenDTO.Token, ExternalAccountId = authTokenDTO.ExternalAccountId };
             var config = _docuSignManager.SetUp(authTokenDO);
 
             string terminalUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint");
             string prodUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultProductionUrl");
             string devUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultDevUrl");
+            string demoUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultDemoUrl");
 
             string connectName = "";
             string connectId = "";
-
-
-            Console.WriteLine("Connect creation: terminalUrl = {0}", terminalUrl);
+           
+            Logger.LogInfo($"CreateConnect terminalUrl {terminalUrl}", DocuSignManager.DocusignTerminalName);
             if (!string.IsNullOrEmpty(terminalUrl))
             {
                 if (terminalUrl.Contains(devUrl, StringComparison.InvariantCultureIgnoreCase))
@@ -89,17 +91,27 @@ namespace terminalDocuSign.Services
                 }
                 else
                     if (terminalUrl.Contains(prodUrl, StringComparison.InvariantCultureIgnoreCase))
+                {
                     connectName = ProdConnectName;
-
+                }
+                else 
+                    if (terminalUrl.Contains(demoUrl, StringComparison.InvariantCultureIgnoreCase))
+                {
+                    connectName = DemoConnectName;
+                }
+                else
+                {
+                    Logger.LogInfo($"Unable to set connectName from {terminalUrl}", DocuSignManager.DocusignTerminalName);
+                }                    
 
                 string publishUrl = terminalUrl + "/terminals/terminalDocuSign/events";
 
-                Console.WriteLine("Connect creation: publishUrl = {0}", publishUrl);
+                Logger.LogInfo("Connect creation: publishUrl = {0}", DocuSignManager.DocusignTerminalName);
 
                 if (!string.IsNullOrEmpty(connectName))
                 {
                     connectId = _docuSignConnect.CreateOrActivateConnect(config, connectName, publishUrl);
-                    Console.WriteLine("Created connect named {0} pointing to {1} with id {2}", connectName, publishUrl, connectId);
+                    Logger.LogInfo($"Created connect named {connectName} pointing to {publishUrl} with id {connectId}", DocuSignManager.DocusignTerminalName);
                 }
                 else
                 {
@@ -112,24 +124,36 @@ namespace terminalDocuSign.Services
                     }
 
                     connectId = _docuSignConnect.CreateConnect(config, TemporaryConnectName, publishUrl);
-                    Console.WriteLine("Created connect named {0} pointing to {1} with id {2}", TemporaryConnectName, publishUrl, connectId);
+                    Logger.LogInfo($"Created connect named {TemporaryConnectName} pointing to {publishUrl} with id {connectId}", DocuSignManager.DocusignTerminalName);
                 }
+            } else
+            {
+                Logger.LogInfo($"terminalUrl is empty, no work has been done in DocuSignPlan.CreateConnect: prodUrl -> {prodUrl}, devUrl -> {devUrl}, demoUrl -> {demoUrl}");
             }
         }
 
-        private async Task<bool> FindAndActivateExistingPlan(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
+        public async void CreateOrUpdatePolling(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
+        {
+            DocuSignPolling polling = new DocuSignPolling();
+            polling.SchedulePolling(authTokenDTO.ExternalAccountId, curFr8UserId);
+        }
+
+
+        private bool CheckIfSaveToFr8WarehouseConfiguredWithOldManifest(PlanDTO val)
+        {
+            return (_crateManager.GetStorage(val.Plan.SubPlans.ElementAt(0).Activities[1]).CrateContentsOfType<StandardConfigurationControlsCM>()
+                     .First().FindByName("UpstreamCrateChooser") as UpstreamCrateChooser).SelectedCrates.Count > 1;
+        }
+
+        private async Task<string> FindAndActivateExistingPlan(string curFr8UserId, string plan_name, AuthorizationTokenDTO authTokenDTO)
         {
             try
             {
-                var existingPlans = (await _hubCommunicator.GetPlansByName("MonitorAllDocuSignEvents", curFr8UserId, PlanVisibility.Internal)).ToList();
+                var existingPlans = (await _hubCommunicator.GetPlansByName(plan_name, curFr8UserId, PlanVisibility.Internal)).ToList();
                 if (existingPlans.Count > 0)
                 {
-
                     //search for existing MADSE plan for this DS account and updating it
 
-
-                    // 27 march 2016 (Sergey P.)
-                    // Logic for removing obsolete plans might be removed a few weeks after this code end up in production
                     //1 Split existing plans in obsolete/malformed and new
                     var plans = existingPlans.GroupBy
                         (val =>
@@ -138,18 +162,11 @@ namespace terminalDocuSign.Services
                         //second condition
                         val.Plan.SubPlans.ElementAt(0).Activities.Count() > 0 &&
                         //third condtion
-                        _crateManager.GetStorage(val.Plan.SubPlans.ElementAt(0).Activities[0]).Where(t => t.Label == "DocuSignUserCrate").FirstOrDefault() != null)
-                      .ToDictionary(g => g.Key, g => g.ToList());
+                        _crateManager.GetStorage(val.Plan.SubPlans.ElementAt(0).Activities[0]).Where(t => t.Label == "DocuSignUserCrate").FirstOrDefault() != null &&
+                        //fourth condition -> check if SaveToFr8Warehouse configured with old manifests
+                        !(plan_name == "MonitorAllDocuSignEvents" && CheckIfSaveToFr8WarehouseConfiguredWithOldManifest(val))
 
-                    //removing obsolete/malformed plans
-                    if (plans.ContainsKey(false))
-                    {
-                        List<PlanDTO> obsoletePlans = plans[false];
-                        foreach (var obsoletePlan in obsoletePlans)
-                        {
-                            await _hubCommunicator.DeletePlan(obsoletePlan.Plan.Id, curFr8UserId);
-                        }
-                    }
+                      ).ToDictionary(g => g.Key, g => g.ToList());
 
                     //trying to find an existing plan for this DS account
                     if (plans.ContainsKey(true))
@@ -175,8 +192,20 @@ namespace terminalDocuSign.Services
                                 await _hubCommunicator.ApplyNewToken(firstActivity.Id, Guid.Parse(authTokenDTO.Id), curFr8UserId);
                                 var existingPlanDO = Mapper.Map<PlanDO>(existingPlan.Plan);
                                 await _hubCommunicator.ActivatePlan(existingPlanDO, curFr8UserId);
-                                return true;
+                                Logger.LogInfo($"#### Existing MADSE plan activated with planId: {existingPlanDO.Id}", DocuSignManager.DocusignTerminalName);
+                                return existingPlan.Plan.Id.to_S();
                             }
+                        }
+                    }
+
+                    //removing obsolete/malformed plans
+                    if (plans.ContainsKey(false))
+                    {
+                        List<PlanDTO> obsoletePlans = plans[false];
+                        Logger.LogInfo($"#### Found {obsoletePlans.Count} obsolete MADSE plans", DocuSignManager.DocusignTerminalName);
+                        foreach (var obsoletePlan in obsoletePlans)
+                        {
+                            await _hubCommunicator.DeletePlan(obsoletePlan.Plan.Id, curFr8UserId);
                         }
                     }
                 }
@@ -184,10 +213,10 @@ namespace terminalDocuSign.Services
             // if anything bad happens we would like not to create a new MADSE plan and fail loudly
             catch (Exception exc) { throw new ApplicationException("Couldn't update an existing Monitor_All_DocuSign_Events plan", exc); };
 
-            return false;
+            return null;
         }
 
-        private async Task CreateAndActivateNewPlan(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
+        private async Task CreateAndActivateNewMADSEPlan(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
         {
             var emptyMonitorPlan = new PlanEmptyDTO
             {
@@ -201,6 +230,7 @@ namespace terminalDocuSign.Services
             var activityTemplates = await _hubCommunicator.GetActivityTemplates(null, curFr8UserId);
             var recordDocusignEventsTemplate = GetActivityTemplate(activityTemplates, "Prepare_DocuSign_Events_For_Storage");
             var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "SaveToFr8Warehouse");
+            Debug.WriteLine($"Calling create and configure with params {recordDocusignEventsTemplate} {curFr8UserId} {monitorDocusignPlan}");
             await _hubCommunicator.CreateAndConfigureActivity(recordDocusignEventsTemplate.Id,
                 curFr8UserId, "Record DocuSign Events", 1, monitorDocusignPlan.Plan.StartingSubPlanId, false, new Guid(authTokenDTO.Id));
             var storeMTDataActivity = await _hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id,
@@ -210,8 +240,9 @@ namespace terminalDocuSign.Services
             await _hubCommunicator.ConfigureActivity(storeMTDataActivity, curFr8UserId);
             var planDO = Mapper.Map<PlanDO>(monitorDocusignPlan.Plan);
             await _hubCommunicator.ActivatePlan(planDO, curFr8UserId);
-        }
 
+            Logger.LogInfo($"#### New MADSE plan activated with planId: {planDO.RootPlanNodeId}", DocuSignManager.DocusignTerminalName);
+        }
 
         private void SetSelectedCrates(ActivityDTO storeMTDataActivity)
         {
@@ -226,31 +257,15 @@ namespace terminalDocuSign.Services
                 var existingLabelDdlb = upstreamCrateChooser.SelectedCrates[0].Label;
                 var docusignEnvelope = new DropDownList
                 {
-                    selectedKey = MT.DocuSignEnvelope.ToString(),
-                    Value = ((int)MT.DocuSignEnvelope).ToString(),
+                    selectedKey = MT.DocuSignEnvelope_v2.ToString(),
+                    Value = ((int)MT.DocuSignEnvelope_v2).ToString(),
                     Name = "UpstreamCrateChooser_mnfst_dropdown_0",
-                    Source = existingDdlbSource
-                };
-                var docusignEvent = new DropDownList
-                {
-                    selectedKey = MT.DocuSignEvent.ToString(),
-                    Value = ((int)MT.DocuSignEvent).ToString(),
-                    Name = "UpstreamCrateChooser_mnfst_dropdown_1",
-                    Source = existingDdlbSource
-                };
-                var docusignRecipient = new DropDownList
-                {
-                    selectedKey = MT.DocuSignRecipient.ToString(),
-                    Value = ((int)MT.DocuSignRecipient).ToString(),
-                    Name = "UpstreamCrateChooser_mnfst_dropdown_2",
                     Source = existingDdlbSource
                 };
 
                 upstreamCrateChooser.SelectedCrates = new List<CrateDetails>()
                 {
-                    new CrateDetails { ManifestType = docusignEnvelope, Label = existingLabelDdlb },
-                    new CrateDetails { ManifestType = docusignEvent, Label = existingLabelDdlb },
-                    new CrateDetails { ManifestType = docusignRecipient, Label = existingLabelDdlb }
+                    new CrateDetails { ManifestType = docusignEnvelope, Label = existingLabelDdlb }
                 };
             }
         }

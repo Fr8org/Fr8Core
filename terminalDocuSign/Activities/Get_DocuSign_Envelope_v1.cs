@@ -5,14 +5,13 @@ using System.Threading.Tasks;
 using Data.Constants;
 using Data.Control;
 using Data.Crates;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
+using Data.States;
 using Hub.Managers;
 using Newtonsoft.Json;
 using terminalDocuSign.DataTransferObjects;
-using terminalDocuSign.Services;
 using TerminalBase.Infrastructure;
-using Data.Entities;
-using Data.States;
 using Utilities;
 
 namespace terminalDocuSign.Actions
@@ -115,7 +114,7 @@ namespace terminalDocuSign.Actions
 
                 // This has to be re-thinked. TemplateId is neccessary to retrieve fields but is unknown atm
                 // Perhaps it can be received by EnvelopeId
-                allFields.AddRange(GetEnvelopeUserDefinedFields(authTokenDO, envelopeId, null));
+                allFields.AddRange(GetEnvelopeData(authTokenDO, envelopeId, null));
 
                 // Update all fields crate
                 crateStorage.Add(Crate.CreateDesignTimeFieldsCrate(AllFieldsCrateName, AvailabilityType.RunTime, allFields.ToArray()));

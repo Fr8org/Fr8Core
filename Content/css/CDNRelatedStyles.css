@@ -1,0 +1,41 @@
+﻿.demo-card-square-connect > .mdl-card__title {
+  color: #F2F4F5;
+  font-weight: 700;
+  background: url('//fr8.azureedge.net/Content/img/freight-connect.jpg') center no-repeat;
+  background-color: #F2F4F5;
+}
+
+.demo-card-square-workflows > .mdl-card__title {
+  color: #F2F4F5;
+  font-weight: 500;
+  background: url('//fr8.azureedge.net/Content/img/freight-design.jpg') center no-repeat;
+  background-color: #444C58;
+}
+
+.demo-card-square-run > .mdl-card__title {
+  color: #F2F4F5;
+  font-weight: 500;
+  background: url('//fr8.azureedge.net/Content/img/freight-train.jpg') center no-repeat;
+  background-color: #444C58;
+}
+
+#social-network {
+  background-image: url('//fr8.azureedge.net/Content/img/background-cta-3.jpg');
+  text-align: center;
+  min-height: 550px;
+}
+
+.demo-card-square-fr8-box > .mdl-card__title {
+  color: #F2F4F5;
+  font-weight: 700;
+  background: url('//fr8.azureedge.net/Content/img/freight-containers_s.jpg') center no-repeat;
+  background-color: #F2F4F5;
+  opacity:1;
+}
+.demo-card-square-fr8-box > .mdl-card__title:hover {
+  color: #F2F4F5;
+  font-weight: 700;
+  background: url('//fr8.azureedge.net/Content/img/freight-containers_s.jpg') center no-repeat;
+  background-color: #F2F4F5;
+  opacity:0.9;
+}

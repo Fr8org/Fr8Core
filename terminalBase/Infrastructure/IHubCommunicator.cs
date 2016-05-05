@@ -30,6 +30,7 @@ namespace TerminalBase.Infrastructure
 
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, string userId);
         Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields, string userId);
+        Task<AuthorizationTokenDTO> GetAuthToken(string authTokenId, string curFr8UserId);
         Task<ActivityDTO> ConfigureActivity(ActivityDTO activityDTO, string userId);
         Task<ActivityDO> SaveActivity(ActivityDO activityDO, string userId);
         Task<ActivityDO> ConfigureActivity(ActivityDO activityDO, string userId);
@@ -37,6 +38,7 @@ namespace TerminalBase.Infrastructure
         Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO, string userId);
         Task RunPlan(Guid planId, List<CrateDTO> payload, string userId);
         Task<PlanDO> ActivatePlan(PlanDO planDO, string userId);
+        Task<List<CrateDTO>> GetStoredManifests(string currentFr8UserId, List<CrateDTO> cratesForMTRequest);
         Task<IEnumerable<PlanDTO>> GetPlansByName(string name, string userId, PlanVisibility visibility = PlanVisibility.Standard);
         Task<FileDO> SaveFile(string name, Stream stream, string userId);
         Task<Stream> DownloadFile(int fileId, string userId);

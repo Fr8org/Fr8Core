@@ -2,36 +2,26 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Web;
 using AutoMapper;
-using Hub.Managers;
-using Newtonsoft.Json;
-using StructureMap;
 using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
-using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Data.Repositories;
 using Data.States;
-using Utilities;
+using Hub.Interfaces;
+using Hub.Managers;
+using Newtonsoft.Json;
+using StructureMap;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
-using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
+using terminalDocuSign.Services.New_Api;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using TerminalBase.Services;
-using Hub.Infrastructure;
-using Hub.Interfaces;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using Utilities.Configuration.Azure;
-using terminalDocuSign.Services.New_Api;
+using Utilities;
 
 namespace terminalDocuSign.Actions
 {
@@ -57,13 +47,13 @@ namespace terminalDocuSign.Actions
         // This little class is storing information about how certian field displayed in Query Builder controls is query to the backed
         class FieldBackedRoutingInfo
         {
-            public readonly FieldType FieldType;
+            public readonly string FieldType;
             public readonly string DocusignQueryName;
             public readonly string MtDbPropertyName;
             public readonly Func<string, AuthorizationTokenDO, ControlDefinitionDTO> ControlFactory;
 
             public FieldBackedRoutingInfo(
-                FieldType fieldType,
+                string fieldType,
                 string docusignQueryName,
                 string mtDbPropertyName,
                 Func<string, AuthorizationTokenDO, ControlDefinitionDTO> controlFactory)
@@ -107,7 +97,7 @@ namespace terminalDocuSign.Actions
                     Source = new FieldSourceDTO
                     {
                         Label = "Queryable Criteria",
-                        ManifestType = CrateManifestTypes.StandardQueryFields
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
                 }));
 
@@ -652,16 +642,16 @@ namespace terminalDocuSign.Actions
             return null;
         }
 
-        public TypedFieldDTO[] GetFieldListForQueryBuilder(AuthorizationTokenDO authToken)
+        public FieldDTO[] GetFieldListForQueryBuilder(AuthorizationTokenDO authToken)
         {
             return _queryBuilderFields
                 .Select(x =>
-                    new TypedFieldDTO(
-                        x.Key,
-                        x.Key,
-                        x.Value.FieldType,
-                        x.Value.ControlFactory(x.Key, authToken)
-                    )
+                    new FieldDTO()
+                    {
+                        Key = x.Key,
+                        Label = x.Key,
+                        FieldType = x.Value.FieldType
+                    }
                 )
                 .ToArray();
         }
@@ -713,7 +703,7 @@ namespace terminalDocuSign.Actions
         {
             yield return Data.Crates.Crate.FromContent(
                 "Queryable Criteria",
-                new TypedFieldsCM(GetFieldListForQueryBuilder(authToken))
+                new FieldDescriptionsCM(GetFieldListForQueryBuilder(authToken))
             );
 
             yield return Data.Crates.Crate.FromContent(
@@ -737,6 +727,7 @@ namespace terminalDocuSign.Actions
             }
             return ConfigurationRequestType.Followup;
         }
+
         /// <summary>
         /// This method provides documentation in two forms:
         /// SolutionPageDTO for general information and 
@@ -756,17 +747,17 @@ namespace terminalDocuSign.Actions
             {
                 if (curDocumentation.Contains("ExplainMailMerge"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution work with DocuSign Reports"));
+                    return Task.FromResult(GenerateDocumentationResponse(@"This solution work with DocuSign Reports"));
                 }
                 if (curDocumentation.Contains("ExplainService"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                    return Task.FromResult(GenerateDocumentationResponse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }
-                return Task.FromResult(GenerateErrorRepsonse("Unknown contentPath"));
+                return Task.FromResult(GenerateErrorResponse("Unknown contentPath"));
             }
             return
                 Task.FromResult(
-                    GenerateErrorRepsonse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+                    GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }

@@ -8,6 +8,7 @@ using Data.Interfaces.DataTransferObjects;
 using terminalSlack.Interfaces;
 using Utilities.Configuration.Azure;
 using Hub.Managers.APIManagers.Transmitters.Restful;
+using Newtonsoft.Json;
 
 namespace terminalSlack.Services
 {
@@ -38,26 +39,23 @@ namespace terminalSlack.Services
             return jsonObj.Value<string>("access_token");
         }
 
+        public async Task<UserInfo> GetUserInfo(string oauthToken)
+        {
+            var url = PrepareTokenUrl("SlackAuthTestUrl", oauthToken);
+            var response = await _client.GetAsync<JObject>(new Uri(url));
+            if (!string.Equals(response.Value<string>("ok"), "true", StringComparison.InvariantCultureIgnoreCase))
+            {
+                throw new ApplicationException($"Failed to get Slack user info. Slack response code - {response.Value<string>("error")}");
+            }
+            return response.ToObject<UserInfo>();
+        }
+
         private string PrepareTokenUrl(string urlKey, string oauthToken)
         {
             var template = CloudConfigurationManager.GetSetting(urlKey);
             var url = template.Replace("%TOKEN%", oauthToken);
 
             return url;
-        }
-
-        public async Task<string> GetUserId(string oauthToken)
-        {
-            var url = PrepareTokenUrl("SlackAuthTestUrl", oauthToken);
-            var jsonObj = await _client.GetAsync<JObject>(new Uri(url));
-            return jsonObj.Value<string>("user_id");
-        }
-
-        public async Task<string> GetUserName(string oauthToken)
-        {
-            var url = PrepareTokenUrl("SlackAuthTestUrl", oauthToken);
-            var jsonObj = await _client.GetAsync<JObject>(new Uri(url));
-            return jsonObj.Value<string>("user");
         }
 
         public async Task<List<FieldDTO>> GetChannelList(string oauthToken, bool includeArchived = false)
@@ -82,7 +80,7 @@ namespace terminalSlack.Services
             }
 
             return result;
-            
+
         }
 
         public async Task<List<FieldDTO>> GetUserList(string oauthToken)
@@ -126,11 +124,11 @@ namespace terminalSlack.Services
         {
             var url = CloudConfigurationManager.GetSetting("SlackChatPostMessageUrl");
 
-            
 
-            
+
+
             var content = new FormUrlEncodedContent(
-                new[] { 
+                new[] {
                     new KeyValuePair<string, string>("token", oauthToken),
                     new KeyValuePair<string, string>("channel", channelId),
                     new KeyValuePair<string, string>("text", message)
@@ -138,15 +136,25 @@ namespace terminalSlack.Services
             );
 
             var responseJson = await _client.PostAsync<JObject>(new Uri(url), (HttpContent)content);
+            bool isOk;
             try
             {
-                return responseJson.Value<bool>("ok");
+                isOk = responseJson.Value<bool>("ok");
             }
-            catch
+            catch (Exception ex)
             {
                 return false;
             }
-            
+
+            if (!isOk)
+            {
+                string reason = responseJson.Value<string>("error");
+                if (reason.IndexOf("token") > -1)
+                {
+                    throw new TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException();
+                }
+            }
+            return isOk;
         }
     }
 }

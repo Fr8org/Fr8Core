@@ -37,8 +37,9 @@ namespace terminalSalesforce.Controllers
 	        {
 				Name = "Salesforce"
 	        };
+            var actionList = new List<ActivityTemplateDTO>();
 
-            var saveToSalesforce = new ActivityTemplateDTO()
+            actionList.Add(new ActivityTemplateDTO()
             {
                 Version = "1",
                 Name = "Save_To_SalesforceDotCom",
@@ -48,9 +49,8 @@ namespace terminalSalesforce.Controllers
                 Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 WebService = webService
-            };
-
-            var getDataAction = new ActivityTemplateDTO()
+            });
+            actionList.Add(new ActivityTemplateDTO()
             {
                 Version = "1",
                 Name = "Get_Data",
@@ -58,12 +58,11 @@ namespace terminalSalesforce.Controllers
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 Category = ActivityCategory.Receivers,
-                MinPaneWidth = 330,
+                MinPaneWidth = 550,
                 WebService = webService,
                 Tags = Tags.TableDataGenerator
-            };
-
-            var postToChatterAction = new ActivityTemplateDTO()
+            });
+            actionList.Add(new ActivityTemplateDTO()
             {
                 Version = "1",
                 Name = "Post_To_Chatter",
@@ -73,9 +72,18 @@ namespace terminalSalesforce.Controllers
                 Category = ActivityCategory.Forwarders,
                 MinPaneWidth = 330,
                 WebService = webService
-            }; 
-
-            var mailMergeFromSalesforce = new ActivityTemplateDTO
+            }); actionList.Add(new ActivityTemplateDTO()
+            {
+                Version = "2",
+                Name = "Post_To_Chatter",
+                Label = "Post To Salesforce Chatter",
+                Terminal = terminal,
+                NeedsAuthentication = true,
+                Category = ActivityCategory.Forwarders,
+                MinPaneWidth = 330,
+                WebService = webService
+            });
+            actionList.Add(new ActivityTemplateDTO()
             {
                 Version = "1",
                 Name = "Mail_Merge_From_Salesforce",
@@ -86,9 +94,8 @@ namespace terminalSalesforce.Controllers
                 MinPaneWidth = 500,
                 WebService = webService,
                 Tags = Tags.UsesReconfigureList
-            };
-
-            var monitorSalesforceAction = new ActivityTemplateDTO()
+            });
+            actionList.Add(new ActivityTemplateDTO()
             {
                 Version = "1",
                 Name = "Monitor_Salesforce_Event",
@@ -98,12 +105,7 @@ namespace terminalSalesforce.Controllers
                 Category = ActivityCategory.Monitors,
                 MinPaneWidth = 330,
                 WebService = webService
-            };
-
-            var actionList = new List<ActivityTemplateDTO>()
-            {
-                saveToSalesforce, getDataAction, postToChatterAction, mailMergeFromSalesforce, monitorSalesforceAction
-            };
+            });
 
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
