@@ -6,6 +6,7 @@ using NUnit.Core;
 using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.IO;
 
 namespace HealthMonitor
 {
@@ -27,6 +28,7 @@ namespace HealthMonitor
             var skipLocal = false;
             var interactive = false;
             var killIISExpress = false;
+            var doNotCleanUp = false;
 
             if (args != null)
             {
@@ -81,6 +83,12 @@ namespace HealthMonitor
                     else if (args[i] == "--killexpress")
                     {
                         killIISExpress = true;
+                    }
+
+                    // Supresses the execution of the clean-up script after the tests finished running. 
+                    else if (args[i].ToLowerInvariant() == "--donotcleanup")
+                    {
+                        doNotCleanUp = true;
                     }
                 }
 
@@ -158,11 +166,24 @@ namespace HealthMonitor
                     selfHostInitializer.Dispose();
                 }
             }
+
+            if (!doNotCleanUp)
+            {
+                Trace.TraceWarning("Running clean-up scripts...");
+                new CleanupService().LaunchCleanup();
+            }
+
+            if (errorCount > 0)
+            {
+                Trace.TraceWarning($"{errorCount} tests failed");
+            }
+
             if (interactive)
             {
                 Console.WriteLine("Tests are completed. Press ENTER to close the app");
                 Console.ReadLine();
             }
+
             Environment.Exit(errorCount);
         }
 
@@ -276,8 +297,6 @@ namespace HealthMonitor
                     reportNotifier.Notify(appName, htmlReport);
                 }
             }
-
-            //ReportToConsole(appName, report); We now have real-time reporting
             return report.Tests.Count(x => !x.Success);
         }
 
