@@ -1,8 +1,7 @@
-﻿<div>
+﻿<div class="col-sm-12">
     <!--TextBlock control main container-->
-    <label class="fr8-full-width" ng-click="field.isCollapsed=!field.isCollapsed">
-        <strong>{{field.initialLabel}}</strong>
-    </label>
+        <md-button class="col-sm-12 md-raised" ng-click="field.isCollapsed=!field.isCollapsed" ng-class="[{'': !field.isCollapsed},{'md-primary':field.isCollapsed}]">{{field.initialLabel}}</md-button>
+
 
     <!--Toggel wrapper -->
     <div class="collapsed" ng-class="[{'expanded': !field.isCollapsed},{'':field.isCollapsed}]">
