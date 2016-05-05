@@ -13,11 +13,11 @@ namespace TerminalBase.BaseClasses
 {
     public class UpstreamQueryManager
     {
-        private readonly ActivityDO _activity;
+        private readonly ActivityDTO _activity;
         private readonly IHubCommunicator _hubCommunicator;
         private readonly string _userId;
 
-        public UpstreamQueryManager(ActivityDO activity, IHubCommunicator hubCommunicator, string userId)
+        public UpstreamQueryManager(ActivityDTO activity, IHubCommunicator hubCommunicator, string userId)
         {
             _activity = activity;
             _hubCommunicator = hubCommunicator;

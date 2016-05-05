@@ -4,8 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using StructureMap;
-using Data.Entities;
-using Data.States;
 using Hub.Managers;
 using System.IO;
 using Fr8Data.Constants;
@@ -50,7 +48,7 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult<object>(null);
         }
 
-        public Task<PayloadDTO> GetPayload(ActivityDO activityDO, Guid containerId, string userId)
+        public Task<PayloadDTO> GetPayload(ActivityDTO activityDO, Guid containerId, string userId)
         {
             var payload = new PayloadDTO(containerId)
             {
@@ -72,7 +70,7 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(payload);
         }
 
-        public Task<UserDTO> GetCurrentUser(ActivityDO activityDO, Guid containerId, string userId)
+        public Task<UserDTO> GetCurrentUser(ActivityDTO activityDO, Guid containerId, string userId)
         {
             return Task.FromResult<UserDTO>(
                 new UserDTO()
@@ -85,7 +83,7 @@ namespace TerminalBase.Infrastructure
             );
         }
 
-        public Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDO activityDO, CrateDirection direction, string userId)
+        public Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDTO activityDO, CrateDirection direction, string userId)
         {
             var searchLabel = direction == CrateDirection.Upstream
                 ? LabelPrefix + "_UpstreamCrate"
@@ -101,13 +99,13 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(crates);
         }
 
-        public Task<List<Crate>> GetCratesByDirection(ActivityDO activityDO, CrateDirection direction, string userId)
+        public Task<List<Crate>> GetCratesByDirection(ActivityDTO activityDTO, CrateDirection direction, string userId)
         {
             var searchLabel = direction == CrateDirection.Upstream
                 ? LabelPrefix + "_UpstreamCrate"
                 : LabelPrefix + "_DownstreamCrate";
 
-            var crateStorage = Crate.GetStorage(activityDO);
+            var crateStorage = Crate.GetStorage(activityDTO);
             var crates = crateStorage
                 .Where(x => x.Label.StartsWith(searchLabel))
                 .ToList();
@@ -122,14 +120,11 @@ namespace TerminalBase.Infrastructure
 
         }
 
-        public Task<FileDO> SaveFile(string name, Stream stream, string userId)
+        public Task<FileDTO> SaveFile(string name, Stream stream, string userId)
         {
-            var fileDO = new FileDO
+            var fileDO = new FileDTO
             {
                 OriginalFileName = name,
-                CreateDate = DateTime.Now,
-                Id = 0,
-                LastUpdated = DateTime.Now
             };
 
             return Task.FromResult(fileDO);
@@ -181,7 +176,7 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(new List<FieldValidationResult>());
         }
 
-        public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
+        public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(ActivityDTO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
         {
             //This code only supports integration testing scenarios
 
@@ -193,7 +188,7 @@ namespace TerminalBase.Infrastructure
             return mergedFields;
         }
 
-        public async Task<IncomingCratesDTO> GetAvailableData(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
+        public async Task<IncomingCratesDTO> GetAvailableData(ActivityDTO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
         {
             var fields = await GetCratesByDirection<FieldDescriptionsCM>(activityDO, direction,  userId);
             var crates = await GetCratesByDirection<CrateDescriptionCM>(activityDO, direction, userId);
@@ -216,7 +211,7 @@ namespace TerminalBase.Infrastructure
             throw new NotImplementedException();
         }
 
-        public Task<ActivityDO> SaveActivity(ActivityDO activityDO, string userId)
+        public Task<ActivityDTO> SaveActivity(ActivityDTO activityDO, string userId)
         {
             throw new NotImplementedException();
         }
@@ -226,7 +221,7 @@ namespace TerminalBase.Infrastructure
             throw new NotImplementedException();
         }
 
-        public Task<ActivityDO> ConfigureActivity(ActivityDO activityDO, string userId)
+        public Task<ActivityDTO> ConfigureActivity(ActivityDTO activityDO, string userId)
         {
             throw new NotImplementedException();
         }

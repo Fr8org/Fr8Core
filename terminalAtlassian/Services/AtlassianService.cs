@@ -7,7 +7,6 @@ using System.Text;
 using Atlassian.Jira;
 using Newtonsoft.Json;
 using StructureMap;
-using Data.Entities;
 using Fr8Data.DataTransferObjects;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using TerminalBase.Errors;
@@ -71,7 +70,7 @@ namespace terminalAtlassian.Services
             request.Headers["Authorization"] = "Basic " + authInfo;
         }
 
-        public List<FieldDTO> GetJiraIssue(string jiraKey, AuthorizationTokenDO authorizationTokenDO)
+        public List<FieldDTO> GetJiraIssue(string jiraKey, AuthorizationTokenDTO authorizationTokenDO)
         {
             Jira jira = CreateRestClient(authorizationTokenDO.Token);
 

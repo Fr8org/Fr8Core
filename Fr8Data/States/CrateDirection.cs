@@ -1,4 +1,4 @@
-﻿namespace Data.States
+﻿namespace Fr8Data.States
 {
     public enum CrateDirection
     {

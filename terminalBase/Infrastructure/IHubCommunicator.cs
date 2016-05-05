@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
-using Data.Entities;
-using Data.States;
 using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
@@ -14,12 +12,12 @@ namespace TerminalBase.Infrastructure
 {
     public interface IHubCommunicator
     {
-        Task<PayloadDTO> GetPayload(ActivityDO activityDO, Guid containerId, string userId);
-        Task<UserDTO> GetCurrentUser(ActivityDO activityDO, Guid containerId, string userId);
-        Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId);
-        Task<IncomingCratesDTO> GetAvailableData(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId);
-        Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDO activityDO, CrateDirection direction, string userId);
-        Task<List<Crate>> GetCratesByDirection(ActivityDO activityDO, CrateDirection direction, string userId);
+        Task<PayloadDTO> GetPayload(ActivityDTO activityDO, Guid containerId, string userId);
+        Task<UserDTO> GetCurrentUser(ActivityDTO activityDO, Guid containerId, string userId);
+        Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(ActivityDTO activityDO, CrateDirection direction, AvailabilityType availability, string userId);
+        Task<IncomingCratesDTO> GetAvailableData(ActivityDTO activityDO, CrateDirection direction, AvailabilityType availability, string userId);
+        Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDTO activityDO, CrateDirection direction, string userId);
+        Task<List<Crate>> GetCratesByDirection(ActivityDTO activityDO, CrateDirection direction, string userId);
 
         Task CreateAlarm(AlarmDTO alarmDTO, string userId);
 
@@ -31,15 +29,14 @@ namespace TerminalBase.Infrastructure
         Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields, string userId);
         Task<AuthorizationTokenDTO> GetAuthToken(string authTokenId, string curFr8UserId);
         Task<ActivityDTO> ConfigureActivity(ActivityDTO activityDTO, string userId);
-        Task<ActivityDO> SaveActivity(ActivityDO activityDO, string userId);
-        Task<ActivityDO> ConfigureActivity(ActivityDO activityDO, string userId);
+        Task<ActivityDTO> SaveActivity(ActivityDTO activityDO, string userId);
         Task<ActivityDTO> CreateAndConfigureActivity(Guid templateId, string userId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null);
         Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO, string userId);
         Task RunPlan(Guid planId, List<CrateDTO> payload, string userId);
-        Task<PlanDO> ActivatePlan(PlanDO planDO, string userId);
+        Task<PlanDTO> ActivatePlan(PlanDTO planDO, string userId);
         Task<List<CrateDTO>> GetStoredManifests(string currentFr8UserId, List<CrateDTO> cratesForMTRequest);
         Task<IEnumerable<PlanDTO>> GetPlansByName(string name, string userId, PlanVisibility visibility = PlanVisibility.Standard);
-        Task<FileDO> SaveFile(string name, Stream stream, string userId);
+        Task<FileDTO> SaveFile(string name, Stream stream, string userId);
         Task<Stream> DownloadFile(int fileId, string userId);
         Task<IEnumerable<FileDTO>> GetFiles(string userId);
         Task ApplyNewToken(Guid activityId, Guid authTokenId, string userId);

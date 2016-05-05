@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
+using Fr8Data.DataTransferObjects;
 using TerminalBase.BaseClasses;
 
 namespace TerminalBase.Infrastructure.Behaviors
@@ -20,12 +20,12 @@ namespace TerminalBase.Infrastructure.Behaviors
         /// <summary>
         /// Delegate that used by ReconfigurationList algorithm to create a new activity and add it to solution child-nodes.
         /// </summary>
-        public Func<ReconfigurationContext, Task<ActivityDO>> CreateActivityMethod { get; set; }
+        public Func<ReconfigurationContext, Task<ActivityDTO>> CreateActivityMethod { get; set; }
 
         /// <summary>
         /// Delegate that used by ReconfigurationList algorithm to configure existing activity in the list of solution child-nodes.
         /// </summary>
-        public Func<ReconfigurationContext, Task<ActivityDO>> ConfigureActivityMethod { get; set; }
+        public Func<ReconfigurationContext, Task<ActivityDTO>> ConfigureActivityMethod { get; set; }
 
         /// <summary>
         /// Ordering number of a child activity to be configured.
@@ -46,12 +46,12 @@ namespace TerminalBase.Infrastructure.Behaviors
         /// <summary>
         /// Solution activity that ReconfigurationLists is run for.
         /// </summary>
-        public ActivityDO SolutionActivity { get; set; }
+        public ActivityDTO SolutionActivity { get; set; }
 
         /// <summary>
         /// Current AuthToken.
         /// </summary>
-        public AuthorizationTokenDO AuthToken { get; set; }
+        public AuthorizationTokenDTO AuthToken { get; set; }
 
         /// <summary>
         /// The list of initial requests.
@@ -101,8 +101,8 @@ namespace TerminalBase.Infrastructure.Behaviors
         /// <summary>
         /// ReconfigurationList algorithm.
         /// </summary>
-        public async Task ReconfigureActivities(ActivityDO solution,
-            AuthorizationTokenDO authToken, IReadOnlyList<ConfigurationRequest> items)
+        public async Task ReconfigureActivities(ActivityDTO solution,
+            AuthorizationTokenDTO authToken, IReadOnlyList<ConfigurationRequest> items)
         {
             var queue = new Queue<ConfigurationRequest>(items);
 

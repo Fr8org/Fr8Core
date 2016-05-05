@@ -5,8 +5,6 @@ using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Security;
-using System.Web;
 using Data.Repositories;
 using Data.States;
 using Data.States.Templates;
@@ -16,8 +14,8 @@ using Data.Interfaces;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using Fr8Data.States;
 using StructureMap;
-//using MT_FieldService = Data.Infrastructure.MultiTenant.MT_Field;
 
 namespace Data.Migrations
 {

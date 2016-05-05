@@ -12,7 +12,7 @@ namespace Hub.Managers
     {
         public static IUpdatableCrateStorage GetUpdatableStorage(this ICrateManager crateManager, ActivityDO activity)
         {
-            if (activity == null) throw new ArgumentNullException("activity");
+            if (activity == null) throw new ArgumentNullException(nameof(activity));
             return crateManager.UpdateStorage(() => activity.CrateStorage);
         }
 

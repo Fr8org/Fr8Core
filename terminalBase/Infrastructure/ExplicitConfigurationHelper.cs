@@ -19,7 +19,7 @@
             return prefix + endPoint + "/activities/configure";
         }
 
-        private void AddHubCrate<T>(ActivityDO activityDO,
+        private void AddHubCrate<T>(ActivityDTO activityDO,
             T crateManifest, string label, string innerLabel)
         {
             var crateStorage = Crate.GetStorage(activityDO.ExplicitData);
@@ -36,7 +36,7 @@
             activityDO.ExplicitData = Crate.CrateStorageAsStr(crateStorage);
         }
 
-        public void AddCrate<T>(ActivityDO activityDO, T crateManifest, string label)
+        public void AddCrate<T>(ActivityDTO activityDO, T crateManifest, string label)
         {
             var crateStorage = Crate.GetStorage(activityDO.ExplicitData);
 
@@ -46,28 +46,28 @@
             activityDO.ExplicitData = Crate.CrateStorageAsStr(crateStorage);
         }
 
-        public void AddUpstreamCrate<T>(ActivityDO activityDO, T crateManifest, string crateLabel = "")
+        public void AddUpstreamCrate<T>(ActivityDTO activityDO, T crateManifest, string crateLabel = "")
         {
             AddHubCrate(activityDO, crateManifest, "ExplicitData_UpstreamCrate", crateLabel);
         }
 
-        public void AddDownstreamCrate<T>(ActivityDO activityDTO, T crateManifest, string crateLabel = "")
+        public void AddDownstreamCrate<T>(ActivityDTO activityDTO, T crateManifest, string crateLabel = "")
         {
             AddHubCrate(activityDTO, crateManifest, "ExplicitData_DownstreamCrate", crateLabel);
         }
 
-        public async Task<ActivityDO> Configure(ActivityDO activityDO,ActivityTemplateDTO activityTemplate,AuthorizationTokenDO authTokenDO = null)
+        public async Task<ActivityDTO> Configure(ActivityDTO activityDO,ActivityTemplateDTO activityTemplate,AuthorizationTokenDTO authTokenDTO = null)
         {
             var activityDTO = Mapper.Map<ActivityDTO>(activityDO);
             activityDTO.IsExplicitData = true;
             activityDTO.ActivityTemplate = activityTemplate;
 
-            if (authTokenDO != null)
+            if (authTokenDTO != null)
             {
                 activityDTO.AuthToken = new AuthorizationTokenDTO()
                 {
-                    Token = authTokenDO.Token,
-                    AdditionalAttributes = authTokenDO.AdditionalAttributes
+                    Token = authTokenDTO.Token,
+                    AdditionalAttributes = authTokenDTO.AdditionalAttributes
                 };
             }
 
@@ -75,7 +75,7 @@
                 activityDTO
             );
 
-            var responseActionDO = Mapper.Map<ActivityDO>(responseActionDTO);
+            var responseActionDO = Mapper.Map<ActivityDTO>(responseActionDTO);
             return responseActionDO;
         }
     }*/

@@ -3,8 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
-using Data.States;
 using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
@@ -62,8 +60,8 @@ namespace TerminalBase.BaseClasses
 
         protected bool IsAuthenticationRequired { get; }
         protected ICrateStorage CurrentActivityStorage { get; private set; }
-        protected ActivityDO CurrentActivity { get; private set; }
-        protected AuthorizationTokenDO AuthorizationToken { get; private set; }
+        protected ActivityDTO CurrentActivity { get; private set; }
+        protected AuthorizationTokenDTO AuthorizationToken { get; private set; }
         protected T ConfigurationControls { get; private set; }
         protected UpstreamQueryManager UpstreamQueryManager { get; private set; }
         protected UiBuilder UiBuilder { get; private set; }
@@ -83,11 +81,11 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        private bool AuthorizeIfNecessary(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
+        private bool AuthorizeIfNecessary(ActivityDTO activityDTO, AuthorizationTokenDTO authTokenDTO)
         {
             if (IsAuthenticationRequired)
             {
-                return CheckAuthentication(activityDO, authTokenDO);
+                return CheckAuthentication(activityDTO, authTokenDTO);
             }
 
             return false;
@@ -100,17 +98,17 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        public sealed override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public sealed override async Task<ActivityDTO> Configure(ActivityDTO curActivityDTO, AuthorizationTokenDTO authTokenDTO)
         {
             try
             {
-                if (AuthorizeIfNecessary(curActivityDO, authTokenDO))
+                if (AuthorizeIfNecessary(curActivityDTO, authTokenDTO))
                 {
-                    return curActivityDO;
+                    return curActivityDTO;
                 }
 
-                AuthorizationToken = authTokenDO;
-                CurrentActivity = curActivityDO;
+                AuthorizationToken = authTokenDTO;
+                CurrentActivity = curActivityDTO;
 
                 UpstreamQueryManager = new UpstreamQueryManager(CurrentActivity, HubCommunicator, CurrentFr8UserId);
 
@@ -136,14 +134,14 @@ namespace TerminalBase.BaseClasses
                     }
                 }
 
-                return curActivityDO;
+                return curActivityDTO;
             }
             catch (Exception ex)
             {
                 if (IsTokenInvalidation(ex))
                 {
-                    AddAuthenticationCrate(curActivityDO, true);
-                    return curActivityDO;
+                    AddAuthenticationCrate(curActivityDTO, true);
+                    return curActivityDTO;
                 }
 
                 throw;
@@ -190,15 +188,15 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        public sealed override async Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public sealed override async Task<ActivityDTO> Activate(ActivityDTO curActivityDTO, AuthorizationTokenDTO authTokenDTO)
         {
-            if (AuthorizeIfNecessary(curActivityDO, authTokenDO))
+            if (AuthorizeIfNecessary(curActivityDTO, authTokenDTO))
             {
-                return curActivityDO;
+                return curActivityDTO;
             }
 
-            AuthorizationToken = authTokenDO;
-            CurrentActivity = curActivityDO;
+            AuthorizationToken = authTokenDTO;
+            CurrentActivity = curActivityDTO;
 
             UpstreamQueryManager = new UpstreamQueryManager(CurrentActivity, HubCommunicator, CurrentFr8UserId);
 
@@ -214,14 +212,14 @@ namespace TerminalBase.BaseClasses
                 }
             }
 
-            return curActivityDO;
+            return curActivityDTO;
         }
 
         /**********************************************************************************/
 
-        public sealed override async Task<ActivityDO> Deactivate(ActivityDO curActivityDO)
+        public sealed override async Task<ActivityDTO> Deactivate(ActivityDTO curActivityDTO)
         {
-            CurrentActivity = curActivityDO;
+            CurrentActivity = curActivityDTO;
 
             UpstreamQueryManager = new UpstreamQueryManager(CurrentActivity, HubCommunicator, CurrentFr8UserId);
 
@@ -233,36 +231,36 @@ namespace TerminalBase.BaseClasses
                 await Deactivate();
             }
 
-            return curActivityDO;
+            return curActivityDTO;
         }
 
         /**********************************************************************************/
 
-        public sealed override Task<PayloadDTO> ExecuteChildActivities(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public sealed override Task<PayloadDTO> ExecuteChildActivities(ActivityDTO curActivityDTO, Guid containerId, AuthorizationTokenDTO authTokenDTO)
         {
-            return Run(curActivityDO, containerId, authTokenDO, RunChildActivities);
+            return Run(curActivityDTO, containerId, authTokenDTO, RunChildActivities);
         }
 
         /**********************************************************************************/
 
-        public Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public Task<PayloadDTO> Run(ActivityDTO curActivityDTO, Guid containerId, AuthorizationTokenDTO authTokenDTO)
         {
-            return Run(curActivityDO, containerId, authTokenDO, RunCurrentActivity);
+            return Run(curActivityDTO, containerId, authTokenDTO, RunCurrentActivity);
         }
 
         /**********************************************************************************/
 
-        private async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO, Func<Task> runMode)
+        private async Task<PayloadDTO> Run(ActivityDTO curActivityDTO, Guid containerId, AuthorizationTokenDTO authTokenDTO, Func<Task> runMode)
         {
-            var processPayload = await HubCommunicator.GetPayload(curActivityDO, containerId, CurrentFr8UserId);
+            var processPayload = await HubCommunicator.GetPayload(curActivityDTO, containerId, CurrentFr8UserId);
 
-            if (IsAuthenticationRequired && NeedsAuthentication(authTokenDO))
+            if (IsAuthenticationRequired && NeedsAuthentication(authTokenDTO))
             {
                 return NeedsAuthenticationError(processPayload);
             }
 
-            AuthorizationToken = authTokenDO;
-            CurrentActivity = curActivityDO;
+            AuthorizationToken = authTokenDTO;
+            CurrentActivity = curActivityDTO;
             
             UpstreamQueryManager = new UpstreamQueryManager(CurrentActivity, HubCommunicator, CurrentFr8UserId);
 
@@ -743,62 +741,62 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
         // we don't want uncontrollable extensibility
-        protected sealed override Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
+        protected sealed override Task<ICrateStorage> ValidateActivity(ActivityDTO curActivityDTO)
         {
-            return base.ValidateActivity(curActivityDO);
+            return base.ValidateActivity(curActivityDTO);
         }
 
-        public sealed override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public sealed override ConfigurationRequestType ConfigurationEvaluator(ActivityDTO curActivityDTO)
         {
-            return base.ConfigurationEvaluator(curActivityDO);
+            return base.ConfigurationEvaluator(curActivityDTO);
         }
 
-        protected sealed override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected sealed override Task<ActivityDTO> InitialConfigurationResponse(ActivityDTO curActivityDTO, AuthorizationTokenDTO authTokenDTO)
         {
-            return base.InitialConfigurationResponse(curActivityDO, authTokenDO);
+            return base.InitialConfigurationResponse(curActivityDTO, authTokenDTO);
         }
 
-        protected sealed override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected sealed override Task<ActivityDTO> FollowupConfigurationResponse(ActivityDTO curActivityDTO, AuthorizationTokenDTO authTokenDTO)
         {
-            return base.FollowupConfigurationResponse(curActivityDO, authTokenDO);
+            return base.FollowupConfigurationResponse(curActivityDTO, authTokenDTO);
         }
 
-        public sealed override Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDO activityDO, CrateDirection direction)
+        public sealed override Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDTO activityDO, CrateDirection direction)
         {
             return base.GetCratesByDirection<TManifest>(activityDO, direction);
         }
 
-        public sealed override Task<List<Crate>> GetCratesByDirection(ActivityDO activityDO, CrateDirection direction)
+        public sealed override Task<List<Crate>> GetCratesByDirection(ActivityDTO activityDO, CrateDirection direction)
         {
             return base.GetCratesByDirection(activityDO, direction);
         }
 
-        public sealed override Task<FieldDescriptionsCM> GetDesignTimeFields(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
+        public sealed override Task<FieldDescriptionsCM> GetDesignTimeFields(ActivityDTO activityDO, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
         {
             return base.GetDesignTimeFields(activityDO, direction, availability);
         }
 
-        public sealed override Task<List<CrateManifestType>> BuildUpstreamManifestList(ActivityDO activityDO)
+        public sealed override Task<List<CrateManifestType>> BuildUpstreamManifestList(ActivityDTO activityDO)
         {
             return base.BuildUpstreamManifestList(activityDO);
         }
 
-        public sealed override Task<List<string>> BuildUpstreamCrateLabelList(ActivityDO activityDO)
+        public sealed override Task<List<string>> BuildUpstreamCrateLabelList(ActivityDTO activityDO)
         {
             return base.BuildUpstreamCrateLabelList(activityDO);
         }
 
-        public sealed override Task<Crate<FieldDescriptionsCM>> GetUpstreamManifestListCrate(ActivityDO activityDO)
+        public sealed override Task<Crate<FieldDescriptionsCM>> GetUpstreamManifestListCrate(ActivityDTO activityDO)
         {
             return base.GetUpstreamManifestListCrate(activityDO);
         }
 
-        public sealed override Task<Crate<FieldDescriptionsCM>> GetUpstreamCrateLabelListCrate(ActivityDO activityDO)
+        public sealed override Task<Crate<FieldDescriptionsCM>> GetUpstreamCrateLabelListCrate(ActivityDTO activityDO)
         {
             return base.GetUpstreamCrateLabelListCrate(activityDO);
         }
 
-        protected sealed override Task<List<Crate<StandardFileDescriptionCM>>> GetUpstreamFileHandleCrates(ActivityDO activityDO)
+        protected sealed override Task<List<Crate<StandardFileDescriptionCM>>> GetUpstreamFileHandleCrates(ActivityDTO activityDO)
         {
             return base.GetUpstreamFileHandleCrates(activityDO);
         }

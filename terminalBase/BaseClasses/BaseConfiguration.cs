@@ -1,15 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using StructureMap;
-using Data.Infrastructure.AutoMapper;
-using Hub.StructureMap;
 using TerminalBase.Infrastructure;
 
 namespace TerminalBase.BaseClasses
@@ -35,7 +31,6 @@ namespace TerminalBase.BaseClasses
                 _configuration.Services.Replace(typeof(IHttpControllerTypeResolver), this);
             }
 
-            DataAutoMapperBootStrapper.ConfigureAutoMapper();
         }
 
         protected virtual void ConfigureFormatters()
