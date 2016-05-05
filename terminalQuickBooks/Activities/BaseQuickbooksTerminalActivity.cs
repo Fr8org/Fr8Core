@@ -21,9 +21,9 @@ namespace terminalQuickBooks.Actions
             return ex is TerminalQuickbooksTokenExpiredException;
         }
 
-        public AuthorizationTokenDO GetQuickbooksAuthToken(AuthorizationTokenDO authTokenDO = null)
+        public AuthorizationTokenDO GetQuickbooksAuthToken()
         {
-            return JsonConvert.DeserializeObject<AuthorizationTokenDO>((authTokenDO ?? AuthorizationToken).Token);
+            return AuthorizationToken;
         }
     }
 }
