@@ -235,7 +235,6 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Controllers\ActivityControllerTest.cs" />
-    <Compile Include="Controllers\ActivityListControllerTest.cs" />
     <Compile Include="Controllers\Api\ApiControllerTestBase.cs" />
     <Compile Include="Controllers\AuthenticationControllerTest.cs" />
     <Compile Include="Controllers\ContainerControllerTests.cs" />

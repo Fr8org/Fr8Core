@@ -47,12 +47,12 @@ namespace terminalAtlassian.Actions
             _atlassianService = ObjectFactory.GetInstance<AtlassianService>();
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             await Task.Yield();
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Configure(CrateSignaller crateSignaller)
         {
             var issueKey = ConfigurationControls.IssueNumber.GetValue(CurrentActivityStorage);
             if (!string.IsNullOrEmpty(issueKey))

@@ -82,7 +82,7 @@ namespace terminalFr8Core.Actions
             ActivityName = "Match Incoming Text and Build Object List";
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             var activityTemplates = await HubCommunicator.GetActivityTemplates(ActivityTemplate.TableDataGeneratorTag, CurrentFr8UserId);
             activityTemplates.Sort((x, y) => x.Name.CompareTo(y.Name));
@@ -91,7 +91,7 @@ namespace terminalFr8Core.Actions
                                                                  .ToList();
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Configure(CrateSignaller crateSignaller)
         {
             //Remove child activity if its not specified or add it if is not yet added
             if (string.IsNullOrEmpty(ConfigurationControls.DataSourceSelector.Value))

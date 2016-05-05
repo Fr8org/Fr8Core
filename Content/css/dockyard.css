@@ -101,11 +101,11 @@
 .designer-header {
     background: transparent;
     width: 100%;
+    padding-top:13px;
 }
 
 .designer-header-title.page-title {
-    height: 49px;
-    padding: 0 0 19px 0;
+    padding: 5px 0px 0 15px
 }
 
 .design-header-title-editField {
@@ -125,6 +125,17 @@
     display: none;
 }
 
+.designer-header-fixed{
+    position: fixed;
+    margin-top: -25px; 
+    border-bottom: 3px solid; 
+    border-color: rgb(38, 166, 154);
+    z-index: 5;
+    background-color: #EFF3F8;
+    width:79%;
+    height:64px;
+}
+
 .designer-header-glyphicon {
     font-size: 22px;
     line-height: 24px;
@@ -139,7 +150,7 @@
 
 .designer-header-status {
     float: right;
-    text-align: right;
+    margin-left:30px;
 }
 
 .designer-header-statusLabel {
@@ -1062,6 +1073,14 @@ i.activity-stream-font {
     padding-top: 5px;
 }
 
+.activity-stream{
+    right:0px;
+    position:absolute; 
+    width:100%; 
+    height:100%; 
+    z-index:10;
+}
+
 .activity-stream-flex{
     flex:1;
     margin-left:17px;
@@ -1205,4 +1224,16 @@ footer p {
 .delete-button{
      width:15px;
      margin-top:10px;
+}
+
+.plan-state-text {
+    background-color:forestgreen; 
+    border-radius:6px !important; 
+    padding:6px 6px 6px 6px; 
+    color:white;
+}
+
+.menu-logo {
+    height:50px;
+    padding:7px 15px 0 0;
 }
