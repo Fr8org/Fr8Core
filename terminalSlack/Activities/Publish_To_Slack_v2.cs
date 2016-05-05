@@ -34,7 +34,7 @@ namespace terminalSlack.Actions
             _slackIntegration = new SlackIntegration();
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             var usersTask = _slackIntegration.GetUserList(AuthorizationToken.Token);
             var channelsTask = _slackIntegration.GetChannelList(AuthorizationToken.Token);
@@ -49,7 +49,7 @@ namespace terminalSlack.Actions
             ConfigurationControls.ChannelSelector.ListItems = channelsAndUsersList;
         }
 
-        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Configure(CrateSignaller crateSignaller)
         {
             //No extra config is required
             return Task.FromResult(0);
