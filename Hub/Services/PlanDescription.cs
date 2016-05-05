@@ -87,7 +87,7 @@ namespace Hub.Services
                     .Include(t => t.PlanNodeDescriptions.Select(x => x.Transitions))
                     .Where(a => a.Id == planDescriptionId).FirstOrDefault();
 
-                var planDO = new PlanDO() { Fr8AccountId = userId, Name = planDescription.Name + "— from a plan description", PlanState = 1, ChildNodes = new List<PlanNodeDO>(), Description = planDescription.Description };
+                var planDO = new PlanDO() { Fr8AccountId = userId, Name = planDescription.Name + " — from a plan description", PlanState = 1, ChildNodes = new List<PlanNodeDO>(), Description = planDescription.Description };
 
                 var allNodesDictionary = new Dictionary<ActivityDO, PlanNodeDescriptionDO>();
                 var first_activities = planDescription.PlanNodeDescriptions.Where(a => a.ParentNode == null);
@@ -118,14 +118,17 @@ namespace Hub.Services
            List<ActivityTemplateDO> related_templates, bool startingSubplan, ref Dictionary<Guid, PlanNodeDescriptionDO> allNodesDictionary)
         {
             var result = new Dictionary<Guid, PlanNodeDescriptionDO>();
-            foreach (var activityNode in nodeDO.ChildNodes)
+            foreach (var activityNode in nodeDO.ChildNodes.OrderBy(a => a.Ordering))
             {
                 var firstActivity = all_activities.Where(a => a.Id == activityNode.Id).FirstOrDefault();
                 var template = related_templates.Where(a => a.Id == firstActivity.ActivityTemplateId).FirstOrDefault();
                 var node = CreatePlanDescriptionNode(firstActivity, template);
 
                 if (nodeDO is SubPlanDO)
+                {
                     node.SubPlanName = (nodeDO as SubPlanDO).Name;
+                    node.SubPlanOriginalId = nodeDO.Id.ToString();
+                }
 
                 if (startingSubplan)
                 {
@@ -213,7 +216,7 @@ namespace Hub.Services
                         {
                             case ContainerTransitions.JumpToActivity:
                                 var target_node = all_nodes_dictionary[transition.TargetNodeId.Value];
-                                testAndBranch_node.Transitions.Add(new ActivityTransitionDO() { ActivityDescription = target_node.ActivityDescription, Transition = PlanNodeTransitionType.Jump, TransitionId = transition.Id });
+                                testAndBranch_node.Transitions.Add(new ActivityTransitionDO() { ActivityDescription = target_node.ActivityDescription, Transition = PlanNodeTransitionType.Jump });
                                 break;
 
                             case ContainerTransitions.JumpToSubplan:
@@ -223,14 +226,14 @@ namespace Hub.Services
                                 if (target_starting_nodeDO != null) //false if a jump is targeting an emty subplan, so we won't create transitions
                                 {
                                     var target_starting_node = all_nodes_dictionary[target_starting_nodeDO.Id];
-                                    testAndBranch_node.Transitions.Add(new ActivityTransitionDO() { ActivityDescription = target_starting_node.ActivityDescription, Transition = PlanNodeTransitionType.Jump, TransitionId = transition.Id });
+                                    testAndBranch_node.Transitions.Add(new ActivityTransitionDO() { ActivityDescription = target_starting_node.ActivityDescription, Transition = PlanNodeTransitionType.Jump });
                                 }
                                 break;
 
                             case ContainerTransitions.LaunchAdditionalPlan:
                                 // for now let's jump to an existing a plan, but that will lead to "unsharable" plan description,
                                 // so in future we might want to evaluate if a user wants a target plan to be saved as description as well
-                                testAndBranch_node.Transitions.Add(new ActivityTransitionDO() { PlanId = transition.TargetNodeId, Transition = PlanNodeTransitionType.Jump, TransitionId = transition.Id });
+                                testAndBranch_node.Transitions.Add(new ActivityTransitionDO() { PlanId = transition.TargetNodeId, Transition = PlanNodeTransitionType.Jump });
                                 break;
                         }
                     }
@@ -246,6 +249,7 @@ namespace Hub.Services
             planNode.ActivityDescription = new ActivityDescriptionDO()
             {
                 ActivityTemplateId = firstActivity.ActivityTemplateId,
+                OriginalId = firstActivity.Id.ToString(),
                 Name = firstActivity.Label,
                 Version = template.Version,
                 CrateStorage = firstActivity.CrateStorage
@@ -283,32 +287,25 @@ namespace Hub.Services
                     var controlsCrate = crateStorage.Where(a => a.ManifestType.Id == (int)MT.StandardConfigurationControls).FirstOrDefault().Get<StandardConfigurationControlsCM>();
                     var transitionsPanel = (ContainerTransition)controlsCrate.Controls.Where(a => a.Type == ControlTypes.ContainerTransition).FirstOrDefault();
 
-                    foreach (var transition in testAndBranch_node.Transitions)
+                    foreach (var transition in transitionsPanel.Transitions)
                     {
-                        if (transition.ActivityDescriptionId != null)
+                        if (transition.TargetNodeId != null)
                         {
-                            var activity_transition = transitionsPanel.Transitions.Where(a => a.Id == transition.TransitionId).FirstOrDefault();
-                            var target_activity_node = planDescription.PlanNodeDescriptions.Where(a => a.ActivityDescription.Id == transition.ActivityDescriptionId).FirstOrDefault();
-                            var target_activity = allNodesDictionary.Where(a => a.Value == target_activity_node).FirstOrDefault().Key;
-
-                            //we treat both activities/subplans the same in the JSON. If it is a subplan jump then in the json the target is the first node
-                            if (activity_transition.Transition == ContainerTransitions.JumpToActivity)
+                            switch (transition.Transition)
                             {
-                                transitionsPanel.Transitions.Remove(activity_transition);
-                                var new_transition = new ContainerTransitionField() { Conditions = activity_transition.Conditions, Transition = activity_transition.Transition, Id = activity_transition.Id, TargetNodeId = target_activity.Id };
-                                transitionsPanel.Transitions.Add(new_transition);
+                                case ContainerTransitions.JumpToActivity:
+                                    var targetActivityNode = planDescription.PlanNodeDescriptions.Where(a => a.ActivityDescription.OriginalId == transition.TargetNodeId.ToString()).FirstOrDefault();
+                                    var targetActivity = allNodesDictionary.Where(a => a.Value == targetActivityNode).FirstOrDefault().Key;
+                                    transition.TargetNodeId = targetActivity.Id;
+                                    break;
+                                case ContainerTransitions.JumpToSubplan:
+                                    var targetStartingActivityNode = planDescription.PlanNodeDescriptions.Where(a => a.SubPlanOriginalId == transition.TargetNodeId.ToString()).FirstOrDefault();
+                                    var startingActivity = allNodesDictionary.Where(a => a.Value == targetStartingActivityNode).FirstOrDefault().Key;
+                                    transition.TargetNodeId = startingActivity.ParentPlanNode.Id;
+                                    break;
+                                case ContainerTransitions.LaunchAdditionalPlan:
+                                    break;
                             }
-                            else if (activity_transition.Transition == ContainerTransitions.JumpToSubplan)
-                            {
-                                transitionsPanel.Transitions.Remove(activity_transition);
-                                var target_subplan_node = planDO.GetDescendants().Where(a => a.ChildNodes.Contains(target_activity)).FirstOrDefault();
-                                var new_transition = new ContainerTransitionField() { Conditions = activity_transition.Conditions, Transition = activity_transition.Transition, Id = activity_transition.Id, TargetNodeId = target_subplan_node.Id };
-                                transitionsPanel.Transitions.Add(new_transition);
-                            }
-                        }
-                        else if (transition.PlanId != null)
-                        {
-                            // currently we do nothing
                         }
                     }
                 }

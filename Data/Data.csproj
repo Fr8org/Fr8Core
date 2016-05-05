@@ -409,9 +409,9 @@
     <Compile Include="Interfaces\Manifests\EventReportCM.cs" />
     <Compile Include="Interfaces\Manifests\EventSubscriptionCM.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PlanDTO.cs" />
-    <Compile Include="Migrations\201605031522500_PlanDescription.cs" />
-    <Compile Include="Migrations\201605031522500_PlanDescription.Designer.cs">
-      <DependentUpon>201605031522500_PlanDescription.cs</DependentUpon>
+    <Compile Include="Migrations\201605051324568_PlanDescription.cs" />
+    <Compile Include="Migrations\201605051324568_PlanDescription.Designer.cs">
+      <DependentUpon>201605051324568_PlanDescription.cs</DependentUpon>
     </Compile>
     <Compile Include="Repositories\PlanDescriptions\ActivityDescriptionRepository.cs" />
     <Compile Include="Repositories\PlanDescriptions\ActivityTransitionRepository.cs" />
@@ -1307,8 +1307,8 @@
     <EmbeddedResource Include="Migrations\201605020854120_EncryptedCrateStorageAdded.resx">
       <DependentUpon>201605020854120_EncryptedCrateStorageAdded.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201605031522500_PlanDescription.resx">
-      <DependentUpon>201605031522500_PlanDescription.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201605051324568_PlanDescription.resx">
+      <DependentUpon>201605051324568_PlanDescription.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

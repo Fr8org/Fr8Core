@@ -20,5 +20,9 @@ namespace Data.Interfaces.DataTransferObjects.PlanDescription
         public ActivityDescriptionDTO ActivityDescription { get; set; }
 
         public string SubPlanName { get; set; }
+
+        public string SubPlanOriginalId { get; set; }
+
+        public bool IsStartingSubplan { get; set; }
     }
 }

@@ -15,6 +15,10 @@ namespace Data.Interfaces.DataTransferObjects.PlanDescription
 
         public string Version { get; set; }
 
+        public string OriginalId { get; set; }
+
+        public string CrateStorage { get; set; }
+
         public Guid ActivityTemplateId { get; set; }
     }
 }

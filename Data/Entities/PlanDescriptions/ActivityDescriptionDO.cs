@@ -11,6 +11,8 @@ namespace Data.Entities
     {
         public int Id { get; set; }
 
+        public string OriginalId { get; set; }
+
         public string Name { get; set; }
 
         public string Version { get; set; }

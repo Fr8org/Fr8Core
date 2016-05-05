@@ -11,8 +11,6 @@ namespace Data.Entities
     {
         public int Id { get; set; }
         
-        public Guid TransitionId { get; set; }
-
         public PlanNodeTransitionType Transition { get; set; }
 
         /// <summary>
