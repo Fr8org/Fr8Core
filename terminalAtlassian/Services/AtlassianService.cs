@@ -97,6 +97,23 @@ namespace terminalAtlassian.Services
             return result;
         }
 
+        public List<FieldDTO> GetPriorities(AuthorizationTokenDO authToken)
+        {
+            var jira = CreateRestClient(authToken.Token);
+
+            var priorities = jira.GetIssuePriorities();
+            var result = priorities
+                .Select(x => new FieldDTO()
+                    {
+                        Key = x.Name,
+                        Value = x.Id
+                    }
+                )
+                .ToList();
+
+            return result;
+        }
+
         public List<FieldDTO> GetCustomFields(AuthorizationTokenDO authToken)
         {
             var jira = CreateRestClient(authToken.Token);
@@ -109,11 +126,19 @@ namespace terminalAtlassian.Services
                         Value = x.Id
                     }
                 )
+                .OrderBy(x => x.Key)
                 .ToList();
 
             return result;
         }
 
+        public void CreateIssue(AuthorizationTokenDO authToken)
+        {
+            var jira = CreateRestClient(authToken.Token);
+
+            var issue = jira.CreateIssue("FR");
+        }
+        
         private List<FieldDTO> CreateKeyValuePairList(Issue curIssue)
         {
             List<FieldDTO> returnList = new List<FieldDTO>();
