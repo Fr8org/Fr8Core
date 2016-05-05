@@ -62,7 +62,7 @@ namespace Fr8Data.DataTransferObjects
         {
             try
             {
-                return Type.GetType(string.Format("Data.Control.{0}, Data", fieldTypeName));
+                return Type.GetType(string.Format("Fr8Data.Control.{0}, Fr8Data", fieldTypeName));
             }
             catch
             {
@@ -123,7 +123,7 @@ namespace Fr8Data.DataTransferObjects
         {
             try
             {
-                return Type.GetType(string.Format("Data.Control.{0}, Data", fieldTypeName));
+                return Type.GetType(string.Format("Fr8Data.Control.{0}, Fr8Data", fieldTypeName));
             }
             catch
             {
