@@ -1130,7 +1130,7 @@ i.activity-stream-font {
     display: block;
 }
 
-.expanded {
+.collapsed {
     max-height: 1000px;
     -o-transition: all .6s ease;   
     -webkit-transition: all .6s ease;
@@ -1138,7 +1138,7 @@ i.activity-stream-font {
 	transition: all .6s ease;
 }
 
-.collapsed {
+.expanded {
     max-height: 0px;
     overflow: hidden;
     -o-transition: all .3s ease;   
