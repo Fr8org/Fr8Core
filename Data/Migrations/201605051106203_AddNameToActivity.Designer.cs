@@ -13,7 +13,7 @@ namespace Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201604212027550_AddNameToActivity"; }
+            get { return "201605051106203_AddNameToActivity"; }
         }
         
         string IMigrationMetadata.Source
