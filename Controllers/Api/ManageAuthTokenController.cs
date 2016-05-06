@@ -75,7 +75,7 @@ namespace HubWeb.Controllers.Api
         }
 
         [HttpPost]
-        public IHttpActionResult TerminalsByActivities(IEnumerable<Guid> activityIds)
+        public IHttpActionResult AuthenticateTerminalsByActivities(IEnumerable<Guid> activityIds)
         {
             var result = new List<ManageAuthToken_Terminal_Activity>();
 
@@ -129,11 +129,11 @@ namespace HubWeb.Controllers.Api
 
         [Fr8HubWebHMACAuthenticate]
         [HttpPost]
-        public IHttpActionResult Apply(IEnumerable<ManageAuthToken_Apply> apply)
+        public IHttpActionResult Apply(IEnumerable<ManageAuthToken_Apply> authTokenList)
         {
             var userId = User.Identity.GetUserId();
 
-            foreach (var applyItem in apply)
+            foreach (var applyItem in authTokenList)
             {
                 Authorization.GrantToken(applyItem.ActivityId, applyItem.AuthTokenId);
 

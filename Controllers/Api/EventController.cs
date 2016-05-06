@@ -58,7 +58,7 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [ActionName("gen1_event")]
-        public IHttpActionResult ProcessGen1Event(CrateDTO submittedEventsCrate)
+        public IHttpActionResult CreateEventLog(CrateDTO submittedEventsCrate)
         {
             var eventCm = _crate.FromDto(submittedEventsCrate).Get<EventCM>();
 
