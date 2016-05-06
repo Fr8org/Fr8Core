@@ -107,6 +107,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseClasses\Activity.cs" />
     <Compile Include="BaseClasses\ActivityExecutionException.cs" />
     <Compile Include="BaseClasses\BaseConfiguration.cs" />
     <Compile Include="BaseClasses\BaseTerminalActivity.cs" />

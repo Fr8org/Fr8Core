@@ -4,11 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using StructureMap;
-using Hub.Managers;
 using System.IO;
 using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 
@@ -221,11 +221,6 @@ namespace TerminalBase.Infrastructure
             throw new NotImplementedException();
         }
 
-        public Task<ActivityDTO> ConfigureActivity(ActivityDTO activityDO, string userId)
-        {
-            throw new NotImplementedException();
-        }
-
         public Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO, string userId)
         {
             throw new NotImplementedException();
@@ -236,7 +231,7 @@ namespace TerminalBase.Infrastructure
             throw new NotImplementedException();
         }
 
-        public Task<PlanDO> ActivatePlan(PlanDO planDO, string userId)
+        public Task<PlanDTO> ActivatePlan(PlanDTO planDTO, string userId)
         {
             throw new NotImplementedException();
         }

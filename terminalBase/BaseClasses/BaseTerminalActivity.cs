@@ -11,6 +11,7 @@ using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.DataTransferObjects.Helpers;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 
@@ -369,13 +370,6 @@ namespace TerminalBase.BaseClasses
             return null;
         }
 
-        protected async Task<CrateDTO> ValidateByStandartDesignTimeFields(ActivityDTO curActivityDTO, FieldDescriptionsCM designTimeFields)
-        {
-            var fields = designTimeFields.Fields;
-            var validationList = fields.Select(f => new FieldValidationDTO(curactivityDTO.Id, f.Key)).ToList();
-            return CrateManager.ToDto(await ValidateFields(validationList));
-        }
-
         //if the Action doesn't provide a specific method to override this, we just return null = no validation errors
         protected virtual async Task<ICrateStorage> ValidateActivity(ActivityDTO curActivityDTO)
         {
@@ -430,7 +424,7 @@ namespace TerminalBase.BaseClasses
         }
         /// <summary>
         /// Returns the list of items that describe crates available at runtime for downstream activities
-        /// NOTE: do not create <see cref="Hub.Managers.IUpdatableCrateStorage" /> for passed activity inside this method
+        /// NOTE: do not create <see cref="IUpdatableCrateStorage" /> for passed activity inside this method
         /// as it may lead to unpredictable consequences
         /// </summary>
         protected virtual IEnumerable<CrateDescriptionDTO> GetRuntimeAvailableCrateDescriptions(ActivityDTO curActivityDTO)
@@ -588,10 +582,10 @@ namespace TerminalBase.BaseClasses
         {
 
             var resultDO = await AddAndConfigureChildActivity(parent.Id, activityTemplate, name, label, order);
-
             if (resultDO != null)
             {
-                parent.ChildNodes.Add(resultDO);
+                
+                parent.ChildrenActivities = parent.ChildrenActivities.ToList().Add(resultDO);
                 return resultDO;
             }
 
