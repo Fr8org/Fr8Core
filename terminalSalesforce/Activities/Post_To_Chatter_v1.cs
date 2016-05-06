@@ -27,7 +27,7 @@ namespace terminalSalesforce.Actions
             public RadioButtonOption UseUpstreamFeedParentIdOption { get; set; }
 
             public TextSource FeedParentIdSource { get; set; }
-
+            
             public TextSource FeedTextSource { get; set; }
 
             public ActivityUi() : this(new UiBuilder()) { }
@@ -61,7 +61,7 @@ namespace terminalSalesforce.Actions
                 Controls.Add(FeedParentSelectionGroup);
                 FeedTextSource = uiBuilder.CreateSpecificOrUpstreamValueChooser("Feed Text", nameof(FeedTextSource), requestUpstream: true, availability: AvailabilityType.RunTime);
                 Controls.Add(FeedTextSource);
-            }
+            }         
         }
 
         public const string PostedFeedCrateLabel = "Posted Salesforce Feed";
