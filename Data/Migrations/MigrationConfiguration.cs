@@ -725,6 +725,20 @@ namespace Data.Migrations
 
         public static void AddDefaultProfiles(IUnitOfWork uow)
         {
+            //create 'Fr8 Admin' Profile 
+            var fr8AdminProfile = uow.ProfileRepository.GetQuery().FirstOrDefault(x => x.Name == "Fr8 Admin");
+            if (fr8AdminProfile == null)
+            {
+                fr8AdminProfile = new ProfileDO()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = "Fr8 Admin",
+                    PermissionSets = new List<PermissionSetDO>()
+                };
+                uow.ProfileRepository.Add(fr8AdminProfile);
+            }
+
+
             //create 'System Administrator' Profile 
             var profile = uow.ProfileRepository.GetQuery().FirstOrDefault(x => x.Name == "System Administrator");
             if (profile == null)
@@ -787,7 +801,8 @@ namespace Data.Migrations
             standardProfile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), false, standardProfile.Id, "Standard User Permission Set", uow));
         }
 
-        private static PermissionSetDO AddPermissionSet(string objectType, bool isFullSet, Guid profileId, string name, IUnitOfWork uow)
+        private static PermissionSetDO AddPermissionSet(string objectType, bool isFullSet, bool hasManageInternalUsers, bool hasManageFr8Users,
+            Guid profileId, string name, IUnitOfWork uow)
         {
             var permissionSet = uow.PermissionSetRepository.GetQuery().FirstOrDefault(x => x.Name == name && x.ObjectType == objectType);
 
@@ -816,6 +831,16 @@ namespace Data.Migrations
             {
                 permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.ViewAllObjects));
                 permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.ModifyAllObjects));
+            }
+
+            if (hasManageFr8Users)
+            {
+                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int)PermissionType.ManageFr8Users));
+            }
+
+            if (hasManageInternalUsers)
+            {
+                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int)PermissionType.ViewAllObjects));
             }
 
             if (permissionSet.Id == Guid.Empty)
