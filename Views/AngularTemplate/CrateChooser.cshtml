@@ -1,6 +1,6 @@
 ﻿<div>
     <span>{{::field.label}}</span>
-    <div style="margin-top: 15px;">
+    <div>
         <div ng-repeat="crate in field.crateDescriptions" ng-if="crate.selected" style="padding-left: 5px;">
             <div class="media">
                 <div class="media-left">
@@ -12,8 +12,8 @@
                 </div>
             </div>
         </div>
-        <div style="margin-top: 10px;margin-bottom: 10px">
-            <a class="btn btn-primary" style="margin-top: 10px;" ng-click="selectCrate()" stop-click-propagation>Select...</a>
+        <div style="margin-left: 20px">
+            <a class="btn btn-primary" style="margin-top: 5px;" ng-click="selectCrate()" stop-click-propagation>Select...</a>
         </div>
     </div>
 </div>
