@@ -235,7 +235,7 @@ namespace Hub.Managers
                 pusherNotifier.Notify(pusherChannel, "fr8pusher_activity_execution_info",
                     new
                     {
-                        ActivityName = activityDo.Label,
+                        ActivityName = activityDo.Name,
                         PlanName = containerDO.Name,
                         ContainerId = containerDO.Id.ToString(),
                         PlanId = planId,

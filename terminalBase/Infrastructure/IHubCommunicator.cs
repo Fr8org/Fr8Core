@@ -33,7 +33,7 @@ namespace TerminalBase.Infrastructure
         Task<ActivityDTO> ConfigureActivity(ActivityDTO activityDTO, string userId);
         Task<ActivityDO> SaveActivity(ActivityDO activityDO, string userId);
         Task<ActivityDO> ConfigureActivity(ActivityDO activityDO, string userId);
-        Task<ActivityDTO> CreateAndConfigureActivity(Guid templateId, string userId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null);
+        Task<ActivityDTO> CreateAndConfigureActivity(Guid templateId, string userId, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null);
         Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO, string userId);
         Task RunPlan(Guid planId, List<CrateDTO> payload, string userId);
         Task<PlanDO> ActivatePlan(PlanDO planDO, string userId);
