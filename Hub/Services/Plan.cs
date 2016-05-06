@@ -27,6 +27,7 @@ using Data.Interfaces.DataTransferObjects.Helpers;
 using Data.Repositories.Plan;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Utilities.Logging;
+using Utilities.Interfaces;
 
 namespace Hub.Services
 {
@@ -41,9 +42,10 @@ namespace Hub.Services
         private readonly ICrateManager _crate;
         private readonly ISecurityServices _security;
         private readonly IJobDispatcher _dispatcher;
+        private readonly IPusherNotifier _pusher;
 
         public Plan(InternalInterface.IContainer container, Fr8Account dockyardAccount, IActivity activity,
-            ICrateManager crate, ISecurityServices security,  IJobDispatcher dispatcher)
+            ICrateManager crate, ISecurityServices security,  IJobDispatcher dispatcher, IPusherNotifier pusher)
         {
             _container = container;
             _dockyardAccount = dockyardAccount;
@@ -51,6 +53,7 @@ namespace Hub.Services
             _crate = crate;
             _security = security;
             _dispatcher = dispatcher;
+            _pusher = pusher;
         }
 
         public PlanResultDTO GetForUser(IUnitOfWork unitOfWork, Fr8AccountDO account, PlanQueryDTO planQueryDTO, bool isAdmin = false)
@@ -417,40 +420,6 @@ namespace Hub.Services
         public PlanDO Copy(IUnitOfWork uow, PlanDO plan, string name)
         {
             throw new NotImplementedException();
-
-            //            var root = (PlanDO)plan.Clone();
-            //            root.Id = Guid.NewGuid();
-            //            root.Name = name;
-            //            uow.PlanRepository.Add(root);
-            //
-            //            var queue = new Queue<Tuple<PlanNodeDO, Guid>>();
-            //            queue.Enqueue(new Tuple<PlanNodeDO, Guid>(root, plan.Id));
-            //
-            //            while (queue.Count > 0)
-            //            {
-            //                var planTuple = queue.Dequeue();
-            //                var planNode = planTuple.Item1;
-            //                var sourcePlanNodeId = planTuple.Item2;
-            //
-            //                var sourceChildren = uow.
-            //                    .GetQuery()
-            //                    .Where(x => x.ParentPlanNodeId == sourcePlanNodeId)
-            //                    .ToList();
-            //
-            //                foreach (var sourceChild in sourceChildren)
-            //                {
-            //                    var childCopy = sourceChild.Clone();
-            //                    childCopy.Id = Guid.NewGuid();
-            //                    childCopy.ParentPlanNode = planNode;
-            //                    planNode.ChildNodes.Add(childCopy);
-            //
-            //                    uow.PlanNodeRepository.Add(childCopy);
-            //
-            //                    queue.Enqueue(new Tuple<PlanNodeDO, Guid>(childCopy, sourceChild.Id));
-            //                }
-            //            }
-            //
-            //            return root;
         }
 
         /// <summary>
@@ -501,6 +470,7 @@ namespace Hub.Services
         private async Task<ContainerDO> Run(IUnitOfWork uow, ContainerDO curContainerDO)
         {
             var plan = uow.PlanRepository.GetById<PlanDO>(curContainerDO.PlanId);
+            var user = uow.UserRepository.GetByKey(plan.Fr8AccountId);
 
             if (plan.PlanState == PlanState.Deleted)
             {
@@ -517,6 +487,26 @@ namespace Hub.Services
             {
                 await _container.Run(uow, curContainerDO);
                 return curContainerDO;
+            }
+            catch (InvalidTokenRuntimeException ex)
+            {
+                string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with " +
+                        $"{ex?.FailedActivityDTO.ActivityTemplate.WebService.Name}. Plan execution has stopped. ";
+
+                errorMessage += $"Please re-authorize Fr8 to connect to {ex?.FailedActivityDTO.ActivityTemplate.WebService.Name} " +
+                        $"by clicking on the Settings dots in the upper " +
+                        $"right corner of the activity and then selecting Choose Authentication. ";
+
+                // Try getting specific the instructions provided by the terminal.
+                if (!String.IsNullOrEmpty(ex.Message))
+                {
+                    errorMessage += "Additional instructions from the terminal: ";
+                    errorMessage += ex.Message;
+                }
+
+                _pusher.NotifyUser(errorMessage, NotificationChannel.GenericFailure, user.UserName);
+                curContainerDO.State = State.Failed;
+                throw;
             }
             catch (Exception)
             {

@@ -70,7 +70,7 @@ namespace terminalGoogle.Actions
             _googleIntegration = ObjectFactory.GetInstance<IGoogleIntegration>();
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             var googleAuth = GetGoogleAuthToken();
             var forms = await _googleDrive.GetGoogleForms(googleAuth);
@@ -78,10 +78,10 @@ namespace terminalGoogle.Actions
                 .Select(x => new ListItem { Key = x.Value, Value = x.Key })
                 .ToList();
             CurrentActivityStorage.Add(CreateEventSubscriptionCrate());
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Configure(CrateSignaller crateSignaller)
         {
             var googleAuth = GetGoogleAuthToken();
             var forms = await _googleDrive.GetGoogleForms(googleAuth);
@@ -100,8 +100,8 @@ namespace terminalGoogle.Actions
             }
             if (string.IsNullOrEmpty(ConfigurationControls.FormsList.selectedKey))
                 SelectedForm = null;
-            runtimeCrateManager.ClearAvailableCrates();
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel)
+            crateSignaller.ClearAvailableCrates();
+            crateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel)
                 .AddField("Full Name")
                 .AddField("TR ID")
                 .AddField("Email Address")
@@ -153,7 +153,7 @@ namespace terminalGoogle.Actions
             if (payloadFields == null)
             {
                 RequestHubExecutionTermination();
-                return Task.FromResult(0); ;
+                return Task.FromResult(0);
             }
             var formResponseFields = CreatePayloadFormResponseFields(payloadFields);
 

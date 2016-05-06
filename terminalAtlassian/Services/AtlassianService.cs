@@ -11,7 +11,7 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Managers.APIManagers.Transmitters.Restful;
-
+using TerminalBase.Errors;
 using terminalAtlassian.Interfaces;
 
 namespace terminalAtlassian.Services
@@ -54,127 +54,182 @@ namespace terminalAtlassian.Services
             request.Headers["Authorization"] = "Basic " + authInfo;
         }
 
+        private void InterceptJiraExceptions(Action process)
+        {
+            try
+            {
+                process();
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.IndexOf("Unauthorized (401)") > -1)
+                {
+                    throw new AuthorizationTokenExpiredOrInvalidException("Please make sure that username, password and domain are correct.");
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
+        private T InterceptJiraExceptions<T>(Func<T> process)
+        {
+            try
+            {
+                return process();
+            }
+            catch (Exception ex)
+            {
+                if (ex.Message.IndexOf("Unauthorized (401)") > -1)
+                {
+                    throw new AuthorizationTokenExpiredOrInvalidException("Please make sure that username, password and domain are correct.");
+                }
+                else
+                {
+                    throw;
+                }
+            }
+        }
+
         public List<FieldDTO> GetJiraIssue(string jiraKey, AuthorizationTokenDO authorizationTokenDO)
         {
-            Jira jira = CreateRestClient(authorizationTokenDO.Token);
-
-            var issue = jira.GetIssue(jiraKey);
-            return CreateKeyValuePairList(issue);
+            return InterceptJiraExceptions(() =>
+            {
+                Jira jira = CreateRestClient(authorizationTokenDO.Token);
+                var issue = jira.GetIssue(jiraKey);
+                return CreateKeyValuePairList(issue);
+            });
         }
 
         public List<FieldDTO> GetProjects(AuthorizationTokenDO authToken)
         {
-            var jira = CreateRestClient(authToken.Token);
+            return InterceptJiraExceptions(() =>
+            {
+                var jira = CreateRestClient(authToken.Token);
 
-            var projects = jira.GetProjects();
-            var result = projects
-                .Select(x => new FieldDTO()
+                var projects = jira.GetProjects();
+                var result = projects
+                    .Select(x => new FieldDTO()
                     {
                         Key = x.Name,
                         Value = x.Key
                     }
-                )
-                .ToList();
+                    )
+                    .ToList();
 
-            return result;
+                return result;
+            });
         }
 
         public List<FieldDTO> GetIssueTypes(string projectKey,
             AuthorizationTokenDO authToken)
         {
-            var jira = CreateRestClient(authToken.Token);
+            return InterceptJiraExceptions(() =>
+            {
+                var jira = CreateRestClient(authToken.Token);
 
-            var issueTypes = jira.GetIssueTypes(projectKey);
-            var result = issueTypes
-                .Select(x => new FieldDTO()
-                    {
-                        Key = x.Name,
-                        Value = x.Id
-                    }
-                )
-                .ToList();
+                var issueTypes = jira.GetIssueTypes(projectKey);
+                var result = issueTypes
+                    .Select(x => new FieldDTO()
+                        {
+                            Key = x.Name,
+                            Value = x.Id
+                        }
+                    )
+                    .ToList();
 
-            return result;
+                return result;
+            });
         }
 
         public List<FieldDTO> GetPriorities(AuthorizationTokenDO authToken)
         {
-            var jira = CreateRestClient(authToken.Token);
+            return InterceptJiraExceptions(() =>
+            {
+                var jira = CreateRestClient(authToken.Token);
 
-            var priorities = jira.GetIssuePriorities();
-            var result = priorities
-                .Select(x => new FieldDTO()
-                    {
-                        Key = x.Name,
-                        Value = x.Id
-                    }
-                )
-                .ToList();
+                var priorities = jira.GetIssuePriorities();
+                var result = priorities
+                    .Select(x => new FieldDTO()
+                        {
+                            Key = x.Name,
+                            Value = x.Id
+                        }
+                    )
+                    .ToList();
 
-            return result;
+                return result;
+            });
         }
 
         public List<FieldDTO> GetCustomFields(AuthorizationTokenDO authToken)
         {
-            var jira = CreateRestClient(authToken.Token);
-            var customFields = jira.GetCustomFields();
+            return InterceptJiraExceptions(() =>
+            {
+                var jira = CreateRestClient(authToken.Token);
+                var customFields = jira.GetCustomFields();
 
-            var result = customFields
-                .Select(x => new FieldDTO()
+                var result = customFields
+                    .Select(x => new FieldDTO()
                     {
                         Key = x.Name,
                         Value = x.Id
                     }
-                )
-                .OrderBy(x => x.Key)
-                .ToList();
+                    )
+                    .OrderBy(x => x.Key)
+                    .ToList();
 
-            return result;
+                return result;
+            });
         }
 
         public void CreateIssue(IssueInfo issueInfo, AuthorizationTokenDO authToken)
         {
-            var jira = CreateRestClient(authToken.Token);
-
-            var issueTypes = jira.GetIssueTypes(issueInfo.ProjectKey);
-            var issueType = issueTypes.FirstOrDefault(x => x.Id == issueInfo.IssueTypeKey);
-            if (issueType == null)
+            InterceptJiraExceptions(() =>
             {
-                throw new ApplicationException("Invalid Jira Issue Type specified.");
-            }
+                var jira = CreateRestClient(authToken.Token);
 
-            var priorities = jira.GetIssuePriorities();
-            var priority = priorities.FirstOrDefault(x => x.Id == issueInfo.PriorityKey);
-            if (priority == null)
-            {
-                throw new ApplicationException("Invalid Jira Priority specified.");
-            }
-
-            var jiraCustomFields = jira.GetCustomFields();
-
-            var issue = jira.CreateIssue(issueInfo.ProjectKey);
-            issue.Type = issueType;
-            issue.Priority = priority;
-            issue.Summary = issueInfo.Summary;
-            issue.Description = issueInfo.Description;
-
-            if (issueInfo.CustomFields != null)
-            {
-                var customFieldsCollection = issue.CustomFields.ForEdit();
-                foreach (var customField in issueInfo.CustomFields)
+                var issueTypes = jira.GetIssueTypes(issueInfo.ProjectKey);
+                var issueType = issueTypes.FirstOrDefault(x => x.Id == issueInfo.IssueTypeKey);
+                if (issueType == null)
                 {
-                    var jiraCustomField = jiraCustomFields.FirstOrDefault(x => x.Id == customField.Key);
-                    if (jiraCustomField == null)
-                    {
-                        throw new ApplicationException($"Invalid custom field {customField.Key}");
-                    }
-
-                    customFieldsCollection.Add(jiraCustomField.Name, customField.Value);
+                    throw new ApplicationException("Invalid Jira Issue Type specified.");
                 }
-            }
 
-            issue.SaveChanges();
-            issueInfo.Key = issue.Key.Value;
+                var priorities = jira.GetIssuePriorities();
+                var priority = priorities.FirstOrDefault(x => x.Id == issueInfo.PriorityKey);
+                if (priority == null)
+                {
+                    throw new ApplicationException("Invalid Jira Priority specified.");
+                }
+
+                var jiraCustomFields = jira.GetCustomFields();
+
+                var issue = jira.CreateIssue(issueInfo.ProjectKey);
+                issue.Type = issueType;
+                issue.Priority = priority;
+                issue.Summary = issueInfo.Summary;
+                issue.Description = issueInfo.Description;
+
+                if (issueInfo.CustomFields != null)
+                {
+                    var customFieldsCollection = issue.CustomFields.ForEdit();
+                    foreach (var customField in issueInfo.CustomFields)
+                    {
+                        var jiraCustomField = jiraCustomFields.FirstOrDefault(x => x.Id == customField.Key);
+                        if (jiraCustomField == null)
+                        {
+                            throw new ApplicationException($"Invalid custom field {customField.Key}");
+                        }
+
+                        customFieldsCollection.Add(jiraCustomField.Name, customField.Value);
+                    }
+                }
+
+                issue.SaveChanges();
+                issueInfo.Key = issue.Key.Value;
+            });
         }
         
         private List<FieldDTO> CreateKeyValuePairList(Issue curIssue)
@@ -189,8 +244,11 @@ namespace terminalAtlassian.Services
         private Jira CreateRestClient(string token)
         {
             var credentialsDTO = JsonConvert.DeserializeObject<CredentialsDTO>(token);
-            // credentialsDTO.Domain = credentialsDTO.Domain.Replace("http://", "https://");
-
+            credentialsDTO.Domain = credentialsDTO.Domain.Replace("http://", "https://");
+            if (!credentialsDTO.Domain.StartsWith("https://"))
+            {
+                credentialsDTO.Domain = "https://" + credentialsDTO.Domain;
+            }
             return Jira.CreateRestClient(credentialsDTO.Domain, credentialsDTO.Username, credentialsDTO.Password);
         }
     }
