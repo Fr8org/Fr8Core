@@ -192,7 +192,7 @@ namespace terminalAtlassian.Actions
 
         #region Configuration
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             ConfigurationControls.AvailableProjects.ListItems = _atlassianService
                 .GetProjects(AuthorizationToken)
@@ -202,7 +202,7 @@ namespace terminalAtlassian.Actions
             await Task.Yield();
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Configure(CrateSignaller crateSignaller)
         {
             ConfigurationControls.RestoreCustomFields(CurrentActivityStorage);
             var configProps = GetConfigurationProperties();
