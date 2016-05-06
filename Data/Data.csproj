@@ -606,9 +606,9 @@
     <Compile Include="Migrations\201605051106203_AddNameToActivity.Designer.cs">
       <DependentUpon>201605051106203_AddNameToActivity.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201605050942096_UpdateMTDatabaseWithNewCLRTypes.cs" />
-    <Compile Include="Migrations\201605050942096_UpdateMTDatabaseWithNewCLRTypes.Designer.cs">
-      <DependentUpon>201605050942096_UpdateMTDatabaseWithNewCLRTypes.cs</DependentUpon>
+    <Compile Include="Migrations\201605061523484_UpdateMTDatabaseWithNewCLRTypes.cs" />
+    <Compile Include="Migrations\201605061523484_UpdateMTDatabaseWithNewCLRTypes.Designer.cs">
+      <DependentUpon>201605061523484_UpdateMTDatabaseWithNewCLRTypes.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1163,8 +1163,8 @@
     <EmbeddedResource Include="Migrations\201605051106203_AddNameToActivity.resx">
       <DependentUpon>201605051106203_AddNameToActivity.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201605050942096_UpdateMTDatabaseWithNewCLRTypes.resx">
-      <DependentUpon>201605050942096_UpdateMTDatabaseWithNewCLRTypes.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201605061523484_UpdateMTDatabaseWithNewCLRTypes.resx">
+      <DependentUpon>201605061523484_UpdateMTDatabaseWithNewCLRTypes.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

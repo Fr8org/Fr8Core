@@ -13,7 +13,7 @@ namespace Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201605050942096_UpdateMTDatabaseWithNewCLRTypes"; }
+            get { return "201605061523484_UpdateMTDatabaseWithNewCLRTypes"; }
         }
         
         string IMigrationMetadata.Source

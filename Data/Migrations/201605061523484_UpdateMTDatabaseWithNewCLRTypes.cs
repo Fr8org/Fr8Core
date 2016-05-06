@@ -2,7 +2,7 @@ namespace Data.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class UpdateMTDatabaseWithNewCLRTypes : DbMigration
     {
         public override void Up()
@@ -12,7 +12,7 @@ namespace Data.Migrations
             Sql("UPDATE MtTypes SET ClrName = REPLACE(ClrName, 'Data.Crates', 'Fr8Data.Crates')");
             Sql("UPDATE MtTypes SET ClrName = REPLACE(ClrName, ', Data,', ', Fr8Data,')");
         }
-        
+
         public override void Down()
         {
             Sql("UPDATE MtTypes SET ClrName =  REPLACE(ClrName, 'Fr8Data.Manifests', 'Data.Interfaces.Manifests')");
