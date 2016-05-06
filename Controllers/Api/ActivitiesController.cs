@@ -119,11 +119,7 @@ namespace HubWeb.Controllers
         [HttpDelete]
         public async Task<IHttpActionResult> Delete(Guid id, bool confirmed = false)
         {
-            var isDeleted = await _subPlan.DeleteActivity(User.Identity.GetUserId(), id, confirmed);
-            if (!isDeleted)
-            {
-                return ResponseMessage(new HttpResponseMessage(HttpStatusCode.PreconditionFailed));
-            }
+            await _activity.Delete(id);
             return Ok();
         }
 
@@ -131,7 +127,7 @@ namespace HubWeb.Controllers
         [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> DeleteActivity(Guid id)
         {
-            await _subPlan.DeleteActivity(User.Identity.GetUserId(), id, true);
+            await _activity.Delete(id);
             return Ok();
         }
 
@@ -142,11 +138,7 @@ namespace HubWeb.Controllers
         [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> DeleteChildNodes(Guid activityId)
         {
-            var isDeleted = await _subPlan.DeleteAllChildNodes(activityId);
-            if (!isDeleted)
-            {
-                return ResponseMessage(new HttpResponseMessage(HttpStatusCode.PreconditionFailed));
-            }
+            await _activity.Delete(activityId);
             return Ok();
         }
 

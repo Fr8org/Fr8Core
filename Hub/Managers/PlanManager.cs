@@ -93,7 +93,7 @@ namespace Hub.Managers
                         var activityDTO = Mapper.Map<ActivityDTO>(result);
                         SetSelectedCrates(activityDTO);
 
-                        var activityDO = _activity.MapFromDTO(activityDTO);
+                        var activityDO = Mapper.Map<ActivityDO>(activityDTO);
                         await _activity.Configure(uow, curFr8Account.Id, activityDO);
                     }
 

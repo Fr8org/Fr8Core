@@ -297,7 +297,7 @@ namespace Data.Infrastructure
             if (handler != null) handler(terminalUrl, activityDTO, e, objectId);
         }
 
-        public static void TerminalActionActivationFailed(string terminalUrl, string activityDTO, string objectId)
+        public static void TerminalActionActivationFailed(string terminalUrl, string activityDTO, string errorMessage, string objectId)
         {
             IncidentTerminalActionActivationPOSTFailureHandler handler = IncidentTerminalActionActivationFailed;
             if (handler != null) handler(terminalUrl, activityDTO, objectId);

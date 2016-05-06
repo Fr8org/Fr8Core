@@ -101,9 +101,7 @@ namespace HubTests.Services
 
             Assert.AreEqual(origActivityDO.Ordering, activityDO.Ordering);
 
-            ISubPlan subPlan = new SubPlan();
-            //Delete
-            await subPlan.DeleteActivity(null, activityDO.Id, true);
+            await activity.Delete(activityDO.Id);
         }
 
         [Test]
