@@ -1270,3 +1270,7 @@ footer p {
     height:50px;
     padding:7px 15px 0 0;
 }
+
+md-checkbox.md-checked.green .md-icon {
+ background-color: rgb(38, 166, 154);
+}
