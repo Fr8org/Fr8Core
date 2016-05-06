@@ -281,7 +281,7 @@ namespace TerminalBase.Infrastructure
             return Mapper.Map<ActivityDO>(await SaveActivity(activityDTO, userId));
         }
 
-        public async Task<ActivityDTO> CreateAndConfigureActivity(Guid templateId, string userId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
+        public async Task<ActivityDTO> CreateAndConfigureActivity(Guid templateId, string userId, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                       + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/activities/create";
@@ -290,9 +290,9 @@ namespace TerminalBase.Infrastructure
             var postUrl = "?activityTemplateId={0}&createPlan={1}";
             var formattedPostUrl = string.Format(postUrl, templateId, createPlan ? "true" : "false");
 
-            if (label != null)
+            if (name != null)
             {
-                formattedPostUrl += "&label=" + label;
+                formattedPostUrl += "&name=" + name;
             }
             if (parentNodeId != null)
             {

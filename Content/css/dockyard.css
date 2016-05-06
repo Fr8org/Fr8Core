@@ -286,13 +286,46 @@ div.action {
     border-radius: 10px !important;
 }
 
-.action-name {
-    text-align: center;
+@-moz-keyframes updatingFadeIn { 
+  from   { opacity:0; }
+  to { opacity:0.8; }
+}
+
+@-webkit-keyframes updatingFadeIn { 
+  from   { opacity:0; }
+  to { opacity:0.8; }
 }
 
 @keyframes updatingFadeIn { 
-  from   { opacity:0.1; }
+  from   { opacity:0; }
   to { opacity:0.8; }
+}
+
+@-moz-keyframes actionNameFadeOut { 
+  from   { opacity:0; }
+  to { opacity:1; }
+}
+
+@-webkit-keyframes actionNameFadeOut { 
+  from   { opacity:0; }
+  to { opacity:1; }
+}
+
+@keyframes actionNameFadeOut { 
+  from   { opacity:0; }
+  to { opacity:1; }
+}
+
+.action-name {
+    font-size: small;
+    right: 5px;
+    position: absolute;
+    top: 5px;
+    text-align:center;
+    -moz-animation: actionNameFadeOut 0.5s ease-in;
+    -o-animation: actionNameFadeOut 0.5s ease-in;
+    -webkit-animation: actionNameFadeOut 0.5s ease-in;
+    animation: actionNameFadeOut 0.5s ease-in;
 }
 
 .action-reconfigure-status {
@@ -303,10 +336,10 @@ div.action {
     top: 5px;
     opacity: 0.8;
     color: white;
-    -moz-animation: updatingFadeIn 1s ;
-    -o-animation: updatingFadeIn 1s ;
-    -webkit-animation: updatingFadeIn 1s ;
-    animation: updatingFadeIn 1s;
+    -moz-animation: updatingFadeIn 0.2s linear ;
+    -o-animation: updatingFadeIn 0.2s linear ;
+    -webkit-animation: updatingFadeIn 0.2s linear ;
+    animation: updatingFadeIn 0.2s linear;
 }
 
 .action-menu {
