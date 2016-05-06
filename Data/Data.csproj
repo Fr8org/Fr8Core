@@ -274,6 +274,7 @@
     <Compile Include="Expressions\ExpressionTransformation.cs" />
     <Compile Include="Expressions\ExpressionTransformation.PropertyInfo.cs" />
     <Compile Include="Expressions\ExpressionTransformation.TransformationVisitor.cs" />
+    <Compile Include="Infrastructure\DataExtensions.cs" />
     <Compile Include="Infrastructure\Fr8ApiHelper.cs" />
     <Compile Include="Helpers\Fr8ReflectionHelper.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
