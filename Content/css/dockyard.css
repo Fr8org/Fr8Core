@@ -101,11 +101,11 @@
 .designer-header {
     background: transparent;
     width: 100%;
+    padding-top:13px;
 }
 
 .designer-header-title.page-title {
-    height: 49px;
-    padding: 0 0 19px 0;
+    padding: 5px 0px 0 15px
 }
 
 .design-header-title-editField {
@@ -125,6 +125,17 @@
     display: none;
 }
 
+.designer-header-fixed{
+    position: fixed;
+    margin-top: -25px; 
+    border-bottom: 3px solid; 
+    border-color: rgb(38, 166, 154);
+    z-index: 5;
+    background-color: #EFF3F8;
+    width:79%;
+    height:64px;
+}
+
 .designer-header-glyphicon {
     font-size: 22px;
     line-height: 24px;
@@ -139,7 +150,7 @@
 
 .designer-header-status {
     float: right;
-    text-align: right;
+    margin-left:30px;
 }
 
 .designer-header-statusLabel {
@@ -275,13 +286,46 @@ div.action {
     border-radius: 10px !important;
 }
 
-.action-name {
-    text-align: center;
+@-moz-keyframes updatingFadeIn { 
+  from   { opacity:0; }
+  to { opacity:0.8; }
+}
+
+@-webkit-keyframes updatingFadeIn { 
+  from   { opacity:0; }
+  to { opacity:0.8; }
 }
 
 @keyframes updatingFadeIn { 
-  from   { opacity:0.1; }
+  from   { opacity:0; }
   to { opacity:0.8; }
+}
+
+@-moz-keyframes actionNameFadeOut { 
+  from   { opacity:0; }
+  to { opacity:1; }
+}
+
+@-webkit-keyframes actionNameFadeOut { 
+  from   { opacity:0; }
+  to { opacity:1; }
+}
+
+@keyframes actionNameFadeOut { 
+  from   { opacity:0; }
+  to { opacity:1; }
+}
+
+.action-name {
+    font-size: small;
+    right: 5px;
+    position: absolute;
+    top: 5px;
+    text-align:center;
+    -moz-animation: actionNameFadeOut 0.5s ease-in;
+    -o-animation: actionNameFadeOut 0.5s ease-in;
+    -webkit-animation: actionNameFadeOut 0.5s ease-in;
+    animation: actionNameFadeOut 0.5s ease-in;
 }
 
 .action-reconfigure-status {
@@ -292,10 +336,10 @@ div.action {
     top: 5px;
     opacity: 0.8;
     color: white;
-    -moz-animation: updatingFadeIn 1s ;
-    -o-animation: updatingFadeIn 1s ;
-    -webkit-animation: updatingFadeIn 1s ;
-    animation: updatingFadeIn 1s;
+    -moz-animation: updatingFadeIn 0.2s linear ;
+    -o-animation: updatingFadeIn 0.2s linear ;
+    -webkit-animation: updatingFadeIn 0.2s linear ;
+    animation: updatingFadeIn 0.2s linear;
 }
 
 .action-menu {
@@ -1062,6 +1106,14 @@ i.activity-stream-font {
     padding-top: 5px;
 }
 
+.activity-stream{
+    right:0px;
+    position:absolute; 
+    width:100%; 
+    height:100%; 
+    z-index:10;
+}
+
 .activity-stream-flex{
     flex:1;
     margin-left:17px;
@@ -1111,7 +1163,7 @@ i.activity-stream-font {
     display: block;
 }
 
-.expanded {
+.collapsed {
     max-height: 1000px;
     -o-transition: all .6s ease;   
     -webkit-transition: all .6s ease;
@@ -1119,7 +1171,7 @@ i.activity-stream-font {
 	transition: all .6s ease;
 }
 
-.collapsed {
+.expanded {
     max-height: 0px;
     overflow: hidden;
     -o-transition: all .3s ease;   
@@ -1205,4 +1257,20 @@ footer p {
 .delete-button{
      width:15px;
      margin-top:10px;
+}
+
+.plan-state-text {
+    background-color:forestgreen; 
+    border-radius:6px !important; 
+    padding:6px 6px 6px 6px; 
+    color:white;
+}
+
+.menu-logo {
+    height:50px;
+    padding:7px 15px 0 0;
+}
+
+md-checkbox.md-checked.green .md-icon {
+ background-color: rgb(38, 166, 154);
 }

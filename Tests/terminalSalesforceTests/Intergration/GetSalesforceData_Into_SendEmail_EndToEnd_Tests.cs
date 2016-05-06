@@ -111,7 +111,7 @@ namespace terminalSalesforceTests.Intergration
             Debug.WriteLine("Created initial plan without actions");
 
             string mainUrl = _baseUrl + "activities/create";
-            var postUrl = "?actionTemplateId={0}&createPlan=false";
+            var postUrl = "?activityTemplateId={0}&createPlan=false";
             var formattedPostUrl = string.Format(postUrl, getData.Id);
             formattedPostUrl += "&parentNodeId=" + initialPlan.Plan.StartingSubPlanId;
             formattedPostUrl += "&authorizationTokenId=" + authToken.Id.ToString();
