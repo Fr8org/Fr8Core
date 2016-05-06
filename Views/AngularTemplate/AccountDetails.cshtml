@@ -4,3 +4,70 @@
     <div>Status: {{user.status}}</div>
     <div>Role: {{user.role}}</div>
 </div>
+
+<ul class="page-breadcrumb breadcrumb hide">
+    <!-- BEGIN PAGE BREADCRUMB -->
+    <li>
+        <a href="#">Home</a><i class="fa fa-circle"></i>
+    </li>
+    <li class="active">
+        Dashboard
+    </li>
+</ul>
+<!-- END PAGE BREADCRUMB -->
+<!-- BEGIN MAIN CONTENT -->
+<div ng-controller="AccountDetailsController" class="margin-top-10">
+    <div class="row">
+        <div class="col-md-12 col-sm-12">
+            <!-- BEGIN PORTLET-->
+            <div class="portlet light ">
+                <div class="portlet-title">
+                    <div class="caption caption-md">
+                        <i class="icon-bar-chart font-green-haze hide"></i>
+                        <span class="caption-subject font-green-haze bold uppercase">Create an Account</span>
+                    </div>
+                </div>
+                <div class="portlet-body">
+                    <!-- PROCESS FORM -->
+                    <div class="tab-pane active" id="tab_1_1">
+                        <form role="form" ng-submit="submit(form.$valid)" name="form" novalidate>
+                            <div class="alert alert-danger" ng-show="form.$submitted && !form.$valid">
+                                Some fields do not contain correct data. Please check below.
+                            </div>
+                            <div class="alert alert-danger" ng-show="errorMessage != null">
+                                {{errorMessage}}
+                            </div>
+                            <div ng-class="(form.name.$error.required && form.$submitted) ? 'has-error' : ''" class="form-group">
+                                <label class="control-label">First Name <span class="required">*</span></label>
+                                <div class="input-icon right">
+                                    <i class="fa fa-warning" ng-show="form.name.$error.required && form.$submitted"></i>
+                                    <input type="text" name="name" maxlength="50" placeholder="" class="form-control" ng-model="user.userName" auto-focus required data-required="1" />
+                                </div>
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Email</label>
+                                <input type="text" placeholder="" maxlength="100" class="form-control" ng-model="user.emailAddress" />
+                            </div>
+                            <div class="form-group">
+                                <label class="control-label">Role</label>
+                                <select placeholder="" maxlength="100" class="form-control"></select>
+                            </div>
+
+                            <div class="margiv-top-10">
+                                <button type="submit" class="btn green-haze">
+                                    Save Changes
+                                </button>
+                                <a href="#plans" class="btn default">
+                                    Cancel
+                                </a>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- END PROCESS FORM -->
+
+                </div>
+            </div>
+            <!-- END PORTLET-->
+        </div>
+    </div>
+</div><!-- END MAIN CONTENT -->
