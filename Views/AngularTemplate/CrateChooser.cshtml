@@ -19,7 +19,7 @@
 </div>
 <script type="text/ng-template" id="TextTemplate-CrateChooserSelectionModal">
     <div class="modal-header">
-        <h3 class="modal-title">Select Crate</h3>
+        <h3 class="modal-title">Select Incoming Data</h3>
     </div>
     <div class="modal-body">
         <div ng-if="crateDescriptions.length > 0">
@@ -39,14 +39,12 @@
         <div class="crate-node-leaf" ng-if="!node.isCategory">
             <div class="row">
                 <div class="col-md-1">
-                    <span>
-                        <span ng-show="node.selected" class="glyphicon glyphicon-check green"></span>
-                        <span ng-hide="node.selected || node.__ivhTreeviewIndeterminate" class="glyphicon glyphicon-unchecked"></span>
-                    </span>
+                    <md-checkbox class="green" ng-model="node.selected" ng-click="node.selected = !node.selected">
+                    </md-checkbox>
                 </div>
                 <div class="col-md-11 data">
                     <span style="float:left">
-                        <img src="/Content/img/{{node.selected ? 'green' : 'gray'}}-crate.png" height="42" width="42" />
+                        <img src="/Content/img/gray-crate.png" height="42" width="42" />
                     </span>
                     <span class="ivh-treeview-node-label" ivh-treeview-toggle>
                         <div class="col-md-10">
