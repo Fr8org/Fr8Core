@@ -109,8 +109,8 @@ namespace TerminalBase.Infrastructure
         public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDTO activityDO, CrateDirection direction, string userId)
         {
             var directionSuffix = (direction == CrateDirection.Upstream)
-                ? "upstream_actions/"
-                : "downstream_actions/";
+                ? "upstream/"
+                : "downstream/";
 
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/"
@@ -118,10 +118,10 @@ namespace TerminalBase.Infrastructure
                 + "?id=" + activityDO.Id;
             var uri = new Uri(url, UriKind.Absolute);
 
-            var curActions = await _restfulServiceClient.GetAsync<List<ActivityDTO>>(uri, null, await GetHMACHeader(uri, userId));
+            var curActivities = await _restfulServiceClient.GetAsync<List<ActivityDTO>>(uri, null, await GetHMACHeader(uri, userId));
             var curCrates = new List<Crate<TManifest>>();
 
-            foreach (var curAction in curActions)
+            foreach (var curAction in curActivities)
             {
                 var storage = _crate.FromDto(curAction.CrateStorage);
 
@@ -134,8 +134,8 @@ namespace TerminalBase.Infrastructure
         public async Task<List<Crate>> GetCratesByDirection(ActivityDTO activityDO, CrateDirection direction, string userId)
         {
             var directionSuffix = (direction == CrateDirection.Upstream)
-                ? "upstream_actions/"
-                : "downstream_actions/";
+                ? "upstream/"
+                : "downstream";
 
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/"
@@ -143,10 +143,10 @@ namespace TerminalBase.Infrastructure
                 + "?id=" + activityDO.Id;
 
             var uri = new Uri(url, UriKind.Absolute);
-            var curActions = await _restfulServiceClient.GetAsync<List<ActivityDTO>>(uri, null, await GetHMACHeader(uri, userId));
+            var curActivities = await _restfulServiceClient.GetAsync<List<ActivityDTO>>(uri, null, await GetHMACHeader(uri, userId));
             var curCrates = new List<Crate>();
 
-            foreach (var curAction in curActions)
+            foreach (var curAction in curActivities)
             {
                 var storage = _crate.FromDto(curAction.CrateStorage);
                 curCrates.AddRange(storage);
@@ -274,7 +274,7 @@ namespace TerminalBase.Infrastructure
                       + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/activities/create";
 
 
-            var postUrl = "?actionTemplateId={0}&createPlan={1}";
+            var postUrl = "?activityTemplateId={0}&createPlan={1}";
             var formattedPostUrl = string.Format(postUrl, templateId, createPlan ? "true" : "false");
 
             if (label != null)

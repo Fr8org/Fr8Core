@@ -43,38 +43,13 @@ namespace HubWeb.Controllers
 
             return Ok(curActivityTemplateDTO);
         }
+       
 
         [ActionName("upstream")]
-        [ResponseType(typeof(List<PlanNodeDO>))]
-        [Fr8ApiAuthorize]
-        public IHttpActionResult GetUpstreamActivities(Guid id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var activityDO = uow.PlanRepository.GetById<ActivityDO>(id);
-                var upstreamActivities = _activity.GetUpstreamActivities(uow, activityDO);
-                return Ok(upstreamActivities);
-            }
-        }
-
-        [ActionName("downstream")]
-        [ResponseType(typeof(List<PlanNodeDO>))]
-        [Fr8ApiAuthorize]
-        public IHttpActionResult GetDownstreamActivities(Guid id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                ActivityDO activityDO = uow.PlanRepository.GetById<ActivityDO>(id);
-                var downstreamActivities = _activity.GetDownstreamActivities(uow, activityDO);
-                return Ok(downstreamActivities);
-            }
-        }
-
-        // TODO: after DO-1214 is completed, this method must be removed.
-        [ActionName("upstream_actions")]
         [ResponseType(typeof(List<ActivityDTO>))]
         [Fr8HubWebHMACAuthenticate]
-        public IHttpActionResult GetUpstreamActions(Guid id)
+        [Fr8ApiAuthorize]
+        public IHttpActionResult GetUpstreamActivities(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -88,11 +63,10 @@ namespace HubWeb.Controllers
                 return Ok(upstreamActions);
             }
         }
-        // TODO: after DO-1214 is completed, this method must be removed.
-        [ActionName("downstream_actions")]
+        [ActionName("downstream")]
         [ResponseType(typeof(List<ActivityDTO>))]
         [Fr8HubWebHMACAuthenticate]
-        public IHttpActionResult GetDownstreamActions(Guid id)
+        public IHttpActionResult GetDownstreamActivities(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -106,7 +80,7 @@ namespace HubWeb.Controllers
                 return Ok(downstreamActions);
             }
         }
-        
+
         [HttpGet]
         [ActionName("available_data")]
         [Fr8HubWebHMACAuthenticate]
@@ -114,7 +88,7 @@ namespace HubWeb.Controllers
         {
             return Ok(_activity.GetAvailableData(id, direction, availability));
         }
-        
+
         [ActionName("available")]
         [ResponseType(typeof(IEnumerable<ActivityTemplateCategoryDTO>))]
         [AllowAnonymous]

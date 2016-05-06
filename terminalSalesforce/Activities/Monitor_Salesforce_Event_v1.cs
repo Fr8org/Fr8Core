@@ -71,14 +71,14 @@ namespace terminalSalesforce.Actions
             _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
         }
 
-        protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Initialize(CrateSignaller crateSignaller)
         {
             ActivitiesHelper.GetAvailableFields(ConfigurationControls.SalesforceObjectList);
 
             return Task.FromResult(0);
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Configure(CrateSignaller crateSignaller)
         {
             string curSfChosenObject = ConfigurationControls.SalesforceObjectList.selectedKey;
 
@@ -91,12 +91,12 @@ namespace terminalSalesforce.Actions
 
             CurrentActivityStorage.ReplaceByLabel(eventSubscriptionCrate);
 
-            runtimeCrateManager.ClearAvailableCrates();
-            runtimeCrateManager.MarkAvailableAtRuntime<SalesforceEventCM>("Salesforce Event");
+            crateSignaller.ClearAvailableCrates();
+            crateSignaller.MarkAvailableAtRuntime<SalesforceEventCM>("Salesforce Event");
 
             var selectedObjectProperties = await _salesforceManager.GetProperties(curSfChosenObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
 
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(GenerateRuntimeDataLabel(), true).AddFields(selectedObjectProperties);
+            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(GenerateRuntimeDataLabel(), true).AddFields(selectedObjectProperties);
         }
 
         protected override async Task RunCurrentActivity()

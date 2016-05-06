@@ -415,40 +415,6 @@ namespace Hub.Services
         public PlanDO Copy(IUnitOfWork uow, PlanDO plan, string name)
         {
             throw new NotImplementedException();
-
-            //            var root = (PlanDO)plan.Clone();
-            //            root.Id = Guid.NewGuid();
-            //            root.Name = name;
-            //            uow.PlanRepository.Add(root);
-            //
-            //            var queue = new Queue<Tuple<PlanNodeDO, Guid>>();
-            //            queue.Enqueue(new Tuple<PlanNodeDO, Guid>(root, plan.Id));
-            //
-            //            while (queue.Count > 0)
-            //            {
-            //                var planTuple = queue.Dequeue();
-            //                var planNode = planTuple.Item1;
-            //                var sourcePlanNodeId = planTuple.Item2;
-            //
-            //                var sourceChildren = uow.
-            //                    .GetQuery()
-            //                    .Where(x => x.ParentPlanNodeId == sourcePlanNodeId)
-            //                    .ToList();
-            //
-            //                foreach (var sourceChild in sourceChildren)
-            //                {
-            //                    var childCopy = sourceChild.Clone();
-            //                    childCopy.Id = Guid.NewGuid();
-            //                    childCopy.ParentPlanNode = planNode;
-            //                    planNode.ChildNodes.Add(childCopy);
-            //
-            //                    uow.PlanNodeRepository.Add(childCopy);
-            //
-            //                    queue.Enqueue(new Tuple<PlanNodeDO, Guid>(childCopy, sourceChild.Id));
-            //                }
-            //            }
-            //
-            //            return root;
         }
 
         /// <summary>

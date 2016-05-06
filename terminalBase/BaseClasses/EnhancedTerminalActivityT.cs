@@ -117,7 +117,7 @@ namespace TerminalBase.BaseClasses
                     CurrentActivityStorage = storage;
 
                     var configurationType = GetConfigurationRequestType();
-                    var runtimeCrateManager = new RuntimeCrateManager(CurrentActivityStorage, CurrentActivity.Label);
+                    var runtimeCrateManager = new CrateSignaller(CurrentActivityStorage, CurrentActivity.Label);
 
                     switch (configurationType)
                     {
@@ -160,27 +160,27 @@ namespace TerminalBase.BaseClasses
         
         /**********************************************************************************/
 
-        private async Task InitialConfiguration(RuntimeCrateManager runtimeCrateManager)
+        private async Task InitialConfiguration(CrateSignaller crateSignaller)
         {
             ConfigurationControls = CrateConfigurationControls();
             CurrentActivityStorage.Clear();
 
             CurrentActivityStorage.Add(Crate.FromContent(ConfigurationControlsLabel, ConfigurationControls, AvailabilityType.Configuration));
 
-            await Initialize(runtimeCrateManager);
+            await Initialize(crateSignaller);
 
             SyncConfControlsBack();
         }
 
         /**********************************************************************************/
 
-        private async Task FollowupConfiguration(RuntimeCrateManager runtimeCrateManager)
+        private async Task FollowupConfiguration(CrateSignaller crateSignaller)
         {
             SyncConfControls();
 
             if (await Validate())
             {
-                await Configure(runtimeCrateManager);
+                await Configure(crateSignaller);
             }
 
             SyncConfControlsBack();
@@ -379,8 +379,8 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        protected abstract Task Initialize(RuntimeCrateManager runtimeCrateManager);
-        protected abstract Task Configure(RuntimeCrateManager runtimeCrateManager);
+        protected abstract Task Initialize(CrateSignaller crateSignaller);
+        protected abstract Task Configure(CrateSignaller crateSignaller);
 
         /**********************************************************************************/
 

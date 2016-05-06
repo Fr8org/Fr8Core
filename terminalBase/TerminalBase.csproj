@@ -114,7 +114,7 @@
     <Compile Include="BaseClasses\BaseTerminalWebApiConfig.cs" />
     <Compile Include="BaseClasses\DynamicControlsAttribute.cs" />
     <Compile Include="BaseClasses\EnhancedTerminalActivityT.cs" />
-    <Compile Include="BaseClasses\RuntimeCrateManager.cs" />
+    <Compile Include="BaseClasses\CrateSignaller.cs" />
     <Compile Include="BaseClasses\UiBuilder.cs" />
     <Compile Include="BaseClasses\UpstreamQueryManager.cs" />
     <Compile Include="Errors\AuthorizationTokenExpiredOrInvalidException.cs" />

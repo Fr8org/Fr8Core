@@ -45,13 +45,13 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Create(Guid actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
+        public async Task<IHttpActionResult> Create(Guid activityTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var userId = User.Identity.GetUserId();
 
-                var result = await _activity.CreateAndConfigure(uow, userId, actionTemplateId, label, order, parentNodeId, createPlan, authorizationTokenId);
+                var result = await _activity.CreateAndConfigure(uow, userId, activityTemplateId, label, order, parentNodeId, createPlan, authorizationTokenId);
 
                 if (result is ActivityDO)
                 {
@@ -116,11 +116,7 @@ namespace HubWeb.Controllers
             }
         }
 
-        /// <summary>
-        /// GET : Returns an action with the specified id
-        /// </summary>
         [HttpDelete]
-        //[Route("{id:guid}")]
         public async Task<IHttpActionResult> Delete(Guid id, bool confirmed = false)
         {
             var isDeleted = await _subPlan.DeleteActivity(User.Identity.GetUserId(), id, confirmed);

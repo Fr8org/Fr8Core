@@ -63,17 +63,17 @@ namespace terminalSalesforce.Actions
             ActivityName = "Get Data from Salesforce";
         }
 
-        protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Initialize(CrateSignaller crateSignaller)
         {
             ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager
                 .GetSalesforceObjectTypes()
                 .Select(x => new ListItem() { Key = x.Key, Value = x.Key })
                 .ToList();
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
+            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
             return Task.FromResult(true);
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Configure(CrateSignaller crateSignaller)
         {
             //If Salesforce object is empty then we should clear filters as they are no longer applicable
             var selectedObject = ConfigurationControls.SalesforceObjectSelector.selectedKey;
@@ -100,7 +100,7 @@ namespace terminalSalesforce.Actions
 
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
             //Publish information for downstream activities
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
+            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
         }
 
         protected override async Task RunCurrentActivity()

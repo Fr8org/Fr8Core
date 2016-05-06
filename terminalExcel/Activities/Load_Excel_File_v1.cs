@@ -78,12 +78,12 @@ namespace terminalExcel.Actions
             ActivityName = "Load Excel File";
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Configure(CrateSignaller crateSignaller)
         {
             CurrentActivityStorage.RemoveByLabel(ColumnHeadersCrateLabel);
             //If file is not uploaded we hide file description
@@ -118,7 +118,7 @@ namespace terminalExcel.Actions
                 }
             }
 
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
             CurrentActivityStorage.Add(Crate.FromContent(FileCrateLabel, new StandardFileDescriptionCM() { Filename = FileCrateLabel }));
         }
 

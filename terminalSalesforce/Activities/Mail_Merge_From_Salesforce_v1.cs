@@ -108,7 +108,7 @@ namespace terminalSalesforce.Actions
             return Task.FromResult(true);
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Configure(CrateSignaller crateSignaller)
         {
             if (ConfigurationControls.RunMailMergeButton.Clicked)
             {
@@ -268,7 +268,7 @@ namespace terminalSalesforce.Actions
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager.GetSalesforceObjectTypes().Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
             var activityTemplates = await HubCommunicator.GetActivityTemplates(ActivityTemplate.EmailDelivererTag, CurrentFr8UserId);
