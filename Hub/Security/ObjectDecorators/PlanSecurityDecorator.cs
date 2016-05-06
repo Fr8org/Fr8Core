@@ -108,11 +108,11 @@ namespace Hub.Security.ObjectDecorators
             }
         }
 
-        public void Delete(IUnitOfWork uow, Guid id)
+        public async Task Delete(IUnitOfWork uow, Guid id)
         {
             if (_securityServices.AuthorizeActivity(PermissionType.DeleteObject, id.ToString(), nameof(PlanNodeDO)))
             {
-                _target.Delete(uow, id);
+               await _target.Delete(uow, id);
             }
             else
             {

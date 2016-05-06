@@ -22,13 +22,11 @@ namespace HubWeb.Controllers
         private readonly IActivity _activity;
         private readonly IActivityTemplate _activityTemplate;
         private readonly ITerminal _terminal;
-        private readonly ISubPlan _subPlan;
 
         public ActivitiesController()
         {
             _activity = ObjectFactory.GetInstance<IActivity>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
-            _subPlan = ObjectFactory.GetInstance<ISubPlan>();
             _terminal = ObjectFactory.GetInstance<ITerminal>();
         }
 
@@ -36,12 +34,7 @@ namespace HubWeb.Controllers
         {
             _activity = service;
         }
-
-        public ActivitiesController(ISubPlan service)
-        {
-            _subPlan = service;
-        }
-
+        
 
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]

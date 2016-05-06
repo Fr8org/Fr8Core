@@ -16,7 +16,7 @@ namespace Hub.Interfaces
         IList<PlanDO> GetByName(IUnitOfWork uow, Fr8AccountDO account, string name, PlanVisibility visibility);
         void CreateOrUpdate(IUnitOfWork uow, PlanDO submittedPlan, bool withTemplate);
         PlanDO Create(IUnitOfWork uow, string name, string category = "");
-        void Delete(IUnitOfWork uow, Guid id);
+        Task Delete(IUnitOfWork uow, Guid id);
 
         IList<PlanDO> GetMatchingPlans(string userId, EventReportCM curEventReport);
         Task<ActivateActivitiesDTO> Activate(Guid planId, bool planBuilderActivate);

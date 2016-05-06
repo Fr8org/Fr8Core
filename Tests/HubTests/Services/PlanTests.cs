@@ -1,4 +1,5 @@
 ﻿using System.Linq;
+using System.Threading.Tasks;
 using Data.Constants;
 using StructureMap;
 using Data.Entities;
@@ -44,7 +45,7 @@ namespace HubTests.Services
         }
 
         [Test]
-        public void PlanService_CanDelete()
+        public async Task PlanService_CanDelete()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -55,7 +56,7 @@ namespace HubTests.Services
                 Assert.AreNotEqual(curPlanDO.Id, 0);
 
                 var currPlanDOId = curPlanDO.Id;
-                Plan.Delete(uow, curPlanDO.Id);
+                await Plan.Delete(uow, curPlanDO.Id);
                 var result = uow.PlanRepository.GetById<PlanDO>(currPlanDOId);
 
                 Assert.NotNull(result);

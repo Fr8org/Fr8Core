@@ -130,9 +130,9 @@ namespace Hub.Services
 
             uow.SaveChanges();
 
-            await CallActivityConfigure(uow, userId, activity);
+            var configuredActivity = await CallActivityConfigure(uow, userId, activity);
 
-            UpdateActivityProperties(uow, activity);
+            UpdateActivityProperties(uow, configuredActivity);
 
             if (createPlan)
             {
@@ -152,10 +152,10 @@ namespace Hub.Services
 
             using (await _configureLock.Lock(submittedActivity.Id))
             {
+                await DeactivateActivity(uow, submittedActivity.Id);
+
                 var configuredActivity = await CallActivityConfigure(uow, userId, submittedActivity);
-
-                await DeactivateActivities(submittedActivity.GetDescendants().Select(x => x.Id));
-
+                
                 SaveAndUpdateActivity(uow, configuredActivity);
 
                 uow.SaveChanges();
@@ -323,22 +323,17 @@ namespace Hub.Services
             }
         }
         
-        private async Task<ActivityDTO> SaveOrUpdateActivityCore(ActivityDO submittedActivityData)
+        private async Task<ActivityDTO> SaveOrUpdateActivityCore(ActivityDO submittedActivity)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var exising = uow.PlanRepository.GetById<ActivityDO>(submittedActivityData.Id);
+                await DeactivateActivity(uow, submittedActivity.Id);
 
-                if (exising != null)
-                {
-                    await DeactivateActivities(exising.GetDescendants().Select(x => x.Id));
-                }
-                
-                SaveAndUpdateActivity(uow, submittedActivityData);
+                SaveAndUpdateActivity(uow, submittedActivity);
 
                 uow.SaveChanges();
 
-                var result = uow.PlanRepository.GetById<ActivityDO>(submittedActivityData.Id);
+                var result = uow.PlanRepository.GetById<ActivityDO>(submittedActivity.Id);
 
                 return Mapper.Map<ActivityDTO>(result);
             }
@@ -432,14 +427,25 @@ namespace Hub.Services
             }
         }
 
+        private async Task DeactivateActivity(IUnitOfWork uow, Guid activityId)
+        {
+            var exising = uow.PlanRepository.GetById<ActivityDO>(activityId);
 
+            if (exising != null)
+            {
+                await DeactivateActivities(exising.GetDescendants().Select(x => x.Id));
+            }
+        }
+        
         private async Task DeactivateActivities(IEnumerable<Guid> activityIds)
         {
             List<Task> tasks = new List<Task>();
 
+            var activities = activityIds.ToArray();
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                foreach (var activityId in activityIds)
+                foreach (var activityId in activities)
                 {
                     tasks.Add(CallActivityDeactivate(uow, activityId));
                 }
@@ -449,9 +455,23 @@ namespace Hub.Services
                     await Task.WhenAll(tasks);
                     uow.SaveChanges();
                 }
-                catch (Exception)
+                catch (Exception ex)
                 {
+                    var failedTasks = new List<Guid>();
+
+                    for (int index = 0; index < tasks.Count; index++)
+                    {
+                        var task = tasks[index];
+
+                        if (task.Exception != null)
+                        {
+                            failedTasks.Add(activities[index]);
+                        }
+                    }
+
                     uow.SaveChanges();
+
+                    throw new Exception("Following activities have failed to deactivate: " + string.Join(", ", failedTasks.Select(x => x.ToString())), ex);
                 }
             }
         }
@@ -464,13 +484,18 @@ namespace Hub.Services
             {
                 return;
             }
-
+            
             var curActivityDO = (ActivityDO)exisiting.Clone();
 
             curActivityDO.AuthorizationToken = uow.AuthorizationTokenRepository.FindTokenById(curActivityDO.AuthorizationTokenId);
 
             await CallTerminalActivityAsync<ActivityDTO>(uow, "deactivate", curActivityDO, Guid.Empty);
-            
+
+            if (((PlanDO) exisiting.RootPlanNode).PlanState == PlanState.Active)
+            {
+                ((PlanDO) exisiting.RootPlanNode).PlanState = PlanState.Inactive;
+            }
+
             exisiting.ActivationState = ActivationState.Deactivated;
         }
 

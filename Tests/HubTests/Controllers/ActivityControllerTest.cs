@@ -190,7 +190,7 @@ namespace HubTests.Controllers
             {
                 var activityMock = new Mock<IActivity>();
 
-                activityMock.Setup(a => a.Delete(It.IsAny<Guid>()));
+                activityMock.Setup(a => a.Delete(It.IsAny<Guid>())).Returns(Task.FromResult(0));
 
                 ActivityDO activityDO = new FixtureData(uow).TestActivity3();
                 var controller = new ActivitiesController(activityMock.Object);

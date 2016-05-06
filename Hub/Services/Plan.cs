@@ -180,7 +180,7 @@ namespace Hub.Services
             return plan;
         }
 
-        public void Delete(IUnitOfWork uow, Guid id)
+        public async Task Delete(IUnitOfWork uow, Guid id)
         {
             var plan = uow.PlanRepository.GetById<PlanDO>(id);
 
@@ -190,6 +190,8 @@ namespace Hub.Services
             }
 
             plan.PlanState = PlanState.Deleted;
+
+            await Deactivate(id);
 
             //Plan deletion will only update its PlanState = Deleted
             foreach (var container in _container.LoadContainers(uow, plan))
@@ -323,7 +325,7 @@ namespace Hub.Services
                     }
                     catch (Exception ex)
                     {
-                        throw new ApplicationException("Process template activation failed.", ex);
+                        throw new ApplicationException("Unable to deactivate plan.", ex);
                     }
                 }
 
