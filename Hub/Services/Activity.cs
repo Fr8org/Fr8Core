@@ -175,7 +175,7 @@ namespace Hub.Services
             return uow.PlanRepository.GetById<ActivityDO>(id);
         }
 
-        public async Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid actionTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
+        public async Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
         {
             if (parentNodeId != null && createPlan)
             {
@@ -190,7 +190,7 @@ namespace Hub.Services
             // to avoid null pointer exception while creating parent node if label is null 
             if (name == null)
             {
-                name = userId + "_" + actionTemplateId.ToString();
+                name = userId + "_" + activityTemplateId.ToString();
             }
 
             PlanNodeDO parentNode;
@@ -231,7 +231,7 @@ namespace Hub.Services
             var activity = new ActivityDO
             {
                 Id = Guid.NewGuid(),
-                ActivityTemplateId = actionTemplateId,
+                ActivityTemplateId = activityTemplateId,
                 Name = name,
                 CrateStorage = _crate.EmptyStorageAsStr(),
                 AuthorizationTokenId = authorizationTokenId

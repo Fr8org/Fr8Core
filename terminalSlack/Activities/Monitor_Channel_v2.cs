@@ -82,14 +82,14 @@ namespace terminalSlack.Actions
             ActivityName = "Monitor Slack Messages";
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             ConfigurationControls.ChannelList.ListItems = (await _slackIntegration.GetChannelList(AuthorizationToken.Token).ConfigureAwait(false))
                 .OrderBy(x => x.Key)
                 .Select(x => new ListItem { Key = $"#{x.Key}", Value = x.Value })
                 .ToList();
             CurrentActivityStorage.Add(CreateEventSubscriptionCrate());
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel)
+            crateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel)
                                .AddFields(GetChannelProperties());
         }
 
@@ -110,7 +110,7 @@ namespace terminalSlack.Actions
             return CrateManager.CreateStandardEventSubscriptionsCrate(EventSubscriptionsCrateLabel, "Slack", "Slack Outgoing Message");
         }
 
-        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Configure(CrateSignaller crateSignaller)
         {
             //No extra configuration is required
             return Task.FromResult(0);

@@ -74,14 +74,14 @@ namespace terminalSalesforce.Actions
             ActivityName = "Post to Chatter";
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             ConfigurationControls.UseUserOrGroupOption.Selected = true;
             ConfigurationControls.UserOrGroupSelector.ListItems = (await _salesforceManager.GetUsersAndGroups(AuthorizationToken)).Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardPayloadDataCM>(PostedFeedCrateLabel);            
+            crateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PostedFeedCrateLabel);            
         }
 
-        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Configure(CrateSignaller crateSignaller)
         {
             //No configuration is required
             return Task.FromResult(0);
