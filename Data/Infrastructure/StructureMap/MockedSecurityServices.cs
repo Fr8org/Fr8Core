@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using Data.Repositories.Security;
 using Data.States;
 using StructureMap;
@@ -106,6 +107,11 @@ namespace Data.Infrastructure.StructureMap
             if (currentPermission != 0) return true;
 
             return false;
+        }
+
+        public List<PermissionDTO> GetCurrentUserPermissions()
+        {
+            throw new NotImplementedException();
         }
     }
 }

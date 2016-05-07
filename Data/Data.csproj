@@ -296,6 +296,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ExternalObjectHandleDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\IncomingCratesDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\OrganizationDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\PermissionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalNotificationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AlarmDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AuthenticateResponse.cs" />
@@ -847,6 +848,7 @@
     <Compile Include="States\ActivityTemplateState.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
     <Compile Include="States\AvailabilityType.cs" />
+    <Compile Include="States\DefaultProfiles.cs" />
     <Compile Include="States\NotificationChannel.cs" />
     <Compile Include="States\CrateDirection.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />

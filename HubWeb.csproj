@@ -452,6 +452,7 @@
     <Compile Include="Infrastructure\Fr8HubWebHMACAuthenticateAttribute.cs" />
     <Compile Include="Infrastructure\Fr8Identity.cs" />
     <Compile Include="Infrastructure\HtmlHelpers.cs" />
+    <Compile Include="Infrastructure\HtmlSecurityHelpers.cs" />
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="ViewModels\AuthenticationErrorVM.cs" />
     <Compile Include="ViewModels\DocusignLoginVM.cs" />

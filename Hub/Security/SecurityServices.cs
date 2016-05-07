@@ -14,6 +14,7 @@ using StructureMap;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using Data.Repositories.Security;
 using Data.Repositories.Security.Entities;
 using Data.States;
@@ -169,6 +170,15 @@ namespace Hub.Security
             //Object Based permission set checks
             var permissionSets = _securityObjectStorageProvider.GetObjectBasedPermissionSetForObject(curObjectId, curObjectType, roles);
             return EvaluatePermissionSet(permissionType, permissionSets);
+        }
+
+        /// <summary>
+        /// Return a list of current user permissions
+        /// </summary>
+        /// <returns></returns>
+        public List<PermissionDTO> GetCurrentUserPermissions()
+        {
+            return _securityObjectStorageProvider.GetAllPermissionsForUser(GetRoleNames().ToList());
         }
 
         private bool EvaluatePermissionSet(PermissionType permissionType, List<int> permissionSet)

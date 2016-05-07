@@ -9,6 +9,8 @@ using Hub.Interfaces;
 using StructureMap;
 using Data.Interfaces.DataTransferObjects;
 using AutoMapper;
+using Data.Infrastructure;
+using Hub.Managers;
 
 namespace Hub.Services
 {
@@ -79,24 +81,23 @@ namespace Hub.Services
                 Name = MemberOfOrganizationRoleName(organizationName)
             });
 
+            //add System Administrator Profile to this role
+            var systemAdminProfile = uow.ProfileRepository.GetQuery().FirstOrDefault(x=>x.Name == DefaultProfiles.SystemAdministrator);
+            if (systemAdminProfile == null)
+            {
+                throw new ApplicationException("Default System Admin Profile is missing");
+            }
+
             var adminRole = new AspNetRolesDO()
             {
-                Name = AdminOfOrganizationRoleName(organizationName)
+                Name = AdminOfOrganizationRoleName(organizationName),
+                ProfileId =  systemAdminProfile.Id
             };
             uow.AspNetRolesRepository.Add(adminRole);
 
             isNewOrganization = true;
                 
             uow.SaveChanges();
-
-            //link adminRole with ManageInternalUsers Permission, used for add/edit users that belong to this organization
-            var securityObjectStorage = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
-            //todo: check this
-            //securityObjectStorage.InsertRolePermission(new RolePermission()
-            //    {
-            //        Permission = new PermissionDO() {  = Permission.ManageInternalUsers.ToString()},
-            //        Role = new RoleDO() { RoleId = adminRole.Id, }
-            //    });
 
             return organization;
         }

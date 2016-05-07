@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
+using Data.Interfaces.DataTransferObjects;
 using Data.Repositories.MultiTenant;
 using Data.Repositories.Security.Entities;
 using Data.Repositories.SqlBased;
@@ -106,6 +107,11 @@ namespace Data.Repositories.Security.StorageImpl
         }
 
         public int UpdateRolePermission(RolePermission rolePermissions)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<PermissionDTO> GetAllPermissionsForUser(List<string> roleNames)
         {
             throw new NotImplementedException();
         }

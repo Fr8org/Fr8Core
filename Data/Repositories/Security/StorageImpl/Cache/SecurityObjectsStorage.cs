@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Web.UI.WebControls;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using Data.Repositories.Security.Entities;
 using StructureMap;
 
@@ -70,6 +71,33 @@ namespace Data.Repositories.Security.StorageImpl.Cache
 
                 _cache.AddOrUpdateRecordBasedPermissionSet(dataObjectId, permissionSet);
                 return permissionSet;
+            }
+        }
+
+        public List<PermissionDTO> GetAllPermissionsForUser(List<string> roleNames)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var result = new List<PermissionDTO>();
+                var roleCollection = uow.AspNetRolesRepository.GetQuery().Where(x => roleNames.Contains(x.Name) && x.ProfileId.HasValue).ToList();
+                foreach (var role in roleCollection)
+                {
+                    lock (_cache)
+                    {
+                        var permissionSets = _cache.GetProfilePermissionSets(role.ProfileId.ToString());
+                        if (!permissionSets.Any())
+                        {
+                            permissionSets = uow.PermissionSetRepository.GetQuery().Where(x => x.ProfileId == role.ProfileId).ToList();
+                            _cache.AddOrUpdateProfile(role.ProfileId.ToString(), permissionSets);
+                        }
+                        foreach (var set in permissionSets)
+                        {
+                            result.AddRange(set.Permissions.Select(x=> new PermissionDTO() { Permission = x.Id, RoleName = role.Name, ObjectType = set.ObjectType}).ToList());
+                        }
+                    }
+                }
+
+                return result;
             }
         }
 

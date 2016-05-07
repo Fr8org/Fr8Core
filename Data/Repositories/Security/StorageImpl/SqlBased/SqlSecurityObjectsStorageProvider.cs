@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.Repositories.Security.Entities;
 using Data.Repositories.SqlBased;
 using Data.States;
@@ -145,6 +146,11 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                     return result;
                 }
             }
+        }
+
+        public List<PermissionDTO> GetAllPermissionsForUser(List<string> roleNames)
+        {
+            throw new NotImplementedException();
         }
 
         public void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType)
