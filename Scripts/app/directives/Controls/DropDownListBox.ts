@@ -40,10 +40,11 @@ module dockyard.directives.dropDownListBox {
                     $scope.selectedItem = item;
 
                     // Since there is no 'focus' event for ui-select yet (https://github.com/angular-ui/ui-select/issues/344), we execute handler here
-                    if ($scope.focus != null && angular.isFunction($scope.focus)) {
-                        $scope.focus()($scope.field);
+                    if (typeof($scope.focus) != 'undefined') {
+                        if ($scope.focus != null && angular.isFunction($scope.focus)) {
+                            $scope.focus()($scope.field);
+                        }    
                     }
-
 
                     // Invoke onChange event handler
                     if ($scope.change != null && angular.isFunction($scope.change)) {
@@ -197,7 +198,7 @@ module dockyard.directives.dropDownListBox {
                 field: '=',
                 change: '&',
                 click: '&',
-                focus: '&'
+                focus: '&?'
             }
         };
     }
