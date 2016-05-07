@@ -1165,10 +1165,10 @@ i.activity-stream-font {
 
 .collapsed {
     max-height: 1000px;
-    -o-transition: all .6s ease;   
-    -webkit-transition: all .6s ease;
-	-moz-transition: all .6s ease;
-	transition: all .6s ease;
+    -o-transition: all 1.2s ease;   
+    -webkit-transition: all 1.2s ease;
+	-moz-transition: all 1.2s ease;
+	transition: all 1.2s ease;
 }
 
 .expanded {
@@ -1180,13 +1180,30 @@ i.activity-stream-font {
 	transition: all .3s ease;
 }
 
-
 .fr8-full-width {
     width: 100%;
 }
 
 .fr8-float-right {
     float: right;
+}
+
+.fr8-borders {
+    border: 1px solid rgba(38,166,154,0.3);
+}
+
+.fr8-text-source-button {
+    text-transform: none !important;
+    text-align: left !important;
+    margin: 0;
+}
+
+.fr8-text-source-button-pressed {
+    background-color: rgba(38,166,154,0.3) !important;
+}
+
+.fr8-text-source-panel {
+    padding: 6px 0 0 0;
 }
 
 footer {
