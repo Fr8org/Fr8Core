@@ -46,7 +46,7 @@ namespace terminalGoogleTests.Integration
 
             var crateStorage = Crate.FromDto(responseActivityDTO.CrateStorage);
             Assert.AreEqual(3, crateStorage.Count);
-            Assert.IsNotNull(crateStorage.FirstCrateOrDefault<CrateDescriptionCM>(x => x.Label == RuntimeCrateManager.RuntimeCrateDescriptionsCrateLabel), "ActivityDTO storage doesn't contain crate with Runtime Crates Descriptions.");
+            Assert.IsNotNull(crateStorage.FirstCrateOrDefault<CrateDescriptionCM>(x => x.Label == CrateSignaller.RuntimeCrateDescriptionsCrateLabel), "ActivityDTO storage doesn't contain crate with Runtime Crates Descriptions.");
             Assert.IsNotNull(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault(), "ActivityDTO storage doesn't contain crate with Standard Configuration Controls.");
             Assert.IsNotNull(crateStorage.CrateContentsOfType<EventSubscriptionCM>().SingleOrDefault(), "ActivityDTO storage doesn't contain crate with Event Subscription.");
         }

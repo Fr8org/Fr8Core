@@ -54,7 +54,7 @@ namespace terminaBaselTests.BaseClasses
             return base.GetConfigurationRequestType();
         }
 
-        protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Initialize(CrateSignaller crateSignaller)
         {
             CalledMethods |= CalledMethod.Initialize;
             CheckBasicPropeties();
@@ -62,7 +62,7 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Configure(CrateSignaller crateSignaller)
         {
             CalledMethods |= CalledMethod.Configure;
             CheckBasicPropeties();
@@ -161,7 +161,7 @@ namespace terminaBaselTests.BaseClasses
         {
         }
 
-        protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Initialize(CrateSignaller crateSignaller)
         {
             OnInitialize?.Invoke(ConfigurationControls);
 
@@ -172,7 +172,7 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Configure(CrateSignaller crateSignaller)
         {
             OnConfigure?.Invoke(ConfigurationControls);
 
@@ -235,13 +235,13 @@ namespace terminaBaselTests.BaseClasses
         {
         }
 
-        protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Initialize(CrateSignaller crateSignaller)
         {
             OnInitialize?.Invoke(ConfigurationControls);
             return Task.FromResult(0);
         }
 
-        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Configure(CrateSignaller crateSignaller)
         {
             OnConfigure?.Invoke(ConfigurationControls);
             return Task.FromResult(0);
@@ -268,12 +268,12 @@ namespace terminaBaselTests.BaseClasses
         {
         }
 
-        protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Initialize(CrateSignaller crateSignaller)
         {
             return Task.FromResult(0);
         }
 
-        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Configure(CrateSignaller crateSignaller)
         {
             return Task.FromResult(0);
         }

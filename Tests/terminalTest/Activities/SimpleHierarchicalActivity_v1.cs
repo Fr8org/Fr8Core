@@ -15,7 +15,7 @@ namespace terminalTest.Actions
         {
         }
         
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             var templates = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId);
             var activityTemplate = templates.First(x => x.Name == "SimpleActivity");
@@ -76,7 +76,7 @@ namespace terminalTest.Actions
             });
         }
 
-        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Configure(CrateSignaller crateSignaller)
         {
             return Task.FromResult(0);
         }
