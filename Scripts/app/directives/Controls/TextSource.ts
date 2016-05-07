@@ -10,7 +10,7 @@ module dockyard.directives.textSource {
         onFocus: any;
         uniqueDirectiveId: number;
         isFocused: boolean;
-        onUpStreamFocus: any;
+        onUpStreamChange: any;
     }
 
     //Setup aliases
@@ -56,8 +56,9 @@ module dockyard.directives.textSource {
                     new pca.ConfigureFocusElementArgs($scope.field));
             };
 
-            $scope.onUpStreamFocus = (field: any) => {
-                field.valueSource = 'upstream';
+            $scope.onUpStreamChange = (fieldName: string) => {
+                $scope.field.valueSource = 'upstream';
+                $scope.onFocus(fieldName);
             }
             
         }];
