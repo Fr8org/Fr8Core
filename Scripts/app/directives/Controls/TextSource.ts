@@ -9,7 +9,8 @@ module dockyard.directives.textSource {
         onChange: any;
         onFocus: any;
         uniqueDirectiveId: number;
-        isFocused : boolean;
+        isFocused: boolean;
+        onUpStreamFocus: any;
     }
 
     //Setup aliases
@@ -54,6 +55,11 @@ module dockyard.directives.textSource {
                 $scope.$emit(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureFocusElement],
                     new pca.ConfigureFocusElementArgs($scope.field));
             };
+
+            $scope.onUpStreamFocus = (field: any) => {
+                field.valueSource = 'upstream';
+            }
+            
         }];
 
         var link = function($scope, $element, attrs) {
@@ -63,7 +69,7 @@ module dockyard.directives.textSource {
                     var theElement = $element.find("input[type='text']")[0];
                     theElement.focus();
                     $scope.field.valueSource = 'specific';
-                }
+                } 
             });
         }
 

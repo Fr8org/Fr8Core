@@ -11,6 +11,7 @@ module dockyard.directives.dropDownListBox {
 
     export interface IDropDownListBoxScope extends ng.IScope {
         field: model.DropDownList;
+        focus: () => (field: model.ControlDefinitionDTO) => void;
         currentAction: model.ActivityDTO;
         change: () => (field: model.ControlDefinitionDTO) => void;
         click: () => (field: model.ControlDefinitionDTO) => void;
@@ -38,10 +39,17 @@ module dockyard.directives.dropDownListBox {
                     $scope.field.selectedKey = item.key;
                     $scope.selectedItem = item;
 
+                    // Since there is no 'focus' event for ui-select yet (https://github.com/angular-ui/ui-select/issues/344), we execute handler here
+                    if ($scope.focus != null && angular.isFunction($scope.focus)) {
+                        $scope.focus()($scope.field);
+                    }
+
+
                     // Invoke onChange event handler
                     if ($scope.change != null && angular.isFunction($scope.change)) {
                         $scope.change()($scope.field);
                     }
+                    
                 };
 
                 // parameter isSilent is for to show the error messages or not
@@ -188,7 +196,8 @@ module dockyard.directives.dropDownListBox {
                 currentAction: '=',
                 field: '=',
                 change: '&',
-                click: '&'
+                click: '&',
+                focus: '&'
             }
         };
     }
