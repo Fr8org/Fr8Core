@@ -768,16 +768,16 @@ namespace Data.Migrations
 
             fr8AdminProfile.PermissionSets.Clear();
             //default permissions for Plans and PlanNodes
-            fr8AdminProfile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), true, false, false, fr8AdminProfile.Id, "System Administrator Permission Set", uow));
+            fr8AdminProfile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), true, false, false, fr8AdminProfile.Id, "Fr8 Administrator Permission Set", uow));
 
             //default permissions for ContainerDO
-            fr8AdminProfile.PermissionSets.Add(AddPermissionSet(nameof(ContainerDO), true, false, false, fr8AdminProfile.Id, "System Administrator Permission Set", uow));
+            fr8AdminProfile.PermissionSets.Add(AddPermissionSet(nameof(ContainerDO), true, false, false, fr8AdminProfile.Id, "Fr8 Administrator Permission Set", uow));
 
             //default permissions for Terminals
-            fr8AdminProfile.PermissionSets.Add(AddPermissionSet(nameof(TerminalDO), true, false, false, fr8AdminProfile.Id, "System Administrator Permission Set", uow));
+            fr8AdminProfile.PermissionSets.Add(AddPermissionSet(nameof(TerminalDO), true, false, false, fr8AdminProfile.Id, "Fr8 Administrator Permission Set", uow));
 
             //default permissions for Users
-            fr8AdminProfile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), true, false, true, fr8AdminProfile.Id, "System Administrator Permission Set", uow));
+            fr8AdminProfile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), true, false, true, fr8AdminProfile.Id, "Fr8 Administrator Permission Set", uow));
             
             profile.PermissionSets.Clear();
             //default permissions for Plans and PlanNodes
