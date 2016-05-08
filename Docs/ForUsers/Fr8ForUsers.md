@@ -1,7 +1,7 @@
 # Fr8 for Users  
-[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/docs/Home.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
 Fr8 is a cloud workflow solution. It provides an easy-to-use environment where users can move information easily between their cloud services.  Here's an example of a Fr8 Plan that carries out a DocuSign mail merge using a Google Sheet:  
-![mailmerge](https://github.com/Fr8org/Fr8Core/blob/master/docs/img/Fr8ForUsers_MailMerge.png)  
+![mailmerge](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/Fr8ForUsers_MailMerge.png)  
 
 And here's a video of that Plan in action:  
 [Video](https://vimeo.com/162762690)  
@@ -25,4 +25,4 @@ When you run a Plan, Fr8 creates a Container to hold your data. Inside the conta
 
 [Tutorials]()   
    
-[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/docs/Home.md) 
+[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md) 

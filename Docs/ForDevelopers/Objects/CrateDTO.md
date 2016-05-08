@@ -1,6 +1,6 @@
 # CRATE – DEFINITION
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/docs/Home.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
 
 A Crate is a Json element that can contain arbitrary data.  It creates a standardized way to store different kinds of data in an organized way.
 
@@ -56,9 +56,9 @@ Id |	GUID |	not required and not currently used as part of processing.
 Label |	string |	an arbitrary name useful for distinguishing crates from each other.   
 Contents |	string (JSON) |	The actual data inside of the crate. Everything else can be thought of as metadata taped to the outside of the crate. This distinction is important from a security point of view. Generally, properties other than Contents should be assumed to be publicly visible and insecure. On the other hand, by encrypting the Contents of a crate, it can be considered to be data secure.   
 ParentCrateId |	string |	Crates can be put inside of other Crates   
-[ManifestType](https://github.com/Fr8org/Fr8Core/blob/master/docs/ForDevelopers/Objects/CratesManifest.md)  |	string |	A friendly name for different types of Manifests. Not really necessary, but storing it here makes the json more readable   
-[ManifestId](https://github.com/Fr8org/Fr8Core/blob/master/docs/ForDevelopers/Objects/CratesManifest.md)  |	int |	An optional way to signal the schema of the contents.   
+[ManifestType](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CratesManifest.md)  |	string |	A friendly name for different types of Manifests. Not really necessary, but storing it here makes the json more readable   
+[ManifestId](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CratesManifest.md)  |	int |	An optional way to signal the schema of the contents.   
 Manufacturer |	ManufacturerDTO |	A data structure identifying the Terminal that created the crate   
 Mode |	string |	choices “Design-Time”, “Run-Time”. [Review for need]   
  
- [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/docs/Home.md)  
+ [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  

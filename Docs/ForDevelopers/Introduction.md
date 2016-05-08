@@ -1,8 +1,8 @@
 # Part 1 – Introduction  
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/docs/Home.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
 
-For a basic introduction to Fr8 concepts, see [this](https://github.com/Fr8org/Fr8Core/blob/master/docs/ForUsers/Fr8ForUsers.md) .  
+For a basic introduction to Fr8 concepts, see [this](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForUsers/Fr8ForUsers.md) .  
 
 Fr8 is a fully distributed application environment designed from the ground up to specialize in connecting existing cloud services. End Users will mostly experience Fr8 through prebuilt solutions that make cloud integration problems vanish. Power Users will mostly experience Fr8 through the point-and-click Plan Builder, the easiest and most powerful tool for assembling cloud business processes.  
 
@@ -24,6 +24,6 @@ This architecture also allows Terminals to be very nuanced. There might end up b
 
 The Fr8 Hub has no knowledge about the Fr8 Terminals it works with, beyond what it discovers when it starts up. That means that individual Terminals and their Activities can be upgraded, patched, and extended independently of the Hubs and client code.  
 
-[Part 2 – Understanding the Fr8 Architectural Model](https://github.com/Fr8org/Fr8Core/blob/master/docs/ForDevelopers/ArchitecturalModel.md)  
+[Part 2 – Understanding the Fr8 Architectural Model](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ArchitecturalModel.md)  
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/docs/Home.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  

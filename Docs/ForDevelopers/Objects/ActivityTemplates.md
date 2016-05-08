@@ -1,6 +1,6 @@
 # ACTIVITY TEMPLATES
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/docs/Home.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
 
 ActivityTemplates are provided by Terminals in response to requests by Hubs. They instruct the Hub as to each Activity that a Terminal is capable of processing.
 ```javascript
@@ -90,4 +90,4 @@ Notifier |	Some Activities want to provide the user with a list of mechanisms fo
 Table Data Generator |	Indicates that an activity generates table data. Used by other activities to query for all activities that generate tables.	
 Getter |	Getter activities are activities that fetch an object of data, such as an Excel File, a Google Sheet, or a Quickbooks Online Invoice.
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/docs/Home.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
