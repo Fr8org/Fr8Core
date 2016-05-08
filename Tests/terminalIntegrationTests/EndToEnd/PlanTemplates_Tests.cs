@@ -86,11 +86,6 @@ namespace terminalIntegrationTests.EndToEnd
                 Assert.AreEqual(templateDO.PlanNodeDescriptions.Count, new_templateDO.PlanNodeDescriptions.Count);
                 Assert.AreEqual(templateDO.PlanNodeDescriptions.SelectMany(a => a.Transitions)
                     .Count(), new_templateDO.PlanNodeDescriptions.SelectMany(a => a.Transitions).Count());
-
-                //clean up after test
-                var templatesForIntegrationUser = uow.PlanTemplateRepository.GetQuery().Where(a => a.User.Id == currentUser.Id).ToList();
-                templatesForIntegrationUser.ForEach(a => uow.PlanTemplateRepository.Remove(a));
-                uow.SaveChanges();
             }
         }
     }
