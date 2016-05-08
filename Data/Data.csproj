@@ -301,7 +301,7 @@
     <Compile Include="Interfaces\DataTransferObjects\IncomingCratesDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PlanTemplates\ActivityDescriptionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PlanTemplates\NodeTransitionDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\PlanTemplates\PlanDescriptionDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\PlanTemplates\PlanTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PlanTemplates\PlanNodeDescriptionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\OrganizationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalNotificationDTO.cs" />
@@ -412,7 +412,7 @@
     <Compile Include="Interfaces\DataTransferObjects\PlanDTO.cs" />
     <Compile Include="Repositories\PlanTemplates\ActivityDescriptionRepository.cs" />
     <Compile Include="Repositories\PlanTemplates\NodeTransitionRepository.cs" />
-    <Compile Include="Repositories\PlanTemplates\PlanDescriptionsRepository.cs" />
+    <Compile Include="Repositories\PlanTemplates\PlanTemplateRepository.cs" />
     <Compile Include="Repositories\PlanTemplates\PlanNodeDescriptionsRepository.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.Designer.cs">

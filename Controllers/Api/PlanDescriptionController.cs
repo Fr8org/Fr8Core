@@ -18,14 +18,14 @@ using HubWeb.Infrastructure;
 namespace HubWeb.Controllers
 {
     [Fr8ApiAuthorize]
-    [RoutePrefix("plan_descriptions")]
-    public class PlanDescriptionController : Fr8BaseApiController
+    [RoutePrefix("plan_templates")]
+    public class PlanTemplatesController : Fr8BaseApiController
     {
-        private IPlanDescription _planDescription;
+        private IPlanTemplates _planDescription;
 
-        public PlanDescriptionController()
+        public PlanTemplatesController()
         {
-            _planDescription = ObjectFactory.GetInstance<IPlanDescription>();
+            _planDescription = ObjectFactory.GetInstance<IPlanTemplates>();
         }
 
         [HttpPost]
@@ -57,7 +57,7 @@ namespace HubWeb.Controllers
 #endif
         public async Task<IHttpActionResult> Get(string userId)
         {
-            var result = _planDescription.GetDescriptions(userId);
+            var result = _planDescription.GetTemplates(userId);
             return Ok(result);
         }
     }

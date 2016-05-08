@@ -312,7 +312,7 @@
     <Compile Include="Services\EventTests.cs" />
     <Compile Include="Services\FileTests.cs" />
     <Compile Include="Services\HMACAuthenticatorTests.cs" />
-    <Compile Include="Services\PlanDescriptionTests.cs" />
+    <Compile Include="Services\PlanTemplatesTests.cs" />
     <Compile Include="Services\PlanNodeTests.cs" />
     <Compile Include="Services\PlanTests.cs" />
     <Compile Include="Services\SubscriptionServiceTests.cs" />

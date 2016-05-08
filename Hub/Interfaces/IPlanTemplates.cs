@@ -1,5 +1,5 @@
 ﻿using Data.Entities;
-using Data.Interfaces.DataTransferObjects.PlanDescription;
+using Data.Interfaces.DataTransferObjects.PlanTemplates;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,10 +8,10 @@ using System.Threading.Tasks;
 
 namespace Hub.Interfaces
 {
-    public interface IPlanDescription
+    public interface IPlanTemplates
     {
-        PlanDescriptionDTO SavePlan(Guid planId, string curFr8UserId);
-        List<PlanDescriptionDTO> GetDescriptions(string userId);
+        PlanTemplateDTO SavePlan(Guid planId, string curFr8UserId);
+        List<PlanTemplateDTO> GetTemplates(string userId);
         string LoadPlan(int planDescriptionId, string userId);
     }
 }

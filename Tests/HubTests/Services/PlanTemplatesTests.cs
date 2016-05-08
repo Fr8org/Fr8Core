@@ -14,15 +14,15 @@ namespace HubTests.Services
 {
     [TestFixture]
     [Category("PlanDescription")]
-    public class PlanDescriptionTests : BaseTest
+    public class PlanTemplatesTests : BaseTest
     {
-        private IPlanDescription _planDescription;
+        private IPlanTemplates _planDescription;
 
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
-            _planDescription = ObjectFactory.GetInstance<IPlanDescription>();
+            _planDescription = ObjectFactory.GetInstance<IPlanTemplates>();
         }
 
         [Test]

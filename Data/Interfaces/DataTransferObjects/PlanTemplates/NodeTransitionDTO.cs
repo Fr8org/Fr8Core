@@ -21,7 +21,7 @@ namespace Data.Interfaces.DataTransferObjects.PlanTemplates
         /// <summary>
         /// Used if Containers generated from this PlanDescription would transition to Plans generated from another PlanDescription
         /// </summary>
-        public int? PlanDescriptionId { get; set; }
+        public int? PlanTemplateId { get; set; }
 
         /// <summary>
         /// Used if Containers generated from this PlanDescription would transition to an existing Plan. Currently assumes that the existing Plan will be hosted by the same Hub. Eventually we'll need a way to address a Plan running on another Hub.
