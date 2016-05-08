@@ -74,7 +74,7 @@ namespace HealthMonitor.Jobs
             {
                 int activeTestPlans = (int)provider.ExecuteScalar();
                 parameters.Add("Database", provider.Database);
-                TrackMetric(scope, FormatMetricName(scope,  "Active_Test_Plans"), activeTestPlans, parameters);
+                TrackMetric(scope, FormatMetricName(scope, "Active_Test_Plans"), activeTestPlans, parameters);
             }
         }
 
@@ -87,12 +87,14 @@ namespace HealthMonitor.Jobs
         [Test]
         public void Get_Dev_Database_File_Stats()
         {
-            var devCS = (string)Program.Context.AllArguments["devConnectionString"];
-            if (devCS == null)
+            if (Program.Context.AllArguments.ContainsKey("devConnectionString"))
             {
-                throw new ArgumentNullException("The --devConnectionString argument is not supplied to HealthMonitor.");
+                var devCS = (string)Program.Context.AllArguments["devConnectionString"];
+                if (devCS != null)
+                {
+                    GetStatsInDatabase(devCS);
+                }
             }
-            GetStatsInDatabase(devCS);
         }
 
         private void GetStatsInDatabase(string connectionString)
