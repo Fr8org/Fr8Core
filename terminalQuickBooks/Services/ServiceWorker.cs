@@ -71,7 +71,7 @@ namespace terminalQuickBooks.Services
 
             if (DateTime.Now > expiresDate)
             {
-                throw new TerminalQuickbooksTokenExpiredException();
+                throw new TerminalQuickbooksTokenExpiredException("Quickbooks token is expired. Please, get the new one");
             }
 
             var oauthValidator = new OAuthRequestValidator(
