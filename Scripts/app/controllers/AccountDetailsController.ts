@@ -7,6 +7,7 @@ module dockyard.controllers {
         user: interfaces.IUserDTO;
         profiles: Array<interfaces.IProfileDTO>;
         submit: (isValid: boolean) => void;
+        cancel: () => void;
     }
 
     class AccountDetailsController {
@@ -40,6 +41,10 @@ module dockyard.controllers {
                     var result = UserService.updateUserProfile({ userId: $scope.user.id, profileId: $scope.user.profileId });
                     result.$promise.then(() => { $state.go('accounts'); });
                 }
+            };
+
+            $scope.cancel = function () {
+                     $state.go('accounts'); 
             };
         }
     }

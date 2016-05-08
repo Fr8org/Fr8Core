@@ -144,6 +144,8 @@ namespace HubWeb.Controllers
             {
                 var user = uow.UserRepository.FindOne(u => u.Id == userId);
                 user.ProfileId = profileId;
+
+                uow.SaveChanges();
             }
 
             return Ok();
