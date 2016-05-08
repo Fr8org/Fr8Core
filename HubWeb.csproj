@@ -393,7 +393,6 @@
     <Compile Include="Controllers\SupportController.cs" />
     <Compile Include="Controllers\WelcomeController.cs" />
     <Compile Include="Controllers\Api\FieldController.cs" />
-    <Compile Include="Controllers\Api\ActivityListController.cs" />
     <Compile Include="Controllers\Api\CriteriaController.cs" />
     <Compile Include="Controllers\DocuSignTemplateController.cs" />
     <Compile Include="Controllers\Api\PlanNodesController.cs" />
@@ -866,7 +865,8 @@
     <Content Include="Scripts\PlanBuilder\pb-widget.js" />
     <Content Include="Scripts\templateCache.js" />
     <Content Include="Scripts\tests\e2e\conf.js" />
-    <Content Include="Scripts\tests\e2e\login.js" />
+    <Content Include="Scripts\tests\e2e\login\login.spec.js" />
+    <Content Include="Scripts\tests\e2e\pages\login.page.js" />
     <Content Include="Views\AngularTemplate\DatePicker.cshtml" />
     <Content Include="ApplicationInsights.config">
       <TransformOnBuild>true</TransformOnBuild>
@@ -936,6 +936,8 @@
     <Content Include="Config\log4net.tests.healthMonitor.Demo.config" />
     <Content Include="Config\log4net.tests.healthMonitor.Dev.config" />
     <Content Include="Config\log4net.tests.healthMonitor.Release.config" />
+    <Content Include="Views\AngularTemplate\FilterPane.cshtml" />
+    <Content Include="Views\AngularTemplate\MiniHeader.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />
@@ -957,11 +959,15 @@
     <Content Include="_PowerShellScripts\Start-Sleep.ps1" />
     <Content Include="_PowerShellScripts\Update-TerminalHostnameInDb.ps1" />
     <Content Include="_PowerShellScripts\Add-BuildServer.ps1" />
-    <Content Include="_PowerShellScripts\BuildServer_Templ.json" />
     <Content Include="_PowerShellScripts\UpdateTerminalHostnameInDb.ps1" />
     <Content Include="_PowerShellScripts\Check-Confirmation.ps1" />
     <Content Include="_PowerShellScripts\MergePRSourcesIntoDev.ps1" />
-    <Content Include="_PowerShellScripts\UpdateGitHubBuildStatus.ps1" />
+    <Content Include="_PowerShellScripts\Run-ProtractorTests.ps1" />
+    <Content Include="_PowerShellScripts\Set-GitHubBuildStatus.ps1" />
+    <Content Include="_PowerShellScripts\DeleteHostedDatabase.ps1" />
+    <Content Include="_PowerShellScripts\RestoreDatabaseFromBackup.ps1" />
+    <Content Include="_PowerShellScripts\CleanUpAfterTests.ps1" />
+    <Content Include="_PowerShellScripts\Copy-ImagesBetweenAccount.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\KioskModeOrganizationHeaderController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
@@ -972,10 +978,12 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\BuildMessageAppender.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ControlList.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ExternalObjectChooser.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\FilterPane.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\MetaControlContainer.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ContainerTransition.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DatePicker.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Fr8Event.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\Controls\QueryBuilder.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\QueryBuilderCondition.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\SelectData.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\SourceableCriteria.ts" />
@@ -1043,7 +1051,7 @@
     <Content Include="Views\AngularTemplate\FieldList.cshtml" />
     <Content Include="Views\AngularTemplate\FilePicker.cshtml" />
     <Content Include="Views\AngularTemplate\FileSelectorModal.cshtml" />
-    <Content Include="Views\AngularTemplate\FilterPane.cshtml" />
+    <Content Include="Views\AngularTemplate\--TO-BE-REMOVED--FilterPane.cshtml" />
     <Content Include="Views\AngularTemplate\Footer.cshtml" />
     <Content Include="Views\AngularTemplate\Header.cshtml" />
     <Content Include="Views\AngularTemplate\InternalAuthentication.cshtml" />
@@ -1054,7 +1062,7 @@
     <Content Include="Views\AngularTemplate\PaneConfigureAction.cshtml" />
     <Content Include="Views\AngularTemplate\PaneSelectActionModal.cshtml" />
     <Content Include="Views\AngularTemplate\PlanBuilder.cshtml" />
-    <Content Include="Views\AngularTemplate\QueryBuilderWidget.cshtml" />
+    <Content Include="Views\AngularTemplate\--TO-BE-REMOVED--QueryBuilderWidget.cshtml" />
     <Content Include="Views\AngularTemplate\RadioButtonOption.cshtml" />
     <Content Include="Views\AngularTemplate\PlanDetails.cshtml" />
     <Content Include="Views\AngularTemplate\PlanForm.cshtml" />
@@ -1106,7 +1114,7 @@
     <Content Include="Views\Shared\CDN\_AngularAppScripts.cshtml" />
     <Content Include="Views\Shared\_AngularAppStyles.cshtml" />
     <Content Include="Views\Shared\CDN\_AngularAppStyles.cshtml" />
-    <Content Include="Views\AngularTemplate\QueryBuilderCondition.cshtml" />
+    <Content Include="Views\AngularTemplate\--TO-BE-REMOVED--QueryBuilderCondition.cshtml" />
     <Content Include="Views\AngularTemplate\SourceableCriteria.cshtml" />
     <Content Include="Views\AngularTemplate\CrateChooser.cshtml" />
     <Content Include="Views\AngularTemplate\_PlanReportList.cshtml" />
@@ -1122,6 +1130,8 @@
     <Content Include="Views\AngularTemplate\BuildMessageAppender.cshtml" />
     <Content Include="Views\AngularTemplate\KioskModeOrganizationHeader.cshtml" />
     <Content Include="Views\AngularTemplate\Organization.cshtml" />
+    <Content Include="Views\AngularTemplate\QueryBuilder.cshtml" />
+    <Content Include="Views\AngularTemplate\QueryBuilderCondition.cshtml" />
     <None Include="Web.Demo.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -1151,7 +1161,6 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\Duration.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\RunPlanButton.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ManagePlan.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\QueryBuilder.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\TextSource.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\DropDownListBox.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\FieldList.ts" />
@@ -1237,11 +1246,9 @@
     <TypeScriptCompile Include="Scripts\app\controllers\PlanBuilderController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\PlanListController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\EventArgsBase.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\Controls\FilterPane.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneConfigureAction\PaneConfigureAction.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\Messages.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\PaneWorkflowDesigner\PaneWorkflowDesigner.ts" />
-    <TypeScriptCompile Include="Scripts\app\directives\QueryBuilderWidget.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\PlanFormController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\directives.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IAppRootScope.ts" />
@@ -4449,7 +4456,7 @@
     <Content Include="Views\AngularTemplate\SolutionList.cshtml" />
     <Content Include="Views\AuthenticationCallback\Error.cshtml" />
     <Content Include="Views\AngularTemplate\WebServiceList.cshtml" />
-    <Content Include="Views\AngularTemplate\QueryBuilder.cshtml" />
+    <Content Include="Views\AngularTemplate\--TO-BE-REMOVED--QueryBuilder.cshtml" />
     <Content Include="Views\AngularTemplate\ManagePlan.cshtml" />
     <Content Include="Views\AngularTemplate\Duration.cshtml" />
     <Content Include="Views\AngularTemplate\Counter.cshtml" />

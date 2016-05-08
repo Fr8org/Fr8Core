@@ -14,6 +14,7 @@ using StructureMap;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
 using TerminalBase.Infrastructure;
+using TerminalBase.Services.MT;
 using Data.States;
 using Data.Repositories.MultiTenant;
 using terminalDocuSign.Actions;
@@ -301,9 +302,9 @@ namespace terminalDocuSign.Actions
                 var filterPane = (FilterPane)configControlCM.Controls.First(c => c.Name == "Selected_Filter");
 
                 var conditions = new List<FilterConditionDTO>
-                                {
-                                    new FilterConditionDTO{ Field = "Status", Operator = "neq", Value = status}
-                                };
+                {
+                    new FilterConditionDTO{ Field = "Status", Operator = "neq", Value = status}
+                };
 
                 filterPane.Value = JsonConvert.SerializeObject(new FilterDataDTO
                 {
@@ -311,10 +312,13 @@ namespace terminalDocuSign.Actions
                     Conditions = conditions
                 });
 
-                var queryableCriteria = new TypedFieldsCM(new TypedFieldDTO[] {new TypedFieldDTO("Status", "Status", FieldType.String, new TextBox()
-                            {
-                                Name = "QueryField_Status"
-                            })});
+                var queryableCriteria = new FieldDescriptionsCM(
+                    new FieldDTO()
+                    {
+                        Key = "Status",
+                        Label = "Status",
+                        FieldType = FieldType.String
+                    });
                 var queryFieldsCrate = Data.Crates.Crate.FromContent("Queryable Criteria", queryableCriteria);
                 crateStorage.RemoveByLabel("Queryable Criteria");
                 crateStorage.Add(queryFieldsCrate);
@@ -368,38 +372,13 @@ namespace terminalDocuSign.Actions
                     Conditions = conditions
                 });
 
-
-                var queryCriteria = Data.Crates.Crate.FromContent("Queryable Criteria", new TypedFieldsCM(GetFieldsByObjectId(selectedObject.Id)));
+                var queryCriteria = Data.Crates.Crate.FromContent(
+                    "Queryable Criteria",
+                    new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(selectedObject.Id))
+                );
                 crateStorage.Add(queryCriteria);
             }
         }
-
-        private IEnumerable<TypedFieldDTO> GetFieldsByObjectId(Guid typeId)
-        {
-            var fields = new List<FieldDTO>();
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                foreach (var field in uow.MultiTenantObjectRepository.ListTypePropertyReferences(typeId).OrderBy(x => x.Name))
-                {
-                    fields.Add(new FieldDTO(field.Name, field.Name));
-                }
-            }
-
-            return fields.OrderBy(x => x.Key)
-                .Select(x =>
-                    new TypedFieldDTO(
-                        x.Key,
-                        x.Key,
-                        FieldType.String,
-                        new TextBox()
-                        {
-                            Name = "QueryField_" + x.Key
-                        }
-                    )
-                );
-        }
-
 
         private MtTypeReference GetMtType(Type clrType)
         {
@@ -511,17 +490,17 @@ namespace terminalDocuSign.Actions
             {
                 if (curDocumentation.Contains("TrackDocuSignRecipients"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution work with notifications"));
+                    return Task.FromResult(GenerateDocumentationResponse(@"This solution work with notifications"));
                 }
                 if (curDocumentation.Contains("ExplainService"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                    return Task.FromResult(GenerateDocumentationResponse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }
-                return Task.FromResult(GenerateErrorRepsonse("Unknown contentPath"));
+                return Task.FromResult(GenerateErrorResponse("Unknown contentPath"));
             }
             return
                 Task.FromResult(
-                    GenerateErrorRepsonse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+                    GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }

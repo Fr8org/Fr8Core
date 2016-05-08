@@ -39,6 +39,7 @@ namespace TerminalBase.BaseClasses
         private const string RuntimeAvailableCratesLabel = "Runtime Available Crates";
         protected static readonly string ConfigurationControlsLabel = "Configuration_Controls";
         public string CurrentFr8UserId { get; set; }
+        public string CurrentFr8UserEmail { get; set; }
         protected string ActivityName { get; set; }
 
         private List<ActivityTemplateDTO> _activityTemplateCache = null;
@@ -64,9 +65,10 @@ namespace TerminalBase.BaseClasses
             ActivityName = activityName;
         }
 
-        public void SetCurrentUser(string userId)
+        public void SetCurrentUser(string userId, string userEmail)
         {
             CurrentFr8UserId = userId;
+            CurrentFr8UserEmail = userEmail;
         }
 
         /// <summary>
@@ -220,12 +222,23 @@ namespace TerminalBase.BaseClasses
         /// <returns></returns>
         protected PayloadDTO Error(PayloadDTO payload, string errorMessage = null, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
         {
+            return Error(payload, errorMessage, ErrorType.Generic, errorCode, currentActivity, currentTerminal);
+        }
+
+        /// <summary>
+        /// returns error to hub
+        /// </summary>
+        /// <param name="currentActivity">Activity where the error occured</param>
+        /// <param name="currentTerminal">Terminal where the error occured</param>
+        /// <returns></returns>
+        protected PayloadDTO Error(PayloadDTO payload, string errorMessage, ErrorType errorType, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
+        {
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
                 var operationalState = GetOperationalStateCrate(crateStorage);
                 operationalState.CurrentActivityErrorCode = errorCode;
                 operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Error);
-                operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, ErrorType.Generic, errorCode.ToString(), null, currentActivity, currentTerminal));
+                operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, errorType, errorCode.ToString(), null, currentActivity, currentTerminal));
             }
 
             return payload;
@@ -249,13 +262,23 @@ namespace TerminalBase.BaseClasses
         }
 
         /// <summary>
-        /// returns Needs authentication error to hub
+        /// Returns Needs authentication error to hub
         /// </summary>
         /// <param name="payload"></param>
         /// <returns></returns>
         protected PayloadDTO NeedsAuthenticationError(PayloadDTO payload)
         {
-            return Error(payload, "No AuthToken provided.", ActivityErrorCode.NO_AUTH_TOKEN_PROVIDED);
+            return Error(payload, "No AuthToken provided.", ErrorType.Authentication, ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID);
+        }
+
+        /// <summary>
+        /// Returns authentication error to hub
+        /// </summary>
+        /// <param name="payload"></param>
+        /// <returns></returns>
+        protected PayloadDTO InvalidTokenError(PayloadDTO payload, string instructionsToUser = null)
+        {
+            return Error(payload, instructionsToUser, ErrorType.Authentication, ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID);
         }
 
         protected async Task PushUserNotification(TerminalNotificationDTO notificationMessage)
@@ -566,7 +589,7 @@ namespace TerminalBase.BaseClasses
             //If Plan is specified as a parent, then a new subPlan will be created
             //Guid parentId = (parent.ChildNodes.Count > 0) ? parent.ChildNodes[0].ParentPlanNodeId.Value : parent.RootPlanNodeId.Value;
 
-            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, CurrentFr8UserId, label, order, parentActivityId);
+            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, CurrentFr8UserId, name, order, parentActivityId);
             var resultDO = Mapper.Map<ActivityDO>(result);
             return resultDO;
         }
@@ -638,7 +661,7 @@ namespace TerminalBase.BaseClasses
         }
 
 
-        public ActivityResponseDTO GenerateDocumentationRepsonse(string documentation)
+        public ActivityResponseDTO GenerateDocumentationResponse(string documentation)
         {
             return new ActivityResponseDTO
             {
@@ -646,7 +669,7 @@ namespace TerminalBase.BaseClasses
                 Type = ActivityResponse.ShowDocumentation.ToString()
             };
         }
-        public ActivityResponseDTO GenerateErrorRepsonse(string errorMessage)
+        public ActivityResponseDTO GenerateErrorResponse(string errorMessage)
         {
             return new ActivityResponseDTO
             {

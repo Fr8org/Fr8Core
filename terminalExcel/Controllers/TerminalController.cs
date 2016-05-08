@@ -66,6 +66,7 @@ namespace terminalExcel.Controllers
                 Name = "SetExcelTemplate",
                 Label = "Set Excel Template",
                 Version = "1",
+                MinPaneWidth = 330,
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 Tags = "Table Data Generator,Skip At Run-Time",

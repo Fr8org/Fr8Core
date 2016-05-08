@@ -19,13 +19,14 @@ namespace HubWeb.Controllers
 {
     public class NotificationsController : Fr8BaseApiController
     {
-        private readonly IPusherNotifier _pusherNotifier;
 
         //TODO create an enum for different types of pusher events
         private const string PUSHER_EVENT_TERMINAL_NOTIFICATION = "fr8pusher_terminal_event";
+        private IPusherNotifier _notification;
+
         public NotificationsController()
         {
-            _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
+            _notification = ObjectFactory.GetInstance<IPusherNotifier>();
         }
 
         [HttpPost]
@@ -33,18 +34,19 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         public IHttpActionResult Post(TerminalNotificationDTO notificationMessage)
         {
-            var pusherChannel = "";
+            string userName;
 
             if (IsThisTerminalCall())
             {
                 var user = GetUserTerminalOperatesOn();
-                pusherChannel = $"fr8pusher_{user?.UserName}";
+                userName = user?.UserName;
             }
             else
             {
-                pusherChannel = $"fr8pusher_{User.Identity.Name}";
+                userName = User.Identity.Name;
             }
-            _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_TERMINAL_NOTIFICATION, notificationMessage);
+
+            _notification.NotifyUser(notificationMessage, PUSHER_EVENT_TERMINAL_NOTIFICATION, userName);
             return Ok();
         }
     }

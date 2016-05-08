@@ -1,4 +1,6 @@
-﻿using Data.Constants;
+﻿using System;
+using System.Collections.Generic;
+using Data.Constants;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json.Linq;
@@ -56,7 +58,7 @@ namespace Data.Interfaces.Manifests
                 ExternalAccountId = proxy.ExternalAccountId,
                 ExternalDomainId = proxy.ExternalDomainId,
                 EventPayload = storage,
-                Manufacturer = proxy.Manufacturer
+                Manufacturer = proxy.Manufacturer,
             };
         }
 
@@ -71,7 +73,7 @@ namespace Data.Interfaces.Manifests
                 ExternalAccountId = e.ExternalAccountId,
                 ExternalDomainId = e.ExternalDomainId,
                 Manufacturer = e.Manufacturer,
-                EventPayload = _storageSerizlier.ConvertToDto(e.EventPayload)
+                EventPayload = _storageSerizlier.ConvertToDto(e.EventPayload),
             };
 
             return JToken.FromObject(proxy);

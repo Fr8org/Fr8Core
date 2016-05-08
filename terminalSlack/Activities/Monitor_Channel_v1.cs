@@ -82,7 +82,7 @@ namespace terminalSlack.Actions
             ActivityName = "Monitor Channel";
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             var oAuthToken = AuthorizationToken.Token;
             ConfigurationControls.ChannelList.ListItems = (await _slackIntegration.GetChannelList(oAuthToken, false))
@@ -91,7 +91,7 @@ namespace terminalSlack.Actions
                 .ToList();
             CurrentActivityStorage.Add(CreateChannelPropertiesCrate());
             CurrentActivityStorage.Add(CreateEventSubscriptionCrate());
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel);
+            crateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel);
         }
         
         private Crate CreateChannelPropertiesCrate()
@@ -120,7 +120,7 @@ namespace terminalSlack.Actions
                                                                       new string[] { "Slack Outgoing Message" });
         }
 
-        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Configure(CrateSignaller crateSignaller)
         {
             //No extra configuration is required
             return Task.FromResult(0);

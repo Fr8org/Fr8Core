@@ -235,7 +235,6 @@
   </Choose>
   <ItemGroup>
     <Compile Include="Controllers\ActivityControllerTest.cs" />
-    <Compile Include="Controllers\ActivityListControllerTest.cs" />
     <Compile Include="Controllers\Api\ApiControllerTestBase.cs" />
     <Compile Include="Controllers\AuthenticationControllerTest.cs" />
     <Compile Include="Controllers\ContainerControllerTests.cs" />
@@ -281,6 +280,9 @@
     <Compile Include="MockedDB\MoqDemoTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Repositories\AuthorizationTokenRepositoryTests.cs" />
+    <Compile Include="Repositories\Encryption\EncryptionServiceTests.cs" />
+    <Compile Include="Repositories\Encryption\EncryptionTests.cs" />
+    <Compile Include="Repositories\Encryption\RijndaelEncryptionProviderTests.cs" />
     <Compile Include="Repositories\MultiTenantObjectRepositoryTests.cs" />
     <Compile Include="Repositories\Plan\PersistentPlanStorage.cs" />
     <Compile Include="Repositories\Plan\PlanCacheTests.cs" />

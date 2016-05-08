@@ -114,10 +114,10 @@
     <Compile Include="BaseClasses\BaseTerminalWebApiConfig.cs" />
     <Compile Include="BaseClasses\DynamicControlsAttribute.cs" />
     <Compile Include="BaseClasses\EnhancedTerminalActivityT.cs" />
-    <Compile Include="BaseClasses\RuntimeCrateManager.cs" />
+    <Compile Include="BaseClasses\CrateSignaller.cs" />
     <Compile Include="BaseClasses\UiBuilder.cs" />
     <Compile Include="BaseClasses\UpstreamQueryManager.cs" />
-    <Compile Include="Errors\AuthorizationTokenExpiredException.cs" />
+    <Compile Include="Errors\AuthorizationTokenExpiredOrInvalidException.cs" />
     <Compile Include="Errors\TerminalErrorCode.cs" />
     <Compile Include="Infrastructure\BaseTerminalEvent.cs" />
     <Compile Include="Infrastructure\Behaviors\BaseControlMappingBehavior.cs" />
@@ -142,6 +142,7 @@
     <Compile Include="Services\MT\MTSearchHelper.cs" />
     <Compile Include="Services\MT\MTSearchHelper.IMtQueryProvider.cs" />
     <Compile Include="Services\MT\MTSearchHelper.MtQueryProviderT.cs" />
+    <Compile Include="Services\MT\MTTypesHelper.cs" />
     <Compile Include="WebApiExceptionFilterAttribute.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -48,7 +48,8 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
-                Version = "1"
+                Version = "1",
+                MinPaneWidth = 330
             });
 
             result.Add(new ActivityTemplateDTO
@@ -58,7 +59,8 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
-                Version = "1"
+                Version = "1",
+                MinPaneWidth = 330
             });
 
             result.Add(new ActivityTemplateDTO
@@ -68,7 +70,7 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 Version = "1",
-                MinPaneWidth = 420,
+                MinPaneWidth = 550,
                 WebService = webService
             });
 
@@ -114,7 +116,8 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
-                Version = "1"
+                Version = "1",
+                MinPaneWidth = 330,
             });
 
             result.Add(new ActivityTemplateDTO
@@ -181,6 +184,7 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1",
+                MinPaneWidth = 330,
                 Type = ActivityType.Solution
             });
 
@@ -192,6 +196,7 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1",
+                MinPaneWidth = 330,
                 Type = ActivityType.Loop,
                 Tags = Tags.AggressiveReload
             });
@@ -204,6 +209,7 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1",
+                MinPaneWidth = 330,
                 Type = ActivityType.Standard
             });
 
@@ -273,6 +279,7 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1",
+                MinPaneWidth = 330,
                 Type = ActivityType.Standard
             });
 
@@ -309,7 +316,7 @@ namespace terminalFr8Core.Controllers
                 NeedsAuthentication = false,
                 Terminal = terminal,
                 WebService = webService,
-                MinPaneWidth = 350,
+                MinPaneWidth = 550,
                 Tags = Tags.AggressiveReload
             });
 
@@ -318,6 +325,7 @@ namespace terminalFr8Core.Controllers
                 Name = "ExtractTableField",
                 Label = "Extract Table Field",
                 Version = "1",
+                MinPaneWidth = 330,
                 Category = ActivityCategory.Processors,
                 NeedsAuthentication = false,
                 Terminal = terminal,
