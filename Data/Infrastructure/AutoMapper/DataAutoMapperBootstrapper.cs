@@ -190,7 +190,7 @@ namespace Data.Infrastructure.AutoMapper
 
 
             Mapper.CreateMap<PlanTemplateDO, PlanTemplateDTO>();
-            Mapper.CreateMap<PlanTemplateDTO, PlanTemplateDTO>();
+            Mapper.CreateMap<PlanTemplateDTO, PlanTemplateDO>();
 
             Mapper.CreateMap<PlanNodeDescriptionDO, PlanNodeDescriptionDTO>();
             Mapper.CreateMap<PlanNodeDescriptionDTO, PlanNodeDescriptionDO>();

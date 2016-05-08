@@ -33,6 +33,19 @@ namespace Hub.Services
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 
+        public PlanTemplateDTO GetTemplate(int planDescriptionId, string userId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var planDescription = uow.PlanTemplateRepository.GetQuery()
+                    .Include(t => t.PlanNodeDescriptions.Select(x => x.ActivityDescription))
+                    .Include(t => t.PlanNodeDescriptions.Select(x => x.Transitions))
+                    .Where(a => a.Id == planDescriptionId && a.User.Id == userId).FirstOrDefault();
+
+                return Mapper.Map<PlanTemplateDTO>(planDescription);
+            }
+        }
+
         public List<PlanTemplateDTO> GetTemplates(string userId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -365,5 +378,7 @@ namespace Hub.Services
         {
             return templates.Where(a => a.Name == "TestAndBranch").FirstOrDefault();
         }
+
+
     }
 }

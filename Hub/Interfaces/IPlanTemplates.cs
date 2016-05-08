@@ -13,5 +13,6 @@ namespace Hub.Interfaces
         PlanTemplateDTO SavePlan(Guid planId, string curFr8UserId);
         List<PlanTemplateDTO> GetTemplates(string userId);
         string LoadPlan(int planDescriptionId, string userId);
+        PlanTemplateDTO GetTemplate(int planDescriptionId, string userId);
     }
 }

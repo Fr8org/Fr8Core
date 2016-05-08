@@ -18,7 +18,6 @@ using HubWeb.Infrastructure;
 namespace HubWeb.Controllers
 {
     [Fr8ApiAuthorize]
-    [RoutePrefix("plan_templates")]
     public class PlanTemplatesController : Fr8BaseApiController
     {
         private IPlanTemplates _planTemplates;
@@ -29,33 +28,28 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-#if DEBUG
-        [AllowAnonymous]
-#endif
         public async Task<IHttpActionResult> Post(Guid planId, string userId)
         {
             var result = _planTemplates.SavePlan(planId, userId);
             return Ok(result);
         }
 
-
-
         [HttpPost]
-#if DEBUG
-        [AllowAnonymous]
-#endif
-        public async Task<IHttpActionResult> Create(int planDescriptionId, string userId)
+        public async Task<IHttpActionResult> Create(int id, string userId)
         {
-            var result = _planTemplates.LoadPlan(planDescriptionId, userId);
+            var result = _planTemplates.LoadPlan(id, userId);
             return Ok(result);
         }
 
+        [HttpGet]
+        public async Task<IHttpActionResult> Get(int id, string userId)
+        {
+            var result = _planTemplates.GetTemplate(id, userId);
+            return Ok(result);
+        }
 
         [HttpGet]
-#if DEBUG
-        [AllowAnonymous]
-#endif
-        public async Task<IHttpActionResult> Get(string userId)
+        public async Task<IHttpActionResult> GetAll(string userId)
         {
             var result = _planTemplates.GetTemplates(userId);
             return Ok(result);
