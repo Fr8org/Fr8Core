@@ -615,18 +615,18 @@ namespace Hub.Services
             }
         }
         
-        public void UpdateToken(AuthorizationTokenDO authorizationTokenDO)
+        public void RenewToken(Guid authTokenId, string externalAccountId, string token)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var authToken = uow.AuthorizationTokenRepository
                     .GetPublicDataQuery()
-                    .SingleOrDefault(x => x.Id == authorizationTokenDO.Id);
+                    .SingleOrDefault(x => x.Id == authTokenId);
 
                 if (authToken == null)
                     return;
-                authToken.ExternalAccountId = authorizationTokenDO.ExternalAccountId;
-                authToken.Token = authorizationTokenDO.Token;
+                authToken.ExternalAccountId = externalAccountId;
+                authToken.Token = token;
             }
         }
 

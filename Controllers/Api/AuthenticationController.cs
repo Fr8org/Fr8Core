@@ -141,9 +141,9 @@ namespace HubWeb.Controllers
         [HttpPost]
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> UpdateToken(AuthorizationTokenDO authorizationTokenDO)
+        public IHttpActionResult RenewToken(AuthorizationTokenDTO authTokenDTO)
         {
-            _authorization.UpdateToken(authorizationTokenDO);
+            _authorization.RenewToken(Guid.Parse(authTokenDTO.Id), authTokenDTO.ExternalAccountId, authTokenDTO.Token);
             return Ok();
         }
     }

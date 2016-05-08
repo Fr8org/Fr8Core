@@ -39,7 +39,9 @@ namespace Hub.Interfaces
         /// <summary>
         /// Updates token in database
         /// </summary>
-        /// <param name="authorizationTokenDO">New authorizationTokenDO</param>
-        void UpdateToken(AuthorizationTokenDO authorizationTokenDO);
+        /// <param name="authTokenId">Token Id</param>
+        /// <param name="externalAccountId"></param>
+        /// <param name="token">Token content</param>
+        void RenewToken(Guid authTokenId, string externalAccountId, string token);
     }
 }
