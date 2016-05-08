@@ -12,6 +12,6 @@ namespace terminalQuickBooks.Interfaces
 {
     public interface IServiceWorker
     {
-        DataService GetDataService(AuthorizationTokenDO authTokenDO);
+        DataService GetDataService(AuthorizationTokenDO authTokenDO, string userId);
     }
 }

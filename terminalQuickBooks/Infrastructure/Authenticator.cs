@@ -85,10 +85,11 @@ namespace terminalQuickBooks.Infrastructure
                     CloudConfigurationManager.GetSetting("QuickBooksConsumerKey").ToString(CultureInfo.InvariantCulture)
             };
             var accToken = oauthSession.ExchangeRequestTokenForAccessToken(reqToken, oauthVerifier);
+            var expiresAt = DateTime.Now.Date.AddDays(180);
 
             return new AuthorizationTokenDTO()
             {
-                Token = accToken.Token + TokenSeparator + accToken.TokenSecret + TokenSeparator + realmId,
+                Token = string.Join(TokenSeparator, accToken.Token, accToken.TokenSecret, realmId, expiresAt),
                 ExternalAccountId = realmId,
                 ExternalStateToken = null
             };
@@ -96,11 +97,11 @@ namespace terminalQuickBooks.Infrastructure
 
         public Task<AuthorizationTokenDO> RefreshAuthToken(AuthorizationTokenDO authorizationToken)
         {
-            var tokenArray = authorizationToken.Token.Split(new[] {TokenSeparator},
+            var tokenArray = authorizationToken.Token.Split(new[] { TokenSeparator },
                 StringSplitOptions.RemoveEmptyEntries);
             var accessToken = tokenArray[0];
             var tokenSecret = tokenArray[1];
-           
+
             var reconnectResult = ReconnectRealm(ConsumerKey, ConsumerSecret, accessToken, tokenSecret);
             XmlDocument xmlDoc = new XmlDocument();
             xmlDoc.LoadXml(reconnectResult);

@@ -13,6 +13,9 @@ namespace terminalQuickBooks.Interfaces
     {
         StandardAccountingTransactionDTO GetAccountingTransactionData(Intuit.Ipp.Data.JournalEntry journalEntry);
         Intuit.Ipp.Data.JournalEntry CreateQbJournalEntry(StandardAccountingTransactionDTO crate);
-        void Create(StandardAccountingTransactionDTO curStandardAccountingTransactionCm, AuthorizationTokenDO authTokenDo);
+        void Create(
+            StandardAccountingTransactionDTO curStandardAccountingTransactionCM,
+            AuthorizationTokenDO authTokenDO,
+            string userId);
     }
 }

@@ -17,6 +17,7 @@ using Intuit.Ipp.Security;
 using StructureMap;
 using terminalQuickBooks.Infrastructure;
 using terminalQuickBooks.Interfaces;
+using TerminalBase.Infrastructure;
 using Utilities.Configuration.Azure;
 
 
@@ -28,34 +29,62 @@ namespace terminalQuickBooks.Services
             CloudConfigurationManager.GetSetting("QuickBooksAppToken").ToString(CultureInfo.InvariantCulture);
 
         private readonly IAuthenticator _authenticator;
+        private readonly IHubCommunicator _hubCommunicator;
 
         public ServiceWorker()
         {
             _authenticator = ObjectFactory.GetInstance<IAuthenticator>();
+            _hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
         }
 
-        public ServiceContext CreateServiceContext(string accessToken)
+        public ServiceContext CreateServiceContext(AuthorizationTokenDO authTokenDO, string userId)
         {
-            var tokens = accessToken.Split(new[] { Authenticator.TokenSeparator }, StringSplitOptions.None);
-            var accToken = tokens[0];
-            var accTokenSecret = tokens[1];
+            var tokens = authTokenDO.Token.Split(new[] { Authenticator.TokenSeparator }, StringSplitOptions.None);
+            var accessToken = tokens[0];
+            var accessTokenSecret = tokens[1];
             var companyId = tokens[2];
+            var expiresAt = tokens[3];
+            DateTime expiresDate;
+            if (DateTime.TryParse(expiresAt, out expiresDate) == false)
+            {
+                throw new ArgumentException(nameof(expiresAt));
+            }
+            // Token renew should fit into 151-180 days period,
+            // See https://developer.intuit.com/docs/0100_accounting/0060_authentication_and_authorization/connect_from_within_your_app#/manage
+            // 
+            if (DateTime.Now > expiresDate.AddDays(-30) && DateTime.Now <= expiresDate)
+            {
+                authTokenDO = _authenticator.RefreshAuthToken(authTokenDO).Result;
+                var tokenDto = new AuthorizationTokenDTO
+                {
+                    Id = authTokenDO.Id.ToString(),
+                    ExternalAccountId = authTokenDO.ExternalAccountId,
+                    Token = authTokenDO.Token
+                };
+                _hubCommunicator.RenewToken(tokenDto, userId);
+
+                // After token refresh we need to get new accessToken and accessTokenSecret from it
+                tokens = authTokenDO.Token.Split(new[] { Authenticator.TokenSeparator }, StringSplitOptions.None);
+                accessToken = tokens[0];
+                accessTokenSecret = tokens[1];
+            }
+
+            if (DateTime.Now > expiresDate)
+            {
+                throw new TerminalQuickbooksTokenExpiredException();
+            }
+
             var oauthValidator = new OAuthRequestValidator(
-                accToken,
-                accTokenSecret,
+                accessToken,
+                accessTokenSecret,
                 Authenticator.ConsumerKey,
                 Authenticator.ConsumerSecret);
             return new ServiceContext(AppToken, companyId, IntuitServicesType.QBO, oauthValidator);
         }
 
-        public DataService GetDataService(AuthorizationTokenDO authTokenDO)
+        public DataService GetDataService(AuthorizationTokenDO authTokenDO, string userId)
         {
-            // Check token refresh.
-            var isTokenNeedsRefresh = DateTime.Now.Date - authTokenDO.ExpiresAt.Date < TimeSpan.FromDays(5);
-            if (isTokenNeedsRefresh)
-                authTokenDO = _authenticator.RefreshAuthToken(authTokenDO).Result;
-
-            var curServiceContext = CreateServiceContext(authTokenDO.Token);
+            var curServiceContext = CreateServiceContext(authTokenDO, userId);
             //Modify required settings for the Service Context
             curServiceContext.IppConfiguration.BaseUrl.Qbo = "https://sandbox-quickbooks.api.intuit.com/";
             curServiceContext.IppConfiguration.MinorVersion.Qbo = "4";

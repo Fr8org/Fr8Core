@@ -110,11 +110,15 @@ namespace terminalQuickBooks.Services
         /// Creates Journal Entry in the developers account in Sandbox in Intuit https://sandbox.qbo.intuit.com/app/journal
         /// </summary>
         /// <param name="curAccountingTransactionDto"></param>
-        /// <param name="authTokenDO"></param>
-        public void Create(StandardAccountingTransactionDTO curAccountingTransactionDto, AuthorizationTokenDO authTokenDO)
+        /// <param name="authTokenDO"/>
+        /// <paramref name="userId"/>
+        public void Create(
+            StandardAccountingTransactionDTO curAccountingTransactionDto, 
+            AuthorizationTokenDO authTokenDO,
+            string userId)
         {
             var curJournalEntry = CreateQbJournalEntry(curAccountingTransactionDto);
-            var curDataService = _serviceWorker.GetDataService(authTokenDO);
+            var curDataService = _serviceWorker.GetDataService(authTokenDO, userId);
             try
             {
                 curDataService.Add(curJournalEntry);

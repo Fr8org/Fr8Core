@@ -11,6 +11,6 @@ namespace terminalQuickBooks.Interfaces
 {
     public interface IChartOfAccounts
     {
-        ChartOfAccountsCM GetChartOfAccounts(AuthorizationTokenDO authTokenDO);
+        ChartOfAccountsCM GetChartOfAccounts(AuthorizationTokenDO authTokenDO, string userId);
     }
 }
