@@ -14,5 +14,6 @@ namespace Hub.Interfaces
         List<PlanTemplateDTO> GetTemplates(string userId);
         string LoadPlan(int planDescriptionId, string userId);
         PlanTemplateDTO GetTemplate(int planDescriptionId, string userId);
+        void DeleteTemplate(int id, string userId);
     }
 }

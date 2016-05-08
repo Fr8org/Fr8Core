@@ -28,6 +28,12 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
+        public async Task Delete(int id, string userId)
+        {
+            _planTemplates.DeleteTemplate(id, userId);
+        }
+
+        [HttpPost]
         public async Task<IHttpActionResult> Post(Guid planId, string userId)
         {
             var result = _planTemplates.SavePlan(planId, userId);

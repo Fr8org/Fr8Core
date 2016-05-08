@@ -53,6 +53,16 @@ namespace Hub.Services
                 return uow.PlanTemplateRepository.GetQuery().Where(a => a.Fr8AccountId == userId).ToList().Select(b => Mapper.Map<PlanTemplateDTO>(b)).ToList();
             }
         }
+        
+        public void DeleteTemplate(int id, string userId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var templatesForIntegrationUser = uow.PlanTemplateRepository.GetQuery().Where(a => a.User.Id == userId).ToList();
+                templatesForIntegrationUser.ForEach(a => uow.PlanTemplateRepository.Remove(a));
+                uow.SaveChanges();
+            }
+        }
 
         public PlanTemplateDTO SavePlan(Guid planId, string curFr8UserId)
         {
@@ -378,7 +388,6 @@ namespace Hub.Services
         {
             return templates.Where(a => a.Name == "TestAndBranch").FirstOrDefault();
         }
-
 
     }
 }
