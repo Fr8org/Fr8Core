@@ -790,7 +790,7 @@ namespace Data.Migrations
             profile.PermissionSets.Add(AddPermissionSet(nameof(TerminalDO), true, false, false, profile.Id, "System Administrator Permission Set", uow));
 
             //default permissions for Users
-            profile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), true, false, false, profile.Id, "System Administrator Permission Set", uow));
+            profile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), true, true, false, profile.Id, "System Administrator Permission Set", uow));
 
             var adminRole = uow.AspNetRolesRepository.GetQuery().FirstOrDefault(x => x.Name == Roles.Admin);
             if (adminRole != null)

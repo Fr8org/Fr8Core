@@ -109,7 +109,7 @@ namespace Data.Infrastructure.StructureMap
             return false;
         }
 
-        public List<PermissionDTO> GetCurrentUserPermissions()
+        public bool UserHasPermission(PermissionType permissionType, string objectType)
         {
             throw new NotImplementedException();
         }

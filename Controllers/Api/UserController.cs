@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Threading;
 using System.Threading.Tasks;
@@ -27,17 +28,13 @@ namespace HubWeb.Controllers
     [DockyardAuthorize]
     public class UserController : ApiController
     {
-        private readonly JsonPackager _jsonPackager;
-        private readonly Fr8Account _dockyardAccount;
         private readonly IMappingEngine _mappingEngine;
-        private readonly Email _email;
+        private readonly ISecurityServices _securityServices;
 
         public UserController()
         {
+            _securityServices = ObjectFactory.GetInstance<ISecurityServices>();
             _mappingEngine = ObjectFactory.GetInstance<IMappingEngine>();
-            _jsonPackager = new JsonPackager();
-            _dockyardAccount = new Fr8Account();
-            _email = new Email();
         }
 
         public static string GetCallbackUrl(string providerName)
@@ -123,21 +120,40 @@ namespace HubWeb.Controllers
             }
         }
 
-        [DockyardAuthorize(Roles = Roles.Admin)]
         public IHttpActionResult Get()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var users = uow.UserRepository.GetAll();
-                var userDTOList = users.Select(user =>
+                if (_securityServices.UserHasPermission(PermissionType.ManageFr8Users, nameof(Fr8AccountDO)))
                 {
-                    var dto = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
-                    dto.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(user.Id).Select(r => r.Name).ToArray());
-                    return dto;
-                }).ToList();
+                    Expression<Func<Fr8AccountDO, bool>> predicate = x => true;
+                    return Ok(GetUsers(uow, predicate));
+                }
 
-                return Ok(userDTOList);
+                int? organizationId;
+                if (_securityServices.UserHasPermission(PermissionType.ManageInternalUsers, nameof(Fr8AccountDO)))
+                {
+                    var currentUser = _securityServices.GetCurrentAccount(uow);
+                    organizationId = currentUser.OrganizationId;
+
+                    Expression<Func<Fr8AccountDO, bool>> predicate = x => x.OrganizationId == organizationId;
+                    return Ok(GetUsers(uow, predicate));
+                }
+
+                //todo: show not authorized messsage in activityStream
+                return Ok();
             }
+        }
+
+        private List<UserDTO> GetUsers(IUnitOfWork uow, Expression<Func<Fr8AccountDO, bool>>  predicate)
+        {
+            var users = uow.UserRepository.GetQuery().Where(predicate).ToList();
+            return users.Select(user =>
+            {
+                var dto = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
+                dto.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(user.Id).Select(r => r.Name).ToArray());
+                return dto;
+            }).ToList();
         }
 
         [DockyardAuthorize(Roles = Roles.Admin)]

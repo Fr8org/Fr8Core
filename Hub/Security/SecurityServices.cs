@@ -173,12 +173,19 @@ namespace Hub.Security
         }
 
         /// <summary>
-        /// Return a list of current user permissions
+        /// 
         /// </summary>
+        /// <param name="permissionType"></param>
+        /// <param name="objectType"></param>
         /// <returns></returns>
-        public List<PermissionDTO> GetCurrentUserPermissions()
+        public bool UserHasPermission(PermissionType permissionType, string objectType)
         {
-            return _securityObjectStorageProvider.GetAllPermissionsForUser(GetRoleNames().ToList());
+            if (!IsAuthenticated())
+                return false;
+
+            //this permissions will be returned from cache based on profile
+            var permissions = _securityObjectStorageProvider.GetAllPermissionsForUser(GetRoleNames().ToList());
+            return permissions.Any(x => x.Permission == (int)permissionType && x.ObjectType == objectType);
         }
 
         private bool EvaluatePermissionSet(PermissionType permissionType, List<int> permissionSet)

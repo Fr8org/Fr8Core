@@ -23,6 +23,6 @@ namespace Data.Infrastructure.StructureMap
         ClaimsIdentity GetIdentity(IUnitOfWork uow, Fr8AccountDO dockyardAccountDO);
         void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType);
         bool AuthorizeActivity(PermissionType permissionType, string curObjectId, string curObjectType, string propertyName = null);
-        List<PermissionDTO> GetCurrentUserPermissions();
+        bool UserHasPermission(PermissionType permissionType, string objectType);
     }
 }

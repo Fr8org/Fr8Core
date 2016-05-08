@@ -75,17 +75,11 @@ namespace Hub.Services
             };
             uow.OrganizationRepository.Add(organization);
 
-            //create roles for new organization
-            uow.AspNetRolesRepository.Add(new AspNetRolesDO()
-            {
-                Name = MemberOfOrganizationRoleName(organizationName)
-            });
-
-            //add System Administrator Profile to this role
+            //create role for new organization and add System Administrator Profile to this role
             var systemAdminProfile = uow.ProfileRepository.GetQuery().FirstOrDefault(x=>x.Name == DefaultProfiles.SystemAdministrator);
             if (systemAdminProfile == null)
             {
-                throw new ApplicationException("Default System Admin Profile is missing");
+                throw new ApplicationException("Default System Administrator Profile is Missing");
             }
 
             var adminRole = new AspNetRolesDO()

@@ -312,16 +312,17 @@ namespace Hub.Services
 
         private void AssingRolesToUserBasedOnOrganization(IUnitOfWork uow, string newFr8AccountId, string organizationName, bool isNewOrganization)
         {
-            //New Fr8Account need to be linked with roles based on organization 
-            var orgMemberRoleName = Organization.MemberOfOrganizationRoleName(organizationName);
-            //every new user that registers inside some organization must have role that is member of that organization
-            uow.AspNetUserRolesRepository.AssignRoleToUser(orgMemberRoleName, newFr8AccountId);
-
             //in case when the new user is the one that created this new organization, add to user role as admin of new organization
             if (isNewOrganization)
             {
                 var orgAdminRoleName = Organization.AdminOfOrganizationRoleName(organizationName);
                 uow.AspNetUserRolesRepository.AssignRoleToUser(orgAdminRoleName, newFr8AccountId);
+            }
+            else
+            {
+                //every new user that registers inside some organization must have role that is member of that organization
+                var orgMemberRoleName = Organization.MemberOfOrganizationRoleName(organizationName);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(orgMemberRoleName, newFr8AccountId);
             }
         }
 
