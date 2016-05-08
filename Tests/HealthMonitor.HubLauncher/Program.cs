@@ -69,7 +69,7 @@ namespace HealthMonitor.HubLauncher
 
             // read input to detect "quit" command
             string command = string.Empty;
-            do
+            do 
             {
                 command = Console.ReadLine();
             } while (!command.Equals("quit", StringComparison.InvariantCultureIgnoreCase));
