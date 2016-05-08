@@ -21,11 +21,11 @@ namespace HubWeb.Controllers
     [RoutePrefix("plan_templates")]
     public class PlanTemplatesController : Fr8BaseApiController
     {
-        private IPlanTemplates _planDescription;
+        private IPlanTemplates _planTemplates;
 
         public PlanTemplatesController()
         {
-            _planDescription = ObjectFactory.GetInstance<IPlanTemplates>();
+            _planTemplates = ObjectFactory.GetInstance<IPlanTemplates>();
         }
 
         [HttpPost]
@@ -34,7 +34,7 @@ namespace HubWeb.Controllers
 #endif
         public async Task<IHttpActionResult> Post(Guid planId, string userId)
         {
-            var result = _planDescription.SavePlan(planId, userId);
+            var result = _planTemplates.SavePlan(planId, userId);
             return Ok(result);
         }
 
@@ -46,7 +46,7 @@ namespace HubWeb.Controllers
 #endif
         public async Task<IHttpActionResult> Create(int planDescriptionId, string userId)
         {
-            var result = _planDescription.LoadPlan(planDescriptionId, userId);
+            var result = _planTemplates.LoadPlan(planDescriptionId, userId);
             return Ok(result);
         }
 
@@ -57,7 +57,7 @@ namespace HubWeb.Controllers
 #endif
         public async Task<IHttpActionResult> Get(string userId)
         {
-            var result = _planDescription.GetTemplates(userId);
+            var result = _planTemplates.GetTemplates(userId);
             return Ok(result);
         }
     }

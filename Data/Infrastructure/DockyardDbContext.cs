@@ -381,9 +381,9 @@ namespace Data.Infrastructure
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<ActivityDescriptionDO>().ToTable("ActivityDescriptions");
-            modelBuilder.Entity<NodeTransitionDO>().ToTable("ActivityTransitions");
+            modelBuilder.Entity<NodeTransitionDO>().ToTable("NodeTransitions");
             modelBuilder.Entity<PlanNodeDescriptionDO>().ToTable("PlanNodeDescriptions");
-            modelBuilder.Entity<PlanTemplateDO>().ToTable("PlanDescription");
+            modelBuilder.Entity<PlanTemplateDO>().ToTable("PlanTemplates");
 
             base.OnModelCreating(modelBuilder);
         }

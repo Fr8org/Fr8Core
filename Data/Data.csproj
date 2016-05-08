@@ -410,6 +410,10 @@
     <Compile Include="Interfaces\Manifests\EventReportCM.cs" />
     <Compile Include="Interfaces\Manifests\EventSubscriptionCM.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PlanDTO.cs" />
+    <Compile Include="Migrations\201605081302142_PlanTemplates.cs" />
+    <Compile Include="Migrations\201605081302142_PlanTemplates.Designer.cs">
+      <DependentUpon>201605081302142_PlanTemplates.cs</DependentUpon>
+    </Compile>
     <Compile Include="Repositories\PlanTemplates\ActivityDescriptionRepository.cs" />
     <Compile Include="Repositories\PlanTemplates\NodeTransitionRepository.cs" />
     <Compile Include="Repositories\PlanTemplates\PlanTemplateRepository.cs" />
@@ -1310,6 +1314,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201605051106203_AddNameToActivity.resx">
       <DependentUpon>201605051106203_AddNameToActivity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605081302142_PlanTemplates.resx">
+      <DependentUpon>201605081302142_PlanTemplates.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
