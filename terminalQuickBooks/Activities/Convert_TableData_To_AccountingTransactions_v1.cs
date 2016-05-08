@@ -169,7 +169,7 @@ namespace terminalQuickBooks.Actions
             _chartOfAccounts = ObjectFactory.GetInstance<IChartOfAccounts>();
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             if (CurrentActivity.Id == Guid.Empty)
                 throw new ArgumentException("Configuration requires the submission of an Action that has a real ActionId");
@@ -192,7 +192,7 @@ namespace terminalQuickBooks.Actions
             CurrentActivityStorage.AddRange(await PackSources());
         }
 
-        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Configure(CrateSignaller crateSignaller)
         {
             MemoText = ConfigurationControls.Memo.Value;
             DebitAccount = GetDebitAccount(CurrentActivityStorage);

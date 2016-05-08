@@ -22,7 +22,7 @@ namespace terminalQuickBooks.Actions
             _journalEntry = ObjectFactory.GetInstance<IJournalEntry>();
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             if (CurrentActivity.Id == Guid.Empty)
                 throw new ArgumentException("Configuration requires the submission of an Action that has a real ActionId");
@@ -38,7 +38,7 @@ namespace terminalQuickBooks.Actions
             }
         }
 
-        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Configure(CrateSignaller crateSignaller)
         {
             // No extra configuration required
             return Task.FromResult(0);
