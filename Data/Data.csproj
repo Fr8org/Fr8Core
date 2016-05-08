@@ -278,6 +278,7 @@
     <Compile Include="Expressions\ExpressionTransformation.cs" />
     <Compile Include="Expressions\ExpressionTransformation.PropertyInfo.cs" />
     <Compile Include="Expressions\ExpressionTransformation.TransformationVisitor.cs" />
+    <Compile Include="Infrastructure\DataExtensions.cs" />
     <Compile Include="Infrastructure\Fr8ApiHelper.cs" />
     <Compile Include="Helpers\Fr8ReflectionHelper.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
@@ -753,6 +754,10 @@
     <Compile Include="Migrations\201605020854120_EncryptedCrateStorageAdded.cs" />
     <Compile Include="Migrations\201605020854120_EncryptedCrateStorageAdded.Designer.cs">
       <DependentUpon>201605020854120_EncryptedCrateStorageAdded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201605051106203_AddNameToActivity.cs" />
+    <Compile Include="Migrations\201605051106203_AddNameToActivity.Designer.cs">
+      <DependentUpon>201605051106203_AddNameToActivity.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1309,6 +1314,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201605051324568_PlanDescription.resx">
       <DependentUpon>201605051324568_PlanDescription.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605051106203_AddNameToActivity.resx">
+      <DependentUpon>201605051106203_AddNameToActivity.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

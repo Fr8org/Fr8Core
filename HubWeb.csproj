@@ -394,7 +394,6 @@
     <Compile Include="Controllers\SupportController.cs" />
     <Compile Include="Controllers\WelcomeController.cs" />
     <Compile Include="Controllers\Api\FieldController.cs" />
-    <Compile Include="Controllers\Api\ActivityListController.cs" />
     <Compile Include="Controllers\Api\CriteriaController.cs" />
     <Compile Include="Controllers\DocuSignTemplateController.cs" />
     <Compile Include="Controllers\Api\PlanNodesController.cs" />
@@ -961,12 +960,15 @@
     <Content Include="_PowerShellScripts\Start-Sleep.ps1" />
     <Content Include="_PowerShellScripts\Update-TerminalHostnameInDb.ps1" />
     <Content Include="_PowerShellScripts\Add-BuildServer.ps1" />
-    <Content Include="_PowerShellScripts\BuildServer_Templ.json" />
     <Content Include="_PowerShellScripts\UpdateTerminalHostnameInDb.ps1" />
     <Content Include="_PowerShellScripts\Check-Confirmation.ps1" />
     <Content Include="_PowerShellScripts\MergePRSourcesIntoDev.ps1" />
     <Content Include="_PowerShellScripts\Run-ProtractorTests.ps1" />
     <Content Include="_PowerShellScripts\Set-GitHubBuildStatus.ps1" />
+    <Content Include="_PowerShellScripts\DeleteHostedDatabase.ps1" />
+    <Content Include="_PowerShellScripts\RestoreDatabaseFromBackup.ps1" />
+    <Content Include="_PowerShellScripts\CleanUpAfterTests.ps1" />
+    <Content Include="_PowerShellScripts\Copy-ImagesBetweenAccount.ps1" />
     <TypeScriptCompile Include="Scripts\app\controllers\FileDetailsController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\KioskModeOrganizationHeaderController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManifestRegistryFormController.ts" />
