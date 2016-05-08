@@ -475,5 +475,13 @@ namespace TerminalBase.Infrastructure
             var uri = new Uri(url);
             return await _restfulServiceClient.GetAsync<AuthorizationTokenDTO>(uri, null, await GetHMACHeader(uri, curFr8UserId));
         }
+
+        public async Task RenewToken(AuthorizationTokenDTO authTokenDTO, string userId)
+        {
+            var url = $"{CloudConfigurationManager.GetSetting("CoreWebServerUrl")}api/" +
+                      $"{CloudConfigurationManager.GetSetting("HubApiVersion")}/authentication/RenewToken";
+            var uri = new Uri(url);
+            await _restfulServiceClient.PostAsync<AuthorizationTokenDTO>(uri, null, await GetHMACHeader(uri, userId));
+        }
     }
 }

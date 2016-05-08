@@ -300,5 +300,10 @@ namespace TerminalBase.Infrastructure
         {
             throw new NotImplementedException();
         }
+
+        public Task RenewToken(AuthorizationTokenDTO authTokenDTO, string userId)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
