@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
+using System.Management.Automation;
+using System.Management.Automation.Runspaces;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace HealthMonitor
 {
     public class CleanupService
     {
-        public void LaunchCleanup()
+        public void LaunchCleanup(string connectionString)
         {
             TimeSpan timeout = new TimeSpan(0, 10, 0); // max run time
 
@@ -18,38 +22,70 @@ namespace HealthMonitor
             string powerShellScriptsPath = Path.Combine(rootPath, "_PowerShellScripts");
             string cleanUpScriptPath = Path.Combine(powerShellScriptsPath, "CleanUpAfterTests.ps1");
 
-            ProcessStartInfo startInfo = new ProcessStartInfo();
-            startInfo.FileName = @"powershell.exe";
-            startInfo.Arguments = $"& '{cleanUpScriptPath}'";
-            startInfo.RedirectStandardOutput = true;
-            startInfo.RedirectStandardError = true;
-            startInfo.UseShellExecute = false;
-            startInfo.CreateNoWindow = true;
+            string cleanUpScript = string.Empty;
 
-            Process process = new Process();
-            process.StartInfo = startInfo;
-            process.Start();
-            process.OutputDataReceived += OutputDataReceived;
-            process.ErrorDataReceived += OutputDataReceived;
+            if (File.Exists(cleanUpScriptPath))
+                cleanUpScript = File.ReadAllText(cleanUpScriptPath);
+            else
+                throw new FileNotFoundException("Database clean up script is not found.");
 
-            process.EnableRaisingEvents = true;
-            bool started = process.Start();
-            process.BeginOutputReadLine();
-            process.BeginErrorReadLine();
-
-            DateTime startTime = DateTime.UtcNow;
-
-            while (!process.HasExited && startTime + timeout > DateTime.UtcNow)
+            Console.WriteLine("Running clean-up script...");
+            using (PowerShell ps = PowerShell.Create())
             {
+                // the streams (Error, Debug, Progress, etc) are available on the PowerShell instance.
+                // we can review them during or after execution.
+                // we can also be notified when a new item is written to the stream (like this):
+                ps.Streams.Error.DataAdded += error_DataAdded;
+                ps.Streams.Debug.DataAdded += debug_DataAdded;
 
-                System.Threading.Thread.Sleep(500);
+                ps.AddCommand("Set-ExecutionPolicy").AddParameter("ExecutionPolicy", "RemoteSigned").AddParameter("Scope", "Process").Invoke();
+
+                Pipeline pipeLine = ps.Runspace.CreatePipeline();
+                Command cleanCommand = new Command(cleanUpScript, true);
+                cleanCommand.Parameters.Add("connectionString", connectionString);
+                cleanCommand.Parameters.Add("dbName", "");
+                pipeLine.Commands.Add(cleanCommand);
+                pipeLine.Commands.Add("Out-String");
+
+                DateTime startTime = DateTime.UtcNow;
+                pipeLine.InvokeAsync();
+                while (pipeLine.PipelineStateInfo.State == PipelineState.Running || pipeLine.PipelineStateInfo.State == PipelineState.Stopping)
+                {
+                    if (startTime + timeout < DateTime.UtcNow)
+                    {
+                        //Timeout condition
+                        Console.WriteLine("Operation timeout, exiting");
+                        break;
+                    }
+                    Thread.Sleep(500);
+                }
+
+                var output = pipeLine.Output.ReadToEnd();
+
+                foreach (PSObject outputItem in output)
+                {
+                    Console.WriteLine(outputItem.BaseObject?.ToString());
+                }
+
+                if (pipeLine.PipelineStateInfo.State == PipelineState.Failed)
+                {
+                    Console.WriteLine("Execution completed with error. Reason: " + pipeLine.PipelineStateInfo.Reason.Message);
+                }
+                else
+                {
+                    Console.WriteLine("Execution has finished. The pipeline state: " + pipeLine.PipelineStateInfo.State);
+                }
             }
         }
 
-        private static void OutputDataReceived(object sender, DataReceivedEventArgs e)
+        private void error_DataAdded(object sender, DataAddedEventArgs e)
         {
-            if (e.Data == null) return;
-            Console.WriteLine("Cleanup Script:\\> " + e.Data);
+            Console.WriteLine(((PSDataCollection<ErrorRecord>)sender)[e.Index].ToString());
+        }
+
+        private void debug_DataAdded(object sender, DataAddedEventArgs e)
+        {
+            Console.WriteLine(((PSDataCollection<DebugRecord>)sender)[e.Index].ToString());
         }
     }
 }
