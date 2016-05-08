@@ -101,7 +101,7 @@ namespace HealthMonitor
             var selfHostInitializer = new SelfHostInitializer();
             if (selfHosting)
             {
-                selfHostInitializer.Initialize(csName + connectionString);
+                selfHostInitializer.Initialize(csName + "=" + connectionString);
             }
 
             try
