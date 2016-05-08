@@ -1,6 +1,6 @@
 # CRATE – DEFINITION
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
 
 A Crate is a Json element that can contain arbitrary data.  It creates a standardized way to store different kinds of data in an organized way.
 
@@ -61,4 +61,4 @@ ParentCrateId |	string |	Crates can be put inside of other Crates
 Manufacturer |	ManufacturerDTO |	A data structure identifying the Terminal that created the crate   
 Mode |	string |	choices “Design-Time”, “Run-Time”. [Review for need]   
  
- [Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  
+ [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  

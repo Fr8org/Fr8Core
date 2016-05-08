@@ -1,6 +1,6 @@
 # CRATES 
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
 
 Data is transported throughout the Fr8 network  in Crates. A Crate is simply a json container for storing data. Crates are used for two different kinds of data:
 
@@ -25,4 +25,4 @@ Organizationally, when constructing a Crate of data, expect that the metadata ab
 
 [Crate Manifests](https://github.com/Fr8org/Fr8Core.NET/blob/master/ForDevelopers/Objects/CratesManifest.md) 
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  

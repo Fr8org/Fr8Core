@@ -1,6 +1,6 @@
 # FR8 MODES
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
  
  Fr8 has 3 Modes:
 
@@ -19,4 +19,4 @@ The Fr8 client does not have any specific knowledge about a specific Activity. I
 
 The heart of Design Mode is [Activity Configuration.](https://github.com/Fr8org/Fr8Core.NET/blob/master/ForDevelopers/OperatingConcepts/ActivityConfiguration.md)
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  

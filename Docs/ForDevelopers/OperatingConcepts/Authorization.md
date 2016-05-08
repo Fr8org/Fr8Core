@@ -1,5 +1,5 @@
 # FR8 SECURITY – AUTHORIZATION
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
 
 Many Activities will require authorization. That is, it will be necessary for that activity to have a set of credentials to some external service.
 
@@ -25,4 +25,4 @@ Authentication flow based on External AuthenticationType is shown below:
 
 When a User creates or uploads a Plan to a Hub, the Hub will attempt to Activate the Plan. As part of this process, it examines each Activity in the Plan for the presence of a non-blank AuthenticationType. For each such Activity it checks its database for an AuthenticationToken associated with the requested Activity.
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  

@@ -1,5 +1,5 @@
 # PLANS
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
 
 A Fr8 Plan  is a json-based workflow definition. Hubs process  fr8 Plans by generating Containers of Payload Crates and routing them from one Activity to the next.
 
@@ -17,4 +17,4 @@ Configuring Routes
 
 Currently defined states are Active, Inactive, and Deleted
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  

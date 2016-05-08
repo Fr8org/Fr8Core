@@ -1,5 +1,5 @@
 # PLAN – JSON DEFINITION
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
 
 The JSON specification for a Plan is:
 ```javascript
@@ -31,4 +31,4 @@ The JSON specification for a Plan is:
 
 This property is optional and can have two values “standard” or “internal”. Default is “Standard”. Plans with “Internal” visibility are not generally displayed to their owning users. An example would be the Plan that registers for and records DocuSign Events when a Fr8 User has linked in a DocuSign account.
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
