@@ -10,24 +10,24 @@ Actions are added to Plans during the Design stage. They are ordered in a linear
 
 ### General Guides
 
-[Development Guide – Activities](https://github.com/Fr8org/Fr8Core.NET/blob/master/ForDevelopers/DevelopmentGuides/ActivityDevelopmentGuide.md)
+[Development Guide – Activities](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/DevelopmentGuides/ActivityDevelopmentGuide.md)
 
-[Activities Library](https://github.com/Fr8org/Fr8Core.NET/blob/master/ForDevelopers/ActivitiesLibrary.md)
+[Activities Library](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/ActivitiesLibrary.md)
 
 ### Core Concepts
 
-* [Configuration](https://github.com/Fr8org/Fr8Core.NET/blob/master/ForDevelopers/OperatingConcepts/ActivityConfiguration.md) and [Controls](https://github.com/Fr8org/Fr8Core.NET/blob/master/ForDevelopers/DevelopmentGuides/ConfigurationControls.md)    
-* [JSON Definition](https://github.com/Fr8org/Fr8Core.NET/blob/master/ForDevelopers/ActivityJSONDefinition.md)
-* [Registration](https://github.com/Fr8org/Fr8Core.NET/blob/master/ForDevelopers/ActivitiesRegistration.md)
+* [Configuration](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/OperatingConcepts/ActivityConfiguration.md) and [Controls](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/DevelopmentGuides/ConfigurationControls.md)    
+* [JSON Definition](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/ActivityJSONDefinition.md)
+* [Registration](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/ActivitiesRegistration.md)
 * Signalling
-    * [Response Status](https://github.com/Fr8org/Fr8Core.NET/blob/master/ForDevelopers/ActivitiesCommunication.md)
-    * [Available Crate Data](https://github.com/Fr8org/Fr8Core.NET/blob/master/ForDevelopers/CrateSignalling.md)
-* [ActivityTemplates](https://github.com/Fr8org/Fr8Core.NET/blob/master/ForDevelopers/Objects/ActivityTemplates.md)
-* [Documentation](https://github.com/Fr8org/Fr8Core.NET/blob/master/ForDevelopers/ActivityDevelopmentBuildingDocumentation.md)
+    * [Response Status](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/ActivitiesCommunication.md)
+    * [Available Crate Data](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/CrateSignalling.md)
+* [ActivityTemplates](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/Objects/ActivityTemplates.md)
+* [Documentation](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/ActivityDevelopmentBuildingDocumentation.md)
 
 ### Advanced Concepts
 
-[Activity Branching](https://github.com/Fr8org/Fr8Core.NET/blob/master/ForDevelopers/Branching.md)   
-[Views](https://github.com/Fr8org/Fr8Core.NET/blob/master/ForDevelopers/ActivitiesViews.md)
+[Activity Branching](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/Branching.md)   
+[Views](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/ActivitiesViews.md)
 
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
