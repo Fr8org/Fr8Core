@@ -21,6 +21,7 @@ using UtilitiesTesting.Fixtures;
 
 namespace terminalIntegrationTests.EndToEnd
 {
+    [Explicit]
     public class PlanTemplates_Tests : BaseHubIntegrationTest
     {
         private IntegrationTestTools _plansHelper;
