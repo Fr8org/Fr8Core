@@ -1,18 +1,33 @@
-﻿<div ng-controller="AccountListController">
-    <table datatable="ng" class="row-border hover" dt-options="dtOptionsBuilder">
-        <thead>
-            <tr>
-                <th>ID</th>
-                <th>Email Address</th>
-                <th>Roles</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr ng-repeat="user in ::users" ng-click="openDetails(user)" style="cursor: pointer;">
-                <td>{{:: user.id }}</td>
-                <td>{{:: user.emailAddress }}</td>
-                <td>{{:: user.role }}</td>
-            </tr>
-        </tbody>
-    </table>
+﻿<div ng-controller="AccountListController" class="margin-top-10">
+<div class="row">
+    <div class="col-md-12 col-sm-12">
+        <!-- BEGIN PORTLET-->
+        <div class="portlet light ">
+            <div class="portlet-title">
+                <div class="caption caption-md">
+                    <i class="icon-bar-chart font-green-haze hide"></i>
+                    <span class="caption-subject font-green-haze bold uppercase">Manage Accounts</span>
+                </div>
+            </div>
+            <div class="portlet-body">
+                <table datatable="ng" class="row-border hover" dt-options="dtOptionsBuilder">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Email Address</th>
+                            <th>Roles</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr ng-repeat="user in ::users" ng-click="openDetails(user)" style="cursor: pointer;">
+                            <td>{{:: user.id }}</td>
+                            <td>{{:: user.emailAddress }}</td>
+                            <td>{{:: user.role }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 </div>

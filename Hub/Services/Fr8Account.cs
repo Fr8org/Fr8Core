@@ -220,7 +220,7 @@ namespace Hub.Services
             RegistrationStatus curRegStatus;
             Fr8AccountDO newFr8Account = null;
             //check if we know this email address
-
+            
             EmailAddressDO existingEmailAddressDO =
                 uow.EmailAddressRepository.GetQuery().FirstOrDefault(ea => ea.Address == email);
             if (existingEmailAddressDO != null)
@@ -255,9 +255,16 @@ namespace Hub.Services
                 curRegStatus = RegistrationStatus.Successful;
             }
 
-            if (organizationDO != null && newFr8Account != null)
+            if (newFr8Account != null)
             {
-                AssingRolesToUserBasedOnOrganization(uow, newFr8Account.Id, organizationDO.Name, isNewOrganization);
+                if (organizationDO != null)
+                {
+                    AssingRolesAndProfilesBasedOnOrganization(uow, newFr8Account, organizationDO.Name, isNewOrganization);
+                }
+                else
+                {
+                    AssignProfileToUser(uow, newFr8Account, DefaultProfiles.StandardUser);
+                }
             }
 
             uow.SaveChanges();
@@ -310,19 +317,36 @@ namespace Hub.Services
             return userDO;
         }
 
-        private void AssingRolesToUserBasedOnOrganization(IUnitOfWork uow, string newFr8AccountId, string organizationName, bool isNewOrganization)
+        private void AssingRolesAndProfilesBasedOnOrganization(IUnitOfWork uow, Fr8AccountDO newFr8Account, string organizationName, bool isNewOrganization)
         {
             //in case when the new user is the one that created this new organization, add to user role as admin of new organization
             if (isNewOrganization)
             {
                 var orgAdminRoleName = Organization.AdminOfOrganizationRoleName(organizationName);
-                uow.AspNetUserRolesRepository.AssignRoleToUser(orgAdminRoleName, newFr8AccountId);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(orgAdminRoleName, newFr8Account.Id);
+                //this user need to have system administrator profile assigned to him
+                AssignProfileToUser(uow, newFr8Account, DefaultProfiles.SystemAdministrator);
             }
             else
             {
                 //every new user that registers inside some organization must have role that is member of that organization
                 var orgMemberRoleName = Organization.MemberOfOrganizationRoleName(organizationName);
-                uow.AspNetUserRolesRepository.AssignRoleToUser(orgMemberRoleName, newFr8AccountId);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(orgMemberRoleName, newFr8Account.Id);
+                //this user need to have standard user profile assigned to him
+                AssignProfileToUser(uow, newFr8Account, DefaultProfiles.StandardUser);
+            }
+        }
+
+        private void AssignProfileToUser(IUnitOfWork uow, Fr8AccountDO fr8Account, string profileName)
+        {
+            var profile = uow.ProfileRepository.GetQuery().FirstOrDefault(x => x.Name == profileName);
+            if (profile != null)
+            {
+                fr8Account.ProfileId = profile.Id;
+            }
+            else
+            {
+                throw new ApplicationException($"Profile '{profileName}' not found for User");
             }
         }
 

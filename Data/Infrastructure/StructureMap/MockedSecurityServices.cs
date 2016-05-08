@@ -95,7 +95,7 @@ namespace Data.Infrastructure.StructureMap
             //Object Based permission set checks
 
             var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
-            var permissionSets = securityStorageProvider.GetObjectBasedPermissionSetForObject(curObjectId, curObjectType, roles);
+            var permissionSets = securityStorageProvider.GetObjectBasedPermissionSetForObject(curObjectId, curObjectType, Guid.Empty);
 
             var modifyAllData = permissionSets.FirstOrDefault(x => x == (int) PermissionType.ModifyAllObjects);
             var viewAllData = permissionSets.FirstOrDefault(x => x == (int) PermissionType.ViewAllObjects);

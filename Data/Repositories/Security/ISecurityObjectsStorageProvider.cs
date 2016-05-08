@@ -15,8 +15,8 @@ namespace Data.Repositories.Security
         int InsertObjectRolePermission(string dataObjectId, Guid rolePermissionId, string dataObjectType, string propertyName = null);
         int RemoveObjectRolePermission(string dataObjectId, Guid rolePermissionId, string propertyName = null);
         ObjectRolePermissionsWrapper GetRecordBasedPermissionSetForObject(string dataObjectId);
-        List<PermissionDTO> GetAllPermissionsForUser(List<string> roleNames);
-        List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, List<string> roleNames);
+        List<PermissionDTO> GetAllPermissionsForUser(Guid profileId);
+        List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, Guid profileId);
         void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType);
     }
 }

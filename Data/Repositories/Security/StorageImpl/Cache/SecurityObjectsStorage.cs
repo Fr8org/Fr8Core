@@ -74,26 +74,22 @@ namespace Data.Repositories.Security.StorageImpl.Cache
             }
         }
 
-        public List<PermissionDTO> GetAllPermissionsForUser(List<string> roleNames)
+        public List<PermissionDTO> GetAllPermissionsForUser(Guid profileId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var result = new List<PermissionDTO>();
-                var roleCollection = uow.AspNetRolesRepository.GetQuery().Where(x => roleNames.Contains(x.Name) && x.ProfileId.HasValue).ToList();
-                foreach (var role in roleCollection)
+                lock (_cache)
                 {
-                    lock (_cache)
+                    var permissionSets = _cache.GetProfilePermissionSets(profileId.ToString());
+                    if (!permissionSets.Any())
                     {
-                        var permissionSets = _cache.GetProfilePermissionSets(role.ProfileId.ToString());
-                        if (!permissionSets.Any())
-                        {
-                            permissionSets = uow.PermissionSetRepository.GetQuery().Where(x => x.ProfileId == role.ProfileId).ToList();
-                            _cache.AddOrUpdateProfile(role.ProfileId.ToString(), permissionSets);
-                        }
-                        foreach (var set in permissionSets)
-                        {
-                            result.AddRange(set.Permissions.Select(x=> new PermissionDTO() { Permission = x.Id, RoleName = role.Name, ObjectType = set.ObjectType}).ToList());
-                        }
+                        permissionSets = uow.PermissionSetRepository.GetQuery().Where(x => x.ProfileId == profileId).ToList();
+                        _cache.AddOrUpdateProfile(profileId.ToString(), permissionSets);
+                    }
+                    foreach (var set in permissionSets)
+                    {
+                        result.AddRange(set.Permissions.Select(x=> new PermissionDTO() { Permission = x.Id, ObjectType = set.ObjectType}).ToList());
                     }
                 }
 
@@ -101,24 +97,20 @@ namespace Data.Repositories.Security.StorageImpl.Cache
             }
         }
 
-        public List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, List<string> roleNames)
+        public List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, Guid profileId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var result = new List<int>();
-                var roleCollection = uow.AspNetRolesRepository.GetQuery().Where(x=> roleNames.Contains(x.Name) && x.ProfileId.HasValue).ToList();
-                foreach (var role in roleCollection)
+                lock (_cache)
                 {
-                    lock (_cache)
+                    var permissionSets = _cache.GetProfilePermissionSets(profileId.ToString());
+                    if (!permissionSets.Any())
                     {
-                        var permissionSets = _cache.GetProfilePermissionSets(role.ProfileId.ToString());
-                        if (!permissionSets.Any())
-                        {
-                            permissionSets = uow.PermissionSetRepository.GetQuery().Where(x => x.ProfileId == role.ProfileId).ToList();
-                            _cache.AddOrUpdateProfile(role.ProfileId.ToString(), permissionSets);
-                        }
-                        result.AddRange(permissionSets.Where(x => x.ObjectType == dataObjectType).SelectMany(l => l.Permissions.Select(m => m.Id)).ToList());
+                        permissionSets = uow.PermissionSetRepository.GetQuery().Where(x => x.ProfileId == profileId).ToList();
+                        _cache.AddOrUpdateProfile(profileId.ToString(), permissionSets);
                     }
+                    result.AddRange(permissionSets.Where(x => x.ObjectType == dataObjectType).SelectMany(l => l.Permissions.Select(m => m.Id)).ToList());
                 }
 
                 return result;

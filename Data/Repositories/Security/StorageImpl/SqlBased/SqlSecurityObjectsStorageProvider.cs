@@ -148,7 +148,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
-        public List<PermissionDTO> GetAllPermissionsForUser(List<string> roleNames)
+        public List<PermissionDTO> GetAllPermissionsForUser(Guid profileId)
         {
             throw new NotImplementedException();
         }
@@ -244,7 +244,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             throw new NotImplementedException();
         }
 
-        public List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, List<string> roleNames)
+        public List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, Guid profileId)
         {
             return new List<int>();
         }

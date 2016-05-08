@@ -9,7 +9,7 @@
 /// <reference path="interfaces/iquerybuilderwidgetscope.ts" />
 /// <reference path="interfaces/iplanbuilder.ts" />
 /// <reference path="interfaces/iuser.ts" />
-
+/// <reference path="interfaces/iprofile.ts" />
 
 /*
     MODEL

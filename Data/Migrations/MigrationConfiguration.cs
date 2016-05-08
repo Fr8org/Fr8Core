@@ -733,9 +733,14 @@ namespace Data.Migrations
                 {
                     Id = Guid.NewGuid(),
                     Name = DefaultProfiles.Fr8Admin,
+                    Protected = true,
                     PermissionSets = new List<PermissionSetDO>()
                 };
                 uow.ProfileRepository.Add(fr8AdminProfile);
+            }
+            else
+            {
+                fr8AdminProfile.Protected = true;
             }
             
             //create 'System Administrator' Profile 
@@ -746,9 +751,14 @@ namespace Data.Migrations
                 {
                     Id = Guid.NewGuid(),
                     Name = DefaultProfiles.SystemAdministrator,
+                    Protected = true,
                     PermissionSets = new List<PermissionSetDO>()
                 };
                 uow.ProfileRepository.Add(profile);
+            }
+            else
+            {
+                profile.Protected = true;
             }
 
             //create 'Standard User' profile
@@ -759,8 +769,13 @@ namespace Data.Migrations
                 {
                     Id = Guid.NewGuid(),
                     Name = DefaultProfiles.StandardUser,
+                    Protected = true
                 };
                 uow.ProfileRepository.Add(standardProfile);
+            }
+            else
+            {
+                standardProfile.Protected = true;
             }
 
             //presave needed here for permissionSetPermissions table inserts
@@ -792,17 +807,20 @@ namespace Data.Migrations
             //default permissions for Users
             profile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), true, true, false, profile.Id, "System Administrator Permission Set", uow));
 
-            var adminRole = uow.AspNetRolesRepository.GetQuery().FirstOrDefault(x => x.Name == Roles.Admin);
-            if (adminRole != null)
-            {
-                adminRole.ProfileId = fr8AdminProfile.Id;
-            }
-
-            //add standard user to all roles that don't have permissions
-            var roles = uow.AspNetRolesRepository.GetQuery().Where(x => x.ProfileId == null).ToList();
+            //add standard user to all users without profile 
+            var roles = uow.UserRepository.GetQuery().Where(x => x.ProfileId == null).ToList();
             foreach (var item in roles)
             {
                 item.ProfileId = profile.Id;
+            }
+
+            var adminRole = uow.AspNetRolesRepository.GetQuery().FirstOrDefault(x => x.Name == Roles.Admin);
+
+            var userRoles = uow.AspNetUserRolesRepository.GetQuery().Where(x => x.RoleId == adminRole.Id).Select(l=>l.UserId).ToList();
+            var fr8Admins = uow.UserRepository.GetQuery().Where(x=> userRoles.Contains(x.Id)).ToList();
+            foreach (var user in fr8Admins)
+            {
+                user.ProfileId = fr8AdminProfile.Id;
             }
             
             standardProfile.PermissionSets.Clear();

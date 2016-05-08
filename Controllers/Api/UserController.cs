@@ -37,89 +37,8 @@ namespace HubWeb.Controllers
             _mappingEngine = ObjectFactory.GetInstance<IMappingEngine>();
         }
 
-        public static string GetCallbackUrl(string providerName)
-        {
-            return GetCallbackUrl(providerName, Utilities.Server.ServerUrl);
-        }
-
-        public static string GetCallbackUrl(string providerName, string serverUrl)
-        {
-            if (String.IsNullOrEmpty(serverUrl))
-                throw new ArgumentException("Server Url is empty", "serverUrl");
-
-            return String.Format("{0}{1}AuthCallback/IndexAsync", serverUrl.Replace("www.", ""), providerName);
-        }
-
-        public ICollection<IdentityUserRole> ConvertRoleStringToRoles(string selectedRole)
-        {
-            List<IdentityUserRole> userNewRoles = new List<IdentityUserRole>();
-            string[] userRoles = { };
-            switch (selectedRole)
-            {
-                case Roles.Admin:
-                    userRoles = new[] { Roles.Admin, Roles.Booker, Roles.Customer };
-                    break;
-                case Roles.Booker:
-                    userRoles = new[] { Roles.Booker, Roles.Customer };
-                    break;
-                case Roles.Customer:
-                    userRoles = new[] { Roles.Customer };
-                    break;
-            }
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                uow.AspNetRolesRepository.GetQuery().Where(e => userRoles.Contains(e.Name))
-                    .Each(e => userNewRoles.Add(new IdentityUserRole()
-                    {
-                        RoleId = e.Id
-                    }));
-            }
-            return userNewRoles;
-        }
-
-        private string ConvertRolesToRoleString(String[] userRoles)
-        {
-            if (userRoles.Contains(Roles.Admin))
-                return Roles.Admin;
-            else if (userRoles.Contains(Roles.Booker))
-                return Roles.Booker;
-            else if (userRoles.Contains(Roles.Customer))
-                return Roles.Customer;
-            else
-                return "";
-        }
-
-        private UserVM CreateUserVM(Fr8AccountDO u, IUnitOfWork uow)
-        {
-            return new UserVM
-            {
-                Id = u.Id,
-                FirstName = u.FirstName,
-                LastName = u.LastName,
-                UserName = u.UserName,
-                EmailAddress = u.EmailAddress.Address,
-                Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(u.Id).Select(r => r.Name).ToArray()),
-                //Calendars = u.Calendars.Select(c => new UserCalendarVM { Id = c.Id, Name = c.Name }).ToList(),
-                EmailAddressID = u.EmailAddressID.Value,
-                Status = u.State.Value
-            };
-        }
-
-        //Update DockYardAccount Status from user details view valid states are "Active" and "Deleted"
-        public void UpdateStatus(string userId, int status)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                Fr8AccountDO curDockyardAccount = uow.UserRepository.GetQuery().Where(user => user.Id == userId).FirstOrDefault();
-
-                if (curDockyardAccount != null)
-                {
-                    curDockyardAccount.State = status;
-                    uow.SaveChanges();
-                }
-            }
-        }
-
+        #region API Endpoints 
+        
         public IHttpActionResult Get()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -145,15 +64,15 @@ namespace HubWeb.Controllers
             }
         }
 
-        private List<UserDTO> GetUsers(IUnitOfWork uow, Expression<Func<Fr8AccountDO, bool>>  predicate)
+        [HttpGet]
+        public IHttpActionResult GetProfiles()
         {
-            var users = uow.UserRepository.GetQuery().Where(predicate).ToList();
-            return users.Select(user =>
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var dto = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
-                dto.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(user.Id).Select(r => r.Name).ToArray());
-                return dto;
-            }).ToList();
+                //for now only return profiles that are protected. Those are all default Fr8 core profiles
+                var profiles = uow.ProfileRepository.GetQuery().Where(x => x.Protected).Select(x => new ProfileDTO() { Id = x.Id.ToString(), Name = x.Name }).ToList();
+                return Ok(profiles);
+            }
         }
 
         [DockyardAuthorize(Roles = Roles.Admin)]
@@ -217,5 +136,101 @@ namespace HubWeb.Controllers
 
             return Ok();
         }
+
+        [HttpPost]
+        public IHttpActionResult UpdateUserProfile(string userId, Guid profileId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var user = uow.UserRepository.FindOne(u => u.Id == userId);
+                user.ProfileId = profileId;
+            }
+
+            return Ok();
+        }
+
+        #endregion
+
+        #region Helper Methods
+
+        private List<UserDTO> GetUsers(IUnitOfWork uow, Expression<Func<Fr8AccountDO, bool>> predicate)
+        {
+            var users = uow.UserRepository.GetQuery().Where(predicate).ToList();
+            return users.Select(user =>
+            {
+                var dto = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
+                dto.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(user.Id).Select(r => r.Name).ToArray());
+                return dto;
+            }).ToList();
+        }
+
+        public static string GetCallbackUrl(string providerName)
+        {
+            return GetCallbackUrl(providerName, Utilities.Server.ServerUrl);
+        }
+
+        public static string GetCallbackUrl(string providerName, string serverUrl)
+        {
+            if (String.IsNullOrEmpty(serverUrl))
+                throw new ArgumentException("Server Url is empty", "serverUrl");
+
+            return String.Format("{0}{1}AuthCallback/IndexAsync", serverUrl.Replace("www.", ""), providerName);
+        }
+
+        public ICollection<IdentityUserRole> ConvertRoleStringToRoles(string selectedRole)
+        {
+            List<IdentityUserRole> userNewRoles = new List<IdentityUserRole>();
+            string[] userRoles = { };
+            switch (selectedRole)
+            {
+                case Roles.Admin:
+                    userRoles = new[] { Roles.Admin, Roles.Booker, Roles.Customer };
+                    break;
+                case Roles.Booker:
+                    userRoles = new[] { Roles.Booker, Roles.Customer };
+                    break;
+                case Roles.Customer:
+                    userRoles = new[] { Roles.Customer };
+                    break;
+            }
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.AspNetRolesRepository.GetQuery().Where(e => userRoles.Contains(e.Name))
+                    .Each(e => userNewRoles.Add(new IdentityUserRole()
+                    {
+                        RoleId = e.Id
+                    }));
+            }
+            return userNewRoles;
+        }
+
+        private string ConvertRolesToRoleString(String[] userRoles)
+        {
+            if (userRoles.Contains(Roles.Admin))
+                return Roles.Admin;
+            else if (userRoles.Contains(Roles.Booker))
+                return Roles.Booker;
+            else if (userRoles.Contains(Roles.Customer))
+                return Roles.Customer;
+            else
+                return "";
+        }
+
+        //Update DockYardAccount Status from user details view valid states are "Active" and "Deleted"
+        public void UpdateStatus(string userId, int status)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Fr8AccountDO curDockyardAccount = uow.UserRepository.GetQuery().Where(user => user.Id == userId).FirstOrDefault();
+
+                if (curDockyardAccount != null)
+                {
+                    curDockyardAccount.State = status;
+                    uow.SaveChanges();
+                }
+            }
+        }
+
+        #endregion
     }
 }

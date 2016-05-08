@@ -124,7 +124,7 @@
                         <li><a ui-sref="findObjects">Find Objects</a></li>
 
                     </ul>
-						</li>
+				</li>
 
                 <li class="menu-dropdown classic-menu-dropdown">
                     <a data-toggle="dropdown" href="#" class="dropdown-toggle">Containers <i class="fa fa-angle-down"></i></a>
@@ -161,18 +161,11 @@
                     <li class="menu-dropdown classic-menu-dropdown pull-right" style="position: absolute; right:0;">
                         <a data-toggle="dropdown" href="#" class="dropdown-toggle">Admin <i class="fa fa-angle-down"></i></a>
                         <ul class="dropdown-menu">
-
-                            <li><a href="#/form-tools">Create Accounts</a></li>
-                            <li><a ui-sref="accounts">Manage Fr8 Accounts</a></li>
-                            <li><a ui-sref="manifestregistry">Manage ManifestRegistry</a></li>
-                            <li><a ui-sref="webservices">Show Web Services</a></li>
-                            <li><a ui-sref="showFacts">Show Facts</a></li>
-                            <li><a ui-sref="showIncidents">Show Incidents</a></li>
+                            <li><a ui-sref="accounts">Manage Users</a></li>
                             <li><a onclick="window.parent.document.body.style.zoom = 0.6;">Ipad Mode</a></li>
                             <li><a onclick="window.parent.document.body.style.zoom = 1;">Normal Mode</a></li>
                         </ul>
                     </li>
-
                 }
 
                 @if (Html.HasManageUsersPermission(PermissionType.ManageFr8Users))

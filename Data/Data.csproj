@@ -403,6 +403,7 @@
     <Compile Include="Interfaces\Manifests\EventReportCM.cs" />
     <Compile Include="Interfaces\Manifests\EventSubscriptionCM.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PlanDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ProfileDTO.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.Designer.cs">
       <DependentUpon>201510120408332_InitialMigration.cs</DependentUpon>
@@ -743,6 +744,14 @@
     <Compile Include="Migrations\201605051106203_AddNameToActivity.cs" />
     <Compile Include="Migrations\201605051106203_AddNameToActivity.Designer.cs">
       <DependentUpon>201605051106203_AddNameToActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201605081024545_Move_Profile_To_Fr8Account.cs" />
+    <Compile Include="Migrations\201605081024545_Move_Profile_To_Fr8Account.Designer.cs">
+      <DependentUpon>201605081024545_Move_Profile_To_Fr8Account.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201605081649590_Add_Protected_Flag_to_Profile.cs" />
+    <Compile Include="Migrations\201605081649590_Add_Protected_Flag_to_Profile.Designer.cs">
+      <DependentUpon>201605081649590_Add_Protected_Flag_to_Profile.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1300,6 +1309,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201605051106203_AddNameToActivity.resx">
       <DependentUpon>201605051106203_AddNameToActivity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605081024545_Move_Profile_To_Fr8Account.resx">
+      <DependentUpon>201605081024545_Move_Profile_To_Fr8Account.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605081649590_Add_Protected_Flag_to_Profile.resx">
+      <DependentUpon>201605081649590_Add_Protected_Flag_to_Profile.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

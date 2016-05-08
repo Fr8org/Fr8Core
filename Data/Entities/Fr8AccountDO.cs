@@ -37,10 +37,14 @@ namespace Data.Entities
         public int? EmailAddressID { get; set; }
         public virtual EmailAddressDO EmailAddress { get; set; }
 
+        [ForeignKey("Profile")]
+        public Guid? ProfileId { get; set; }
+        public virtual ProfileDO Profile { get; set; }
+
         //it's important to persist the DocuSignAccountId. The rest of the DocuSignAccount data is accessed through the DocuSignAccount wrapper class
         public string DocusignAccountId { get; set; }
 
-        //[NotMapped]
+        //[NotMapped]`
         //public DocuSignAccount DocuSignAccount { get; set; }
 
         [Required, ForeignKey("UserStateTemplate"), DefaultValue(UserState.Active)]

@@ -111,12 +111,12 @@ namespace Data.Repositories.Security.StorageImpl
             throw new NotImplementedException();
         }
 
-        public List<PermissionDTO> GetAllPermissionsForUser(List<string> roleNames)
+        public List<PermissionDTO> GetAllPermissionsForUser(Guid profileId)
         {
             throw new NotImplementedException();
         }
 
-        public List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, List<string> roleNames)
+        public List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, Guid profileId)
         {
             return new List<int>();
         }

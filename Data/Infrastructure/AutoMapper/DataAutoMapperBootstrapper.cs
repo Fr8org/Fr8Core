@@ -5,6 +5,7 @@ using System.Security.Cryptography.X509Certificates;
 using AutoMapper;
 using Data.Crates;
 using Data.Entities;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.DataTransferObjects.Helpers;
 using Data.Interfaces.Manifests;
