@@ -1,6 +1,6 @@
 # Part 1 – Introduction  
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/README.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  
 
 For a basic introduction to Fr8 concepts, see [this](https://github.com/Fr8org/Fr8Core.NET/blob/master/ForUsers/Fr8ForUsers.md) .  
 
@@ -26,4 +26,4 @@ The Fr8 Hub has no knowledge about the Fr8 Terminals it works with, beyond what 
 
 [Part 2 – Understanding the Fr8 Architectural Model](https://github.com/Fr8org/Fr8Core.NET/blob/master/ForDevelopers/ArchitecturalModel.md)  
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/README.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  

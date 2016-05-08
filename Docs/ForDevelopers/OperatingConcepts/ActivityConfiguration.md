@@ -1,6 +1,6 @@
 # ACTIVITY CONFIGURATION
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/README.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  
 
 Activities are configured at Design-Time. Configuration is the responsibility of the Terminal that hosts that Activity. The terminal instructs the Client as to what UI controls should be displayed and as a result the Client doesn’t need to know anything specific about the Activity. Likewise the Hub stays uninvolved with Activity Configuration, serving as a simple conduit to enable the Client and Terminal to exchange data.  
 
@@ -36,4 +36,4 @@ The Fr8 Client V1 standard supports the AggressiveReload Tag, which can be added
 
 Learn more about the [UI Control Definitions.](https://github.com/Fr8org/Fr8Core.NET/blob/master/ForDevelopers/DevelopmentGuides/ConfigurationControls.md)
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/README.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  

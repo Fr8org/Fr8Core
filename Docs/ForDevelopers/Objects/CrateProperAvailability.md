@@ -1,6 +1,6 @@
 # CRATE PROPERTY: AVAILABILITY
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/README.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  
 
 **Availability**
 
@@ -14,4 +14,4 @@ To filter out design-time fields, an Action should just add Avaiability=Run-Time
 
 This is related to the Availabililty property on Fields.
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/README.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  

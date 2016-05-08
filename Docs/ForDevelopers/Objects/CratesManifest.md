@@ -1,5 +1,5 @@
 # CRATES – MANIFEST
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/README.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  
 A Manifest is a simple json schema that defines the contents of a Crate of data. Use of Manifests is optional. They’re essentially a way for activities to effectively process data. Put another way, if you know the Manifest of a Crate, you can use it to deserialize the contents (which is just a big json string) into structured data.
 
 While any builder of Fr8 Actions can defined private Manifests for their own purposes, the real value of Manifests comes through a shared registry. For example, in the [Fr8 Manifest Registry](https://github.com/Fr8org/Fr8Core.NET/blob/master/ForDevelopers/.md), Id 14 is assigned to a Manifest called DocuSignEnvelope that looks like this:
@@ -20,4 +20,4 @@ The Baseline Manifests: Standard Payload Data and Standard Configuration Fields
 
 If there isn’t a more targeted manifest that fits, these are the fallback. Both essentially are a simple List of JSON objects, which can have arbitrarily complex values.
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/README.md) 
+[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md) 

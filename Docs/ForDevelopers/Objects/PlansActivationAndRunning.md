@@ -1,5 +1,5 @@
 # PLANS – ACTIVATION AND RUNNING
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/README.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  
 
 Plans are created by the Hub in response to client requests. Initially, Plans are inactive.
 
@@ -17,4 +17,4 @@ When the user clicks Run on a Monitor plan, the behavior is the same with the fo
 
 In general, when a “Monitor” Activity receives a /run call, it will typically inspect the Container passed to it with the /run command to see whether the current run call represents either a) an initial activation call or b) an actual received event that the Monitor activity had registered interest in.  For example, the Monitor DocuSign Envelopes Activity inspects the Container for the presence of a DocuSign envelopeId. If it doesn’t find one, it  carries out Activation activities (such as registering with DocuSign to receive event notification) and quickly returns. As described above, it’s Status remains “Active” and it will continue to receive /run calls when matching events are received.
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/README.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  

@@ -1,5 +1,5 @@
 # SUBPLANS
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/README.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  
 
 Every Plan is made up of 1 or more Subplans. A default Plan has a single, unnamed Subplan. Users can optionally add additional Subplans and name them.
 
@@ -7,4 +7,4 @@ Subplans enable the user to add more structure to their Plan. The primary exampl
 
 Subplans allow the creation of reusable blocks of functionality inside of a single Plan.
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/README.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  

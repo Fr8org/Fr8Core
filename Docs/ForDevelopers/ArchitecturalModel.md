@@ -1,6 +1,6 @@
 # PART 2 – UNDERSTANDING THE FR8 ARCHITECTURAL MODEL
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/README.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  
 ### Hubs and Terminals: Where Work Gets Done  
 
 Fr8 Plans are assembled out of individual Activities. The Web Services that host and process Fr8 Plans are called Fr8 Hubs. The Fr8 Company operates a major Hub at www.fr8.co, but anyone can run their own Hub by creating a web service that supports the [Fr8 Hub Specification.](https://github.com/Fr8org/Fr8Core.NET/blob/master/ForDevelopers/OperatingConcepts/Fr8HubSpecification.md)  
@@ -13,4 +13,4 @@ When a Hub is ready for the next Activity in the Plan to be executed, it makes a
 
 [Part 3 – The Fr8 Data Model](https://github.com/Fr8org/Fr8Core.NET/blob/master/ForDevelopers/DataModel.md)  
 
-[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/README.md)  
+[Go to Contents](https://github.com/Fr8org/Fr8Core.NET/blob/master/Docs/Home.md)  
