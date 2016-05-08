@@ -13,7 +13,7 @@ At Run-Time, Crates are created into a [Container](https://github.com/Fr8org/Fr8
 
 In the real world, a Crate consists of the stuff inside the Crate (the “Storage”), and some amount of metadata about the Crate (such as receipts, logs, manifests, and directives) that is typically found taped, stapled, nailed, or painted onto the outside of the Crate.
 
-![crate_manifest](https://github.com/Fr8org/Fr8Core/blob/master/img/Fr8Crates_CrateManifest.png) 
+![crate_manifest](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/Fr8Crates_CrateManifest.png) 
 
 Fr8 Crates are similar. Each Crate consists of a set of JSON properties. One property, CrateStorage, contains the Crate’s contents. The other properties, seen below, represent the publicly visible portion of the Crate.
 

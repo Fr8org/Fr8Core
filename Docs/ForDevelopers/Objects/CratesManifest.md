@@ -4,7 +4,7 @@ A Manifest is a simple json schema that defines the contents of a Crate of data.
 
 While any builder of Fr8 Actions can defined private Manifests for their own purposes, the real value of Manifests comes through a shared registry. For example, in the [Fr8 Manifest Registry](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/.md), Id 14 is assigned to a Manifest called DocuSignEnvelope that looks like this:
 
-![manifest_docusign_envelopes](https://github.com/Fr8org/Fr8Core/blob/master/img/CratesManifest_ManifestDocusignEnvelopes.png) 
+![manifest_docusign_envelopes](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/CratesManifest_ManifestDocusignEnvelopes.png) 
 
 The Fr8 Company maintains a public registry of Manifests at fr8.co/registry. Anyone can register a new Manifest, although registration of manifests that are equivalent or highly similar to existing manifests is discouraged. The registry generates a unique id that can be used in Crates.
 
