@@ -7,6 +7,7 @@ namespace Data.Interfaces.DataTransferObjects
     public class ActivityDTO 
     {
         public string Label { get; set; }
+        public string Name { get; set; }
 
         [JsonProperty("activityTemplate")]
         [JsonConverter(typeof(ActivityTemplateActivityConverter))]

@@ -44,8 +44,6 @@
                     var createControl = (condition: IQueryCondition): model.ControlDefinitionDTO => {
                         var control;
 
-                        debugger;
-
                         if ($scope.condition.field.fieldType === model.FieldType[model.FieldType.Date]) {
                             control = new model.DatePicker();
                             control.value = condition.value;

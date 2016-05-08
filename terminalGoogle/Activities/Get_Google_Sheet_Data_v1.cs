@@ -111,15 +111,15 @@ namespace terminalGoogle.Actions
             return JsonConvert.DeserializeObject<GoogleAuthDTO>((authTokenDO ?? AuthorizationToken).Token);
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             var spreadsheets = await _googleApi.GetSpreadsheets(GetGoogleAuthToken());
             ConfigurationControls.SpreadsheetList.ListItems = spreadsheets.Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
 
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Configure(CrateSignaller crateSignaller)
         {
             var googleAuth = GetGoogleAuthToken();
             var spreadsheets = await _googleApi.GetSpreadsheets(googleAuth);
@@ -180,7 +180,7 @@ namespace terminalGoogle.Actions
                 var hasHeaderRow = TryAddHeaderRow(table);
                 CurrentActivityStorage.ReplaceByLabel(Crate.FromContent(RunTimeCrateLabel,new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
             }
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
         private async Task<List<TableRowDTO>> GetSelectedSpreadSheet()
