@@ -265,10 +265,10 @@
     <Compile Include="Entities\AspNetUserClaimDO.cs" />
     <Compile Include="Entities\EncryptedAuthorizationData.cs" />
     <Compile Include="Entities\OrganizationDO.cs" />
-    <Compile Include="Entities\PlanDescriptions\ActivityDescriptionDO.cs" />
-    <Compile Include="Entities\PlanDescriptions\ActivityTransitionDO.cs" />
-    <Compile Include="Entities\PlanDescriptions\PlanDescriptionDO.cs" />
-    <Compile Include="Entities\PlanDescriptions\PlanNodeDescriptionDO.cs" />
+    <Compile Include="Entities\PlanTemplates\ActivityDescriptionDO.cs" />
+    <Compile Include="Entities\PlanTemplates\NodeTransitionDO.cs" />
+    <Compile Include="Entities\PlanTemplates\PlanTemplateDO.cs" />
+    <Compile Include="Entities\PlanTemplates\PlanNodeDescriptionDO.cs" />
     <Compile Include="Entities\PermissionSetDO.cs" />
     <Compile Include="Entities\PlanNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
@@ -299,10 +299,10 @@
     <Compile Include="Interfaces\DataTransferObjects\ActivityResponseDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\ExternalObjectHandleDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\IncomingCratesDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\PlanDescription\ActivityDescriptionDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\PlanDescription\ActivityTransitionDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\PlanDescription\PlanDescriptionDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\PlanDescription\PlanNodeDescriptionDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\PlanTemplates\ActivityDescriptionDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\PlanTemplates\NodeTransitionDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\PlanTemplates\PlanDescriptionDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\PlanTemplates\PlanNodeDescriptionDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\OrganizationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalNotificationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AlarmDTO.cs" />
@@ -410,14 +410,10 @@
     <Compile Include="Interfaces\Manifests\EventReportCM.cs" />
     <Compile Include="Interfaces\Manifests\EventSubscriptionCM.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PlanDTO.cs" />
-    <Compile Include="Migrations\201605051324568_PlanDescription.cs" />
-    <Compile Include="Migrations\201605051324568_PlanDescription.Designer.cs">
-      <DependentUpon>201605051324568_PlanDescription.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Repositories\PlanDescriptions\ActivityDescriptionRepository.cs" />
-    <Compile Include="Repositories\PlanDescriptions\ActivityTransitionRepository.cs" />
-    <Compile Include="Repositories\PlanDescriptions\PlanDescriptionsRepository.cs" />
-    <Compile Include="Repositories\PlanDescriptions\PlanNodeDescriptionsRepository.cs" />
+    <Compile Include="Repositories\PlanTemplates\ActivityDescriptionRepository.cs" />
+    <Compile Include="Repositories\PlanTemplates\NodeTransitionRepository.cs" />
+    <Compile Include="Repositories\PlanTemplates\PlanDescriptionsRepository.cs" />
+    <Compile Include="Repositories\PlanTemplates\PlanNodeDescriptionsRepository.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.Designer.cs">
       <DependentUpon>201510120408332_InitialMigration.cs</DependentUpon>
@@ -1311,9 +1307,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201605020854120_EncryptedCrateStorageAdded.resx">
       <DependentUpon>201605020854120_EncryptedCrateStorageAdded.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201605051324568_PlanDescription.resx">
-      <DependentUpon>201605051324568_PlanDescription.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201605051106203_AddNameToActivity.resx">
       <DependentUpon>201605051106203_AddNameToActivity.cs</DependentUpon>

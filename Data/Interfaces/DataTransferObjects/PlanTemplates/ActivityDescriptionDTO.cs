@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Data.Interfaces.DataTransferObjects.PlanDescription
+namespace Data.Interfaces.DataTransferObjects.PlanTemplates
 {
     public class ActivityDescriptionDTO
     {

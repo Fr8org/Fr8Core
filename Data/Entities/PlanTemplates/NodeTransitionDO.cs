@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace Data.Entities
 {
-    public class ActivityTransitionDO : BaseObject
+    public class NodeTransitionDO : BaseObject
     {
         public int Id { get; set; }
         
@@ -25,7 +25,7 @@ namespace Data.Entities
         /// </summary>
         public int? PlanDescriptionId { get; set; }
 
-        public PlanDescriptionDO PlanDescription { get; set; }
+        public PlanTemplateDO PlanDescription { get; set; }
 
         /// <summary>
         /// Used if Containers generated from this PlanDescription would transition to an existing Plan. Currently assumes that the existing Plan will be hosted by the same Hub. Eventually we'll need a way to address a Plan running on another Hub.

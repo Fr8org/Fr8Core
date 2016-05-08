@@ -5,9 +5,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Data.Interfaces.DataTransferObjects.PlanDescription
+namespace Data.Interfaces.DataTransferObjects.PlanTemplates
 {
-    public class ActivityTransitionDTO
+    public class NodeTransitionDTO
     {
         public int Id { get; set; }
 

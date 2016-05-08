@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Data.Interfaces.DataTransferObjects.PlanDescription
+namespace Data.Interfaces.DataTransferObjects.PlanTemplates
 {
     public class PlanNodeDescriptionDTO
     {
@@ -15,7 +15,7 @@ namespace Data.Interfaces.DataTransferObjects.PlanDescription
 
         public int ParentNodeId { get; set; }
 
-        public List<ActivityTransitionDTO> Transitions { get; set; }
+        public List<NodeTransitionDTO> Transitions { get; set; }
 
         public ActivityDescriptionDTO ActivityDescription { get; set; }
 

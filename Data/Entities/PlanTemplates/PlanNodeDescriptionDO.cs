@@ -18,7 +18,7 @@ namespace Data.Entities
         public int? ParentNodeId { get; set; }
         public PlanNodeDescriptionDO ParentNode { get; set; }
 
-        public List<ActivityTransitionDO> Transitions { get; set; }
+        public List<NodeTransitionDO> Transitions { get; set; }
         
         public ActivityDescriptionDO ActivityDescription { get; set; }
 

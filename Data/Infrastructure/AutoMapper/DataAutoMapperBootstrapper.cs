@@ -14,7 +14,7 @@ using Newtonsoft.Json.Linq;
 using StructureMap;
 using Utilities.AutoMapper;
 using Data.Interfaces.Manifests;
-using Data.Interfaces.DataTransferObjects.PlanDescription;
+using Data.Interfaces.DataTransferObjects.PlanTemplates;
 
 namespace Data.Infrastructure.AutoMapper
 {
@@ -189,8 +189,8 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.AuthenticationTypeTemplate, opts => opts.Ignore());
 
 
-            Mapper.CreateMap<PlanDescriptionDO, PlanDescriptionDTO>();
-            Mapper.CreateMap<PlanDescriptionDTO, PlanDescriptionDTO>();
+            Mapper.CreateMap<PlanTemplateDO, PlanTemplateDTO>();
+            Mapper.CreateMap<PlanTemplateDTO, PlanTemplateDTO>();
 
             Mapper.CreateMap<PlanNodeDescriptionDO, PlanNodeDescriptionDTO>();
             Mapper.CreateMap<PlanNodeDescriptionDTO, PlanNodeDescriptionDO>();
@@ -198,8 +198,8 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ActivityDescriptionDO, ActivityDescriptionDTO>();
             Mapper.CreateMap<ActivityDescriptionDTO, ActivityDescriptionDO>();
 
-            Mapper.CreateMap<ActivityTransitionDO, ActivityTransitionDTO>();
-            Mapper.CreateMap<ActivityTransitionDTO, ActivityTransitionDO>();
+            Mapper.CreateMap<NodeTransitionDO, NodeTransitionDTO>();
+            Mapper.CreateMap<NodeTransitionDTO, NodeTransitionDO>();
 
             Mapper.CreateMap<PlanNodeTransitionType, String>().ConvertUsing(e => e.ToString().ToLower());
             Mapper.CreateMap<string, PlanNodeTransitionType>().ConvertUsing(e => (PlanNodeTransitionType)Enum.Parse(typeof(PlanNodeTransitionType), e, true));

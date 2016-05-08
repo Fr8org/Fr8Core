@@ -50,8 +50,8 @@ namespace Data.Interfaces
         ActivityTemplateRepository ActivityTemplateRepository { get; }
     
         IActivityDescriptionRepository ActivityDescriptionRepository { get; }
-        IActivityTransitionRepository ActivityTransitionRepository { get; }
-        IPlanDescriptionsRepository PlanDescriptionsRepository { get; }
+        INodeTransitionRepository NodeTransitionRepository { get; }
+        IPlanTemplateRepository PlanTemplateRepository { get; }
         IPlanNodeDescriptionsRepository PlanNodeDescriptionsRepository { get; }
 
         ICriteriaRepository CriteriaRepository { get; }

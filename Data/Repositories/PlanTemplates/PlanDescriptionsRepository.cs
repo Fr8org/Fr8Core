@@ -9,9 +9,9 @@ using System.Threading.Tasks;
 
 namespace Data.Repositories.PlanDescriptions
 {
-    public class PlanDescriptionsRepository : GenericRepository<PlanDescriptionDO>, IPlanDescriptionsRepository
+    public class PlanTemplateRepository : GenericRepository<PlanTemplateDO>, IPlanTemplateRepository
     {
-        public PlanDescriptionsRepository(IUnitOfWork uow)
+        public PlanTemplateRepository(IUnitOfWork uow)
             : base(uow)
         {
 
@@ -20,5 +20,5 @@ namespace Data.Repositories.PlanDescriptions
 
     
 
-    public interface IPlanDescriptionsRepository : IGenericRepository<PlanDescriptionDO> { }
+    public interface IPlanTemplateRepository : IGenericRepository<PlanTemplateDO> { }
 }

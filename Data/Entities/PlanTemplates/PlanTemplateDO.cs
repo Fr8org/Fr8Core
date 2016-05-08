@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Data.Entities
 {
-    public class PlanDescriptionDO : BaseObject
+    public class PlanTemplateDO : BaseObject
     {
         public int Id { get; set; }
 

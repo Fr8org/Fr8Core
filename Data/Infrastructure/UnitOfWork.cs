@@ -548,21 +548,22 @@ namespace Data.Infrastructure
             }
         }
 
-        private ActivityTransitionRepository _activityTransitionRepository;
-        public IActivityTransitionRepository ActivityTransitionRepository
+        private NodeTransitionRepository _nodeTransitionRepository;
+        public INodeTransitionRepository NodeTransitionRepository
+
         {
             get
             {
-                return _activityTransitionRepository ?? (_activityTransitionRepository = new ActivityTransitionRepository(this));
+                return _nodeTransitionRepository ?? (_nodeTransitionRepository = new NodeTransitionRepository(this));
             }
         }
 
-        private PlanDescriptionsRepository _planDescriptionRepository;
-        public IPlanDescriptionsRepository PlanDescriptionsRepository
+        private PlanTemplateRepository _planTemplateRepository;
+        public IPlanTemplateRepository PlanTemplateRepository
         {
             get
             {
-                return _planDescriptionRepository ?? (_planDescriptionRepository = new PlanDescriptionsRepository(this));
+                return _planTemplateRepository ?? (_planTemplateRepository = new PlanTemplateRepository(this));
             }
         }
 
