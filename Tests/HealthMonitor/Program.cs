@@ -13,10 +13,13 @@ namespace HealthMonitor
 {
     public class Program
     {
+        public static readonly Context Context = new Context();
+
         static void Main(string[] args)
         {
             var appName = "Unspecified App";
             var csName = "DockyardDB";
+            var allArguments = new Dictionary<string, object>();
             var connectionString = ConfigurationManager.ConnectionStrings[csName].ConnectionString;
             var sendEmailReport = false;
             var ensureTerminalsStartup = false;
@@ -33,6 +36,18 @@ namespace HealthMonitor
             {
                 for (var i = 0; i < args.Length; ++i)
                 {
+                    if (i > 0 && args[i - 1].StartsWith("--"))
+                    {
+                        if (!args[i].StartsWith("--"))
+                        {
+                            allArguments[args[i - 1].Substring(2)] = args[i];
+                        }
+                        else
+                        {
+                            allArguments[args[i - 1].Substring(2)] = true;
+                        }
+                    }
+
                     if (args[i] == "--email-report")
                     {
                         sendEmailReport = true;
@@ -63,6 +78,7 @@ namespace HealthMonitor
                     else if (i > 0 && args[i - 1] == "--aiik" && args[i] != null)
                     {
                         appInsightsInstrumentationKey = args[i];
+                        Context.InstrumentationKey = appInsightsInstrumentationKey;
                     }
 
                     //This flag will signal HM to wait for user response before shut down (used when launched directly)
@@ -97,6 +113,9 @@ namespace HealthMonitor
                     }
                 }
             }
+
+            Context.ConnectionString = connectionString;
+            Context.AllArguments = allArguments;
 
             var selfHostInitializer = new SelfHostInitializer();
             if (selfHosting)
