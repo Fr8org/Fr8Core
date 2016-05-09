@@ -111,7 +111,7 @@ The complete list of 22 controls currently used is presented below.
       ]
 }
 ```
-RadioButtonsGroup
+#### RadioButtonsGroup
 ```javascript
 {
       "type": "RadioButtonGroup",
@@ -149,7 +149,7 @@ RadioButtonsGroup
       ]
 }
 ```
-FieldList
+#### FieldList
 ```javascript
 {
       "type": "FieldList",      
@@ -172,7 +172,7 @@ FieldList
 ```
 Control: Field List
 
-FilterPane
+#### FilterPane
 ```javascript
 { 
     "type": "FilterPane", 
@@ -186,7 +186,7 @@ FilterPane
 ```
 a widget that produces UI which generates a query. Looks like this: image2015-9-22 13-35-41
 
-TextBlock
+#### TextBlock
 ```javascript
 {
       "type": "TextBlock",      
@@ -195,7 +195,7 @@ TextBlock
       "label": "DocuSign Envelope"
 }
 ```
-FilePicker
+#### FilePicker
 ```javascript
 {
       "name": "file_picker", 
@@ -214,7 +214,7 @@ See Create new TextArea control
 	"isReadOnly": false,
 }
 ```
-Duration
+#### Duration
 ```javascript
 { 
          "days": 0, 
@@ -255,7 +255,7 @@ valueSource property will contact user’s selected option: either specific or u
 
  
 
-MappingPane
+#### MappingPane
 ```javascript
 {
       "type": "MappingPane",      
@@ -263,7 +263,7 @@ MappingPane
       "label": "Configure Mapping"
 }
 ```
-QueryBuilder
+#### QueryBuilder
 ```javascript
 {
            "errorMessage": null,
@@ -282,7 +282,7 @@ QueryBuilder
           "value": "[]"
 }
 ```
-RunRouteButton
+#### RunRouteButton
 ```javascript
 {
            "errorMessage": null,
@@ -297,7 +297,7 @@ RunRouteButton
           "value": null
 }
 ```
-DatePicker
+#### DatePicker
 ```javascript
 {
            "errorMessage": null,
@@ -312,7 +312,7 @@ DatePicker
           "value": null
 }
 ```
-CrateChooser
+#### CrateChooser
 ```javascript
 {
            "crateDescription": []
@@ -329,7 +329,7 @@ CrateChooser
            "value": null
 }
 ```
-Routing	
+#### Routing	
 ```javascript
 {
            "errorMessage": null,
@@ -344,7 +344,8 @@ Routing
            "value": null
 }
 ```
-ManagerRoute	
+#### ManagerRoute
+```javascript
 {
            "errorMessage": null,
            "events": null,
@@ -357,7 +358,9 @@ ManagerRoute
            "type": "ManagerRoute",
            "value": null
 }
-UpstreamDataChooser	
+```
+#### UpstreamDataChooser
+```javascript
 {
            "errorMessage": null,
            "events": [
@@ -376,8 +379,10 @@ UpstreamDataChooser
            "type": "UpstreamDataChooser",
            "value": null
 }
-UpstreamFieldChooser	 In development	
+```
+#### UpstreamFieldChooser	 In development	
 UpstreamCrateChooser	
+```javascript
 {
            "multiSelection": true,
            "errorMessage": null,
@@ -392,9 +397,12 @@ UpstreamCrateChooser
            "type": "UpstreamCrateChooser",
            "value": null
 }
-ControlList	When an activity needs N set of controls it should use ControlList.
+```
+#### ControlList    
+When an activity needs N set of controls it should use ControlList.
 Let’s assume your activity needs two TextBoxes named “key” and “value”. ControlList allows user to add more than one key-value pair.
 To do this one should create a control list and configure it’s template. Template accepts a list of ControlDefinitionDTO. every added control to template will be structured as a whole. when user click add controlGroup button ControlList will add one of each control in template.In our example we need to add two textboxes with key and value names to template.
+```javascript
 {
  "controlGroups": [ 
 [{"type":"TextBox","name":"key"..},{"type":"TextBox","name":"value"..}],
@@ -415,11 +423,8 @@ To do this one should create a control list and configure it’s template. Templ
  "label": "Select key-value pairs",
  "type": "ControlList"
  }
+ ```
 Nesting is also supported.
-
- 
-
-
 
 ## Supported Events
 
