@@ -1,0 +1,10 @@
+{
+  "name": "Fr8PlanDirectory",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "angular": "1.4.9",
+    "jquery": "~2.1.4"
+  },
+  "devDependencies": {}
+}
