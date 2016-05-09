@@ -1,6 +1,6 @@
 # CONFIGURATION CONTROLS
 
-When a Terminal needs to expose UI to a user to enable configuration of an Activity, it defines the UI using a set of predefined json-driven widgets. This control JSON is packed into a Crate of Manifest: Standard UI Controls, which is then added to the Activity’s CrateStorage.
+When a Terminal needs to expose UI to a user to enable configuration of an Activity, it defines the UI using a set of predefined json-driven widgets. This control JSON is packed into a Crate of [Manifest: Standard UI Controls](https://maginot.atlassian.net/wiki/display/SH/Manifest%3A+Standard+UI+Controls), which is then added to the [Activity’s CrateStorage](https://maginot.atlassian.net/wiki/display/SH/Data+Model%3A+ActionDO).
 
 Fr8-compliant client applications know how to process this json and render the correct on-screen UI. When the user fills in values, such as by typing text into a text field, the values are added to the JSON (typically into elements called “value”) and saved back into the same Crate. Later, at Run-Time, the Terminal will have access to these values.
 
@@ -111,7 +111,7 @@ The complete list of 22 controls currently used is presented below.
       ]
 }
 ```
-#### RadioButtonsGroup
+#### [RadioButtonsGroup](https://maginot.atlassian.net/wiki/display/SH/Control%3A+RadioGroup)
 ```javascript
 {
       "type": "RadioButtonGroup",
@@ -170,9 +170,9 @@ The complete list of 22 controls currently used is presented below.
       ]
 }
 ```
-Control: Field List
+[Control: Field List](https://maginot.atlassian.net/wiki/display/SH/Control%3A+Field+List)
 
-#### FilterPane
+#### [FilterPane](https://maginot.atlassian.net/wiki/display/SH/Filter+Control)
 ```javascript
 { 
     "type": "FilterPane", 
@@ -202,10 +202,11 @@ a widget that produces UI which generates a query. Looks like this: image2015-9-
       "type": "FilePicker"
 }
 ```
-Create File Upload Control for Dockyard Frontend
+[Create File Upload Control for Dockyard Frontend](https://maginot.atlassian.net/wiki/display/SH/Create+File+Upload+Control+for+Dockyard+Frontend)
 
-TextArea	This is a multiline text field that is generated using the TextAngular rich text directive.
-See Create new TextArea control
+#### TextArea   
+This is a multiline text field that is generated using the [TextAngular rich text directive](https://github.com/fraywing/textAngular).
+See [Create new TextArea control](https://maginot.atlassian.net/wiki/display/SH/Create+new+TextArea+control)
 ```javascript
 {
 	"type": "TextArea",
@@ -251,7 +252,7 @@ TextSource	A complex control enabling user either to type specific text or to se
     } 
 }
 ```
-valueSource property will contact user’s selected option: either specific or upstream.The value property will contain either specific text or a value selected in the drop down list.
+**valueSource** property will contact user’s selected option: either specific or upstream.The value property will contain either    **specific** text or a value selected in the drop down list.   
 
  
 
@@ -399,33 +400,33 @@ UpstreamCrateChooser
 }
 ```
 #### ControlList    
-When an activity needs N set of controls it should use ControlList.
-Let’s assume your activity needs two TextBoxes named “key” and “value”. ControlList allows user to add more than one key-value pair.
+When an activity needs N set of controls it should use ControlList.   
+Let’s assume your activity needs two TextBoxes named “key” and “value”. ControlList allows user to add more than one key-value pair.   
 To do this one should create a control list and configure it’s template. Template accepts a list of ControlDefinitionDTO. every added control to template will be structured as a whole. when user click add controlGroup button ControlList will add one of each control in template.In our example we need to add two textboxes with key and value names to template.
 ```javascript
 {
- "controlGroups": [ 
-[{"type":"TextBox","name":"key"..},{"type":"TextBox","name":"value"..}],
-[{"type":"TextBox","name":"key"..},{"type":"TextBox","name":"value"..}]
- ],
- "templateContainer": {
- "template": [
- { "type": "TextBox", "name": "key" ... },
- { "type": "TextBox", "name": "value" ...}
- ],
- "name": "key_value_pair"
- },
- "addControlGroupButtonText": "Add Key/Value Pair",
- "noDataMessage": "No field is selected",
- "name": "kay_value_pairs",
- "required": false,
- "value": null,
- "label": "Select key-value pairs",
- "type": "ControlList"
+	 "controlGroups": [ 
+		[{"type":"TextBox","name":"key"..},{"type":"TextBox","name":"value"..}],
+		[{"type":"TextBox","name":"key"..},{"type":"TextBox","name":"value"..}]
+	 ],
+	 "templateContainer": {
+		 "template": [
+			 { "type": "TextBox", "name": "key" ... },
+			 { "type": "TextBox", "name": "value" ...}
+		 ],
+		 "name": "key_value_pair"
+	 },
+	 "addControlGroupButtonText": "Add Key/Value Pair",
+	 "noDataMessage": "No field is selected",
+	 "name": "kay_value_pairs",
+	 "required": false,
+	 "value": null,
+	 "label": "Select key-value pairs",
+	 "type": "ControlList"
  }
  ```
 Nesting is also supported.
 
 ## Supported Events
 
-Supported Configuration Control Events
+[Supported Configuration Control Events](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/ConfigurationControlEvents.md) 
