@@ -8,8 +8,9 @@ using Utilities.Logging;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
+using Infrastructure.Communication;
 
-namespace Hub.Managers.APIManagers.Transmitters.Restful
+namespace Infrastructure.Communication
 {
     public class RestfulServiceClient : IRestfulServiceClient
     {
@@ -26,7 +27,7 @@ namespace Hub.Managers.APIManagers.Transmitters.Restful
             public void LogError(string errorPath, string errorMessage)
             {
                 //Log.Error(string.Format("{0}: {1}", errorPath, errorMessage))
-                Logger.LogError(string.Format("{0}: {1}", errorPath, errorMessage));
+                Logger.LogError($"{errorPath}: {errorMessage}");
             }
         }
 

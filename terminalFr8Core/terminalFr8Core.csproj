@@ -240,6 +240,10 @@
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Converters\DocuSignTemplateToStandardFileDescriptionConversion.cs" />
     <Compile Include="Converters\ICrateConversion.cs" />
+    <Compile Include="Services\MT\MTSearchHelper.cs" />
+    <Compile Include="Services\MT\MTSearchHelper.IMtQueryProvider.cs" />
+    <Compile Include="Services\MT\MTSearchHelper.MtQueryProviderT.cs" />
+    <Compile Include="Services\MT\MTTypesHelper.cs" />
     <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Web.Http.Description;
 using System.Web.Http;
-using Data.States;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;

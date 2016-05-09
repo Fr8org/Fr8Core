@@ -2,8 +2,6 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Data.Entities;
-using Data.States;
 using TerminalBase.BaseClasses;
 using AutoMapper;
 using Fr8Data.DataTransferObjects;
@@ -30,7 +28,7 @@ namespace terminalAzure.Controllers
         [HttpPost]
         [Route("Write_To_Sql_Server")]
         [Obsolete]
-        public IHttpActionResult Process(ActivityDO curActivityDO)
+        public IHttpActionResult Process(ActivityDTO curActivityDTO)
         {
             //var _actionHandler = ObjectFactory.GetInstance<Write_To_Sql_Server_v1>();
             //ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);
@@ -42,7 +40,7 @@ namespace terminalAzure.Controllers
 
         [HttpPost]
         [Route("Write_To_Sql_Server/{path}")]
-        public IHttpActionResult Process(string path, ActivityDO curActivityDO)
+        public IHttpActionResult Process(string path, ActivityDTO curActivityDTO)
 
         {
             //ActionDO curAction = Mapper.Map<ActionDO>(curActionDTO);

@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Data.Entities;
 using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Newtonsoft.Json.Linq;
-using Hub.Managers;
 using StructureMap;
-using TerminalBase.Infrastructure;
 using TerminalSqlUtilities;
 
 namespace terminalAzure.Infrastructure
@@ -42,7 +41,7 @@ namespace terminalAzure.Infrastructure
             return ExtractTable(data);
         }
 
-        public string ExtractConnectionString(ActivityDO curActivityDO)
+        public string ExtractConnectionString(ActivityDTO curActivityDO)
         {
             var controlsMS = _crateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 

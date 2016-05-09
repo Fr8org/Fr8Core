@@ -6,6 +6,7 @@ using System.Web;
 using Hub.Infrastructure;
 using StructureMap;
 using Hub.Interfaces;
+using Infrastructure.Security;
 
 namespace HubWeb.Infrastructure
 {

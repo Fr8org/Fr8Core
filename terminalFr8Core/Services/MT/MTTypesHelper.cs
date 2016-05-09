@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using Data.Interfaces;
+using Data.Repositories.MultiTenant;
 using StructureMap;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.States;
 
-namespace TerminalBase.Services.MT
+namespace terminalFr8Core.Services.MT
 {
     public class MTTypesHelper
     {

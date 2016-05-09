@@ -20,7 +20,15 @@ namespace Fr8Data.Managers
             return crateManager.UpdateStorage(() => payload.CrateStorage);
         }
 
-   
+        public static ICrateStorage GetStorage(this ICrateManager crateManager, CrateStorageDTO crateStorageDTO)
+        {
+            if (crateStorageDTO == null)
+            {
+                return new CrateStorage();
+            }
+
+            return crateManager.FromDto(crateStorageDTO);
+        }
 
         public static ICrateStorage GetStorage(this ICrateManager crateManager, string crateStorageRaw)
         {

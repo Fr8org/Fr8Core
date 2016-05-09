@@ -3,12 +3,11 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
-using Hub.Managers;
 using StructureMap;
 using terminalAzure.Infrastructure;
 using terminalAzure.Services;
@@ -27,22 +26,22 @@ namespace terminalAzure.Actions
         //General Methods (every Action class has these)
 
         //maybe want to return the full Action here
-        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override async Task<ActivityDTO> Configure(ActivityDTO curActivityDTO, AuthorizationTokenDTO authTokenDTO)
         {
-            return await ProcessConfigurationRequest(curActivityDO, EvaluateReceivedRequest, authTokenDO);
+            return await ProcessConfigurationRequest(curActivityDTO, EvaluateReceivedRequest, authTokenDTO);
         }
 
         //this entire function gets passed as a delegate to the main processing code in the base class
         //currently many actions have two stages of configuration, and this method determines which stage should be applied
-        private ConfigurationRequestType EvaluateReceivedRequest(ActivityDO curActivityDO)
+        private ConfigurationRequestType EvaluateReceivedRequest(ActivityDTO curActivityDTO)
         {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
+            if (CrateManager.IsStorageEmpty(curActivityDTO))
                 return ConfigurationRequestType.Initial;
 
             //load configuration crates of manifest type Standard Control Crates
             //look for a text field name connection string with a value
 
-            var storage = CrateManager.GetStorage(curActivityDO);
+            var storage = CrateManager.GetStorage(curActivityDTO);
 
             var connectionStrings = storage.CratesOfType<StandardConfigurationControlsCM>()
                 .Select(x => x.Content.FindByName("connection_string"))
@@ -65,15 +64,15 @@ namespace terminalAzure.Actions
         }
 
         //If the user provides no Connection String value, provide an empty Connection String field for the user to populate
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDTO> InitialConfigurationResponse(ActivityDTO curActivityDTO, AuthorizationTokenDTO authTokenDTO)
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDTO))
             {
                 crateStorage.Clear();
                 crateStorage.Add(CreateControlsCrate());
             }
 
-            return await Task.FromResult<ActivityDO>(curActivityDO);
+            return await Task.FromResult<ActivityDTO>(curActivityDTO);
         }
 
         private Crate CreateControlsCrate()
@@ -100,7 +99,7 @@ namespace terminalAzure.Actions
         }
 
         //if the user provides a connection string, this action attempts to connect to the sql server and get its columns and tables
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task<ActivityDTO> FollowupConfigurationResponse(ActivityDTO curActivityDO, AuthorizationTokenDTO authTokenDO)
         {
             //Verify controls, make sure that TextBox with value exists
             ValidateControls(curActivityDO);
@@ -120,9 +119,9 @@ namespace terminalAzure.Actions
             {
                 AddErrorToControl(curActivityDO);
             }
-            return await Task.FromResult<ActivityDO>(curActivityDO);
+            return await Task.FromResult<ActivityDTO>(curActivityDO);
         }
-        public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task<PayloadDTO> Run(ActivityDTO activityDO, Guid containerId, AuthorizationTokenDTO authTokenDO)
         {
             var payloadCrates = await GetPayload(activityDO, containerId);
 
@@ -149,7 +148,7 @@ namespace terminalAzure.Actions
         //CONFIGURATION-Related Methods
         //-----------------------------------------
 
-        public List<string> GetFieldMappings(ActivityDO curActivityDO)
+        public List<string> GetFieldMappings(ActivityDTO curActivityDO)
         {
             var confControls = GetConfigurationControls(curActivityDO);
             var connStringField = confControls.Controls.First();
@@ -176,7 +175,7 @@ namespace terminalAzure.Actions
             });
         }
 
-        private void ValidateControls(ActivityDO activityDO)
+        private void ValidateControls(ActivityDTO activityDO)
         {
             var storage = CrateManager.GetStorage(activityDO);
 
@@ -198,7 +197,7 @@ namespace terminalAzure.Actions
                 throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
             }
         }
-        private void AddErrorToControl(ActivityDO activityDO)
+        private void AddErrorToControl(ActivityDTO activityDO)
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
             {
@@ -210,7 +209,7 @@ namespace terminalAzure.Actions
 
         //EXECUTION-Related Methods
         //-----------------------------------------
-        private WriteCommandArgs PrepareSQLWrite(ActivityDO curActivityDO, PayloadDTO payloadCrates)
+        private WriteCommandArgs PrepareSQLWrite(ActivityDTO curActivityDO, PayloadDTO payloadCrates)
         {
             var parser = new DbServiceJsonParser();
             var curConnStringObject = parser.ExtractConnectionString(curActivityDO);

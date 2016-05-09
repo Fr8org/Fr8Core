@@ -1,8 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using Data.Interfaces;
 using Fr8Data.DataTransferObjects;
 
-namespace TerminalBase.Services
+namespace terminalFr8Core.Services.MT
 {
 	static partial class MTSearchHelper
 	{

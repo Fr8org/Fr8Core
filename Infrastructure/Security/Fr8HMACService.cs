@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Formatting;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
-using Hub.Interfaces;
+using Infrastructure.Interfaces;
 using StructureMap;
 
-namespace Hub.Security
+namespace Infrastructure.Security
 {
     public class Fr8HMACService : IHMACService
     {
@@ -25,7 +24,7 @@ namespace Hub.Security
 
         private async Task<string> GetHMACHash(Uri requestUri, string userId, string terminalId, string terminalSecret, string timeStamp, string nonce, string contentBase64String)
         {
-            string url = HttpUtility.UrlEncode(requestUri.ToString().ToLowerInvariant());
+            string url = WebUtility.UrlEncode(requestUri.ToString().ToLowerInvariant());
             //Formulate the keys used in plain format as a concatenated string.
             string authenticationKeyString = string.Format("{0}{1}{2}{3}{4}{5}", terminalId, url, timeStamp, nonce, contentBase64String, userId);
 

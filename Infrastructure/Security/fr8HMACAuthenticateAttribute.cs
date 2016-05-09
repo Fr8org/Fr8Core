@@ -1,20 +1,15 @@
-﻿using System.Net;
+﻿using System;
+using System.Net;
 using System.Net.Http;
-using System.Web.Http;
-using System.Web.Http.Filters;
-using System;
+using System.Net.Http.Headers;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Http.Results;
-using System.Net.Http.Headers;
-using System.Security.Cryptography;
-using System.Text;
-using System.Runtime.Caching;
-using System.Web;
-using Hub.Interfaces;
+using System.Web.Http;
+using System.Web.Http.Filters;
+using Infrastructure.Interfaces;
 using StructureMap;
 
-namespace Hub.Infrastructure
+namespace Infrastructure.Security
 {
     public abstract class fr8HMACAuthenticateAttribute : Attribute, IAuthenticationFilter
     {

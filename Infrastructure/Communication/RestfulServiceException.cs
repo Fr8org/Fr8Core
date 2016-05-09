@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Hub.Managers.APIManagers.Transmitters.Restful
+namespace Infrastructure.Communication
 {
     public class RestfulServiceException : ApplicationException
     {

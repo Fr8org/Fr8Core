@@ -4,7 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Hub.Managers.APIManagers.Transmitters.Restful
+namespace Infrastructure.Communication
 {
     public interface IRestfulServiceClient
     {

@@ -21,8 +21,8 @@ using Fr8Data.States;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
+using Infrastructure.Communication;
 using Utilities;
 
 namespace Hub.Services

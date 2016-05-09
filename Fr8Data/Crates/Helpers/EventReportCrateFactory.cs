@@ -1,11 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
-using Hub.Managers;
-using StructureMap;
 
-namespace Hub.Crates.Helpers
+namespace Fr8Data.Crates.Helpers
 {
     public class EventReportCrateFactory
     {
@@ -13,7 +10,7 @@ namespace Hub.Crates.Helpers
         {
             return Create(eventName, palletId, (IEnumerable<Crate>) crates);
         }
-//
+
         public Crate Create(String eventName, String palletId, IEnumerable<Crate> crates)
         {
             var eventDTO = new EventCM
@@ -30,16 +27,6 @@ namespace Hub.Crates.Helpers
         public Crate Create(EventCM eventCm)
         {
             return Crate.FromContent("Fr8 Terminal Event or Incident Report", eventCm);
-//
-//            var eventDTOContent = JsonConvert.SerializeObject(eventDTO);
-//            return new CrateDTO()
-//            {
-//                Id = Guid.NewGuid().ToString(),
-//                Label = "Dockyard Plugin Event or Incident Report",
-//                Contents = eventDTOContent,
-//                ManifestType = "Dockyard Plugin Event or Incident Report",
-//                ManifestId = 2
-//            };
         }
     }
 }

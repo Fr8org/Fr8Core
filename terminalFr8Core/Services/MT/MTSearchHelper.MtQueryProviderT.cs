@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using Hub.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories.MultiTenant.Queryable;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using Hub.Infrastructure;
 
-namespace TerminalBase.Services
+namespace terminalFr8Core.Services.MT
 {
     static partial class MTSearchHelper
     {

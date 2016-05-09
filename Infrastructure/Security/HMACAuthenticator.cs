@@ -1,14 +1,11 @@
-﻿using Hub.Interfaces;
-using StructureMap;
+﻿using StructureMap;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Runtime.Caching;
-using System.Text;
 using System.Threading.Tasks;
+using Infrastructure.Interfaces;
 
-namespace Hub.Security
+namespace Infrastructure.Security
 {
     public class HMACAuthenticator : IHMACAuthenticator
     {

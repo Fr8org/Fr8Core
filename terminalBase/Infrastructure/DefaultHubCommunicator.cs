@@ -16,6 +16,8 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using Infrastructure.Communication;
+using Infrastructure.Interfaces;
 
 namespace TerminalBase.Infrastructure
 {
@@ -264,12 +266,6 @@ namespace TerminalBase.Infrastructure
                       + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/activities/save";
             var uri = new Uri(url);
             return await _restfulServiceClient.PostAsync<ActivityDTO, ActivityDTO>(uri, activityDTO, null, await GetHMACHeader(uri, userId, activityDTO));
-        }
-
-        public async Task<ActivityDO> SaveActivity(ActivityDO activityDO, string userId)
-        {
-            var activityDTO = Mapper.Map<ActivityDTO>(activityDO);
-            return Mapper.Map<ActivityDO>(await SaveActivity(activityDTO, userId));
         }
 
         public async Task<ActivityDTO> CreateAndConfigureActivity(Guid templateId, string userId, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)

@@ -17,6 +17,7 @@ using Fr8Data.States;
 using TerminalBase.BaseClasses;
 using TerminalBase.Services;
 using TerminalBase.Services.MT;
+using MTSearchHelper = terminalFr8Core.Services.MT.MTSearchHelper;
 
 namespace terminalFr8Core.Actions
 {

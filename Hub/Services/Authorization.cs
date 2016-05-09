@@ -13,10 +13,10 @@ using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using Newtonsoft.Json;
 using StructureMap;
 using Hub.Exceptions;
+using Infrastructure.Communication;
 
 namespace Hub.Services
 {

@@ -12,7 +12,6 @@ using Hub.Managers.APIManagers.Authorizers.Google;
 using Hub.Managers.APIManagers.Packagers;
 using Hub.Managers.APIManagers.Packagers.SegmentIO;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
 using InternalClass = Hub.Services;
 using Hub.Services;
@@ -101,8 +100,6 @@ namespace Hub.StructureMap
 
                 For<IImapClient>().Use<ImapClientWrapper>();
 
-                For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
-                For<IRestfulServiceClient>().Singleton().Use<RestfulServiceClient>().SelectConstructor(() => new RestfulServiceClient());
                 For<ITerminalTransmitter>().Use<TerminalTransmitter>();
 
                 For<IPlan>().Use<Hub.Services.Plan>().DecorateWith((context, service) => new PlanSecurityDecorator(service, ObjectFactory.GetInstance<ISecurityServices>()));
@@ -128,9 +125,6 @@ namespace Hub.StructureMap
                 For<IAuthorization>().Use<Authorization>();
                 For<ITag>().Use<Tag>();
                 For<IOrganization>().Use<Organization>();
-
-                For<IHMACAuthenticator>().Use<HMACAuthenticator>();
-                For<IHMACService>().Use<Fr8HMACService>();
 
                 For<TelemetryClient>().Use<TelemetryClient>();
                 For<IJobDispatcher>().Use<HangfireJobDispatcher>();
@@ -158,9 +152,6 @@ namespace Hub.StructureMap
                 For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
 
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
-
-                var restfulServiceClientMock = new Mock<RestfulServiceClient>(MockBehavior.Default);
-                For<IRestfulServiceClient>().Use(restfulServiceClientMock.Object).Singleton();
 
                 var mockSegment = new Mock<ITracker>();
                 For<ITracker>().Use(mockSegment.Object);
@@ -200,16 +191,6 @@ namespace Hub.StructureMap
 
                 For<ITag>().Use<Tag>();
                 For<IOrganization>().Use<Organization>();
-
-                var fr8HMACAuthenticator = new Mock<IHMACAuthenticator>();
-                fr8HMACAuthenticator.Setup(x => x.IsValidRequest(It.IsAny<HttpRequestMessage>(), It.IsAny<string>())).ReturnsAsync(true);
-                var outTerminalId = "testTerminal";
-                var outUserId = "testUser";
-                fr8HMACAuthenticator.Setup(s => s.ExtractTokenParts(It.IsAny<HttpRequestMessage>(), out outTerminalId, out outUserId));
-                For<IHMACAuthenticator>().Use(fr8HMACAuthenticator.Object);
-
-                var fr8HMACService = new Mock<IHMACService>();
-                For<IHMACService>().Use(fr8HMACService.Object);
                 For<TelemetryClient>().Use<TelemetryClient>();
                 For<ITerminal>().Use(new TerminalServiceForTests()).Singleton();
                 For<IJobDispatcher>().Use<MockJobDispatcher>();

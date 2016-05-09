@@ -573,9 +573,7 @@ namespace TerminalBase.BaseClasses
             //If Plan is specified as a parent, then a new subPlan will be created
             //Guid parentId = (parent.ChildNodes.Count > 0) ? parent.ChildNodes[0].ParentPlanNodeId.Value : parent.RootPlanNodeId.Value;
 
-            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, CurrentFr8UserId, name, order, parentActivityId);
-            var resultDO = Mapper.Map<ActivityDO>(result);
-            return resultDO;
+            return await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, CurrentFr8UserId, name, order, parentActivityId);
         }
 
         protected async Task<ActivityDTO> AddAndConfigureChildActivity(ActivityDTO parent, ActivityTemplateDTO activityTemplate, string name = null, string label = null, int? order = null)

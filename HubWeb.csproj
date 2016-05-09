@@ -446,11 +446,11 @@
     <Compile Include="Controllers\Api\ReportController.cs" />
     <Compile Include="Controllers\TokenAuthController.cs" />
     <Compile Include="ExceptionHandling\MvcHandleErrorAttribute.cs" />
-    <Compile Include="Infrastructure\AngularTemplateCacheAttribute.cs" />
-    <Compile Include="Infrastructure\FileActionResult.cs" />
-    <Compile Include="Infrastructure\Fr8HubWebHMACAuthenticateAttribute.cs" />
-    <Compile Include="Infrastructure\Fr8Identity.cs" />
-    <Compile Include="Infrastructure\HtmlHelpers.cs" />
+    <Compile Include="Infrastructure_HubWeb\AngularTemplateCacheAttribute.cs" />
+    <Compile Include="Infrastructure_HubWeb\FileActionResult.cs" />
+    <Compile Include="Infrastructure_HubWeb\Fr8HubWebHMACAuthenticateAttribute.cs" />
+    <Compile Include="Infrastructure_HubWeb\Fr8Identity.cs" />
+    <Compile Include="Infrastructure_HubWeb\HtmlHelpers.cs" />
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="ViewModels\AuthenticationErrorVM.cs" />
     <Compile Include="ViewModels\DocusignLoginVM.cs" />
@@ -4523,6 +4523,10 @@
     <ProjectReference Include="Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="Infrastructure\Infrastructure.csproj">
+      <Project>{9f4b5c92-3535-4d4c-b1e4-37beb1ae5c42}</Project>
+      <Name>Infrastructure</Name>
     </ProjectReference>
     <ProjectReference Include="terminalBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>

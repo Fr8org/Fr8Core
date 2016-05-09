@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
 using Fr8Data.DataTransferObjects;
-using Hub.Managers.APIManagers.Transmitters.Restful;
+using Infrastructure.Communication;
 
 namespace Hub.Managers.APIManagers.Transmitters.Terminal
 {
