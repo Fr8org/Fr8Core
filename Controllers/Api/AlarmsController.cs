@@ -1,11 +1,11 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using Hangfire;
+﻿using Hangfire;
 using Hub.Interfaces;
 using HubWeb.Infrastructure;
 using StructureMap;
 using System;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Fr8Data.DataTransferObjects;
 using log4net;
 using Utilities.Configuration;
 

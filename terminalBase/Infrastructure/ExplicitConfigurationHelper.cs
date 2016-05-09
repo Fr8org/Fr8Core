@@ -1,14 +1,4 @@
-﻿using System;
-using System.Threading.Tasks;
-using AutoMapper;
-using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using StructureMap;
-
-namespace TerminalBase.Infrastructure
+﻿namespace TerminalBase.Infrastructure
 {
     /*
     public class ExplicitConfigurationHelper

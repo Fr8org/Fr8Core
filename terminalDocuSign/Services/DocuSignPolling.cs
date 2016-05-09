@@ -1,20 +1,10 @@
-﻿using Data.Control;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
+﻿using Data.Entities;
 using DocuSign.eSign.Api;
 using DocuSign.eSign.Client;
-using DocuSign.eSign.Model;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using Data.Validations;
-using terminalDocuSign.DataTransferObjects;
-using terminalDocuSign.Services.NewApi;
 using StructureMap;
 using terminalDocuSign.Services.New_Api;
 using TerminalBase.Infrastructure;
@@ -22,13 +12,11 @@ using Utilities.Configuration.Azure;
 using terminalDocuSign.Infrastructure;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using System.Threading.Tasks;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Hub.Managers;
 using Hangfire;
-using System.Web.Http.Results;
 using Nito.AsyncEx;
-using Hangfire.States;
-using Hangfire.Common;
-using Hangfire.Server;
 
 namespace terminalDocuSign.Services
 {
@@ -117,7 +105,7 @@ namespace terminalDocuSign.Services
         {
             foreach (var envelope in envelopesToNotify)
             {
-                var crate = _crateManager.ToDto(Data.Crates.Crate.FromContent("Polling Event", envelope));
+                var crate = _crateManager.ToDto(Fr8Data.Crates.Crate.FromContent("Polling Event", envelope));
                 string publishUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint") + "/terminals/terminalDocuSign/events";
                 var uri = new Uri(publishUrl, UriKind.Absolute);
                 await _restfulServiceClient.PostAsync<CrateDTO>(new Uri(publishUrl, UriKind.Absolute), crate, null);

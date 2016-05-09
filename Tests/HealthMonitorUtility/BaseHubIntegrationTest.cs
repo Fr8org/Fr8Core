@@ -2,25 +2,14 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Threading.Tasks;
-using Hub.Interfaces;
 using Hub.Security;
-using Newtonsoft.Json;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using System.Linq;
 using NUnit.Framework;
-using Data.Constants;
-using Data.Interfaces.DataTransferObjects.Helpers;
 using StructureMap;
 using System.Net.Http;
-using System.Net;
-using System.Linq;
-using Data.Entities;
-using Data.Interfaces;
-using Data.States;
+using Fr8Data.DataTransferObjects;
 
 namespace HealthMonitor.Utility
 {

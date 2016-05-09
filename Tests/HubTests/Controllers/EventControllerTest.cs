@@ -1,14 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http.Results;
-using Moq;
 using NUnit.Framework;
 using StructureMap;
-using Data.Crates.Helpers;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Hub.Interfaces;
 using Hub.Managers;
 using HubWeb.Controllers;
 using Utilities.Serializers.Json;
@@ -16,10 +12,8 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using System.Threading.Tasks;
 using System;
-using Data.Constants;
-using Data.Interfaces.Manifests;
-using Data.Repositories.Plan;
-using Data.States;
+using Fr8Data.DataTransferObjects;
+using Hub.Crates.Helpers;
 
 namespace HubTests.Controllers
 {

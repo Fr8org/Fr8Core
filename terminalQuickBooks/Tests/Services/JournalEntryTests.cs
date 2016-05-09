@@ -1,10 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Migrations;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using Hub.StructureMap;
+using Fr8Data.DataTransferObjects;
 using Intuit.Ipp.Data;
 using NUnit.Framework;
 using StructureMap;

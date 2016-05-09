@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Newtonsoft.Json.Linq;
-using terminalDocuSign.DataTransferObjects;
+﻿using System.Collections.Generic;
 using DocuSign.eSign.Model;
 
 namespace terminalDocuSign.Services.New_Api

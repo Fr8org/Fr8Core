@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 using Moq;
 using terminalDocuSign.Actions;
 using terminalDocuSign.Services.New_Api;

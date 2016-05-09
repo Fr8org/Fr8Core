@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 using HealthMonitor.Utility;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
-using terminalGoogle.DataTransferObjects;
 
 namespace terminaBaselTests.Tools.Terminals
 {

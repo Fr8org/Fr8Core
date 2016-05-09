@@ -1,10 +1,8 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using Dropbox.Api;
+﻿using Dropbox.Api;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
+using Fr8Data.DataTransferObjects;
 using Utilities.Configuration.Azure;
 
 namespace terminalDropbox.Infrastructure

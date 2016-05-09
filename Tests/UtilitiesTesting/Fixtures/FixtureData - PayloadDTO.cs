@@ -1,14 +1,8 @@
-﻿﻿using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-﻿using Data.Crates;
-﻿using Hub.Managers;
+﻿using System.Collections.Generic;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Hub.Managers;
 ﻿using StructureMap;
 
 namespace UtilitiesTesting.Fixtures

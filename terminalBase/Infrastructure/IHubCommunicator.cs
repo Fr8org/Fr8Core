@@ -1,15 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Runtime.InteropServices;
 using System.Threading.Tasks;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Data.Constants;
-using Data.Interfaces.Manifests;
-using Data.Interfaces;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace TerminalBase.Infrastructure
 {

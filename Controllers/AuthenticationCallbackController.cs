@@ -1,18 +1,14 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
-using Hub.Services;
 using HubWeb.ViewModels;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
+using Fr8Data.DataTransferObjects;
 
 namespace HubWeb.Controllers
 {

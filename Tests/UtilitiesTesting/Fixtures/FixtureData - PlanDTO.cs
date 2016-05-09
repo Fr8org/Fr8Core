@@ -1,4 +1,4 @@
-﻿using Data.Interfaces.DataTransferObjects;
+﻿using Fr8Data.DataTransferObjects;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -11,7 +11,7 @@ namespace UtilitiesTesting.Fixtures
                 Name = "plan1",
                 Description = "Description for test plan",
                 PlanState = 1,
-                Visibility = Data.States.PlanVisibility.Standard
+                Visibility = Fr8Data.States.PlanVisibility.Standard
                 //DockyardAccount = FixtureData.TestDockyardAccount1()
             };
         }

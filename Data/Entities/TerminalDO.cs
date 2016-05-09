@@ -14,7 +14,7 @@ namespace Data.Entities
     {
         public TerminalDO()
         {
-            this.AuthenticationType = States.AuthenticationType.None;            
+            this.AuthenticationType = Fr8Data.States.AuthenticationType.None;      
         }
 
         [Key]

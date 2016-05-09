@@ -1,6 +1,5 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using System;
-using System.Collections.Generic;
+﻿using System;
+using Fr8Data.DataTransferObjects;
 
 namespace terminalYammerTests.Fixtures
 {

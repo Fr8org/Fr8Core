@@ -90,9 +90,9 @@ namespace HubTests.Managers
                 _setupMock.Setup(
                  a => a.Configure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<ActivityDO>(), It.IsAny<Boolean>())).Callback(() =>
                  {
-                 }).Returns(Task.FromResult(new Data.Interfaces.DataTransferObjects.ActivityDTO()));
+                 }).Returns(Task.FromResult(new Fr8Data.DataTransferObjects.ActivityDTO()));
 
-                _setupMock.Setup(a => a.MapFromDTO(new Data.Interfaces.DataTransferObjects.ActivityDTO()));
+                _setupMock.Setup(a => a.MapFromDTO(new Fr8Data.DataTransferObjects.ActivityDTO()));
 
                 ObjectFactory.Container.Inject(typeof(IActivity), _setupMock.Object);
             }

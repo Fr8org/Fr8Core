@@ -1,7 +1,7 @@
 ﻿using System;
 ﻿using System.Threading.Tasks;
 using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
