@@ -1,4 +1,4 @@
-CONFIGURATION CONTROLS
+# CONFIGURATION CONTROLS
 
 When a Terminal needs to expose UI to a user to enable configuration of an Activity, it defines the UI using a set of predefined json-driven widgets. This control JSON is packed into a Crate of Manifest: Standard UI Controls, which is then added to the Activity’s CrateStorage.
 
@@ -14,7 +14,7 @@ type |	yes |	one of the values shown below
 name |	yes |	should be unique among the controls added to a single Crate.
 label |	no |	intended for friendly ui-visible labels. If not present, the client will use the name field
 required |	yes |	true or false. if set to true, the client or server will validate that a value has been set before allowing the field
-events |	no |	allows the plugin to request that action take place upon events triggering. Discussed here.
+events |	no |	allows the plugin to request that action take place upon events triggering. Discussed [here](https://maginot.atlassian.net/wiki/display/SH/Supported+Configuration+Control+Events).
 source |	no |	instructs some controls where to find data.
 showDocumentation |	no |	 used to provide documentation for activities
 errorMessage |	no |	![2016-03-10_0157]() used to ward/inform a user
@@ -25,8 +25,8 @@ errorMessage |	no |	![2016-03-10_0157]() used to ward/inform a user
 
 The complete list of 22 controls currently used is presented below.
 
-Control	 JSON snippet	
-TextBox	
+#### TextBox 	
+```javascript
 {
       "type": "TextBox",
       "name": "Address",
@@ -41,7 +41,9 @@ TextBox
         }
       ]
 }
-Checkbox	
+```   
+#### Checkbox   
+```javascript
 {
       "type": "CheckBox",      
       "name": "Event_Envelope_Sent",
@@ -54,7 +56,9 @@ Checkbox
         }
       ]
 }
-DropDownList	
+```   
+#### DropDownList  
+```javascript
 {
        "type": "DropDownList",      
        "listItems": [
@@ -89,7 +93,9 @@ DropDownList
         "label": "Available Templates"
       }
 }
-Button	
+```   
+#### Button
+```javascript
 {
       "type": "Button",
       "name": "Continue",
@@ -104,7 +110,9 @@ Button
         }
       ]
 }
-RadioButtonsGroup	
+```
+RadioButtonsGroup
+```javascript
 {
       "type": "RadioButtonGroup",
       "groupName": "Recipient",
@@ -140,7 +148,9 @@ RadioButtonsGroup
         }
       ]
 }
-FieldList	
+```
+FieldList
+```javascript
 {
       "type": "FieldList",      
       "name": "Selected_Fields",
@@ -159,9 +169,11 @@ FieldList
         }
       ]
 }
+```
 Control: Field List
 
-FilterPane	
+FilterPane
+```javascript
 { 
     "type": "FilterPane", 
     "name": "Selected_Filter", 
@@ -171,16 +183,20 @@ FilterPane
          "label": "Queryable Criteria" 
               } 
 }
+```
 a widget that produces UI which generates a query. Looks like this: image2015-9-22 13-35-41
 
-TextBlock	
+TextBlock
+```javascript
 {
       "type": "TextBlock",      
       "class": "well well-lg",
       "value": "This Action doesn't require any configuration.",
       "label": "DocuSign Envelope"
 }
-FilePicker	
+```
+FilePicker
+```javascript
 {
       "name": "file_picker", 
       "type": "FilePicker"
