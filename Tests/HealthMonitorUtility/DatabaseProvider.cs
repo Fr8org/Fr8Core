@@ -34,19 +34,32 @@ namespace HealthMonitorUtility
             return provider;
         }
 
+        private string GetScriptPath(string rootPath, string scriptName)
+        {
+            return Path.Combine(rootPath, "SQL", scriptName);
+        }
+
         private void Init(string scriptName, string connectionString)
         {
-            string rootPath = Utilities.MiscUtils.UpNLevels(Environment.CurrentDirectory, 2);
-            string sqlFolder = Path.Combine(rootPath, "SQL");
-            string sqlScript = Path.Combine(sqlFolder, scriptName);
-
             string commandText;
-
+            string rootPath = Utilities.MiscUtils.UpNLevels(Environment.CurrentDirectory, 2);
+            string sqlScript = GetScriptPath(rootPath, scriptName);
             if (File.Exists(sqlScript))
                 commandText = File.ReadAllText(sqlScript);
             else
-                throw new FileNotFoundException($"The SQL script is not found in this location: {sqlScript}");
-
+            {
+                //Check alternative location (for HM deployed as a Web Job)
+                rootPath = Environment.CurrentDirectory;
+                sqlScript = GetScriptPath(rootPath, scriptName);
+                if (File.Exists(sqlScript))
+                {
+                    commandText = File.ReadAllText(sqlScript);
+                }
+                else
+                {
+                    throw new FileNotFoundException($"The SQL script is not found in this location: {sqlScript}");
+                }
+            }
             _conn = new SqlConnection(connectionString);
             _conn.Open();
 
