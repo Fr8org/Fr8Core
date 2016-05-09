@@ -62,10 +62,5 @@ namespace terminalBox.Actions
 
             return Task.FromResult(0);
         }
-
-        protected override Task RunChildActivities()
-        {
-            return Task.FromResult(0);
-        }
     }
 }

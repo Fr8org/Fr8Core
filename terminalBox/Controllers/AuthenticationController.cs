@@ -9,8 +9,7 @@ using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Text;
 using Newtonsoft.Json;
-using terminalBox.DataTransferObjects;
-using terminalBox.Services;
+using terminalBox.Infrastructure;
 
 namespace terminalBox.Controllers
 {
@@ -73,12 +72,12 @@ namespace terminalBox.Controllers
                 var response = await result.Content.ReadAsStringAsync();
                 var jsonObj = JsonConvert.DeserializeObject<JObject>(response);
 
-                var token = new BoxAuthDTO();
-                token.AccessToken = jsonObj.Value<string>("access_token");
-                token.Expires = DateTime.UtcNow.AddSeconds(jsonObj.Value<int>("expires_in"));
-                token.RefreshToken = jsonObj.Value<string>("refresh_token");
+                var token = new BoxAuthTokenDO(
+                    jsonObj.Value<string>("access_token"),
+                    jsonObj.Value<string>("refresh_token"),
+                    DateTime.UtcNow.AddSeconds(jsonObj.Value<int>("expires_in")));
 
-                var userId = await UserService.GetUserExternalId(token);
+                var userId = await new BoxService(token).GetCurrentUserLogin();
 
                 return new AuthorizationTokenDTO()
                 {

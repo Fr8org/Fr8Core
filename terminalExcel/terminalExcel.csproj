@@ -277,7 +277,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Activities\App_Data\" />
+    <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj">
@@ -379,7 +379,6 @@
   <ItemGroup>
     <Log4netConfigFiles Include="..\Config\log4net.terminals.*" />
   </ItemGroup>
-
   <Target Name="BeforeBuild">
     <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
   </Target>

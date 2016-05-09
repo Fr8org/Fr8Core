@@ -1,10 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Utilities.Configuration.Azure;
+﻿using Utilities.Configuration.Azure;
 
-namespace terminalBox.Services
+namespace terminalBox.Infrastructure
 {
     public static class BoxHelpers
     {
