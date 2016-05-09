@@ -18,16 +18,29 @@ namespace HealthMonitor
         {
             TimeSpan timeout = new TimeSpan(0, 10, 0); // max run time
 
-            string rootPath = Utilities.MiscUtils.UpNLevels(Environment.CurrentDirectory, 4);
-            string powerShellScriptsPath = Path.Combine(rootPath, "_PowerShellScripts");
-            string cleanUpScriptPath = Path.Combine(powerShellScriptsPath, "CleanUpAfterTests.ps1");
-
             string cleanUpScript = string.Empty;
+            string cleanUpScriptPath = string.Empty;
+            string commandText = string.Empty;
+            string scriptName = "CleanUpAfterTests.ps1";
 
-            if (File.Exists(cleanUpScriptPath))
-                cleanUpScript = File.ReadAllText(cleanUpScriptPath);
+            string rootPath = Utilities.MiscUtils.UpNLevels(Environment.CurrentDirectory, 4);
+            string sqlScript = Path.Combine(rootPath, "_PowerShellScripts", scriptName);
+            if (File.Exists(sqlScript))
+                commandText = File.ReadAllText(sqlScript);
             else
-                throw new FileNotFoundException("Database clean up script is not found.");
+            {
+                //Check alternative location (for HM deployed as a Web Job)
+                rootPath = Environment.CurrentDirectory;
+                sqlScript = Path.Combine(rootPath, scriptName);
+                if (File.Exists(sqlScript))
+                {
+                    commandText = File.ReadAllText(sqlScript);
+                }
+                else
+                {
+                    throw new FileNotFoundException($"The PowerShell script is not found in this location: {sqlScript}");
+                }
+            }
 
             Console.WriteLine("Running clean-up script...");
             using (PowerShell ps = PowerShell.Create())
@@ -77,6 +90,12 @@ namespace HealthMonitor
                 }
             }
         }
+
+        private string GetScriptPath(string rootPath, string scriptName)
+        {
+            return Path.Combine(rootPath, scriptName);
+        }
+
 
         private void error_DataAdded(object sender, DataAddedEventArgs e)
         {

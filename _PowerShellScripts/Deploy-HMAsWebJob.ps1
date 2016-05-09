@@ -48,6 +48,11 @@ $srcRunFile = "$rootDir\..\Tests\HealthMonitor\SQL\*"
 $dstRunFile = "$archiveFolderName\SQL\"
 Copy-Item $srcRunFile -Destination $dstRunFile -Force
 
+# Copy PowerShell script
+$srcRunFile = "$rootDir\CleanUpAfterTests.ps1"
+$dstRunFile = "$archiveFolderName\"
+Copy-Item $srcRunFile -Destination $dstRunFile -Force
+
 # Create zip archive.
 $archiveFiles = "$archiveFolderName\*"
 Compress-Archive -Path $archiveFiles -DestinationPath $outputArchiveFile -Force
