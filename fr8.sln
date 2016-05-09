@@ -51,7 +51,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalTwilio", "terminalT
 		{990241EA-6CF0-4026-B57C-A9031463C7C0} = {990241EA-6CF0-4026-B57C-A9031463C7C0}
 	EndProjectSection
 EndProject
-Project("{CC5FD16D-436D-48AD-A40C-5A424C6E3E79}") = "terminalCloudService", "terminalCloudService\terminalCloudService.ccproj", "{4E494560-EC62-4F1F-9CA6-18727759222B}"
+Project("{BB40F520-413E-3EBA-ABD4-2177801094F0}") = "terminalCloudService", "terminalCloudService\terminalCloudService.ccproj", "{4E494560-EC62-4F1F-9CA6-18727759222B}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalWebRole", "terminalWebRole\terminalWebRole.csproj", "{8C7F0CB5-9CD8-40D8-A539-51F451CCB29E}"
 EndProject
@@ -916,6 +916,8 @@ Global
 		{84800565-B464-471D-8F02-1A93311C3388}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{84800565-B464-471D-8F02-1A93311C3388}.Debug|x86.ActiveCfg = Debug|Any CPU
 		{84800565-B464-471D-8F02-1A93311C3388}.Debug|x86.Build.0 = Debug|Any CPU
+		{84800565-B464-471D-8F02-1A93311C3388}.Demo|Any CPU.ActiveCfg = Debug|Any CPU
+		{84800565-B464-471D-8F02-1A93311C3388}.Demo|x86.ActiveCfg = Debug|Any CPU
 		{84800565-B464-471D-8F02-1A93311C3388}.Dev|Any CPU.ActiveCfg = Debug|Any CPU
 		{84800565-B464-471D-8F02-1A93311C3388}.Dev|Any CPU.Build.0 = Debug|Any CPU
 		{84800565-B464-471D-8F02-1A93311C3388}.Dev|x86.ActiveCfg = Debug|Any CPU

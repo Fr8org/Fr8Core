@@ -52,12 +52,12 @@ namespace terminalBox.Actions
             }).ToList();
         }*/
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
            //await FillAvailableFolders();
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Configure(CrateSignaller crateSignaller)
         {
             //await FillAvailableFolders();
         }

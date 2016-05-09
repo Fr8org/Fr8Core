@@ -142,7 +142,7 @@ namespace terminalExcel.Actions
 
         protected override async Task Initialize(CrateSignaller crateSignaller)
         {
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardFileDescriptionCM>("StoredFile");
+            crateSignaller.MarkAvailableAtRuntime<StandardFileDescriptionCM>("StoredFile");
             ConfigurationControls.ExistingSpreadsheetsList.ListItems = await GetCurrentUsersFiles();
         }
 
