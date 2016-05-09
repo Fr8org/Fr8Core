@@ -231,9 +231,10 @@ See [Create new TextArea control](https://maginot.atlassian.net/wiki/display/SH/
 ```
 ![Duration](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/Duration.png)
 
-Configuration Control – Duration
+[Configuration Control – Duration](https://maginot.atlassian.net/wiki/display/SH/Configuration+Control+-+Duration)
 
-TextSource	A complex control enabling user either to type specific text or to select a value source from an upstream crate.
+#### TextSource	 
+A complex control enabling user either to type specific text or to select a value source from an upstream crate.
 ![TextSource](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/TextSource.png)
 ```javascript
 { 
