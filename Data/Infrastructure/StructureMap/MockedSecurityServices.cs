@@ -111,7 +111,7 @@ namespace Data.Infrastructure.StructureMap
 
         public bool UserHasPermission(PermissionType permissionType, string objectType)
         {
-            throw new NotImplementedException();
+            return true;
         }
     }
 }
