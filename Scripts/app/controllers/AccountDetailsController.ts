@@ -44,7 +44,7 @@ module dockyard.controllers {
             };
 
             $scope.cancel = function () {
-                     $state.go('accounts'); 
+                $state.go('accounts'); 
             };
         }
     }

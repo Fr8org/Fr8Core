@@ -11,6 +11,7 @@ using AutoMapper.Internal;
 using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;
 using Data.Entities;
+using Data.Infrastructure.Security;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
@@ -70,8 +71,16 @@ namespace HubWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //for now only return profiles that are protected. Those are all default Fr8 core profiles
-                var profiles = uow.ProfileRepository.GetQuery().Where(x => x.Protected).Select(x => new ProfileDTO() { Id = x.Id.ToString(), Name = x.Name }).ToList();
-                return Ok(profiles);
+                var profiles = uow.ProfileRepository.GetQuery().Where(x => x.Protected).Select(x => new ProfileDTO() { Id = x.Id.ToString(), Name = x.Name });
+
+                //only users with permission 'Manage Fr8 Users' need to be able to use 'Fr8 Administrator' profile
+                if (!_securityServices.UserHasPermission(PermissionType.ManageFr8Users, nameof(Fr8AccountDO)))
+                {
+                    //remove from list that profile  
+                    profiles = profiles.Where(x => x.Name != DefaultProfiles.Fr8Administrator);
+                }
+
+                return Ok(profiles.ToList());
             }
         }
 
@@ -142,10 +151,25 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                bool hasChanged = false;
                 var user = uow.UserRepository.FindOne(u => u.Id == userId);
-                user.ProfileId = profileId;
 
-                uow.SaveChanges();
+                if (_securityServices.UserHasPermission(PermissionType.ManageFr8Users, nameof(Fr8AccountDO)))
+                {
+                    user.ProfileId = profileId;
+                    uow.SaveChanges();
+                    return Ok();
+                }
+
+                if (_securityServices.UserHasPermission(PermissionType.ManageInternalUsers, nameof(Fr8AccountDO)))
+                {
+                    //security check if user is from same organization
+                    user.ProfileId = profileId;
+                    hasChanged = true;
+                }
+
+                if(hasChanged)
+                    uow.SaveChanges();
             }
 
             return Ok();

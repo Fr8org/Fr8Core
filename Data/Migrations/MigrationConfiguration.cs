@@ -726,13 +726,13 @@ namespace Data.Migrations
         public static void AddDefaultProfiles(IUnitOfWork uow)
         {
             //create 'Fr8 Admin' Profile 
-            var fr8AdminProfile = uow.ProfileRepository.GetQuery().FirstOrDefault(x => x.Name == DefaultProfiles.Fr8Admin);
+            var fr8AdminProfile = uow.ProfileRepository.GetQuery().FirstOrDefault(x => x.Name == DefaultProfiles.Fr8Administrator);
             if (fr8AdminProfile == null)
             {
                 fr8AdminProfile = new ProfileDO()
                 {
                     Id = Guid.NewGuid(),
-                    Name = DefaultProfiles.Fr8Admin,
+                    Name = DefaultProfiles.Fr8Administrator,
                     Protected = true,
                     PermissionSets = new List<PermissionSetDO>()
                 };

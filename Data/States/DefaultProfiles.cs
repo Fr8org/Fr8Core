@@ -4,6 +4,6 @@
     {
         public const string StandardUser = "Standard User";
         public const string SystemAdministrator = "System Administrator";
-        public const string Fr8Admin = "Fr8 Administrator";
+        public const string Fr8Administrator = "Fr8 Administrator";
     }
 }
