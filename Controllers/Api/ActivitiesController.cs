@@ -68,7 +68,7 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> Create(string solutionName)
+        public async Task<IHttpActionResult> CreateSolution(string solutionName)
         {
             var userId = User.Identity.GetUserId();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
