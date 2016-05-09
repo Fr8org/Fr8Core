@@ -9,7 +9,7 @@ When a Hub is ready for the next Activity in the Plan to be executed, it makes a
 
 ### Fr8 Workflow  
 
-![Main Flow](https://github.com/Fr8org/Fr8Core/blob/master/img/ArchitecturalModel_MainFlow.png) 
+![Main Flow](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/ArchitecturalModel_MainFlow.png) 
 
 [Part 3 – The Fr8 Data Model](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/DataModel.md)  
 

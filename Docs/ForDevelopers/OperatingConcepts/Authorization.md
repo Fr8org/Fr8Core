@@ -16,11 +16,11 @@ Terminals have a property called AuthenticationType which can be assigned with o
 
 Authentication flow based on Internal (or InternalWithDomain) AuthenticationType is shown below:
 
-![internal-authentication](https://github.com/Fr8org/Fr8Core/blob/master/img/AuthorizationInternalAuthentication.png)
+![internal-authentication](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/AuthorizationInternalAuthentication.png)
 
 Authentication flow based on External AuthenticationType is shown below:
 
-![external-authentication](https://github.com/Fr8org/Fr8Core/blob/master/img/AuthorizationExternalAuthentication.png)
+![external-authentication](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/AuthorizationExternalAuthentication.png)
 
 
 When a User creates or uploads a Plan to a Hub, the Hub will attempt to Activate the Plan. As part of this process, it examines each Activity in the Plan for the presence of a non-blank AuthenticationType. For each such Activity it checks its database for an AuthenticationToken associated with the requested Activity.

@@ -17,7 +17,7 @@ required |	yes |	true or false. if set to true, the client or server will valida
 events |	no |	allows the plugin to request that action take place upon events triggering. Discussed [here](https://maginot.atlassian.net/wiki/display/SH/Supported+Configuration+Control+Events).
 source |	no |	instructs some controls where to find data.
 showDocumentation |	no |	 used to provide documentation for activities
-errorMessage |	no |	![ErrorMessage](https://github.com/Fr8org/Fr8Core/blob/master/img/ErrorMessage.png) used to ward/inform a user
+errorMessage |	no |	![ErrorMessage](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/ErrorMessage.png) used to ward/inform a user
 
  
 
@@ -184,7 +184,7 @@ The complete list of 22 controls currently used is presented below.
               } 
 }
 ```
-a widget that produces UI which generates a query. Looks like this: ![FilterPane](https://github.com/Fr8org/Fr8Core/blob/master/img/FilterPane.png)
+a widget that produces UI which generates a query. Looks like this: ![FilterPane](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/FilterPane.png)
 
 #### TextBlock
 ```javascript
@@ -229,12 +229,12 @@ See [Create new TextArea control](https://maginot.atlassian.net/wiki/display/SH/
          "type": "Duration" 
 }
 ```
-![Duration](https://github.com/Fr8org/Fr8Core/blob/master/img/Duration.png)
+![Duration](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/Duration.png)
 
 Configuration Control – Duration
 
 TextSource	A complex control enabling user either to type specific text or to select a value source from an upstream crate.
-![TextSource](https://github.com/Fr8org/Fr8Core/blob/master/img/TextSource.png)
+![TextSource](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/TextSource.png)
 ```javascript
 { 
     "initialLabel": "For the Email Address Use", 
