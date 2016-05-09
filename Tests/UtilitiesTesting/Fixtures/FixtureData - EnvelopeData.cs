@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Newtonsoft.Json;
+using Fr8Data.DataTransferObjects;
 
 namespace UtilitiesTesting.Fixtures
 {

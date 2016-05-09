@@ -1,10 +1,9 @@
 ﻿using System;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Hub.Managers;
-using Newtonsoft.Json;
 using Ploeh.AutoFixture;
 
 namespace terminalDropboxTests.Fixtures

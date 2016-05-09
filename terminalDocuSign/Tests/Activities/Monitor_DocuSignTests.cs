@@ -1,21 +1,10 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using Data.Crates;
+﻿using System.Threading.Tasks;
+using Fr8Data.DataTransferObjects;
 using NUnit.Framework;
-using Newtonsoft.Json;
-using StructureMap;
-using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
 using TerminalBase.Infrastructure;
 using terminalDocuSign.Actions;
-using terminalDocuSign.Tests.Fixtures;
 using terminalDocuSign.Infrastructure.StructureMap;
 using terminalDocuSign.Infrastructure.AutoMapper;
-using Utilities.Configuration.Azure;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 

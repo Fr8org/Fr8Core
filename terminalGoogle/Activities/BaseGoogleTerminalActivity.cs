@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Data.Entities;
-using Data.Interfaces.Manifests;
+using Fr8Data.Manifests;
 using Newtonsoft.Json;
 using StructureMap;
 using terminalGoogle.DataTransferObjects;

@@ -1,13 +1,10 @@
-﻿
-using Data.Entities;
+﻿using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
 using Salesforce.Common;
 using StructureMap;
 using System;
 using System.Threading.Tasks;
-using terminalSalesforce.Infrastructure;
+using Fr8Data.DataTransferObjects;
 
 namespace terminalSalesforceTests.Fixtures
 {

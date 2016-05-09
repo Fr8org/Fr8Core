@@ -1,11 +1,10 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+﻿using System.Linq;
 using HealthMonitor.Utility;
 using NUnit.Framework;
-using System;
-using System.Linq;
 using System.Threading.Tasks;
-using Data.Crates;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Hub.Managers;
 using terminalDropboxTests.Fixtures;
 

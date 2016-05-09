@@ -1,6 +1,4 @@
-﻿using System;
-using System.Net.Mail;
-using Data.Control;
+﻿using Fr8Data.Control;
 
 namespace terminalDocuSign
 {

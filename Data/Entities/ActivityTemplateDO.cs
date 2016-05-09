@@ -7,6 +7,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using Data.States.Templates;
+using Fr8Data.States;
 using StructureMap;
 
 namespace Data.Entities

@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Hub.Managers;
 using Moq;
 using NUnit.Framework;
@@ -112,7 +112,7 @@ namespace terminalSlackTests.Activities
             var activity = new Monitor_Channel_v2();
             var currentActivity = await activity.Configure(new ActivityDO(), AuthorizationToken);
             currentActivity = currentActivity.UpdateControls<Monitor_Channel_v2.ActivityUi>(x =>
-            {
+        {
                 x.MonitorDirectMessagesOption.Selected = true;
                 x.MonitorChannelsOption.Selected = false;
             });

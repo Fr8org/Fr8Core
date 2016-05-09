@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
-
 using Utilities.Configuration.Azure;
 using System.Web.Http.Description;
-using Data.Interfaces.Manifests;
-using Data.Constants;
+using Fr8Data.Constants;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace terminalDocuSign.Controllers
 {

@@ -1,13 +1,12 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.StructureMap;
@@ -18,7 +17,6 @@ using terminalPapertrail.Actions;
 using terminalPapertrail.Interfaces;
 using terminalPapertrail.Tests.Infrastructure;
 using TerminalBase.Infrastructure;
-using Utilities.Logging;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 

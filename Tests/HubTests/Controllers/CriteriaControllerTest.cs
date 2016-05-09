@@ -3,7 +3,7 @@ using NUnit.Framework;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 using HubWeb.Controllers;
 using HubTests.Controllers.Api;
 using UtilitiesTesting.Fixtures;

@@ -1,6 +1,6 @@
 ﻿using System.Threading.Tasks;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
 using HealthMonitor.Utility;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
@@ -21,7 +21,7 @@ namespace terminalDocuSignTests.Integration
         {
             var storage = new CrateStorage();
 
-            storage.Add(Data.Crates.Crate.FromContent("Config", new Query_DocuSign_v1.ActivityUi()));
+            storage.Add(Fr8Data.Crates.Crate.FromContent("Config", new Query_DocuSign_v1.ActivityUi()));
             
             return storage;
         }
