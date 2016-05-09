@@ -10,11 +10,7 @@ namespace Hub.Managers
     {
         public void Enqueue(System.Linq.Expressions.Expression<Action> job)
         {
-            //put Hubs job in "hub" queue to avoid processing of terminalDocuSign jobs
-            var client = new BackgroundJobClient();
-            var state = new EnqueuedState("hub");
-            var hangfire_job = Job.FromExpression(job);
-            client.Create(job, state);
+            BackgroundJob.Enqueue(job);
         }
     }
 }
