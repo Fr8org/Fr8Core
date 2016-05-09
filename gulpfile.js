@@ -49,6 +49,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/model/Plan.js',
         'Scripts/app/model/PlanBuilderState.js',
         'Scripts/app/model/User.js',
+        'Scripts/app/model/Profile.js',
         'Scripts/app/model/ContainerDTO.js',
         'Scripts/app/model/ActionGroup.js',
         'Scripts/app/model/WebServiceDTO.js',
