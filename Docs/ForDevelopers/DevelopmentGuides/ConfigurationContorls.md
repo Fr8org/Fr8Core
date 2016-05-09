@@ -201,18 +201,21 @@ FilePicker
       "name": "file_picker", 
       "type": "FilePicker"
 }
+```
 Create File Upload Control for Dockyard Frontend
 
 TextArea	This is a multiline text field that is generated using the TextAngular rich text directive.
 See Create new TextArea control
-
+```javascript
 {
 	"type": "TextArea",
 	"name": "Body",
         "label": "Body"
 	"isReadOnly": false,
 }
-Duration	
+```
+Duration
+```javascript
 { 
          "days": 0, 
          "hours": 1, 
@@ -224,13 +227,14 @@ Duration
          "label": "After you send a Tracked Envelope, Fr8 will wait.", 
          "type": "Duration" 
 }
+```
 2016-03-09_2358
 
 Configuration Control – Duration
 
 TextSource	A complex control enabling user either to type specific text or to select a value source from an upstream crate.
 97b819f377c46ee0181324c5e0f32fff
-
+```javascript
 { 
     "initialLabel": "For the Email Address Use", 
     "valueSource": null, 
@@ -246,17 +250,21 @@ TextSource	A complex control enabling user either to type specific text or to se
         "label": "Upstream Plugin-Provided Fields" 
     } 
 }
+```
 valueSource property will contact user’s selected option: either specific or upstream.The value property will contain either specific text or a value selected in the drop down list.
 
  
 
-MappingPane	
+MappingPane
+```javascript
 {
       "type": "MappingPane",      
       "name": "Selected_Mapping",
       "label": "Configure Mapping"
 }
-QueryBuilder	
+```
+QueryBuilder
+```javascript
 {
            "errorMessage": null,
            "events": [],
@@ -273,7 +281,9 @@ QueryBuilder
           "type": "QueryBuilder",
           "value": "[]"
 }
-RunRouteButton	
+```
+RunRouteButton
+```javascript
 {
            "errorMessage": null,
            "events": [],
@@ -286,7 +296,9 @@ RunRouteButton
           "type": "RunRouteButton",
           "value": null
 }
-DatePicker	
+```
+DatePicker
+```javascript
 {
            "errorMessage": null,
            "events": [],
@@ -299,7 +311,9 @@ DatePicker
           "type": "DatePicker",
           "value": null
 }
-CrateChooser	
+```
+CrateChooser
+```javascript
 {
            "crateDescription": []
            "errorMessage": null,
@@ -314,7 +328,9 @@ CrateChooser
            "type": "CrateChooser",
            "value": null
 }
+```
 Routing	
+```javascript
 {
            "errorMessage": null,
            "events": null,
@@ -327,6 +343,7 @@ Routing
            "type": "Routing",
            "value": null
 }
+```
 ManagerRoute	
 {
            "errorMessage": null,
