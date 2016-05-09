@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using Data.Entities;
-using Data.Interfaces.Manifests;
-using terminalQuickBooks.Infrastructure;
+using Fr8Data.Manifests;
 using terminalQuickBooks.Interfaces;
 
 namespace terminalQuickBooks.Services

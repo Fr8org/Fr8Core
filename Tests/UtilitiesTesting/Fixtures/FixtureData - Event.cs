@@ -1,9 +1,5 @@
-﻿using System.Collections.Generic;
-using Data.Crates;
-using Data.Crates.Helpers;
-using Data.Interfaces.DataTransferObjects;
-using Hub.Managers;
-using StructureMap;
+﻿using Fr8Data.Crates.Helpers;
+using Fr8Data.DataTransferObjects;
 
 namespace UtilitiesTesting.Fixtures
 {

@@ -2,17 +2,13 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Data.Entities;
-using Newtonsoft.Json;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Data.States;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using TerminalSqlUtilities;
 using TerminalBase.BaseClasses;
-using Utilities.Configuration.Azure;
 
 namespace terminalFr8Core.Infrastructure
 {

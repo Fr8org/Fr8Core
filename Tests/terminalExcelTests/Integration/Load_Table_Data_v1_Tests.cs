@@ -1,26 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
-using Data.Infrastructure;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using HealthMonitor.Utility;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using Hub.StructureMap;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
 using terminalExcel.Actions;
 using terminalExcelTests.Fixtures;
-using TerminalBase.BaseClasses;
-using Utilities.Configuration;
-using Utilities.Configuration.Azure;
 
 namespace terminalExcelTests.Integration
 {
@@ -56,7 +47,7 @@ namespace terminalExcelTests.Integration
                     var controlsCrate = _crateManager.GetStorage(responseActivityDTO).FirstCrate<StandardConfigurationControlsCM>();
                     activityUi.SyncWith(controlsCrate.Content);
                     activityUi.FilePicker.Value = HealthMonitor_FixtureData.GetFilePath();
-                    storage.ReplaceByLabel(Data.Crates.Crate.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
+                    storage.ReplaceByLabel(Fr8Data.Crates.Crate.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
                 }
             }
             dataDTO.ActivityDTO = responseActivityDTO;
@@ -159,7 +150,7 @@ namespace terminalExcelTests.Integration
             var requestActionDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_Fr8DataDTO(Guid.NewGuid());
             using (var storage = _crateManager.GetUpdatableStorage(requestActionDTO.ActivityDTO))
             {
-                storage.Add(Data.Crates.Crate.FromContent("Control", new StandardConfigurationControlsCM(new Load_Excel_File_v1.ActivityUi().Controls.ToArray()), AvailabilityType.Configuration));
+                storage.Add(Fr8Data.Crates.Crate.FromContent("Control", new StandardConfigurationControlsCM(new Load_Excel_File_v1.ActivityUi().Controls.ToArray()), AvailabilityType.Configuration));
             }
 
                 //Act
@@ -184,7 +175,7 @@ namespace terminalExcelTests.Integration
             var requestActionDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_Fr8DataDTO(Guid.NewGuid());
             using (var storage = _crateManager.GetUpdatableStorage(requestActionDTO.ActivityDTO))
             {
-                storage.Add(Data.Crates.Crate.FromContent("Control", new StandardConfigurationControlsCM(new Load_Excel_File_v1.ActivityUi().Controls.ToArray()), AvailabilityType.Configuration));
+                storage.Add(Fr8Data.Crates.Crate.FromContent("Control", new StandardConfigurationControlsCM(new Load_Excel_File_v1.ActivityUi().Controls.ToArray()), AvailabilityType.Configuration));
             }
 
             //Act

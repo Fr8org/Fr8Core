@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Data.Control;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.Control;
+using Fr8Data.DataTransferObjects;
 
 namespace Data.Infrastructure
 {

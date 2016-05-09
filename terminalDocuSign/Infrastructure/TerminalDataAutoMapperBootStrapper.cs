@@ -1,13 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using AutoMapper;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Utilities.AutoMapper;
-using terminalDocuSign.DataTransferObjects;
-
+﻿
 namespace terminalDocuSign.Infrastructure.AutoMapper
 {
     public class TerminalDataAutoMapperBootStrapper

@@ -1,27 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
 using System.Diagnostics;
-using System.Linq;
-using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Data.Crates;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StructureMap;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
-using Hub.Interfaces;
 using Hub.Managers;
-using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Interfaces;
-using Utilities.Configuration.Azure;
-using Utilities.Logging;
 using terminalDocuSign.Infrastructure;
-using terminalDocuSign.Infrastructure.DocuSignParserModels;
 
 namespace terminalDocuSign.Services
 {

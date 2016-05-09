@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Interfaces;
-using Data.States;
 using Hub.Interfaces;
 using Moq;
 using NUnit.Framework;
@@ -11,8 +10,6 @@ using terminalDocuSign.Services;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using terminalDocuSign.Tests.Fixtures;
 
 namespace terminalDocuSign.Tests.Services
 {

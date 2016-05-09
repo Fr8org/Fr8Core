@@ -1,12 +1,10 @@
-﻿using Data.Control;
-using Data.Interfaces.DataTransferObjects;
-using DocuSign.eSign.Model;
+﻿using DocuSign.eSign.Model;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Web;
+using Fr8Data.Control;
+using Fr8Data.DataTransferObjects;
 using terminalDocuSign.DataTransferObjects;
 using Utilities;
 

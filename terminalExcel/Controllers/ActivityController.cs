@@ -1,12 +1,8 @@
 ﻿using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
-using Data.Entities;
 using TerminalBase.BaseClasses;
-using System.Collections.Generic;
-using Data.States;
 using System;
 using System.Threading.Tasks;
-using AutoMapper;
+using Fr8Data.DataTransferObjects;
 using TerminalBase.Infrastructure;
 
 namespace terminalExcel.Controllers

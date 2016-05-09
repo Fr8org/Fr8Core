@@ -4,16 +4,14 @@ using System.Linq;
 using System.Web.Http;
 using AutoMapper;
 using HubWeb.Infrastructure;
-using Microsoft.AspNet.Identity;
 using StructureMap;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
 using InternalInterface = Hub.Interfaces;
 using Data.Entities;
-using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Fr8Data.DataTransferObjects;
 using Newtonsoft.Json;
 
 namespace HubWeb.Controllers
@@ -51,18 +49,6 @@ namespace HubWeb.Controllers
                 curPayloadDTO.CrateStorage = JsonConvert.DeserializeObject<CrateStorageDTO>(curContainerDO.CrateStorage);
 
                 return Ok(curPayloadDTO);
-            }
-        }
-
-        [Fr8ApiAuthorize]
-        [HttpGet]
-        public IHttpActionResult GetIdsByName(string name)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var containerIds = uow.ContainerRepository.GetQuery().Where(x => x.Name == name).Select(x => x.Id).ToArray();
-
-                return Json(containerIds);
             }
         }
 

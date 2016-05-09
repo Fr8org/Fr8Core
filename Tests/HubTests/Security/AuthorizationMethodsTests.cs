@@ -5,19 +5,16 @@ using Data.Entities;
 using StructureMap;
 using Data.Interfaces;
 using Data.States;
-using Data.Interfaces.DataTransferObjects;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Owin;
-using System.Web.Http;
-using System.Web.Http.Dispatcher;
 using System.Collections.Generic;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Moq;
 using Hub.Managers;
-using Data.Interfaces.Manifests;
-using Data.Crates;
 using AutoMapper;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace HubTests.Security
 {

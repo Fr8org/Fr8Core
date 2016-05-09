@@ -1,17 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Data.Crates;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Data.States;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Moq;
@@ -67,7 +65,7 @@ namespace terminalIntegrationTests
 
             using (var crateStorage = _crateManager.GetUpdatableStorage(curActionDTO))
             {
-                crateStorage.Add(Data.Crates.Crate.FromContent("", tableDataMS));
+                crateStorage.Add(Fr8Data.Crates.Crate.FromContent("", tableDataMS));
             }
 
             var restfulServiceClient = new Mock<IRestfulServiceClient>();
