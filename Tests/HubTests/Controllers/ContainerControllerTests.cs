@@ -80,12 +80,6 @@ namespace HubTests.Controllers
         }
 
         [Test]
-        public void ContainerController_ShouldHaveFr8ApiAuthorizeOnGetIdsByNameMethod()
-        {
-            ShouldHaveFr8ApiAuthorizeOnFunction(typeof(ContainersController), "GetIdsByName");
-        }
-
-        [Test]
         public void ContainerController_ShouldHaveFr8ApiAuthorizeOnGetMethod()
         {
             ShouldHaveFr8ApiAuthorizeOnFunction(typeof(ContainersController), "Get");

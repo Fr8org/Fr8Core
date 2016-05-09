@@ -280,7 +280,7 @@ namespace HubTests.Controllers
             PlansController ptc = CreatePlanController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             var response = ptc.Post(PlanDto);
             PlanDto.Name = "updated";
-            response = ptc.Post(PlanDto, true);
+            response = ptc.Post(PlanDto);
 
             //Assert
             var okResult = response as OkNegotiatedContentResult<PlanEmptyDTO>;
