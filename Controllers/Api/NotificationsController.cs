@@ -35,7 +35,7 @@ namespace HubWeb.Controllers
                 userName = User.Identity.Name;
             }
 
-            _notification.NotifyUser(notificationMessage.Message, PUSHER_EVENT_TERMINAL_NOTIFICATION, userName);
+            _notification.NotifyUser(notificationMessage, PUSHER_EVENT_TERMINAL_NOTIFICATION, userName);
             return Ok();
         }
     }

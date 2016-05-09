@@ -216,7 +216,7 @@ namespace TerminalBase.Infrastructure
             throw new NotImplementedException();
         }
 
-        public Task<ActivityDTO> CreateAndConfigureActivity(Guid templateId, string userId, string label = null, int? order = null, Guid? parentNodeId = default(Guid?), bool createPlan = false, Guid? authorizationTokenId = null)
+        public Task<ActivityDTO> CreateAndConfigureActivity(Guid templateId, string userId, string name = null, int? order = null, Guid? parentNodeId = default(Guid?), bool createPlan = false, Guid? authorizationTokenId = null)
         {
             throw new NotImplementedException();
         }

@@ -117,7 +117,7 @@ namespace TerminalBase.BaseClasses
                     CurrentActivityStorage = storage;
 
                     var configurationType = GetConfigurationRequestType();
-                    var runtimeCrateManager = new CrateSignaller(CurrentActivityStorage, CurrentActivity.Label);
+                    var runtimeCrateManager = new CrateSignaller(CurrentActivityStorage, CurrentActivity.Name);
 
                     switch (configurationType)
                     {

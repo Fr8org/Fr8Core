@@ -240,7 +240,6 @@
     <Compile Include="Controllers\ContainerControllerTests.cs" />
     <Compile Include="Controllers\CriteriaControllerTest.cs" />
     <Compile Include="Controllers\EventControllerTest.cs" />
-    <Compile Include="Controllers\FactsControllerTests.cs" />
     <Compile Include="Controllers\ManifestControllerTest.cs" />
     <Compile Include="Controllers\NotificationControllerTests.cs" />
     <Compile Include="Controllers\PlanControllerTests.cs" />

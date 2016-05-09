@@ -44,9 +44,22 @@ namespace terminalAtlassian.Controllers
                 WebService = webService
             };
 
+            var saveJiraIssueActivity = new ActivityTemplateDTO()
+            {
+                Version = "1",
+                Name = "Save_Jira_Issue",
+                Label = "Save Jira Issue",
+                Terminal = terminal,
+                NeedsAuthentication = true,
+                Category = ActivityCategory.Forwarders,
+                MinPaneWidth = 330,
+                WebService = webService
+            };
+
             var actionList = new List<ActivityTemplateDTO>()
             {
-                getJiraIssueAction
+                getJiraIssueAction,
+                saveJiraIssueActivity
             };
 
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()

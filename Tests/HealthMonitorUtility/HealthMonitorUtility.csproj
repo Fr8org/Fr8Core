@@ -84,6 +84,7 @@
     <Compile Include="BaseIntegrationTest.cs" />
     <Compile Include="BaseHubIntegrationTest.cs" />
     <Compile Include="BaseTerminalIntegrationTest.cs" />
+    <Compile Include="DatabaseProvider.cs" />
     <Compile Include="EmailAssert.cs" />
     <Compile Include="ExceptionExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -132,6 +133,10 @@
     <ProjectReference Include="..\..\terminalGoogle\terminalGoogle.csproj">
       <Project>{cddccfab-28b8-446c-8585-72d2bb78f2dc}</Project>
       <Name>terminalGoogle</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utilities\Utilities.csproj">
+      <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
+      <Name>Utilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\UtilitiesTesting\UtilitiesTesting.csproj">
       <Project>{6b855c3f-07a9-4787-9fde-29fa567c43e2}</Project>

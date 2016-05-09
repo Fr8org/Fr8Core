@@ -49,7 +49,7 @@ namespace HubTests.Controllers
 
             //Act
 
-            var result = _eventController.ProcessGen1Event(_crate.ToDto(_eventReportCrateFactoryHelper.Create(eventDto)));
+            var result = _eventController.CreateEventLog(_crate.ToDto(_eventReportCrateFactoryHelper.Create(eventDto)));
 
             //Assert
             Assert.IsTrue(result is OkResult);
@@ -71,7 +71,7 @@ namespace HubTests.Controllers
                 var curEventDTO = FixtureData.TestTerminalEventDto();
 
                 //Act
-                var result = _eventController.ProcessGen1Event(_crate.ToDto(_eventReportCrateFactoryHelper.Create(curEventDTO)));
+                var result = _eventController.CreateEventLog(_crate.ToDto(_eventReportCrateFactoryHelper.Create(curEventDTO)));
 
                 //Assert
                 Assert.IsTrue(result is OkResult);
