@@ -8,6 +8,7 @@ using System.Net.Http;
 using Newtonsoft.Json.Linq;
 using System.Net;
 using System.Text;
+using System.Web;
 using Newtonsoft.Json;
 using terminalBox.Infrastructure;
 
@@ -16,7 +17,8 @@ namespace terminalBox.Controllers
     [RoutePrefix("authentication")]
     public class AuthenticationController : BaseTerminalController
     {
-        private const string curTerminal = "terminalBox";
+        private const string CurTerminal = "terminalBox";
+
         //https://account.box.com/api/oauth2/authorize?response_type=code&client_id=MY_CLIENT_ID&state=security_token%3DKnhMJatFipTAnM0nHlZA
         //http://localhost:30643/AuthenticationCallback/ProcessSuccessfulOAuthResponse
         [HttpPost]
@@ -28,11 +30,11 @@ namespace terminalBox.Controllers
             var redirectUri = BoxHelpers.RedirectUri;
             var state = Guid.NewGuid().ToString();
 
-            url = url + string.Format("response_type=code&client_id={0}&redirect_uri={1}&state={2}",
-                clientId, System.Web.HttpUtility.UrlEncode(redirectUri),
-               System.Web.HttpUtility.UrlEncode(state));
+            url = url + $"response_type=code&client_id={clientId}" +
+                  $"&redirect_uri={HttpUtility.UrlEncode(redirectUri)}" +
+                  $"&state={HttpUtility.UrlEncode(state)}";
 
-            return new ExternalAuthUrlDTO() { Url = url, ExternalStateToken = System.Web.HttpUtility.UrlEncode(state) };
+            return new ExternalAuthUrlDTO() { Url = url, ExternalStateToken = HttpUtility.UrlEncode(state) };
         }
 
         [HttpPost]
@@ -42,20 +44,18 @@ namespace terminalBox.Controllers
         {
             try
             {
-                string code;
-                string state;
-                ParseCodeAndState(externalAuthDTO.RequestQueryString, out code, out state);
-
+                var query = HttpUtility.ParseQueryString(externalAuthDTO.RequestQueryString);
+                string code = query["code"];
+                string state = query["state"];
 
                 string accessUrl = "https://api.box.com/oauth2/token";
 
                 string url = accessUrl;
 
-                string payload = string.Format("grant_type=authorization_code&code={0}&client_id={1}&client_secret={2}&redirect_uri={3}",
-               System.Web.HttpUtility.UrlEncode(code),
-               System.Web.HttpUtility.UrlEncode(BoxHelpers.ClientId),
-               System.Web.HttpUtility.UrlEncode(BoxHelpers.Secret),
-               System.Web.HttpUtility.UrlEncode(BoxHelpers.RedirectUri));
+                string payload = $"grant_type=authorization_code&code={HttpUtility.UrlEncode(code)}" +
+                                 $"&client_id={HttpUtility.UrlEncode(BoxHelpers.ClientId)}&" +
+                                 $"&client_secret={HttpUtility.UrlEncode(BoxHelpers.Secret)}" +
+                                 $"&redirect_uri={HttpUtility.UrlEncode(BoxHelpers.RedirectUri)}";
 
                 var httpClient = new HttpClient(new HttpClientHandler
                 {
@@ -75,7 +75,8 @@ namespace terminalBox.Controllers
                 var token = new BoxAuthTokenDO(
                     jsonObj.Value<string>("access_token"),
                     jsonObj.Value<string>("refresh_token"),
-                    DateTime.UtcNow.AddSeconds(jsonObj.Value<int>("expires_in")));
+                    DateTime.UtcNow.AddSeconds(jsonObj.Value<int>("expires_in"))
+                    );
 
                 var userId = await new BoxService(token).GetCurrentUserLogin();
 
@@ -88,41 +89,13 @@ namespace terminalBox.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex);
+                ReportTerminalError(CurTerminal, ex);
                 return await Task.FromResult(
                     new AuthorizationTokenDTO()
                     {
                         Error = "An error occurred while trying to authorize, please try again later."
                     }
                 );
-            }
-        }
-
-        private void ParseCodeAndState(string queryString, out string code, out string state)
-        {
-            if (string.IsNullOrEmpty(queryString))
-            {
-                throw new ApplicationException("QueryString is empty.");
-            }
-            code = null;
-            state = null;
-            var tokens = queryString.Split(new[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var token in tokens)
-            {
-                var nameValueTokens = token.Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
-                if (nameValueTokens.Length < 2)
-                {
-                    continue;
-                }
-
-                if (nameValueTokens[0] == "code")
-                {
-                    code = nameValueTokens[1];
-                }
-                else if (nameValueTokens[0] == "state")
-                {
-                    state = nameValueTokens[1];
-                }
             }
         }
     }

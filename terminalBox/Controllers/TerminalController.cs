@@ -66,9 +66,5 @@ namespace terminalBox.Controllers
 
             return Json(curStandardFr8TerminalCM);
         }
-
-
-
-
     }
 }
