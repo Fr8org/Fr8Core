@@ -63,8 +63,8 @@ namespace HubWeb.Controllers.Api
         }
 
         [HttpGet]
-        [ActionName("getDescriptionWithMaxVersion")]
-        public IHttpActionResult GetDescriptionWithMaxVersion(string name)
+        [ActionName("getDescriptionWithLastVersion")]
+        public IHttpActionResult GetDescriptionWithLastVersion(string name)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

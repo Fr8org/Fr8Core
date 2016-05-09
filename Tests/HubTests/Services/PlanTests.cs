@@ -30,7 +30,7 @@ namespace HubTests.Services
                 var curUserAccount = FixtureData.TestDockyardAccount1();
                 curPlanDO.Fr8Account = curUserAccount;
 
-                Plan.CreateOrUpdate(uow, curPlanDO, false);
+                Plan.CreateOrUpdate(uow, curPlanDO);
 
                 uow.SaveChanges();
 
