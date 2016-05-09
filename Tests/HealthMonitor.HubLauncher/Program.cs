@@ -61,7 +61,7 @@ namespace HealthMonitor.HubLauncher
             }
             UpdateConnectionString(match.Groups[1].Value, match.Groups[2].Value);
 
-            Console.WriteLine("{0} About to launch self-hosting. This may take up to 30 seconds.", DateTime.UtcNow.ToLongTimeString());
+            Console.WriteLine("{0} About to launch self-hosting.", DateTime.UtcNow.ToLongTimeString());
             _initializer = new SelfHostInitializer();
             _initializer.Initialize(selfHostFactory, endpoint);
 
@@ -69,7 +69,7 @@ namespace HealthMonitor.HubLauncher
 
             // read input to detect "quit" command
             string command = string.Empty;
-            do
+            do 
             {
                 command = Console.ReadLine();
             } while (!command.Equals("quit", StringComparison.InvariantCultureIgnoreCase));
