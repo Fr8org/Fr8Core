@@ -15,7 +15,6 @@ using System.Threading.Tasks;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Hub.Managers;
-using Hangfire;
 using Nito.AsyncEx;
 
 namespace terminalDocuSign.Services
@@ -39,25 +38,7 @@ namespace terminalDocuSign.Services
         public void SchedulePolling(string externalAccountId, string curFr8UserId)
         {
             string pollingInterval = CloudConfigurationManager.GetSetting("terminalDocuSign.PollingInterval");
-            var jobId = GetSchedulledJobId(externalAccountId);
-            RecurringJob.AddOrUpdate(jobId, () => LaunchScheduledActivity(externalAccountId, curFr8UserId, pollingInterval), "*/" + pollingInterval + " * * * *", null, "terminal_docusign");
-        }
-
-        [Queue("terminal_docusign")]
-        public void LaunchScheduledActivity(string externalAccountId, string curFr8UserId, string pollingInterval)
-        {
-
-            //http://stackoverflow.com/questions/9343594/how-to-call-asynchronous-method-from-synchronous-method-in-c
-            var success = AsyncContext.Run(() => Poll(externalAccountId, curFr8UserId, pollingInterval));
-            if (!success)
-            {
-                RecurringJob.RemoveIfExists(GetSchedulledJobId(externalAccountId));
-            }
-        }
-
-        public string GetSchedulledJobId(string externalAccountId)
-        {
-            return externalAccountId.GetHashCode().ToString();
+            _hubCommunicator.ScheduleEvent(externalAccountId, curFr8UserId, pollingInterval);
         }
 
         public async Task<bool> Poll(string externalAccountId, string curFr8UserId, string pollingInterval)
