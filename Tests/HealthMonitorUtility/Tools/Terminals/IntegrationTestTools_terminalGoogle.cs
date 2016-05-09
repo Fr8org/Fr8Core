@@ -14,6 +14,7 @@ using NUnit.Framework;
 using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services;
+using terminalGoogle.Services.Authorization;
 
 namespace terminaBaselTests.Tools.Terminals
 {
@@ -27,7 +28,7 @@ namespace terminaBaselTests.Tools.Terminals
         }
 
         /// <summary>
-        /// For a given google account check for a spreasheet file existence amd return the content from that spreadsheet
+        /// For a given google account check for a spreasheet file existence and return the content from that spreadsheet
         /// </summary>
         /// <param name="authorizationTokenId"></param>
         /// <param name="spreadsheetName"></param>

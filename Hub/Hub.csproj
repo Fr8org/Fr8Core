@@ -278,11 +278,13 @@
     <Compile Include="Exceptions\AuthenticationExeception.cs" />
     <Compile Include="Exceptions\ErrorResponseException.cs" />
     <Compile Include="Exceptions\ActivityExecutionException.cs" />
+    <Compile Include="Exceptions\InvalidTokenException.cs" />
     <Compile Include="Helper\JSONLowercaseContractResolver.cs" />
     <Compile Include="Helper\LZString.cs" />
     <Compile Include="Infrastructure\AsyncMultiLock.cs" />
     <Compile Include="Infrastructure\FilterConditionPredicateBuilder.cs" />
     <Compile Include="Infrastructure\fr8HMACAuthenticateAttribute.cs" />
+    <Compile Include="Infrastructure\Fr8Principle.cs" />
     <Compile Include="Managers\HangfireJobDispatcher.cs" />
     <Compile Include="Interfaces\IJobDispatcher.cs" />
     <Compile Include="Managers\HangFireJobFilter.cs" />

@@ -5256,11 +5256,12 @@ img.mfp-img {
 /* --------------------- */
 /* SOCIAL NETWORK
 /* --------------------- */
-#social-network {
+/*moved to CDNRelatedStyles*/
+/*#social-network {
   background-image: url('/Content/img/background-cta-3.jpg');
   text-align: center;
   min-height: 550px;
-}
+}*/
 #social-network h2 {
   padding-top: 100px;
   color: #F2F4F5;
@@ -5979,7 +5980,9 @@ img.mfp-img {
   background-color: #F2F4F5;
 }
 
-.demo-card-square-connect > .mdl-card__title {
+/*Section moved to CDNRElatedStyles.css*/
+
+/*.demo-card-square-connect > .mdl-card__title {
   color: #F2F4F5;
   font-weight: 700;
   background: url('/Content/img/freight-connect.jpg') center no-repeat;
@@ -5998,7 +6001,7 @@ img.mfp-img {
   font-weight: 500;
   background: url('/Content/img/freight-train.jpg') center no-repeat;
   background-color: #444C58;
-}
+}*/
 
 .mdl-card__supporting-text {
 
@@ -6097,7 +6100,8 @@ img.mfp-img {
   opacity:0.9;
 }
 
-.demo-card-square-fr8-box > .mdl-card__title {
+/*moved to CDNRelatedStyles*/
+/*.demo-card-square-fr8-box > .mdl-card__title {
   color: #F2F4F5;
   font-weight: 700;
   background: url('/Content/img/freight-containers.jpg') center no-repeat;
@@ -6110,7 +6114,8 @@ img.mfp-img {
   background: url('/Content/img/freight-containers.jpg') center no-repeat;
   background-color: #F2F4F5;
   opacity:0.9;
-}
+}*/
+
 .hero-unit .hero-bg-welcome-pattern {
   /*filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=20);*/
   opacity: 0.6;

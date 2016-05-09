@@ -15,6 +15,7 @@ using Data.States;
 using Hub.Managers;
 using TerminalBase.Infrastructure;
 using Newtonsoft.Json.Linq;
+using TerminalBase.Errors;
 
 namespace TerminalBase.BaseClasses
 {
@@ -118,7 +119,7 @@ namespace TerminalBase.BaseClasses
                     CurrentActivityStorage = storage;
 
                     var configurationType = GetConfigurationRequestType();
-                    var runtimeCrateManager = new RuntimeCrateManager(CurrentActivityStorage, CurrentActivity.Label);
+                    var runtimeCrateManager = new CrateSignaller(CurrentActivityStorage, CurrentActivity.Name);
 
                     switch (configurationType)
                     {
@@ -161,27 +162,27 @@ namespace TerminalBase.BaseClasses
         
         /**********************************************************************************/
 
-        private async Task InitialConfiguration(RuntimeCrateManager runtimeCrateManager)
+        private async Task InitialConfiguration(CrateSignaller crateSignaller)
         {
             ConfigurationControls = CrateConfigurationControls();
             CurrentActivityStorage.Clear();
 
             CurrentActivityStorage.Add(Crate.FromContent(ConfigurationControlsLabel, ConfigurationControls, AvailabilityType.Configuration));
 
-            await Initialize(runtimeCrateManager);
+            await Initialize(crateSignaller);
 
             SyncConfControlsBack();
         }
 
         /**********************************************************************************/
 
-        private async Task FollowupConfiguration(RuntimeCrateManager runtimeCrateManager)
+        private async Task FollowupConfiguration(CrateSignaller crateSignaller)
         {
             SyncConfControls();
 
             if (await Validate())
             {
-                await Configure(runtimeCrateManager);
+                await Configure(crateSignaller);
             }
 
             SyncConfControlsBack();
@@ -299,6 +300,10 @@ namespace TerminalBase.BaseClasses
                         Success();
                     }
                 }
+                catch (AuthorizationTokenExpiredOrInvalidException ex)
+                {
+                    ErrorInvalidToken(ex.Message);
+                }
                 catch (ActivityExecutionException ex)
                 {
                     Error(ex.Message, ex.ErrorCode);
@@ -376,8 +381,8 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        protected abstract Task Initialize(RuntimeCrateManager runtimeCrateManager);
-        protected abstract Task Configure(RuntimeCrateManager runtimeCrateManager);
+        protected abstract Task Initialize(CrateSignaller crateSignaller);
+        protected abstract Task Configure(CrateSignaller crateSignaller);
 
         /**********************************************************************************/
 
@@ -722,6 +727,18 @@ namespace TerminalBase.BaseClasses
             SetResponse(ActivityResponse.Error);
             OperationalState.CurrentActivityErrorCode = errorCode;
             OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, ErrorType.Generic, errorCode.ToString(), null, null, null));
+        }
+
+        /**********************************************************************************/
+        /// <summary>
+        /// returns error to hub
+        /// </summary>
+        protected void ErrorInvalidToken(string instructionsToUser = null)
+        {
+            SetResponse(ActivityResponse.Error);
+            var errorCode = ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID;
+            OperationalState.CurrentActivityErrorCode = errorCode;
+            OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(instructionsToUser, ErrorType.Authentication, errorCode.ToString(), null, null, null));
         }
 
         /**********************************************************************************/

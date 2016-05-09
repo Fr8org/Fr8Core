@@ -1,5 +1,4 @@
-﻿
-using Data.Control;
+﻿using Data.Control;
 using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
@@ -63,7 +62,7 @@ namespace terminalSalesforceTests.Intergration
                 //Assert
                 Debug.WriteLine("Asserting initial payload.");
                 var payloadList = Crate.GetUpdatableStorage(payload).CratesOfType<StandardPayloadDataCM>().ToList();
-                Assert.AreEqual(1, payloadList.Count, "The payload does not contian all activities payload");
+                Assert.AreEqual(2, payloadList.Count, "The payload does not contian all activities payload");
                 Assert.IsTrue(payloadList.Any(pl => pl.Label.Equals("Lead is saved in Salesforce.com")), "Save Data is Failed to save the lead.");
 
                 Debug.WriteLine("Asserting Save To Salesforce payload.");
@@ -107,7 +106,7 @@ namespace terminalSalesforceTests.Intergration
             Debug.WriteLine("Created initial plan without actions");
 
             string mainUrl = _baseUrl + "activities/create";
-            var postUrl = "?actionTemplateId={0}&createPlan=false";
+            var postUrl = "?activityTemplateId={0}&createPlan=false";
             var formattedPostUrl = string.Format(postUrl, atSave.Id);
             formattedPostUrl += "&parentNodeId=" + initialPlan.Plan.StartingSubPlanId;
             formattedPostUrl += "&authorizationTokenId=" + authToken.Id.ToString();
@@ -118,7 +117,7 @@ namespace terminalSalesforceTests.Intergration
             Debug.WriteLine("Create and Initial Configure of Save to Salesforce activity is successful.");
 
             mainUrl = _baseUrl + "activities/create";
-            postUrl = "?actionTemplateId={0}&createPlan=false";
+            postUrl = "?activityTemplateId={0}&createPlan=false";
             formattedPostUrl = string.Format(postUrl, atGet.Id);
             formattedPostUrl += "&parentNodeId=" + initialPlan.Plan.StartingSubPlanId;
             formattedPostUrl += "&authorizationTokenId=" + authToken.Id.ToString();

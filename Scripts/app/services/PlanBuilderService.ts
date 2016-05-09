@@ -6,6 +6,7 @@
 module dockyard.services {
     export interface IPlanService extends ng.resource.IResourceClass<interfaces.IPlanFullDTO> {
         getbystatus: (id: { id: number; status: number; category?: string }) => Array<interfaces.IPlanVM>;
+        getByQuery: (query: model.PlanQueryDTO) => interfaces.IPlanResultDTO;
         getFull: (id: Object) => interfaces.IPlanFullDTO;
         getByActivity: (id: { id: string }) => interfaces.IPlanVM;
         execute: (id: { id: number }, payload: { payload: string }, success: any, error: any) => void;
@@ -24,7 +25,7 @@ module dockyard.services {
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
         configure: (action: interfaces.IActivityDTO) => ng.resource.IResource<interfaces.IActionVM>;
         getByPlan: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
-        create: (args: { actionTemplateId: number, name: string, label: string, parentNodeId: number, createPlan: boolean }) => ng.resource.IResource<model.PlanDTO | model.ActivityDTO>;
+        create: (args: { activityTemplateId: number, name: string, label: string, parentNodeId: number, createPlan: boolean }) => ng.resource.IResource<model.PlanDTO | model.ActivityDTO>;
         createSolution: (args: { solutionName: string }) => ng.resource.IResource<model.PlanFullDTO>
         //TODO make resource class do this operation
         deleteById: (id: { id: string; confirmed: boolean }) => ng.resource.IResource<string>
@@ -40,6 +41,7 @@ module dockyard.services {
         add: (curProcessNodeTemplate: model.SubPlanDTO) => interfaces.ISubPlanVM;
         update: (curProcessNodeTemplate: model.SubPlanDTO) => interfaces.ISubPlanVM;
     }
+   
 
     interface __ICriteriaService extends ng.resource.IResourceClass<interfaces.ICriteriaVM> {
         update: (curCriteria: model.CriteriaDTO) => interfaces.ICriteriaVM;
@@ -106,6 +108,11 @@ module dockyard.services {
                             status: '@status',
                             category: '@category'
                         }
+                    },
+                    'getByQuery': {
+                        method: 'GET',
+                        isArray: false,
+                        url: '/api/plans/getByQuery'
                     },
                     'getByActivity': {
                         method: 'GET',
@@ -252,6 +259,7 @@ module dockyard.services {
             })
     ]);
 
+    
     /* 
         ActivityDTO CRUD service.
     */
@@ -309,6 +317,8 @@ module dockyard.services {
                 }
             })
     ]);
+
+    
 
     /* 
         CriteriaDTO CRUD service.

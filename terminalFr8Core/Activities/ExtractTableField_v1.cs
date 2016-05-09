@@ -142,7 +142,9 @@ namespace terminalFr8Core.Actions
                     var position = (DropDownList)cGroup.FirstOrDefault(c => c.Name == "extractValueFrom");
                     if (AreValuesSelected(chosenCell, position))
                     {
-                        extractedFields.Add(GetChosenField(chosenCell, position));
+                        var field = GetChosenField(chosenCell, position);
+                        field.Availability = AvailabilityType.RunTime;
+                        extractedFields.Add(field);
                     }
                 }
 

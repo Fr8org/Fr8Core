@@ -99,6 +99,7 @@ namespace Hub.Services
             //existingActivity.ActivityTemplateId = submittedActivity.ActivityTemplateId;
 
             existingActivity.Label = submittedActivity.Label;
+            existingActivity.Name = submittedActivity.Name;
             existingActivity.CrateStorage = submittedActivity.CrateStorage;
             existingActivity.Ordering = submittedActivity.Ordering;
         }
@@ -168,13 +169,13 @@ namespace Hub.Services
             }
         }
 
-        //[AuthorizeActivity(Privilege = Privilege.ReadObject, ObjectType = typeof(Guid))]
+        [AuthorizeActivity(Permission = PermissionType.ReadObject, ParamType = typeof(Guid), TargetType = typeof(PlanNodeDO))]
         public ActivityDO GetById(IUnitOfWork uow, Guid id)
         {
             return uow.PlanRepository.GetById<ActivityDO>(id);
         }
 
-        public async Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
+        public async Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
         {
             if (parentNodeId != null && createPlan)
             {
@@ -187,9 +188,9 @@ namespace Hub.Services
             }
 
             // to avoid null pointer exception while creating parent node if label is null 
-            if (label == null)
+            if (name == null)
             {
-                label = userId + "_" + actionTemplateId.ToString();
+                name = userId + "_" + activityTemplateId.ToString();
             }
 
             PlanNodeDO parentNode;
@@ -197,12 +198,12 @@ namespace Hub.Services
 
             if (createPlan)
             {
-                plan = ObjectFactory.GetInstance<IPlan>().Create(uow, label);
+                plan = ObjectFactory.GetInstance<IPlan>().Create(uow, name);
 
                 plan.ChildNodes.Add(parentNode = new SubPlanDO
                 {
                     StartingSubPlan = true,
-                    Name = label + " #1"
+                    Name = name + " #1"
                 });
             }
             else
@@ -216,7 +217,7 @@ namespace Hub.Services
                         parentNode.ChildNodes.Add(parentNode = new SubPlanDO
                         {
                             StartingSubPlan = true,
-                            Name = label + " #1"
+                            Name = name + " #1"
                         });
                     }
                     else
@@ -230,8 +231,8 @@ namespace Hub.Services
             var activity = new ActivityDO
             {
                 Id = Guid.NewGuid(),
-                ActivityTemplateId = actionTemplateId,
-                Label = label,
+                ActivityTemplateId = activityTemplateId,
+                Name = name,
                 CrateStorage = _crate.EmptyStorageAsStr(),
                 AuthorizationTokenId = authorizationTokenId
             };
@@ -257,8 +258,6 @@ namespace Hub.Services
             if (plan?.PlanState == PlanState.Deleted)
             {
                 var message = "Cannot configure activity when plan is deleted";
-
-
 
                 EventManager.TerminalConfigureFailed(
                    _activityTemplate.GetTerminalUrl(curActivityDO.ActivityTemplateId),
@@ -329,6 +328,7 @@ namespace Hub.Services
             return curActivityDO;
         }
 
+        [AuthorizeActivity(Permission = PermissionType.EditObject, ParamType = typeof(ActivityDO), TargetType = typeof(PlanNodeDO))]
         public async Task<ActivityDTO> Configure(IUnitOfWork uow,
             string userId, ActivityDO curActivityDO, bool saveResult = true)
         {
@@ -361,6 +361,7 @@ namespace Hub.Services
             return submittedActivity;
         }
 
+        [AuthorizeActivity(Permission = PermissionType.DeleteObject, ParamType = typeof(Guid), TargetType = typeof(PlanNodeDO))]
         public void Delete(Guid id)
         {
             //we are using Kludge solution for now
@@ -409,6 +410,7 @@ namespace Hub.Services
             }
         }
 
+        [AuthorizeActivity(Permission = PermissionType.RunObject, ParamType = typeof(ActivityDO), TargetType = typeof(PlanNodeDO))]
         public async Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActivityExecutionMode curActionExecutionMode, ContainerDO curContainerDO)
         {
             if (curActivityDO == null)
@@ -459,6 +461,7 @@ namespace Hub.Services
             }
         }
 
+        [AuthorizeActivity(Permission = PermissionType.EditObject, ParamType = typeof(ActivityDO), TargetType = typeof(PlanNodeDO))]
         public async Task<ActivityDTO> Activate(ActivityDO curActivityDO)
         {
             try
@@ -578,6 +581,7 @@ namespace Hub.Services
                 {
                     Id = Guid.NewGuid(),
                     Label = curActivityTerminalDTO.Label,
+                    Name = curActivityTerminalDTO.Name,
                     ActivityTemplate = curActivityTerminalDTO,
                     AuthToken = new AuthorizationTokenDTO
                     {

@@ -4,20 +4,19 @@ using System.Linq;
 using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
+using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Data.States;
 using Hub.Managers;
-using TerminalBase.Infrastructure;
+using Newtonsoft.Json;
 using terminalYammer.Interfaces;
 using terminalYammer.Services;
 using TerminalBase.BaseClasses;
-using Data.Entities;
-using Data.States;
-using Newtonsoft.Json;
+using TerminalBase.Infrastructure;
 
 namespace terminalYammer.Actions
 {
-
     public class Post_To_Yammer_v1 : BaseTerminalActivity
     {
         private readonly IYammer _yammer;
@@ -126,8 +125,15 @@ namespace terminalYammer.Actions
             ValidateYammerActivity(groupMessageField.GroupID, "No selected group found in activity.");
             ValidateYammerActivity(groupMessageField.Message, "No selected field found in activity.");
 
-            await _yammer.PostMessageToGroup(authTokenDO.Token,
-                groupMessageField.GroupID, groupMessageField.Message);
+            try
+            {
+                await _yammer.PostMessageToGroup(authTokenDO.Token,
+                    groupMessageField.GroupID, groupMessageField.Message);
+            }
+            catch (TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException)
+            {
+                return InvalidTokenError(processPayload);
+            }
 
             return processPayload;
         }

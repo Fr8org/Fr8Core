@@ -14,7 +14,7 @@
     <RootNamespace>terminalFr8Core</RootNamespace>
     <AssemblyName>terminalFr8Core</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -201,6 +201,7 @@
   <ItemGroup>
     <Compile Include="Activities\CollectData_v1.cs" />
     <Compile Include="Activities\FilterObjectListByIncomingMessage_v1.cs" />
+    <Compile Include="Activities\GetDataFromFr8Warehouse_v1.cs" />
     <Compile Include="Activities\Monitor_Fr8_Events_v1.cs" />
     <Compile Include="Activities\Process_Personnel_Report_v1.cs" />
     <Compile Include="Activities\QueryFr8Warehouse_v1.cs" />
@@ -223,9 +224,9 @@
     <Compile Include="Activities\Select_Fr8_Object_v1.cs" />
     <Compile Include="Activities\Show_Report_Onscreen_v1.cs" />
     <Compile Include="Activities\SaveToFr8Warehouse_v1.cs" />
+    <Compile Include="Activities\TestIncomingData_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
     <Compile Include="Controllers\ActivityController.cs" />
-    <Compile Include="App_Start\TestIncomingData_v1.cs" />
     <Compile Include="Controllers\EventController.cs" />
     <Compile Include="Controllers\TerminalController.cs" />
     <Compile Include="Converters\StandardFileDescriptionToDocuSignTemplateConversion.cs" />
@@ -275,6 +276,18 @@
     <Content Include="Service References\Application Insights\ConnectedService.json" />
     <Content Include="..\Config\log4net.terminals.config">
       <Link>log4net.terminals.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Config\log4net.terminals.Demo.config">
+      <Link>log4net.terminals.Demo.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Config\log4net.terminals.Dev.config">
+      <Link>log4net.terminals.Dev.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Config\log4net.terminals.Release.config">
+      <Link>log4net.terminals.Release.config</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="ApplicationInsights.Debug.config">
@@ -362,7 +375,7 @@
   </PropertyGroup>
   <Import Project="$(SlowCheetahTargets)" Condition="Exists('$(SlowCheetahTargets)')" Label="SlowCheetah" />
   <ItemGroup>
-    <Log4netConfigFiles Include="..\Config\*.terminals.*" />
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.*" />
   </ItemGroup>
   <Target Name="BeforeBuild">
     <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />

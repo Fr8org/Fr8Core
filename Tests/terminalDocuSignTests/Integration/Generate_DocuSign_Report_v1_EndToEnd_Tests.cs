@@ -147,8 +147,8 @@ namespace terminalDocuSignTests.Integration
         private void ValidateCrateStructure(ICrateStorage crateStorage)
         {
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<TypedFieldsCM>().Count());
-            Assert.AreEqual("Queryable Criteria", crateStorage.CratesOfType<TypedFieldsCM>().Single().Label);
+            Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count());
+            Assert.AreEqual("Queryable Criteria", crateStorage.CratesOfType<FieldDescriptionsCM>().Single().Label);
         }
 
         private void ValidateConfigurationControls(ICrateStorage crateStorage)
@@ -297,7 +297,7 @@ namespace terminalDocuSignTests.Integration
                 Source = new FieldSourceDTO
                 {
                     Label = "Queryable Criteria",
-                    ManifestType = CrateManifestTypes.StandardQueryFields
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
                 }
             }));
 

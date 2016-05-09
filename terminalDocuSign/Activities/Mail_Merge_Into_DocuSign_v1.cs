@@ -1,21 +1,18 @@
-﻿using AutoMapper;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
+using Data.Constants;
 using Data.Control;
 using Data.Crates;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Managers;
 using TerminalBase.Infrastructure;
 using TerminalBase.Infrastructure.Behaviors;
-using terminalDocuSign.DataTransferObjects;
-using terminalDocuSign.Services;
-using Data.Constants;
 
 namespace terminalDocuSign.Actions
 {
@@ -475,17 +472,17 @@ namespace terminalDocuSign.Actions
             {
                 if (curDocumentation.Contains("ExplainMailMerge"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution helps you to work with email and move data from them to DocuSign service"));
+                    return Task.FromResult(GenerateDocumentationResponse(@"This solution helps you to work with email and move data from them to DocuSign service"));
                 }
                 if (curDocumentation.Contains("ExplainService"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                    return Task.FromResult(GenerateDocumentationResponse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }
-                return Task.FromResult(GenerateErrorRepsonse("Unknown contentPath"));
+                return Task.FromResult(GenerateErrorResponse("Unknown contentPath"));
             }
             return
                 Task.FromResult(
-                    GenerateErrorRepsonse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+                    GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }

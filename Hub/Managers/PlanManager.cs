@@ -84,9 +84,9 @@ namespace Hub.Managers
                     var activity2 = Mapper.Map<ActivityTemplateDTO>(_activityTemplate.GetByName(uow, "SaveToFr8Warehouse_v1"));
 
                     //create and configure required actions
-                    await _activity.CreateAndConfigure(uow, curFr8Account.Id, activity1.Id, activity1.Label, null, subPlan.Id);
+                    await _activity.CreateAndConfigure(uow, curFr8Account.Id, activity1.Id, null, activity1.Label, null, subPlan.Id);
 
-                    var result = await _activity.CreateAndConfigure(uow, curFr8Account.Id, activity2.Id, activity2.Label, null, subPlan.Id);
+                    var result = await _activity.CreateAndConfigure(uow, curFr8Account.Id, activity2.Id, null, activity2.Label, null, subPlan.Id);
 
                     if (result is ActivityDO)
                     {
@@ -103,7 +103,8 @@ namespace Hub.Managers
             }
             catch (Exception e)
             {
-                Logger.GetLogger().Error("Error while creating the Fr8 monitor Plan " + e.Message, e);
+                //Logger.GetLogger().Error("Error while creating the Fr8 monitor Plan " + e.Message, e);
+                Logger.LogError($"Error while creating the Fr8 monitor Plan. Fr8UserId = {curFr8UserId} Exception = {e}");
                 throw;
             }
         }

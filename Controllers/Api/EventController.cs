@@ -19,6 +19,7 @@ using Newtonsoft.Json;
 using System.Xml.Linq;
 using Data.Interfaces.Manifests;
 using Hangfire;
+using Utilities.Logging;
 
 namespace HubWeb.Controllers
 {
@@ -121,14 +122,16 @@ namespace HubWeb.Controllers
                 throw new ArgumentNullException("CrateDTO Content is empty.");
 
             var eventReportMS = curCrateStandardEventReport.Get<EventReportCM>();
+            Logger.LogInfo($"Crate {raw.Id} with incoming event '{eventReportMS.EventNames}' is received for external account '{eventReportMS.ExternalAccountId}'");
+
 
             if (eventReportMS.EventPayload == null)
             {
                 throw new ArgumentException("EventReport can't have a null payload");
             }
-            if (eventReportMS.ExternalAccountId == null)
+            if (string.IsNullOrEmpty(eventReportMS.ExternalAccountId) && string.IsNullOrEmpty(eventReportMS.ExternalDomainId))
             {
-                throw new ArgumentException("EventReport can't have a null ExternalAccountId");
+                throw new ArgumentException("EventReport can't have both ExternalAccountId and ExternalDomainId empty");
             }
 
             _jobDispatcher.Enqueue(() => ProcessEventsInternal(raw));

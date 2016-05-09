@@ -1,194 +1,172 @@
-﻿using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Newtonsoft.Json;
-using System;
-using System.CodeDom;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Constants;
+using Data.Control;
+using Data.Crates;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
+using Data.States;
+using Newtonsoft.Json;
 using TerminalBase.BaseClasses;
 using terminalGoogle.DataTransferObjects;
-using Hub.Managers;
 using terminalGoogle.Services;
-using TerminalBase.Infrastructure;
-using Data.Control;
-using Data.States;
-using Hub.Exceptions;
-using Utilities.Configuration.Azure;
-using Newtonsoft.Json.Linq;
+using StructureMap;
+using terminalGoogle.Interfaces;
 
 namespace terminalGoogle.Actions
 {
-
-    public class EnumerateFormFieldsResponseItem
+    public class Monitor_Form_Responses_v1 : BaseGoogleTerminalActivity<Monitor_Form_Responses_v1.ActivityUi>
     {
-        [JsonProperty("type")]
-        public string Type { get; set; }
-        [JsonProperty("id")]
-        public object Id { get; set; }
-        [JsonProperty("title")]
-        public string Title { get; set; }
-    }
+        public class ActivityUi : StandardConfigurationControlsCM
+        {
+            public DropDownList FormsList { get; set; }
 
-
-    public class Monitor_Form_Responses_v1 : BaseTerminalActivity
-    {
+            public ActivityUi()
+            {
+                FormsList = new DropDownList()
+                {
+                    Label = "Select Google Form",
+                    Name = "Selected_Google_Form",
+                    Required = true,
+                    Source = null,
+                    Events = { ControlEvent.RequestConfig }
+                };
+                Controls.Add(FormsList);
+            }
+        }
         private readonly GoogleDrive _googleDrive;
         private readonly GoogleAppScript _googleAppScript;
 
+        private readonly IGoogleIntegration _googleIntegration;
+        private const string ConfigurationCrateLabel = "Selected_Google_Form";
+        private const string RunTimeCrateLabel = "Google Form Payload Data";
+        private const string EventSubscriptionsCrateLabel = "Standard Event Subscriptions";
+        private FieldDTO SelectedForm
+        {
+            get
+            {
+                var storedValues = CurrentActivityStorage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == ConfigurationCrateLabel)?.Content;
+                return storedValues?.Fields.First();
+            }
+            set
+            {
+                if (value == null)
+                {
+                    CurrentActivityStorage.RemoveByLabel(ConfigurationCrateLabel);
+                    return;
+                }
+                value.Availability = AvailabilityType.Configuration;
+                var newValues = Crate.FromContent(ConfigurationCrateLabel, new FieldDescriptionsCM(value), AvailabilityType.Configuration);
+                CurrentActivityStorage.ReplaceByLabel(newValues);
+            }
+        }
         public Monitor_Form_Responses_v1()
         {
             _googleDrive = new GoogleDrive();
             _googleAppScript = new GoogleAppScript();
+            _googleIntegration = ObjectFactory.GetInstance<IGoogleIntegration>();
         }
 
-        protected bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
-            if (authTokenDO == null) return true;
-            if (!base.NeedsAuthentication(authTokenDO))
-                return false;
-            var token = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
-            // we may also post token to google api to check its validity
-            return (token.Expires - DateTime.Now > TimeSpan.FromMinutes(5) ||
-                    !string.IsNullOrEmpty(token.RefreshToken));
+            var googleAuth = GetGoogleAuthToken();
+            var forms = await _googleDrive.GetGoogleForms(googleAuth);
+            ConfigurationControls.FormsList.ListItems = forms
+                .Select(x => new ListItem { Key = x.Value, Value = x.Key })
+                .ToList();
+            CurrentActivityStorage.Add(CreateEventSubscriptionCrate());
+            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
-        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task Configure(CrateSignaller crateSignaller)
         {
+            var googleAuth = GetGoogleAuthToken();
+            var forms = await _googleDrive.GetGoogleForms(googleAuth);
+            ConfigurationControls.FormsList.ListItems = forms
+                .Select(x => new ListItem { Key = x.Value, Value = x.Key })
+                .ToList();
+            var selectedSpreadsheet = ConfigurationControls.FormsList.selectedKey;
+            if (!string.IsNullOrEmpty(selectedSpreadsheet))
+            {
+                bool any = ConfigurationControls.FormsList.ListItems.Any(x => x.Key == selectedSpreadsheet);
+                if (!any)
+                {
+                    ConfigurationControls.FormsList.selectedKey = null;
+                    ConfigurationControls.FormsList.Value = null;
+                }
+            }
+            if (string.IsNullOrEmpty(ConfigurationControls.FormsList.selectedKey))
+                SelectedForm = null;
+            crateSignaller.ClearAvailableCrates();
+            crateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel)
+                .AddField("Full Name")
+                .AddField("TR ID")
+                .AddField("Email Address")
+                .AddField("Period of Availability");
+        }
+
+        protected override async Task Activate()
+        {
+            var googleAuth = GetGoogleAuthToken();
+            //get form id
+            var googleFormControl = ConfigurationControls.FormsList;
+            var formId = googleFormControl.Value;
+            if (string.IsNullOrEmpty(formId))
+                throw new ArgumentNullException("Google Form selected is empty. Please select google form to receive.");
+
+            bool triggerEvent = false;
             try
             {
-                if (CheckAuthentication(curActivityDO, authTokenDO))
-                {
-                    return curActivityDO;
-                }
-
-                return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
+                triggerEvent = await _googleDrive.CreateFr8TriggerForDocument(googleAuth, formId, CurrentFr8UserEmail);
             }
-            catch (Exception ex)
+            finally
             {
-                if (GoogleAuthHelper.IsTokenInvalidation(ex))
+                if (!triggerEvent)
                 {
-                    AddAuthenticationCrate(curActivityDO, true);
-                    return curActivityDO;
-                }
-
-                throw;
-            }
-        }
-        
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
-
-            using (var storage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                var ccCrate = storage.CrateContentsOfType<StandardConfigurationControlsCM>().First();
-                var control = ccCrate.FindByNameNested<DropDownList>("Selected_Google_Form");
-
-                if (!string.IsNullOrWhiteSpace(control?.Value))
-                {
-                    /*var result = await _googleAppScript.RunScript("M_snhqvaPfe7gMc5XhGu52ZK7araUiK37", "getFoldersUnderRoot", authDTO, control.Value);
-                    object response;
-                    
-                    if (result.TryGetValue("result", out response))
+                    //in case of fail as a backup plan use old manual script notification
+                    var scriptUrl = await _googleDrive.CreateManualFr8TriggerForDocument(googleAuth, formId);
+                    await HubCommunicator.NotifyUser(new TerminalNotificationDTO
                     {
-                        var items = ((JToken) response).ToObject<EnumerateFormFieldsResponseItem[]>();
-
-                        storage.RemoveByLabel("Google Form Payload Data");
-                        storage.Add(CrateManager.CreateDesignTimeFieldsCrate("Google Form Payload Data", AvailabilityType.RunTime, items.Select(x => new FieldDTO(x.Title, x.Title)
-                        {
-                            Availability = AvailabilityType.RunTime,
-                            SourceCrateLabel = "Google Form Payload Data",
-                            SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
-                        }).ToArray()));
-                    }*/
-
-
-                    storage.RemoveByLabel("Google Form Payload Data");
-                    storage.Add(CrateManager.CreateDesignTimeFieldsCrate("Google Form Payload Data", AvailabilityType.RunTime, new[]
-                    {
-                        new FieldDTO("Full Name", "Full Name")
-                        {
-                            Availability = AvailabilityType.RunTime,
-                            SourceCrateLabel = "Google Form Payload Data",
-                            SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
-                        },
-                        new FieldDTO("TR ID", "TR ID")
-                        {
-                            Availability = AvailabilityType.RunTime,
-                            SourceCrateLabel = "Google Form Payload Data",
-                            SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
-                        },
-                        new FieldDTO("Email Address", "Email Address")
-                        {
-                            Availability = AvailabilityType.RunTime,
-                            SourceCrateLabel = "Google Form Payload Data",
-                            SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
-                        },
-                        new FieldDTO("Period of Availability", "Period of Availability")
-                        {
-                            Availability = AvailabilityType.RunTime,
-                            SourceCrateLabel = "Google Form Payload Data",
-                            SourceCrateManifest = ManifestDiscovery.Default.GetManifestType<StandardPayloadDataCM>()
-                        }
-                    }));
+                        Type = "Success",
+                        ActivityName = "Monitor_Form_Responses",
+                        ActivityVersion = "1",
+                        TerminalName = "terminalGoogle",
+                        TerminalVersion = "1",
+                        Message = "You need to create fr8 trigger on current form please go to this url and run Initialize function manually. Ignore this message if you completed this step before. " + scriptUrl,
+                        Subject = "Trigger creation URL"
+                    }, CurrentFr8UserId);
                 }
             }
-
-            return curActivityDO;
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        protected override Task RunCurrentActivity()
         {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
+            var selectedForm = ConfigurationControls.FormsList.Value;
+            if (string.IsNullOrEmpty(selectedForm))
+                throw new ActivityExecutionException("Form is not selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+            var payloadFields = ExtractPayloadFields(CurrentPayloadStorage);
+            // once we activate the plan we run it. When we run the plan manualy there is no payload with event data. 
+            // Just return Success as a quick fix to avoid "Plan Failed" message.
+            if (payloadFields == null)
             {
-                return ConfigurationRequestType.Initial;
+                RequestHubExecutionTermination();
+                return Task.FromResult(0);
             }
+            var formResponseFields = CreatePayloadFormResponseFields(payloadFields);
 
-            return ConfigurationRequestType.Followup;
-        }
-
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            if (curActivityDO.Id != Guid.Empty)
+            // once we activate the plan we run it. When we run the plan manualy there is no payload with event data. 
+            // Just return Success as a quick fix to avoid "Plan Failed" message.
+            if (formResponseFields == null)
             {
-                var authDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
-                var configurationCrate = PackCrate_ConfigurationControls();
-                await FillSelectedGoogleFormSource(configurationCrate, "Selected_Google_Form", authDTO);            
-                var eventCrate = CreateEventSubscriptionCrate();
-
-                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-                {
-                    crateStorage.Add(configurationCrate);
-                    crateStorage.Add(eventCrate);
-                }
+                RequestHubExecutionTermination();
+                return Task.FromResult(0); ;
             }
-            else
-            {
-                throw new ArgumentException(
-                    "Configuration requires the submission of an Action that has a real ActionId");
-            }
-            return await Task.FromResult(curActivityDO);
+            CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(formResponseFields)));
+            return Task.FromResult(0);
         }
-
-        private Crate PackCrate_ConfigurationControls()
-        {
-            var fieldSelectTemplate = new DropDownList()
-            {
-                Label = "Select Google Form",
-                Name = "Selected_Google_Form",
-                Required = true,
-                Source = null,
-                Events = new List<ControlEvent>() {new ControlEvent("onChange", "requestConfig")}
-            };
-
-            var controls = PackControlsCrate(fieldSelectTemplate);
-            return controls;
-        }
-
-
 
         private Crate CreateEventSubscriptionCrate()
         {
@@ -197,91 +175,10 @@ namespace terminalGoogle.Actions
             };
 
             return CrateManager.CreateStandardEventSubscriptionsCrate(
-                "Standard Event Subscriptions",
+                EventSubscriptionsCrateLabel,
                 "Google",
                 subscriptions.ToArray()
                 );
-        }
-
-        public override async Task<ActivityDO> Activate(ActivityDO curActionDTO, AuthorizationTokenDO authTokenDO)
-        {
-            var googleAuthDTO = JsonConvert.DeserializeObject<GoogleAuthDTO>(authTokenDO.Token);
-
-            //get form id
-            var controlsCrate = CrateManager.GetStorage(curActionDTO).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-            var standardControls = controlsCrate.Get<StandardConfigurationControlsCM>();
-
-            var googleFormControl = standardControls.FindByName("Selected_Google_Form");
-
-            var formId = googleFormControl.Value;
-
-            if (string.IsNullOrEmpty(formId))
-                throw new ArgumentNullException("Google Form selected is empty. Please select google form to receive.");
-
-            var scriptUrl = await _googleDrive.CreateFr8TriggerForDocument(googleAuthDTO, formId);
-            await HubCommunicator.NotifyUser(new TerminalNotificationDTO
-            {
-                Type = "Success",
-                ActivityName = "Monitor_Form_Responses",
-                ActivityVersion = "1",
-                TerminalName = "terminalGoogle",
-                TerminalVersion = "1",
-                Message = "You need to create fr8 trigger on current form please go to this url and run Initialize function manually. Ignore this message if you completed this step before. " + scriptUrl,
-                Subject = "Trigger creation URL"
-            }, CurrentFr8UserId);
-
-            /*
-            var fieldResult = new List<FieldDTO>() { new FieldDTO() { Key = result, Value = result } };
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActionDTO))
-            {
-                crateStorage.Add(Data.Crates.Crate.FromContent("Google Form Payload Data", new StandardPayloadDataCM(fieldResult)));
-            }
-            */
-            return await Task.FromResult(curActionDTO);
-        }
-
-
-      
-
-        public override async Task<ActivityDO> Deactivate(ActivityDO curActionDTO)
-        {
-            return await Task.FromResult(curActionDTO);
-        }
-
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-        {
-            var payloadCrates = await GetPayload(curActivityDO, containerId);
-
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(payloadCrates);
-            }
-
-
-            var payloadFields = ExtractPayloadFields(payloadCrates);
-
-            // once we activate the plan we run it. When we run the plan manualy there is no payload with event data. 
-            // Just return Success as a quick fix to avoid "Plan Failed" message.
-            if (payloadFields == null)
-            {
-                return TerminateHubExecution(payloadCrates);
-            }
-
-            var formResponseFields = CreatePayloadFormResponseFields(payloadFields);
-
-            // once we activate the plan we run it. When we run the plan manualy there is no payload with event data. 
-            // Just return Success as a quick fix to avoid "Plan Failed" message.
-            if (formResponseFields == null)
-            {
-                return TerminateHubExecution(payloadCrates);
-            }
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
-            {
-                crateStorage.Add(Crate.FromContent("Google Form Payload Data", new StandardPayloadDataCM(formResponseFields)));
-            }
-
-            return Success(payloadCrates);
         }
 
         private List<FieldDTO> CreatePayloadFormResponseFields(List<FieldDTO> payloadfields)
@@ -311,43 +208,27 @@ namespace terminalGoogle.Actions
             return formFieldResponse;
         }
 
-        private List<FieldDTO> ExtractPayloadFields(PayloadDTO payloadCrates)
+        private List<FieldDTO> ExtractPayloadFields(ICrateStorage currentPayload)
         {
-            var eventReportMS = CrateManager.GetStorage(payloadCrates).CrateContentsOfType<EventReportCM>().SingleOrDefault();
+            var eventReportMS = currentPayload.CrateContentsOfType<EventReportCM>().SingleOrDefault();
             if (eventReportMS == null)
-            {
                 return null;
-            }
 
             var eventFieldsCrate = eventReportMS.EventPayload.SingleOrDefault();
             if (eventFieldsCrate == null)
-            {
                 return null;
-            }
 
             return eventReportMS.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()).ToList();
         }
+    }
 
-        #region Fill Source
-
-        private async Task FillSelectedGoogleFormSource(Crate configurationCrate, string controlName, GoogleAuthDTO authDTO)
-        {
-            var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
-            var control = configurationControl.FindByNameNested<DropDownList>(controlName);
-            if (control != null)
-            {
-                control.ListItems = await GetGoogleForms(authDTO);
-            }
-        }
-
-        private async Task<List<ListItem>> GetGoogleForms(GoogleAuthDTO authDTO)
-        {
-            if (string.IsNullOrEmpty(authDTO.RefreshToken))
-                throw new ArgumentNullException("Token is empty");
-
-            var files = await _googleDrive.GetGoogleForms(authDTO);
-            return files.Select(file => new ListItem() { Key = file.Value, Value = file.Key }).ToList();
-        }
-        #endregion
+    public class EnumerateFormFieldsResponseItem
+    {
+        [JsonProperty("type")]
+        public string Type { get; set; }
+        [JsonProperty("id")]
+        public object Id { get; set; }
+        [JsonProperty("title")]
+        public string Title { get; set; }
     }
 }

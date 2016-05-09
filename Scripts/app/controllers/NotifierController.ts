@@ -38,10 +38,10 @@ module dockyard.controllers.NotifierController {
                 $scope.eventList = [];
                 
                 PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, dockyard.services.pusherNotifierSuccessEvent, (data: any) => {
-                    this.$mdSidenav('right')
+                    /*this.$mdSidenav('right')
                         .toggle()
                         .then(function () {
-                        });
+                        });*/
                     var event = new Fr8InternalEvent();
                     event.type = event.type = dockyard.services.pusherNotifierSuccessEvent;
                     event.data = data;
@@ -58,10 +58,10 @@ module dockyard.controllers.NotifierController {
                 });
 
                 PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, dockyard.services.pusherNotifierExecutionEvent, (data: any) => {
-                    this.$mdSidenav('right')
+                   /* this.$mdSidenav('right')
                         .toggle()
                         .then(function () {
-                        });
+                        });*/
                     //var contentTemplate = "<label class='toast-activity-info'>Executing Activity: " + data.ActivityName + "</label><label class='toast-activity-info'>For Plan: " + data.PlanName + "</label> <label class='toast-activity-info'>Container: " + data.ContainerId +"</label>";
                     var event = new Fr8InternalEvent();
                     event.type = dockyard.services.pusherNotifierExecutionEvent;
@@ -74,10 +74,10 @@ module dockyard.controllers.NotifierController {
                 });
 
                 PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, dockyard.services.pusherNotifierFailureEvent, (data: any) => {
-                    this.$mdSidenav('right')
+                    /*this.$mdSidenav('right')
                         .toggle()   
                         .then(function () {
-                        });
+                        });*/
                     var event = new Fr8InternalEvent();
                     event.type = dockyard.services.pusherNotifierFailureEvent;
                     event.data = data;

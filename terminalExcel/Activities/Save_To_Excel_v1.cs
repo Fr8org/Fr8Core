@@ -1,21 +1,19 @@
-﻿using Data.Entities;
-using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Constants;
-using TerminalBase.BaseClasses;
-using Data.Interfaces.Manifests;
-using Data.Interfaces.DataTransferObjects;
-using Data.Crates;
-using Data.States;
 using Data.Control;
+using Data.Crates;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
+using Data.Interfaces.Manifests;
 using Data.Interfaces.Manifests.Helpers;
-using StructureMap;
-using System.Globalization;
+using Data.States;
 using terminalUtilities.Excel;
-using System.IO;
+using TerminalBase.BaseClasses;
 
 namespace terminalExcel.Actions
 {
@@ -142,15 +140,14 @@ namespace terminalExcel.Actions
             return false;
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             runtimeCrateManager.MarkAvailableAtRuntime<StandardFileDescriptionCM>("StoredFile");
             ConfigurationControls.ExistingSpreadsheetsList.ListItems = await GetCurrentUsersFiles();
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Configure(CrateSignaller crateSignaller)
         {
-
             //If different existing spreadsheet is selected then we have to load worksheet list for it
             if (ConfigurationControls.UseExistingSpreadsheetOption.Selected && !string.IsNullOrEmpty(ConfigurationControls.ExistingSpreadsheetsList.Value))
             {
