@@ -1,6 +1,6 @@
 SELECT 
+	/* The first field is table name, all the next fields are table metrics */
     t.NAME AS TableName,
-    i.name as indexName,
     p.[Rows],
     (sum(a.used_pages) * 8) / 1024 as UsedSpaceMB
 FROM 
