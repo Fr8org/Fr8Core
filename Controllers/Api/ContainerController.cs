@@ -52,18 +52,6 @@ namespace HubWeb.Controllers
             }
         }
 
-        [Fr8ApiAuthorize]
-        [HttpGet]
-        public IHttpActionResult GetIdsByName(string name)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var containerIds = uow.ContainerRepository.GetQuery().Where(x => x.Name == name).Select(x => x.Id).ToArray();
-
-                return Json(containerIds);
-            }
-        }
-
         // Return the Containers accordingly to ID given
         [Fr8ApiAuthorize]
         //[Route("get/{id:guid?}")]

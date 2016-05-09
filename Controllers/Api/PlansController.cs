@@ -61,7 +61,7 @@ namespace HubWeb.Controllers
 
         [Fr8HubWebHMACAuthenticate]
         [ResponseType(typeof(PlanDTO))]
-        public IHttpActionResult Post(PlanEmptyDTO planDto, bool updateRegistrations = false)
+        public IHttpActionResult Post(PlanEmptyDTO planDto)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -76,7 +76,7 @@ namespace HubWeb.Controllers
                 }
                 var curPlanDO = Mapper.Map<PlanEmptyDTO, PlanDO>(planDto, opts => opts.Items.Add("ptid", planDto.Id));
 
-                _plan.CreateOrUpdate(uow, curPlanDO, updateRegistrations);
+                _plan.CreateOrUpdate(uow, curPlanDO);
 
                 uow.SaveChanges();
                 var result = PlanMappingHelper.MapPlanToDto(uow, uow.PlanRepository.GetById<PlanDO>(curPlanDO.Id));

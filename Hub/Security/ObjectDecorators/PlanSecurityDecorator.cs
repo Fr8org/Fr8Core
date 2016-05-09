@@ -90,9 +90,9 @@ namespace Hub.Security.ObjectDecorators
             return _target.Create(uow, name, category);
         }
 
-        public void CreateOrUpdate(IUnitOfWork uow, PlanDO submittedPlan, bool withTemplate)
+        public void CreateOrUpdate(IUnitOfWork uow, PlanDO submittedPlan)
         {
-            _target.CreateOrUpdate(uow, submittedPlan, withTemplate);
+            _target.CreateOrUpdate(uow, submittedPlan);
         }
 
         public Task<string> Deactivate(Guid curPlanId)

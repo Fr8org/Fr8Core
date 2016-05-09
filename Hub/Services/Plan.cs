@@ -127,7 +127,7 @@ namespace Hub.Services
                     .ToList();
         }
 
-        public void CreateOrUpdate(IUnitOfWork uow, PlanDO submittedPlan, bool updateChildEntities)
+        public void CreateOrUpdate(IUnitOfWork uow, PlanDO submittedPlan)
         {
             if (submittedPlan.Id == Guid.Empty)
             {
