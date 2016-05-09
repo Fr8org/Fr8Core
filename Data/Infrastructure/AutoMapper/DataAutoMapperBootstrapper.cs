@@ -3,18 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using AutoMapper;
-using Data.Crates;
+using Fr8Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.DataTransferObjects.Helpers;
-using Data.Interfaces.Manifests;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.DataTransferObjects.Helpers;
+using Fr8Data.Manifests;
 using Data.States;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StructureMap;
 using Utilities.AutoMapper;
-using Data.Interfaces.Manifests;
-using Data.Interfaces.DataTransferObjects.PlanTemplates;
 
 namespace Data.Infrastructure.AutoMapper
 {
@@ -134,8 +132,7 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<CriteriaDTO, CriteriaDO>()
                 .ForMember(x => x.ConditionsJSON, opts => opts.ResolveUsing(y => y.Conditions));
 
-            Mapper.CreateMap<PlanDO, PlanFullDTO>()
-                .ConvertUsing<PlanDOFullConverter>();
+            Mapper.CreateMap<PlanDO, PlanFullDTO>().ConvertUsing<PlanDOFullConverter>();
 
             Mapper.CreateMap<PlanEmptyDTO, PlanFullDTO>();
 
@@ -160,7 +157,7 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ContainerDO, ContainerDTO>()
                 .ForMember(
                     x => x.CurrentActivityResponse,
-                    x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentActivityResponse != null ? Enum.Parse(typeof(Data.Constants.ActivityResponse), z.CurrentActivityResponse.Type) : null))
+                    x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentActivityResponse != null ? Enum.Parse(typeof(Fr8Data.Constants.ActivityResponse), z.CurrentActivityResponse.Type) : null))
                 )
                 .ForMember(
                     x => x.CurrentClientActivityName,

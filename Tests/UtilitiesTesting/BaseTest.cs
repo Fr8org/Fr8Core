@@ -10,8 +10,7 @@ using Data.Infrastructure.AutoMapper;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Hub.Managers;
+using Fr8Data.DataTransferObjects;
 using Hub.StructureMap;
 using Web.ViewModels;
 

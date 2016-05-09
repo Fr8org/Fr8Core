@@ -1,12 +1,10 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using DocuSign.eSign.Api;
+﻿using DocuSign.eSign.Api;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Web;
 using DocuSign.eSign.Model;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using terminalDocuSign.Services.New_Api;
 
 namespace terminalDocuSign.Services

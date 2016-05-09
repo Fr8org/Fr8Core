@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Data.Crates;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Data.Interfaces;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8Data.Crates;
+using Fr8Data.Manifests;
+using Newtonsoft.Json.Linq;
 using Hub.Managers;
 using StructureMap;
 using TerminalBase.Infrastructure;

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8Data.DataTransferObjects;
 using Intuit.Ipp.Data;
 using Intuit.Ipp.DataService;
 using terminalQuickBooks.Interfaces;

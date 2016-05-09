@@ -1,7 +1,5 @@
-﻿
-using System;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
+﻿using System;
+using Fr8Data.DataTransferObjects;
 
 namespace terminalPapertrailTests.Fixtures
 {

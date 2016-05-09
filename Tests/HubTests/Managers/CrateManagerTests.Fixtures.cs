@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Newtonsoft.Json.Linq;
 
 namespace HubTests.Managers

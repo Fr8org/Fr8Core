@@ -1,11 +1,11 @@
-﻿using Data.Interfaces.Manifests;
-using DocuSign.eSign.Model;
+﻿using DocuSign.eSign.Model;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Xml.Serialization;
+using Fr8Data.Manifests;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure.DocuSignParserModels;
 using terminalDocuSign.Services.NewApi;

@@ -1,21 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
 using System.Net.Http.Formatting;
-using System.Net.Http.Headers;
-using System.Text;
 using System.Threading.Tasks;
 using log4net;
-using Hub.Managers.APIManagers.Packagers.Json;
 using Utilities.Logging;
 using System.Diagnostics;
-using System.Net;
 using System.Globalization;
 using System.IO;
-using Data.Interfaces.DataTransferObjects;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace Hub.Managers.APIManagers.Transmitters.Restful
 {

@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using Data.Crates;
-using StructureMap;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
-using Hub.Interfaces;
-using Hub.Managers;
+﻿using Data.Entities;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.States;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 

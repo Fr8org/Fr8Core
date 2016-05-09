@@ -134,7 +134,6 @@ Scripts/tests/integration/DockyardAccountControllerTests/*.js
 
  
 # Others
-sql/
 *.Cache
 ClientBin/
 [Ss]tyle[Cc]op.*
