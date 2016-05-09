@@ -59,9 +59,11 @@ namespace terminalSlack.Controllers
                 return new AuthorizationTokenDTO
                 {
                     Token = oauthToken,
-                    ExternalAccountId = userInfo.UserName,
+                    ExternalAccountId = userInfo.UserId,
+                    ExternalAccountName = userInfo.UserName,
+                    ExternalDomainId = userInfo.TeamId,
+                    ExternalDomainName = userInfo.TeamName,
                     ExternalStateToken = state,
-                    ExternalDomainId = userInfo.TeamId
                 };
             }
             catch (Exception ex)
