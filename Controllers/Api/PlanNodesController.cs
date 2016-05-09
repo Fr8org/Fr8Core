@@ -100,11 +100,11 @@ namespace HubWeb.Controllers
             return Ok(categoriesWithActivities);
         }
 
-        [ActionName("available")]
+        [ActionName("getAvailableActivitiesWithTag")]
         [ResponseType(typeof(IEnumerable<ActivityTemplateDTO>))]
         [AllowAnonymous]
         [HttpGet]
-        public IHttpActionResult GetAvailableActivities(string tag)
+        public IHttpActionResult getAvailableActivitiesWithTag(string tag)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

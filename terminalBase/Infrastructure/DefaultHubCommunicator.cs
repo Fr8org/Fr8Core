@@ -211,7 +211,7 @@ namespace TerminalBase.Infrastructure
         public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, string userId)
         {
             var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/available?tag=";
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/getAvailableActivitiesWithTag?tag=";
 
             if (string.IsNullOrEmpty(tag))
             {

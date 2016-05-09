@@ -33,7 +33,7 @@ namespace terminalDocuSignTests.Integration
 
             string baseUrl = GetHubApiBaseUrl();
 
-            var solutionCreateUrl = baseUrl + "activities/create?solutionName=Extract_Data_From_Envelopes";
+            var solutionCreateUrl = baseUrl + "activities/createSolution?solutionName=Extract_Data_From_Envelopes";
 
             //
             // Create solution
