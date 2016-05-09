@@ -1,5 +1,6 @@
 ﻿using Data.Entities;
 using Data.Interfaces.DataTransferObjects.PlanTemplates;
+using Fr8Data.DataTransferObjects.PlanTemplates;
 using System;
 using System.Collections.Generic;
 using System.Linq;

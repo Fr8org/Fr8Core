@@ -13,6 +13,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StructureMap;
 using Utilities.AutoMapper;
+using Fr8Data.DataTransferObjects.PlanTemplates;
+using Data.Interfaces.DataTransferObjects.PlanTemplates;
 
 namespace Data.Infrastructure.AutoMapper
 {

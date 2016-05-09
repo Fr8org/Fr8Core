@@ -623,6 +623,10 @@
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryStub.cs" />
     <Compile Include="Repositories\Authorization\IAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\Authorization\KeyVaultAuthorizationTokenRepository.cs" />
+    <Compile Include="Repositories\PlanTemplates\ActivityDescriptionRepository.cs" />
+    <Compile Include="Repositories\PlanTemplates\NodeTransitionRepository.cs" />
+    <Compile Include="Repositories\PlanTemplates\PlanNodeDescriptionsRepository.cs" />
+    <Compile Include="Repositories\PlanTemplates\PlanTemplateRepository.cs" />
     <Compile Include="Repositories\ProfileRepository.cs" />
     <Compile Include="Repositories\Cache\ICacheExpirationStrategy.cs" />
     <Compile Include="Repositories\Cache\IExpirationToken.cs" />

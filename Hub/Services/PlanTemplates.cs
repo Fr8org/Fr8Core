@@ -1,13 +1,13 @@
 ﻿using AutoMapper;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.DataTransferObjects.PlanTemplates;
-using Data.Interfaces.Manifests;
 using Data.Repositories.Encryption;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.DataTransferObjects.PlanTemplates;
+using Fr8Data.Manifests;
 using Hub.Interfaces;
 using Hub.Managers;
 using StructureMap;
