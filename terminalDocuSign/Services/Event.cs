@@ -40,7 +40,7 @@ namespace terminalDocuSign.Services
                 }
                 catch
                 {
-                    create polling
+                    //create polling
                     _docuSignPlan.CreateOrUpdatePolling(curFr8UserAndToken.Item1, curFr8UserAndToken.Item2);
                 }
                 finally
