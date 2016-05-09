@@ -48,35 +48,6 @@ namespace HubWeb.Controllers
             }
 
             //TODO report output to somewhere to pusher service maybe
-
-            /*
-                var container = uow.ContainerRepository.GetByKey(alarmDTO.ContainerId);
-                if (container != null && container.ContainerState == ContainerState.Pending)
-                {
-                    var crateManager = ObjectFactory.GetInstance<ICrateManager>();
-
-                    var label = String.Format("Alarm Triggered [{0}]", alarmDTO.StartTime.ToUniversalTime());
-                    var logItemList = new List<LogItemDTO>();
-
-                    crateManager.AddLogMessage(label, logItemList, container);
-                    var terminal = ObjectFactory.GetInstance<ITerminal>();
-                    var terminalUrl = terminal.ParseTerminalUrlFor(alarmDTO.TerminalName, alarmDTO.TerminalVersion, "activity/run");
-                    var content = new ObjectContent<ActionDTO>(alarmDTO.ActionDTO, new JsonMediaTypeFormatter());
-
-                    
-                }
-                 * */
-
-        }
-
-        //TODO is this method called from somewhere else?
-        [HttpPost]
-        // as for now it seems that this is the only way to specify queue when you are schedulig the job
-        //https://discuss.hangfire.io/t/how-schedule-a-delayed-job-to-a-specific-queue/911
-        [Queue("hub")]
-        public void ExecuteTerminalWithLogging(AlarmDTO alarmDTO)
-        {
-            Execute(alarmDTO);
         }
     }
 }
