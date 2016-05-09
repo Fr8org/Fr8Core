@@ -30,6 +30,7 @@ namespace TerminalBase.Infrastructure
         Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, string userId);
         Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields, string userId);
         Task<AuthorizationTokenDTO> GetAuthToken(string authTokenId, string curFr8UserId);
+        Task ScheduleEvent(string externalAccountId, string curFr8UserId, string minutes);
         Task<ActivityDTO> ConfigureActivity(ActivityDTO activityDTO, string userId);
         Task<ActivityDO> SaveActivity(ActivityDO activityDO, string userId);
         Task<ActivityDO> ConfigureActivity(ActivityDO activityDO, string userId);

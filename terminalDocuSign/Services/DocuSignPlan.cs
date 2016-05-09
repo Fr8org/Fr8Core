@@ -77,7 +77,7 @@ namespace terminalDocuSign.Services
 
             string connectName = "";
             string connectId = "";
-           
+
             Logger.LogInfo($"CreateConnect terminalUrl {terminalUrl}", DocuSignManager.DocusignTerminalName);
             if (!string.IsNullOrEmpty(terminalUrl))
             {
@@ -95,7 +95,7 @@ namespace terminalDocuSign.Services
                 {
                     connectName = ProdConnectName;
                 }
-                else 
+                else
                     if (terminalUrl.Contains(demoUrl, StringComparison.InvariantCultureIgnoreCase))
                 {
                     connectName = DemoConnectName;
@@ -103,7 +103,7 @@ namespace terminalDocuSign.Services
                 else
                 {
                     Logger.LogInfo($"Unable to set connectName from {terminalUrl}", DocuSignManager.DocusignTerminalName);
-                }                    
+                }
 
                 string publishUrl = terminalUrl + "/terminals/terminalDocuSign/events";
 
@@ -127,7 +127,8 @@ namespace terminalDocuSign.Services
                     connectId = _docuSignConnect.CreateConnect(config, TemporaryConnectName, publishUrl);
                     Logger.LogInfo($"Created connect named {TemporaryConnectName} pointing to {publishUrl} with id {connectId}", DocuSignManager.DocusignTerminalName);
                 }
-            } else
+            }
+            else
             {
                 Logger.LogInfo($"terminalUrl is empty, no work has been done in DocuSignPlan.CreateConnect: prodUrl -> {prodUrl}, devUrl -> {devUrl}, demoUrl -> {demoUrl}");
             }

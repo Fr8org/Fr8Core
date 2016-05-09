@@ -195,7 +195,7 @@ namespace TerminalBase.Infrastructure
 
         public async Task<IncomingCratesDTO> GetAvailableData(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
         {
-            var fields = await GetCratesByDirection<FieldDescriptionsCM>(activityDO, direction,  userId);
+            var fields = await GetCratesByDirection<FieldDescriptionsCM>(activityDO, direction, userId);
             var crates = await GetCratesByDirection<CrateDescriptionCM>(activityDO, direction, userId);
             var availableData = new IncomingCratesDTO();
 
@@ -297,6 +297,11 @@ namespace TerminalBase.Infrastructure
         }
 
         public Task<AuthorizationTokenDTO> GetAuthToken(string authTokenId, string curFr8UserId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ScheduleEvent(string externalAccountId, string curFr8UserId, string minutes)
         {
             throw new NotImplementedException();
         }
