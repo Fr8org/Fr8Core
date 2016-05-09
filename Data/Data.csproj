@@ -614,6 +614,10 @@
     <Compile Include="Migrations\201605061523484_UpdateMTDatabaseWithNewCLRTypes.Designer.cs">
       <DependentUpon>201605061523484_UpdateMTDatabaseWithNewCLRTypes.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201605091247127_Plan_Templates.cs" />
+    <Compile Include="Migrations\201605091247127_Plan_Templates.Designer.cs">
+      <DependentUpon>201605091247127_Plan_Templates.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -1173,6 +1177,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201605061523484_UpdateMTDatabaseWithNewCLRTypes.resx">
       <DependentUpon>201605061523484_UpdateMTDatabaseWithNewCLRTypes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605091247127_Plan_Templates.resx">
+      <DependentUpon>201605091247127_Plan_Templates.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

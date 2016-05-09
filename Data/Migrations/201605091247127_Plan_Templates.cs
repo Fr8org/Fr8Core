@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class PlanTemplates : DbMigration
+    public partial class Plan_Templates : DbMigration
     {
         public override void Up()
         {
