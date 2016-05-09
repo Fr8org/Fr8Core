@@ -296,6 +296,7 @@
     <Compile Include="Interfaces\DataTransferObjects\ExternalObjectHandleDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\IncomingCratesDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\OrganizationDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\PlanTemplateDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalNotificationDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AlarmDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\AuthenticateResponse.cs" />
@@ -375,6 +376,7 @@
     <Compile Include="Interfaces\Manifests\OperationalStateCM.CallStack.cs" />
     <Compile Include="Interfaces\Manifests\OperationalStateCM.CallStackConverter.cs" />
     <Compile Include="Interfaces\Manifests\OperationalStateCM.InternalStates.cs" />
+    <Compile Include="Interfaces\Manifests\PlanTemplateCM.cs" />
     <Compile Include="Interfaces\Manifests\SalesforceEventCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardAccountingTransactionCM.cs" />
     <Compile Include="Interfaces\Manifests\StandardBusinessFactCM.cs" />
