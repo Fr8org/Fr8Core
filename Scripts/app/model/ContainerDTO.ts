@@ -10,7 +10,7 @@
         currentPlanType: PlanType;
         currentClientActivityName: string;
         error: any;
-        validationErrors: { [activityId: string]: string};
+        validationErrors: { [activityId: string]: ValidationResults};
     }
 
     export enum State {

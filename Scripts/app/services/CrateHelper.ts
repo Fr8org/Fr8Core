@@ -196,10 +196,46 @@
             }
         }
 
+        public populateErrorsFromCrateStorage(fields: Array<model.ControlDefinitionDTO>, validationResults: model.ValidationResults) {
+            //now we should look for crates with manifestType Standard Design Time Fields
+            //to set or override our DropdownListBox items
+            for (var i = 0; i < fields.length; i++) {
+
+                for (var j = 0; j < validationResults.validationErrors.length; j++) {
+                    for (var k = 0; k < validationResults.validationErrors[j].controlNames.length; k++) {
+                        if (validationResults.validationErrors[j].controlNames[k] === fields[i].name) {
+                            fields[i].errorMessage = validationResults.validationErrors[j].errorMessage;
+                            break;
+                        }
+                    }
+                }
+
+                // Handle nested fields
+                let field: any = fields[i];
+                if (field.controls) {
+                    this.populateErrorsFromCrateStorage((<model.ISupportsNestedFields>field).controls, validationResults);
+                }
+                // If we encountered radiobuttonGroup, we need to check every individual option if it has any nested fields
+                if (field.radios) {
+                    this.populateErrorsFromCrateStorage((<model.RadioButtonGroup>field).radios, validationResults);
+                }
+            }
+        }
+
         private resetClickedFlag(fields: Array<any>) {
             for (var field of fields) {
                 if (field.clicked) 
                     field.clicked = false;
+            }
+        }
+
+        public getValidationResult(crateStorage: model.CrateStorage): model.ValidationResults {
+            try {
+                var validationCrate = this.findByManifestType(crateStorage, "Validation Results");
+                return <model.ValidationResults>validationCrate.contents;
+            }
+            catch (e) {
+                return null;
             }
         }
 
@@ -220,11 +256,17 @@
                 return null;
             }
 
-
+            var validationResults = this.getValidationResult(crateStorage);
+           
             var controlsList = new model.ControlsList();
             controlsList.fields = (<any>crate.contents).Controls;
             this.resetClickedFlag(controlsList.fields); // Unset 'clicked' flag on buttons and other coontrols on which it exists
             this.populateListItemsFromDataSource(controlsList.fields, crateStorage);
+
+            if (validationResults !== null && validationResults.validationErrors !== null) {
+                this.populateErrorsFromCrateStorage(controlsList.fields, validationResults);
+            }
+
             return controlsList;
         }
 

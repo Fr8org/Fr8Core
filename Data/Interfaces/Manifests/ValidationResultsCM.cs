@@ -10,6 +10,7 @@ namespace Data.Interfaces.Manifests
     public class ValidationResultsCM : Manifest
     {
         // List of validation errors
+        [JsonProperty("validationErrors")]
         public List<ValidationResultDTO> ValidationErrors { get; set; } = new List<ValidationResultDTO>();
 
         [JsonIgnore]
