@@ -19,7 +19,7 @@ This enables the Activity to cause the client to render a full page of informati
 
 ## The Documentation Request Process
 
-![Documentation_Flow](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/ActivityDocumentation_DocumentationFlow.png) 
+![Documentation_Flow](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/ActivityDevelopment_DocumentationFlow.png) 
 
  As the above flow shows, Activity designers encode Documentation triggers into their Activities. When the user activates a trigger, a POST is made to the activity, which puts together appropriate content and returns it to the client, which displays it. 
 
@@ -66,7 +66,7 @@ Support for documentation features like small minicon question marks and context
 
 To add a question mark minicon to a control, as shown here:
 
-![CrateChooser](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/ActivityDocumentation_CrateChooser.png) 
+![CrateChooser](https://github.com/Fr8org/Fr8Core/blob/master/Docs/img/ActivityDevelopment_CrateChooser.png) 
 
 Add a documentation json block to the control with displayMechanism set to “Minicon”.
 ```javascript
