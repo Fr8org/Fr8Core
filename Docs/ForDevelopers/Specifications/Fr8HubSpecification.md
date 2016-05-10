@@ -392,21 +392,21 @@ description |	ManifestDescriptionDTO			| | |
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 version	string			
 name	string			name of the manifest description
-Return Values	BoolValue
-Description	Check that if there is any manifest description with given name in given version of db.
+**Return Values**	BoolValue
+**Description:**	Check that if there is any manifest description with given name in given version of db.
 #### **Path:**	*/manifestRegistry/getDescriptionWithMaxVersion
 **Type:**	*GET*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 name	string			Name of the manifest decription
-Return Values	ManifestDescriptionCM
-Description	Gets the manifest description with given name from last version.
+**Return Values**	ManifestDescriptionCM
+**Description:**	Gets the manifest description with given name from last version.
 
 ### ManifestsController
 ---------------------------------
@@ -416,10 +416,10 @@ Description	Gets the manifest description with given name from last version.
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 id	int			id of the manifest
-Return Values	CrateDTO
-Description	get the Manifest with given id.
+**Return Values**	CrateDTO
+**Description:**	get the Manifest with given id.
 
 ### NotificationsController
 -------------------------------------
@@ -429,10 +429,10 @@ Description	get the Manifest with given id.
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 notificationMessage	TerminalNotificationDTO			
-Return Values	IHttpActionResult
-Description	Takes the message, checks whether it is a terminal call or client call, and sets channel accordingly. Then notifies the selected channel.
+**Return Values**	IHttpActionResult
+**Description:**	Takes the message, checks whether it is a terminal call or client call, and sets channel accordingly. Then notifies the selected channel.
 
 ### OrganizationController
 ------------------------------------
@@ -442,20 +442,20 @@ Description	Takes the message, checks whether it is a terminal call or client ca
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 id	int			 id of the organization
-Return Values	OrganizationDTO
-Description	Takes the id and returns the Organization
+**Return Values**	OrganizationDTO
+**Description:**	Takes the id and returns the Organization
 #### **Path:**	*/organization/put
 Type:	PUT
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 dto	OrganizationDTO			
-Return Values	OrganizationDTO
-Description	Updates organization
+**Return Values**	OrganizationDTO
+**Description:**	Updates organization
 
 ### PlanNodesController
 --------------------------------------
@@ -465,30 +465,30 @@ Description	Updates organization
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 id	Guid			
-Return Values	ActivityTemplateDTO
-Description	Returns the activity template with given id.
+**Return Values**	ActivityTemplateDTO
+**Description:**	Returns the activity template with given id.
 #### **Path:**	*/planNodesController/getUpstreamActivities
 **Type:**	*GET*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 id	Guid			
-Return Values	List<PlanNodeDO>
-Description	Returns the Upstream Activities of the activity with given id.
+**Return Values**	List<PlanNodeDO>
+**Description:**	Returns the Upstream Activities of the activity with given id.
 #### **Path:**	*/planNodesController/getDownstreamActivities
 **Type:**	*GET*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 id	Guid			
-Return Values	List<PlanNodeDO>
-Description	 Returns the Downstream Activities of the activity with given id.
+**Return Values**	List<PlanNodeDO>
+**Description:**	 Returns the Downstream Activities of the activity with given id.
  
 
 #### **Path:**	*/planNodesController/getAvailableActivities
@@ -497,31 +497,31 @@ Description	 Returns the Downstream Activities of the activity with given id.
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-Return Values	IEnumerable<ActivityTemplateCategoryDTO>
-Description	Returns the activities with status active.
+
+**Return Values**	IEnumerable<ActivityTemplateCategoryDTO>
+**Description:**	Returns the activities with status active.
 #### **Path:**	*/planNodesController/getAvailableData
 **Type:**	*GET*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 id	Guid			
 direction	CrateDirection		CrateDirection.Upstream	
 availability	AvailabilityType		AvailabilityType.RunTime	
-Return Values	IncomingCratesDTO
-Description	Gets available data from upstream for the activity with given id.
+**Return Values**	IncomingCratesDTO
+**Description:**	Gets available data from upstream for the activity with given id.
 #### **Path:**	*/planNodesController/getAvailableActivities
 **Type:**	*GET*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 tag	string			
-Return Values	IEnumerable<ActivityTemplateDTO>
-Description	Gets the available activities with given tag.
+**Return Values**	IEnumerable<ActivityTemplateDTO>
+**Description:**	Gets the available activities with given tag.
 
 ### PlansController
 ------------------------------------
@@ -531,156 +531,156 @@ Description	Gets the available activities with given tag.
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 planDto	PlanEmptyDTO			
 updateRegistrations	bool		false	
-Return Values	PlanDTO
-Description	Creates and saves the plan.
+**Return Values**	PlanDTO
+**Description:**	Creates and saves the plan.
 #### **Path:**	*/plans/getFullPlan
 **Type:**	*GET*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 id	Guid			
-Return Values	PlanDTO
-Description	Returns the plan with given id
+**Return Values**	PlanDTO
+**Description:**	Returns the plan with given id
 #### **Path:**	*/plans/getByActivity
 **Type:**	*GET*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 id	Guid			
-Return Values	PlanDTO
-Description	Returns the plan with given activity id.
+**Return Values**	PlanDTO
+**Description:**	Returns the plan with given activity id.
 #### **Path:**	*/plans/getByQuery
 **Type:**	*GET*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 planQuery	[FromUri] PlanQueryDTO			
-Return Values	PlanResultDTO
-Description	Returns the PlanResult with given query
+**Return Values**	PlanResultDTO
+**Description:**	Returns the PlanResult with given query
 #### **Path:**	*/plans/getByName
 **Type:**	*GET*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 name	string			
 visibility	PlanVisibility		PlanVisibility.Standard	
-Return Values	List<PlanDTO>
-Description	Returns the list of planDTO’s with given name and visibility.
+**Return Values**	List<PlanDTO>
+**Description:**	Returns the list of planDTO’s with given name and visibility.
 #### **Path:**	*/plans/copy
 **Type:**	*POST*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 id	Guid			
 name	string			
-Return Values	dynamic ? ? ?
-Description	
+**Return Values**	dynamic ? ? ?
+**Description:**	
 #### **Path:**	*/plans/get
 **Type:**	*GET*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 id	Guid	true	null	
-Return Values	PlanEmptyDTO
-Description	
+**Return Values**	PlanEmptyDTO
+**Description:**	
 #### **Path:**	*/plans/putActivity
 **Type:**	*POST*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-Return Values	
-Description	
+
+**Return Values**	
+**Description:**	
 #### **Path:**	*/plans/delete
 **Type:**	*DELETE*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 id	Guid			
-Return Values	Guid
-Description	Deletes the plan with given id
+**Return Values**	Guid
+**Description:**	Deletes the plan with given id
 #### **Path:**	*/plans/activate
 **Type:**	*POST*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 planId	Guid			
 planBuilderActivate	bool		false	
-Return Values	ActivateActivitiesDTO
-Description	Activates the plan and generates the notifier.
+**Return Values**	ActivateActivitiesDTO
+**Description:**	Activates the plan and generates the notifier.
 #### **Path:**	*/plans/deactivate
 **Type:**	*POST*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 planId	Guid			
-Return Values	string
-Description	Deactivates the plan with given id, returns the string result: “success” or “no action”
+**Return Values**	string
+**Description:**	Deactivates the plan with given id, returns the string result: “success” or “no action”
 #### **Path:**	*/plans/createFindObjectsPlan
 **Type:**	*POST*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-Return Values	dynamic {id = plan.Id}
-Description	Creates Find Object Plan.
+
+**Return Values**	dynamic {id = plan.Id}
+**Description:**	Creates Find Object Plan.
 #### **Path:**	*/plans/run
 **Type:**	*GET*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 planId	Guid			
 containerId	Guid	true	null	
-Return Values	ContainerDTO
-Description	Method for plan execution continuation from URL
+**Return Values**	ContainerDTO
+**Description:**	Method for plan execution continuation from URL
 #### **Path:**	*/plans/run
 **Type:**	*POST*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 planId	Guid			
 model	[FromBody]PayloadVM			
 containerId	Guid	true	null	
-Return Values	ContainerDTO
-Description	Runs the plan with given id, payload and container.
+**Return Values**	ContainerDTO
+**Description:**	Runs the plan with given id, payload and container.
 #### **Path:**	*/plans/runWithPayload
 **Type:**	*POST*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 planId	Guid			
 payload	[FromBody]List<CrateDTO>	true	null
-Return Values	ContainerDTO
-Description	Run the plan with given id and payload.
+**Return Values**	ContainerDTO
+**Description:**	Run the plan with given id and payload.
 
 ### ReportController
 ----------------------------------
@@ -690,20 +690,20 @@ Description	Run the plan with given id and payload.
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 historyQueryDTO	[FromUri] HistoryQueryDTO			
-Return Values	HistoryResultDTO<IncidentDTO>
-Description	Gets incidents with given history result query
+**Return Values**	HistoryResultDTO<IncidentDTO>
+**Description:**	Gets incidents with given history result query
 #### **Path:**	*/report/getFactsByQuery
 **Type:**	*GET*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 historyQueryDTO	[FromUri] HistoryQueryDTO			
-Return Values	HistoryResultDTO<FactDTO>
-Description	Gets facts with given history result query
+**Return Values**	HistoryResultDTO<FactDTO>
+**Description:**	Gets facts with given history result query
 
 ### SubPlansController
 --------------------------------
@@ -713,40 +713,40 @@ Description	Gets facts with given history result query
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 subPlanDTO	SubPlanDTO			
-Return Values	SubPlanDTO
-Description	Creates and saves given subPlan
+**Return Values**	SubPlanDTO
+**Description:**	Creates and saves given subPlan
 #### **Path:**	*/subPlans/put
 Type:	PUT
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 subPlanDTO	SubPlanDTO			
-Return Values	SubPlanDTO
-Description	Updates given subPlan
+**Return Values**	SubPlanDTO
+**Description:**	Updates given subPlan
 #### **Path:**	*/subPlans/delete
 **Type:**	*DELETE*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 id	Guid			
-Return Values	SubPlanDTO
-Description	Deletes given subPlan
+**Return Values**	SubPlanDTO
+**Description:**	Deletes given subPlan
 #### **Path:**	*/subPlans/firstActivity
 **Type:**	*POST*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 id	Guid			
-Return Values	ActivityDTO
-Description	Gets the first activity in parent hierarchy.
+**Return Values**	ActivityDTO
+**Description:**	Gets the first activity in parent hierarchy.
 
 ### TerminalsController
 ------------------------------------
@@ -756,19 +756,19 @@ Description	Gets the first activity in parent hierarchy.
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-Return Values	List<TerminalDTO>
-Description	Returns list of terminals for current user
+
+**Return Values**	List<TerminalDTO>
+**Description:**	Returns list of terminals for current user
 #### **Path:**	*/terminals/post
 **Type:**	*POST*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 terminalDto	TerminalDTO			
-Return Values	TerminalDTO
-Description	Creates and saves terminal object.
+**Return Values**	TerminalDTO
+**Description:**	Creates and saves terminal object.
 
 ### UserController
 ------------------------------------
@@ -778,31 +778,31 @@ Description	Creates and saves terminal object.
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-Return Values	UserDTO
-Description	Returns the current user.
+
+**Return Values**	UserDTO
+**Description:**	Returns the current user.
 #### **Path:**	*/user/getUserData
 **Type:**	*GET*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 id	string			
-Return Values	UserDTO
-Description	Returns the user with given id
+**Return Values**	UserDTO
+**Description:**	Returns the user with given id
 #### **Path:**	*/user/updatePassword
 **Type:**	*POST*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 oldPassword	string			
 newPassword	string			
 confirmPassword	string			
-Return Values	IHttpActionResult
-Description	Updates user password
+**Return Values**	IHttpActionResult
+**Description:**	Updates user password
 
 ### WarehouseController
 ------------------------------------
@@ -812,11 +812,11 @@ Description	Updates user password
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 string	userId			
 crates	List<CrateDTO>			
-Return Values	List<CrateDTO>
-Description	
+**Return Values**	List<CrateDTO>
+**Description:**	
 
 ### WebServicesController
 ------------------------------------
@@ -826,27 +826,27 @@ Description
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 id	Guid	true	null	
-Return Values	ActivityTemplateDTO or WebServiceDTO
-Description	
+**Return Values**	ActivityTemplateDTO or WebServiceDTO
+**Description:**	
 #### **Path:**	*/webServices/post
 **Type:**	*POST*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 webService	WebServiceDTO			
-Return Values	WebServiceDTO
-Description	
+**Return Values**	WebServiceDTO
+**Description:**	
 #### **Path:**	*/webServices/getActivities
 **Type:**	*POST*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
+
 categories	ActivityCategory[]			
-Return Values	WebServiceActivitySetDTO
-Description	
+**Return Values**	WebServiceActivitySetDTO
+**Description:**	
