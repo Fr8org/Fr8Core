@@ -155,9 +155,9 @@
             
 
             // we don't need errorMessages on server
-            for (var field of fieldsToSyncWithCrate) {
+            /*for (var field of fieldsToSyncWithCrate) {
                     field.errorMessage = null;
-            }
+            }*/
 
             // Overwrite contents of that crate with actual data in controlList.fields.
             controlListCrate.contents = { Controls: fieldsToSyncWithCrate };

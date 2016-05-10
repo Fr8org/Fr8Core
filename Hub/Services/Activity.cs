@@ -192,7 +192,14 @@ namespace Hub.Services
                         var activatedActivityDTO = await CallTerminalActivityAsync<ActivityDTO>(uow, "activate", submittedActivity, Guid.Empty);
                         var activatedActivityDo = Mapper.Map<ActivityDO>(activatedActivityDTO);
 
-                        existingAction.ActivationState = ActivationState.Activated;
+                        var storage = _crate.GetStorage(activatedActivityDo);
+
+                        var validationCrate = storage.CrateContentsOfType<ValidationResultsCM>().FirstOrDefault();
+
+                        if (validationCrate == null || !validationCrate.HasErrors)
+                        {
+                            existingAction.ActivationState = ActivationState.Activated;
+                        }
 
                         UpdateActivityProperties(existingAction, activatedActivityDo);
 
