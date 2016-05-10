@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Fr8Data.DataTransferObjects.PlanTemplates
+namespace Data.Interfaces.DataTransferObjects.PlanTemplates
 {
     public class NodeTransitionDTO
     {
