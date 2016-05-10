@@ -178,8 +178,8 @@
       <Setting name="terminalSlack.TerminalEndpoint"/>
       <Setting name="terminalTwilio.TerminalEndpoint"/>
       <Setting name="terminalYammer.TerminalEndpoint"/>
-      <Setting name="OutboundUserName" value="" />
-      <Setting name="OutboundPassword" value="" />
+      <Setting name="OutboundUserName"/>
+      <Setting name="OutboundPassword"/>
     </ConfigurationSettings>
     <Endpoints>
       <!-- Endpoint name must strongly match terminal name. This rule is expected 
