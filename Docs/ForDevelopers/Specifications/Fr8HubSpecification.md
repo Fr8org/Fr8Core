@@ -537,7 +537,7 @@ id | 	Guid			| | |
 **Return Values**	PlanDTO  
 **Description:**	Returns the plan with given id   
 
-#### **Path:**	*/plans/getByActivity
+#### **Path:**	*/plans/getByActivity*
 **Type:**	*GET*
 **Input Parameters:**  	  
 
