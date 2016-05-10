@@ -58,39 +58,52 @@ Name |	Type |	Nullable	| Default |	Description
 --- | --- | --- | --- | ---  
  id |	Guid	| | |	 id of the activity to delete.
 confirmed |	boolean |		false | |	Deleting an activity can cause effects on downstream activities. When this parameter is false, the downstream activities are being checked, and if there is an effect on them, the user will be informed by a message. If user confirms, then the activity is directly deleted.   
+
 **Return Values:**	void   
 **Description:**		 To delete an activity   
 
 #### **Path:**	*/activities/deleteActivity*   
-Type:	DELETE
-Input Parameters:	
-Name	Type	Nullable	Default	Description
- id	Guid			 id of the activity to delete
-Return Values	void
-Description	This endpoint for terminals to delete activity, since there is no user interaction when a request is sent from terminal, there will be no confirm message needed too.
-Path:	/activities/deleteChildNodes
-Type:	DELETE
-Input Parameters:	
-Name	Type	Nullable	Default	Description
- activityId	Guid			 id of the activity to delete
-Return Values	void
-Description	Remove all child Nodes and clear activity values
-Path:	/activities/save
-Type:	POST
-Input Parameters:	
-Name	Type	Nullable	Default	Description
- curActionDTO	ActivityDTO			Current object that will be saved or updated
-Return Values	ActivityDTO
-Description	Saves or updates the given action
+**Type:** DELETE
+**Input Parameters:	**
+
+Name |	Type |	Nullable	| Default |	Description   
+--- | --- | --- | --- | ---  
+ id |	Guid	| | |		 id of the activity to delete  
+ 
+**Return Values:**	void     
+**Description:**			This endpoint for terminals to delete activity, since there is no user interaction when a request is sent from terminal, there will be no confirm message needed too.  
+
+#### **Path:**	*/activities/deleteChildNodes*  
+**Type:** DELETE  
+**Input Parameters:	**
+
+Name |	Type |	Nullable	| Default |	Description   
+--- | --- | --- | --- | ---  
+ activityId |	Guid | | |			 id of the activity to delete  
+ 
+**Return Values:**	void    
+**Description:**		Remove all child Nodes and clear activity values  
+
+#### **Path:**	*/activities/save*  
+**Type:**	POST  
+**Input Parameters:	**  
+
+Name |	Type |	Nullable	| Default |	Description   
+--- | --- | --- | --- | ---  
+ curActionDTO |	ActivityDTO	| | |		Current object that will be saved or updated   
+**Return Values:**	ActivityDTO  
+**Description:**	Saves or updates the given action  
  
 
-Path:	/activities/documentation
-Type:	POST
-Input Parameters:	
-Name	Type	Nullable	Default	Description
- curActivityDTO	 ActivityDTO [FromBody]			
-Return Values	SolutionPageDTO or ActivityResponseDTO
-Description	This endpoint returns help menu of the current activity, if the activity that is passed to function is not a solution. If a solution is given as a parameter, then the endpoint returns the documentation page of the solution.
+#### **Path:**	*/activities/documentation*   
+**Type:**	POST   
+**Input Parameters:	**   
+
+Name |	Type |	Nullable	| Default |	Description   
+--- | --- | --- | --- | ---  
+ curActivityDTO |	 ActivityDTO [FromBody]			| | |   
+**Return Values:**		SolutionPageDTO or ActivityResponseDTO   
+**Description:**	This endpoint returns help menu of the current activity, if the activity that is passed to function is not a solution. If a solution is given as a parameter, then the endpoint returns the documentation page of the solution.   
 
 ### AlarmsController
 -----------------------------------------
