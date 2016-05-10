@@ -46,7 +46,7 @@ module dockyard.directives.crateChooser {
                     UpstreamExtractor.getAvailableData($scope.currentAction.id, 'NotSet')
                         .then((data: model.IncomingCratesDTO) => {
                             var descriptions = <Array<model.CrateDescriptionDTO>>[];
-                            angular.forEach(data.availableCrates, (cd) => {
+                            angular.forEach(data.incomingCrates, (cd) => {
                                 descriptions.push(cd);
                             });
 
