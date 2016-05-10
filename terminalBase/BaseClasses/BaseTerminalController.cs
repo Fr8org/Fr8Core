@@ -85,7 +85,7 @@ namespace TerminalBase.BaseClasses
             return _baseTerminalEvent.SendEventOrIncidentReport(terminalName, "Terminal Incident");
         }
 
-
+        /*
         private void BindTestHubCommunicator(object curObject, string explicitData)
         {
             var baseTerminalAction = curObject as BaseTerminalActivity;
@@ -132,7 +132,7 @@ namespace TerminalBase.BaseClasses
             }
 
             baseTerminalAction.HubCommunicator.Configure(terminalName);
-        }
+        }*/
 
         /// <summary>
         /// Reports event when process an action
@@ -195,7 +195,7 @@ namespace TerminalBase.BaseClasses
 
             if (_integrationTestMode)
             {
-                BindTestHubCommunicator(curObject, curDataDTO.ExplicitData);
+                //BindTestHubCommunicator(curObject, curDataDTO.ExplicitData);
             }
 
             var curActivityDTO = Mapper.Map<ActivityDTO>(curActionDTO);
@@ -208,8 +208,8 @@ namespace TerminalBase.BaseClasses
             var currentUserId = curAuthTokenDO?.UserId;
             var currentUserEmail = curAuthTokenDO?.ExternalAccountId;
             //Set Current user of action
-            SetCurrentUser(curObject, currentUserId, currentUserEmail);
-            ConfigureHubCommunicator(curObject, curTerminal);
+            //SetCurrentUser(curObject, currentUserId, currentUserEmail);
+            //ConfigureHubCommunicator(curObject, curTerminal);
             try
             {
                 // null checking
@@ -331,8 +331,8 @@ namespace TerminalBase.BaseClasses
                 //Logger.GetLogger().Error($"Exception caught while processing {curActionPath} for {this.GetType()}", e);
                 Logger.LogError($"Exception caught while processing {curActionPath} for {this.GetType()} with exception {e.Data} and stack trace {e.StackTrace} and message {e.GetFullExceptionMessage()}", curTerminal);
                 var endpoint = (curActivityDTO.ActivityTemplate != null && curActivityDTO.ActivityTemplate.Terminal != null && curActivityDTO.ActivityTemplate.Terminal.Endpoint != null) ? curActivityDTO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
-                EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActivityDTO, settings), e, curActivityDTO.Id.ToString());
-
+                //EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActivityDTO, settings), e, curActivityDTO.Id.ToString());
+                //TODO check this
                 throw;              
             }
         }

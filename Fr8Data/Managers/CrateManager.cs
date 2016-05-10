@@ -75,6 +75,11 @@ namespace Fr8Data.Managers
             return JsonConvert.SerializeObject(CrateStorageSerializer.Default.ConvertToDto(storage));
         }
 
+        public string CrateStorageAsStr(CrateStorageDTO storageDTO)
+        {
+            return JsonConvert.SerializeObject(storageDTO);
+        }
+
         public Crate CreateAuthenticationCrate(string label, AuthenticationMode mode, bool revocation)
         {
             return Crate.FromContent(label, new StandardAuthenticationCM()

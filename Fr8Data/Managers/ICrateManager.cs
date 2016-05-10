@@ -26,6 +26,7 @@ namespace Fr8Data.Managers
         bool IsEmptyStorage(CrateStorageDTO storageDto);
         string EmptyStorageAsStr();
         string CrateStorageAsStr(ICrateStorage storage);
+        string CrateStorageAsStr(CrateStorageDTO storageDTO);
         Crate CreateAuthenticationCrate(string label, AuthenticationMode mode, bool revocation);
         Crate<ManifestDescriptionCM> CreateManifestDescriptionCrate(string label, string name, string id, AvailabilityType availability);
         Crate<FieldDescriptionsCM> CreateDesignTimeFieldsCrate(string label, params FieldDTO[] fields);

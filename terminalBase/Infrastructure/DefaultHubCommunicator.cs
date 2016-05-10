@@ -42,7 +42,7 @@ namespace TerminalBase.Infrastructure
         public Task Configure(string terminalName)
         {
             if (string.IsNullOrEmpty(terminalName))
-                throw new ArgumentNullException("terminalName");
+                throw new ArgumentNullException(nameof(terminalName));
 
             TerminalSecret = CloudConfigurationManager.GetSetting("TerminalSecret");
             TerminalId = CloudConfigurationManager.GetSetting("TerminalId");
@@ -96,6 +96,7 @@ namespace TerminalBase.Infrastructure
 
             return payloadDTOTask;
         }
+
         public async Task<UserDTO> GetCurrentUser(ActivityDTO activityDO, Guid containerId, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")

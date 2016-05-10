@@ -107,7 +107,10 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="BaseClasses\Activity.cs" />
+    <Compile Include="BaseClasses\BaseTerminalActivityv2.cs" />
+    <Compile Include="BaseClasses\EnhancedTerminalActivityv2.cs" />
+    <Compile Include="BaseClasses\EnhancedTerminalController.cs" />
+    <Compile Include="BaseClasses\TerminalActivity.cs" />
     <Compile Include="BaseClasses\ActivityExecutionException.cs" />
     <Compile Include="BaseClasses\BaseConfiguration.cs" />
     <Compile Include="BaseClasses\BaseTerminalActivity.cs" />
