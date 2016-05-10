@@ -1,45 +1,62 @@
-﻿query-builder .delete-btn {
+﻿query-builder .delete-btn, 
+query-builder-two .delete-btn {
     color: red;
     cursor: pointer;
 }
 
-query-builder .filter-pane{
+query-builder .filter-pane,
+query-builder-two .filter-pane {
     padding-left: 8px
 }
 
-query-builder .add-condition span {
+query-builder .add-condition span,
+query-builder-two .add-condition span {
     vertical-align: middle;
 }
 
-query-builder .add-condition .btn {
+query-builder .add-condition .btn,
+query-builder-two .add-condition .btn {
     margin-left: 5px;
 }
 
-query-builder table {
+query-builder table,
+query-builder-two table {
     table-layout: fixed;
     width: 100%;
     margin-bottom: 5px;
     text-align: center;
 }
 
-query-builder th:nth-child(2) {
+query-builder th:nth-child(2),
+query-builder-two th:nth-child(2) {
     width: 70px;
 }
+
+query-builder td .condition-control input,
+query-builder-two td .condition-control input {
+    padding: 6px 12px 6px 12px;
+}
     
-query-builder th:nth-child(4) {
+query-builder th:nth-child(4),
+query-builder-two th:nth-child(4) {
     width: 20px;
 }
 
-query-builder th {
+query-builder th,
+query-builder-two th {
     font-weight: normal;
 }
 
 query-builder tr > td + td,
-query-builder tr > th + th {
+query-builder tr > th + th,
+query-builder-two tr > td + td,
+query-builder-two tr > th + th {
     border-left-width: 10px;
 }
 
 query-builder td,
-query-builder th {
+query-builder th,
+query-builder-two td,
+query-builder-two th {
     border: 0 solid transparent;
 }

@@ -71,7 +71,7 @@
 
     <!--
         TextBlock template
-        -->
+    -->
     <div ng-if='field.type == "TextBlock"'>
         <label ng-if="field.label !== null && field.label.length > 0" class='control-label'>{{::field.label}}</label>
         <text-block field='field'></text-block>
@@ -79,14 +79,14 @@
 
     <!--
         FilterPane template
-        -->
+    -->
     <div ng-if='field.type == "FilterPane"'>
         <filter-pane current-action='currentAction' field='field' change='onChange'></filter-pane>
     </div>
 
     <!--
         QueryBuilder template
-        -->
+    -->
     <div ng-if='field.type == "QueryBuilder"'>
         <label class='control-label'>{{::field.label}}</label>
         <query-builder current-action='currentAction' field='field'></query-builder>
@@ -94,7 +94,7 @@
 
     <!--
         MappingPane template
-        -->
+    -->
     <div ng-if='field.type == "MappingPane"'>
         <label class='control-label'>{{::field.label}}</label>
         <mapping-pane current-action='currentAction' field='field'></mapping-pane>
@@ -102,7 +102,7 @@
 
     <!--
         Routing control group template
-        -->
+    -->
     <div ng-if='field.type == "Routing"'>
         <div class="container_box" ng-repeat="plan in field.plans">
             <routing-control plan="plan" />
@@ -111,7 +111,7 @@
 
     <!--
         Field List control template
-        -->
+    -->
     <div ng-if='field.type == "FieldList"'>
         <label class="conrol-label">{{::field.label}}</label>
         <field-list field="field" change="onChange"></field-list>

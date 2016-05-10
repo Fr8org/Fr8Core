@@ -5,14 +5,13 @@ using System.Threading.Tasks;
 using NUnit.Framework;
 using StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using System.Diagnostics;
 using System.Net.Http;
 using AutoMapper;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Newtonsoft.Json.Linq;
 
 namespace terminalDocuSignTests.Integration
@@ -70,7 +69,6 @@ namespace terminalDocuSignTests.Integration
 </DocuSignEnvelopeInformation>";
 
 
-        private const string UserAccountName = "IntegrationTestUser1";
         private const int MaxAwaitPeriod = 300000;
         private const int SingleAwaitPeriod = 10000;
         private const string DocuSignEmail = "fr8.madse.testing@gmail.com"; // "freight.testing@gmail.com";
@@ -141,8 +139,9 @@ namespace terminalDocuSignTests.Integration
                 }
 
                 Assert.IsTrue(mtDataCountBefore < mtDataCountAfter,
-                    $"The number of Local MtData ({mtDataCountAfter}) records for user {UserAccountName} remained unchanged within {MaxAwaitPeriod} miliseconds.");
+                    $"The number of Local MtData ({mtDataCountAfter}) records for user {TestUserEmail} remained unchanged within {MaxAwaitPeriod} miliseconds.");
             }
+
         }
 
         private async Task RecreateDefaultAuthToken(IUnitOfWork uow,

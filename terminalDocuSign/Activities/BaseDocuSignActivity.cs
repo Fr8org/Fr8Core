@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Managers;
 using StructureMap;
 using terminalDocuSign.Services.New_Api;
 using TerminalBase.BaseClasses;
+using TerminalBase.Errors;
 
 namespace terminalDocuSign.Actions
 {
@@ -175,7 +176,26 @@ namespace terminalDocuSign.Actions
             {
                 return Error(payloadCrates, $"Could not run {ActivityUserFriendlyName} because of the below issues:{Environment.NewLine}{result.ErrorMessage}", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
-            return await RunInternal(activityDO, containerId, authTokenDO);
+
+            try
+            {
+                return await RunInternal(activityDO, containerId, authTokenDO);
+            }
+            catch (AuthorizationTokenExpiredOrInvalidException ex)
+            {
+                return InvalidTokenError(payloadCrates, ex.Message);
+            }
+            catch (DocuSign.eSign.Client.ApiException ex)
+            {
+                if (ex.ErrorCode == 401)
+                {
+                    return InvalidTokenError(payloadCrates);
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
         protected abstract string ActivityUserFriendlyName { get; }

@@ -2,16 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using StructureMap;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 using TerminalBase.BaseClasses;
-using Utilities.Logging;
 
 namespace terminalSlack.Actions
 {
@@ -35,27 +34,32 @@ namespace terminalSlack.Actions
             {
                 MonitorDirectMessagesOption = new CheckBox
                 {
-                    Label = "Monitor direct messages to me and my group conversations"
+                    Label = "Monitor my direct messages and group conversations",
+                    Name = nameof(MonitorDirectMessagesOption)
                 };
                 MonitorChannelsOption = new CheckBox
                 {
                     Label = "Monitor channels",
+                    Name = nameof(MonitorChannelsOption),
                     Selected = true
                 };
                 AllChannelsOption = new RadioButtonOption
                 {
                     Value = "All",
+                    Name = nameof(AllChannelsOption),
                     Selected = true
                 };
                 ChannelList = new DropDownList();
                 SpecificChannelOption = new RadioButtonOption
                 {
                     Controls = new List<ControlDefinitionDTO> { ChannelList },
+                    Name = nameof(SpecificChannelOption),
                     Value = "Select channel"
                 };
                 ChannelSelectionGroup = new RadioButtonGroup
                 {
                     GroupName = nameof(ChannelSelectionGroup),
+                    Name = nameof(ChannelSelectionGroup),
                     Radios = new List<RadioButtonOption> { AllChannelsOption, SpecificChannelOption },
                     Label = "Monitor which channels?"
                 };
@@ -73,18 +77,18 @@ namespace terminalSlack.Actions
 
         public Monitor_Channel_v2() : base(true)
         {
-            _slackIntegration = new SlackIntegration();
+            _slackIntegration = ObjectFactory.GetInstance<ISlackIntegration>();
             ActivityName = "Monitor Slack Messages";
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
-            ConfigurationControls.ChannelList.ListItems = (await _slackIntegration.GetChannelList(AuthorizationToken.Token))
+            ConfigurationControls.ChannelList.ListItems = (await _slackIntegration.GetChannelList(AuthorizationToken.Token).ConfigureAwait(false))
                 .OrderBy(x => x.Key)
                 .Select(x => new ListItem { Key = $"#{x.Key}", Value = x.Value })
                 .ToList();
             CurrentActivityStorage.Add(CreateEventSubscriptionCrate());
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel)
+            crateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel)
                                .AddFields(GetChannelProperties());
         }
 
@@ -105,7 +109,7 @@ namespace terminalSlack.Actions
             return CrateManager.CreateStandardEventSubscriptionsCrate(EventSubscriptionsCrateLabel, "Slack", "Slack Outgoing Message");
         }
 
-        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Configure(CrateSignaller crateSignaller)
         {
             //No extra configuration is required
             return Task.FromResult(0);
@@ -148,19 +152,14 @@ namespace terminalSlack.Actions
                 {
                     throw new ActivityExecutionException("At least one of the monitoring options must be selected");
                 }
-                if (string.IsNullOrEmpty(AuthorizationToken.ExternalDomainId))
-                {
-                    throw new ActivityExecutionException("Your authorization doesn't contain info about your Slack team. Please reauthorize with Slack to update your team info");
-                }
-                //Try not to wait on this (test measure)
-                ObjectFactory.GetInstance<ISlackEventManager>().Subscribe(AuthorizationToken, CurrentActivity.Id);
+                await ObjectFactory.GetInstance<ISlackEventManager>().Subscribe(AuthorizationToken, CurrentActivity.RootPlanNodeId.Value).ConfigureAwait(false);
                 RequestHubExecutionTermination("Plan successfully activated. It will wait and respond to specified Slack postings");
             }
         }
 
         protected override Task Deactivate()
         {
-            ObjectFactory.GetInstance<ISlackEventManager>().Unsubscribe(CurrentActivity.Id);
+            ObjectFactory.GetInstance<ISlackEventManager>().Unsubscribe(CurrentActivity.RootPlanNodeId.Value);
             return base.Deactivate();
         }
 

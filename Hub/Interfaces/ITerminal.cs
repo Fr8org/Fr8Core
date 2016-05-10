@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using Data.Entities;
 using System.Threading.Tasks;
 using System;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 
 namespace Hub.Interfaces
 {

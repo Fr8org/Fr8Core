@@ -1,19 +1,17 @@
 ﻿using AutoMapper;
-using Data.Control;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Interfaces;
 using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Data.Crates;
-using Utilities.Configuration.Azure;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Utilities.Logging;
 
 namespace Hub.Managers
@@ -84,9 +82,9 @@ namespace Hub.Managers
                     var activity2 = Mapper.Map<ActivityTemplateDTO>(_activityTemplate.GetByName(uow, "SaveToFr8Warehouse_v1"));
 
                     //create and configure required actions
-                    await _activity.CreateAndConfigure(uow, curFr8Account.Id, activity1.Id, activity1.Label, null, subPlan.Id);
+                    await _activity.CreateAndConfigure(uow, curFr8Account.Id, activity1.Id, null, activity1.Label, null, subPlan.Id);
 
-                    var result = await _activity.CreateAndConfigure(uow, curFr8Account.Id, activity2.Id, activity2.Label, null, subPlan.Id);
+                    var result = await _activity.CreateAndConfigure(uow, curFr8Account.Id, activity2.Id, null, activity2.Label, null, subPlan.Id);
 
                     if (result is ActivityDO)
                     {

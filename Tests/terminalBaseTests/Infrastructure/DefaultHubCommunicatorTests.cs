@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Data.States;
-using Hub.Interfaces;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.States;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Moq;
 using NUnit.Framework;

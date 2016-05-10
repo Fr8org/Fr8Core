@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Interfaces;
-using Data.States;
 using Hub.Interfaces;
 using Moq;
 using NUnit.Framework;
@@ -11,8 +10,6 @@ using terminalDocuSign.Services;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using terminalDocuSign.Tests.Fixtures;
 
 namespace terminalDocuSign.Tests.Services
 {
@@ -101,7 +98,7 @@ namespace terminalDocuSign.Tests.Services
 
                 _actionMock.Setup(
                     a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<Guid>(),
-                        It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
+                        It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {
@@ -114,7 +111,7 @@ namespace terminalDocuSign.Tests.Services
 
                 _actionMock.Setup(
                     a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<Guid>(),
-                        It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
+                        It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {

@@ -1,26 +1,18 @@
 ﻿using System;
-using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Http;
-using System.Web.Http.Results;
 using StructureMap;
 using Data.Infrastructure;
-using Data.Interfaces.DataTransferObjects;
-using Hub.Exceptions;
 using Hub.Interfaces;
-using System.Configuration;
-using Data.Crates;
-using Data.Interfaces.Manifests;
 using Data.Interfaces;
 using Data.States;
 using Data.Entities;
 using System.Linq;
 using System.Collections.Generic;
 using System.Data.Entity;
-using Data.Exceptions;
-using Utilities;
-using Hub.Managers;
-using Hangfire;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Utilities.Logging;
 
 namespace Hub.Services
 {
@@ -80,6 +72,7 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                Logger.LogInfo($"Received external event for account '{eventReportMS.ExternalAccountId}'");
                 if (eventReportMS.ExternalAccountId == systemUserEmail)
                 {
                     try
@@ -102,6 +95,7 @@ namespace Hub.Services
                         .Where(x => x.ExternalAccountId.Contains(eventReportMS.ExternalAccountId)
                                 || (x.ExternalDomainId != null && x.ExternalDomainId == eventReportMS.ExternalDomainId))
                         .ToArray();
+                    Logger.LogInfo($"External event for account '{eventReportMS.ExternalAccountId}' relates to {authTokenList.Length} auth tokens");
                     foreach (var authToken in authTokenList)
                     {
                         try
@@ -125,6 +119,7 @@ namespace Hub.Services
                 .Where(pt => pt.Fr8AccountId == curDockyardAccount.Id && pt.PlanState == PlanState.Active).ToList();
             var subscribingPlans = _plan.MatchEvents(initialPlansList, eventReportMS);
 
+            Logger.LogInfo($"Upon receiving event for account '{eventReportMS.ExternalAccountId}' {subscribingPlans.Count} of {initialPlansList.Count} will be notified");
             //When there's a match, it means that it's time to launch a new Process based on this Plan, 
             //so make the existing call to Plan#LaunchProcess.
             _plan.Enqueue(

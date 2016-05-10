@@ -1,6 +1,6 @@
 ﻿using System.Web;
 using System.Web.Http.ExceptionHandling;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 
 namespace HubWeb.ExceptionHandling
 {

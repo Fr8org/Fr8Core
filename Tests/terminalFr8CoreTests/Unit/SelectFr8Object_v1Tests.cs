@@ -1,16 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using AutoMapper;
-using Data.Control;
-using Data.Crates;
 using NUnit.Framework;
 using StructureMap;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
-using HealthMonitor.Utility;
 using Hub.Managers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
@@ -19,6 +12,7 @@ using terminalFr8Core.Actions;
 using Moq;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using System.Threading.Tasks;
+using Fr8Data.DataTransferObjects;
 
 namespace terminalFr8CoreTests.Unit
 {

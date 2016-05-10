@@ -1,10 +1,10 @@
 using System;
 using System.Linq;
-using Data.Constants;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.DataTransferObjects.Helpers;
-using Data.Interfaces.Manifests;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.DataTransferObjects.Helpers;
+using Fr8Data.Manifests;
 using Hub.Managers;
 
 namespace HubTests.Services.Container

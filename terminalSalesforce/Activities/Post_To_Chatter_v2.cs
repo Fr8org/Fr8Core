@@ -3,21 +3,21 @@ using StructureMap;
 using System.Threading.Tasks;
 using TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
-using Data.Interfaces.DataTransferObjects;
-using Data.Crates;
-using Data.Control;
-using Data.Interfaces.Manifests;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Data.States;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Helpers;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Newtonsoft.Json;
 using ServiceStack;
-using Data.Helpers;
 
 namespace terminalSalesforce.Actions
 {
-    public class Post_To_Chatter_v2 : EnhancedTerminalActivity<Post_To_Chatter_v2.ActivityUi>
+    public class Post_To_Chatter_v2 : BaseSalesforceTerminalActivity<Post_To_Chatter_v2.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -55,7 +55,7 @@ namespace terminalSalesforce.Actions
                     Source = new FieldSourceDTO
                     {
                         Label = QueryFilterCrateLabel,
-                        ManifestType = CrateManifestTypes.StandardQueryFields
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
                 };
                 QueryForChatterOption = new RadioButtonOption
@@ -104,23 +104,23 @@ namespace terminalSalesforce.Actions
 
         private readonly ISalesforceManager _salesforceManager;
 
-        public Post_To_Chatter_v2() : base(true)
+        public Post_To_Chatter_v2()
         {
             _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
             ActivityName = "Post to Chatter";
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             IsPostingToQueryiedChatter = true;
             AvailableChatters = _salesforceManager.GetSalesforceObjectTypes(filterByProperties: SalesforceObjectProperties.HasChatter).Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardPayloadDataCM>(PostedFeedCrateLabel);
+            crateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PostedFeedCrateLabel);
             CurrentActivityStorage.Add(Crate<FieldDescriptionsCM>.FromContent(PostedFeedPropertiesCrateLabel,
                                                                               new FieldDescriptionsCM(new FieldDTO(FeedIdKeyName, FeedIdKeyName, AvailabilityType.RunTime)),
                                                                               AvailabilityType.RunTime));
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Configure(CrateSignaller crateSignaller)
         {
             //If Salesforce object is empty then we should clear filters as they are no longer applicable
             if (string.IsNullOrEmpty(SelectedChatter))
@@ -137,10 +137,9 @@ namespace terminalSalesforce.Actions
             }
             //Prepare new query filters from selected object properties
             var selectedObjectProperties = await _salesforceManager.GetProperties(SelectedChatter.ToEnum<SalesforceObjectType>(), AuthorizationToken);
-            var queryFilterCrate = Crate<TypedFieldsCM>.FromContent(
+            var queryFilterCrate = Crate<FieldDescriptionsCM>.FromContent(
                 QueryFilterCrateLabel,
-                new TypedFieldsCM(selectedObjectProperties.OrderBy(x => x.Key)
-                                                                  .Select(x => new TypedFieldDTO(x.Key, x.Value, FieldType.String, new TextBox { Name = x.Key }))),
+                new FieldDescriptionsCM(selectedObjectProperties),
                 AvailabilityType.Configuration);
             CurrentActivityStorage.ReplaceByLabel(queryFilterCrate);
 
@@ -151,7 +150,7 @@ namespace terminalSalesforce.Actions
             CurrentActivityStorage.ReplaceByLabel(objectPropertiesCrate);
             this[nameof(SelectedChatter)] = SelectedChatter;
             //Publish information for downstream activities
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(PostedFeedCrateLabel);
+            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(PostedFeedCrateLabel);
         }
 
         protected override async Task RunCurrentActivity()

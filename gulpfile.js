@@ -1,10 +1,12 @@
-    var gulp = require('gulp');
+var gulp = require('gulp');
 var bower = require('gulp-bower');
 var concat = require('gulp-concat');
 var path = require('path');
 var child_process = require('child_process');
 var sourcemaps = require('gulp-sourcemaps');
 var templateCache = require('gulp-angular-templatecache');
+var argv = require('yargs').argv;
+var gutil = require('gulp-util');
 
 gulp.task('bower', function (done) {
     return bower({ layout: "byComponent" });
@@ -17,6 +19,7 @@ gulp.task('concattemplates', function () {
         '!Views/AngularTemplate/PlanList.cshtml',
         '!Views/AngularTemplate/MyAccountPage.cshtml',
         '!Views/AngularTemplate/Header.cshtml',
+        '!Views/AngularTemplate/MiniHeader.cshtml',
         '!Views/AngularTemplate/ChangePassword.cshtml',
         '!Views/AngularTemplate/AccountList.cshtml'])
         .pipe(templateCache('templateCache.js', {
@@ -101,7 +104,6 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/TextArea.js',
         'Scripts/app/directives/Controls/TextArea.js',
         'Scripts/app/directives/Controls/FilterPane.js',
-        'Scripts/app/directives/QueryBuilderWidget.js',
         'Scripts/app/directives/Controls/MappingPane.js',
         'Scripts/app/directives/Controls/ManagePlan.js',
         'Scripts/app/directives/Controls/RunPlanButton.js',
@@ -397,15 +399,20 @@ function getProtractorBinary(binaryName){
 }
 
 gulp.task('update-web-driver', function(done){
-    child_process.spawnSync(getProtractorBinary('webdriver-manager'), ['update'], {
+    return child_process.spawnSync(getProtractorBinary('webdriver-manager'), ['update'], {
         stdio: 'inherit'
     });
 });
 
 gulp.task('protractor-run', function (done) {
-    child_process.spawnSync(getProtractorBinary('protractor'),  ['Scripts\\tests\\e2e\\conf.js'] ,{
+    gutil.log('Using base url: ' + argv.baseUrl);
+    var result = child_process.spawnSync(getProtractorBinary('protractor'),  ['--baseUrl='+argv.baseUrl, 'Scripts\\tests\\e2e\\conf.js'] ,{
         stdio: 'inherit'
     });
+
+    if (result.status !== 0) {
+        process.exit(1);
+    }
 });
 gulp.task('default', ['bower', 'concattemplates', 'cdnizer-js', 'cdnizer-css']);
 

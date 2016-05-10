@@ -7,7 +7,7 @@ using System.Web.Http;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 using Hub.Interfaces;
 using HubWeb.Controllers.Helpers;
 using HubWeb.Infrastructure;
@@ -45,13 +45,13 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Create(Guid actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
+        public async Task<IHttpActionResult> Create(Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var userId = User.Identity.GetUserId();
 
-                var result = await _activity.CreateAndConfigure(uow, userId, actionTemplateId, label, order, parentNodeId, createPlan, authorizationTokenId);
+                var result = await _activity.CreateAndConfigure(uow, userId, activityTemplateId, label, name, order, parentNodeId, createPlan, authorizationTokenId);
 
                 if (result is ActivityDO)
                 {
@@ -68,7 +68,7 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> Create(string solutionName)
+        public async Task<IHttpActionResult> CreateSolution(string solutionName)
         {
             var userId = User.Identity.GetUserId();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -81,7 +81,7 @@ namespace HubWeb.Controllers
                 }
 
                 var result = await _activity.CreateAndConfigure(uow, userId,
-                    activityTemplate.Id, activityTemplate.Label, null, null, true, null);
+                    activityTemplate.Id, null, activityTemplate.Label, null, null, true, null);
                 return Ok(PlanMappingHelper.MapPlanToDto(uow, (PlanDO)result));
             }
         }
@@ -116,11 +116,7 @@ namespace HubWeb.Controllers
             }
         }
 
-        /// <summary>
-        /// GET : Returns an action with the specified id
-        /// </summary>
         [HttpDelete]
-        //[Route("{id:guid}")]
         public async Task<IHttpActionResult> Delete(Guid id, bool confirmed = false)
         {
             var isDeleted = await _subPlan.DeleteActivity(User.Identity.GetUserId(), id, confirmed);

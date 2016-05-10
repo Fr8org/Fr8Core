@@ -3,13 +3,14 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Salesforce.Force;
 using terminalSalesforce.Infrastructure;
 using Data.Entities;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Managers;
 using Salesforce.Common.Models;
 using Salesforce.Common;
@@ -17,7 +18,6 @@ using Salesforce.Chatter;
 using Newtonsoft.Json.Linq;
 using Salesforce.Chatter.Models;
 using StructureMap;
-using Data.States;
 
 namespace terminalSalesforce.Services
 {
@@ -67,33 +67,73 @@ namespace terminalSalesforce.Services
                 {
                     resultFields = new JArray(resultFields.Where(fieldDescription => (fieldDescription.Value<bool>("updateable") == true)));
                 }
-                var fields = resultFields.Select(fieldDescription =>
-                                    /*
-                                    Select Fields as FieldDTOs with                                    
 
-                                    Key -> Field Name
-                                    Value -> Field Lable
-                                    AvailabilityType -> Run Time
-                                    FieldType -> Field Type
+                var fields = resultFields
+                    .Select(fieldDescription =>
+                        /*
+                        Select Fields as FieldDTOs with                                    
 
-                                    IsRequired -> The Field is required when ALL the below conditions are true.
-                                      nillable            = false, Meaning, the field must have a valid value. The field's value should not be NULL or NILL or Empty
-                                      defaultedOnCreate   = false, Meaning, Salesforce itself does not assign default value for this field when object is created (ex. ID)
-                                      updateable          = true,  Meaning, The filed's value must be updatable by the user. 
-                                                                            User must be able to set or modify the value of this field.
-                                    */
-                                    new FieldDTO(fieldDescription.Value<string>("name"), fieldDescription.Value<string>("label"), AvailabilityType.RunTime)
-                                    {
-                                        FieldType = fieldDescription.Value<string>("type"),
+                        Key -> Field Name
+                        Value -> Field Lable
+                        AvailabilityType -> Run Time
+                        FieldType -> Field Type
 
-                                        IsRequired = fieldDescription.Value<bool>("nillable") == false &&
-                                                     fieldDescription.Value<bool>("defaultedOnCreate") == false &&
-                                                     fieldDescription.Value<bool>("updateable") == true,
-                                        Availability = AvailabilityType.RunTime
-                                    }).OrderBy(field => field.Key);
+                        IsRequired -> The Field is required when ALL the below conditions are true.
+                            nillable            = false, Meaning, the field must have a valid value. The field's value should not be NULL or NILL or Empty
+                            defaultedOnCreate   = false, Meaning, Salesforce itself does not assign default value for this field when object is created (ex. ID)
+                            updateable          = true,  Meaning, The filed's value must be updatable by the user. 
+                                                                User must be able to set or modify the value of this field.
+                        */
+                        new FieldDTO(fieldDescription.Value<string>("name"), fieldDescription.Value<string>("label"), AvailabilityType.RunTime)
+                        {
+                            FieldType = ExtractFieldType(fieldDescription.Value<string>("type")),
+
+                            IsRequired = fieldDescription.Value<bool>("nillable") == false &&
+                                            fieldDescription.Value<bool>("defaultedOnCreate") == false &&
+                                            fieldDescription.Value<bool>("updateable") == true,
+                            Availability = AvailabilityType.RunTime,
+                            Data = ExtractFieldData(fieldDescription.ToObject<JObject>())
+                        }
+                    )
+                    .OrderBy(field => field.Key);
+
                 objectFields.AddRange(fields);
             }
             return objectFields;
+        }
+
+        private string ExtractFieldType(string salesforceFieldType)
+        {
+            switch (salesforceFieldType)
+            {
+                case "picklist":
+                    return FieldType.PickList;
+
+                default:
+                    return FieldType.String;
+            }
+        }
+
+        private Dictionary<string, JToken> ExtractFieldData(JObject obj)
+        {
+            JToken pickListValuesToken;
+            if (obj.TryGetValue("picklistValues", out pickListValuesToken)
+                && pickListValuesToken is JArray)
+            {
+                var pickListValues = (JArray)pickListValuesToken;
+                var fields = pickListValues
+                    .Select(x => new JObject(
+                        new JProperty("key", x.Value<string>("label")),
+                        new JProperty("value", x.Value<string>("value"))
+                    ));
+
+                var dataDict = new Dictionary<string, JToken>();
+                dataDict.Add(FieldDTO.Data_AllowableValues, new JArray(fields));
+
+                return dataDict;
+            }
+
+            return null;
         }
         
         public T CreateSalesforceDTO<T>(ActivityDO curActivity, PayloadDTO curPayload) where T : new()
@@ -247,9 +287,10 @@ namespace terminalSalesforce.Services
             };
         }
 
-        private async Task<TResult> ExecuteClientOperationWithTokenRefresh<TClient, TResult>(Func<AuthorizationTokenDO, bool, Task<TClient>> clientProvider,
-                                                                                             Func<TClient, Task<TResult>> operation,
-                                                                                             AuthorizationTokenDO authTokenDO)
+        private async Task<TResult> ExecuteClientOperationWithTokenRefresh<TClient, TResult>(
+            Func<AuthorizationTokenDO, bool, Task<TClient>> clientProvider,
+            Func<TClient, Task<TResult>> operation,
+            AuthorizationTokenDO authTokenDO)
         {
             var client = await clientProvider(authTokenDO, false);
             var retried = false;

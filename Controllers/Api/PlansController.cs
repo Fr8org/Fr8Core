@@ -1,35 +1,30 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
 using Hub.Exceptions;
-using Hub.Infrastructure;
 using HubWeb.Controllers.Helpers;
 using Microsoft.AspNet.Identity;
 using StructureMap;
-using Data.Entities;
-using Data.Infrastructure.StructureMap;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
 using Hub.Interfaces;
 using System.Threading.Tasks;
+using Data.Entities;
 using HubWeb.ViewModels;
 using Newtonsoft.Json;
 using Hub.Managers;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects.Helpers;
 using Utilities.Interfaces;
 using HubWeb.Infrastructure;
-using Data.Interfaces.Manifests;
-using System.Text;
-using Data.Constants;
 using Data.Infrastructure;
-using Hangfire;
-using System.Web.Http.Results;
+using Data.Infrastructure.StructureMap;
+using Data.Interfaces;
+using Data.States;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.DataTransferObjects.Helpers;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace HubWeb.Controllers
 {
@@ -37,8 +32,6 @@ namespace HubWeb.Controllers
     [Fr8ApiAuthorize]
     public class PlansController : ApiController
     {
-        private const string PUSHER_EVENT_GENERIC_SUCCESS = "fr8pusher_generic_success";
-        private const string PUSHER_EVENT_GENERIC_FAILURE = "fr8pusher_generic_failure";
 
         private readonly Hub.Interfaces.IPlan _plan;
         private readonly IFindObjectsPlan _findObjectsPlan;
@@ -68,7 +61,7 @@ namespace HubWeb.Controllers
 
         [Fr8HubWebHMACAuthenticate]
         [ResponseType(typeof(PlanDTO))]
-        public IHttpActionResult Post(PlanEmptyDTO planDto, bool updateRegistrations = false)
+        public IHttpActionResult Post(PlanEmptyDTO planDto)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -83,7 +76,7 @@ namespace HubWeb.Controllers
                 }
                 var curPlanDO = Mapper.Map<PlanEmptyDTO, PlanDO>(planDto, opts => opts.Items.Add("ptid", planDto.Id));
 
-                _plan.CreateOrUpdate(uow, curPlanDO, updateRegistrations);
+                _plan.CreateOrUpdate(uow, curPlanDO);
 
                 uow.SaveChanges();
                 var result = PlanMappingHelper.MapPlanToDto(uow, uow.PlanRepository.GetById<PlanDO>(curPlanDO.Id));
@@ -273,7 +266,9 @@ namespace HubWeb.Controllers
                 //check if the response contains any error message and show it to the user 
                 if (activateDTO != null && !string.IsNullOrEmpty(activateDTO.ErrorMessage))
                 {
-                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, activateDTO.ErrorMessage);
+                    _pusherNotifier.NotifyUser(activateDTO.ErrorMessage, 
+                        NotificationChannel.GenericFailure, 
+                        User.Identity.Name);
                 }
 
                 EventManager.PlanActivated(planId);
@@ -282,12 +277,16 @@ namespace HubWeb.Controllers
             }
             catch (ApplicationException ex)
             {
-                _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, ex.Message);
+                _pusherNotifier.NotifyUser(ex.Message,
+                    NotificationChannel.GenericFailure, 
+                    User.Identity.Name);
                 throw;
             }
             catch (Exception)
             {
-                _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "There is a problem with activating this plan. Please try again later.");
+                _pusherNotifier.NotifyUser("There is a problem with activating this plan. Please try again later.",
+                    NotificationChannel.GenericFailure, 
+                    User.Identity.Name);
                 throw;
             }
         }
@@ -345,8 +344,6 @@ namespace HubWeb.Controllers
                 }
             }
 
-            string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
-
             if (inActive)
             {
                 var activateDTO = await _plan.Activate(planId, false);
@@ -357,7 +354,7 @@ namespace HubWeb.Controllers
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
                         var routeDO = uow.PlanRepository.GetById<PlanDO>(planId);
-                        activateDTO.Container.CurrentPlanType = routeDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
+                        activateDTO.Container.CurrentPlanType = routeDO.IsOngoingPlan() ? Fr8Data.Constants.PlanType.Ongoing : Fr8Data.Constants.PlanType.RunOnce;
                     }
 
                     return Ok(activateDTO.Container);
@@ -378,12 +375,14 @@ namespace HubWeb.Controllers
                 }
                 catch
                 {
-                    _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, "Your payload is invalid. Make sure that it represents a valid crate object JSON.");
+                    _pusherNotifier.NotifyUser("Your payload is invalid. Make sure that it represents a valid crate object JSON.",
+                        NotificationChannel.GenericFailure,
+                        User.Identity.Name);
 
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
                         var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
-                        currentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing.ToString() : Data.Constants.PlanType.RunOnce.ToString();
+                        currentPlanType = planDO.IsOngoingPlan() ? Fr8Data.Constants.PlanType.Ongoing.ToString() : Fr8Data.Constants.PlanType.RunOnce.ToString();
                     }
                     return BadRequest(currentPlanType);
                 }
@@ -415,12 +414,16 @@ namespace HubWeb.Controllers
                         if (containerId == null)
                         {
                             container = await _plan.Run(planDO, curPayload);
-                            _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, $"Launching a new Container for Plan \"{planDO.Name}\"");
+                            _pusherNotifier.NotifyUser( $"Launching a new Container for Plan \"{planDO.Name}\"",
+                                NotificationChannel.GenericSuccess,
+                                User.Identity.Name);
                         }
                         else
                         {
                             container = await _plan.Continue(containerId.Value);
-                            _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, $"Continue execution of the supsended Plan \"{planDO.Name}\"");
+                            _pusherNotifier.NotifyUser($"Continue execution of the supsended Plan \"{planDO.Name}\"",
+                                NotificationChannel.GenericSuccess, 
+                                User.Identity.Name);
                         }
 
                         if (!planDO.IsOngoingPlan())
@@ -433,36 +436,47 @@ namespace HubWeb.Controllers
 
                         string message = String.Format("Complete processing for Plan \"{0}\".{1}", planDO.Name, responseMsg);
 
-                        _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
+                        _pusherNotifier.NotifyUser(message, NotificationChannel.GenericSuccess, User.Identity.Name);
                         EventManager.ContainerLaunched(container);
 
                         var containerDTO = Mapper.Map<ContainerDTO>(container);
-                        containerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
+                        containerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Fr8Data.Constants.PlanType.Ongoing : Fr8Data.Constants.PlanType.RunOnce;
 
                         EventManager.ContainerExecutionCompleted(container);
 
                         return Ok(containerDTO);
                     }
 
-                    currentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing.ToString() : Data.Constants.PlanType.RunOnce.ToString();
+                    currentPlanType = planDO.IsOngoingPlan() ? Fr8Data.Constants.PlanType.Ongoing.ToString() : Fr8Data.Constants.PlanType.RunOnce.ToString();
                     return BadRequest(currentPlanType);
+                }
+                catch (InvalidTokenRuntimeException exception)
+                {
+                    //this response contains details about the error that happened on some terminal and need to be shown to client
+                    if (exception.ContainerDTO != null)
+                    {
+                        exception.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Fr8Data.Constants.PlanType.Ongoing : Fr8Data.Constants.PlanType.RunOnce;
+                    }
+
+                    // Do not notify -- it happens in Plan.cs
+                    throw;
                 }
                 catch (ActivityExecutionException exception)
                 {
                     //this response contains details about the error that happened on some terminal and need to be shown to client
                     if (exception.ContainerDTO != null)
                     {
-                        exception.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
+                        exception.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Fr8Data.Constants.PlanType.Ongoing : Fr8Data.Constants.PlanType.RunOnce;
                     }
 
-                    NotifyWithErrorMessage(exception, planDO, pusherChannel, exception.ErrorMessage);
+                    NotifyWithErrorMessage(exception, planDO, User.Identity.Name, exception.ErrorMessage);
 
                     throw;
                 }
                 catch (Exception e)
                 {
                     var errorMessage = "An internal error has occured. Please, contact the administrator.";
-                    NotifyWithErrorMessage(e, planDO, pusherChannel, errorMessage);
+                    NotifyWithErrorMessage(e, planDO, User.Identity.Name, errorMessage);
                     throw;
                 }
                 finally
@@ -491,7 +505,7 @@ namespace HubWeb.Controllers
             return responseMsg;
         }
 
-        private void NotifyWithErrorMessage(Exception exception, PlanDO planDO, string pusherChannel, string errorMessage = "")
+        private void NotifyWithErrorMessage(Exception exception, PlanDO planDO, string username, string errorMessage = "")
         {
             var messageToNotify = string.Empty;
             if (!string.IsNullOrEmpty(errorMessage))
@@ -500,7 +514,7 @@ namespace HubWeb.Controllers
             }
 
             var message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, messageToNotify);
-            _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_FAILURE, message);
+            _pusherNotifier.NotifyUser(message, NotificationChannel.GenericFailure, username);
 
         }
 
@@ -534,7 +548,7 @@ namespace HubWeb.Controllers
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
                         var routeDO = uow.PlanRepository.GetById<PlanDO>(planId);
-                        activateDTO.Container.CurrentPlanType = routeDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
+                        activateDTO.Container.CurrentPlanType = routeDO.IsOngoingPlan() ? Fr8Data.Constants.PlanType.Ongoing : Fr8Data.Constants.PlanType.RunOnce;
                     }
 
                     return Ok(activateDTO.Container);
@@ -551,7 +565,9 @@ namespace HubWeb.Controllers
                 {
                     if (planDO != null)
                     {
-                        _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, $"Launching a new Container for Plan \"{planDO.Name}\"");
+                        _pusherNotifier.NotifyUser($"Launching a new Container for Plan \"{planDO.Name}\"", 
+                            NotificationChannel.GenericSuccess,
+                            User.Identity.Name);
 
                         var crates = payload.Select(c => _crate.FromDto(c)).ToArray();
                         var containerDO = await _plan.Run(uow, planDO, crates);
@@ -574,25 +590,25 @@ namespace HubWeb.Controllers
 
                         var message = $"Complete processing for Plan \"{planDO.Name}\".{responseMsg}";
 
-                        _pusherNotifier.Notify(pusherChannel, PUSHER_EVENT_GENERIC_SUCCESS, message);
+                        _pusherNotifier.NotifyUser(message, NotificationChannel.GenericSuccess, User.Identity.Name);
                         EventManager.ContainerLaunched(containerDO);
 
                         var containerDTO = Mapper.Map<ContainerDTO>(containerDO);
-                        containerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
+                        containerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Fr8Data.Constants.PlanType.Ongoing : Fr8Data.Constants.PlanType.RunOnce;
 
                         EventManager.ContainerExecutionCompleted(containerDO);
 
                         return Ok(containerDTO);
                     }
 
-                    currentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing.ToString() : Data.Constants.PlanType.RunOnce.ToString();
+                    currentPlanType = planDO.IsOngoingPlan() ? Fr8Data.Constants.PlanType.Ongoing.ToString() : Fr8Data.Constants.PlanType.RunOnce.ToString();
                     return BadRequest(currentPlanType);
                 }
                 catch (ActivityExecutionException exception)
                 {
                     if (exception.ContainerDTO != null)
                     {
-                        exception.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
+                        exception.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Fr8Data.Constants.PlanType.Ongoing : Fr8Data.Constants.PlanType.RunOnce;
                     }
 
                     NotifyWithErrorMessage(exception, planDO, pusherChannel, exception.ErrorMessage);

@@ -1,17 +1,14 @@
 ﻿using System;
-using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using NUnit.Framework;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using terminalDocuSignTests.Fixtures;
-using System.Collections.Generic;
 
 namespace terminalDocuSignTests.Integration
 {

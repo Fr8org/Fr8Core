@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using HealthMonitor.Utility;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using terminalTests.Fixtures;
 
 namespace terminalFr8CoreTests.Integration
@@ -139,10 +139,10 @@ namespace terminalFr8CoreTests.Integration
             Assert.IsNotNull(activityDTO.CrateStorage, "ActivityDTO.CrateStorage is null");
 
             var crateStorage = Crate.FromDto(activityDTO.CrateStorage);
-            Assert.AreEqual(4, crateStorage.Count, "Invalid CrateStorage structure");
+            Assert.AreEqual(3, crateStorage.Count, "Invalid CrateStorage structure");
             Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(), "Invalid CrateStorage structure");
             Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count(), "Invalid CrateStorage structure");
-            Assert.AreEqual(1, crateStorage.CratesOfType<TypedFieldsCM>().Count(), "Invalid CrateStorage structure");
+            // Assert.AreEqual(1, crateStorage.CratesOfType<TypedFieldsCM>().Count(), "Invalid CrateStorage structure");
             Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(), "Invalid CrateStorage structure");
 
             controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First();

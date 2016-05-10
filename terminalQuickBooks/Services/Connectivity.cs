@@ -1,16 +1,13 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
 using DevDefined.OAuth.Consumer;
 using DevDefined.OAuth.Framework;
 using DevDefined.OAuth.Storage.Basic;
 using Intuit.Ipp.Core;
 using Intuit.Ipp.Core.Configuration;
-using Intuit.Ipp.Data;
 using Intuit.Ipp.DataService;
 using Intuit.Ipp.Diagnostics;
 using Intuit.Ipp.Security;

@@ -3,17 +3,16 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Crates;
-using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using HealthMonitor.Utility;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services;
+using terminalGoogle.Services.Authorization;
 
 namespace terminaBaselTests.Tools.Terminals
 {

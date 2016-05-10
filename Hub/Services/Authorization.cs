@@ -2,19 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Crates;
+using AutoMapper;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Newtonsoft.Json;
 using StructureMap;
+using Hub.Exceptions;
 
 namespace Hub.Services
 {
@@ -85,6 +87,15 @@ namespace Hub.Services
                         Token = authToken.Token,
                         AdditionalAttributes = authToken.AdditionalAttributes
                     };
+                }
+                else
+                {
+                    throw new InvalidTokenRuntimeException(activityDTO);
+                }
+
+                if (String.IsNullOrEmpty(authToken.Token))
+                {
+                    throw new InvalidTokenRuntimeException(activityDTO);
                 }
             }
 
@@ -206,7 +217,7 @@ namespace Hub.Services
 
                 return new AuthenticateResponse()
                 {
-                    AuthorizationToken = authToken,
+                    AuthorizationToken = Mapper.Map<AuthorizationTokenDTO>(authToken),
                     Error = null
                 };
             }
@@ -283,7 +294,7 @@ namespace Hub.Services
 
                 return new AuthenticateResponse()
                 {
-                    AuthorizationToken = authTokenByExternalAccountId ?? authTokenByExternalState,
+                    AuthorizationToken = Mapper.Map<AuthorizationTokenDTO>(authTokenByExternalAccountId ?? authTokenByExternalState),
                     Error = null
                 };
             }

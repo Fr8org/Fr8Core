@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Web.Http.Results;
-using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
 using HubWeb.Controllers;
 using HubWeb.ViewModels;
@@ -12,9 +10,10 @@ using NUnit.Framework;
 using StructureMap;
 using Utilities.Interfaces;
 using System.Threading.Tasks;
-using Data.Constants;
 using Data.States;
-using HubTests.Services;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
 using HubTests.Services.Container;
 using UtilitiesTesting.Fixtures;
 
@@ -69,7 +68,9 @@ namespace HubTests.Controllers
 
                 plan.PlanState = PlanState.Active;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
-
+                var userAcct = FixtureData.TestUser1();
+                uow.UserRepository.Add(userAcct);
+                plan.Fr8Account = userAcct;
                 uow.SaveChanges();
 
                 var controller = new PlansController();

@@ -1,13 +1,5 @@
-﻿using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
-using Hub.Managers;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using Fr8Data.DataTransferObjects;
 
 namespace terminalSendGridTests.Fixtures
 {

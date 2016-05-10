@@ -1,11 +1,11 @@
 ﻿using System.Web.Http;
-using Data.Entities;
 using System.Collections.Generic;
 using Data.States;
 using Utilities.Configuration.Azure;
 using System.Web.Http.Description;
-using Data.Interfaces.Manifests;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace terminalAtlassian.Controllers
 {
@@ -45,9 +45,22 @@ namespace terminalAtlassian.Controllers
                 WebService = webService
             };
 
+            var saveJiraIssueActivity = new ActivityTemplateDTO()
+            {
+                Version = "1",
+                Name = "Save_Jira_Issue",
+                Label = "Save Jira Issue",
+                Terminal = terminal,
+                NeedsAuthentication = true,
+                Category = ActivityCategory.Forwarders,
+                MinPaneWidth = 330,
+                WebService = webService
+            };
+
             var actionList = new List<ActivityTemplateDTO>()
             {
-                getJiraIssueAction
+                getJiraIssueAction,
+                saveJiraIssueActivity
             };
 
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()

@@ -2,16 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Control;
-using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using StructureMap;
 using terminalAtlassian.Services;
 using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalAtlassian.Actions
 {
@@ -50,12 +47,12 @@ namespace terminalAtlassian.Actions
             _atlassianService = ObjectFactory.GetInstance<AtlassianService>();
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             await Task.Yield();
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Configure(CrateSignaller crateSignaller)
         {
             var issueKey = ConfigurationControls.IssueNumber.GetValue(CurrentActivityStorage);
             if (!string.IsNullOrEmpty(issueKey))
@@ -81,12 +78,12 @@ namespace terminalAtlassian.Actions
 
         private Crate CrateJiraIssueDetailsDescriptionCrate(List<FieldDTO> curJiraIssue)
         {
-            return Data.Crates.Crate.FromContent("Jira Issue Details", new FieldDescriptionsCM(curJiraIssue), Data.States.AvailabilityType.Configuration);
+            return Fr8Data.Crates.Crate.FromContent("Jira Issue Details", new FieldDescriptionsCM(curJiraIssue), Fr8Data.States.AvailabilityType.Configuration);
         }
 
         private Crate CrateJiraIssueDetailsPayloadCrate(List<FieldDTO> curJiraIssue)
         {
-            return Data.Crates.Crate.FromContent("Jira Issue Details", new StandardPayloadDataCM(curJiraIssue), Data.States.AvailabilityType.RunTime);
+            return Fr8Data.Crates.Crate.FromContent("Jira Issue Details", new StandardPayloadDataCM(curJiraIssue), Fr8Data.States.AvailabilityType.RunTime);
         }
     }
 }

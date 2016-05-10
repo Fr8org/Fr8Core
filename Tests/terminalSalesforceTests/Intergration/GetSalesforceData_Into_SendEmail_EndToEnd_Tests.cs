@@ -2,17 +2,17 @@
 using HealthMonitor.Utility;
 using NUnit.Framework;
 using System.Threading.Tasks;
-using Data.Interfaces.DataTransferObjects;
 using System.Linq;
 using System.Collections.Generic;
 using Hub.Managers;
-using Data.Interfaces.Manifests;
-using Data.Crates;
-using Data.Control;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using terminalSalesforce.Actions;
 using Data.Entities;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 
 namespace terminalSalesforceTests.Intergration
 {
@@ -111,7 +111,7 @@ namespace terminalSalesforceTests.Intergration
             Debug.WriteLine("Created initial plan without actions");
 
             string mainUrl = _baseUrl + "activities/create";
-            var postUrl = "?actionTemplateId={0}&createPlan=false";
+            var postUrl = "?activityTemplateId={0}&createPlan=false";
             var formattedPostUrl = string.Format(postUrl, getData.Id);
             formattedPostUrl += "&parentNodeId=" + initialPlan.Plan.StartingSubPlanId;
             formattedPostUrl += "&authorizationTokenId=" + authToken.Id.ToString();

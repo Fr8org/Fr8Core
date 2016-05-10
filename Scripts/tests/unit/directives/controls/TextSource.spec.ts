@@ -77,8 +77,8 @@ module dockyard.tests.unit.directives.controls {
             expect(element.find("[value='upstream']").length).toBe(1);
         });
 
-        it('Shouldn\'t contain a dropdown list initially', () => {
-            expect(element.find("drop-down-list-box").length).toBe(0);
+        it('Should contain a dropdown list initially', () => {
+            expect(element.find("drop-down-list-box").length).toBeGreaterThan(0);
         });
 
         it('Should contain a dropdown list when upstream radio is selected', () => {

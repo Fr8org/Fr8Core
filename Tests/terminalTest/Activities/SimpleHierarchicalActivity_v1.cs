@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using TerminalBase.BaseClasses;
 
 namespace terminalTest.Actions
@@ -15,7 +15,7 @@ namespace terminalTest.Actions
         {
         }
         
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             var templates = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId);
             var activityTemplate = templates.First(x => x.Name == "SimpleActivity");
@@ -76,7 +76,7 @@ namespace terminalTest.Actions
             });
         }
 
-        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Configure(CrateSignaller crateSignaller)
         {
             return Task.FromResult(0);
         }

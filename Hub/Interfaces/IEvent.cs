@@ -1,10 +1,8 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
-using Data.Crates;
+﻿using System.Threading.Tasks;
 using Data.Entities;
 using System.Collections.Generic;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
 
 namespace Hub.Interfaces
 {

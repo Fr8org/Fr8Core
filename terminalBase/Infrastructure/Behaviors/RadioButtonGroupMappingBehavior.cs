@@ -1,14 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
-using StructureMap;
+using Fr8Data.Control;
+using Fr8Data.Crates;
 
 namespace TerminalBase.Infrastructure.Behaviors
 {

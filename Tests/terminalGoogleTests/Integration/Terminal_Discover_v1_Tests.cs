@@ -1,10 +1,9 @@
-﻿using System.Runtime.Remoting;
-using Data.Interfaces.Manifests;
+﻿using System.Linq;
 using HealthMonitor.Utility;
 using NUnit.Framework;
-using System.Linq;
 using System.Threading.Tasks;
-using Data.States;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace terminalGoogleTests.Integration
 {
@@ -17,10 +16,7 @@ namespace terminalGoogleTests.Integration
     [Explicit]
     public class Terminal_Discover_v1_Tests : BaseTerminalIntegrationTest
     {
-        public override string TerminalName
-        {
-            get { return "terminalGoogle"; }
-        }
+        public override string TerminalName => "terminalGoogle";
 
         /// <summary>
         /// Validate correct crate-storage structure in initial configuration response.

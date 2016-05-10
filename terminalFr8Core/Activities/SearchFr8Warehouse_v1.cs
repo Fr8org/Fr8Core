@@ -1,33 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Web;
-using AutoMapper;
 using Hub.Managers;
 using Newtonsoft.Json;
 using StructureMap;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.Repositories;
-using Data.States;
-using Utilities;
-using terminalFr8Core;
-using terminalFr8Core.Infrastructure;
-using terminalFr8Core.Interfaces;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using TerminalBase.Services;
-using System.Text.RegularExpressions;
-using Hub.Infrastructure;
+using TerminalBase.Services.MT;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Utilities.Logging;
 
 namespace terminalFr8Core.Actions
@@ -126,7 +114,7 @@ namespace terminalFr8Core.Actions
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                crateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", queryMTResult));
+                crateStorage.Add(Fr8Data.Crates.Crate.FromContent("Sql Query Result", queryMTResult));
             }
 
             return ExecuteClientActivity(payload, "ShowTableReport");
@@ -202,7 +190,7 @@ namespace terminalFr8Core.Actions
             }
             return
                 Task.FromResult(
-                    GenerateErrorRepsonse("Unknown displayMechanism: we currently support MainPage cases"));
+                    GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage cases"));
         }
 
         protected async Task<ActivityDO> GenerateSolutionActivities(ActivityDO activityDO, string fr8ObjectID)
@@ -264,13 +252,18 @@ namespace terminalFr8Core.Actions
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(actvityDO))
             {
-                var designTimeQueryFields = GetFr8WarehouseFieldNames(fr8ObjectID);
+                var designTimeQueryFields = MTTypesHelper.GetFieldsByTypeId(Guid.Parse(fr8ObjectID));
                 var criteria = crateStorage.FirstOrDefault(d => d.Label == "Queryable Criteria");
                 if (criteria != null)
                 {
                     crateStorage.Remove(criteria);
                 }
-                crateStorage.Add(Data.Crates.Crate.FromContent("Queryable Criteria", new TypedFieldsCM(designTimeQueryFields)));
+                crateStorage.Add(
+                    Fr8Data.Crates.Crate.FromContent(
+                        "Queryable Criteria",
+                        new FieldDescriptionsCM(designTimeQueryFields)
+                    )
+                );
             }
         }
 
@@ -284,7 +277,7 @@ namespace terminalFr8Core.Actions
                 operationalStatus.CurrentActivityResponse =
                     ActivityResponseDTO.Create(ActivityResponse.ExecuteClientActivity);
                 operationalStatus.CurrentClientActivityName = "RunImmediately";
-                var operationsCrate = Data.Crates.Crate.FromContent("Operational Status", operationalStatus);
+                var operationsCrate = Fr8Data.Crates.Crate.FromContent("Operational Status", operationalStatus);
                 crateStorage.Add(operationsCrate);
             }
         }
@@ -362,7 +355,7 @@ namespace terminalFr8Core.Actions
 
         private IEnumerable<Crate> PackDesignTimeData()
         {
-            yield return Data.Crates.Crate.FromContent("Fr8 Search Report", new FieldDescriptionsCM(new FieldDTO
+            yield return Fr8Data.Crates.Crate.FromContent("Fr8 Search Report", new FieldDescriptionsCM(new FieldDTO
             {
                 Key = "Fr8 Search Report",
                 Value = "Table",
@@ -388,30 +381,6 @@ namespace terminalFr8Core.Actions
                 
                 return warehouseTypes;
             }
-        }
-
-        // create the Query design time fields.
-        private List<TypedFieldDTO> GetFr8WarehouseFieldNames(string typeId)
-        {
-            List<TypedFieldDTO> designTimeQueryFields = new List<TypedFieldDTO>();
-
-            using (var unitWork = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                foreach (var field in unitWork.MultiTenantObjectRepository.ListTypePropertyReferences(Guid.Parse(typeId)))
-                {
-                    if (!designTimeQueryFields.Exists(d => d.Name == field.Name))
-                    {
-                        designTimeQueryFields.Add(new TypedFieldDTO()
-                        {
-                            FieldType = FieldType.String,
-                            Label = field.Name,
-                            Name = field.Name,
-                            Control = CreateTextBoxQueryControl(field.Name)
-                        });
-                    }
-                }
-            }
-            return designTimeQueryFields;
         }
 
         private bool ButtonIsClicked(Button button)

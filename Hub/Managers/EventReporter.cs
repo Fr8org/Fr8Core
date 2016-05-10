@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -10,16 +9,12 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
 using Hub.Interfaces;
-using Hub.Managers.APIManagers.Packagers;
-using Hub.Services;
 using Utilities;
 using Utilities.Logging;
 using System.Data.Entity.Infrastructure;
-using System.Web.Mvc;
-using Data.Constants;
+using Fr8Data.Constants;
+using Fr8Data.DataTransferObjects;
 using Utilities.Interfaces;
 
 //NOTES: Do NOT put Incidents here. Put them in IncidentReporter
@@ -240,7 +235,7 @@ namespace Hub.Managers
                 pusherNotifier.Notify(pusherChannel, "fr8pusher_activity_execution_info",
                     new
                     {
-                        ActivityName = activityDo.Label,
+                        ActivityName = activityDo.Name,
                         PlanName = containerDO.Name,
                         ContainerId = containerDO.Id.ToString(),
                         PlanId = planId,
@@ -820,11 +815,18 @@ namespace Hub.Managers
             historyItem.Data = historyItem.Data ?? "";
             var dataLen = historyItem.Data.Length > 256 ? 255 : historyItem.Data.Length;
             var substring = historyItem.Data.Substring(0, dataLen);
+            substring = dataLen == 255 ? substring + "..." : substring;
+            
+            //in FactDO we have CreatedById property, so we need crutch to not have Fr8UserId empty
+            if (typeof(FactDO) == historyItem.GetType() && historyItem.Fr8UserId.IsNullOrEmpty())
+            {
+                historyItem.Fr8UserId = (historyItem as FactDO).CreatedByID;
+            }
 
             var message = $"{itemType}: {historyItem.PrimaryCategory} " +
                               $"{historyItem.SecondaryCategory}" +
                               $"{historyItem.Activity}, " +
-                              $"Data = {substring}...., " +
+                              $"Data = {substring}, " +
                               $"Fr8User = {historyItem.Fr8UserId}, " +
                               $"ObjectId = {historyItem.ObjectId}";
 

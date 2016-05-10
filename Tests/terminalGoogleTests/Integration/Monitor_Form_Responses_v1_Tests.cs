@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Linq;
 using NUnit.Framework;
 using HealthMonitor.Utility;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.Control;
-using Data.Crates;
-using System.Linq;
 using System.Threading.Tasks;
-using Hub.Managers;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Hub.Managers.APIManagers.Transmitters.Restful;
-using Newtonsoft.Json.Linq;
-using terminalGoogleTests.Unit;
 using TerminalBase.BaseClasses;
 
 namespace terminalGoogleTests.Integration
@@ -21,10 +16,7 @@ namespace terminalGoogleTests.Integration
     public class Monitor_Form_Responses_v1_Tests : BaseTerminalIntegrationTest
     {
         private string ActivityName = "Monitor_Form_Responses_v1";
-        public override string TerminalName
-        {
-            get { return "terminalGoogle"; }
-        }
+        public override string TerminalName => "terminalGoogle";
 
         /// <summary>
         /// Validate correct crate-storage structure in initial configuration response.
@@ -50,7 +42,7 @@ namespace terminalGoogleTests.Integration
 
             var crateStorage = Crate.FromDto(responseActivityDTO.CrateStorage);
             Assert.AreEqual(3, crateStorage.Count);
-            Assert.IsNotNull(crateStorage.FirstCrateOrDefault<CrateDescriptionCM>(x => x.Label == RuntimeCrateManager.RuntimeCrateDescriptionsCrateLabel), "ActivityDTO storage doesn't contain crate with Runtime Crates Descriptions.");
+            Assert.IsNotNull(crateStorage.FirstCrateOrDefault<CrateDescriptionCM>(x => x.Label == CrateSignaller.RuntimeCrateDescriptionsCrateLabel), "ActivityDTO storage doesn't contain crate with Runtime Crates Descriptions.");
             Assert.IsNotNull(crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault(), "ActivityDTO storage doesn't contain crate with Standard Configuration Controls.");
             Assert.IsNotNull(crateStorage.CrateContentsOfType<EventSubscriptionCM>().SingleOrDefault(), "ActivityDTO storage doesn't contain crate with Event Subscription.");
         }
@@ -164,7 +156,7 @@ namespace terminalGoogleTests.Integration
             Assert.Greater(formID.PayloadObjects.SelectMany(s => s.PayloadObject).Count(), 0);
         }
 
-        [Test, Category("Integration.terminalGoogle")]
+        [Test, Category("Integration.terminalGoogle"), Ignore]
         public async Task Monitor_Form_Responses_Activate_Returns_ActivityDTO()
         {
             //Arrange
@@ -247,7 +239,7 @@ namespace terminalGoogleTests.Integration
                {
                    EventPayload = new CrateStorage()
                    {
-                        Data.Crates.Crate.FromContent(
+                        Fr8Data.Crates.Crate.FromContent(
                             "Response",
                             new StandardPayloadDataCM(
                                 new FieldDTO("response", "key1=value1&key2=value2")
@@ -277,6 +269,6 @@ namespace terminalGoogleTests.Integration
             var controls = crateStorage.CratesOfType<StandardConfigurationControlsCM>().Single().Content.Controls;
             var ddlb = (DropDownList)controls.SingleOrDefault(c => c.Type == ControlTypes.DropDownList);
             return ddlb;
-        }
+    }
     }
 }

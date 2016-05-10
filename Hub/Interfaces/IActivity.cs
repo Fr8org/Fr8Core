@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.Constants;
+using Fr8Data.DataTransferObjects;
 
 
 namespace Hub.Interfaces
@@ -17,10 +17,10 @@ namespace Hub.Interfaces
         ActivityDO GetById(IUnitOfWork uow, Guid id);
         ActivityDO MapFromDTO(ActivityDTO curActivityDTO);
 
-//      ActivityDO Create(IUnitOfWork uow, int actionTemplateId, string name, string label, int? order, PlanNodeDO parentNode, Guid? authorizationTokenId = null);
+//      ActivityDO Create(IUnitOfWork uow, int activityTemplateId, string name, string label, int? order, PlanNodeDO parentNode, Guid? authorizationTokenId = null);
 
-        Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid actionTemplateId, 
-                                             string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null);
+        Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid activityTemplateId, 
+                                             string label = null, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null);
 
         Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActivityExecutionMode curActionExecutionMode, ContainerDO curContainerDO);
         Task<ActivityDTO> Activate(ActivityDO curActivityDO);

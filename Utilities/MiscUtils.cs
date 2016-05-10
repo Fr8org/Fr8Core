@@ -57,5 +57,22 @@ namespace Utilities
             }
             return source.Remove(0, trimLength);            
         }
+
+        /// <summary>
+        /// Given a directory path, returns an upper level path by the specified number of levels up.
+        /// </summary>
+        public static string UpNLevels(string path, int levels)
+        {
+            int index = path.LastIndexOf('\\', path.Length - 1, path.Length);
+            if (index <= 3)
+                return string.Empty;
+            string result = path.Substring(0, index);
+            if (levels > 1)
+            {
+                result = UpNLevels(result, levels - 1);
+            }
+            return result;
+        }
+
     }
 }

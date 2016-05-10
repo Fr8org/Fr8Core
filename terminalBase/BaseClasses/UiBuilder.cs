@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
-using Data.Control;
-using Data.Interfaces.Manifests;
-using Data.States;
+using Fr8Data.Control;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace TerminalBase.BaseClasses
 {

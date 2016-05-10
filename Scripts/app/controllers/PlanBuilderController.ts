@@ -106,6 +106,7 @@ module dockyard.controllers {
             this.LayoutService.resetLayout();
 
             this.$scope.isPlanBuilderScope = true;
+            this.$scope.isReConfiguring = false;
 
             this.$scope.current = new model.PlanBuilderState();
             this.$scope.actionGroups = [];
@@ -154,6 +155,14 @@ module dockyard.controllers {
                     this.selectAction(action, null);
 
             }
+
+            $scope.$watch(function () {
+                return $(".resizable").width();
+            }, function (newVal, oldVal) {
+                if (newVal !== oldVal) {
+                    $(".designer-header-fixed").width(newVal);
+                }
+            })
 
             //Group: which group action is dropped to
             //actionId: id of dropped action
@@ -204,28 +213,6 @@ module dockyard.controllers {
                 });
 
             };
-
-
-            var currentState: number;
-            $scope.$watch('current.plan.planState', () => {
-                if ($scope.current.plan) {
-                    if (currentState === undefined) currentState = $scope.current.plan.planState;
-
-                    if (currentState !== $scope.current.plan.planState) {
-                        if ($scope.current.plan.planState === model.PlanState.Inactive) {
-                            PlanService.deactivate({ planId: $scope.current.plan.id });
-                        } else if ($scope.current.plan.planState === model.PlanState.Active) {
-                            PlanService.activate(<any>{ planId: $scope.current.plan.id, planBuilderActivate: true })
-                                .$promise.then((result) => {
-                                    if (result != null && result.status === "validation_error") {
-                                        this.renderActions(result.activitiesCollection);
-                                        $scope.current.plan.planState = model.PlanState.Inactive;
-                                    }
-                                });
-                        }
-                    }
-                }
-            });
 
             this.processState($state);
         }
@@ -593,7 +580,7 @@ module dockyard.controllers {
             var parentId = eventArgs.group.parentId;
             var action = new model.ActivityDTO(this.$scope.planId, parentId, id);
 
-            action.label = activityTemplate.label;
+            action.name = activityTemplate.label;
             // Add action to Workflow Designer.
             this.$scope.current.activities = action.toActionVM();
             this.$scope.current.activities.activityTemplate = activityTemplate;

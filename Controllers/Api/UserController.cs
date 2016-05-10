@@ -1,26 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
 using AutoMapper.Internal;
 using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;
 using Data.Entities;
-using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Fr8Data.DataTransferObjects;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Authorizers;
 using Hub.Services;
 using HubWeb.ViewModels;
-using Microsoft.AspNet.Identity;
 using Utilities;
-using Utilities.Logging;
 
 namespace HubWeb.Controllers
 {
@@ -40,19 +33,6 @@ namespace HubWeb.Controllers
             _email = new Email();
         }
 
-        //[DockyardAuthorize(Roles = "Admin")]
-        //public ActionResult Index()
-        //{
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        List<DockyardAccountDO> userList = uow.UserRepository.GetAll().ToList();
-
-        //        var userVMList = userList.Select(u => CreateUserVM(u, uow)).ToList();
-
-        //        return View(userVMList);
-        //    }
-        //}
-
         public static string GetCallbackUrl(string providerName)
         {
             return GetCallbackUrl(providerName, Utilities.Server.ServerUrl);
@@ -65,146 +45,6 @@ namespace HubWeb.Controllers
 
             return String.Format("{0}{1}AuthCallback/IndexAsync", serverUrl.Replace("www.", ""), providerName);
         }
-
-        //public async Task<ActionResult> GrantAccess(string providerName)
-        //{
-        //    var authorizer = ObjectFactory.GetNamedInstance<IOAuthAuthorizer>(providerName);
-        //    var result = await authorizer.AuthorizeAsync(
-        //        this.GetUserId(),
-        //        this.GetUserName(),
-        //        GetCallbackUrl(providerName),
-        //        Request.RawUrl,
-        //        CancellationToken.None);
-
-        //    if (result.IsAuthorized)
-        //    {
-        //        // don't wait for this, run it async and return response to the user.
-        //        return RedirectToAction("RemoteServices", new { remoteServiceAccessGranted = providerName });
-        //    }
-        //    return new RedirectResult(result.RedirectUri);
-        //}
-
-        //public async Task<ActionResult> RevokeAccess(string providerName)
-        //{
-        //    var authorizer = ObjectFactory.GetNamedInstance<IOAuthAuthorizer>(providerName);
-        //    await authorizer.RevokeAccessTokenAsync(this.GetUserId(), CancellationToken.None);
-        //    return RedirectToAction("RemoteServices", new { remoteServiceAccessForbidden = providerName });
-        //}
-
-        //[HttpPost]
-        //public ActionResult UpdateUserTimezone(String userID, String timezoneID)
-        //{
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        var userDO = uow.UserRepository.GetByKey(userID);
-        //        userDO.TimeZoneID = timezoneID;
-        //        uow.SaveChanges();
-        //        return Json(true);
-        //    }
-        //}
-
-        //public ActionResult MyAccount()
-        //{
-        //    return View();
-        //}
-
-        //public ActionResult ShowAddUser()
-        //{
-        //    return View(new UserVM());
-        //}
-
-        //[DockyardAuthorize(Roles = "Admin")]
-        //public ActionResult Details(String userId)
-        //{
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        var userDO = uow.UserRepository.GetByKey(userId);
-        //        var userVM = CreateUserVM(userDO, uow);
-
-        //        return View(userVM);
-        //    }
-        //}
-
-
-        //[HttpPost]
-        //public ActionResult RunQuery(UserVM queryParams)
-        //{
-        //    if (string.IsNullOrEmpty(queryParams.EmailAddress) && string.IsNullOrEmpty(queryParams.FirstName) &&
-        //        string.IsNullOrEmpty(queryParams.LastName))
-        //    {
-        //        var jsonErrorResult = Json(_jsonPackager.Pack(new { Error = "Atleast one field is required" }));
-        //        return jsonErrorResult;
-        //    }
-        //    if (queryParams.EmailAddress != null)
-        //    {
-        //        var ru = new RegexUtilities();
-
-        //        if (!(ru.IsValidEmailAddress(queryParams.EmailAddress)))
-        //        {
-        //            var jsonErrorResult = Json(_jsonPackager.Pack(new { Error = "Please provide valid email address" }));
-        //            return jsonErrorResult;
-        //        }
-        //    }
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        var query = uow.UserRepository.GetQuery();
-        //        if (!String.IsNullOrWhiteSpace(queryParams.FirstName))
-        //            query = query.Where(u => u.FirstName.Contains(queryParams.FirstName));
-        //        if (!String.IsNullOrWhiteSpace(queryParams.LastName))
-        //            query = query.Where(u => u.LastName.Contains(queryParams.LastName));
-        //        if (!String.IsNullOrWhiteSpace(queryParams.EmailAddress))
-        //            query = query.Where(u => u.EmailAddress.Address.Contains(queryParams.EmailAddress));
-
-        //        var matchedUsers = query.ToList();
-
-        //        var jsonResult = Json(_jsonPackager.Pack(matchedUsers));
-
-        //        jsonResult.MaxJsonLength = int.MaxValue;
-        //        return jsonResult;
-        //    }
-        //}
-
-        //[HttpPost]
-        //[DockyardAuthorize(Roles = Roles.Admin)]
-        //public ActionResult ProcessAddUser(UserVM curCreateUserVM)
-        //{
-        //    DockyardAccountDO submittedDockyardAccountData = new DockyardAccountDO();
-        //    Mapper.Map(curCreateUserVM, submittedDockyardAccountData);
-        //    string userPassword = curCreateUserVM.NewPassword;
-        //    bool sendConfirmation = curCreateUserVM.SendMail;
-        //    string displayMessage;
-
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        DockyardAccountDO existingDockyardAccount = _dockyardAccount.GetExisting(uow, submittedDockyardAccountData.EmailAddress.Address);
-
-        //        if (existingDockyardAccount != null && String.IsNullOrEmpty(submittedDockyardAccountData.Id))
-        //        {
-        //            var jsonSuccessResult = Json(_jsonPackager.Pack(new { Data = "DockYardAccount already exists.", UserId = existingDockyardAccount.Id }));
-        //            return jsonSuccessResult;
-        //        }
-        //        ConvertRoleStringToRoles(curCreateUserVM.Role).Each(e => submittedDockyardAccountData.Roles.Add(e));
-        //        if (existingDockyardAccount != null)
-        //        {
-        //            _dockyardAccount.Update(uow, submittedDockyardAccountData, existingDockyardAccount);
-        //            displayMessage = "DockYardAccount updated successfully.";
-        //        }
-        //        else
-        //        {
-        //            _dockyardAccount.Create(uow, submittedDockyardAccountData);
-        //            displayMessage = "DockYardAccount created successfully.";
-        //        }
-        //        if (!String.IsNullOrEmpty(userPassword))
-        //        {
-        //            _dockyardAccount.UpdatePassword(uow, submittedDockyardAccountData, userPassword);
-        //        }
-        //        if (sendConfirmation && !String.IsNullOrEmpty(userPassword))
-        //        {
-        //            //_email.SendLoginCredentials(uow, submittedUserData.EmailAddress.Address, userPassword);
-        //        }
-        //    }
-        //    return Json(_jsonPackager.Pack(new { Data = displayMessage }));
-        //}
 
         public ICollection<IdentityUserRole> ConvertRoleStringToRoles(string selectedRole)
         {
@@ -245,37 +85,6 @@ namespace HubWeb.Controllers
                 return "";
         }
 
-        //public ActionResult FindUser()
-        //{
-        //    return View();
-        //}
-
-        //[HttpPost]
-        //public ActionResult Search(String firstName, String lastName, String emailAddress, int[] states)
-        //{
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        var users = uow.UserRepository.GetQuery();
-        //        if (!String.IsNullOrWhiteSpace(firstName))
-        //            users = users.Where(u => u.FirstName.Contains(firstName));
-        //        if (!String.IsNullOrWhiteSpace(lastName))
-        //            users = users.Where(u => u.LastName.Contains(lastName));
-        //        if (!String.IsNullOrWhiteSpace(emailAddress))
-        //            users = users.Where(u => u.EmailAddress.Address.Contains(emailAddress));
-
-        //        users = users.Where(u => states.Contains(u.State.Value));
-
-        //        return Json(users.ToList().Select(u => new
-        //        {
-        //            Id = u.Id,
-        //            FirstName = u.FirstName,
-        //            LastName = u.LastName,
-        //            EmailAddress = u.EmailAddress.Address
-        //        }).ToList()
-        //        );
-        //    }
-        //}
-
         private UserVM CreateUserVM(Fr8AccountDO u, IUnitOfWork uow)
         {
             return new UserVM
@@ -306,72 +115,6 @@ namespace HubWeb.Controllers
                 }
             }
         }
-
-        //public ActionResult ExistingUserAlert(string UserId)
-        //{
-        //    ViewBag.UserId = UserId;
-        //    return View();
-        //}
-
-        //public ActionResult MakeNewBookingRequest()
-        //{
-        //    return View();
-        //}
-
-        //public ActionResult RemoteServices(string remoteServiceAccessGranted = null,
-        //    string remoteServiceAccessForbidden = null)
-        //{
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        var curUserId = this.GetUserId();
-        //        var curUserDO = uow.UserRepository.GetByKey(curUserId);
-        //        if (curUserDO == null)
-        //        {
-        //            // if we found no user then assume that this user doesn't exists any more and force log off action.
-        //            return RedirectToAction("LogOff", "DockyardAccount");
-        //        }
-        //        var curManageUserVM = Mapper.Map<DockyardAccountDO, ManageUserVM>(curUserDO);
-        //        var tokens = uow.AuthorizationTokenRepository.FindList(at => at.UserID == curUserId);
-        //        curManageUserVM.HasDocusignToken = tokens.Any();
-        //        var googleAuthDatas = uow.RemoteServiceAuthDataRepository.FindList(ad => ad.Provider.Name == "Google" && ad.UserID == curUserId).ToArray();
-        //        var googleAuthData = googleAuthDatas.FirstOrDefault(ad => ad.HasAccessToken());
-        //        curManageUserVM.HasGoogleToken = googleAuthData != null;
-        //        if (googleAuthData != null)
-        //        {
-        //            var spreadsheet = ObjectFactory.GetInstance<GoogleSheet>();
-        //            curManageUserVM.GoogleSpreadsheets = spreadsheet.EnumerateSpreadsheetsUris(curUserId);
-        //        }
-        //        return View(curManageUserVM);
-        //    }
-        //}
-
-        //[HttpPost]
-        //public ActionResult ExportGoogleSpreadsheet(string spreadsheetUri)
-        //{
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        var curUserId = this.GetUserId();
-        //        var curUserDO = uow.UserRepository.GetByKey(curUserId);
-        //        if (curUserDO == null)
-        //        {
-        //            // if we found no user then assume that this user doesn't exists any more and force log off action.
-        //            return RedirectToAction("LogOff", "DockyardAccount");
-        //        }
-        //        var googleAuthDatas = uow.RemoteServiceAuthDataRepository.FindList(ad => ad.Provider.Name == "Google" && ad.UserID == curUserId).ToArray();
-        //        var googleAuthData = googleAuthDatas.FirstOrDefault(ad => ad.HasAccessToken());
-        //        if (googleAuthData == null)
-        //            return new HttpStatusCodeResult(HttpStatusCode.BadRequest, "No Google authorization info");
-        //        var spreadsheet = ObjectFactory.GetInstance<GoogleSheet>();
-        //        var fileUrl = spreadsheet.ExtractData(spreadsheetUri, curUserId);
-        //        Logger.GetLogger().InfoFormat("Google Spreadsheet '{0}' exported to '{1}'", spreadsheetUri, fileUrl);
-        //        return RedirectToAction("RemoteServices");
-        //    }
-        //}
-
-        //public ActionResult LearnHowToUseKwasant()
-        //{
-        //    return View();
-        //}
 
         [DockyardAuthorize(Roles = Roles.Admin)]
         public IHttpActionResult Get()
