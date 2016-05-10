@@ -558,7 +558,7 @@ planQuery|	[FromUri] PlanQueryDTO			| | |
 **Description:**	Returns the PlanResult with given query  
 
 #### **Path:**	*/plans/getByName*
-**Type:**	*GET*
+**Type:**	*GET*     
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
