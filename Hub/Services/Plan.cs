@@ -527,8 +527,12 @@ namespace Hub.Services
 
         public void Enqueue(Guid curPlanId, params Crate[] curEventReport)
         {
+            //We convert incoming data to DTO objects because HangFire will serialize method parameters into JSON and serializing of Crate objects is forbidden
             var curEventReportDTO = curEventReport.Select(x => CrateStorageSerializer.Default.ConvertToDto(x)).ToArray();
-            _dispatcher.Enqueue(() => LaunchProcessSync(curPlanId, curEventReportDTO));
+            //We don't await this call as it will be awaited inside HangFire after job is launched
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            _dispatcher.Enqueue(() => LaunchProcess(curPlanId, curEventReportDTO));
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
         public void Enqueue(List<PlanDO> curPlans, params Crate[] curEventReport)
@@ -538,13 +542,8 @@ namespace Hub.Services
                 Enqueue(curPlan.Id, curEventReport);
             }
         }
-        //This is for HangFire compatibility reasons
-        public static void LaunchProcessSync(Guid curPlan, params CrateDTO[] curPayload)
-        {
-            LaunchProcess(curPlan, curPayload.Select(x => CrateStorageSerializer.Default.ConvertFromDto(x)).ToArray()).Wait();
-        }
 
-        public static async Task LaunchProcess(Guid curPlan, params Crate[] curPayload)
+        public static async Task LaunchProcess(Guid curPlan, params CrateDTO[] curPayload)
         {
             Logger.LogInfo($"Starting executing plan {curPlan} as a reaction to external event");
             if (curPlan == default(Guid))
@@ -556,7 +555,7 @@ namespace Hub.Services
             // this exception should be already logged somewhere
             try
             {
-                await ObjectFactory.GetInstance<IPlan>().Run(curPlan, curPayload);
+                await ObjectFactory.GetInstance<IPlan>().Run(curPlan, curPayload.Select(x => CrateStorageSerializer.Default.ConvertFromDto(x)).ToArray());
             }
             catch
             {
