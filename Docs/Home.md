@@ -21,6 +21,7 @@
         * [Plans](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Plans.md)  
         * [Plan - JSON Definition](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/PlanJSONDefinition.md)  
         * [Plans - Activation and Running](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/PlansActivationAndRunning.md)  
+		* [Plan Templates](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Plans/PlanTemplates.md) 
         * [Subplans](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Subplans.md)  
         * [Containers](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Containers.md)  
         * [Container Execution](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/ContainerExecution.md)  
