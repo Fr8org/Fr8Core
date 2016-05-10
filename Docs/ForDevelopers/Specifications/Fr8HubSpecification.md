@@ -22,7 +22,7 @@ authorizationTokenId |	Guid |	true |	null |	 To get authorization tokens for the
 
 #### **Path:**	*/activities/create*  
 **Type:**	POST  
-**Input Parameters:	**
+**Input Parameters:**
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---  
@@ -33,16 +33,16 @@ solutionName	| string	| | |		Name of the solution template of the solution that 
 
 #### **Path:**	*/activities/configure*  
 **Type:**	POST  
-**Input Parameters:	**
+**Input Parameters:**
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---  
 curActionDesignDTO | 	ActivityDTO			| | |   
-**Return Values:**	ActivityDTO
+**Return Values:**	ActivityDTO   
 **Description:**	Callers to this endpoint expect to receive back what they need to know to encode user configuration data into the Action. the typical scenario involves a front-end client  calling this and receiving back the same Action they passed, but with an attached Configuration Crate. The client renders UI based on the Configuration Crate, collects user inputs, and saves them as values in the Configuration Crate json. The updated Configuration Crate is then saved to the server so it will be available to the processing Terminal at run-time.   
 #### **Path:**	*/activities/get*
 **Type:**	GET
-**Input Parameters:	**
+**Input Parameters:**
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---  
@@ -52,7 +52,7 @@ Name |	Type |	Nullable	| Default |	Description
  
 #### **Path:**	*/activities/delete*   
 **Type:**	DELETE
-**Input Parameters:	**
+**Input Parameters:**
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---  
@@ -64,7 +64,7 @@ confirmed |	boolean |		false | |	Deleting an activity can cause effects on downs
 
 #### **Path:**	*/activities/deleteActivity*   
 **Type:** DELETE
-**Input Parameters:	**
+**Input Parameters:**
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---  
@@ -75,7 +75,7 @@ Name |	Type |	Nullable	| Default |	Description
 
 #### **Path:**	*/activities/deleteChildNodes*  
 **Type:** DELETE  
-**Input Parameters:	**
+**Input Parameters:**
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---  
@@ -86,7 +86,7 @@ Name |	Type |	Nullable	| Default |	Description
 
 #### **Path:**	*/activities/save*  
 **Type:**	POST  
-**Input Parameters:	**  
+**Input Parameters:**  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---  
@@ -97,7 +97,7 @@ Name |	Type |	Nullable	| Default |	Description
 
 #### **Path:**	*/activities/documentation*   
 **Type:**	POST   
-**Input Parameters:	**   
+**Input Parameters:**   
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---  
@@ -107,46 +107,59 @@ Name |	Type |	Nullable	| Default |	Description
 
 ### AlarmsController
 -----------------------------------------
-Path:	/alarms/post
-Type:	POST
-Input Parameters:	
-Name	Type	Nullable	Default	Description
- alarmDTO	 AlarmDTO			
-Return Values	void
-Description	Alarms provide ability to add some delay between activities. This endpoints set the start time of the first activity that is going to be executed after delay.
-Path:	/alarms/executeTerminalWithLogging
-Type:	POST
-Input Parameters:	
-Name	Type	Nullable	Default	Description
- alarmDTO	 AlarmDTO			
-Return Values	void
-Description	Alarms provide ability to add some delay between activities. This endpoints set the start time of the first activity that is going to be executed after delay.
+#### **Path:**	*/alarms/post*  
+**Type:**	POST    
+**Input Parameters:**   
+
+Name |	Type |	Nullable	| Default |	Description   
+--- | --- | --- | --- | ---  
+ alarmDTO |	 AlarmDTO		| | |	  
+**Return Values:**	void   
+**Description:**		Alarms provide ability to add some delay between activities. This endpoints set the start time of the first activity that is going to be executed after delay.   
+#### **Path:**	*/alarms/executeTerminalWithLogging*
+**Type:**	POST    
+**Input Parameters:**   
+
+Name |	Type |	Nullable	| Default |	Description   
+--- | --- | --- | --- | ---  
+ alarmDTO |	 AlarmDTO		| | |	  
+**Return Values:**	void   
+**Description:**		Alarms provide ability to add some delay between activities. This endpoints set the start time of the first activity that is going to be executed after delay.  
 
 ### AuthenticationController
 -----------------------------------
-Path:	/authentication/authenticate
-Type:	POST
-Input Parameters:	
-Name	Type	Nullable	Default	Description
-credentials	CredentialsDTO			Credentials of the user to login
-Return Values	IHttpActionResult
-Description	Gets the user credentials an provides necessary authentication. Returns authorazition token, terminal id and error message if there is any.
-Path:	/authentication/getOAuthInitiationURL
-Type:	GET
-Input Parameters:	
-Name	Type	Nullable	Default	Description
-terminalId	[FromUri(Name = “id”)] int			
-Return Values	string
-Description	
-Path:	/authentication/getAuthToken
-Type:	GET
-Input Parameters:	
-Name	Type	Nullable	Default	Description
-curFr8UserId	[FromUri]string			
-externalAccountId	[FromUri]string			
-terminalId	[FromUri] string			
-Return Values	AuthorizationTokenDO
-Description	
+#### **Path:**	*/authentication/authenticate*
+**Type:**	POST    
+**Input Parameters:**   
+
+Name |	Type |	Nullable	| Default |	Description   
+--- | --- | --- | --- | ---  
+credentials |	CredentialsDTO	| | |		Credentials of the user to login   
+**Return Values:**	IHttpActionResult   
+**Description:**	Gets the user credentials an provides necessary authentication. Returns authorazition token, terminal id and error message if there is any.   
+
+#### **Path:**	*/authentication/getOAuthInitiationURL*
+**Type:**		GET   
+**Input Parameters:**   
+
+Name |	Type |	Nullable	| Default |	Description   
+--- | --- | --- | --- | ---  
+terminalId |	[FromUri(Name = “id”)] int		| | |
+
+**Return Values:**	string   
+**Description:** none
+
+#### **Path:**	*/authentication/getAuthToken*
+**Type:**		GET   
+**Input Parameters:**   
+
+Name |	Type |	Nullable	| Default |	Description   
+--- | --- | --- | --- | ---  
+curFr8UserId |	[FromUri]string			| | |
+externalAccountId |	[FromUri]string			| | |
+terminalId |	[FromUri] string			| | |
+**Return Values:**	AuthorizationTokenDO
+**Description:** none
 
 ### ConfigurationController
 ---------------------------------------
