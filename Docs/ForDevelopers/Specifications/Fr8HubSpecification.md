@@ -5,7 +5,7 @@
 ### ActivitiesController
 ----------------
 #### **Path:**	*/activities/create*  
-**Type:**	POST  
+**Type:**	*POST*  
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -21,7 +21,7 @@ authorizationTokenId |	Guid |	true |	null |	 To get authorization tokens for the
 **Description:**	Creates an instance of activity from activityTemplates, and provides necessary authorization to use them.  
 
 #### **Path:**	*/activities/create*  
-**Type:**	POST  
+**Type:**	*POST*  
 **Input Parameters:**
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -41,7 +41,7 @@ curActionDesignDTO | 	ActivityDTO			| | |
 **Return Values:**	ActivityDTO   
 **Description:**	Callers to this endpoint expect to receive back what they need to know to encode user configuration data into the Action. the typical scenario involves a front-end client  calling this and receiving back the same Action they passed, but with an attached Configuration Crate. The client renders UI based on the Configuration Crate, collects user inputs, and saves them as values in the Configuration Crate json. The updated Configuration Crate is then saved to the server so it will be available to the processing Terminal at run-time.   
 #### **Path:**	*/activities/get*
-**Type:**	GET   
+**Type:**	*GET*   
 **Input Parameters:**
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -51,7 +51,7 @@ Name |	Type |	Nullable	| Default |	Description
 **Description:**	 Simple getter for activity.  
  
 #### **Path:**	*/activities/delete*   
-**Type:**	DELETE   
+**Type:**	*DELETE*   
 **Input Parameters:**
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -63,7 +63,7 @@ confirmed |	boolean |		false | |	Deleting an activity can cause effects on downs
 **Description:**		 To delete an activity   
 
 #### **Path:**	*/activities/deleteActivity*   
-**Type:** DELETE   
+**Type:** *DELETE*   
 **Input Parameters:**
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -74,7 +74,7 @@ Name |	Type |	Nullable	| Default |	Description
 **Description:**			This endpoint for terminals to delete activity, since there is no user interaction when a request is sent from terminal, there will be no confirm message needed too.  
 
 #### **Path:**	*/activities/deleteChildNodes*  
-**Type:** DELETE  
+**Type:** *DELETE*  
 **Input Parameters:**
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -85,7 +85,7 @@ Name |	Type |	Nullable	| Default |	Description
 **Description:**		Remove all child Nodes and clear activity values  
 
 #### **Path:**	*/activities/save*  
-**Type:**	POST  
+**Type:**	*POST*  
 **Input Parameters:**  
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -96,7 +96,7 @@ Name |	Type |	Nullable	| Default |	Description
  
 
 #### **Path:**	*/activities/documentation*   
-**Type:**	POST   
+**Type:**	*POST*   
 **Input Parameters:**   
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -117,7 +117,7 @@ Name |	Type |	Nullable	| Default |	Description
 **Return Values:**	void   
 **Description:**		Alarms provide ability to add some delay between activities. This endpoints set the start time of the first activity that is going to be executed after delay.   
 #### **Path:**	*/alarms/executeTerminalWithLogging*
-**Type:**	POST    
+**Type:**	*POST*    
 **Input Parameters:**   
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -129,7 +129,7 @@ Name |	Type |	Nullable	| Default |	Description
 ### AuthenticationController
 -----------------------------------
 #### **Path:**	*/authentication/authenticate*
-**Type:**	POST    
+**Type:**	*POST*    
 **Input Parameters:**   
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -139,7 +139,7 @@ credentials |	CredentialsDTO	| | |		Credentials of the user to login
 **Description:**	Gets the user credentials an provides necessary authentication. Returns authorazition token, terminal id and error message if there is any.   
 
 #### **Path:**	*/authentication/getOAuthInitiationURL*
-**Type:**		GET   
+**Type:**		*GET*   
 **Input Parameters:**   
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -150,7 +150,7 @@ terminalId |	[FromUri(Name = “id”)] int		| | |
 **Description:** none
 
 #### **Path:**	*/authentication/getAuthToken*  
-**Type:**		GET   
+**Type:**		*GET*   
 **Input Parameters:**   
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -170,7 +170,7 @@ terminalId |	[FromUri] string			| | |
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-**Return Values:**	string
+**Return Values:**	string   
 **Description:**
 
 ### ContainersController
@@ -186,17 +186,17 @@ id |	Guid		|	| | Container id
 **Description:**	Gets the payload of the container given.  
  
 #### **Path:**	*/containers/getIdsByName*
-**Type:**	*GET*
+**Type:**	*GET*   
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
 name |	string			| | |
-**Return Values:**	Json
-**Description:**
+**Return Values:**	Json   
+**Description:** none   
 
 #### **Path:**	*/containers/get*
-**Type:**	*GET*
+**Type:**	*GET*   
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -207,8 +207,8 @@ name |	string |	 true	| null	| Container id
 
 ### CriteriaController
 
-#### **Path:**	*/criteria/bySubPlanId*
-**Type:**	*GET*
+#### **Path:**	*/criteria/bySubPlanId*   
+**Type:**	*GET*   
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -218,7 +218,7 @@ id |	Guid	 | | |		 subPlanId
 **Description:**	Retrieve criteria by Subroute.Id   
 
 #### **Path:**	*/criteria/update*
-**Type:**	PUT
+**Type:**	*PUT*  
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -230,7 +230,7 @@ dto |	CriteriaDTO	| | |		 CriteriaDTO to update
 ### EventController
 -----------------------------------
 #### **Path:**	*/event/processGen1Event*
-**Type:**	*POST*
+**Type:**	*POST*   
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -240,7 +240,7 @@ submittedEventsCrate |	CrateDTO			| | |
 **Description:**	Update event logs.  
 
 #### **Path:**	*/event/processEvents*
-**Type:**	*POST*
+**Type:**	*POST*   
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -252,7 +252,7 @@ raw |	CrateDTO			| | |
 ### FactsController
 -------------------------------------
 #### **Path:**	*/facts/processQuery*
-**Type:**	*POST*
+**Type:**	*POST*   
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -264,7 +264,7 @@ query |	FactDO			| | |
 ### FieldController
 -----------------------------------------
 #### **Path:**	*/field/exists*
-**Type:**	*POST*
+**Type:**	*POST*   
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -276,7 +276,7 @@ fieldCheckList |	List<FieldValidationDTO> | | |			Field list to check
 ### FilesController
 
 #### **Path:**	*/files/post*
-**Type:**	*POST*
+**Type:**	*POST*   
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -285,26 +285,26 @@ Name |	Type |	Nullable	| Default |	Description
 *Description:*	 Uploads the file and then saves the file object to db.  
 
 #### **Path:**	*/files/details*  
-**Type:**	*GET*  
+**Type:**	*GET*   
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-id |	int	| | |		 id of the file object
+id |	int	| | |		 id of the file object   
 **Return Values:**	FileDTO   
 **Description:**	Takes the id of the file and then returns the FileDTO object.   
 
 #### **Path:**	*/files/get*
-**Type:**	*GET*
+**Type:**	*GET*   
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-**Return Values:**	IList<FileDTO>  
-**Description:**	Gets all files current user stored on Fr8  
+**Return Values:**	IList<FileDTO>   
+**Description:**	Gets all files current user stored on Fr8   
 
 #### **Path:**	*/files/download*
-**Type:**	*GET*
+**Type:**	*GET*   
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -316,22 +316,22 @@ id | 	int	|		| | id of the file object
 ### ManageAuthTokenController
 -------------------------------------------
 #### **Path:**	*/manageAuthToken/get*  
-**Type:**	*GET*  
+**Type:**	*GET*   
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-**Return Values:**	List<ManageAuthToken_Terminal>  
-**Description:**	Extract user’s auth-tokens and parent terminals.  
+**Return Values:**	List<ManageAuthToken_Terminal>   
+**Description:**	Extract user’s auth-tokens and parent terminals.   
 
 #### **Path:**	*/manageAuthToken/revoke*
-**Type:**	*POST*
+**Type:**	*POST*   
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-id |	Guid | | |			 id of the token to revoke
-**Return Values:**	IHttpActionResult    
+id |	Guid | | |			 id of the token to revoke  
+**Return Values:**	IHttpActionResult     
 **Description:**	Revoke token.    
 
 #### **Path:**	*/manageAuthToken/terminalsByActivities*
