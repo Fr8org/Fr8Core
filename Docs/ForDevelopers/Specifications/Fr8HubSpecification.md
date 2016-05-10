@@ -149,7 +149,7 @@ terminalId |	[FromUri(Name = “id”)] int		| | |
 **Return Values:**	string   
 **Description:** none
 
-#### **Path:**	*/authentication/getAuthToken*
+#### **Path:**	*/authentication/getAuthToken*  
 **Type:**		GET   
 **Input Parameters:**   
 
@@ -159,237 +159,233 @@ curFr8UserId |	[FromUri]string			| | |
 externalAccountId |	[FromUri]string			| | |
 terminalId |	[FromUri] string			| | |
 
-**Return Values:**	AuthorizationTokenDO   
+**Return Values:**	AuthorizationTokenDO    
 **Description:** none
 
 ### ConfigurationController
 ---------------------------------------
-#### **Path:**	*/configuration/getAppInsightsInstrKey
+#### **Path:**	*/configuration/getAppInsightsInstrKey*  
+**Type:**	*GET*  
+**Input Parameters:**  	  
+
+Name |	Type |	Nullable	| Default |	Description   
+--- | --- | --- | --- | ---   
+**Return Values:**	string
+**Description:**
+
+### ContainersController
+
+#### **Path:**	*/containers/getPayload*
+**Type:**	*GET*  
+**Input Parameters:**  	  
+
+Name |	Type |	Nullable	| Default |	Description   
+--- | --- | --- | --- | ---   
+id |	Guid		|	| | Container id   
+**Return Values:**	PayloadDTO   
+**Description:**	Gets the payload of the container given.  
+ 
+#### **Path:**	*/containers/getIdsByName*
 **Type:**	*GET*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Return Values	string
-Description	
-ContainersController
+name |	string			| | |
+**Return Values:**	Json
+**Description:**
 
-#### **Path:**	*/containers/getPayload
+#### **Path:**	*/containers/get*
 **Type:**	*GET*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-id	Guid			 Container id
-Return Values	PayloadDTO
-Description	Gets the payload of the container given.
-#### **Path:**	*/containers/getIdsByName
+name |	string |	 true	| null	| Container id   
+**Return Values:**	Json  
+**Description:**	 Return the Containers accordingly to ID given   
+
+### CriteriaController
+
+#### **Path:**	*/criteria/bySubPlanId*
 **Type:**	*GET*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-name	string			
-Return Values	Json
-Description	
-#### **Path:**	*/containers/get
-**Type:**	*GET*
+id |	Guid	 | | |		 subPlanId   
+**Return Values:**	CriteriaDTO   
+**Description:**	Retrieve criteria by Subroute.Id   
+
+#### **Path:**	*/criteria/update*
+**Type:**	PUT
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-name	string	 true	 null	 Container id
-Return Values	Json
-Description	 Return the Containers accordingly to ID given
-CriteriaController
-
-#### **Path:**	*/criteria/bySubPlanId
-**Type:**	*GET*
-**Input Parameters:**  	  
-
-Name |	Type |	Nullable	| Default |	Description   
---- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-id	Guid			 subPlanId
-Return Values	CriteriaDTO
-Description	Retrieve criteria by Subroute.Id
-#### **Path:**	*/criteria/update
-Type:	PUT
-**Input Parameters:**  	  
-
-Name |	Type |	Nullable	| Default |	Description   
---- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-dto	CriteriaDTO			 CriteriaDTO to update
-Return Values	CriteriaDTO
-Description	Recieve criteria with global id, update criteria, and return updated criteria.
+dto |	CriteriaDTO	| | |		 CriteriaDTO to update    
+**Return Values:**	CriteriaDTO  
+**Description:**	Recieve criteria with global id, update criteria, and return updated criteria.  
 
 ### EventController
 -----------------------------------
-#### **Path:**	*/event/processGen1Event
+#### **Path:**	*/event/processGen1Event*
 **Type:**	*POST*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-submittedEventsCrate	CrateDTO			
-Return Values	IHttpActionResult
-Description	Update event logs.
-#### **Path:**	*/event/processEvents
+submittedEventsCrate |	CrateDTO			| | |
+**Return Values:**	IHttpActionResult  
+**Description:**	Update event logs.  
+
+#### **Path:**	*/event/processEvents*
 **Type:**	*POST*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-raw	CrateDTO			
-Return Values	IHttpActionResult
-Description	Takes the crate as an input and create related event manifest to establish necessary connection between terminal and Hub.
+raw |	CrateDTO			| | |  
+**Return Values**	IHttpActionResult   
+**Description:**	Takes the crate as an input and create related event manifest to establish necessary connection between terminal and Hub.
 
 ### FactsController
 -------------------------------------
-#### **Path:**	*/facts/processQuery
+#### **Path:**	*/facts/processQuery*
 **Type:**	*POST*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-query	FactDO			
-Return Values	HistoryItemDTO
-Description	
+query |	FactDO			| | |   
+**Return Values:**	HistoryItemDTO  
+**Description:** none  
 
 ### FieldController
 -----------------------------------------
-#### **Path:**	*/field/exists
+#### **Path:**	*/field/exists*
 **Type:**	*POST*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-fieldCheckList	List<FieldValidationDTO>			Field list to check
-Return Values	List<FieldValidationResult>
-Description	Checks whether fields in the fieldList are exists or not
-FilesController
+fieldCheckList |	List<FieldValidationDTO> | | |			Field list to check  
+**Return Values:**	List<FieldValidationResult>  
+**Description:**	Checks whether fields in the fieldList are exists or not  
 
-#### **Path:**	*/files/post
+### FilesController
+
+#### **Path:**	*/files/post*
 **Type:**	*POST*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-Return Values	FileDO
-Description	 Uploads the file and then saves the file object to db.
-#### **Path:**	*/files/details
+*Return Values:*	FileDO   
+*Description:*	 Uploads the file and then saves the file object to db.  
+
+#### **Path:**	*/files/details*  
+**Type:**	*GET*  
+**Input Parameters:**  	  
+
+Name |	Type |	Nullable	| Default |	Description   
+--- | --- | --- | --- | ---   
+id |	int	| | |		 id of the file object
+**Return Values:**	FileDTO   
+**Description:**	Takes the id of the file and then returns the FileDTO object.   
+
+#### **Path:**	*/files/get*
 **Type:**	*GET*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-id	int			 id of the file object
-Return Values	FileDTO
-Description	Takes the id of the file and then returns the FileDTO object.
-#### **Path:**	*/files/get
+**Return Values:**	IList<FileDTO>  
+**Description:**	Gets all files current user stored on Fr8  
+
+#### **Path:**	*/files/download*
 **Type:**	*GET*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-Return Values	IList<FileDTO>
-Description	Gets all files current user stored on Fr8
-#### **Path:**	*/files/download
-**Type:**	*GET*
-**Input Parameters:**  	  
-
-Name |	Type |	Nullable	| Default |	Description   
---- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-id	int			 id of the file object
-Return Values	FileActionResult
-Description	Downloads user’s given file
+id | 	int	|		| | id of the file object  
+**Return Values:**	FileActionResult  
+**Description:**	Downloads user’s given file  
 
 ### ManageAuthTokenController
 -------------------------------------------
-#### **Path:**	*/manageAuthToken/get
-**Type:**	*GET*
+#### **Path:**	*/manageAuthToken/get*  
+**Type:**	*GET*  
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-Return Values	List<ManageAuthToken_Terminal>
-Description	Extract user’s auth-tokens and parent terminals.
-#### **Path:**	*/manageAuthToken/revoke
+**Return Values:**	List<ManageAuthToken_Terminal>  
+**Description:**	Extract user’s auth-tokens and parent terminals.  
+
+#### **Path:**	*/manageAuthToken/revoke*
 **Type:**	*POST*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-id	Guid			 id of the token to revoke
-Return Values	IHttpActionResult
-Description	Revoke token.
-#### **Path:**	*/manageAuthToken/terminalsByActivities
+id |	Guid | | |			 id of the token to revoke
+**Return Values:**	IHttpActionResult    
+**Description:**	Revoke token.    
+
+#### **Path:**	*/manageAuthToken/terminalsByActivities*
 **Type:**	*POST*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-actionIds	IEnumerable<Guid>			
-Return Values	List<ManageAuthToken_Terminal_Activity>
-Description	Takes the activity ids and manages the necessary auth tokens for them than returns the authenticated terminal activity list.
+actionIds |	IEnumerable<Guid>		 | | |	
+**Return Values:**	List<ManageAuthToken_Terminal_Activity>   
+**Description:**	Takes the activity ids and manages the necessary auth tokens for them than returns the authenticated terminal activity list.
+
 #### **Path:**	*/manageAuthToken/apply
 **Type:**	*POST*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-apply	IEnumerable<ManageAuthToken_Apply>			
-Return Values	IHttpActionResult
-Description	Applies the authentication. If the token set as main, it will be also set as default token.
-#### **Path:**	*/manageAuthToken/setDefault
+apply |	IEnumerable<ManageAuthToken_Apply>		| | |  	
+**Return Values:**	IHttpActionResult   
+**Description:**	Applies the authentication. If the token set as main, it will be also set as default token.  
+
+#### **Path:**	*/manageAuthToken/setDefault*
 **Type:**	*POST*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-id	Guid			 id of the auth token
-Return Values	IHttpActionResult
-Description	Takes the id of the authentication token and sets it as default authentication token.
+id |	Guid	| | |		 id of the auth token
+**Return Values:**	IHttpActionResult   
+**Description:**	Takes the id of the authentication token and sets it as default authentication token.  
 
 ### ManifestRegistryController
 ------------------------------------
-#### **Path:**	*/manifestRegistry/get
+#### **Path:**	*/manifestRegistry/get*
 **Type:**	*GET*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-id	Guid			
-Return Values	IHttpActionResult ??? (dynamic)
-Description	
-#### **Path:**	*/manifestRegistry/post
+id | 	Guid			 | | |
+**Return Values:**	IHttpActionResult ??? (dynamic)  
+**Description:** 	
+
+#### **Path:**	*/manifestRegistry/post*
 **Type:**	*POST*
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---   
-Name	Type	Nullable	Default	Description
-description	ManifestDescriptionDTO			
-Return Values	ManifestDescriptionDTO
-Description	Takes the manifest description and saves to db.
+description |	ManifestDescriptionDTO			| | | 
+**Return Values:**	ManifestDescriptionDTO  
+**Description:**	Takes the manifest description and saves to db.   
+
 #### **Path:**	*/manifestRegistry/checkVersionAndName
 **Type:**	*GET*
 **Input Parameters:**  	  
