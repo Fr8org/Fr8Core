@@ -6,21 +6,31 @@ using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
-using Fr8Data.Managers;
 using Fr8Data.Manifests;
+using Fr8Data.States;
 using StructureMap;
 using terminalAzure.Infrastructure;
 using terminalAzure.Services;
 using TerminalBase;
 using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 using TerminalSqlUtilities;
 
 namespace terminalAzure.Activities
 {
-
     public class Write_To_Sql_Server_v1 : BaseTerminalActivityv2
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Write_To_Sql_Server",
+            Label = "Write to Azure Sql Server",
+            Category = ActivityCategory.Forwarders,
+            Version = "1",
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         //If the user provides no Connection String value, provide an empty Connection String field for the user to populate
         public override Task Initialize()
         {

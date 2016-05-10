@@ -37,6 +37,11 @@ namespace TerminalBase.BaseClasses
             }
             return factory;
         }
+
+        public static List<ActivityTemplateDTO> GetAllActivities()
+        {
+            return _activityRegistrations.Select(y => y.Key.ActivityTemplateDTO).ToList();
+        }
     }
 
     public class ActivityPayload

@@ -10,13 +10,13 @@ namespace Fr8Data.Managers
     {
         public static IUpdatableCrateStorage GetUpdatableStorage(this ICrateManager crateManager, ActivityDTO activity)
         {
-            if (activity == null) throw new ArgumentNullException("action");
+            if (activity == null) throw new ArgumentNullException(nameof(activity));
             return crateManager.UpdateStorage(() => activity.CrateStorage);
         }
 
         public static IUpdatableCrateStorage GetUpdatableStorage(this ICrateManager crateManager, PayloadDTO payload)
         {
-            if (payload == null) throw new ArgumentNullException("payload");
+            if (payload == null) throw new ArgumentNullException(nameof(payload));
             return crateManager.UpdateStorage(() => payload.CrateStorage);
         }
 

@@ -11,23 +11,16 @@ using TerminalBase.Infrastructure;
 
 namespace TerminalBase.BaseClasses
 {
-    public abstract class EnhancedTerminalController
+    public class ActivityExecutionManager
     {
         protected readonly IHubCommunicator HubCommunicator;
         protected readonly ICrateManager CrateManager;
-        protected EnhancedTerminalController(IHubCommunicator hubCommunicator, ICrateManager crateManager)
+        protected ActivityExecutionManager(IHubCommunicator hubCommunicator, ICrateManager crateManager)
         {
             HubCommunicator = hubCommunicator;
             CrateManager = crateManager;
         }
 
-        [HttpGet]
-        public Task<ActivityTemplateDTO[]> GetActivitiesList()
-        {
-            return Task.FromResult(ActivityStore._activityRegistrations.Select(y => y.Key.ActivityTemplateDTO).ToArray());
-        }
-
-        [NonAction]
         public async Task<object> HandleFr8Request(string curTerminal, string curActionPath, Fr8DataDTO curDataDTO)
         {
             IActivityFactory factory = ActivityStore.GetValue(curDataDTO.ActivityDTO.ActivityTemplate);
@@ -83,7 +76,7 @@ namespace TerminalBase.BaseClasses
 
         private ActivityDTO SerializeResponse(ActivityContext activityContext)
         {
-            return Mapper.Map<ActivityDTO>(activityContext);
+            return Mapper.Map<ActivityDTO>(activityContext.ActivityPayload);
         }
 
         private PayloadDTO SerializeResponse(ContainerExecutionContext activityContext)

@@ -27,7 +27,7 @@ namespace TerminalBase.BaseClasses
         public IHubCommunicator HubCommunicator { get; set; }
         protected ContainerExecutionContext ExecutionContext { get; set; }
         protected ActivityContext ActivityContext { get; set; }
-        protected ActivityTemplateDTO MyTemplate { get; set; }
+        protected abstract ActivityTemplateDTO MyTemplate { get; }
         
         #endregion
 

@@ -11,7 +11,7 @@ using TerminalBase.Infrastructure;
 
 namespace TerminalBase.BaseClasses
 {
-    public class BaseConfiguration : IHttpControllerTypeResolver
+    public abstract class BaseConfiguration : IHttpControllerTypeResolver
     {
         protected HttpConfiguration _configuration = new HttpConfiguration();
 
@@ -20,6 +20,7 @@ namespace TerminalBase.BaseClasses
             ObjectFactory.Initialize();
             ObjectFactory.Configure(StructureMapBootStrapper.LiveConfiguration);
             TerminalBootstrapper.ConfigureLive();
+            AutoMapperBootstrapper.ConfigureAutoMapper();
 
             if (terminalStructureMapRegistryConfigExpression != null)
             {
@@ -32,7 +33,11 @@ namespace TerminalBase.BaseClasses
                 _configuration.Services.Replace(typeof(IHttpControllerTypeResolver), this);
             }
 
+
+            RegisterActivities();
         }
+
+        protected abstract void RegisterActivities();
 
         protected virtual void ConfigureFormatters()
         {
