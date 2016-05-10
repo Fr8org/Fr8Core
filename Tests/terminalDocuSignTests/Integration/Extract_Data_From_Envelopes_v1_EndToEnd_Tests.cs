@@ -25,6 +25,7 @@ namespace terminalDocuSignTests.Integration
 
         ActivityDTO _solution;
         ICrateStorage _crateStorage;
+        error;
 
         [Test]
         public async Task Extract_Data_From_Envelopes_EndToEnd()
