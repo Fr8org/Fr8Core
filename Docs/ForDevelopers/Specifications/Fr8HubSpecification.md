@@ -31,31 +31,37 @@ solutionName	| string	| | |		Name of the solution template of the solution that 
 **Return Values:**	PlanDTO    
 **Description:**	Creates an instance of solution from solutionTemplates, and configures it.  
 
-Path:	/activities/configure
-Type:	POST
-Input Parameters:	
-Name	Type	Nullable	Default	Description
-curActionDesignDTO	ActivityDTO			
-Return Values	ActivityDTO
-Description	Callers to this endpoint expect to receive back what they need to know to encode user configuration data into the Action. the typical scenario involves a front-end client  calling this and receiving back the same Action they passed, but with an attached Configuration Crate. The client renders UI based on the Configuration Crate, collects user inputs, and saves them as values in the Configuration Crate json. The updated Configuration Crate is then saved to the server so it will be available to the processing Terminal at run-time.
-Path:	/activities/get
-Type:	GET
-Input Parameters:	
-Name	Type	Nullable	Default	Description
- id	Guid			 id of the demanded activity
-Return Values	ActivityDTO
-Description	 Simple getter for activity.
- 
+#### **Path:**	*/activities/configure*  
+**Type:**	POST  
+**Input Parameters:	**
 
-Path:	/activities/delete
-Type:	DELETE
-Input Parameters:	
-Name	Type	Nullable	Default	Description
- id	Guid			 id of the activity to delete.
-confirmed	boolean		false	Deleting an activity can cause effects on downstream activities. When this parameter is false, the downstream activities are being checked, and if there is an effect on them, the user will be informed by a message. If user confirms, then the activity is directly deleted.
-Return Values	void
-Description	 To delete an activity
-Path:	/activities/deleteActivity
+Name |	Type |	Nullable	| Default |	Description   
+--- | --- | --- | --- | ---  
+curActionDesignDTO | 	ActivityDTO			| | |   
+**Return Values:**	ActivityDTO
+**Description:**	Callers to this endpoint expect to receive back what they need to know to encode user configuration data into the Action. the typical scenario involves a front-end client  calling this and receiving back the same Action they passed, but with an attached Configuration Crate. The client renders UI based on the Configuration Crate, collects user inputs, and saves them as values in the Configuration Crate json. The updated Configuration Crate is then saved to the server so it will be available to the processing Terminal at run-time.   
+#### **Path:**	*/activities/get*
+**Type:**	GET
+**Input Parameters:	**
+
+Name |	Type |	Nullable	| Default |	Description   
+--- | --- | --- | --- | ---  
+ id |	Guid	| | |		 id of the demanded activity   
+**Return Values:**	ActivityDTO   
+**Description:**	 Simple getter for activity.  
+ 
+#### **Path:**	*/activities/delete*   
+**Type:**	DELETE
+**Input Parameters:	**
+
+Name |	Type |	Nullable	| Default |	Description   
+--- | --- | --- | --- | ---  
+ id |	Guid	| | |	 id of the activity to delete.
+confirmed |	boolean |		false | |	Deleting an activity can cause effects on downstream activities. When this parameter is false, the downstream activities are being checked, and if there is an effect on them, the user will be informed by a message. If user confirms, then the activity is directly deleted.   
+**Return Values:**	void   
+**Description:**		 To delete an activity   
+
+#### **Path:**	*/activities/deleteActivity*   
 Type:	DELETE
 Input Parameters:	
 Name	Type	Nullable	Default	Description
