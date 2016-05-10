@@ -1,7 +1,6 @@
 ﻿/// <reference path="../../_all.ts" />
 module dockyard.directives.upstreamDataChooser {
     'use strict';
-    import upstreamFieldChooserEvents = dockyard.Fr8Events.UpstreamFieldChooser;
     export interface IUpstreamFieldChooser extends ng.IScope {
         field: model.DropDownList;
         currentAction: model.ActivityDTO;
@@ -18,14 +17,20 @@ module dockyard.directives.upstreamDataChooser {
 
     export class UpstreamFieldChooserController {
 
-        static $inject = ['$scope', '$element', '$attrs', 'UpstreamExtractor', '$modal','NgTableParams'];
+        static $inject = ['$scope', '$element', '$attrs', 'UpstreamExtractor', '$modal', 'NgTableParams', 'UIHelperService'];
         constructor($scope: IUpstreamFieldChooser,
             $element: ng.IAugmentedJQuery,
             $attrs: ng.IAttributes,
             UpstreamExtractor: services.UpstreamExtractor,
             $modal: any,
-            NgTableParams) {
+            NgTableParams,
+            uiHelperService: services.IUIHelperService) {
+
             var modalInstance;
+            var alertMessage = new model.AlertDTO();
+            alertMessage.title = "Notification";
+            alertMessage.body = 'There are no upstream fields available right now. To learn more,<a href= "/documentation/UpstreamCrates.html" target= "_blank" > click here </a><i class="fa fa-question-circle" > </i>';
+
             $scope.openModal = () => {
                 getUpstreamFields();
                 if ($scope.field.listItems.length !== 0) {
@@ -80,7 +85,7 @@ module dockyard.directives.upstreamDataChooser {
                             }
                         });
                         if (listItems.length === 0) {
-                            $scope.$emit(<any>upstreamFieldChooserEvents.NO_UPSTREAM_FIELDS, new AlertEventArgs());
+                            uiHelperService.openConfirmationModal(alertMessage);
                         }
                         else {
                             $scope.field.listItems = listItems;

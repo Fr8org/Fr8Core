@@ -9,8 +9,5 @@ module dockyard.Fr8Events {
     }
     export enum DesignerHeader {
         PLAN_EXECUTION_COMPLETED_REARRANGE_PLANS = <any>"planExecutionCompleted-rearrangePlans"
-    }
-    export enum UpstreamFieldChooser {
-        NO_UPSTREAM_FIELDS = <any>"noUpstreamFields"
-    }
+    }    
 }
