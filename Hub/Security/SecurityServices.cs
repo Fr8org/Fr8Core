@@ -195,7 +195,8 @@ namespace Hub.Security
             //in case nothing found check database for a profile
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var currentUser = uow.UserRepository.GetQuery().FirstOrDefault(x => x.Id == GetCurrentUser());
+                var currentUserId = GetCurrentUser();
+                var currentUser = uow.UserRepository.GetQuery().FirstOrDefault(x => x.Id == currentUserId);
                 if (currentUser != null)
                 {
                     profileId = currentUser.ProfileId ?? Guid.Empty;
