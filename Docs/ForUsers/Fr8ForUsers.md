@@ -21,8 +21,10 @@ Fr8 Plans are assembled out of individual Activities, represented by the cards t
 
 When you run a Plan, Fr8 creates a Container to hold your data. Inside the container your data is sotred in Crates. The main Fr8 service routes the Container as it travels from Activity to Activity.  
 
-[Getting Started]()  
+[Getting Started](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForUsers/HowToUseFr8.md)   
 
-[Tutorials]()   
+##### Tutorials  
+[Tutorial: A Basic Twilio Terminal That Can Send an SMS Message](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Tutorials/TwilioTutorial.md)    
+[Tutorial: Create a Fr8 Plan, Import Spreadsheet Data, and Distribute the Data by an Email Activity](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/Tutorials/CreateImportDistributeTutorial.md)   
    
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md) 
