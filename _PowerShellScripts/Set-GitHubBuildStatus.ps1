@@ -99,10 +99,12 @@ $failedBuildSteps = $activeTasks | where {$_.state -eq "completed" -and $_.resul
 if ($failedBuildSteps.Count -eq 0)
 {
     UpdateGitHubBuildStatus -message $success
+	Write-Host "Updated status of current build to Succeeded."
 }
 else
 {
     UpdateGitHubBuildStatus -message $failure
+	Write-Host "Updated status of current build to Failed."
 }
 
 
