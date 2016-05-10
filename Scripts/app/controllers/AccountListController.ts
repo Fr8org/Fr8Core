@@ -6,7 +6,7 @@ module dockyard.controllers {
     export interface IAccountListScope extends ng.IScope {
         users: Array<interfaces.IUserDTO>;
         openDetails(user: interfaces.IUserDTO);
-        dtOptionsBuilder: any
+        dtOptionsBuilder: any;
     }
 
     class AccountListController {

@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace Fr8Data.DataTransferObjects
 {
@@ -21,5 +18,7 @@ namespace Fr8Data.DataTransferObjects
         public string Role { get; set; }
 
         public int? organizationId { get; set; }
+
+        public Guid ProfileId { get; set; }
     }
 }

@@ -1009,12 +1009,14 @@
     <TypeScriptCompile Include="Scripts\app\controllers\AuthenticationDialogController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManageAuthTokenController.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IManifestRegistry.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IProfile.ts" />
     <TypeScriptCompile Include="Scripts\app\model\AlertDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\HistoryDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\IncomingCratesDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ManifestDescriptionDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\CrateDescriptionDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\OrganizationDTO.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\Profile.ts" />
     <TypeScriptCompile Include="Scripts\app\model\SubordinateSubplan.ts" />
     <TypeScriptCompile Include="Scripts\app\services\AuthService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ConfigureTrackerService.ts" />

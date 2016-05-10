@@ -9,7 +9,7 @@
 /// <reference path="interfaces/iquerybuilderwidgetscope.ts" />
 /// <reference path="interfaces/iplanbuilder.ts" />
 /// <reference path="interfaces/iuser.ts" />
-
+/// <reference path="interfaces/iprofile.ts" />
 
 /*
     MODEL
@@ -23,6 +23,7 @@
 /// <reference path="model/controlslist.ts" />
 /// <reference path="model/planbuilderstate.ts" />
 /// <reference path="model/user.ts" />
+/// <reference path="model/Profile.ts" />
 /// <reference path="model/WebServiceActionSetDTO.ts" />
 
 /*

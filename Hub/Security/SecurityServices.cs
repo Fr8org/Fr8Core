@@ -14,6 +14,7 @@ using StructureMap;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using Data.Repositories.Security;
 using Data.Repositories.Security.Entities;
 using Data.States;
@@ -25,6 +26,8 @@ namespace Hub.Security
 {
     internal class SecurityServices : ISecurityServices
     {
+        private const string ProfileClaim = "Profile";
+
         private ISecurityObjectsStorageProvider _securityObjectStorageProvider;
 
         public SecurityServices(ISecurityObjectsStorageProvider securityObjectStorageProvider)
@@ -102,13 +105,10 @@ namespace Hub.Security
             {
                 var role = uow.AspNetRolesRepository.GetByKey(roleId);
                 identity.AddClaim(new Claim(ClaimTypes.Role, role.Name));
-
-                //add organization as claim for runtime usage
-                if (fr8AccountDO.Organization != null)
-                {
-                    identity.AddClaim(new Claim("Organization", fr8AccountDO.Organization.Name));
-                }
             }
+
+            //save profileId from current logged user for future usage inside authorization activities logic
+            identity.AddClaim(new Claim(ProfileClaim, fr8AccountDO.ProfileId.ToString()));
 
             return identity;
         }
@@ -149,6 +149,8 @@ namespace Hub.Security
             if (!roles.Any())
                 return true;
 
+            Guid profileId = GetCurrentUserProfile();
+
             //first check Record Based Permission.
             var objRolePermissionWrapper = _securityObjectStorageProvider.GetRecordBasedPermissionSetForObject(curObjectId);
             if (objRolePermissionWrapper.RolePermissions.Any() || objRolePermissionWrapper.Properties.Any())
@@ -167,8 +169,56 @@ namespace Hub.Security
             }
 
             //Object Based permission set checks
-            var permissionSets = _securityObjectStorageProvider.GetObjectBasedPermissionSetForObject(curObjectId, curObjectType, roles);
+            var permissionSets = _securityObjectStorageProvider.GetObjectBasedPermissionSetForObject(curObjectId, curObjectType, profileId);
             return EvaluatePermissionSet(permissionType, permissionSets);
+        }
+
+        /// <summary>
+        /// Returns assigned profile to current user. Check inside Identity claims, as a backup query database
+        /// </summary>
+        /// <returns></returns>
+        private Guid GetCurrentUserProfile()
+        {
+            Guid profileId = Guid.Empty;
+            var claimsIdentity = Thread.CurrentPrincipal.Identity as ClaimsIdentity;
+            var profile = claimsIdentity?.Claims.Where(c => c.Type == ProfileClaim).Select(c => c.Value).FirstOrDefault();
+            if (profile != null)
+            {
+                Guid.TryParse(profile, out profileId);
+            }
+
+            if (profileId != Guid.Empty)
+            {
+                return profileId;
+            }
+            
+            //in case nothing found check database for a profile
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var currentUser = uow.UserRepository.GetQuery().FirstOrDefault(x => x.Id == GetCurrentUser());
+                if (currentUser != null)
+                {
+                    profileId = currentUser.ProfileId ?? Guid.Empty;
+                }
+            }
+
+            return profileId;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="permissionType"></param>
+        /// <param name="objectType"></param>
+        /// <returns></returns>
+        public bool UserHasPermission(PermissionType permissionType, string objectType)
+        {
+            if (!IsAuthenticated())
+                return false;
+
+            //this permissions will be returned from cache based on profile
+            var permissions = _securityObjectStorageProvider.GetAllPermissionsForUser(GetCurrentUserProfile());
+            return permissions.Any(x => x.Permission == (int)permissionType && x.ObjectType == objectType);
         }
 
         private bool EvaluatePermissionSet(PermissionType permissionType, List<int> permissionSet)
