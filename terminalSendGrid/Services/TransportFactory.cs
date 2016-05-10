@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net;
-using System.Text;
-using System.Threading.Tasks;
 using SendGrid;
 using Utilities;
+using Utilities.Configuration.Azure;
 
 namespace terminalSendGrid.Services
 {
@@ -17,8 +15,8 @@ namespace terminalSendGrid.Services
                 throw new ArgumentNullException("configRepository");
             var credentials = new NetworkCredential
             {
-                UserName = configRepository.Get("OutboundUserName"),
-                Password = configRepository.Get("OutboundUserPassword")
+                UserName = CloudConfigurationManager.GetSetting("OutboundUserName"),
+                Password = CloudConfigurationManager.GetSetting("OutboundUserPassword")
             };
             var web = new Web(credentials);
             return new TransportWrapper(web);

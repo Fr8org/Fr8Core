@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Configuration;
+using System.Diagnostics;
 using System.Net;
 using System.Net.Mail;
 using System.Linq;
@@ -49,8 +50,14 @@ namespace HealthMonitor
             return string.Format("{0}, Test report {1:R}", appName, DateTime.Now);
         }
 
-        public void Notify(string appName, string htmlReport)
+        public void Notify(string appName, string htmlReport, string username, string password)
         {
+            if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
+            {
+                Trace.TraceWarning($"The SMTP username [{username}] or password [{password}] is empty. No email will be sent.");
+                return;
+            }
+
             var toEmails = GetToEmails();
             if (toEmails == null)
             {
@@ -69,8 +76,8 @@ namespace HealthMonitor
 
             var credentials = new NetworkCredential
             {
-                UserName = GetUserName(),
-                Password = GetPassword()
+                UserName = username,
+                Password = password
             };
 
             var web = new Web(credentials);

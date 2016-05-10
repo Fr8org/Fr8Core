@@ -15,6 +15,12 @@ param(
     [Parameter(Mandatory = $true)]
 	[string]$connectionString,
 
+    [Parameter(Mandatory = $true)]
+	[string]$smtpUsername,
+
+    [Parameter(Mandatory = $true)]
+	[string]$smtpPassword,
+
     [Parameter(Mandatory = $false)]
 	[string]$overrideDbName,
 
@@ -96,6 +102,13 @@ if(Test-Path $ConfigFile)
 			Write-Host "$terminalName  - "$_.value
 		}
     }
+
+	#Update SMTP Credentials
+	Write-Host "Setting SMTP Credentials (Currently SendGrid)"
+	$usernameNode = $roleNode.ConfigurationSettings.Setting | where {$_.name -eq 'OutboundUserName'}
+	$userNameNode.value = $smtpUsername
+	$passwordNode = $roleNode.ConfigurationSettings.Setting | where {$_.name -eq 'OutboundPassword'}
+	$passwordNode.value = $smtpPassword
 
 	try
 	{
