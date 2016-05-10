@@ -177,7 +177,9 @@
       <Setting name="terminalSendGrid.TerminalEndpoint"/>
       <Setting name="terminalSlack.TerminalEndpoint"/>
       <Setting name="terminalTwilio.TerminalEndpoint"/>
-      <Setting name="terminalYammer.TerminalEndpoint"/>      
+      <Setting name="terminalYammer.TerminalEndpoint"/>
+      <Setting name="OutboundUserName" value="" />
+      <Setting name="OutboundPassword" value="" />
     </ConfigurationSettings>
     <Endpoints>
       <!-- Endpoint name must strongly match terminal name. This rule is expected 
