@@ -41,7 +41,7 @@ curActionDesignDTO | 	ActivityDTO			| | |
 **Return Values:**	ActivityDTO   
 **Description:**	Callers to this endpoint expect to receive back what they need to know to encode user configuration data into the Action. the typical scenario involves a front-end client  calling this and receiving back the same Action they passed, but with an attached Configuration Crate. The client renders UI based on the Configuration Crate, collects user inputs, and saves them as values in the Configuration Crate json. The updated Configuration Crate is then saved to the server so it will be available to the processing Terminal at run-time.   
 #### **Path:**	*/activities/get*
-**Type:**	GET
+**Type:**	GET   
 **Input Parameters:**
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -51,7 +51,7 @@ Name |	Type |	Nullable	| Default |	Description
 **Description:**	 Simple getter for activity.  
  
 #### **Path:**	*/activities/delete*   
-**Type:**	DELETE
+**Type:**	DELETE   
 **Input Parameters:**
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -63,7 +63,7 @@ confirmed |	boolean |		false | |	Deleting an activity can cause effects on downs
 **Description:**		 To delete an activity   
 
 #### **Path:**	*/activities/deleteActivity*   
-**Type:** DELETE
+**Type:** DELETE   
 **Input Parameters:**
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -158,7 +158,8 @@ Name |	Type |	Nullable	| Default |	Description
 curFr8UserId |	[FromUri]string			| | |
 externalAccountId |	[FromUri]string			| | |
 terminalId |	[FromUri] string			| | |
-**Return Values:**	AuthorizationTokenDO
+
+**Return Values:**	AuthorizationTokenDO   
 **Description:** none
 
 ### ConfigurationController
