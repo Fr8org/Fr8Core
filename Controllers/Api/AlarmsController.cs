@@ -1,7 +1,7 @@
 ﻿using Data.Interfaces.DataTransferObjects;
 using Hangfire;
+using Hub.Infrastructure;
 using Hub.Interfaces;
-using HubWeb.Infrastructure;
 using StructureMap;
 using System;
 using System.Threading.Tasks;

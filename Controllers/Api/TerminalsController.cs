@@ -7,6 +7,7 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Validations;
+using Hub.Infrastructure;
 using Hub.Interfaces;
 using StructureMap;
 

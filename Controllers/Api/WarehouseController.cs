@@ -1,26 +1,15 @@
-﻿using System;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using AutoMapper;
-using Data.Entities;
+using StructureMap;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
-using Hub.Interfaces;
-using HubWeb.Controllers.Helpers;
-using HubWeb.Infrastructure;
-using Microsoft.AspNet.Identity;
-using StructureMap;
-using Hub.Managers;
 using Data.Interfaces.Manifests;
-using System.Collections.Generic;
-using Data.Crates;
+using Hub.Infrastructure;
+using Hub.Managers;
 
 namespace HubWeb.Controllers
 {
-
     [Fr8ApiAuthorize]
     public class WarehouseController : ApiController
     {

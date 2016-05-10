@@ -1,18 +1,7 @@
-﻿using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
-using Hangfire;
-using Hub.Interfaces;
-using Hub.Managers;
-using HubWeb.Infrastructure;
+﻿using System.Web.Http;
 using StructureMap;
-using System;
-using System.Collections.Generic;
-using System.Linq.Expressions;
-using System.Net.Http;
-using System.Net.Http.Formatting;
-using System.Threading.Tasks;
-using System.Web.Http;
+using Data.Interfaces.DataTransferObjects;
+using Hub.Infrastructure;
 using Utilities.Interfaces;
 
 namespace HubWeb.Controllers

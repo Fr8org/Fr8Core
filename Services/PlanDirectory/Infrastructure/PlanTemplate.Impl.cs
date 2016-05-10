@@ -7,12 +7,12 @@ namespace PlanDirectory.Infrastructure
     {
         public void Publish(PlanTemplateCM planTemplate)
         {
-            throw new NotImplementedException();
+            // TODO: not implemented yet.
         }
 
         public void Unpublish(PlanTemplateCM planTemplate)
         {
-            throw new NotImplementedException();
+            // TODO: not implemented yet.
         }
     }
 }

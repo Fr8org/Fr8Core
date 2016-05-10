@@ -7,6 +7,7 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Hub.Infrastructure;
 using Hub.Interfaces;
 
 namespace HubWeb.Controllers

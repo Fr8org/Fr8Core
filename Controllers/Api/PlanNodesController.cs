@@ -4,19 +4,16 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
-using HubWeb.Infrastructure;
-using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Infrastructure.StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Hub.Infrastructure;
 using Hub.Interfaces;
 using Hub.Managers;
-using Data.Crates;
-using Data.Interfaces.Manifests;
 using Data.States;
-using Data.Constants;
+
 
 namespace HubWeb.Controllers
 {

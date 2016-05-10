@@ -1,16 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Security.Claims;
-using System.Security.Principal;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Http;
-using HubWeb;
-using HubWeb.Controllers;
-using HubWeb.Infrastructure;
 using NUnit.Framework;
+using Hub.Infrastructure;
 using UtilitiesTesting;
 
 namespace HubTests.Controllers.Api

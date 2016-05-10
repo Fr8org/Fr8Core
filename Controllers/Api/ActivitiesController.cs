@@ -8,9 +8,9 @@ using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
+using Hub.Infrastructure;
 using Hub.Interfaces;
 using HubWeb.Controllers.Helpers;
-using HubWeb.Infrastructure;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 
