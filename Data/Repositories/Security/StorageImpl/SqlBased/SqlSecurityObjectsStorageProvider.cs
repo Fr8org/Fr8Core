@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
 using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.Repositories.Security.Entities;
 using Data.Repositories.SqlBased;
 using Data.States;
 using Data.States.Templates;
+using Fr8Data.DataTransferObjects;
 
 namespace Data.Repositories.Security.StorageImpl.SqlBased
 {
@@ -147,6 +149,11 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             }
         }
 
+        public List<PermissionDTO> GetAllPermissionsForUser(Guid profileId)
+        {
+            throw new NotImplementedException();
+        }
+
         public void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType)
         {
             using (var connection = OpenConnection(_sqlConnectionProvider))
@@ -238,7 +245,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             throw new NotImplementedException();
         }
 
-        public List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, List<string> roleNames)
+        public List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, Guid profileId)
         {
             return new List<int>();
         }
