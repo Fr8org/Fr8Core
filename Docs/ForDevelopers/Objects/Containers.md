@@ -7,8 +7,8 @@ When data is moved around the Fr8 network as part of the execution of a Fr8 Plan
 
 Fr8 Hubs move Containers from place to place.
 
-[Container Logs](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/Objects/ContainerLog.md)  
+[Container Logs](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/ContainerLog.md)  
 
-[Container Execution](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/Objects/ContainerExecution.md)  
+[Container Execution](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/ContainerExecution.md)  
 
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md) 

@@ -431,4 +431,4 @@ Nesting is also supported.
 
 ## Supported Events
 
-[Supported Configuration Control Events](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/ConfigurationControlEvents.md) 
+[Supported Configuration Control Events](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ConfigurationControlEvents.md) 

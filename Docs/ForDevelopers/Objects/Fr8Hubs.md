@@ -2,7 +2,7 @@
 
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md) 
 
-A Fr8 Hub is a web service that stores [Plans](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/Objects/Plans.md) and processes [Containers](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/Objects/Containers.md)  of Fr8. The Hub passes the Container to appropriate [Terminals](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/Objects/Terminals.md)  so that the right Activity in the Plan can be executed.
+A Fr8 Hub is a web service that stores [Plans](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Plans.md) and processes [Containers](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Containers.md)  of Fr8. The Hub passes the Container to appropriate [Terminals](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Terminals.md)  so that the right Activity in the Plan can be executed.
 
 Fr8 Hubs are also responsible for managing user accounts and authorization tokens.
 

@@ -34,6 +34,6 @@ The Fr8 Client V1 standard supports the AggressiveReload Tag, which can be added
 
 ## Action Configuration Can Use a Set of Defined UI Controls
 
-Learn more about the [UI Control Definitions.](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/DevelopmentGuides/ConfigurationControls.md)
+Learn more about the [UI Control Definitions.](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DevelopmentGuides/ConfigurationControls.md)
 
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  

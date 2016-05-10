@@ -5,13 +5,13 @@ A Fr8 Plan  is a json-based workflow definition. Hubs process  fr8 Plans by gene
 
 A  fr8 Plan consists of Activities, and each Activity is likely to have 1 or more crates of Design-Time metadata information that is used during configuration.
 
-[Plan Definition](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/Objects/PlanJSONDefinition.md)  
+[Plan Definition](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/PlanJSONDefinition.md)  
 
 Creating Routes
 
 Configuring Routes
 
-[Activating & Running Plans](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/Objects/PlansActivationAndRunning.md)  
+[Activating & Running Plans](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/PlansActivationAndRunning.md)  
 
 ## Plan States
 

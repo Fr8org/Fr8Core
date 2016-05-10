@@ -7,7 +7,7 @@ Data is transported throughout the Fr8 network  in Crates. A Crate is simply a j
 1. Run-Time data (or “Payload”) represents real run-time data that is being processed. Run-time data is either imported into the system (e.g. accessing a Google Spreadsheet), or generated as output by an Action.
 2. Configuration data (sometimes referred to as “Design-Time” data), which is metadata used by Actions and Terminals to communicate useful information to other parts of the system. One of the most important types of these “Configuration Crates” are the UI crates that define the user interface controls that an Action needs clients to display.
 
-At Run-Time, Crates are created into a [Container](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/Objects/Containers.md), and moved from Terminal to Terminal so the Terminals can carry out the Activities of the Plan.
+At Run-Time, Crates are created into a [Container](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Containers.md), and moved from Terminal to Terminal so the Terminals can carry out the Activities of the Plan.
 
 ### Structure
 
@@ -19,10 +19,10 @@ Fr8 Crates are similar. Each Crate consists of a set of JSON properties. One pro
 
 Organizationally, when constructing a Crate of data, expect that the metadata about the Crate will remain publicly viewable. CrateStorage is not automatically encrypted, but the Fr8 design anticipates that some users will want to encrypt their CrateStorage.
 
-[Crate JSON Definition](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/Objects/CrateDTO.md) 
+[Crate JSON Definition](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CrateDTO.md) 
 
-[Property: Availability](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/Objects/CratePropertyAvailability.md)
+[Property: Availability](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CratePropertyAvailability.md)
 
-[Crate Manifests](https://github.com/Fr8org/Fr8Core/blob/master/ForDevelopers/Objects/CratesManifest.md) 
+[Crate Manifests](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/CratesManifest.md) 
 
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
