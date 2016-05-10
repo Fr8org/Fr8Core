@@ -9,6 +9,7 @@ using Data.Infrastructure.StructureMap;
 using StructureMap;
 using Data.Interfaces;
 using Data.States;
+using Fr8Data.States;
 
 namespace Data.Entities
 {

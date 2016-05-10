@@ -1,6 +1,5 @@
 ﻿using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Services;
@@ -10,14 +9,12 @@ using NUnit.Framework;
 using StructureMap;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using HubTests.Controllers.Api;
-using Hub.Interfaces;
-using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using AutoMapper;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.States;
 
 namespace HubTests.Controllers
 {

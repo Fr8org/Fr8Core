@@ -1,21 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Net.Http;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Xml.Linq;
-using AutoMapper;
-using Data;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using terminalDocuSign.DataTransferObjects;
-using Utilities.Configuration.Azure;
 
 namespace terminalDocuSign.Controllers
 {

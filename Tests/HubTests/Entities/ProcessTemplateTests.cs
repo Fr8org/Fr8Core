@@ -3,12 +3,10 @@ using Data.Entities;
 using NUnit.Framework;
 using StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.Manifests;
 using Hub.Interfaces;
-using HubWeb.Controllers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Data.Interfaces.Manifests;
 
 namespace HubTests.Entities
 {

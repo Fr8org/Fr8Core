@@ -1,9 +1,9 @@
 ﻿using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Data.Interfaces.Manifests;
 using System;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 
 namespace terminalSalesforce.Infrastructure
 {

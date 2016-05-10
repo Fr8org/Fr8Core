@@ -2,10 +2,9 @@
 
 using System;
 using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using System.Data.Entity.Infrastructure;
-using Data.Constants;
+using Fr8Data.Constants;
+using Fr8Data.DataTransferObjects;
 
 namespace Data.Infrastructure
 {

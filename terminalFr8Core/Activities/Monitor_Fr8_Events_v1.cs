@@ -2,20 +2,14 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Crates;
-using Newtonsoft.Json;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using TerminalBase.Infrastructure;
 using TerminalBase.BaseClasses;
 using Data.Entities;
-using StructureMap;
 using Hub.Managers;
-using Data.Control;
-using Data.States;
-using System.Globalization;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace terminalFr8Core.Actions
 {
@@ -73,7 +67,7 @@ namespace terminalFr8Core.Actions
                 {
                     using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
                     {
-                        crateStorage.Add(Data.Crates.Crate.FromContent(curEventReport.EventNames, standardLoggingCM));
+                        crateStorage.Add(Fr8Data.Crates.Crate.FromContent(curEventReport.EventNames, standardLoggingCM));
                     }
                 }
             }

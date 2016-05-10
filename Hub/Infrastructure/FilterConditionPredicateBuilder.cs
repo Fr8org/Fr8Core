@@ -4,7 +4,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Globalization;
 using System.Reflection;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 
 namespace Hub.Infrastructure
 {

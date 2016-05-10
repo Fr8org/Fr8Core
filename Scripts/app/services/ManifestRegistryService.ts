@@ -2,7 +2,7 @@
 module dockyard.services {
     export interface IManifestRegistryService extends ng.resource.IResourceClass<interfaces.IManifestRegistryVM> {
         checkVersionAndName: (version: { version: string }, name: { name: string }) => any;
-        getDescriptionWithMaxVersion: (name: { name: string }) => any;
+        getDescriptionWithLastVersion: (name: { name: string }) => any;
     }
 
     app.factory("ManifestRegistryService", ["$resource", ($resource: ng.resource.IResourceService): IManifestRegistryService =>
@@ -16,13 +16,13 @@ module dockyard.services {
                 isArray: false,
                 url: "/api/manifestregistry/checkVersionAndName"
             },
-            getDescriptionWithMaxVersion: {
+            getDescriptionWithLastVersion: {
                 method: 'GET',
                 params: {
                     name: "@name"
                 },
                 isArray: false,
-                url: "/api/manifestregistry/getDescriptionWithMaxVersion"
+                url: "/api/manifestregistry/getDescriptionWithLastVersion"
             }
          })
      ]);

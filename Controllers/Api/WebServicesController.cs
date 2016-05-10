@@ -1,14 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
 using System.Web.Http;
 using AutoMapper;
-using Data.Constants;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.States;
 using Hub.Interfaces;
 using StructureMap;
 using Hub.Services;

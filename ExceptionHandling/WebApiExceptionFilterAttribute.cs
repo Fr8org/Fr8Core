@@ -6,16 +6,13 @@ using System.Web;
 using System.Web.Http.Filters;
 using Newtonsoft.Json;
 using StructureMap;
-using Data.Interfaces.DataTransferObjects;
 using Hub.Exceptions;
 using Hub.Managers;
 using TerminalBase;
 using Utilities;
-using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using System.Collections.Generic;
-using System.Linq;
-using Data.Infrastructure;
+using Fr8Data.DataTransferObjects;
 using Utilities.Configuration.Azure;
 
 namespace HubWeb.ExceptionHandling

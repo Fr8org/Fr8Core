@@ -3,16 +3,13 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
-using Data.States;
-using System.Threading.Tasks;
-using Data.Helpers;
-using Hub.Helper;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Helpers;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using StructureMap;
 
 namespace Hub.Managers

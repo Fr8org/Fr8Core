@@ -1,16 +1,11 @@
-using System;
 using System.Collections.Generic;
-using System.Reflection;
 using System.Web.Http;
-using Newtonsoft.Json;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Hub.Services;
-using TerminalBase.BaseClasses;
 using Utilities.Configuration.Azure;
 using System.Web.Http.Description;
-using Data.Interfaces.Manifests;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace terminalQuickBooks.Controllers
 {

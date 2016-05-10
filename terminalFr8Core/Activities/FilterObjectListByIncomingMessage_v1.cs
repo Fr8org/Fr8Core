@@ -1,19 +1,19 @@
-﻿using Data.Control;
-using Data.Interfaces.Manifests;
-using System;
+﻿using System;
 using TerminalBase.BaseClasses;
 using System.Threading.Tasks;
 using Hub.Services;
 using System.Linq;
 using System.Collections.Generic;
-using Data.States;
-using Data.Constants;
-using Data.Crates;
 using Data.Entities;
 using Hub.Managers;
 using Utilities;
-using Data.Helpers;
 using System.Globalization;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.Helpers;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace terminalFr8Core.Actions
 {

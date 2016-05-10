@@ -9,7 +9,7 @@ using Atlassian.Jira;
 using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using TerminalBase.Errors;
 using terminalAtlassian.Interfaces;
