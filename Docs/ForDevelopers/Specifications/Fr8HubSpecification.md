@@ -4,25 +4,33 @@
 
 ### ActivitiesController
 ----------------
-Path:	/activities/create
-Type:	POST
-Input Parameters:	
-Name	Type	Nullable	Default	Description
-actionTemplateId	Guid			id of the activity template of the activity instance that will be created
-label	string		null	Label that will be shown on the header
-order	int	true	null	Hierarchical order of the activity according to parent-children relation
-parentNodeId	Guid	true	null	If it is a child activity, that is the parent activity id of the instance that will be created
-createPlan	boolean		false	Flag to create the plan for activity or not (true when creating solutions)
-authorizationTokenId	Guid	true	null	 To get authorization tokens for the outside systems such as slack, docusign etc..
-Return Values	PlanDTO or ActivityDTO
-Description	Creates an instance of activity from activityTemplates, and provides necessary authorization to use them.
-Path:	/activities/create
-Type:	POST
-Input Parameters:	
-Name	Type	Nullable	Default	Description
-solutionName	string			Name of the solution template of the solution that will be created
-Return Values	PlanDTO
-Description	 Creates an instance of solution from solutionTemplates, and configures it.
+#### **Path:**	*/activities/create*  
+**Type:**	POST  
+**Input Parameters:**  	  
+
+Name |	Type |	Nullable	| Default |	Description   
+--- | --- | --- | --- | ---   
+actionTemplateId |	Guid	|  |  |		id of the activity template of the activity instance that will be created   
+label |	string |		null |  |	Label that will be shown on the header   
+order |	int |	true |	null |  |	Hierarchical order of the activity according to parent-children relation   
+parentNodeId |	Guid |	true |	null | If it is a child activity, that is the parent activity id of the instance that will be created   
+createPlan |	boolean	|	false	 | | Flag to create the plan for activity or not (true when creating solutions)   
+authorizationTokenId |	Guid |	true |	null |	 To get authorization tokens for the outside systems such as slack, docusign etc..  
+
+**Return Values:**	PlanDTO or ActivityDTO  
+**Description:**	Creates an instance of activity from activityTemplates, and provides necessary authorization to use them.  
+
+#### **Path:**	*/activities/create*  
+**Type:**	POST  
+**Input Parameters:	**
+
+Name |	Type |	Nullable	| Default |	Description   
+--- | --- | --- | --- | ---  
+solutionName	| string	| | |		Name of the solution template of the solution that will be created   
+
+**Return Values:**	PlanDTO    
+**Description:**	Creates an instance of solution from solutionTemplates, and configures it.  
+
 Path:	/activities/configure
 Type:	POST
 Input Parameters:	
