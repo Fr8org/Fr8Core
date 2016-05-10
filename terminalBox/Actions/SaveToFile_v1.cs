@@ -1,12 +1,13 @@
-﻿using System;
-using System.Globalization;
-using System.IO;
+﻿using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml.Packaging;
+using DocumentFormat.OpenXml.Spreadsheet;
 using Newtonsoft.Json;
 using terminalBox.Infrastructure;
 using TerminalBase.BaseClasses;
@@ -30,11 +31,11 @@ namespace terminalBox.Actions
                 });*/
 
                 Controls.Add(Filename = new TextBox()
-                { Name = "Filename", Label = "Enter the file name: "});
+                { Name = "Filename", Label = "Enter the file name: " });
             }
         }
 
-        public SaveToFile_v1() 
+        public SaveToFile_v1()
             : base(true)
         {
         }
@@ -53,7 +54,7 @@ namespace terminalBox.Actions
 
         protected override async Task Initialize(CrateSignaller crateSignaller)
         {
-           //await FillAvailableFolders();
+            //await FillAvailableFolders();
         }
 
         protected override async Task Configure(CrateSignaller crateSignaller)
@@ -65,7 +66,7 @@ namespace terminalBox.Actions
         {
             var token = JsonConvert.DeserializeObject<BoxAuthTokenDO>(AuthorizationToken.Token);
             var desiredCrateDescription = ConfigurationControls.FileChooser.CrateDescriptions.Single(x => x.Selected);
-            var tableCrate =  CurrentPayloadStorage.CratesOfType<StandardTableDataCM>().FirstOrDefault(x => x.Label == desiredCrateDescription.Label && x.ManifestType.Type == desiredCrateDescription.ManifestType);
+            var tableCrate = CurrentPayloadStorage.CratesOfType<StandardTableDataCM>().FirstOrDefault(x => x.Label == desiredCrateDescription.Label && x.ManifestType.Type == desiredCrateDescription.ManifestType);
 
             if (tableCrate == null)
             {
@@ -73,42 +74,17 @@ namespace terminalBox.Actions
                 return;
             }
             var fileName = ConfigurationControls.Filename.Value;
-
-            //if (!int.TryParse(tableCrate.Content.Filename, NumberStyles.Any, CultureInfo.InvariantCulture, out fileId))
-            //{
-            //    Error($"Corrupted file info in crate {desiredCrateDescription.Label}");
-            //    return;
-            //}
-
-            //var stream = await HubCommunicator.DownloadFile(fileId, CurrentFr8UserId);
-            //var mem = new MemoryStream();
-
-            //stream.CopyTo(mem);
-
-            //string fileName = ConfigurationControls.Filename.Value;
-
-            //if (string.IsNullOrWhiteSpace(fileName))
-            //{
-            //    if (string.IsNullOrWhiteSpace(tableCrate.Content.TextRepresentation))
-            //    {
-            //        fileName = Guid.NewGuid().ToString("N");
-            //    }
-            //    else
-            //    {
-            //        fileName = tableCrate.Content.TextRepresentation;
-            //    }
-            //}
-            //var extSeparator = fileName.LastIndexOf('.');
-
-            //if (extSeparator < 0 && !string.IsNullOrWhiteSpace(tableCrate.Content.Filetype))
-            //{
-            //    fileName = fileName + tableCrate.Content.Filetype;
-            //}
             var service = new BoxService(token);
-            var fileId = service.SaveFile(fileName, new MemoryStream()).Result;
-            var downloadLink = service.GetFileLink(fileId);
-
-
+            string fileId;
+            using (var stream = new MemoryStream())
+            {
+                CreateSpreadsheetWorkbook(stream);
+                // Need to reset stream before saving it to box to prevent errors
+                stream.Seek(0, SeekOrigin.Begin);
+                fileId = service.SaveFile(fileName + ".xlsx", stream).Result;
+            }
+            var downloadLink = service.GetFileLink(fileId).Result;
+            
             await HubCommunicator.NotifyUser(new TerminalNotificationDTO
             {
                 Type = "Success",
@@ -119,6 +95,40 @@ namespace terminalBox.Actions
                 Message = "File was upload to Box. You can download it using this url: " + downloadLink,
                 Subject = "File download URL"
             }, CurrentFr8UserId);
+        }
+
+        public void CreateSpreadsheetWorkbook(MemoryStream stream)
+        {
+            // Create a spreadsheet document 
+            // By default, AutoSave = true, Editable = true, and Type = xlsx.
+            SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Create(stream,
+                SpreadsheetDocumentType.Workbook);
+
+            // Add a WorkbookPart to the document.
+            WorkbookPart workbookpart = spreadsheetDocument.AddWorkbookPart();
+            workbookpart.Workbook = new Workbook();
+
+            // Add a WorksheetPart to the WorkbookPart.
+            WorksheetPart worksheetPart = workbookpart.AddNewPart<WorksheetPart>();
+            worksheetPart.Worksheet = new Worksheet(new SheetData());
+
+            // Add Sheets to the Workbook.
+            Sheets sheets = spreadsheetDocument.WorkbookPart.Workbook.
+                AppendChild<Sheets>(new Sheets());
+
+            // Append a new worksheet and associate it with the workbook.
+            Sheet sheet = new Sheet()
+            {
+                Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(worksheetPart),
+                SheetId = 1,
+                Name = "mySheet"
+            };
+            sheets.Append(sheet);
+
+            workbookpart.Workbook.Save();
+
+            // Close the document.
+            spreadsheetDocument.Close();
         }
     }
 }

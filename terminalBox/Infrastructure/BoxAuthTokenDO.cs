@@ -14,8 +14,6 @@ namespace terminalBox.Infrastructure
                 throw new ArgumentNullException(nameof(accessToken));
             if (refreshToken == null)
                 throw new ArgumentNullException(nameof(refreshToken));
-            if (expiresAt == default(DateTime))
-                throw new ArgumentException(nameof(expiresAt));
 
             AccessToken = accessToken;
             RefreshToken = refreshToken;

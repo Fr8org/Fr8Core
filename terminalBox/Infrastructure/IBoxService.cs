@@ -13,19 +13,23 @@ namespace terminalBox.Infrastructure
         Task<ReadOnlyDictionary<string, string>> GetFolderNames();
 
         /// <summary>
-        /// Saves file into box storage
+        /// Saves file into box storage.
         /// </summary>
         /// <param name="fileName">Name of the file to save</param>
         /// <param name="content">File content</param>
         Task<string> SaveFile(string fileName, Stream content);
 
         /// <summary>
-        /// Returns file download link
+        /// Returns file download link.
         /// </summary>
         /// <param name="id">Id of the file to download</param>
         /// <returns></returns>
         Task<string> GetFileLink(string id);
 
+        /// <summary>
+        /// Returns current user login.
+        /// </summary>
+        /// <returns></returns>
         Task<string> GetCurrentUserLogin();
     }
 }

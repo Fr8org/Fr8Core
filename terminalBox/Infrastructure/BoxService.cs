@@ -29,6 +29,14 @@ namespace terminalBox.Infrastructure
 
         public async Task<string> SaveFile(string fileName, Stream content)
         {
+            var items = _boxClient.FoldersManager.GetFolderItemsAsync("0", 500).Result.Entries;
+            BoxFile resultFile;
+
+            if (items.Any(x => x.Name == fileName))
+            {
+                resultFile = _boxClient.FilesManager.UploadNewVersionAsync(fileName, items.First(x => x.Name == fileName).Id, content).Result;
+                return resultFile.Id;
+            }
             var request = new BoxFileRequest
             {
                 Name = fileName,
@@ -36,21 +44,13 @@ namespace terminalBox.Infrastructure
                 Type = BoxType.file,
                 Parent = new BoxRequestEntity { Id = "0" }
             };
-            var items = await _boxClient.FoldersManager.GetFolderItemsAsync("0", 500);
-            BoxFile resultFile;
-            
-            if (items.Entries.Any(x => x.Name == fileName))
-            {
-                resultFile = await _boxClient.FilesManager.UploadNewVersionAsync(fileName, items.Entries.First(x => x.Name == fileName).Id, content);
-                return resultFile.Id;
-            }
-            resultFile = await _boxClient.FilesManager.UploadAsync(request, content);
+            resultFile = _boxClient.FilesManager.UploadAsync(request, content).Result;
             return resultFile.Id;
         }
 
         public async Task<string> GetFileLink(string id)
         {
-            return (await _boxClient.FilesManager.GetDownloadUriAsync(id)).AbsoluteUri;
+            return _boxClient.FilesManager.GetDownloadUriAsync(id).Result.AbsoluteUri;
         }
 
         public async Task<string> GetCurrentUserLogin()
