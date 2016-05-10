@@ -1,6 +1,7 @@
 ﻿using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using ClosedXML.Excel;
 using Data.Control;
 using Data.Crates;
 using Data.Interfaces.DataTransferObjects;
@@ -78,8 +79,8 @@ namespace terminalBox.Actions
             string fileId;
             using (var stream = new MemoryStream())
             {
-                CreateSpreadsheetWorkbook(stream);
-                // Need to reset stream before saving it to box to prevent errors
+                CreateSpreadsheetWorkbook(stream, tableCrate);
+                // Need to reset stream before saving it to box.
                 stream.Seek(0, SeekOrigin.Begin);
                 fileId = service.SaveFile(fileName + ".xlsx", stream).Result;
             }
@@ -97,38 +98,14 @@ namespace terminalBox.Actions
             }, CurrentFr8UserId);
         }
 
-        public void CreateSpreadsheetWorkbook(MemoryStream stream)
+        public void CreateSpreadsheetWorkbook(MemoryStream stream, Crate<StandardTableDataCM> tableCrate)
         {
             // Create a spreadsheet document 
             // By default, AutoSave = true, Editable = true, and Type = xlsx.
-            SpreadsheetDocument spreadsheetDocument = SpreadsheetDocument.Create(stream,
-                SpreadsheetDocumentType.Workbook);
-
-            // Add a WorkbookPart to the document.
-            WorkbookPart workbookpart = spreadsheetDocument.AddWorkbookPart();
-            workbookpart.Workbook = new Workbook();
-
-            // Add a WorksheetPart to the WorkbookPart.
-            WorksheetPart worksheetPart = workbookpart.AddNewPart<WorksheetPart>();
-            worksheetPart.Worksheet = new Worksheet(new SheetData());
-
-            // Add Sheets to the Workbook.
-            Sheets sheets = spreadsheetDocument.WorkbookPart.Workbook.
-                AppendChild<Sheets>(new Sheets());
-
-            // Append a new worksheet and associate it with the workbook.
-            Sheet sheet = new Sheet()
-            {
-                Id = spreadsheetDocument.WorkbookPart.GetIdOfPart(worksheetPart),
-                SheetId = 1,
-                Name = "mySheet"
-            };
-            sheets.Append(sheet);
-
-            workbookpart.Workbook.Save();
-
-            // Close the document.
-            spreadsheetDocument.Close();
+            var workbook = new XLWorkbook();
+            var worksheet = workbook.Worksheets.Add("Sample Sheet");
+            worksheet.Cell("A1").Value = "Hello World!";
+            workbook.SaveAs(stream);
         }
     }
 }

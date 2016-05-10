@@ -16,7 +16,12 @@ namespace terminalBox.Infrastructure
         public BoxService(BoxAuthTokenDO authToken)
         {
             var config = new BoxConfig(BoxHelpers.ClientId, BoxHelpers.Secret, new Uri(BoxHelpers.RedirectUri));
-            Box.V2.Auth.OAuthSession session = new Box.V2.Auth.OAuthSession(authToken.AccessToken, authToken.RefreshToken, (authToken.ExpiresAt - DateTime.UtcNow).Seconds, "bearer");
+            var expiresIn = (int)(authToken.ExpiresAt - DateTime.UtcNow).TotalSeconds;
+            if (expiresIn <= 0)
+            {
+                
+            }
+            Box.V2.Auth.OAuthSession session = new Box.V2.Auth.OAuthSession(authToken.AccessToken, authToken.RefreshToken, expiresIn, "bearer");
             _boxClient = new BoxClient(config, session);
         }
 
