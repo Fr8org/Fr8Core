@@ -2,23 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Net;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
 using AutoMapper.Internal;
-using Microsoft.AspNet.Identity.EntityFramework;
-using StructureMap;
 using Data.Entities;
-using Data.Infrastructure.Security;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
 using Fr8Data.DataTransferObjects;
 using Hub.Managers;
 using Hub.Services;
-using HubWeb.ViewModels;
+using Microsoft.AspNet.Identity.EntityFramework;
+using StructureMap;
 using Utilities;
 
 namespace HubWeb.Controllers
@@ -189,7 +184,7 @@ namespace HubWeb.Controllers
 
         public static string GetCallbackUrl(string providerName)
         {
-            return GetCallbackUrl(providerName, Utilities.Server.ServerUrl);
+            return GetCallbackUrl(providerName, Server.ServerUrl);
         }
 
         public static string GetCallbackUrl(string providerName, string serverUrl)

@@ -8,6 +8,7 @@ using Data.Repositories.Security.Entities;
 using Data.Repositories.SqlBased;
 using Data.States;
 using Data.States.Templates;
+using Fr8Data.DataTransferObjects;
 
 namespace Data.Repositories.Security.StorageImpl.SqlBased
 {

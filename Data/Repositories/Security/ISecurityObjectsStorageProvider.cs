@@ -5,6 +5,7 @@ using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Repositories.Security.Entities;
 using Data.States;
+using Fr8Data.DataTransferObjects;
 
 namespace Data.Repositories.Security
 {

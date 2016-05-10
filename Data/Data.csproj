@@ -269,7 +269,6 @@
     <Compile Include="Interfaces\IAspNetUserClaimDO.cs" />
     <Compile Include="Interfaces\IFileRepository.cs" />
     <Compile Include="Interfaces\ITrackingChangesRepository.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ProfileDTO.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.Designer.cs">
       <DependentUpon>201510120408332_InitialMigration.cs</DependentUpon>
@@ -623,13 +622,9 @@
     <Compile Include="Migrations\201605091247127_Plan_Templates.Designer.cs">
       <DependentUpon>201605091247127_Plan_Templates.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201605081024545_Move_Profile_To_Fr8Account.cs" />
-    <Compile Include="Migrations\201605081024545_Move_Profile_To_Fr8Account.Designer.cs">
-      <DependentUpon>201605081024545_Move_Profile_To_Fr8Account.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Migrations\201605081649590_Add_Protected_Flag_to_Profile.cs" />
-    <Compile Include="Migrations\201605081649590_Add_Protected_Flag_to_Profile.Designer.cs">
-      <DependentUpon>201605081649590_Add_Protected_Flag_to_Profile.cs</DependentUpon>
+    <Compile Include="Migrations\201605102018494_Move_Profile_To_Fr8Account.cs" />
+    <Compile Include="Migrations\201605102018494_Move_Profile_To_Fr8Account.Designer.cs">
+      <DependentUpon>201605102018494_Move_Profile_To_Fr8Account.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -1198,11 +1193,8 @@
     <EmbeddedResource Include="Migrations\201605091247127_Plan_Templates.resx">
       <DependentUpon>201605091247127_Plan_Templates.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201605081024545_Move_Profile_To_Fr8Account.resx">
-      <DependentUpon>201605081024545_Move_Profile_To_Fr8Account.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201605081649590_Add_Protected_Flag_to_Profile.resx">
-      <DependentUpon>201605081649590_Add_Protected_Flag_to_Profile.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201605102018494_Move_Profile_To_Fr8Account.resx">
+      <DependentUpon>201605102018494_Move_Profile_To_Fr8Account.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

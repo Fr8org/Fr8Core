@@ -1,7 +1,6 @@
-﻿using System;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 
-namespace Data.Interfaces.DataTransferObjects
+namespace Fr8Data.DataTransferObjects
 {
     public class ProfileDTO
     { 

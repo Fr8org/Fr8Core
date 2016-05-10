@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class Add_Protected_Flag_to_Profile : IMigrationMetadata
+    public sealed partial class Move_Profile_To_Fr8Account : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(Add_Protected_Flag_to_Profile));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Move_Profile_To_Fr8Account));
         
         string IMigrationMetadata.Id
         {
-            get { return "201605081649590_Add_Protected_Flag_to_Profile"; }
+            get { return "201605102018494_Move_Profile_To_Fr8Account"; }
         }
         
         string IMigrationMetadata.Source

@@ -10,6 +10,7 @@ using Data.Repositories.MultiTenant;
 using Data.Repositories.Security.Entities;
 using Data.Repositories.SqlBased;
 using Data.States;
+using Fr8Data.DataTransferObjects;
 using StructureMap;
 
 namespace Data.Repositories.Security.StorageImpl
