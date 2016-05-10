@@ -614,6 +614,10 @@
     <Compile Include="Migrations\201605061523484_UpdateMTDatabaseWithNewCLRTypes.Designer.cs">
       <DependentUpon>201605061523484_UpdateMTDatabaseWithNewCLRTypes.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201605092037130_AddExternalAccountAndDomainNameToAuthToken.cs" />
+    <Compile Include="Migrations\201605092037130_AddExternalAccountAndDomainNameToAuthToken.Designer.cs">
+      <DependentUpon>201605092037130_AddExternalAccountAndDomainNameToAuthToken.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201605091247127_Plan_Templates.cs" />
     <Compile Include="Migrations\201605091247127_Plan_Templates.Designer.cs">
       <DependentUpon>201605091247127_Plan_Templates.cs</DependentUpon>
@@ -1177,6 +1181,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201605061523484_UpdateMTDatabaseWithNewCLRTypes.resx">
       <DependentUpon>201605061523484_UpdateMTDatabaseWithNewCLRTypes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605092037130_AddExternalAccountAndDomainNameToAuthToken.resx">
+      <DependentUpon>201605092037130_AddExternalAccountAndDomainNameToAuthToken.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201605091247127_Plan_Templates.resx">
       <DependentUpon>201605091247127_Plan_Templates.cs</DependentUpon>

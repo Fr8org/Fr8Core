@@ -141,7 +141,6 @@ namespace Data.Infrastructure
             }
 
             FixForeignKeyIDs(adds);
-
             foreach (var createdEntity in createdEntityList)
             {
                 createdEntity.Entity.BeforeCreate();
