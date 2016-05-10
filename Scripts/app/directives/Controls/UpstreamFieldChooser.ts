@@ -52,10 +52,10 @@ module dockyard.directives.upstreamDataChooser {
             var getUpstreamFields = () => {
                 UpstreamExtractor
                     .getAvailableData($scope.currentAction.id, 'NotSet')
-                    .then((data: any) => {
+                    .then((data: dockyard.model.IncomingCratesDTO) => {
                         var listItems: Array<model.DropDownListItem> = [];
 
-                        angular.forEach(<Array<any>>data.incomingFields, it => {
+                        angular.forEach(data.incomingFields, it => {
                             var i, j;
                             var found = false;
                             for (i = 0; i < listItems.length; ++i) {
