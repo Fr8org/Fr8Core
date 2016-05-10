@@ -69,8 +69,6 @@ namespace terminalDocuSignTests.Integration
                 updater.Add(controlsCrate);
             }
 
-            Assert.True(false);
-
             _solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "activities/configure?id=" + _solution.Id, _solution);
             _crateStorage = Crate.FromDto(_solution.CrateStorage);
             Assert.AreEqual(2, _solution.ChildrenActivities.Count(), "Solution child activities failed to create.");
