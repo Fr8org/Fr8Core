@@ -25,7 +25,6 @@ namespace terminalDocuSignTests.Integration
 
         ActivityDTO _solution;
         ICrateStorage _crateStorage;
-        error;
 
         [Test]
         public async Task Extract_Data_From_Envelopes_EndToEnd()
@@ -69,6 +68,8 @@ namespace terminalDocuSignTests.Integration
                 updater.Remove<StandardConfigurationControlsCM>();
                 updater.Add(controlsCrate);
             }
+
+            Assert.True(false);
 
             _solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "activities/configure?id=" + _solution.Id, _solution);
             _crateStorage = Crate.FromDto(_solution.CrateStorage);
