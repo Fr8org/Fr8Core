@@ -2,6 +2,7 @@
 using Data.Repositories;
 using Data.Repositories.Plan;
 using StructureMap;
+using Data.Repositories.PlanDescriptions;
 
 namespace Data.Interfaces
 {
@@ -48,13 +49,18 @@ namespace Data.Interfaces
         //ActivityRepository ActivityRepository { get; }
         ActivityTemplateRepository ActivityTemplateRepository { get; }
     
+        IActivityDescriptionRepository ActivityDescriptionRepository { get; }
+        INodeTransitionRepository NodeTransitionRepository { get; }
+        IPlanTemplateRepository PlanTemplateRepository { get; }
+        IPlanNodeDescriptionsRepository PlanNodeDescriptionsRepository { get; }
+
         ICriteriaRepository CriteriaRepository { get; }
 
         IFileRepository FileRepository { get; }
         IProfileRepository ProfileRepository { get; }
         IPermissionSetRepository PermissionSetRepository { get; }
 
-
+        
         IPlanRepository PlanRepository { get; }
         IMultiTenantObjectRepository MultiTenantObjectRepository { get; }
 

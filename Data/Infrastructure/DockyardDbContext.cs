@@ -353,8 +353,8 @@ namespace Data.Infrastructure
 
             modelBuilder.Entity<CriteriaDO>().ToTable("Criteria");
             modelBuilder.Entity<FileDO>().ToTable("Files");
-            
-            
+
+
             modelBuilder.Entity<AuthorizationTokenDO>()
              .HasRequired(x => x.Terminal)
              .WithMany()
@@ -375,10 +375,15 @@ namespace Data.Infrastructure
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<OrganizationDO>().ToTable("Organizations")
-                .HasMany(x=>x.Fr8Accounts)
-                .WithOptional(x=>x.Organization)
-                .HasForeignKey(x=>x.OrganizationId)
+                .HasMany(x => x.Fr8Accounts)
+                .WithOptional(x => x.Organization)
+                .HasForeignKey(x => x.OrganizationId)
                 .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<ActivityDescriptionDO>().ToTable("ActivityDescriptions");
+            modelBuilder.Entity<NodeTransitionDO>().ToTable("NodeTransitions");
+            modelBuilder.Entity<PlanNodeDescriptionDO>().ToTable("PlanNodeDescriptions");
+            modelBuilder.Entity<PlanTemplateDO>().ToTable("PlanTemplates");
 
             base.OnModelCreating(modelBuilder);
         }

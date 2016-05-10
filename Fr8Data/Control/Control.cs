@@ -463,7 +463,7 @@ namespace Fr8Data.Control
                     return null;
             }
         }
-            }
+    }
 
     public class Button : ControlDefinitionDTO
     {
