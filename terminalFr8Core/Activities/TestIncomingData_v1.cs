@@ -6,6 +6,7 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Razor.Generator;
 using AutoMapper;
+using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Newtonsoft.Json;
@@ -394,6 +395,37 @@ namespace terminalFr8Core.Actions
                 return ConfigurationRequestType.Initial;
             }
         }
+
+        protected async Task<Crate> ValidateFields(List<FieldValidationDTO> requiredFieldList)
+        {
+            var result = await HubCommunicator.ValidateFields(requiredFieldList, CurrentFr8UserId);
+
+            var validationErrorList = new List<FieldDTO>();
+            //lets create necessary validationError crates
+            for (var i = 0; i < result.Count; i++)
+            {
+                var fieldCheckResult = result[i];
+                if (fieldCheckResult == FieldValidationResult.NotExists)
+                {
+                    validationErrorList.Add(new FieldDTO() { Key = requiredFieldList[i].FieldName, Value = "Required" });
+                }
+            }
+
+            if (validationErrorList.Any())
+            {
+                return CrateManager.CreateDesignTimeFieldsCrate("Validation Errors", validationErrorList.ToArray());
+            }
+
+            return null;
+        }
+
+        protected async Task<CrateDTO> ValidateByStandartDesignTimeFields(ActivityDO curActivityDO, FieldDescriptionsCM designTimeFields)
+        {
+            var fields = designTimeFields.Fields;
+            var validationList = fields.Select(f => new FieldValidationDTO(curActivityDO.Id, f.Key)).ToList();
+            return CrateManager.ToDto(await ValidateFields(validationList));
+        }
+
 
         protected async Task<CrateDTO> ValidateActivity(ActivityDO curActivityDO)
         {

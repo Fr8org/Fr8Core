@@ -257,6 +257,7 @@ namespace HubWeb.Controllers
             return Ok("This is no longer used due to V2 Event Handling mechanism changes.");
         }
 
+        // Not sure if this metod is actually in use
         [HttpPost]
         [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
         [Fr8HubWebHMACAuthenticate]
@@ -269,9 +270,9 @@ namespace HubWeb.Controllers
                 var activateDTO = await _plan.Activate(planId, planBuilderActivate);
 
                 //check if the response contains any error message and show it to the user 
-                if (activateDTO != null && !string.IsNullOrEmpty(activateDTO.ErrorMessage))
+                if (activateDTO.ValidationErrors.Count > 0)
                 {
-                    _pusherNotifier.NotifyUser(activateDTO.ErrorMessage, 
+                    _pusherNotifier.NotifyUser("Plan has validation errors", 
                         NotificationChannel.GenericFailure, 
                         User.Identity.Name);
                 }
@@ -333,38 +334,17 @@ namespace HubWeb.Controllers
         [HttpPost]
         public async Task<IHttpActionResult> Run(Guid planId, [FromBody]PayloadVM model, Guid? containerId = null)
         {
-            string currentPlanType = string.Empty;
+            string currentPlanType;
 
-            //ACTIVATE - activate route if its inactive
+            var activateDTO = await _plan.Activate(planId, false);
 
-            bool inActive = false;
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            if (activateDTO.ValidationErrors.Count > 0)
             {
-                var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
-
-                if (planDO.PlanState == PlanState.Inactive)
+                return Ok(new ContainerDTO
                 {
-                    inActive = true;
-                }
-            }
-
-            if (inActive)
-            {
-                var activateDTO = await _plan.Activate(planId, false);
-
-                if (activateDTO != null && activateDTO.Status == "validation_error")
-                {
-                    //this container holds wrapped inside the ErrorDTO
-                    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                    {
-                        var routeDO = uow.PlanRepository.GetById<PlanDO>(planId);
-                        activateDTO.Container.CurrentPlanType = routeDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
-                    }
-
-                    return Ok(activateDTO.Container);
-                }
-
+                    PlanId = planId,
+                    ValidationErrors = activateDTO.ValidationErrors
+                });
             }
 
             //RUN
@@ -387,7 +367,7 @@ namespace HubWeb.Controllers
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
                         var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
-                        currentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing.ToString() : Data.Constants.PlanType.RunOnce.ToString();
+                        currentPlanType = planDO.IsMonitoringPlan() ? Data.Constants.PlanType.Ongoing.ToString() : Data.Constants.PlanType.RunOnce.ToString();
                     }
                     return BadRequest(currentPlanType);
                 }
@@ -418,6 +398,16 @@ namespace HubWeb.Controllers
 
                         if (containerId == null)
                         {
+                            // There is no sense to run monitoring plans explicitly
+                            // Just return empty container
+                            if (planDO.IsMonitoringPlan())
+                            {
+                                return Ok(new ContainerDTO
+                                {
+                                    PlanId = planId
+                                });
+                            }
+
                             container = await _plan.Run(planDO, curPayload);
                             _pusherNotifier.NotifyUser( $"Launching a new Container for Plan \"{planDO.Name}\"",
                                 NotificationChannel.GenericSuccess,
@@ -430,12 +420,7 @@ namespace HubWeb.Controllers
                                 NotificationChannel.GenericSuccess, 
                                 User.Identity.Name);
                         }
-
-                        if (!planDO.IsOngoingPlan())
-                        {
-                            await _plan.Deactivate(planId);
-                        }
-
+                        
                         var response = _crate.GetContentType<OperationalStateCM>(container.CrateStorage);
                         var responseMsg = GetResponseMessage(response);
 
@@ -445,14 +430,14 @@ namespace HubWeb.Controllers
                         EventManager.ContainerLaunched(container);
 
                         var containerDTO = Mapper.Map<ContainerDTO>(container);
-                        containerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
+                        containerDTO.CurrentPlanType = planDO.IsMonitoringPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
 
                         EventManager.ContainerExecutionCompleted(container);
 
                         return Ok(containerDTO);
                     }
 
-                    currentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing.ToString() : Data.Constants.PlanType.RunOnce.ToString();
+                    currentPlanType = planDO.IsMonitoringPlan() ? Data.Constants.PlanType.Ongoing.ToString() : Data.Constants.PlanType.RunOnce.ToString();
                     return BadRequest(currentPlanType);
                 }
                 catch (InvalidTokenRuntimeException exception)
@@ -460,7 +445,7 @@ namespace HubWeb.Controllers
                     //this response contains details about the error that happened on some terminal and need to be shown to client
                     if (exception.ContainerDTO != null)
                     {
-                        exception.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
+                        exception.ContainerDTO.CurrentPlanType = planDO.IsMonitoringPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
                     }
                     // Do not notify -- it happens in Plan.cs
                     throw;
@@ -470,7 +455,7 @@ namespace HubWeb.Controllers
                     //this response contains details about the error that happened on some terminal and need to be shown to client
                     if (exception.ContainerDTO != null)
                     {
-                        exception.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
+                        exception.ContainerDTO.CurrentPlanType = planDO.IsMonitoringPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
                     }
 
                     NotifyWithErrorMessage(exception, planDO, User.Identity.Name, exception.ErrorMessage);
@@ -482,13 +467,6 @@ namespace HubWeb.Controllers
                     var errorMessage = "An internal error has occured. Please, contact the administrator.";
                     NotifyWithErrorMessage(e, planDO, User.Identity.Name, errorMessage);
                     throw;
-                }
-                finally
-                {
-                    if (!planDO.IsOngoingPlan())
-                    {
-                        await _plan.Deactivate(planId);
-                    }
                 }
             }
         }
@@ -528,39 +506,21 @@ namespace HubWeb.Controllers
         public async Task<IHttpActionResult> RunWithPayload(Guid planId, [FromBody]List<CrateDTO> payload)
         {
             string currentPlanType = string.Empty;
-
-            //ACTIVATE - activate route if its inactive
-
-            bool inActive = false;
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
-
-                if (planDO.PlanState == PlanState.Inactive)
-                    inActive = true;
-            }
-
             string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
 
-            if (inActive)
+            var activateDTO = await _plan.Activate(planId, false);
+
+            if (activateDTO.ValidationErrors.Count > 0)
             {
-                var activateDTO = await _plan.Activate(planId, false);
-
-                if (activateDTO != null && activateDTO.Status == "validation_error")
+                return Ok(new ContainerDTO
                 {
-                    //this container holds wrapped inside the ErrorDTO
-                    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                    {
-                        var routeDO = uow.PlanRepository.GetById<PlanDO>(planId);
-                        activateDTO.Container.CurrentPlanType = routeDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
-                    }
-
-                    return Ok(activateDTO.Container);
-                }
-
+                    PlanId = planId,
+                    ValidationErrors = activateDTO.ValidationErrors
+                });
             }
 
             //RUN
+          
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -569,17 +529,23 @@ namespace HubWeb.Controllers
                 {
                     if (planDO != null)
                     {
+                        // There is no sense to run monitoring plans explicitly
+                        // Just return empty container
+                        if (planDO.IsMonitoringPlan())
+                        {
+                            return Ok(new ContainerDTO
+                            {
+                                PlanId = planId
+                            });
+                        }
+
                         _pusherNotifier.NotifyUser($"Launching a new Container for Plan \"{planDO.Name}\"", 
                             NotificationChannel.GenericSuccess,
                             User.Identity.Name);
 
                         var crates = payload.Select(c => _crate.FromDto(c)).ToArray();
                         var containerDO = await _plan.Run(uow, planDO, crates);
-                        if (!planDO.IsOngoingPlan())
-                        {
-                            await _plan.Deactivate(planId);
-                        }
-
+                     
                         var response = _crate.GetContentType<OperationalStateCM>(containerDO.CrateStorage);
 
                         var responseMsg = "";
@@ -598,21 +564,21 @@ namespace HubWeb.Controllers
                         EventManager.ContainerLaunched(containerDO);
 
                         var containerDTO = Mapper.Map<ContainerDTO>(containerDO);
-                        containerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
+                        containerDTO.CurrentPlanType = planDO.IsMonitoringPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
 
                         EventManager.ContainerExecutionCompleted(containerDO);
 
                         return Ok(containerDTO);
                     }
 
-                    currentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing.ToString() : Data.Constants.PlanType.RunOnce.ToString();
+                    currentPlanType = planDO.IsMonitoringPlan() ? Data.Constants.PlanType.Ongoing.ToString() : Data.Constants.PlanType.RunOnce.ToString();
                     return BadRequest(currentPlanType);
                 }
                 catch (ActivityExecutionException exception)
                 {
                     if (exception.ContainerDTO != null)
                     {
-                        exception.ContainerDTO.CurrentPlanType = planDO.IsOngoingPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
+                        exception.ContainerDTO.CurrentPlanType = planDO.IsMonitoringPlan() ? Data.Constants.PlanType.Ongoing : Data.Constants.PlanType.RunOnce;
                     }
 
                     NotifyWithErrorMessage(exception, planDO, pusherChannel, exception.ErrorMessage);
@@ -623,13 +589,6 @@ namespace HubWeb.Controllers
                     var errorMessage = "An internal error has occurred. Please, contact the administrator.";
                     NotifyWithErrorMessage(ex, planDO, pusherChannel, errorMessage);
                     throw;
-                }
-                finally
-                {
-                    if (!planDO.IsOngoingPlan())
-                    {
-                        await _plan.Deactivate(planId);
-                    }
                 }
             }
         }

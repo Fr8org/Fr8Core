@@ -39,7 +39,7 @@ namespace terminalSalesforce.Services
                     Manufacturer = "Salesforce",
                 };
 
-                return Task.FromResult(Crate.FromContent("Standard Event Report", eventReportContent));
+                return Task.FromResult((Crate)Crate.FromContent("Standard Event Report", eventReportContent));
             }
             catch (Exception e)
             {

@@ -166,32 +166,29 @@ namespace terminalDocuSign.Actions
             return curActivityDO;
         }
 
-        protected internal override ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
+        public override Task ValidateActivity(ActivityDO curActivityDO, ICrateStorage crateStorage, ValidationManager validationManager)
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            var configControls = GetConfigurationControls(crateStorage);
+            if (configControls == null)
             {
-                var configControls = GetConfigurationControls(crateStorage);
-                if (configControls == null)
-                {
-                    return new ValidationResult(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
-                }
-                var templateList = configControls.Controls.OfType<DropDownList>().Where(a => a.Name == "target_docusign_template").FirstOrDefault();
-                var documentsList = configControls.Controls.OfType<DropDownList>().Where(a => a.Name == "document_Override_DDLB").FirstOrDefault();
-                if (!DocuSignValidationUtils.AtLeastOneItemExists(templateList))
-                {
-                    return new ValidationResult(DocuSignValidationUtils.NoTemplateExistsErrorMessage);
-                }
-                if (!DocuSignValidationUtils.ItemIsSelected(templateList))
-                {
-                    return new ValidationResult(DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage);
-                }
-                if (!DocuSignValidationUtils.ItemIsSelected(documentsList))
-                {
-                    return new ValidationResult(DocuSignValidationUtils.DocumentIsNotValidErrorMessage);
-                }
-                return ValidationResult.Success;
+                validationManager.SetError(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
+                return Task.FromResult(0);
             }
-        }
 
+            var templateList = configControls.Controls.OfType<DropDownList>().FirstOrDefault(a => a.Name == "target_docusign_template");
+            var documentsList = configControls.Controls.OfType<DropDownList>().FirstOrDefault(a => a.Name == "document_Override_DDLB");
+
+            if (templateList != null)
+            {
+                validationManager.ValidateTemplateList(templateList);
+            }
+
+            if (!DocuSignValidationUtils.ItemIsSelected(documentsList))
+            {
+                validationManager.SetError(DocuSignValidationUtils.DocumentIsNotValidErrorMessage, documentsList);
+            }
+
+            return Task.FromResult(0);
+        }
     }
 }

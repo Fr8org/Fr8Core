@@ -491,9 +491,10 @@ namespace Hub.Services
 
             await CallTerminalActivityAsync<ActivityDTO>(uow, "deactivate", curActivityDO, Guid.Empty);
 
-            if (((PlanDO) exisiting.RootPlanNode).PlanState == PlanState.Active)
+            var root = exisiting.GetTreeRoot() as PlanDO;
+            if (root?.PlanState == PlanState.Active)
             {
-                ((PlanDO) exisiting.RootPlanNode).PlanState = PlanState.Inactive;
+                root.PlanState = PlanState.Inactive;
             }
 
             exisiting.ActivationState = ActivationState.Deactivated;
@@ -578,13 +579,8 @@ namespace Hub.Services
 
         private void ReportActivityInvocationError(ActivityDO activity, string error, Action<string, string, string, string> reportingAction)
         {
-            JsonSerializerSettings settings = new JsonSerializerSettings
-            {
-                PreserveReferencesHandling = PreserveReferencesHandling.Objects
-            };
-
             var endpoint = _activityTemplate.GetTerminalUrl(activity.ActivityTemplateId) ?? "<no terminal url>";
-            EventManager.TerminalConfigureFailed(endpoint, JsonConvert.SerializeObject(Mapper.Map<ActivityDTO>(activity), settings), error, activity.Id.ToString());
+            EventManager.TerminalConfigureFailed(endpoint, null, error, activity.Id.ToString());
         }
 
 

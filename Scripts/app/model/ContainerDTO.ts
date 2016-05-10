@@ -4,14 +4,13 @@
         name: string;
         planId: number;
         state: number;
-        currentPlanNodeId: string;
-        nextRouteNodeId: string;
         lastUpdated: string;
         createDate: string;
         currentActivityResponse: ActivityResponse;
         currentPlanType: PlanType;
         currentClientActivityName: string;
         error: any;
+        validationErrors: { [activityId: string]: string};
     }
 
     export enum State {

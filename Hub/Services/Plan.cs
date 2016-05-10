@@ -200,14 +200,11 @@ namespace Hub.Services
             }
         }
 
-
         public async Task<ActivateActivitiesDTO> Activate(Guid curPlanId, bool planBuilderActivate)
         {
-            var result = new ActivateActivitiesDTO
-            {
-                Status = "no action",
-                ActivitiesCollections = new List<ActivityDTO>()
-            };
+            var result = new ActivateActivitiesDTO();
+           
+            List<Task<ActivityDTO>> activitiesTask = new List<Task<ActivityDTO>>();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -221,51 +218,31 @@ namespace Hub.Services
 
                 foreach (var curActionDO in plan.GetDescendants().OfType<ActivityDO>())
                 {
-                    try
+                    activitiesTask.Add(_activity.Activate(curActionDO));
+                }
+
+                await Task.WhenAll(activitiesTask);
+
+                foreach (var resultActivate in activitiesTask.Select(x => x.Result))
+                {
+                    var errors = new ValidationErrorsDTO(ExtractValidationErrors(resultActivate));
+
+                    if (errors.ValidationErrors.Count > 0)
                     {
-                        var resultActivate = await _activity.Activate(curActionDO);
-
-                        ContainerDTO errorContainerDTO;
-                        result.Status = "success";
-
-                        var validationErrorChecker = CheckForExistingValidationErrors(resultActivate, out errorContainerDTO);
-                        if (validationErrorChecker)
-                        {
-                            result.Status = "validation_error";
-                            result.Container = errorContainerDTO;
-                        }
-
-                        //if the activate call is comming from the Plan Builder just render again the action group with the errors
-                        if (planBuilderActivate)
-                        {
-                            result.ActivitiesCollections.Add(resultActivate);
-                        }
-                        else if (validationErrorChecker)
-                        {
-                            //if the activate call is comming from the Plans List then show the first error message and redirect to plan builder 
-                            //so the user could fix the configuration
-                            result.RedirectToPlanBuilder = true;
-
-                            return result;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new ApplicationException(string.Format("Process template activation failed for action {0}.", curActionDO.Label), ex);
+                        result.ValidationErrors[resultActivate.Id] = errors;
                     }
                 }
 
-
-                if (result.Status != "validation_error")
+                if (result.ValidationErrors.Count == 0)
                 {
                     plan.PlanState = PlanState.Active;
                     plan.LastUpdated = DateTimeOffset.UtcNow;
                     uow.SaveChanges();
-                    uow.PlanRepository.Reload<PlanDO>(plan.Id);
                 }
             }
 
             return result;
+
         }
 
         /// <summary>
@@ -274,37 +251,10 @@ namespace Hub.Services
         /// <param name="curActivityDTO"></param>
         /// <param name="containerDTO">Use containerDTO as a wrapper for the Error with proper ActivityResponse and error DTO</param>
         /// <returns></returns>
-        private bool CheckForExistingValidationErrors(ActivityDTO curActivityDTO, out ContainerDTO containerDTO)
+        public IEnumerable<ValidationResultDTO> ExtractValidationErrors (ActivityDTO curActivityDTO)
         {
-            containerDTO = new ContainerDTO();
-
             var crateStorage = _crate.GetStorage(curActivityDTO);
-
-            var configControls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().ToList();
-            //search for an error inside the config controls and return back if exists
-            foreach (var controlGroup in configControls)
-            {
-                var control = controlGroup.Controls.FirstOrDefault(x => !string.IsNullOrEmpty(x.ErrorMessage));
-                if (control != null)
-                {
-                    var containerDO = new ContainerDO() { CrateStorage = string.Empty, Name = string.Empty };
-
-                    using (var tempCrateStorage = _crate.UpdateStorage(() => containerDO.CrateStorage))
-                    {
-                        var operationalState = new OperationalStateCM();
-                        operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Error);
-                        operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(control.ErrorMessage, ErrorType.Generic, string.Empty, null, curActivityDTO.ActivityTemplate.Name, curActivityDTO.ActivityTemplate.Terminal.Label));
-
-                        var operationsCrate = Crate.FromContent("Operational Status", operationalState);
-                        tempCrateStorage.Add(operationsCrate);
-                    }
-
-                    containerDTO = Mapper.Map<ContainerDTO>(containerDO);
-                    return true;
-                }
-            }
-
-            return false;
+            return crateStorage.CrateContentsOfType<ValidationResultsCM>().SelectMany(x => x.ValidationErrors);
         }
 
         public async Task<string> Deactivate(Guid curPlanId)

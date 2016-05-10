@@ -7,6 +7,7 @@ using Data.Constants;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
+using Data.Interfaces;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Data.States;
@@ -15,6 +16,7 @@ using StructureMap;
 using terminalDocuSign.Services.New_Api;
 using TerminalBase.BaseClasses;
 using TerminalBase.Errors;
+using TerminalBase.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
@@ -146,23 +148,7 @@ namespace terminalDocuSign.Actions
         {
             return await base.Activate(curActivityDO, authTokenDO);
         }
-
-        protected override async Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
-        {
-            var result = ValidateActivityInternal(curActivityDO);
-            if (result == ValidationResult.Success)
-            {
-                return await Task.FromResult<ICrateStorage>(null);
-            }
-            return await Task.FromResult(new CrateStorage(Crate<FieldDescriptionsCM>.FromContent("Validation Errors",
-                                                                                                 new FieldDescriptionsCM(new FieldDTO("Error Message", result.ErrorMessage)))));
-        }
-
-        protected internal virtual ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
-        {
-            return ValidationResult.Success;
-        }
-
+        
         public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(activityDO, containerId);
@@ -171,10 +157,15 @@ namespace terminalDocuSign.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var result = ValidateActivityInternal(activityDO);
-            if (result != ValidationResult.Success)
+            var crateStorage = CrateManager.GetStorage(activityDO);
+            var validationCrate = new ValidationResultsCM();
+            var validationManager = new ValidationManager(validationCrate);
+
+            await ValidateActivity(activityDO, crateStorage, validationManager);
+
+            if (validationManager.HasErrors)
             {
-                return Error(payloadCrates, $"Could not run {ActivityUserFriendlyName} because of the below issues:{Environment.NewLine}{result.ErrorMessage}", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                return Error(payloadCrates, $"Could not run {ActivityUserFriendlyName} because of the below issues:{Environment.NewLine}{validationCrate}", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
 
             try

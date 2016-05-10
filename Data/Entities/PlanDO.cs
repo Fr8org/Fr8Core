@@ -139,7 +139,7 @@ namespace Data.Entities
             LastUpdated = plan.LastUpdated;
         }
 
-        public bool IsOngoingPlan()
+        public bool IsMonitoringPlan()
         {
             bool isOngoingPlan = false;
             var initialActivity = this.StartingSubPlan.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault() as ActivityDO;

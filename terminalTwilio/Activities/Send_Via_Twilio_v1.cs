@@ -144,72 +144,34 @@ namespace terminalTwilio.Actions
             return new FieldDTO(smsNumber, smsBody);
         }
 
-        protected override async Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
+        public override Task ValidateActivity(ActivityDO curActivityDO, ICrateStorage crateStorage, ValidationManager validationManager)
         {
-            var errors = new List<string>();
+            var configControl = GetConfigurationControls(crateStorage);
 
-            var isValid = ValidateSMSNumberAndBody(curActivityDO, errors);
-
-            if (!isValid)
+            if (configControl != null)
             {
+                var numberControl = (TextSource)configControl.Controls[0];
+                var bodyControl = (TextSource)configControl.Controls[1];
 
-                return await Task.FromResult(new CrateStorage(Crate<FieldDescriptionsCM>.FromContent("Validation Errors",
-                    new FieldDescriptionsCM(new FieldDTO("Error Message",string.Join(", ", errors))))));
-            }
-
-            return null;
-        }
-
-        private bool  ValidateSMSNumberAndBody(ActivityDO curActivityDO, List<string> errors)
-        {
-            bool hasError = false;
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.RemoveByLabel("Validation Errors");
-
-                var configControl = GetConfigurationControls(crateStorage);
-                if (configControl != null)
+                if (numberControl != null)
                 {
-                    var numberControl = (TextSource)configControl.Controls[0];
-                    var bodyControl = (TextSource)configControl.Controls[1];
+                    var smsNumber = numberControl.TextValue;
 
-                    if (numberControl != null)
+                    ValidateSMSNumber(validationManager, smsNumber, numberControl);
+                }
+
+                if (bodyControl != null)
+                {
+                    if (bodyControl.TextValue == null && bodyControl.Value == null)
                     {
-                        var smsNumber = numberControl.TextValue;
-
-                        string errorMessage;
-                        var isValid = ValidateSMSNumber(smsNumber, out errorMessage);
-
-                        if (!isValid)
-                        {
-                            errors.Add(errorMessage);
-                            numberControl.ErrorMessage = errorMessage;
-                            hasError = true;
-                        }
-                        else
-                        {
-                            numberControl.ErrorMessage = null;
-                        }
-                    }
-                    if (bodyControl != null)
-                    {
-                        if (bodyControl.TextValue == null && bodyControl.Value == null)
-                        {
-                            bodyControl.ErrorMessage = "SMS body can not be null.";
-                            errors.Add(bodyControl.ErrorMessage);
-                            hasError = true;
-                        }
-                        else
-                        {
-                            bodyControl.ErrorMessage = null;
-                        }
+                        validationManager.SetError("SMS body can not be null.", bodyControl);
                     }
                 }
             }
 
-            return !hasError;
+            return Task.FromResult(0);
         }
+        
 
         private string GetSMSNumber(TextSource control, ICrateStorage payloadCrates)
         {
@@ -268,13 +230,13 @@ namespace terminalTwilio.Actions
             }
         }
 
-        private bool ValidateSMSNumber(string smsNumber, out string errorMessage)
+        private bool ValidateSMSNumber(ValidationManager validationManager, string smsNumber, ControlDefinitionDTO control)
         {
             try
             {
                 if (String.IsNullOrEmpty(smsNumber))
                 {
-                    errorMessage = "No SMS Number Provided";
+                    validationManager.SetError("No SMS Number Provided", control);
                     return false;
                 }
 
@@ -287,17 +249,16 @@ namespace terminalTwilio.Actions
                 PhoneNumber phoneNumber = phoneUtil.Parse(smsNumber, "");
                 if (isAlphaNumber || !phoneUtil.IsValidNumber(phoneNumber))
                 {
-                    errorMessage = "SMS Number Is Invalid";
+                    validationManager.SetError("SMS Number Is Invalid", control);
                     return false;
                 }
             }
             catch (NumberParseException npe)
             {
-                errorMessage = "Failed to parse SMS number: " + npe.Message;
+                validationManager.SetError("Failed to parse SMS number: " + npe.Message, control);
                 return false;
             }
 
-            errorMessage = string.Empty;
             return true;
         }
     }

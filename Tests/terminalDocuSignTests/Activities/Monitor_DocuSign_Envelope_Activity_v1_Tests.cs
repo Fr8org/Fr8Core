@@ -1,5 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Linq;
+using System.Threading.Tasks;
 using Data.Control;
 using Data.Crates;
 using Data.Entities;
@@ -20,81 +21,82 @@ namespace terminalDocuSignTests.Activities
     public class Monitor_DocuSign_Envelope_Activity_v1_Tests : BaseTest
     {
         [Test]
-        public void ActivityIsValid_WhenIsNotConfigured_ReturnsFalse()
+        public async Task ActivityIsValid_WhenIsNotConfigured_ReturnsFalse()
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
             var target = new Monitor_DocuSign_Envelope_Activity_v1();
-            var result = target.ValidateActivityInternal(FixtureData.TestActivity1());
+            var result = await Validate(target, FixtureData.TestActivity1()); 
             Assert.AreNotEqual(ValidationResult.Success, result);
-            Assert.AreEqual(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage, result.ErrorMessage);
+
+            AssertErrorMessage(result, DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
         }
 
         [Test]
-        public void ActivityIsValid_WhenNoNotificationIsSelected_ReturnsFalse()
+        public async Task ActivityIsValid_WhenNoNotificationIsSelected_ReturnsFalse()
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
             var target = new Monitor_DocuSign_Envelope_Activity_v1();
             var activityDO = FixtureData.TestActivity1();
-            activityDO = target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration()).Result;
+            activityDO = await target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration());
             SetRecipientConditionSelected(activityDO);
             SetRecipientText(activityDO);
-            var result = target.ValidateActivityInternal(activityDO);
-            Assert.AreNotEqual(ValidationResult.Success, result);
-            Assert.AreEqual("At least one notification option must be selected", result.ErrorMessage);
+            var result = await Validate(target, activityDO);
+
+            AssertErrorMessage(result, "At least one notification option must be selected");
         }
 
         [Test]
-        public void ActivityIsValid_WhenNoEnvelopeConditionIsSelected_ReturnsFalse()
+        public async Task ActivityIsValid_WhenNoEnvelopeConditionIsSelected_ReturnsFalse()
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
             var target = new Monitor_DocuSign_Envelope_Activity_v1();
             var activityDO = FixtureData.TestActivity1();
-            activityDO = target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration()).Result;
+            activityDO = await target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration());
             SetNotificationSelected(activityDO);
-            var result = target.ValidateActivityInternal(activityDO);
-            Assert.AreNotEqual(ValidationResult.Success, result);
-            Assert.AreEqual("At least one envelope option must be selected", result.ErrorMessage);
+            var result = await Validate(target, activityDO);
+
+            AssertErrorMessage(result, "At least one envelope option must be selected");
         }
 
         [Test]
-        public void ActivityIsValid_WhenTemplateMustBeSetButThereAreNoTemplates_ReturnsFalse()
+        public async Task ActivityIsValid_WhenTemplateMustBeSetButThereAreNoTemplates_ReturnsFalse()
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
             var target = new Monitor_DocuSign_Envelope_Activity_v1();
             var activityDO = FixtureData.TestActivity1();
-            activityDO = target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration()).Result;
+            activityDO = await target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration());
             SetNotificationSelected(activityDO);
             SetTemplateConditionSelected(activityDO);
-            var result = target.ValidateActivityInternal(activityDO);
-            Assert.AreNotEqual(ValidationResult.Success, result);
-            Assert.AreEqual(DocuSignValidationUtils.NoTemplateExistsErrorMessage, result.ErrorMessage);
+            var result = await Validate(target, activityDO);
+
+            AssertErrorMessage(result, DocuSignValidationUtils.NoTemplateExistsErrorMessage);
         }
 
         [Test]
-        public void ActivityIsValid_WhenTemplateMustBeSetButItIsNot_ReturnsFalse()
+        public async Task ActivityIsValid_WhenTemplateMustBeSetButItIsNot_ReturnsFalse()
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithTemplates()));
             var target = new Monitor_DocuSign_Envelope_Activity_v1();
             var activityDO = FixtureData.TestActivity1();
-            activityDO = target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration()).Result;
+            activityDO = await target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration());
             SetNotificationSelected(activityDO);
             SetTemplateConditionSelected(activityDO);
-            var result = target.ValidateActivityInternal(activityDO);
-            Assert.AreNotEqual(ValidationResult.Success, result);
-            Assert.AreEqual(DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage, result.ErrorMessage);
+            var result = await Validate(target, activityDO);
+
+            AssertErrorMessage(result, DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage);
         }
         [Test]
-        public void ActivityIsValid_WhenAllFieldsAreSet_ReturnsTrue()
+        public async Task ActivityIsValid_WhenAllFieldsAreSet_ReturnsTrue()
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithTemplates()));
             var target = new Monitor_DocuSign_Envelope_Activity_v1();
             var activityDO = FixtureData.TestActivity1();
-            activityDO = target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration()).Result;
+            activityDO = await target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration());
             SetNotificationSelected(activityDO);
             SetTemplateConditionSelected(activityDO);
             SetTemplate(activityDO);
-            var result = target.ValidateActivityInternal(activityDO);
-            Assert.AreEqual(ValidationResult.Success, result);
+            var result = await Validate(target, activityDO);
+            Assert.AreEqual(false, result.HasErrors);
         }
 
         private void SetNotificationSelected(ActivityDO activity)

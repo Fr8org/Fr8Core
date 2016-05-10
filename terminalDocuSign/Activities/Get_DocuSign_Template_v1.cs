@@ -91,24 +91,19 @@ namespace terminalDocuSign.Actions
             return await Task.FromResult(curActivityDO);
         }
 
-        protected internal override ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
+        public override Task ValidateActivity(ActivityDO curActivityDO, ICrateStorage crateStorage, ValidationManager validationManager)
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            var configControls = GetConfigurationControls(crateStorage);
+            var templateList = configControls?.Controls?.OfType<DropDownList>().FirstOrDefault();
+
+            if (!validationManager.ValidateControlExistance(templateList))
             {
-                var configControls = GetConfigurationControls(crateStorage);
-                if (configControls == null)
-                {
-                    return new ValidationResult(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
-                }
-                var templateList = configControls.Controls.OfType<DropDownList>().First();
-                templateList.ErrorMessage =
-                    DocuSignValidationUtils.AtLeastOneItemExists(templateList)
-                        ? DocuSignValidationUtils.ItemIsSelected(templateList)
-                              ? string.Empty
-                              : DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage
-                        : DocuSignValidationUtils.NoTemplateExistsErrorMessage;
-                return string.IsNullOrEmpty(templateList.ErrorMessage) ? ValidationResult.Success : new ValidationResult(templateList.ErrorMessage);
+                return Task.FromResult(0);
             }
+
+            validationManager.ValidateTemplateList(templateList);
+
+            return Task.FromResult(0);
         }
 
         private Crate CreateControlsCrate()

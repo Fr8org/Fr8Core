@@ -23,7 +23,6 @@ namespace Hub.Interfaces
         Task<string> Deactivate(Guid curPlanId);
 
         PlanDO GetPlanByActivityId(IUnitOfWork uow, Guid planActivityId);
-        //  ActionListDO GetActionList(IUnitOfWork uow, int id);
         List<PlanDO> MatchEvents(List<PlanDO> curPlans, EventReportCM curEventReport);
 
         PlanDO Copy(IUnitOfWork uow, PlanDO curPlanDO, string name);

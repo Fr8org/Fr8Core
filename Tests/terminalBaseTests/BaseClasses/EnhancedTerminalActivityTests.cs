@@ -101,12 +101,17 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected override Task<bool> Validate()
+        protected override Task Validate(ValidationManager validationManager)
         {
             CalledMethods |= CalledMethod.Validate;
 
             CheckBasicPropeties();
             Assert.NotNull(AuthorizationToken);
+
+            if (!ValidationState)
+            {
+                validationManager.SetError("Error");
+            }
 
             return Task.FromResult(ValidationState);
         }
@@ -456,7 +461,6 @@ namespace terminaBaselTests.BaseClasses
             activity.OnConfigure = x =>
             {
                 x.TextBox.Value = "123123123";
-                x.TextBox.ErrorMessage = "error";
 
                 x.UpstreamUpstreamCrateChooser.SelectedCrates.Add(new CrateDetails()
                 {
@@ -483,7 +487,6 @@ namespace terminaBaselTests.BaseClasses
             var cc = _crateManager.GetStorage(dto).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
             refCC.TextBox.Value = "123123123";
-            refCC.TextBox.ErrorMessage = "error";
             refCC.UpstreamUpstreamCrateChooser.SelectedCrates.Add(new CrateDetails()
             {
                 Label = new DropDownList()

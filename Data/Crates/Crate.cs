@@ -119,6 +119,18 @@ namespace Data.Crates
 
         /**********************************************************************************/
         /// <summary>
+        /// Create new create from content. Manifest type is deduced from the content. This method guaranties than manifest type can be correctly deduced
+        /// </summary>
+        /// <param name="label"></param>
+        /// <param name="content"></param>
+        /// <returns></returns>
+        public static Crate<T> FromContent<T>(string label, T content)
+        {
+            return Crate<T>.FromContent(label, content);
+        }
+
+        /**********************************************************************************/
+        /// <summary>
         /// Create new create from content. Manifest type is deduced from the content. 
         /// There is no compile-time checks for content's correctness. If manifest type can't be deduced from the content, then run-time error will be throwm.
         /// </summary>

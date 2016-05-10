@@ -26,6 +26,10 @@ namespace TerminalBase.BaseClasses
         // Declarations
         /**********************************************************************************/
 
+        private const string ConfigurationValuesCrateLabel = "Configuration Values";
+        
+        /**********************************************************************************/
+
         private bool _isRunTime;
         private ICrateStorage _currentPayloadStorage;
         private OperationalStateCM _operationalState;
@@ -180,12 +184,34 @@ namespace TerminalBase.BaseClasses
         {
             SyncConfControls();
 
-            if (await Validate())
+            CurrentActivityStorage.Remove<ValidationResultsCM>();
+
+            var validationManager = CreateValidationManager();
+            
+            await Validate(validationManager);
+
+            if (!validationManager.HasErrors)
             {
+                CurrentActivityStorage.Remove<ValidationResultsCM>();
                 await Configure(crateSignaller);
             }
 
             SyncConfControlsBack();
+        }
+
+        /**********************************************************************************/
+
+        protected ValidationManager CreateValidationManager()
+        {
+            var validationResults = CurrentActivityStorage.CrateContentsOfType<ValidationResultsCM>().FirstOrDefault();
+
+            if (validationResults == null)
+            {
+                validationResults = new ValidationResultsCM();
+                CurrentActivityStorage.Add(Crate.FromContent("Validation Errors", validationResults));
+            }
+
+            return new ValidationManager(validationResults);
         }
 
         /**********************************************************************************/
@@ -208,10 +234,18 @@ namespace TerminalBase.BaseClasses
 
                 SyncConfControls();
 
-                if (await Validate())
+                CurrentActivityStorage.Remove<ValidationResultsCM>();
+
+                var validationManager = CreateValidationManager();
+
+                await Validate(validationManager);
+
+                if (!validationManager.HasErrors)
                 {
+                    CurrentActivityStorage.Remove<ValidationResultsCM>();
                     await Activate();
                 }
+               
             }
 
             return curActivityDO;
@@ -285,9 +319,14 @@ namespace TerminalBase.BaseClasses
 
                 try
                 {
-                    if (!await Validate())
+                    var validationCm = new ValidationResultsCM();
+                    var validationManager = new ValidationManager(validationCm);
+
+                    await Validate(validationManager);
+
+                    if (validationManager.HasErrors)
                     {
-                        Error("Activity was incorrectly configured");
+                        Error("Activity was incorrectly configured: " + validationCm);
                         return processPayload;
                     }
 
@@ -411,12 +450,11 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        protected virtual Task<bool> Validate()
+        protected virtual Task Validate(ValidationManager validationManager)
         {
             return Task.FromResult(true);
         }
 
-        private const string ConfigurationValuesCrateLabel = "Configuration Values";
         /// <summary>
         /// Get or sets value of configuration field with the given key stored in current activity storage
         /// </summary>
@@ -743,12 +781,12 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
         // we don't want uncontrollable extensibility
-        protected sealed override Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
+        public sealed override Task ValidateActivity(ActivityDO activityDo, ICrateStorage currActivityCrateStorage, ValidationManager validationManager)
         {
-            return base.ValidateActivity(curActivityDO);
+            return base.ValidateActivity(activityDo, currActivityCrateStorage, validationManager);
         }
 
-        public sealed override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public  override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
             return base.ConfigurationEvaluator(curActivityDO);
         }

@@ -351,6 +351,8 @@
     <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\TerminalDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\UserDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ValidationErrorsDTO.cs" />
+    <Compile Include="Interfaces\DataTransferObjects\ValidationResultDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\WebServiceActivitySetDTO.cs" />
     <Compile Include="Interfaces\DataTransferObjects\WebServiceDTO.cs" />
     <Compile Include="Interfaces\IAspNetUserClaimDO.cs" />
@@ -401,6 +403,7 @@
     <Compile Include="Interfaces\Manifests\EventReportCM.cs" />
     <Compile Include="Interfaces\Manifests\EventSubscriptionCM.cs" />
     <Compile Include="Interfaces\DataTransferObjects\PlanDTO.cs" />
+    <Compile Include="Interfaces\Manifests\ValidationResultsCM.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.Designer.cs">
       <DependentUpon>201510120408332_InitialMigration.cs</DependentUpon>

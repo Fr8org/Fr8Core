@@ -96,32 +96,28 @@ namespace terminalSalesforce.Actions
             return await Task.FromResult(curActivityDO);
         }
 
-        public override async Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override Task ValidateActivity(ActivityDO curActivityDO, ICrateStorage crateStorage, ValidationManager validationManager)
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            var chosenObject = ExtractChosenSFObject(curActivityDO);
+
+            //get Fields which are reqired
+            var requiredFieldsList = GetRequiredFields(curActivityDO, "Salesforce Object Fields - " + chosenObject);
+
+            //get TextSources that represent the above required fields
+            var requiredFieldControlsList = GetConfigurationControls(crateStorage)
+                                                .Controls.OfType<TextSource>()
+                                                .Where(c => requiredFieldsList.Any(f => f.Key.Equals(c.Name)));
+
+            //for each required field's control, check its value source
+            requiredFieldControlsList.ToList().ForEach(c =>
             {
-                //In Activate, we validate whether the user specified values for the Required controls
-
-                var chosenObject = ExtractChosenSFObject(curActivityDO);
-
-                //get Fields which are reqired
-                var requiredFieldsList = GetRequiredFields(curActivityDO, "Salesforce Object Fields - " + chosenObject);
-
-                //get TextSources that represent the above required fields
-                var requiredFieldControlsList = GetConfigurationControls(crateStorage)
-                                                    .Controls.OfType<TextSource>()
-                                                    .Where(c => requiredFieldsList.Any(f => f.Key.Equals(c.Name)));
-
-                //for each required field's control, check its value source
-                requiredFieldControlsList.ToList().ForEach(c =>
+                if (string.IsNullOrEmpty(c.ValueSource))
                 {
-                    if (string.IsNullOrEmpty(c.ValueSource))
-                    {
-                        c.ErrorMessage = string.Format("{0} must be provided for creating {1}", c.Label, chosenObject);
-                    }
-                });
-            }
-            return await Task.FromResult(curActivityDO);
+                    validationManager.SetError($"{c.Label} must be provided for creating {chosenObject}", c);
+                }
+            });
+
+            return Task.FromResult(0);
         }
 
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)

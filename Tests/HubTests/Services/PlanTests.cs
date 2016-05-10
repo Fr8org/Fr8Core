@@ -62,16 +62,5 @@ namespace HubTests.Services
                 Assert.NotNull(result);
             }
         }
-        
-        [Test]
-        [Ignore("ActivityTemplates are not being added to ActivityTemplate respository. Should be fixed if test is needed")]
-        public void Activate_NoMatchingParentActivityId_ReturnsNoActivity()
-        {
-            var curPlanDO = FixtureData.TestPlanNoMatchingParentActivity();
-
-            var result = Plan.Activate(curPlanDO.Id, true).Result;
-
-            Assert.AreEqual(result.Status, "no activity");
-        }
     }
 }

@@ -158,14 +158,13 @@ namespace terminalFr8Core.Actions
 
                 if (ButtonIsClicked(continueButton))
                 {
-                    if (!ValidateSolutionInputs(fr8ObjectID))
+                    if (!ValidateSolutionInputs(activityDO, fr8ObjectID))
                     {
-                        AddRemoveCrateAndError(activityDO, fr8ObjectID, "Please select the Fr8 Object");
+                        UpdateQueryCrate(activityDO, fr8ObjectID);
                         return activityDO;
                     }
-                    else {
-                        AddRemoveCrateAndError(activityDO, fr8ObjectID, "");
-                    }
+
+                    UpdateQueryCrate(activityDO, fr8ObjectID);
 
                     activityDO.ChildNodes.Clear();
                     await GenerateSolutionActivities(activityDO, fr8ObjectID);
@@ -295,7 +294,7 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        private void AddRemoveCrateAndError(ActivityDO activityDO,string fr8ObjectID,string errorMessage)
+        private void UpdateQueryCrate(ActivityDO activityDO,string fr8ObjectID)
         {
             using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
             {
@@ -303,20 +302,27 @@ namespace terminalFr8Core.Actions
                 var queryCrate = ExtractQueryCrate(crateStorage, fr8ObjectID);
                 crateStorage.Add(queryCrate);
 
-                var configurationcontrols = crateStorage.
-                  CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-                var fr8ObjectDropDown = GetControl(configurationcontrols, "Select Fr8 Warehouse Object");
-                fr8ObjectDropDown.ErrorMessage = errorMessage;
+                
             }
         }
 
-        private bool ValidateSolutionInputs(string fr8Object)
+        private bool ValidateSolutionInputs(ActivityDO activityDo, string fr8Object)
         {
-            if (String.IsNullOrWhiteSpace(fr8Object))
+            using (var updatableStorage = CrateManager.GetUpdatableStorage(activityDo))
             {
-                return false;
+                var configurationcontrols = updatableStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+                var fr8ObjectDropDown = GetControl(configurationcontrols, "Select Fr8 Warehouse Object");
+                var validationResult = updatableStorage.GetOrAdd(() => Crate.FromContent("Validation Result", new ValidationResultsCM()));
+                var validationManager = new ValidationManager(validationResult);
+
+                if (String.IsNullOrWhiteSpace(fr8Object))
+                {
+                    validationManager.SetError("Please select the Fr8 Object", fr8ObjectDropDown);
+                    return false;
+                }
+                
+                return true;
             }
-            return true;
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
