@@ -335,7 +335,7 @@ id |	Guid | | |			 id of the token to revoke
 **Description:**	Revoke token.    
 
 #### **Path:**	*/manageAuthToken/terminalsByActivities*
-**Type:**	*POST*
+**Type:**	*POST*   
 **Input Parameters:**  	  
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -344,7 +344,7 @@ actionIds |	IEnumerable<Guid>		 | | |
 **Return Values:**	List<ManageAuthToken_Terminal_Activity>   
 **Description:**	Takes the activity ids and manages the necessary auth tokens for them than returns the authenticated terminal activity list.
 
-#### **Path:**	*/manageAuthToken/apply;
+#### **Path:**	*/manageAuthToken/apply*
 **Type:**	*POST*   
 **Input Parameters:**  	  
 
