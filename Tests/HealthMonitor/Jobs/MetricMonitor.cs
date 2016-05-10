@@ -75,12 +75,6 @@ namespace HealthMonitor.Jobs
         }
 
         [Test]
-        public void Get_Current_Database_File_Stats()
-        {
-            GetStatsInDatabase(Program.Context.ConnectionString);
-        }
-
-        [Test]
         public void Get_Dev_Database_File_Stats()
         {
             if (Program.Context.AllArguments.ContainsKey("devConnectionString"))
