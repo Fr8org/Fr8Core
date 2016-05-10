@@ -130,6 +130,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Validators/ManifestDescriptionValidators.js',
         'Scripts/app/directives/ActionPicker.js',
         'Scripts/app/directives/ActivityResize.js',
+        'Scripts/app/directives/ModalResizable.js',
         'Scripts/app/filters/ActionNameFormatter.js',
         'Scripts/app/filters/DateTimeFormatter.js',
         'Scripts/app/controllers/PlanBuilderController.js',

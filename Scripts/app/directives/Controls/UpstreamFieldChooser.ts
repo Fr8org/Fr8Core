@@ -14,28 +14,18 @@ module dockyard.directives.upstreamDataChooser {
         openModal: () => void;
         ok: () => void;
         cancel: () => void;
-        expand: () => void;
     }
 
     export class UpstreamFieldChooserController {
 
-        static $inject = ['$scope', '$element', '$attrs', 'UpstreamExtractor', '$modal', '$timeout','NgTableParams'];
+        static $inject = ['$scope', '$element', '$attrs', 'UpstreamExtractor', '$modal','NgTableParams'];
         constructor($scope: IUpstreamFieldChooser,
             $element: ng.IAugmentedJQuery,
             $attrs: ng.IAttributes,
             UpstreamExtractor: services.UpstreamExtractor,
             $modal: any,
-            $timeout: any,
             NgTableParams) {
             var modalInstance;
-            $scope.expand = () => {
-                $timeout(function () {
-                    $(".modal-content").parent().css({
-
-                        'height': () => { return $(".modal-header.ng-scope").height() + 40 }
-                    })
-                }, 0);
-            }
             $scope.openModal = () => {
                 getUpstreamFields();
                 if ($scope.field.listItems.length !== 0) {
@@ -43,49 +33,6 @@ module dockyard.directives.upstreamDataChooser {
                         animation: true,
                         templateUrl: '/AngularTemplate/UpstreamFieldChooser',
                         scope: $scope,
-                        controller: ['$scope', '$modalInstance', function ($scope, $modalInstance) {
-                            $timeout(function () {
-                                (<any>$(".modal-content"))
-                                    .wrap('<div align="center"></div>')
-                                    .css({
-                                        'overflow': 'hidden',
-                                        'max-height': () => { return $(document).height() - 80 }
-                                    })
-                                    .parent()
-                                    .css({
-                                        'min-width': () => {
-                                            var minWidth = parseInt($(".modal-content").attr("min-width"));
-                                            if (angular.isNumber(minWidth) && !isNaN(minWidth) && minWidth !== 0) {
-                                                return minWidth;
-                                            }
-                                            var curWidth = $(".modal-content").width();
-                                            return curWidth > 0 ? curWidth : 300;
-                                        },
-                                        'width': () => {
-                                            var minWidth = parseInt($(".modal-content").attr("min-width"));
-                                            if (angular.isNumber(minWidth) && !isNaN(minWidth) && minWidth !== 0) {
-                                                return minWidth;
-                                            }
-                                            var curWidth = $(".modal-content").width();
-                                            return curWidth > 0 ? curWidth : 300;
-                                        },
-                                        'min-height': () => { return $(".modal-header").height() },
-                                        'max-height': () => {
-                                            var curHeight = $(".modal-content").height();
-                                            if (curHeight > 85) {
-                                                return curHeight;
-                                            }
-                                        }
-                                    })
-                                    .resizable().draggable()
-                                    .find($(".modal-content"))
-                                    .css({
-                                        overflow: 'auto',
-                                        width: '100%',
-                                        height: '100%'
-                                    });
-                            }, 0);
-                        }],
                         resolve: {
                             items: function () {
                                 return $scope.field.listItems;
@@ -97,9 +44,6 @@ module dockyard.directives.upstreamDataChooser {
             $scope.setItem = (item) => {
                 $scope.field.value = item;
                 modalInstance.close($scope.field.value);
-                (<any>$(".modal-content")).parent().css({
-                    'min-height': 0
-                });
                 if ($scope.change != null && angular.isFunction($scope.change)) {
                     $scope.change()($scope.field);
                 }
