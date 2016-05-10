@@ -4,7 +4,7 @@ These special activities are part of the core Fr8 set:
 
 ## Collect Data
 
-# ACTIVITY – COLLECT DATA
+### ACTIVITY – COLLECT DATA
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md) 
 
 This special and powerful activity allows the generation of Fr8lets, miniature applications that can be distributed to others, allowing them to run the application without dealing with the Fr8 Plan Builder complexity.
