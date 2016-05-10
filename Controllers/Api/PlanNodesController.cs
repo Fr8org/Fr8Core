@@ -12,6 +12,7 @@ using Data.Interfaces.DataTransferObjects;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using Hub.Managers;
+using HubWeb.Infrastructure;
 using Data.States;
 
 

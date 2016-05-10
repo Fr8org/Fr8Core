@@ -7,6 +7,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
 using Hub.Infrastructure;
 using Hub.Managers;
+using HubWeb.Infrastructure;
 
 namespace HubWeb.Controllers
 {

@@ -2,6 +2,7 @@
 using StructureMap;
 using Data.Interfaces.DataTransferObjects;
 using Hub.Infrastructure;
+using HubWeb.Infrastructure;
 using Utilities.Interfaces;
 
 namespace HubWeb.Controllers

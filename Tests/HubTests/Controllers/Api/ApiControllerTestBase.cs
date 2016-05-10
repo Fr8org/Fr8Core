@@ -3,6 +3,7 @@ using System.Linq;
 using System.Reflection;
 using NUnit.Framework;
 using Hub.Infrastructure;
+using HubWeb.Infrastructure;
 using UtilitiesTesting;
 
 namespace HubTests.Controllers.Api

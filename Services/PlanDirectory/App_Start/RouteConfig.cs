@@ -10,6 +10,18 @@ namespace PlanDirectory.App_Start
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 
             routes.MapRoute(
+                name: "Reauthenticate",
+                url: "Reauthenticate",
+                defaults: new { controller = "Home", action = "Reauthenticate" }
+            );
+
+            routes.MapRoute(
+                name: "AuthenticateByToken",
+                url: "AuthenticateByToken",
+                defaults: new { controller = "Home", action = "AuthenticateByToken" }
+            );
+
+            routes.MapRoute(
                 name: "AngularTemplates",
                 url: "AngularTemplate/{template}",
                 defaults: new { controller = "AngularTemplate", action = "Markup" }

@@ -179,6 +179,9 @@
       <HintPath>..\packages\NLog.1.0.0.505\lib\NLog.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Owin">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
+    </Reference>
     <Reference Include="S22.Imap, Version=3.6.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\lib\S22.Imap.dll</HintPath>
@@ -287,7 +290,7 @@
     <Compile Include="Infrastructure\Fr8Identity.cs" />
     <Compile Include="Infrastructure\Fr8Principle.cs" />
     <Compile Include="Infrastructure\Fr8ApiAuthorizeAttribute.cs" />
-    <Compile Include="Infrastructure\Fr8HubWebHMACAuthenticateAttribute.cs" />
+    <Compile Include="Infrastructure\OwinInitializer.cs" />
     <Compile Include="Managers\HangfireJobDispatcher.cs" />
     <Compile Include="Interfaces\IJobDispatcher.cs" />
     <Compile Include="Managers\HangFireJobFilter.cs" />

@@ -1,8 +1,12 @@
 ﻿using System;
-using System.Data.Entity;
-using System.Linq;
+using System.Configuration;
+using System.Net.Http;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using System.Web.Http;
+using Microsoft.AspNet.Identity;
+using Microsoft.Owin.Security;
+using Newtonsoft.Json.Linq;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
@@ -10,10 +14,9 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Infrastructure.StructureMap;
 using Hub.Infrastructure;
 using Hub.Interfaces;
-using System.Net.Http;
-using System.Security.Claims;
-using Microsoft.Owin.Security;
-using Microsoft.AspNet.Identity;
+using Hub.Managers.APIManagers.Transmitters.Restful;
+using HubWeb.Infrastructure;
+using Utilities.Configuration.Azure;
 
 namespace HubWeb.Controllers
 {
@@ -141,6 +144,23 @@ namespace HubWeb.Controllers
                     return Ok(token);
             }
             return Ok();
+        }
+
+        [HttpPost]
+        [Fr8ApiAuthorize]
+        [Fr8HubWebHMACAuthenticate]
+        public async Task<IHttpActionResult> AuthenticatePlanDirectory()
+        {
+            var hmacService = ObjectFactory.GetInstance<IHMACService>();
+            var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+
+            var uri = new Uri(ConfigurationManager.AppSettings["PlanDirectoryUrl"] + "/api/authentication/token");
+            var headers = await hmacService.GenerateHMACHeader(uri, "PlanDirectory", CloudConfigurationManager.GetSetting("PlanDirectorySecret"), User.Identity.GetUserId());
+
+            var json = await client.PostAsync<JObject>(uri, headers: headers);
+            var token = json.Value<string>("token");
+
+            return Ok(new { token });
         }
     }
 }
