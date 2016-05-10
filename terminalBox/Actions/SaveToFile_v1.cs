@@ -67,7 +67,9 @@ namespace terminalBox.Actions
         {
             var token = JsonConvert.DeserializeObject<BoxAuthTokenDO>(AuthorizationToken.Token);
             var desiredCrateDescription = ConfigurationControls.FileChooser.CrateDescriptions.Single(x => x.Selected);
-            var tableCrate = CurrentPayloadStorage.CratesOfType<StandardTableDataCM>().FirstOrDefault(x => x.Label == desiredCrateDescription.Label && x.ManifestType.Type == desiredCrateDescription.ManifestType);
+            var tableCrate = CurrentPayloadStorage.CratesOfType<StandardTableDataCM>()
+                .FirstOrDefault(x => x.Label == desiredCrateDescription.Label 
+                && x.ManifestType.Type == desiredCrateDescription.ManifestType);
 
             if (tableCrate == null)
             {
@@ -79,13 +81,13 @@ namespace terminalBox.Actions
             string fileId;
             using (var stream = new MemoryStream())
             {
-                CreateSpreadsheetWorkbook(stream, tableCrate);
+                CreateWorkbook(stream, tableCrate);
                 // Need to reset stream before saving it to box.
                 stream.Seek(0, SeekOrigin.Begin);
                 fileId = service.SaveFile(fileName + ".xlsx", stream).Result;
             }
             var downloadLink = service.GetFileLink(fileId).Result;
-            
+
             await HubCommunicator.NotifyUser(new TerminalNotificationDTO
             {
                 Type = "Success",
@@ -98,13 +100,29 @@ namespace terminalBox.Actions
             }, CurrentFr8UserId);
         }
 
-        public void CreateSpreadsheetWorkbook(MemoryStream stream, Crate<StandardTableDataCM> tableCrate)
+        /// <summary>
+        /// Creates a workbook from <paramref name="tableCrate"/> and saves it into <paramref name="stream"/>
+        /// </summary>
+        /// <param name="stream">Stream to save data</param>
+        /// <param name="tableCrate">Crate with data</param>
+        public void CreateWorkbook(MemoryStream stream, Crate<StandardTableDataCM> tableCrate)
         {
-            // Create a spreadsheet document 
-            // By default, AutoSave = true, Editable = true, and Type = xlsx.
             var workbook = new XLWorkbook();
-            var worksheet = workbook.Worksheets.Add("Sample Sheet");
-            worksheet.Cell("A1").Value = "Hello World!";
+            var worksheet = workbook.Worksheets.Add("TableData");
+            var content = tableCrate.Content;
+            // In Excel all row/column indexers starts from 1.
+            if (tableCrate.Content.HasDataRows)
+            {
+                for (int i = 0; i < content.Table.Count; i++)
+                {
+                    int j = 0;
+                    foreach (TableCellDTO cell in content.Table[i].Row)
+                    {
+                        j++;
+                        worksheet.Cell(i + 1, j).Value = cell.Cell.Value;
+                    }
+                }
+            }
             workbook.SaveAs(stream);
         }
     }
