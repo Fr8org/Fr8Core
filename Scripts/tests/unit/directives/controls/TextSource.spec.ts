@@ -77,7 +77,7 @@ module dockyard.tests.unit.directives.controls {
             expect(element.find("[value='upstream']").length).toBe(1);
         });
 
-        it('Shouldn\'t contain a dropdown list initially', () => {
+        it('Should contain a dropdown list initially', () => {
             expect(element.find("drop-down-list-box").length).toBeGreaterThan(0);
         });
 

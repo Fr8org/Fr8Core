@@ -240,6 +240,10 @@
     <Compile Include="Entities\AspNetUserClaimDO.cs" />
     <Compile Include="Entities\EncryptedAuthorizationData.cs" />
     <Compile Include="Entities\OrganizationDO.cs" />
+    <Compile Include="Entities\PlanTemplates\ActivityDescriptionDO.cs" />
+    <Compile Include="Entities\PlanTemplates\NodeTransitionDO.cs" />
+    <Compile Include="Entities\PlanTemplates\PlanTemplateDO.cs" />
+    <Compile Include="Entities\PlanTemplates\PlanNodeDescriptionDO.cs" />
     <Compile Include="Entities\PermissionSetDO.cs" />
     <Compile Include="Entities\PlanNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
@@ -614,6 +618,10 @@
     <Compile Include="Migrations\201605092037130_AddExternalAccountAndDomainNameToAuthToken.Designer.cs">
       <DependentUpon>201605092037130_AddExternalAccountAndDomainNameToAuthToken.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201605091247127_Plan_Templates.cs" />
+    <Compile Include="Migrations\201605091247127_Plan_Templates.Designer.cs">
+      <DependentUpon>201605091247127_Plan_Templates.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -623,6 +631,10 @@
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryStub.cs" />
     <Compile Include="Repositories\Authorization\IAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\Authorization\KeyVaultAuthorizationTokenRepository.cs" />
+    <Compile Include="Repositories\PlanTemplates\ActivityDescriptionRepository.cs" />
+    <Compile Include="Repositories\PlanTemplates\NodeTransitionRepository.cs" />
+    <Compile Include="Repositories\PlanTemplates\PlanNodeDescriptionsRepository.cs" />
+    <Compile Include="Repositories\PlanTemplates\PlanTemplateRepository.cs" />
     <Compile Include="Repositories\ProfileRepository.cs" />
     <Compile Include="Repositories\Cache\ICacheExpirationStrategy.cs" />
     <Compile Include="Repositories\Cache\IExpirationToken.cs" />
@@ -1172,6 +1184,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201605092037130_AddExternalAccountAndDomainNameToAuthToken.resx">
       <DependentUpon>201605092037130_AddExternalAccountAndDomainNameToAuthToken.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605091247127_Plan_Templates.resx">
+      <DependentUpon>201605091247127_Plan_Templates.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

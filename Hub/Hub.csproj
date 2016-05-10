@@ -285,6 +285,7 @@
     <Compile Include="Infrastructure\FilterConditionPredicateBuilder.cs" />
     <Compile Include="Infrastructure\fr8HMACAuthenticateAttribute.cs" />
     <Compile Include="Infrastructure\Fr8Principle.cs" />
+    <Compile Include="Interfaces\IPlanTemplates.cs" />
     <Compile Include="Managers\HangfireJobDispatcher.cs" />
     <Compile Include="Interfaces\IJobDispatcher.cs" />
     <Compile Include="Managers\PlanManager.cs" />
@@ -379,6 +380,7 @@
     <Compile Include="Services\Field.cs" />
     <Compile Include="Services\FindObjectsPlan.cs" />
     <Compile Include="Services\Manifest.cs" />
+    <Compile Include="Services\PlanTemplates.cs" />
     <Compile Include="Services\PlanNode.cs" />
     <Compile Include="Services\Organization.cs" />
     <Compile Include="Services\Activity.cs" />

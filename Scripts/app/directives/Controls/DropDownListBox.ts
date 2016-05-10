@@ -42,6 +42,7 @@ module dockyard.directives.dropDownListBox {
                     if ($scope.change != null && angular.isFunction($scope.change)) {
                         $scope.change()($scope.field);
                     }
+                    
                 };
 
                 // parameter isSilent is for to show the error messages or not
