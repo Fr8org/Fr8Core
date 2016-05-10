@@ -113,6 +113,7 @@ catch
 $activeTasks = $vsoResponse.records | where {$_.type -eq "Task" -and $_.name -notlike "Update GitHub status*"}
 $succeededBuildSteps = $activeTasks | where {$_.state -eq "completed" -and $_.result -eq "succeeded"}
 
+
 Write-Host "Comparing succeded steps with active build steps count " $succeededBuildSteps.Count " - " $activeBuildSteps.Count
 
 if ($succeededBuildSteps.Count -eq $activeBuildSteps.Count)
