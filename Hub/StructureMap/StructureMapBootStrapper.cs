@@ -135,6 +135,7 @@ namespace Hub.StructureMap
                 For<TelemetryClient>().Use<TelemetryClient>();
                 For<IJobDispatcher>().Use<HangfireJobDispatcher>();
                 // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
+                For<IPlanTemplates>().Use<PlanTemplates>();
             }
         }
 
@@ -214,6 +215,7 @@ namespace Hub.StructureMap
                 For<ITerminal>().Use(new TerminalServiceForTests()).Singleton();
                 For<IJobDispatcher>().Use<MockJobDispatcher>();
                 // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
+                For<IPlanTemplates>().Use<PlanTemplates>();
             }
         }
 
