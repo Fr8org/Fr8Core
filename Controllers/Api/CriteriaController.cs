@@ -5,7 +5,7 @@ using System.Web.Http.Description;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 using Hub.Infrastructure;
 using StructureMap;
 

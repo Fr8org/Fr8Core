@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq.Expressions;
-using Data.Interfaces.Manifests;
 using Data.Repositories.MultiTenant;
 using Data.Repositories.MultiTenant.Queryable;
+using Fr8Data.Manifests;
 
 namespace Data.Interfaces
 {

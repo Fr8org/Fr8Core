@@ -1,25 +1,11 @@
-﻿using System.Globalization;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
-using System.Security.Principal;
-using System.Web.Http;
-using System.Web.Http.Controllers;
-using Data.Interfaces.DataTransferObjects;
-using System.Web.Http.Filters;
+﻿using System.Web.Http.Filters;
 using System;
 using System.Threading;
 using System.Threading.Tasks;
-using System.Web.Http.Results;
-using System.Net.Http.Headers;
-using System.Security.Cryptography;
-using System.Text;
-using System.Runtime.Caching;
 using System.Web;
 using Hub.Infrastructure;
 using StructureMap;
 using Hub.Interfaces;
-using HubWeb.Infrastructure;
 
 namespace HubWeb.Infrastructure
 {

@@ -1,5 +1,4 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json.Linq;
 using Salesforce.Force;
 using Salesforce.Common;
 using System;
@@ -7,6 +6,7 @@ using System.Threading.Tasks;
 using System.Web;
 using Utilities.Configuration.Azure;
 using Data.Entities;
+using Fr8Data.DataTransferObjects;
 
 namespace terminalSalesforce.Infrastructure
 {

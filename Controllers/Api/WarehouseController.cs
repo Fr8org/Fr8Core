@@ -3,8 +3,8 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Hub.Infrastructure;
 using Hub.Managers;
 using HubWeb.Infrastructure;
@@ -36,7 +36,7 @@ namespace HubWeb.Controllers
                     var recordOfEnvelopeEvents = uow.MultiTenantObjectRepository.Query<DocuSignEnvelopeCM_v2>(userId, a => a.EnvelopeId == manifest.EnvelopeId);
                     foreach (var stored_manifest in recordOfEnvelopeEvents)
                     {
-                        result.Add(_crateManager.ToDto(Data.Crates.Crate.FromContent("RecordedEnvelope", stored_manifest, Data.States.AvailabilityType.RunTime)));
+                        result.Add(_crateManager.ToDto(Fr8Data.Crates.Crate.FromContent("RecordedEnvelope", stored_manifest, Fr8Data.States.AvailabilityType.RunTime)));
                     }
                 }
             }

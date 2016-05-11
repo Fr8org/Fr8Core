@@ -1,12 +1,9 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using Hub.Interfaces;
+﻿using Hub.Interfaces;
 using StructureMap;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
+using Fr8Data.DataTransferObjects;
 
 namespace HubWeb.Controllers
 {

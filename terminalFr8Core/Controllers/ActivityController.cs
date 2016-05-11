@@ -1,19 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Http;
-using System.Web.Http.Description;
-using AutoMapper;
-using Data.Constants;
-using Newtonsoft.Json;
-using StructureMap;
-using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Hub.Interfaces;
-using Hub.Managers;
+using Fr8Data.DataTransferObjects;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 

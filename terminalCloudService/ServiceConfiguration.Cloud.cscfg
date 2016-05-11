@@ -25,6 +25,8 @@
       <Setting name="terminalSlack.TerminalEndpoint" value="" />
       <Setting name="terminalTwilio.TerminalEndpoint" value="" />
       <Setting name="terminalYammer.TerminalEndpoint" value="" />
+      <Setting name="OutboundUserName" value="" />
+      <Setting name="OutboundPassword" value="" />      
     </ConfigurationSettings>
     <Certificates>
       <Certificate name="Microsoft.WindowsAzure.Plugins.RemoteAccess.PasswordEncryption" thumbprint="4A0CFAE91F22D6D9A60358B6F1DC35223E6B6A06" thumbprintAlgorithm="sha1" />

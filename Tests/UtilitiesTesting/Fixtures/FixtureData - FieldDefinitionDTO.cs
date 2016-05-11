@@ -1,13 +1,7 @@
-﻿﻿using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-﻿using Data.Control;
-﻿using Data.Crates;
-﻿using Data.Interfaces.Manifests;
+﻿using System.Collections.Generic;
+using Fr8Data.Control;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 
 namespace UtilitiesTesting.Fixtures
 {

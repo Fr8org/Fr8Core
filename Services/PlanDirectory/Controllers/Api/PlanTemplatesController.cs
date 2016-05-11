@@ -1,9 +1,7 @@
-﻿using System;
-using System.Web.Http;
+﻿using System.Web.Http;
 using AutoMapper;
 using StructureMap;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8Data.DataTransferObjects.PlanTemplates;
 using PlanDirectory.Infrastructure;
 
 namespace PlanDirectory.Controllers
@@ -21,8 +19,8 @@ namespace PlanDirectory.Controllers
         [HttpPost]
         public IHttpActionResult Publish(PlanTemplateDTO planTemplate)
         {
-            var planTemplateCM = Mapper.Map<PlanTemplateCM>(planTemplate);
-            _planTemplate.Publish(planTemplateCM);
+            // var planTemplateCM = Mapper.Map<PlanTemplateCM>(planTemplate);
+            // _planTemplate.Publish(planTemplateCM);
 
             return Ok();
         }
@@ -30,8 +28,8 @@ namespace PlanDirectory.Controllers
         [HttpPost]
         public IHttpActionResult Unpublish(PlanTemplateDTO planTemplate)
         {
-            var planTemplateCM = Mapper.Map<PlanTemplateCM>(planTemplate);
-            _planTemplate.Unpublish(planTemplateCM);
+            // var planTemplateCM = Mapper.Map<PlanTemplateCM>(planTemplate);
+            // _planTemplate.Unpublish(planTemplateCM);
 
             return Ok();
         }

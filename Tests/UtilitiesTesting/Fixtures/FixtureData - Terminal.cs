@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using StructureMap;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Hub.Interfaces;
+using Fr8Data.States;
 
 namespace UtilitiesTesting.Fixtures
 {

@@ -2,10 +2,9 @@
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 using Newtonsoft.Json;
 using terminalGoogle.Interfaces;
-using terminalGoogle.Services;
 using terminalGoogle.Services.Authorization;
 using TerminalBase.BaseClasses;
 

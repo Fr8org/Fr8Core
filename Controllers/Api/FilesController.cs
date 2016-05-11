@@ -10,11 +10,11 @@ using StructureMap;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using HubWeb.Infrastructure;
+using Fr8Data.DataTransferObjects;
 
 namespace HubWeb.Controllers
 {

@@ -7,7 +7,7 @@ using System.Web.Http;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using HubWeb.Controllers.Helpers;
@@ -69,7 +69,7 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> Create(string solutionName)
+        public async Task<IHttpActionResult> CreateSolution(string solutionName)
         {
             var userId = User.Identity.GetUserId();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

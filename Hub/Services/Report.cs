@@ -1,18 +1,13 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
 using Data.Utility;
+using Fr8Data.DataTransferObjects;
 using Hub.Interfaces;
 using StructureMap;
-using Utilities;
 
 namespace Hub.Services
 {

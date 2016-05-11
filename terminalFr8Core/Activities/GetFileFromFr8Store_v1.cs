@@ -1,30 +1,19 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Web;
-using AutoMapper.Internal;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
 using Hub.Managers;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using TerminalBase;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using Utilities;
-using StructureMap;
-using Hub.Interfaces;
 using System.IO;
 using System.Text;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 
 namespace terminalFr8Core.Actions
 {
@@ -100,7 +89,7 @@ namespace terminalFr8Core.Actions
                 TextRepresentation = textRepresentation
             };
 
-            var fileCrate = Data.Crates.Crate.FromContent("DownloadFile", fileDescription);
+            var fileCrate = Fr8Data.Crates.Crate.FromContent("DownloadFile", fileDescription);
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(curPayloadDTO))
             {

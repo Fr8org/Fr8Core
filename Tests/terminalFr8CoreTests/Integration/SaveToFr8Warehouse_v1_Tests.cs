@@ -3,14 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Data.Repositories.MultiTenant;
 using Data.Repositories.SqlBased;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using HealthMonitor.Utility;
 using NUnit.Framework;
 using terminalFr8CoreTests.Fixtures;
@@ -99,7 +99,7 @@ namespace terminalFr8CoreTests.Integration
                     }
                 });
 
-                storage.Add(Data.Crates.Crate.FromContent("Configuration_Controls", configControlCm));
+                storage.Add(Fr8Data.Crates.Crate.FromContent("Configuration_Controls", configControlCm));
             }
 
             string envelopeId = "testEnvelope_" + Guid.NewGuid().ToString("N");

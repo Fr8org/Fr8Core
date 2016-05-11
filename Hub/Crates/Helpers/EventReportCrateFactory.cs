@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
 using Hub.Managers;
 using StructureMap;
 
-namespace Data.Crates.Helpers
+namespace Hub.Crates.Helpers
 {
     public class EventReportCrateFactory
     {

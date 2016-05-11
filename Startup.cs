@@ -48,11 +48,6 @@ namespace HubWeb
 
         public void ConfigureHangfire(IAppBuilder app, string connectionString)
         {
-            var options = new BackgroundJobServerOptions
-            {
-                Queues = new[] { "hub" },
-            };
-
             GlobalConfiguration.Configuration
                 .UseSqlServerStorage(connectionString)
                 .UseStructureMapActivator(ObjectFactory.Container);
@@ -60,7 +55,7 @@ namespace HubWeb
             {
                 AuthorizationFilters = new[] { new HangFireAuthorizationFilter() },
             });
-            app.UseHangfireServer(options);
+            app.UseHangfireServer();
             GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
         }
 

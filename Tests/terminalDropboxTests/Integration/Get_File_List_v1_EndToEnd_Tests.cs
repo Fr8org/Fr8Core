@@ -1,16 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Data.States;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using HealthMonitor.Utility;
 using HealthMonitorUtility.Tools.Activities;
 using NUnit.Framework;
 using terminaBaselTests.Tools.Activities;
 using terminaBaselTests.Tools.Plans;
-using terminalGoogle.Services;
  
 namespace terminalDropboxTests.Integration
 {
@@ -94,7 +91,6 @@ namespace terminalDropboxTests.Integration
                 // Delete plan
                 await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
             }
-
 
         }
     }

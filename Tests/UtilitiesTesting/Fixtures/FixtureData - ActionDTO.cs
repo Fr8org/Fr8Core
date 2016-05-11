@@ -1,8 +1,5 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Newtonsoft.Json;
-using System.Collections.Generic;
-using Data.Crates;
+﻿using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
 using Hub.Managers;
 using StructureMap;
 
