@@ -175,34 +175,8 @@ namespace Hub.Security.ObjectDecorators
             {
                 return _target.Run(planId, curPayload);
             }
-            else
-            {
-                throw new HttpException(403, "You are not authorized to perform this activity!");
-            }
-        }
 
-        public Task<ContainerDO> Run(PlanDO curPlan, params Crate[] curPayload)
-        {
-            if (_securityServices.AuthorizeActivity(PermissionType.RunObject, curPlan.Id.ToString(), nameof(PlanNodeDO)))
-            {
-                return _target.Run(curPlan, curPayload);
-            }
-            else
-            {
-                throw new HttpException(403, "You are not authorized to perform this activity!");
-            }
-        }
-
-        public Task<ContainerDO> Run(IUnitOfWork uow, PlanDO curPlan, params Crate[] curPayload)
-        {
-            if (_securityServices.AuthorizeActivity(PermissionType.RunObject, curPlan.Id.ToString(), nameof(PlanNodeDO)))
-            {
-                return _target.Run(uow, curPlan, curPayload);
-            }
-            else
-            {
-                throw new HttpException(403, "You are not authorized to perform this activity!");
-            }
+            throw new HttpException(403, "You are not authorized to perform this activity!");
         }
     }
 }

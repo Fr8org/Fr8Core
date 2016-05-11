@@ -378,7 +378,7 @@ namespace HubWeb.Controllers
                                 });
                             }
 
-                            container = await _plan.Run(planDO, payload);
+                            container = await _plan.Run(planDO.Id, payload);
                             _pusherNotifier.NotifyUser($"Launching a new Container for Plan \"{planDO.Name}\"",
                                 NotificationChannel.GenericSuccess,
                                 User.Identity.Name);

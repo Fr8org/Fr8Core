@@ -382,25 +382,27 @@ namespace Hub.Services
         /// <returns></returns>
         public ContainerDO Create(IUnitOfWork uow, PlanDO curPlan, params Crate[] curPayload)
         {
-            //let's exclude null payload crates
-            curPayload = curPayload.Where(c => c != null).ToArray();
-
-            var containerDO = new ContainerDO { Id = Guid.NewGuid() };
+            var containerDO = new ContainerDO {Id = Guid.NewGuid()};
 
             containerDO.PlanId = curPlan.Id;
             containerDO.Name = curPlan.Name;
             containerDO.State = State.Unstarted;
 
-                using (var crateStorage = _crate.UpdateStorage(() => containerDO.CrateStorage))
+            using (var crateStorage = _crate.UpdateStorage(() => containerDO.CrateStorage))
+            {
+                if (curPayload?.Length > 0)
                 {
-                if (curPayload.Length > 0)
-                {
-                    crateStorage.AddRange(curPayload);
-                    crateStorage.Remove<OperationalStateCM>();
+                    foreach (var crate in curPayload)
+                    {
+                        if (crate != null && !crate.IsOfType<OperationalStateCM>())
+                        {
+                            crateStorage.Add(crate);
+                        }
+                    }
                 }
-                
+
                 var operationalState = new OperationalStateCM();
-                
+
                 operationalState.CallStack.PushFrame(new OperationalStateCM.StackFrame
                 {
                     NodeName = "Starting subplan",
@@ -475,13 +477,7 @@ namespace Hub.Services
                 uow.SaveChanges();
             }
         }
-
-        public async Task<ContainerDO> Run(IUnitOfWork uow, PlanDO curPlan, params Crate[] curPayload)
-        {
-            var curContainerDO = Create(uow, curPlan, curPayload);
-            return await Run(uow, curContainerDO);
-        }
-
+        
         public void Enqueue(Guid curPlanId, params Crate[] curEventReport)
         {
             var curEventReportDTO = curEventReport.Select(x => CrateStorageSerializer.Default.ConvertToDto(x)).ToArray();
@@ -521,18 +517,23 @@ namespace Hub.Services
             Logger.LogInfo($"Finished executing plan {curPlan} as a reaction to external event");
         }
 
-        public async Task<ContainerDO> Run(Guid planId, params Crate[] curPayload)
+        public async Task<ContainerDO> Run(Guid planId, Crate[] curPayload)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curPlan = uow.PlanRepository.GetById<PlanDO>(planId);
-                string containerId="";
+                string containerId = "";
+
                 if (curPlan == null)
+                {
                     throw new ArgumentNullException("planId");
+                }
                 try
                 {
                     var curContainerDO = Create(uow, curPlan, curPayload);
+
                     containerId = curContainerDO.Id.ToString();
+
                     return await Run(uow, curContainerDO);
                 }
                 catch (Exception ex)
@@ -542,12 +543,7 @@ namespace Hub.Services
                 }
             }
         }
-
-        public async Task<ContainerDO> Run(PlanDO curPlan, params Crate[] curPayload)
-        {
-            return await Run(curPlan.Id, curPayload);
-        }
-
+        
         public async Task<ContainerDO> Continue(Guid containerId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

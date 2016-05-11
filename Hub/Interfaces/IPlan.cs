@@ -30,9 +30,7 @@ namespace Hub.Interfaces
         void Enqueue(Guid curPlanId, params Crate[] curEventReport);
         void Enqueue(List<PlanDO> curPlans, params Crate[] curEventReport);
         ContainerDO Create(IUnitOfWork uow, Guid planId, params Crate[] curPayload);
-        Task<ContainerDO> Run(PlanDO curPlan, params Crate[] curPayload);
-        Task<ContainerDO> Run(Guid planId, params Crate[] curPayload);
-        Task<ContainerDO> Run(IUnitOfWork uow, PlanDO curPlan, params Crate[] curPayload);
+        Task<ContainerDO> Run(Guid planId, Crate[] curPayload);
         Task<ContainerDO> Continue(Guid containerId);
         Task<PlanDO> Clone(Guid planId);
     }
