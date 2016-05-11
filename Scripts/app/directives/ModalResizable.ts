@@ -4,8 +4,8 @@ module dockyard.directives {
     'use strict';
 
     export class ModalResizable implements ng.IDirective {
-        constructor(private $timeout: ng.ITimeoutService) {}
         restrict: 'A';
+        constructor(private $timeout: ng.ITimeoutService) {}
         link = (scope: IModalResizableScope, elem: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
                     (<any>$(".modal-content"))
                         .wrap('<div align="center"></div>')
