@@ -1,7 +1,5 @@
-﻿using System;
-using System.Net.Mail;
-using Data.Control;
-using Data.Interfaces.DataTransferObjects;
+﻿using Fr8Data.Control;
+using Fr8Data.DataTransferObjects;
 using TerminalBase.Infrastructure;
 
 namespace terminalDocuSign

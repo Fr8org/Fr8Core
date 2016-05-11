@@ -106,6 +106,7 @@ module dockyard.controllers {
             this.LayoutService.resetLayout();
 
             this.$scope.isPlanBuilderScope = true;
+            this.$scope.isReConfiguring = false;
 
             this.$scope.current = new model.PlanBuilderState();
             this.$scope.actionGroups = [];
@@ -403,13 +404,11 @@ module dockyard.controllers {
         private setupMessageProcessing() {
             //Process Configure Action Pane events
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionUpdated],
-                (event: ng.IAngularEvent, eventArgs: pca.ActionUpdatedEventArgs) => this.PaneConfigureAction_ActionUpdated(eventArgs));
+                (event: ng.IAngularEvent, eventArgs: model.ActivityDTO) => this.PaneConfigureAction_ActionUpdated(eventArgs));
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionRemoved],
                 (event: ng.IAngularEvent, eventArgs: pca.ActionRemovedEventArgs) => this.PaneConfigureAction_ActionRemoved(eventArgs));
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ChildActionsReconfiguration],
                 (event: ng.IAngularEvent, childActionReconfigEventArgs: pca.ChildActionReconfigurationEventArgs) => this.PaneConfigureAction_ChildActionsReconfiguration(childActionReconfigEventArgs));
-
-
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_DownStreamReconfiguration],
                 (event: ng.IAngularEvent, eventArgs: pca.DownStreamReConfigureEventArgs) => this.PaneConfigureAction_ReConfigureDownStreamActivities(eventArgs));
 
@@ -579,7 +578,7 @@ module dockyard.controllers {
             var parentId = eventArgs.group.parentId;
             var action = new model.ActivityDTO(this.$scope.planId, parentId, id);
 
-            action.label = activityTemplate.label;
+            action.name = activityTemplate.label;
             // Add action to Workflow Designer.
             this.$scope.current.activities = action.toActionVM();
             this.$scope.current.activities.activityTemplate = activityTemplate;
@@ -694,10 +693,13 @@ module dockyard.controllers {
 
         /*
             Handles message 'ConfigureActionPane_ActionUpdated'
+            TODO : we should update entire activity
         */
-        private PaneConfigureAction_ActionUpdated(eventArgs: pca.ActionUpdatedEventArgs) {
-
-        }
+        private PaneConfigureAction_ActionUpdated(updatedAction: model.ActivityDTO) {
+            var action = this.findActionById(updatedAction.id);
+            action.name = updatedAction.name;
+            action.label = updatedAction.label;
+        }   
 
         /*
             Handles message 'SelectActionPane_ActionTypeSelected'

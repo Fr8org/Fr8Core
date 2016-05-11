@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Crates;
-using Data.Interfaces.Manifests;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
+using Fr8Data.Crates;
+using Fr8Data.Manifests;
 using Hub.Interfaces;
 using Hub.Managers;
 
@@ -92,7 +92,7 @@ namespace Hub.Services
 
                 if (node is ActivityDO)
                 {
-                    nodeName = "Activity: " + ((ActivityDO)node).Label;
+                    nodeName = "Activity: " + ((ActivityDO)node).Name;
                 }
 
                 if (node is SubPlanDO)

@@ -1,13 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Data.Interfaces.Manifests;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace Hub.Interfaces
 {
@@ -22,7 +21,7 @@ namespace Hub.Interfaces
 
         //Task Process(Guid curActivityId, ActivityExecutionMode curActionExecutionMode, ContainerDO curContainerDO);
 
-        IncomingCratesDTO GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability);
+        IncomingCratesDTO GetIncomingData(Guid activityId, CrateDirection direction, AvailabilityType availability);
         IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, IFr8AccountDO curAccount);
         IEnumerable<ActivityTemplateDTO> GetAvailableActivities(IUnitOfWork uow, Func<ActivityTemplateDO, bool> predicate);
 

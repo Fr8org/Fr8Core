@@ -2,16 +2,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Crates;
 using Data.Entities;
-using Data.Helpers;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.DataTransferObjects.Helpers;
 using Data.Interfaces.Manifests;
 using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.DataTransferObjects.Helpers;
+using Fr8Data.Helpers;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Managers;
 using TerminalBase.Infrastructure;
 using Newtonsoft.Json.Linq;
@@ -123,7 +124,7 @@ namespace TerminalBase.BaseClasses
                     CurrentActivityStorage = storage;
 
                     var configurationType = GetConfigurationRequestType();
-                    var runtimeCrateManager = new CrateSignaller(CurrentActivityStorage, CurrentActivity.Label);
+                    var runtimeCrateManager = new CrateSignaller(CurrentActivityStorage, CurrentActivity.Name);
 
                     switch (configurationType)
                     {

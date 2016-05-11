@@ -1,17 +1,14 @@
 ﻿using System.Linq;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using Hub.Managers;
-using Hub.StructureMap;
 using NUnit.Framework;
-using StructureMap;
 using terminalAzureTests.Fixtures;
 using UtilitiesTesting.Fixtures;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 
 namespace terminalAzureTests.Integration
 {

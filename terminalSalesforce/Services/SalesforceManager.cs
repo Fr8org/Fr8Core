@@ -3,13 +3,14 @@ using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Salesforce.Force;
 using terminalSalesforce.Infrastructure;
 using Data.Entities;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Managers;
 using Salesforce.Common.Models;
 using Salesforce.Common;
@@ -17,7 +18,6 @@ using Salesforce.Chatter;
 using Newtonsoft.Json.Linq;
 using Salesforce.Chatter.Models;
 using StructureMap;
-using Data.States;
 
 namespace terminalSalesforce.Services
 {
@@ -56,7 +56,7 @@ namespace terminalSalesforce.Services
             return table;
         }
 
-        public async Task<List<FieldDTO>> GetProperties(SalesforceObjectType type, AuthorizationTokenDO authTokenDO, bool updatableOnly = false)
+        public async Task<List<FieldDTO>> GetProperties(SalesforceObjectType type, AuthorizationTokenDO authTokenDO, bool updatableOnly = false, string label = null)
         {
             var responce = (JObject)await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.DescribeAsync<object>(type.ToString()), authTokenDO);
             var objectFields = new List<FieldDTO>();
@@ -92,7 +92,8 @@ namespace terminalSalesforce.Services
                                             fieldDescription.Value<bool>("defaultedOnCreate") == false &&
                                             fieldDescription.Value<bool>("updateable") == true,
                             Availability = AvailabilityType.RunTime,
-                            Data = ExtractFieldData(fieldDescription.ToObject<JObject>())
+                            Data = ExtractFieldData(fieldDescription.ToObject<JObject>()),
+                            SourceCrateLabel = label
                         }
                     )
                     .OrderBy(field => field.Key);

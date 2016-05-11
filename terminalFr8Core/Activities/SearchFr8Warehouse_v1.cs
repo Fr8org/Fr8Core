@@ -1,34 +1,22 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Web;
-using AutoMapper;
 using Hub.Managers;
 using Newtonsoft.Json;
 using StructureMap;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Data.Repositories;
-using Data.States;
-using Utilities;
-using terminalFr8Core;
-using terminalFr8Core.Infrastructure;
-using terminalFr8Core.Interfaces;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using TerminalBase.Services;
 using TerminalBase.Services.MT;
-using System.Text.RegularExpressions;
-using Hub.Infrastructure;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Utilities.Logging;
 
 namespace terminalFr8Core.Actions
@@ -127,7 +115,7 @@ namespace terminalFr8Core.Actions
 
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                crateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", queryMTResult));
+                crateStorage.Add(Fr8Data.Crates.Crate.FromContent("Sql Query Result", queryMTResult));
             }
 
             return ExecuteClientActivity(payload, "ShowTableReport");
@@ -271,7 +259,7 @@ namespace terminalFr8Core.Actions
                     crateStorage.Remove(criteria);
                 }
                 crateStorage.Add(
-                    Data.Crates.Crate.FromContent(
+                    Fr8Data.Crates.Crate.FromContent(
                         "Queryable Criteria",
                         new FieldDescriptionsCM(designTimeQueryFields)
                     )
@@ -289,7 +277,7 @@ namespace terminalFr8Core.Actions
                 operationalStatus.CurrentActivityResponse =
                     ActivityResponseDTO.Create(ActivityResponse.ExecuteClientActivity);
                 operationalStatus.CurrentClientActivityName = "RunImmediately";
-                var operationsCrate = Data.Crates.Crate.FromContent("Operational Status", operationalStatus);
+                var operationsCrate = Fr8Data.Crates.Crate.FromContent("Operational Status", operationalStatus);
                 crateStorage.Add(operationsCrate);
             }
         }
@@ -374,7 +362,7 @@ namespace terminalFr8Core.Actions
 
         private IEnumerable<Crate> PackDesignTimeData()
         {
-            yield return Data.Crates.Crate.FromContent("Fr8 Search Report", new FieldDescriptionsCM(new FieldDTO
+            yield return Fr8Data.Crates.Crate.FromContent("Fr8 Search Report", new FieldDescriptionsCM(new FieldDTO
             {
                 Key = "Fr8 Search Report",
                 Value = "Table",

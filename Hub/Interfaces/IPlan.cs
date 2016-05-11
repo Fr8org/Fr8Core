@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using System.Threading.Tasks;
-using Data.Crates;
-using Data.States;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace Hub.Interfaces
 {
@@ -14,7 +14,7 @@ namespace Hub.Interfaces
     {
         PlanResultDTO GetForUser(IUnitOfWork uow, Fr8AccountDO account, PlanQueryDTO planQueryDTO, bool isAdmin);
         IList<PlanDO> GetByName(IUnitOfWork uow, Fr8AccountDO account, string name, PlanVisibility visibility);
-        void CreateOrUpdate(IUnitOfWork uow, PlanDO submittedPlan, bool withTemplate);
+        void CreateOrUpdate(IUnitOfWork uow, PlanDO submittedPlan);
         PlanDO Create(IUnitOfWork uow, string name, string category = "");
         Task Delete(IUnitOfWork uow, Guid id);
 

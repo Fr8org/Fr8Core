@@ -1,9 +1,14 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Hub.Interfaces;
 using StructureMap;
 
@@ -20,7 +25,7 @@ namespace Hub.Services
             _activity = ObjectFactory.GetInstance<IActivity>();
             _security = ObjectFactory.GetInstance<ISecurityServices>(); 
         }
-        
+
 
         /// <summary>
         /// Create Subroute entity.

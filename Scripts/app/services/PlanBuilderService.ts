@@ -241,7 +241,7 @@ module dockyard.services {
                 'available': {
                     method: 'GET',
                     isArray: true,
-                    url: '/api/plannodes/available',
+                    url: '/api/plannodes/getAvailableActivitiesWithTag',
                     params: {
                         tag: '@tag'
                     }
@@ -297,7 +297,7 @@ module dockyard.services {
                 },
                 'createSolution': {
                     method: 'POST',
-                    url: '/api/activities/create',
+                    url: '/api/activities/createSolution',
                     params: {
                         solutionName: '@solutionName'
                     }

@@ -3,11 +3,10 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
-using Data.Crates;
 using Data.Infrastructure.AutoMapper;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
 using Newtonsoft.Json;
-using RazorEngine.Configuration;
 
 namespace Hub.Managers
 {

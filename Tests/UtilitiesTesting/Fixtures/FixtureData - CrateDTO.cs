@@ -1,15 +1,10 @@
-﻿using Data.Interfaces;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
-using Newtonsoft.Json;
-using StructureMap;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System;
 using System.Linq;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.Manifests;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 
 namespace UtilitiesTesting.Fixtures
 {

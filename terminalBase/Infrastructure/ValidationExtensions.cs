@@ -1,5 +1,5 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using Data.Validations;
+﻿using Data.Validations;
+using Fr8Data.DataTransferObjects;
 
 namespace TerminalBase.Infrastructure
 {

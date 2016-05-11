@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Web.Http.Results;
-using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
 using HubWeb.Controllers;
 using HubWeb.ViewModels;
@@ -12,8 +10,10 @@ using NUnit.Framework;
 using StructureMap;
 using Utilities.Interfaces;
 using System.Threading.Tasks;
-using Data.Constants;
 using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
 using HubTests.Services.Container;
 using UtilitiesTesting.Fixtures;
 

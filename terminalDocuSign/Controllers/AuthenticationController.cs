@@ -1,20 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Newtonsoft.Json;
-using Data.Interfaces.DataTransferObjects;
-using StructureMap;
 using TerminalBase.BaseClasses;
-using terminalDocuSign.Interfaces;
 using Utilities.Configuration.Azure;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using terminalDocuSign.Services.New_Api;
 using DocuSign.eSign.Client;
 using DocuSign.eSign.Model;
 using DocuSign.eSign.Api;
+using Fr8Data.DataTransferObjects;
 using terminalDocuSign.DataTransferObjects;
 
 namespace terminalDocuSign.Controllers

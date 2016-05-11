@@ -8,9 +8,9 @@ using NUnit.Framework;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using HubTests.Controllers.Api;
 using Data.States;
+using Fr8Data.DataTransferObjects;
 using Hub.Interfaces;
 using HubWeb.Controllers;
 using UtilitiesTesting.Fixtures;
@@ -46,7 +46,7 @@ namespace HubTests.Controllers
         [Test]
         public void ActivityController_ShouldHaveHMACOnCreateMethod()
         {
-            var createMethod = typeof(ActivitiesController).GetMethod("Create", new Type[] { typeof(Guid), typeof(string), typeof(int?), typeof(Guid?), typeof(bool), typeof(Guid?) });
+            var createMethod = typeof(ActivitiesController).GetMethod("Create", new Type[] { typeof(Guid), typeof(string), typeof(string), typeof(int?), typeof(Guid?), typeof(bool), typeof(Guid?) });
             ShouldHaveFr8HMACAuthorizeOnFunction(createMethod);
         }
 

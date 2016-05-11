@@ -3,14 +3,14 @@ using StructureMap;
 using System.Threading.Tasks;
 using TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
-using Data.Interfaces.DataTransferObjects;
-using Data.Crates;
-using Data.Control;
-using Data.Interfaces.Manifests;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Data.States;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace terminalSalesforce.Actions
 {
@@ -27,7 +27,7 @@ namespace terminalSalesforce.Actions
             public RadioButtonOption UseUpstreamFeedParentIdOption { get; set; }
 
             public TextSource FeedParentIdSource { get; set; }
-
+            
             public TextSource FeedTextSource { get; set; }
 
             public ActivityUi() : this(new UiBuilder()) { }
@@ -61,7 +61,7 @@ namespace terminalSalesforce.Actions
                 Controls.Add(FeedParentSelectionGroup);
                 FeedTextSource = uiBuilder.CreateSpecificOrUpstreamValueChooser("Feed Text", nameof(FeedTextSource), requestUpstream: true, availability: AvailabilityType.RunTime);
                 Controls.Add(FeedTextSource);
-            }
+            }         
         }
 
         public const string PostedFeedCrateLabel = "Posted Salesforce Feed";

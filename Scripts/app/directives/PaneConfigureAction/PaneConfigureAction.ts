@@ -458,6 +458,9 @@ module dockyard.directives.paneConfigureAction {
                         }
 
                         var oldAction = this.$scope.currentAction;
+                        if (oldAction.label !== res.label) {
+                            this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ActionUpdated], res);
+                        }
                         if (res.childrenActivities && res.childrenActivities.length > 0 && (!oldAction.childrenActivities || oldAction.childrenActivities.length < 1)) {
                             // If the directive is used for configuring solutions,
                             // the SolutionController would listen to this event 
@@ -479,7 +482,7 @@ module dockyard.directives.paneConfigureAction {
                                 //in case of reconfiguring the solution check the child actions again
 
                                 //not needed in case of Loop action
-                                if (this.$scope.currentAction.label !== "Loop") {
+                                if (this.$scope.currentAction.name !== "Loop") {
                                     this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
                                 }
                             }

@@ -4,20 +4,17 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Hub.Managers;
 using terminalDocuSign.DataTransferObjects;
-using terminalDocuSign.Services;
 using TerminalBase.Infrastructure;
-using TerminalBase.Infrastructure.Behaviors;
 using terminalDocuSign.Services.New_Api;
-using terminalDocuSign.Actions;
 
 namespace terminalDocuSign.Actions
 {

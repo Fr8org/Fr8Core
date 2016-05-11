@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Fr8Data.DataTransferObjects;
 
 namespace TerminalBase.Infrastructure
 {

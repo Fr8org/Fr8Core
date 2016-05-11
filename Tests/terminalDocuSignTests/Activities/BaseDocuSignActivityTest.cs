@@ -1,8 +1,7 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
-using Data.Crates;
 using Data.Entities;
+using Fr8Data.Crates;
 using Moq;
 using NUnit.Framework;
 using StructureMap;

@@ -112,40 +112,6 @@ namespace UtilitiesTesting.Fixtures
             return containeList;
 		}
 
-        public static ContainerDO TestContainerForFactsControllerTest()
-        {
-            var containerDO = new ContainerDO()
-            {
-                Id = TestContainer_Id_1(),
-                Name = "Container",
-                PlanId = TestPlan4().Id,
-                State = State.Executing
-            };
-
-            return containerDO;
-        }
-
-        public static IList<FactDO> TestFactsForFactsControllerTest()
-        {
-            IList<FactDO> facts = new List<FactDO>();
-            var container = TestContainerForFactsControllerTest();
-            facts.Add(new FactDO()
-            {
-                Id = 1,
-                CreateDate = DateTime.UtcNow,
-                ObjectId = container.Id.ToString(),
-            });
-
-            facts.Add(new FactDO()
-            {
-                Id = 2,
-                CreateDate = DateTime.UtcNow.AddDays(1),
-                ObjectId = container.Id.ToString(),
-            });
-
-            return facts;
-        }
-
         public static IList<ContainerDO> TestControllerContainersByUser()
         {
             IList<ContainerDO> containerList = new List<ContainerDO>();
@@ -197,24 +163,9 @@ namespace UtilitiesTesting.Fixtures
 
 			string path = Path.Combine(physLocation, filepath);
 			if (!File.Exists(path))
-				path = FindXmlPayloadFullPath(UpNLevels(physLocation, 1), filepath);
+				path = FindXmlPayloadFullPath(Utilities.MiscUtils.UpNLevels(physLocation, 1), filepath);
 			return path;
 		}
 
-		/// <summary>
-		/// Given a directory path, returns an upper level path by the specified number of levels up.
-		/// </summary>
-		private static string UpNLevels(string path, int levels)
-		{
-			int index = path.LastIndexOf('\\', path.Length - 1, path.Length);
-			if (index <= 3)
-				return string.Empty;
-			string result = path.Substring(0, index);
-			if (levels > 1)
-			{
-				result = UpNLevels(result, levels - 1);
-			}
-			return result;
-		}
 	}
 }

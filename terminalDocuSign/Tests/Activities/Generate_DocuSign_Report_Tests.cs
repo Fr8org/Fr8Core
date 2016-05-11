@@ -3,12 +3,10 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Moq;
@@ -19,10 +17,8 @@ using terminalDocuSign.Actions;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Infrastructure.AutoMapper;
 using terminalDocuSign.Infrastructure.StructureMap;
-using terminalDocuSign.Interfaces;
 using terminalDocuSign.Tests.Fixtures;
 using TerminalBase.Infrastructure;
-using Utilities.Configuration.Azure;
 using UtilitiesTesting;
 
 namespace terminalDocuSign.Tests.Actions

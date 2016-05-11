@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http.Description;
 using System.Web.Http;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Utilities.Configuration.Azure;
-using Utilities.Configuration.Azure;
-using Data.Interfaces.Manifests;
 
 namespace terminalExcel.Controllers
 {
@@ -66,6 +65,7 @@ namespace terminalExcel.Controllers
                 Name = "SetExcelTemplate",
                 Label = "Set Excel Template",
                 Version = "1",
+                MinPaneWidth = 330,
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 Tags = "Table Data Generator,Skip At Run-Time",

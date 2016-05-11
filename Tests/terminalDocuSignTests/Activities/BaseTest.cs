@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Crates;
 using Data.Entities;
 using Data.Interfaces.Manifests;
+using Fr8Data.Crates;
 using Hub.Managers;
 using Moq;
 using NUnit.Framework;

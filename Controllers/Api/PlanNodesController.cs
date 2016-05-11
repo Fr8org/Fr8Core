@@ -5,18 +5,15 @@ using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
 using HubWeb.Infrastructure;
-using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Infrastructure.StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
 using Hub.Managers;
-using Data.Crates;
-using Data.Interfaces.Manifests;
 using Data.States;
-using Data.Constants;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.States;
 
 namespace HubWeb.Controllers
 {
@@ -89,7 +86,7 @@ namespace HubWeb.Controllers
         [Fr8HubWebHMACAuthenticate]
         public IHttpActionResult GetAvailableData(Guid id, CrateDirection direction = CrateDirection.Upstream, AvailabilityType availability = AvailabilityType.RunTime)
         {
-            return Ok(_activity.GetAvailableData(id, direction, availability));
+            return Ok(_activity.GetIncomingData(id, direction, availability));
         }
 
         [ActionName("available")]
@@ -103,11 +100,11 @@ namespace HubWeb.Controllers
             return Ok(categoriesWithActivities);
         }
 
-        [ActionName("available")]
+        [ActionName("getAvailableActivitiesWithTag")]
         [ResponseType(typeof(IEnumerable<ActivityTemplateDTO>))]
         [AllowAnonymous]
         [HttpGet]
-        public IHttpActionResult GetAvailableActivities(string tag)
+        public IHttpActionResult getAvailableActivitiesWithTag(string tag)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

@@ -1,22 +1,24 @@
 ﻿using AutoMapper;
-using Data.Constants;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
 using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Control;
-using Data.Crates;
 using Data.Infrastructure.Security;
 using Data.Repositories.Plan;
 using Data.Infrastructure.StructureMap;
+using Data.Interfaces.Manifests;
 using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using Hub.Managers;
@@ -64,7 +66,7 @@ namespace Hub.Services
             return uow.PlanRepository.GetById<ActivityDO>(id);
         }
 
-        public async Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid activityTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
+        public async Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
         {
             if (parentNodeId != null && createPlan)
             {
@@ -77,9 +79,9 @@ namespace Hub.Services
             }
 
             // to avoid null pointer exception while creating parent node if label is null 
-            if (label == null)
+            if (name == null)
             {
-                label = userId + "_" + activityTemplateId.ToString();
+                name = userId + "_" + activityTemplateId.ToString();
             }
 
             PlanNodeDO parentNode;
@@ -87,12 +89,12 @@ namespace Hub.Services
 
             if (createPlan)
             {
-                plan = ObjectFactory.GetInstance<IPlan>().Create(uow, label);
+                plan = ObjectFactory.GetInstance<IPlan>().Create(uow, name);
 
                 plan.ChildNodes.Add(parentNode = new SubPlanDO
                 {
                     StartingSubPlan = true,
-                    Name = label + " #1"
+                    Name = name + " #1"
                 });
             }
             else
@@ -101,17 +103,17 @@ namespace Hub.Services
 
                 if (parentNode is PlanDO)
                 {
-                    if (((PlanDO)parentNode).StartingSubPlan == null)
+                    if (((PlanDO) parentNode).StartingSubPlan == null)
                     {
                         parentNode.ChildNodes.Add(parentNode = new SubPlanDO
                         {
                             StartingSubPlan = true,
-                            Name = label + " #1"
+                            Name = name + " #1"
                         });
                     }
                     else
                     {
-                        parentNode = ((PlanDO)parentNode).StartingSubPlan;
+                        parentNode = ((PlanDO) parentNode).StartingSubPlan;
                     }
 
                 }
@@ -121,7 +123,7 @@ namespace Hub.Services
             {
                 Id = Guid.NewGuid(),
                 ActivityTemplateId = activityTemplateId,
-                Label = label,
+                Name = name,
                 CrateStorage = _crate.EmptyStorageAsStr(),
                 AuthorizationTokenId = authorizationTokenId
             };
@@ -155,7 +157,7 @@ namespace Hub.Services
                 await DeactivateActivity(uow, submittedActivity.Id);
 
                 var configuredActivity = await CallActivityConfigure(uow, userId, submittedActivity);
-                
+
                 SaveAndUpdateActivity(uow, configuredActivity);
 
                 uow.SaveChanges();
@@ -329,7 +331,7 @@ namespace Hub.Services
                 throw;
             }
         }
-        
+
         private async Task<ActivityDTO> SaveOrUpdateActivityCore(ActivityDO submittedActivity)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -345,7 +347,7 @@ namespace Hub.Services
                 return Mapper.Map<ActivityDTO>(result);
             }
         }
-        
+
         private void UpdateActivityProperties(IUnitOfWork uow, ActivityDO submittedActivity)
         {
             var existingAction = uow.PlanRepository.GetById<ActivityDO>(submittedActivity.Id);
@@ -419,7 +421,7 @@ namespace Hub.Services
 
                     if (originalActions.TryGetValue(submitted.Id, out existingActivity))
                     {
-                        RestoreSystemProperties(existingActivity, (ActivityDO)submitted);
+                        RestoreSystemProperties(existingActivity, (ActivityDO) submitted);
                     }
                 }
             }
@@ -443,7 +445,7 @@ namespace Hub.Services
                 await DeactivateActivities(exising.GetDescendants().Select(x => x.Id));
             }
         }
-        
+
         private async Task DeactivateActivities(IEnumerable<Guid> activityIds)
         {
             List<Task> tasks = new List<Task>();
@@ -491,8 +493,8 @@ namespace Hub.Services
             {
                 return;
             }
-            
-            var curActivityDO = (ActivityDO)exisiting.Clone();
+
+            var curActivityDO = (ActivityDO) exisiting.Clone();
 
             curActivityDO.AuthorizationToken = uow.AuthorizationTokenRepository.FindTokenById(curActivityDO.AuthorizationTokenId);
 
@@ -543,7 +545,7 @@ namespace Hub.Services
 
             return Mapper.Map<ActivityDO>(tempActionDTO);
         }
-        
+
         private Task<TResult> CallTerminalActivityAsync<TResult>(
             IUnitOfWork uow, string activityName,
             ActivityDO curActivityDO,
@@ -635,6 +637,7 @@ namespace Hub.Services
                 {
                     Id = Guid.NewGuid(),
                     Label = curActivityTerminalDTO.Label,
+                    Name = curActivityTerminalDTO.Name,
                     ActivityTemplate = curActivityTerminalDTO,
                     AuthToken = new AuthorizationTokenDTO
                     {
@@ -675,8 +678,8 @@ namespace Hub.Services
             {
                 var curActivities = uow.ActivityTemplateRepository.GetAll()
                     .Where(a => a.Terminal.Name == terminalName
-                        && a.Category == ActivityCategory.Solution)
-                        .ToList();
+                                && a.Category == ActivityCategory.Solution)
+                    .ToList();
                 solutionNameList.AddRange(curActivities.Select(activity => activity.Name));
             }
             return solutionNameList;

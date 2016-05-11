@@ -11,20 +11,21 @@ using StructureMap;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Interfaces;
 using System.Threading.Tasks;
 using HubWeb.ViewModels;
 using Newtonsoft.Json;
 using Hub.Managers;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects.Helpers;
 using Utilities.Interfaces;
 using HubWeb.Infrastructure;
-using Data.Interfaces.Manifests;
 using Data.Infrastructure;
-using PlanType = Data.Constants.PlanType;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.DataTransferObjects.Helpers;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace HubWeb.Controllers
 {
@@ -76,7 +77,7 @@ namespace HubWeb.Controllers
                 }
                 var curPlanDO = Mapper.Map<PlanEmptyDTO, PlanDO>(planDto, opts => opts.Items.Add("ptid", planDto.Id));
 
-                _plan.CreateOrUpdate(uow, curPlanDO, updateRegistrations);
+                _plan.CreateOrUpdate(uow, curPlanDO);
 
                 uow.SaveChanges();
                 var result = PlanMappingHelper.MapPlanToDto(uow, uow.PlanRepository.GetById<PlanDO>(curPlanDO.Id));
@@ -307,7 +308,7 @@ namespace HubWeb.Controllers
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
                         var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
-                        var currentPlanType = planDO.IsMonitoringPlan() ? Data.Constants.PlanType.Monitoring.ToString() : Data.Constants.PlanType.RunOnce.ToString();
+                        var currentPlanType = planDO.IsMonitoringPlan() ? PlanType.Monitoring.ToString() : PlanType.RunOnce.ToString();
                         return BadRequest(currentPlanType);
                     }
                 }

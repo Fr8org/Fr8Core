@@ -1,15 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using Data.Crates;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Data.States;
-using Hub.Interfaces;
+using Fr8Data.Crates;
+using Fr8Data.Manifests;
 using Hub.Managers;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Utilities.Serializers.Json;
 
 namespace UtilitiesTesting.Fixtures

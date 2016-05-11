@@ -1,18 +1,14 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using HealthMonitor.Utility;
 using Hub.Managers;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using terminalGoogle.Actions;
-using terminalGoogle.DataTransferObjects;
-using terminalGoogle.Services;
 using UtilitiesTesting.Fixtures;
 
 namespace terminaBaselTests.Tools.Activities

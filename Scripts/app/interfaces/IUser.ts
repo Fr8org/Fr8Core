@@ -10,5 +10,6 @@ module dockyard.interfaces {
         status: string;
         role: string;
         organizationId: number;
+        profileId: string;
     }    
 }

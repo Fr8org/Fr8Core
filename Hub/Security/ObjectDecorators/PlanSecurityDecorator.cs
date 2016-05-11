@@ -1,16 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web;
-using Data.Crates;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Data.States;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Interfaces;
 
 namespace Hub.Security.ObjectDecorators
@@ -91,9 +90,9 @@ namespace Hub.Security.ObjectDecorators
             return _target.Create(uow, name, category);
         }
 
-        public void CreateOrUpdate(IUnitOfWork uow, PlanDO submittedPlan, bool withTemplate)
+        public void CreateOrUpdate(IUnitOfWork uow, PlanDO submittedPlan)
         {
-            _target.CreateOrUpdate(uow, submittedPlan, withTemplate);
+            _target.CreateOrUpdate(uow, submittedPlan);
         }
 
         public Task<string> Deactivate(Guid curPlanId)

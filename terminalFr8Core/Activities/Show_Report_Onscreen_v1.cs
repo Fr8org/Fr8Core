@@ -2,12 +2,13 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Data.States;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Managers;
 using Newtonsoft.Json;
 using TerminalBase.BaseClasses;
@@ -38,7 +39,7 @@ namespace terminalFr8Core.Actions
         }
 
 
-        private async Task<Data.Crates.Crate> FindTables(ActivityDO curActivityDO)
+        private async Task<Fr8Data.Crates.Crate> FindTables(ActivityDO curActivityDO)
         {
             var fields = new List<FieldDTO>();
 
@@ -50,7 +51,7 @@ namespace terminalFr8Core.Actions
                 fields.Add(new FieldDTO(table.Key, table.Key));    
             }
 
-            return Data.Crates.Crate.FromContent("Upstream Crate Label List", new FieldDescriptionsCM(fields));
+            return Fr8Data.Crates.Crate.FromContent("Upstream Crate Label List", new FieldDescriptionsCM(fields));
         }
 
         protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
@@ -97,7 +98,7 @@ namespace terminalFr8Core.Actions
 
                     if (reportTable != null)
                     {
-                        crateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", new StandardPayloadDataCM
+                        crateStorage.Add(Fr8Data.Crates.Crate.FromContent("Sql Query Result", new StandardPayloadDataCM
                         {
                             PayloadObjects = reportTable.Content.PayloadObjects
                         }));

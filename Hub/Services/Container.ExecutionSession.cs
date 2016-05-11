@@ -1,17 +1,16 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Data.Constants;
-using Data.Crates;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.DataTransferObjects.Helpers;
-using Data.Interfaces.Manifests;
 using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.DataTransferObjects.Helpers;
+using Fr8Data.Manifests;
 using Hub.Exceptions;
 using Hub.Interfaces;
 using Hub.Managers;
@@ -77,7 +76,7 @@ namespace Hub.Services
 
                 if (node is ActivityDO)
                 {
-                    nodeName = "Activity: " + ((ActivityDO) node).Label;
+                    nodeName = "Activity: " + ((ActivityDO) node).Name;
                 }
 
                 if (node is SubPlanDO)

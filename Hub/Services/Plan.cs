@@ -1,31 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data.Entity;
 using System.Linq;
-using System.Runtime.InteropServices;
-using System.Text;
 using AutoMapper;
-using Hub.Exceptions;
-using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;
 using Data.Entities;
 using Data.Exceptions;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Interfaces;
 using InternalInterface = Hub.Interfaces;
 using Hub.Managers;
 using System.Threading.Tasks;
-using AutoMapper.QueryableExtensions;
-using Data.Constants;
-using Data.Crates;
 using Data.Infrastructure;
-using Data.Interfaces.DataTransferObjects.Helpers;
+using Data.Interfaces.Manifests;
 using Data.Repositories.Plan;
-using Hub.Managers.APIManagers.Transmitters.Restful;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.DataTransferObjects.Helpers;
+using Fr8Data.Manifests;
+using Fr8Data.States;
+using Hub.Exceptions;
 using Utilities.Logging;
 using Utilities.Interfaces;
 
@@ -132,7 +128,7 @@ namespace Hub.Services
                     .ToList();
         }
 
-        public void CreateOrUpdate(IUnitOfWork uow, PlanDO submittedPlan, bool updateChildEntities)
+        public void CreateOrUpdate(IUnitOfWork uow, PlanDO submittedPlan)
         {
             if (submittedPlan.Id == Guid.Empty)
             {
@@ -203,7 +199,7 @@ namespace Hub.Services
         public async Task<ActivateActivitiesDTO> Activate(Guid curPlanId, bool planBuilderActivate)
         {
             var result = new ActivateActivitiesDTO();
-           
+
             List<Task<ActivityDTO>> activitiesTask = new List<Task<ActivityDTO>>();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -224,14 +220,14 @@ namespace Hub.Services
                 await Task.WhenAll(activitiesTask);
 
                 foreach (var resultActivate in activitiesTask.Select(x => x.Result))
-                {
+                        {
                     var errors = new ValidationErrorsDTO(ExtractValidationErrors(resultActivate));
 
                     if (errors.ValidationErrors.Count > 0)
-                    {
+                        {
                         result.ValidationErrors[resultActivate.Id] = errors;
-                    }
-                }
+                        }
+                        }
 
                 if (result.ValidationErrors.Count == 0)
                 {
@@ -388,21 +384,21 @@ namespace Hub.Services
             containerDO.Name = curPlan.Name;
             containerDO.State = State.Unstarted;
 
-            using (var crateStorage = _crate.UpdateStorage(() => containerDO.CrateStorage))
-            {
+                using (var crateStorage = _crate.UpdateStorage(() => containerDO.CrateStorage))
+                {
                 if (curPayload?.Length > 0)
                 {
                     foreach (var crate in curPayload)
                     {
                         if (crate != null && !crate.IsOfType<OperationalStateCM>())
-                        {
+                {
                             crateStorage.Add(crate);
                         }
                     }
                 }
-
+                
                 var operationalState = new OperationalStateCM();
-
+                
                 operationalState.CallStack.PushFrame(new OperationalStateCM.StackFrame
                 {
                     NodeName = "Starting subplan",
@@ -477,11 +473,15 @@ namespace Hub.Services
                 uow.SaveChanges();
             }
         }
-        
+
         public void Enqueue(Guid curPlanId, params Crate[] curEventReport)
         {
+            //We convert incoming data to DTO objects because HangFire will serialize method parameters into JSON and serializing of Crate objects is forbidden
             var curEventReportDTO = curEventReport.Select(x => CrateStorageSerializer.Default.ConvertToDto(x)).ToArray();
-            _dispatcher.Enqueue(() => LaunchProcessSync(curPlanId, curEventReportDTO));
+            //We don't await this call as it will be awaited inside HangFire after job is launched
+#pragma warning disable CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
+            _dispatcher.Enqueue(() => LaunchProcess(curPlanId, curEventReportDTO));
+#pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
         public void Enqueue(List<PlanDO> curPlans, params Crate[] curEventReport)
@@ -491,13 +491,8 @@ namespace Hub.Services
                 Enqueue(curPlan.Id, curEventReport);
             }
         }
-        //This is for HangFire compatibility reasons
-        public static void LaunchProcessSync(Guid curPlan, params CrateDTO[] curPayload)
-        {
-            LaunchProcess(curPlan, curPayload.Select(x => CrateStorageSerializer.Default.ConvertFromDto(x)).ToArray()).Wait();
-        }
 
-        public static async Task LaunchProcess(Guid curPlan, params Crate[] curPayload)
+        public static async Task LaunchProcess(Guid curPlan, params CrateDTO[] curPayload)
         {
             Logger.LogInfo($"Starting executing plan {curPlan} as a reaction to external event");
             if (curPlan == default(Guid))
@@ -509,7 +504,7 @@ namespace Hub.Services
             // this exception should be already logged somewhere
             try
             {
-                await ObjectFactory.GetInstance<IPlan>().Run(curPlan, curPayload);
+                await ObjectFactory.GetInstance<IPlan>().Run(curPlan, curPayload.Select(x => CrateStorageSerializer.Default.ConvertFromDto(x)).ToArray());
             }
             catch
             {
@@ -543,7 +538,7 @@ namespace Hub.Services
                 }
             }
         }
-        
+
         public async Task<ContainerDO> Continue(Guid containerId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

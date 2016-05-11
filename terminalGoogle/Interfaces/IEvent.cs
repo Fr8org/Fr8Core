@@ -1,8 +1,7 @@
-﻿using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using System.Threading.Tasks;
-using System.Xml;
-using System.Xml.Linq;
+﻿using System.Threading.Tasks;
+using Fr8Data.Crates;
+
+
 namespace terminalGoogle.Infrastructure
 {
     public interface IEvent

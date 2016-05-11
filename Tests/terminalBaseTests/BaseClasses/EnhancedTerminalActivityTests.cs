@@ -2,12 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.Manifests;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Newtonsoft.Json;

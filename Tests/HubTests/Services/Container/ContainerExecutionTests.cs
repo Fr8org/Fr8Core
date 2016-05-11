@@ -5,11 +5,11 @@ using StructureMap;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
 using Data.Interfaces;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.Manifests;
 using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.Manifests;
 using HubTests.Services.Container;
 using Hub.Exceptions;
 using UtilitiesTesting.Fixtures;

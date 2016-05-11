@@ -3,17 +3,17 @@ using StructureMap;
 using System.Threading.Tasks;
 using TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
-using Data.Interfaces.DataTransferObjects;
-using Data.Crates;
-using Data.Control;
-using Data.Interfaces.Manifests;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Data.States;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Helpers;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Newtonsoft.Json;
 using ServiceStack;
-using Data.Helpers;
 
 namespace terminalSalesforce.Actions
 {
@@ -116,7 +116,7 @@ namespace terminalSalesforce.Actions
             AvailableChatters = _salesforceManager.GetSalesforceObjectTypes(filterByProperties: SalesforceObjectProperties.HasChatter).Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
             crateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PostedFeedCrateLabel);
             CurrentActivityStorage.Add(Crate<FieldDescriptionsCM>.FromContent(PostedFeedPropertiesCrateLabel,
-                                                                              new FieldDescriptionsCM(new FieldDTO(FeedIdKeyName, FeedIdKeyName, AvailabilityType.RunTime)),
+                                                                              new FieldDescriptionsCM(new FieldDTO(FeedIdKeyName, FeedIdKeyName, AvailabilityType.RunTime) { SourceCrateLabel = FeedIdKeyName }),
                                                                               AvailabilityType.RunTime));
         }
 
@@ -136,7 +136,7 @@ namespace terminalSalesforce.Actions
                 return;
             }
             //Prepare new query filters from selected object properties
-            var selectedObjectProperties = await _salesforceManager.GetProperties(SelectedChatter.ToEnum<SalesforceObjectType>(), AuthorizationToken);
+            var selectedObjectProperties = await _salesforceManager.GetProperties(SelectedChatter.ToEnum<SalesforceObjectType>(), AuthorizationToken,false,PostedFeedCrateLabel);
             var queryFilterCrate = Crate<FieldDescriptionsCM>.FromContent(
                 QueryFilterCrateLabel,
                 new FieldDescriptionsCM(selectedObjectProperties),
