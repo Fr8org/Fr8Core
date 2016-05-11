@@ -25,12 +25,6 @@ namespace terminalBox.Actions
             public ActivityUi(UiBuilder uiBuilder)
             {
                 Controls.Add(FileChooser = uiBuilder.CreateCrateChooser("FileChooser", "Select file to store:", true, true));
-                /*Controls.Add(Filename = new DropDownList()
-                {
-                    Label = "Select where to store file",
-                    Name = "Filename"
-                });*/
-
                 Controls.Add(Filename = new TextBox()
                 { Name = "Filename", Label = "Enter the file name: " });
             }
@@ -41,26 +35,14 @@ namespace terminalBox.Actions
         {
         }
 
-        /*private async Task FillAvailableFolders()
-        {
-            var token = JsonConvert.DeserializeObject<BoxAuthTokenDO>(AuthorizationToken.Token);
-            var folders = await new BoxService().ListFolders(token);
-
-            ConfigurationControls.Filename.ListItems = folders.Select(x => new ListItem()
-            {
-                Key = x.Value,
-                Value = x.Key
-            }).ToList();
-        }*/
-
         protected override async Task Initialize(CrateSignaller crateSignaller)
         {
-            //await FillAvailableFolders();
+            await Task.Yield();
         }
 
         protected override async Task Configure(CrateSignaller crateSignaller)
         {
-            //await FillAvailableFolders();
+            await Task.Yield();
         }
 
         protected override async Task RunCurrentActivity()
