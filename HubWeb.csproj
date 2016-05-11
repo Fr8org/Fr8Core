@@ -947,6 +947,7 @@
     <Content Include="Config\log4net.tests.healthMonitor.Release.config" />
     <Content Include="Views\AngularTemplate\FilterPane.cshtml" />
     <Content Include="Views\AngularTemplate\MiniHeader.cshtml" />
+    <Content Include="Views\AngularTemplate\ActivityLabelModal.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />
