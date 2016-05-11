@@ -90,7 +90,6 @@ namespace HealthMonitor
                     }
                     else if (args[i] == "--killexpress")
                     {
-                        killIISExpress = true;
                     }
 
                     // Execute the clean-up script after the tests finished running. 

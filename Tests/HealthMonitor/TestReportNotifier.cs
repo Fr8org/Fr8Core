@@ -52,11 +52,14 @@ namespace HealthMonitor
 
         public void Notify(string appName, string htmlReport, string username, string password)
         {
+            /**
+            This code is for the future
             if (string.IsNullOrEmpty(username) || string.IsNullOrEmpty(password))
             {
                 Trace.TraceWarning($"The SMTP username [{username}] or password [{password}] is empty. No email will be sent.");
                 return;
             }
+            */
 
             var toEmails = GetToEmails();
             if (toEmails == null)
@@ -76,8 +79,8 @@ namespace HealthMonitor
 
             var credentials = new NetworkCredential
             {
-                UserName = username,
-                Password = password
+                UserName = GetUserName(),
+                Password = GetPassword()
             };
 
             var web = new Web(credentials);
