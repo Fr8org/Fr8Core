@@ -622,6 +622,10 @@
     <Compile Include="Migrations\201605091247127_Plan_Templates.Designer.cs">
       <DependentUpon>201605091247127_Plan_Templates.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201605102018494_Move_Profile_To_Fr8Account.cs" />
+    <Compile Include="Migrations\201605102018494_Move_Profile_To_Fr8Account.Designer.cs">
+      <DependentUpon>201605102018494_Move_Profile_To_Fr8Account.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -726,6 +730,7 @@
     <Compile Include="Repositories\WebServiceRepository.cs" />
     <Compile Include="States\ActivityTemplateState.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
+    <Compile Include="States\DefaultProfiles.cs" />
     <Compile Include="States\NotificationChannel.cs" />
     <Compile Include="States\CrateDirection.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
@@ -1187,6 +1192,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201605091247127_Plan_Templates.resx">
       <DependentUpon>201605091247127_Plan_Templates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605102018494_Move_Profile_To_Fr8Account.resx">
+      <DependentUpon>201605102018494_Move_Profile_To_Fr8Account.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
