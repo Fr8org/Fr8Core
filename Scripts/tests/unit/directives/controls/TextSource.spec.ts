@@ -77,8 +77,8 @@ module dockyard.tests.unit.directives.controls {
             expect(element.find("[value='upstream']").length).toBe(1);
         });
 
-        it('Should contain a dropdown list initially', () => {
-            expect(element.find("drop-down-list-box").length).toBeGreaterThan(0);
+        it('Should contain a button that open modal with upstream fields initially', () => {
+            expect(element.find("upstream-field-chooser").length).toBeGreaterThan(0);
         });
 
         it('Should contain a button that open modal when upstream radio is selected', () => {
