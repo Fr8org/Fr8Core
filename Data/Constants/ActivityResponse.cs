@@ -22,7 +22,7 @@
 
     public enum PlanType
     {
-        Ongoing,
+        Monitoring,
         RunOnce
     }
 }
