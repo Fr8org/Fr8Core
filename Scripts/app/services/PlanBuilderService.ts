@@ -10,7 +10,6 @@ module dockyard.services {
         getFull: (id: Object) => interfaces.IPlanFullDTO;
         getByActivity: (id: { id: string }) => interfaces.IPlanVM;
         execute: (id: { id: number }, payload: { payload: string }, success: any, error: any) => void;
-        activate: (data: { planId: string, planBuilderActivate: boolean }) => any;
         deactivate: (data: { planId: string }) => ng.resource.IResource<string>;
         update: (data: { id: string, name: string }) => interfaces.IPlanVM;
         run: (id: string) => ng.IPromise<model.ContainerDTO>;
@@ -128,15 +127,6 @@ module dockyard.services {
                         url: '/api/plans/run?planId=:id',
                         params: {
                             id: '@id'
-                        }
-                    },
-                    'activate': {
-                        method: 'POST',
-                        isArray: false,
-                        url: '/api/plans/activate/',
-                        params: {
-                            planId: '@planId',
-                            planBuilderActivate: '@planBuilderActivate'
                         }
                     },
                     'deactivate': {

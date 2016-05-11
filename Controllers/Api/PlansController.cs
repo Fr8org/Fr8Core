@@ -234,7 +234,6 @@ namespace HubWeb.Controllers
         }
 
 
-
         [HttpDelete]
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
@@ -256,47 +255,7 @@ namespace HubWeb.Controllers
         {
             return Ok("This is no longer used due to V2 Event Handling mechanism changes.");
         }
-
-        // Not sure if this metod is actually in use
-        [HttpPost]
-        [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
-        [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Activate(Guid planId, bool planBuilderActivate = false)
-        {
-            string pusherChannel = String.Format("fr8pusher_{0}", User.Identity.Name);
-
-            try
-            {
-                var activateDTO = await _plan.Activate(planId, planBuilderActivate);
-
-                //check if the response contains any error message and show it to the user 
-                if (activateDTO.ValidationErrors.Count > 0)
-                {
-                    _pusherNotifier.NotifyUser("Plan has validation errors", 
-                        NotificationChannel.GenericFailure, 
-                        User.Identity.Name);
-                }
-
-                EventManager.PlanActivated(planId);
-
-                return Ok(activateDTO);
-            }
-            catch (ApplicationException ex)
-            {
-                _pusherNotifier.NotifyUser(ex.Message,
-                    NotificationChannel.GenericFailure, 
-                    User.Identity.Name);
-                throw;
-            }
-            catch (Exception)
-            {
-                _pusherNotifier.NotifyUser("There is a problem with activating this plan. Please try again later.",
-                    NotificationChannel.GenericFailure, 
-                    User.Identity.Name);
-                throw;
-            }
-        }
-
+        
         [HttpPost]
         [Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Deactivate(Guid planId)
