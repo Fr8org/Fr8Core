@@ -4,7 +4,7 @@ module dockyard.directives {
     'use strict';
 
     export class ModalResizable implements ng.IDirective {
-        restrict: 'A';
+        restrict = 'A';
         constructor(private $timeout: ng.ITimeoutService) {}
         link = (scope: IModalResizableScope, elem: ng.IAugmentedJQuery, attrs: ng.IAttributes) => {
                     (<any>$(".modal-content"))
