@@ -1,17 +1,16 @@
-﻿using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using HealthMonitor.Utility;
+﻿using HealthMonitor.Utility;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using Hub.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Data.States;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -34,7 +33,7 @@ namespace terminalDocuSignTests.Integration
 
             string baseUrl = GetHubApiBaseUrl();
 
-            var solutionCreateUrl = baseUrl + "activities/create?solutionName=Extract_Data_From_Envelopes";
+            var solutionCreateUrl = baseUrl + "activities/createSolution?solutionName=Extract_Data_From_Envelopes";
 
             //
             // Create solution
@@ -73,14 +72,14 @@ namespace terminalDocuSignTests.Integration
             _solution = await HttpPostAsync<ActivityDTO, ActivityDTO>(baseUrl + "activities/configure?id=" + _solution.Id, _solution);
             _crateStorage = Crate.FromDto(_solution.CrateStorage);
             Assert.AreEqual(2, _solution.ChildrenActivities.Count(), "Solution child activities failed to create.");
-            Assert.True(_solution.ChildrenActivities.Any(a => a.Label == "Monitor DocuSign Envelope Activity" && a.Ordering == 1),
+            Assert.True(_solution.ChildrenActivities.Any(a => a.Name == "Monitor DocuSign Envelope Activity" && a.Ordering == 1),
                 "Failed to detect Monitor DocuSign Envelope Activity as the first child activity");
-            Assert.True(_solution.ChildrenActivities.Any(a => a.Label == "Send DocuSign Envelope" && a.Ordering == 2),
+            Assert.True(_solution.ChildrenActivities.Any(a => a.Name == "Send DocuSign Envelope" && a.Ordering == 2),
                 "Failed to detect Send DocuSign Envelope as the second child activity");
 
 
             var monitorDocuSignEnvelopeActivity = _solution.ChildrenActivities
-                .Single(x => x.Label == "Monitor DocuSign Envelope Activity");
+                .Single(x => x.Name == "Monitor DocuSign Envelope Activity");
 
             //
             // Apply auth-token to child MonitorDocuSignEvnelope activity.
@@ -161,7 +160,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Configure Send DocuSign Envelope action
             //
-            var sendEnvelopeAction = _solution.ChildrenActivities.Single(a => a.Label == "Send DocuSign Envelope");
+            var sendEnvelopeAction = _solution.ChildrenActivities.Single(a => a.Name == "Send DocuSign Envelope");
 
             if (sendEnvelopeAction.ActivityTemplate.NeedsAuthentication)
             {
@@ -247,7 +246,7 @@ namespace terminalDocuSignTests.Integration
             var apmAction = new ActivityDTO()
             {
                 ActivityTemplate = apmActivityTemplate,
-                Label = apmActivityTemplate.Label,
+                Name = apmActivityTemplate.Label,
                 ParentPlanNodeId = _solution.Id,
                 RootPlanNodeId = plan.Plan.Id
             };

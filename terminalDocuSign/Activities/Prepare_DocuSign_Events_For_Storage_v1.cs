@@ -3,12 +3,12 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Managers;
 using Newtonsoft.Json;
 using terminalDocuSign.DataTransferObjects;
@@ -78,7 +78,7 @@ namespace terminalDocuSign.Actions
                 using (var crateStorage = CrateManager.GetUpdatableStorage(curProcessPayload))
                 {
                     var crate = curEventReport.EventPayload.CrateContentsOfType<DocuSignEnvelopeCM_v2>().First();
-                    crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope", crate));
+                    crateStorage.Add(Fr8Data.Crates.Crate.FromContent("DocuSign Envelope", crate));
                 }
             }
             Debug.WriteLine($"Returning success for payload {curProcessPayload.ContainerId} - {curProcessPayload.CrateStorage.Crates}");

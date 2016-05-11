@@ -1,28 +1,21 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using StructureMap;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Data.States;
-using Hub.Interfaces;
 using Hub.Managers;
-using Utilities.Configuration.Azure;
 using TerminalBase.Infrastructure;
 using AutoMapper;
-using Data.Helpers;
-using Data.Interfaces.DataTransferObjects.Helpers;
-using Hub.Helper;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.DataTransferObjects.Helpers;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace TerminalBase.BaseClasses
 {
@@ -589,7 +582,7 @@ namespace TerminalBase.BaseClasses
             //If Plan is specified as a parent, then a new subPlan will be created
             //Guid parentId = (parent.ChildNodes.Count > 0) ? parent.ChildNodes[0].ParentPlanNodeId.Value : parent.RootPlanNodeId.Value;
 
-            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, CurrentFr8UserId, label, order, parentActivityId);
+            var result = await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, CurrentFr8UserId, name, order, parentActivityId);
             var resultDO = Mapper.Map<ActivityDO>(result);
             return resultDO;
         }
@@ -759,13 +752,13 @@ namespace TerminalBase.BaseClasses
 
         public virtual async Task<List<CrateManifestType>> BuildUpstreamManifestList(ActivityDO activityDO)
         {
-            var upstreamCrates = await this.GetCratesByDirection<Data.Interfaces.Manifests.Manifest>(activityDO, CrateDirection.Upstream);
+            var upstreamCrates = await this.GetCratesByDirection<Fr8Data.Manifests.Manifest>(activityDO, CrateDirection.Upstream);
             return upstreamCrates.Where(x => !ExcludedManifestTypes.Contains(x.ManifestType)).Select(f => f.ManifestType).Distinct().ToList();
         }
 
         public virtual async Task<List<String>> BuildUpstreamCrateLabelList(ActivityDO activityDO)
         {
-            var curCrates = await this.GetCratesByDirection<Data.Interfaces.Manifests.Manifest>(activityDO, CrateDirection.Upstream);
+            var curCrates = await this.GetCratesByDirection<Fr8Data.Manifests.Manifest>(activityDO, CrateDirection.Upstream);
             return curCrates.Where(x => !ExcludedManifestTypes.Contains(x.ManifestType)).Select(f => f.Label).Distinct().ToList();
         }
 

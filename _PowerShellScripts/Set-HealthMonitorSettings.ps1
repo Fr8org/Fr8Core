@@ -8,7 +8,11 @@
 	[Parameter(Mandatory = $true)]
 	[string]$filePath,
 
-	[string]$keyVaultClientSecret
+	[string]$keyVaultClientSecret,
+
+	[string]$keyVaultClientId,
+
+	[string]$keyVaultUrl
 )
 
 if ([System.String]::IsNullOrEmpty($overrideDbName) -ne $true) {
@@ -34,9 +38,23 @@ if(Test-Path $configPath)
 
 	if (-not([String]::IsNullOrEmpty($keyVaultClientSecret)) )
 	{
-		Write-Host "Updating KeyVault secret" 
+		Write-Host "Updating KeyVault Secret" 
 		$kvNode = $xml.configuration.appSettings.add | where {$_.key -eq 'KeyVaultClientSecret'}
 		$kvNode.value="$keyVaultClientSecret"	
+	}
+
+	if (-not([String]::IsNullOrEmpty($keyVaultClientId)) )
+	{
+		Write-Host "Updating KeyVault Id" 
+		$kvNode = $xml.configuration.appSettings.add | where {$_.key -eq 'KeyVaultClientId'}
+		$kvNode.value="$keyVaultClientId"	
+	}
+
+	if (-not([String]::IsNullOrEmpty($keyVaultUrl)) )
+	{
+		Write-Host "Updating KeyVault URL" 
+		$kvNode = $xml.configuration.appSettings.add | where {$_.key -eq 'KeyVaultUrl'}
+		$kvNode.value="$keyVaultUrl"	
 	}
 	
 	if (-not([String]::IsNullOrEmpty($connectionString)) )

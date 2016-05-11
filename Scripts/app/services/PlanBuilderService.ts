@@ -25,7 +25,7 @@ module dockyard.services {
     export interface IActionService extends ng.resource.IResourceClass<interfaces.IActionVM> {
         configure: (action: interfaces.IActivityDTO) => ng.resource.IResource<interfaces.IActionVM>;
         getByPlan: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
-        create: (args: { actionTemplateId: number, name: string, label: string, parentNodeId: number, createPlan: boolean }) => ng.resource.IResource<model.PlanDTO | model.ActivityDTO>;
+        create: (args: { activityTemplateId: number, name: string, label: string, parentNodeId: number, createPlan: boolean }) => ng.resource.IResource<model.PlanDTO | model.ActivityDTO>;
         createSolution: (args: { solutionName: string }) => ng.resource.IResource<model.PlanFullDTO>
         //TODO make resource class do this operation
         deleteById: (id: { id: string; confirmed: boolean }) => ng.resource.IResource<string>
@@ -251,7 +251,7 @@ module dockyard.services {
                 'available': {
                     method: 'GET',
                     isArray: true,
-                    url: '/api/plannodes/available',
+                    url: '/api/plannodes/getAvailableActivitiesWithTag',
                     params: {
                         tag: '@tag'
                     }
@@ -307,7 +307,7 @@ module dockyard.services {
                 },
                 'createSolution': {
                     method: 'POST',
-                    url: '/api/activities/create',
+                    url: '/api/activities/createSolution',
                     params: {
                         solutionName: '@solutionName'
                     }

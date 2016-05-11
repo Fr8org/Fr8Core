@@ -1,0 +1,199 @@
+<div style="padding-bottom: 51px;"></div>
+<div data-ng-controller="HeaderController" class="page-header" style="position:fixed;z-index: 500;top: 0px;right:0;left:0">
+
+    <!-- END HEADER TOP -->
+    <!-- BEGIN HEADER MENU -->
+    <div class="page-header-menu">
+        <div class="container">
+            <!-- BEGIN MEGA MENU -->
+            <!-- DOC: Apply "hor-menu-light" class after the "hor-menu" class below to have a horizontal menu with white background -->
+            <!-- DOC: Remove dropdown-menu-hover and data-close-others="true" attributes below to disable the dropdown opening on mouse hover -->
+            <div class="hor-menu">
+                <ul class="nav navbar-nav">
+                    <li>
+                        <!-- BEGIN LOGO -->
+                        <a class="menu-logo" href="http://www.fr8.company">
+                            <img style="height:33px" src="/Content/img/dockyard_logo.png" alt="logo" class="logo-default">
+                        </a>
+                        <!--BEGIN STICKER-->
+                        <!--END STICKER-->
+                        <!-- END LOGO -->
+                    </li>
+                    <li class="active">
+                        <a ui-sref="myaccount">Home</a>
+                    </li>
+
+                    <li class="menu-dropdown classic-menu-dropdown">
+                        <a href="#" data-toggle="dropdown" class="dropdown-toggle">Solutions <i class="fa fa-angle-down"></i></a>
+                        <ul class="dropdown-menu pull-left" ng-controller="SolutionListController">
+                            <li class="dropdown-submenu">
+                                <a href="/Services/DocuSign" class="dropdown-toggle">DocuSign</a>
+                                <ul class="dropdown-menu">
+                                    <li ng-repeat="activity in (activityCategories | filter: {name: 'Solution'})[0].activities | filter: { terminal: { name: 'terminalDocuSign' } }">
+                                        <a ui-sref="configureSolution({solutionName: activity.name})" ui-sref-opts="{reload: true}">{{activity.label}}</a>
+                                    </li>
+                                </ul>
+                            </li>
+                            <li class="dropdown-submenu">
+                                <a href="/Services/Salesforce" class="dropdown-toggle">Salesforce</a>
+                                <ul class="dropdown-menu">
+                                    <li ng-repeat="activity in (activityCategories | filter: {name: 'Solution'})[0].activities | filter: { terminal: { name: 'terminalSalesforce' } }">
+                                        <a ui-sref="configureSolution({solutionName: activity.name})" ui-sref-opts="{reload: true}">{{activity.label}}</a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="menu-dropdown classic-menu-dropdown">
+                        <a data-toggle="dropdown" href="#" class="dropdown-toggle">Plans <i class="fa fa-angle-down"></i></a>
+                        <ul class="dropdown-menu">
+
+                            <li><a ui-sref="planList">Show All</a></li>
+                            <li><a ui-sref="planForm">Add</a></li>
+                            <li><a ui-sref="findObjects">Find Objects</a></li>
+
+                        </ul>
+                    </li>
+
+                    <li class="menu-dropdown classic-menu-dropdown">
+                        <a data-toggle="dropdown" href="#" class="dropdown-toggle">Containers <i class="fa fa-angle-down"></i></a>
+                        <ul class="dropdown-menu">
+
+                            <li><a ui-sref="containers">Show All</a></li>
+
+                        </ul>
+                    </li>
+
+                    <li class="menu-dropdown classic-menu-dropdown">
+                        <a data-toggle="dropdown" href="#" class="dropdown-toggle">Tools <i class="fa fa-angle-down"></i></a>
+                        <ul class="dropdown-menu">
+
+                            <li><a ui-sref="managefiles">Manage Files</a></li>
+                            <li><a ui-sref="manageAuthTokens">Manage Auth Tokens</a></li>
+                            <li><a ui-sref="configureSolution({solutionName: 'SearchFr8Warehouse'})">Search Fr8 Warehouse</a></li>
+
+                        </ul>
+                    </li>
+
+                    <li class="menu-dropdown classic-menu-dropdown">
+                        <a data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">Developer <i class="fa fa-angle-down"></i></a>
+                        <ul class="dropdown-menu">
+
+                            <li><a href="http://documentation.fr8.co">Developer Home</a></li>
+                            <li><a href="/Documentation/RestAPIGuide.html">Fr8 Development Resources - DocuSign</a></li>
+
+                        </ul>
+                    </li>
+                    <li class="menu-dropdown classic-menu-dropdown pull-right" style="position: absolute;right:100px" flex>
+                        <div class="top-menu">
+                            <ul class="nav navbar-nav pull-right">
+                                <!-- BEGIN USER LOGIN DROPDOWN -->
+                                @using Data.States                @using HubWeb.Infrastructure                @using Microsoft.AspNet.Identity
+                                @if (Request.IsAuthenticated)
+                                {
+                                    <li class="dropdown dropdown-user dropdown-dark">
+                                        <a data-toggle="dropdown" href="#" class="dropdown-toggle" data-close-others="true">
+                                            @*<img alt="" class="img-circle" src="/Content/templates/metronic/assets/admin/layout3/img/avatar1.jpg" />*@
+
+                                            <span class="username username-hide-mobile">
+                                                Hello
+                                                @if (User.IsInRole("Guest"))
+                                                {
+                                                    <text>Guest User</text>
+                                                }
+                                                else
+                                                {
+                                                    <text>@User.Identity.GetUserName()</text>
+                                                }!
+
+                                            </span>
+                                        </a>
+
+                                        @if (!User.IsInRole("Guest"))
+                                        {
+                                            <ul class="dropdown-menu dropdown-menu-default">
+                                                <li>
+                                                    <a ui-sref="myaccount">
+                                                        <i class="icon-user"></i> My Profile
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a ui-sref="changePassword">
+                                                        <i class="icon-key"></i> Change Password
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a href="/DockyardAccount/Logoff">
+                                                        <i class="icon-key"></i> Log Out
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        }
+
+                                    </li>
+                        <!-- END USER LOGIN DROPDOWN -->
+                                    if (@User.IsInRole("Guest"))
+                                    {
+                                        <li class="have-account-login-guest visible-lg visible-md visible-sm">
+                                            <a href="/DockyardAccount/Logoff">
+                                                <span>Have an Account? Login</span>
+                                            </a>
+                                        </li>
+                                    }
+                                }
+                            </ul>
+                        </div>
+
+                    </li>
+                    @if (Html.HasManageUsersPermission(PermissionType.ManageInternalUsers))
+                    {
+                        <li class="menu-dropdown classic-menu-dropdown pull-right" style="position: absolute; right:0;">
+                            <a data-toggle="dropdown" href="#" class="dropdown-toggle">Admin <i class="fa fa-angle-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a ui-sref="accounts">Manage Users</a></li>
+                                <li><a onclick="window.parent.document.body.style.zoom = 0.6;">Ipad Mode</a></li>
+                                <li><a onclick="window.parent.document.body.style.zoom = 1;">Normal Mode</a></li>
+                            </ul>
+                        </li>
+                    }
+
+                    @if (Html.HasManageUsersPermission(PermissionType.ManageFr8Users))
+                    {
+                        <li class="menu-dropdown classic-menu-dropdown pull-right" style="position: absolute; right:0;">
+                            <a data-toggle="dropdown" href="#" class="dropdown-toggle">Admin <i class="fa fa-angle-down"></i></a>
+                            <ul class="dropdown-menu">
+                                <li><a ui-sref="accounts">Manage Users</a></li>
+                                <li><a ui-sref="manifestregistry">Manage ManifestRegistry</a></li>
+                                <li><a ui-sref="webservices">Show Web Services</a></li>
+                                <li><a ui-sref="showFacts">Show Facts</a></li>
+                                <li><a ui-sref="showIncidents">Show Incidents</a></li>
+                                <li><a onclick="window.parent.document.body.style.zoom = 0.6;">Ipad Mode</a></li>
+                                <li><a onclick="window.parent.document.body.style.zoom = 1;">Normal Mode</a></li>
+                            </ul>
+                        </li>
+                    }
+
+                    @if (User.IsInRole("Guest"))
+                    {
+                        <li class="visible-xs">
+                            <a href="/DockyardAccount/Logoff">
+                                Have an Account? Login
+                            </a>
+                        </li>
+                    }
+
+                </ul>
+
+            </div>
+            @if (User.IsInRole("Guest"))
+            {
+                <ul class="nav navbar-nav navbar-right pull-right">
+                    <li class="pull-right register-guest-user" style="background-color: crimson;">@Html.ActionLink("Register!", "RegisterGuestUser", "DockyardAccount")</li>
+                </ul>
+            }
+            <!-- END MEGA MENU -->
+        </div>
+    </div>
+    <!-- END HEADER MENU -->
+</div>

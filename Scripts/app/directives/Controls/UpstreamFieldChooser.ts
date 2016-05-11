@@ -60,7 +60,7 @@ module dockyard.directives.upstreamDataChooser {
                     .then((data: dockyard.model.IncomingCratesDTO) => {
                         var listItems: Array<model.DropDownListItem> = [];
 
-                        angular.forEach(data.incomingFields, it => {
+                        angular.forEach(data.availableFields, it => {
                             var i, j;
                             var found = false;
                             for (i = 0; i < listItems.length; ++i) {
@@ -89,7 +89,7 @@ module dockyard.directives.upstreamDataChooser {
                         }
                         else {
                             $scope.field.listItems = listItems;
-                            $scope.tableParams = new NgTableParams({ count: 50 }, { data: $scope.field.listItems, counts: [], groupBy: 'label', groupOptions: { isExpanded: false } });
+                            $scope.tableParams = new NgTableParams({ count: 50 }, { data: $scope.field.listItems, counts: [], groupBy: 'sourceCrateLabel', groupOptions: { isExpanded: false } });
                         }
                     });
             };

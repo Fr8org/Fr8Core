@@ -1,7 +1,5 @@
 ﻿
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
 using HealthMonitor.Utility;
 using HubTests.Fixtures;
 using NUnit.Framework;
@@ -9,6 +7,8 @@ using StructureMap;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.States;
 
 namespace HubTests.Integration
 {

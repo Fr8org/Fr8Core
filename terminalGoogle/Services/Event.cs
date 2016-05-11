@@ -1,19 +1,16 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
-using Newtonsoft.Json;
+﻿using Hub.Managers;
 using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
-using System.Text.RegularExpressions;
 using System.Web;
 using terminalGoogle.Infrastructure;
-using Utilities.Configuration.Azure;
 using Hub.Managers;
-using Data.Crates;
 using System.Threading.Tasks;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+
 namespace terminalGoogle.Services
 {
     public class Event : IEvent
@@ -85,7 +82,7 @@ namespace terminalGoogle.Services
         private ICrateStorage WrapPayloadDataCrate(List<FieldDTO> payloadFields)
         {
 
-            return new CrateStorage(Data.Crates.Crate.FromContent("Payload Data", new StandardPayloadDataCM(payloadFields)));
+            return new CrateStorage(Fr8Data.Crates.Crate.FromContent("Payload Data", new StandardPayloadDataCM(payloadFields)));
         }
     }
 }

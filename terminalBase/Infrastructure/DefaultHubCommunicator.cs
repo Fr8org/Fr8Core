@@ -1,30 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Formatting;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using Hub.Managers;
 using StructureMap;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Utilities.Configuration.Azure;
-using Data.Constants;
-using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using AutoMapper;
 using System.Configuration;
-using Data.Interfaces;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace TerminalBase.Infrastructure
 {
@@ -116,8 +111,8 @@ namespace TerminalBase.Infrastructure
         public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDO activityDO, CrateDirection direction, string userId)
         {
             var directionSuffix = (direction == CrateDirection.Upstream)
-                ? "upstream_actions/"
-                : "downstream_actions/";
+                ? "upstream/"
+                : "downstream/";
 
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/"
@@ -125,10 +120,10 @@ namespace TerminalBase.Infrastructure
                 + "?id=" + activityDO.Id;
             var uri = new Uri(url, UriKind.Absolute);
 
-            var curActions = await _restfulServiceClient.GetAsync<List<ActivityDTO>>(uri, null, await GetHMACHeader(uri, userId));
+            var curActivities = await _restfulServiceClient.GetAsync<List<ActivityDTO>>(uri, null, await GetHMACHeader(uri, userId));
             var curCrates = new List<Crate<TManifest>>();
 
-            foreach (var curAction in curActions)
+            foreach (var curAction in curActivities)
             {
                 var storage = _crate.FromDto(curAction.CrateStorage);
 
@@ -141,8 +136,8 @@ namespace TerminalBase.Infrastructure
         public async Task<List<Crate>> GetCratesByDirection(ActivityDO activityDO, CrateDirection direction, string userId)
         {
             var directionSuffix = (direction == CrateDirection.Upstream)
-                ? "upstream_actions/"
-                : "downstream_actions/";
+                ? "upstream/"
+                : "downstream";
 
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/"
@@ -150,10 +145,10 @@ namespace TerminalBase.Infrastructure
                 + "?id=" + activityDO.Id;
 
             var uri = new Uri(url, UriKind.Absolute);
-            var curActions = await _restfulServiceClient.GetAsync<List<ActivityDTO>>(uri, null, await GetHMACHeader(uri, userId));
+            var curActivities = await _restfulServiceClient.GetAsync<List<ActivityDTO>>(uri, null, await GetHMACHeader(uri, userId));
             var curCrates = new List<Crate>();
 
-            foreach (var curAction in curActions)
+            foreach (var curAction in curActivities)
             {
                 var storage = _crate.FromDto(curAction.CrateStorage);
                 curCrates.AddRange(storage);
@@ -167,7 +162,7 @@ namespace TerminalBase.Infrastructure
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                       + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/available_data"
                       + "?id=" + activityDO.Id
-                      + "&direction=" + (int) direction
+                      + "&direction=" + (int)direction
                       + "&availability=" + (int)availability;
             var uri = new Uri(url, UriKind.Absolute);
 
@@ -180,7 +175,7 @@ namespace TerminalBase.Infrastructure
             var mergedFields = new FieldDescriptionsCM();
             var availableData = await GetAvailableData(activityDO, direction, availability, userId);
 
-            mergedFields.Fields.AddRange(availableData.IncomingFields);
+            mergedFields.Fields.AddRange(availableData.AvailableFields);
 
             return mergedFields;
         }
@@ -216,7 +211,7 @@ namespace TerminalBase.Infrastructure
         public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, string userId)
         {
             var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/available?tag=";
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/getAvailableActivitiesWithTag?tag=";
 
             if (string.IsNullOrEmpty(tag))
             {
@@ -281,18 +276,18 @@ namespace TerminalBase.Infrastructure
             return Mapper.Map<ActivityDO>(await SaveActivity(activityDTO, userId));
         }
 
-        public async Task<ActivityDTO> CreateAndConfigureActivity(Guid templateId, string userId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
+        public async Task<ActivityDTO> CreateAndConfigureActivity(Guid templateId, string userId, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                       + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/activities/create";
 
 
-            var postUrl = "?actionTemplateId={0}&createPlan={1}";
+            var postUrl = "?activityTemplateId={0}&createPlan={1}";
             var formattedPostUrl = string.Format(postUrl, templateId, createPlan ? "true" : "false");
 
-            if (label != null)
+            if (name != null)
             {
-                formattedPostUrl += "&label=" + label;
+                formattedPostUrl += "&name=" + name;
             }
             if (parentNodeId != null)
             {
@@ -474,6 +469,16 @@ namespace TerminalBase.Infrastructure
                     + string.Format("/authentication/GetAuthToken?curFr8UserId={0}&externalAccountId={1}&terminalId={2}", curFr8UserId, externalAccountId, TerminalId);
             var uri = new Uri(url);
             return await _restfulServiceClient.GetAsync<AuthorizationTokenDTO>(uri, null, await GetHMACHeader(uri, curFr8UserId));
+        }
+
+        public async Task ScheduleEvent(string externalAccountId, string curFr8UserId, string minutes)
+        {
+            var hubAlarmsUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+               + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion")
+               + string.Format("/alarms/schedule?external_account_id={0}&fr8AccountId={1}&minutes={2}&terminalId={3}",
+               externalAccountId, curFr8UserId, minutes, TerminalId);
+            var uri = new Uri(hubAlarmsUrl);
+            await _restfulServiceClient.PostAsync(uri, null, await GetHMACHeader(uri, curFr8UserId));
         }
     }
 }

@@ -1,11 +1,11 @@
 ﻿using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Runtime.Serialization;
 using System.Text;
 using System.Threading.Tasks;
+using Fr8Data.DataTransferObjects;
 
 namespace Hub.Exceptions
 {
@@ -55,11 +55,11 @@ namespace Hub.Exceptions
         {
             if (!string.IsNullOrEmpty(Message))
             {
-                return String.Format("Failed to run activity \"{0}\". {1}", FailedActivityDTO?.Label, Message);
+                return String.Format("Failed to run activity \"{0}\". {1}", FailedActivityDTO?.Name, Message);
             }
             else
             {
-                return String.Format("Failed to run activity \"{0}\". Please, make sure it is set up correctly.", FailedActivityDTO?.Label);
+                return String.Format("Failed to run activity \"{0}\". Please, make sure it is set up correctly.", FailedActivityDTO?.Name);
             }            
         }
     }

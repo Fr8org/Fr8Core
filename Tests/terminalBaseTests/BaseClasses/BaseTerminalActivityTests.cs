@@ -2,16 +2,11 @@
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Data.Crates;
 using NUnit.Framework;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Data.States;
-
-using Hub.Interfaces;
 using Hub.Managers;
 using TerminalBase.Infrastructure;
 using TerminalBase.BaseClasses;
@@ -19,8 +14,9 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using System.Collections.Generic;
 using Hub.Managers.APIManagers.Transmitters.Restful;
-using Moq;
-using System.Net.Http;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 
 namespace terminalBaseTests.BaseClasses
 {

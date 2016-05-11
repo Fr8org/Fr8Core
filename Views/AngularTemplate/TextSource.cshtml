@@ -1,26 +1,21 @@
-﻿<div>
-    <!--TextBlock control main container-->
-    <label class="fr8-full-width" ng-click="field.isCollapsed=!field.isCollapsed">
-        <strong>{{field.initialLabel}}</strong>
-    </label>
-
+﻿<!--TextBlock control main container-->
+<div class="col-sm-12" style="margin-bottom:6px">  
+    <md-button class="md-raised fr8-text-source-button fr8-full-width" ng-click="field.isCollapsed=!field.isCollapsed;"  ng-class="[{'': !field.isCollapsed},{'fr8-text-source-button-pressed':field.isCollapsed}]">{{field.initialLabel}}</md-button>
     <!--Toggel wrapper -->
-    <div class="collapsed" ng-class="[{'expanded': !field.isCollapsed},{'':field.isCollapsed}]">
+    <div class="fr8-text-source-panel collapsed" ng-class="[{'expanded': !field.isCollapsed},{'fr8-borders':field.isCollapsed}]">
         <div style="padding-left: 20px;" class="form-inline">
             <input ng-click="onChange(field.name)" ng-focus="onFocus(field.name)" name="pca_chk_ts_{{uniqueDirectiveId}}" type="radio" ng-model="field.valueSource" id="pca__chk{{field.$$hashKey}}__value{{uniqueDirectiveId}}" value="specific" ng-click="field.value=''" stop-click-propagation/>
-            <label for="pca__chk{{field.$$hashKey}}__value{{uniqueDirectiveId}}" stop-click-propagation>specific value:</label>
+            <label for="pca__chk{{field.$$hashKey}}__value{{uniqueDirectiveId}}" stop-click-propagation>use this value:</label>
             <input ng-class="{'disabled-control': field.valueSource != 'specific'}" ng-focus="onFocus(field.name)" type='text' ng-model='field.textValue' ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }"
                    ng-blur="onChange(field.name)" id='pca__txt{{field.$$hashKey}}__value'
                    class='form-control form-control-focus small-input' name='pca__txt{{field.$$hashKey}}__value' ng-click="field.valueSource='specific'" stop-click-propagation>
         </div>
-        <div style="padding-left: 20px;">
-            <input ng-click="onChange(field.name)" name="pca_chk_ts_{{uniqueDirectiveId}}" type="radio" id="pca__chk{{field.$$hashKey}}__crate{{uniqueDirectiveId}}" value="upstream" ng-model="field.valueSource" ng-click="field.value=''" stop-click-propagation/>
-            <label for="pca__chk{{field.$$hashKey}}__crate{{uniqueDirectiveId}}" stop-click-propagation>this incoming value: <a href="/documentation/UpstreamCrates.html" class="documentation-link"><i class="fa fa-question-circle"></i></a></label>
+        <div style="padding-left: 20px;" >
+            <input ng-click="onChange(field.name)"  ng-checked="field.valueSource=='upstream'" name="pca_chk_ts_{{uniqueDirectiveId}}" type="radio" id="pca__chk{{field.$$hashKey}}__crate{{uniqueDirectiveId}}" value="upstream" ng-model="field.valueSource" stop-click-propagation/>
+            <label for="pca__chk{{field.$$hashKey}}__crate{{uniqueDirectiveId}}" stop-click-propagation>use this incoming value:<a href="/documentation/UpstreamCrates.html" class="documentation-link"><i class="fa fa-question-circle"></i></a></label>
             <div class="nested-controls" ng-if="field.valueSource == 'upstream'">
                 <upstream-field-chooser class="upstream-field-chooser" field="field" current-action="currentAction" change='onChange'></upstream-field-chooser>
             </div>
         </div>
     </div>
-
-
 </div>

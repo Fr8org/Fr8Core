@@ -1,9 +1,6 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Net.Http.Formatting;
-using System.Security.Principal;
-using System.Web;
 using AutoMapper;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
 using Hub.Managers.APIManagers.Packagers.SendGrid;
@@ -21,13 +18,9 @@ using InternalClass = Hub.Services;
 using Hub.Services;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Repositories;
 using Hub.ExternalServices;
 using Hub.Security;
 using Moq;
-using SendGrid;
 // This is used to avoid ambiguity between StructureMap.IContainer and  Core.Interfaces.IContainer
 using ExtternalStructureMap = StructureMap;
 using StructureMap;
@@ -39,7 +32,7 @@ using System.Net.Http;
 using Microsoft.ApplicationInsights;
 using System.Linq.Expressions;
 using Castle.DynamicProxy;
-using Data.States;
+using Fr8Data.DataTransferObjects;
 using Hub.Security.ObjectDecorators;
 
 namespace Hub.StructureMap
@@ -142,6 +135,7 @@ namespace Hub.StructureMap
                 For<TelemetryClient>().Use<TelemetryClient>();
                 For<IJobDispatcher>().Use<HangfireJobDispatcher>();
                 // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
+                For<IPlanTemplates>().Use<PlanTemplates>();
             }
         }
 
@@ -221,6 +215,7 @@ namespace Hub.StructureMap
                 For<ITerminal>().Use(new TerminalServiceForTests()).Singleton();
                 For<IJobDispatcher>().Use<MockJobDispatcher>();
                 // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
+                For<IPlanTemplates>().Use<PlanTemplates>();
             }
         }
 

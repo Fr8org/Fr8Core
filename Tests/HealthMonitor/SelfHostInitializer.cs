@@ -101,6 +101,8 @@ namespace HealthMonitor
             "dev";
 #elif RELEASE
             "release";
+#elif DEMO
+            "demo   ";
 #else
             "debug";
 #endif

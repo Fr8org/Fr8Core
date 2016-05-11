@@ -2,6 +2,7 @@
 using Data.States.Templates;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text;
 
 namespace Data.Entities
 {
@@ -32,7 +33,11 @@ namespace Data.Entities
 
         public String ExternalAccountId { get; set; }
 
+        public String ExternalAccountName { get; set; }
+
         public String ExternalDomainId { get; set; }
+
+        public String ExternalDomainName { get; set; }
 
         /// <summary>
         /// State-token parameter, that is sent to exteral auth service,
@@ -61,5 +66,20 @@ namespace Data.Entities
         public String AdditionalAttributes { get; set; }
 
         public bool IsMain { get; set; }
+
+        [NotMapped]
+        public string DisplayName
+        {
+            get
+            {
+                var domain = string.IsNullOrEmpty(ExternalDomainName) ? ExternalDomainId : ExternalDomainName;
+                var account = string.IsNullOrEmpty(ExternalAccountName) ? ExternalAccountId : ExternalAccountName;
+                if (string.IsNullOrEmpty(domain))
+                {
+                    return account;
+                }
+                return $"{domain}\\{account}";
+            }
+        }
     }
 }

@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Hub.Managers;
 using TerminalBase.Infrastructure;
 
@@ -81,11 +81,22 @@ namespace terminalFr8Core.Actions
                     switch (containerTransitionField.Transition)
                     {
                         case ContainerTransitions.JumpToActivity:
-                            //TODO check if targetNodeId is selected
+                            if (!containerTransitionField.TargetNodeId.HasValue)
+                            {
+                                return Error(curPayloadDTO, "Target Activity for transition is not specified. Please choose it in the Test And Branch activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                            }
                             return JumpToActivity(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
                         case ContainerTransitions.LaunchAdditionalPlan:
+                            if (!containerTransitionField.TargetNodeId.HasValue)
+                            {
+                                return Error(curPayloadDTO, "Target Additional Plan for transition is not specified. Please choose it in the Test And Branch activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                            }
                             return LaunchAdditionalPlan(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
                         case ContainerTransitions.JumpToSubplan:
+                            if (!containerTransitionField.TargetNodeId.HasValue)
+                            {
+                                return Error(curPayloadDTO, "Target SubPlan for transition is not specified. Please choose it in the Test And Branch activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                            }
                             return JumpToSubplan(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
                         case ContainerTransitions.ProceedToNextActivity:
                             return Success(curPayloadDTO);
@@ -116,6 +127,20 @@ namespace terminalFr8Core.Actions
         private bool CheckConditions(List<FilterConditionDTO> conditions, IQueryable<FieldDTO> fields)
         {
             var filterExpression = ParseCriteriaExpression(conditions, fields);
+            foreach (FieldDTO field in fields)
+            {
+                double result = 0D;
+                if (Double.TryParse(field.Value, 
+                    System.Globalization.NumberStyles.AllowCurrencySymbol 
+                    | System.Globalization.NumberStyles.AllowDecimalPoint 
+                    | System.Globalization.NumberStyles.AllowThousands, 
+                    System.Globalization.CultureInfo.CurrentCulture,
+                    out result))
+                {
+                    field.Value = result.ToString();
+                }
+            }
+
             var results = fields.Provider.CreateQuery<FieldDTO>(filterExpression);
             return results.Any();
 

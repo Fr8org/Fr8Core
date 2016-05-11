@@ -1,18 +1,14 @@
 ﻿using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using HealthMonitor.Utility;
 using Hub.Managers;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using terminalGoogle.Actions;
-using terminalGoogle.DataTransferObjects;
-using terminalGoogle.Services;
 using UtilitiesTesting.Fixtures;
 
 namespace terminaBaselTests.Tools.Activities
@@ -47,9 +43,9 @@ namespace terminaBaselTests.Tools.Activities
             //Activity won't be able to run if there is no upstream data
 
             var upstreamCrateDescriptions = await _baseHubITest.GetRuntimeCrateDescriptionsFromUpstreamActivities(saveToGoogleSheetActivityDTO.Id);
-            Assert.Greater(upstreamCrateDescriptions.IncomingCrates.Count, 0, $"{activityName}: upstream activities didn't provide at least one runtime CrateDescription");
+            Assert.Greater(upstreamCrateDescriptions.AvailableCrates.Count, 0, $"{activityName}: upstream activities didn't provide at least one runtime CrateDescription");
 
-            var expectedCrateDescription = upstreamCrateDescriptions.IncomingCrates.FirstOrDefault(x => x.ManifestType == manifestTypeToUse && x.Label == crateDescriptionLabelToUse);
+            var expectedCrateDescription = upstreamCrateDescriptions.AvailableCrates.FirstOrDefault(x => x.ManifestType == manifestTypeToUse && x.Label == crateDescriptionLabelToUse);
             Assert.IsNotNull(expectedCrateDescription, $"{activityName}: upstream activities didn't provide expected runtime CrateDescription");
             
             //Select the expected crate description
@@ -59,7 +55,7 @@ namespace terminaBaselTests.Tools.Activities
                 var activityUi = new Save_To_Google_Sheet_v1.ActivityUi();
                 activityUi.SyncWith(controlsCrate.Content);
                 crateStorage.Remove<StandardConfigurationControlsCM>();
-                activityUi.UpstreamCrateChooser.CrateDescriptions = upstreamCrateDescriptions.IncomingCrates;
+                activityUi.UpstreamCrateChooser.CrateDescriptions = upstreamCrateDescriptions.AvailableCrates;
                 activityUi.UpstreamCrateChooser.CrateDescriptions.First(x => x.Label == crateDescriptionLabelToUse && x.ManifestType == manifestTypeToUse).Selected = true;
                 //Set the name of new spreadheet that need to be created
                 activityUi.NewSpreadsheetName.Value = newSpeadsheetName;

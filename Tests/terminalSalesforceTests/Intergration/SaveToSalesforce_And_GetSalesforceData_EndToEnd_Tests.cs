@@ -1,19 +1,17 @@
-﻿using Data.Control;
-using Data.Crates;
-using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+﻿using Data.Entities;
 using HealthMonitor.Utility;
 using Hub.Managers;
 using Newtonsoft.Json;
 using NUnit.Framework;
-using StructureMap;
 using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using terminalSalesforce.Actions;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
@@ -106,7 +104,7 @@ namespace terminalSalesforceTests.Intergration
             Debug.WriteLine("Created initial plan without actions");
 
             string mainUrl = _baseUrl + "activities/create";
-            var postUrl = "?actionTemplateId={0}&createPlan=false";
+            var postUrl = "?activityTemplateId={0}&createPlan=false";
             var formattedPostUrl = string.Format(postUrl, atSave.Id);
             formattedPostUrl += "&parentNodeId=" + initialPlan.Plan.StartingSubPlanId;
             formattedPostUrl += "&authorizationTokenId=" + authToken.Id.ToString();
@@ -117,7 +115,7 @@ namespace terminalSalesforceTests.Intergration
             Debug.WriteLine("Create and Initial Configure of Save to Salesforce activity is successful.");
 
             mainUrl = _baseUrl + "activities/create";
-            postUrl = "?actionTemplateId={0}&createPlan=false";
+            postUrl = "?activityTemplateId={0}&createPlan=false";
             formattedPostUrl = string.Format(postUrl, atGet.Id);
             formattedPostUrl += "&parentNodeId=" + initialPlan.Plan.StartingSubPlanId;
             formattedPostUrl += "&authorizationTokenId=" + authToken.Id.ToString();

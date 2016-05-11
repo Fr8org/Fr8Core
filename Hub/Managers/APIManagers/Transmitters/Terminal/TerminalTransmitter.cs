@@ -1,20 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Net.Http;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web;
-using AutoMapper;
+using Fr8Data.DataTransferObjects;
 using StructureMap;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Restful;
-using Hub.Services;
 using Utilities.Logging;
 
 namespace Hub.Managers.APIManagers.Transmitters.Terminal

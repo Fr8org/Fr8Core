@@ -1,9 +1,6 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using Data.States;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.States;
 
 namespace terminalDocuSign.Tests.Fixtures
 {

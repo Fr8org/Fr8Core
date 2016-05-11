@@ -2,15 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
-using Data.Crates;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
-using Data.Interfaces.Manifests;
 
 namespace Hub.Services
 {
@@ -80,9 +81,9 @@ namespace Hub.Services
 
             var crates = GetCrateManifestsByDirection<CrateDescriptionCM>(activityId, direction, AvailabilityType.NotSet);
             var availableData = new IncomingCratesDTO();
-            availableData.IncomingFields.AddRange(fields.SelectMany(x => x.Fields).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
-            availableData.IncomingFields.AddRange(crates.SelectMany(x => x.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0).SelectMany(x => x.Fields));
-            availableData.IncomingCrates.AddRange(crates.SelectMany(x => x.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
+            availableData.AvailableFields.AddRange(fields.SelectMany(x => x.Fields).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
+            availableData.AvailableFields.AddRange(crates.SelectMany(x => x.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0).SelectMany(x => x.Fields));
+            availableData.AvailableCrates.AddRange(crates.SelectMany(x => x.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
 
             return availableData;
         }
@@ -92,7 +93,7 @@ namespace Hub.Services
             CrateDirection direction,
             AvailabilityType availability,
             bool includeCratesFromActivity = true
-                ) where T : Data.Interfaces.Manifests.Manifest
+                ) where T : Fr8Data.Manifests.Manifest
         {
             Func<Crate<T>, bool> cratePredicate;
 
@@ -324,7 +325,7 @@ namespace Hub.Services
             IEnumerable<ActivityTemplateDTO> curActivityTemplates;
             curActivityTemplates = _activityTemplate
                 .GetAll()
-                .Where(at => at.Category == Data.States.ActivityCategory.Solution
+                .Where(at => at.Category == ActivityCategory.Solution
                     && at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
                 .OrderBy(t => t.Category)
                 .Select(Mapper.Map<ActivityTemplateDTO>)

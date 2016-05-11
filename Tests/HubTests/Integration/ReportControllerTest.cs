@@ -1,18 +1,11 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
-using Data.Entities;
 using Data.Interfaces;
-using Hub.Managers;
-using UtilitiesTesting;
-using UtilitiesTesting.Fixtures;
 using System.Threading.Tasks;
 using HealthMonitor.Utility;
 using Hub.Services;
 using System.Data.Entity.Infrastructure;
-using Data.Interfaces.DataTransferObjects;
 
 namespace HubTests.Integration
 {

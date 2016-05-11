@@ -1,23 +1,19 @@
-﻿using Data.Control;
-using Data.Interfaces.Manifests;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
 using System.Threading.Tasks;
-using Data.Crates;
 using StructureMap;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
 using Hub.Services;
 using TerminalBase.Infrastructure.Behaviors;
 using Data.Entities;
-using AutoMapper;
-using Data.Interfaces;
-using Utilities.Configuration.Azure;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Managers;
-using Data.Constants;
 using ServiceStack;
 
 namespace terminalSalesforce.Actions
@@ -112,7 +108,7 @@ namespace terminalSalesforce.Actions
             return Task.FromResult(true);
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Configure(CrateSignaller crateSignaller)
         {
             if (ConfigurationControls.RunMailMergeButton.Clicked)
             {
@@ -272,7 +268,7 @@ namespace terminalSalesforce.Actions
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager.GetSalesforceObjectTypes().Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
             var activityTemplates = await HubCommunicator.GetActivityTemplates(ActivityTemplate.EmailDelivererTag, CurrentFr8UserId);

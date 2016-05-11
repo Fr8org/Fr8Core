@@ -3,14 +3,14 @@ using StructureMap;
 using System.Threading.Tasks;
 using TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
-using Data.Interfaces.DataTransferObjects;
-using Data.Crates;
-using Data.Control;
-using Data.Interfaces.Manifests;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
-using Data.States;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace terminalSalesforce.Actions
 {
@@ -27,7 +27,7 @@ namespace terminalSalesforce.Actions
             public RadioButtonOption UseUpstreamFeedParentIdOption { get; set; }
 
             public TextSource FeedParentIdSource { get; set; }
-
+            
             public TextSource FeedTextSource { get; set; }
 
             public ActivityUi() : this(new UiBuilder()) { }
@@ -61,7 +61,7 @@ namespace terminalSalesforce.Actions
                 Controls.Add(FeedParentSelectionGroup);
                 FeedTextSource = uiBuilder.CreateSpecificOrUpstreamValueChooser("Feed Text", nameof(FeedTextSource), requestUpstream: true, availability: AvailabilityType.RunTime);
                 Controls.Add(FeedTextSource);
-            }
+            }         
         }
 
         public const string PostedFeedCrateLabel = "Posted Salesforce Feed";
@@ -74,14 +74,14 @@ namespace terminalSalesforce.Actions
             ActivityName = "Post to Chatter";
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             ConfigurationControls.UseUserOrGroupOption.Selected = true;
             ConfigurationControls.UserOrGroupSelector.ListItems = (await _salesforceManager.GetUsersAndGroups(AuthorizationToken)).Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardPayloadDataCM>(PostedFeedCrateLabel);            
+            crateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PostedFeedCrateLabel);            
         }
 
-        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Configure(CrateSignaller crateSignaller)
         {
             //No configuration is required
             return Task.FromResult(0);

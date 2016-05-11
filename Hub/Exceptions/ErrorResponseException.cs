@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Runtime.Serialization;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 
 namespace Hub.Exceptions
 {

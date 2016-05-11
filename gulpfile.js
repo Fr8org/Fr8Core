@@ -19,6 +19,7 @@ gulp.task('concattemplates', function () {
         '!Views/AngularTemplate/PlanList.cshtml',
         '!Views/AngularTemplate/MyAccountPage.cshtml',
         '!Views/AngularTemplate/Header.cshtml',
+        '!Views/AngularTemplate/MiniHeader.cshtml',
         '!Views/AngularTemplate/ChangePassword.cshtml',
         '!Views/AngularTemplate/AccountList.cshtml'])
         .pipe(templateCache('templateCache.js', {
@@ -48,6 +49,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/model/Plan.js',
         'Scripts/app/model/PlanBuilderState.js',
         'Scripts/app/model/User.js',
+        'Scripts/app/model/Profile.js',
         'Scripts/app/model/ContainerDTO.js',
         'Scripts/app/model/ActionGroup.js',
         'Scripts/app/model/WebServiceDTO.js',

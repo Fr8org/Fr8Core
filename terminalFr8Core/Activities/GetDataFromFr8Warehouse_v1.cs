@@ -8,13 +8,12 @@ using AutoMapper;
 using AutoMapper.Internal;
 using Newtonsoft.Json;
 using StructureMap;
-using Data.Control;
-using Data.Crates;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.Repositories.MultiTenant;
-using Data.States;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using TerminalBase.BaseClasses;
 using TerminalBase.Services;
 using TerminalBase.Services.MT;
@@ -76,15 +75,15 @@ namespace terminalFr8Core.Actions
         {
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             ConfigurationControls.AvailableObjects.ListItems = GetObjects();
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
 
             await Task.Yield();
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Configure(CrateSignaller crateSignaller)
         {
             var selectedObject = ConfigurationControls.AvailableObjects.Value;
             var hasSelectedObject = !string.IsNullOrEmpty(selectedObject);
@@ -104,7 +103,7 @@ namespace terminalFr8Core.Actions
 
             ConfigurationControls.QueryBuilder.IsHidden = !hasSelectedObject;
             ConfigurationControls.SelectObjectLabel.IsHidden = hasSelectedObject;
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
 
             await Task.Yield();
         }

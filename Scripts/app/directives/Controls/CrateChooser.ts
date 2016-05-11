@@ -46,7 +46,7 @@ module dockyard.directives.crateChooser {
                     UpstreamExtractor.getAvailableData($scope.currentAction.id, 'NotSet')
                         .then((data: model.IncomingCratesDTO) => {
                             var descriptions = <Array<model.CrateDescriptionDTO>>[];
-                            angular.forEach(data.incomingCrates, (cd) => {
+                            angular.forEach(data.availableCrates, (cd) => {
                                 descriptions.push(cd);
                             });
 
@@ -93,7 +93,7 @@ module dockyard.directives.crateChooser {
         for (var i = 0; i < crateDescriptions.length; i++) {
             var category = findCategory(crateDescriptions[i]);
             if (category == null) {
-                category = { label: crateDescriptions[i].manifestType, isCategory: true, children: [] };
+                category = { label: crateDescriptions[i].label, isCategory: true, children: [] };
                 categories.push(category);
             }
 

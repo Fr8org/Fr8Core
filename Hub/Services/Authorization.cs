@@ -2,14 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Crates;
+using AutoMapper;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
@@ -81,7 +82,9 @@ namespace Hub.Services
                     {
                         Id = authToken.Id.ToString(),
                         ExternalAccountId = authToken.ExternalAccountId,
+                        ExternalAccountName = string.IsNullOrEmpty(authToken.ExternalAccountName) ? authToken.ExternalAccountId : authToken.ExternalAccountName,
                         ExternalDomainId = authToken.ExternalDomainId,
+                        ExternalDomainName = string.IsNullOrEmpty(authToken.ExternalDomainName) ? authToken.ExternalDomainId : authToken.ExternalDomainName,
                         UserId = authToken.UserID,
                         Token = authToken.Token,
                         AdditionalAttributes = authToken.AdditionalAttributes
@@ -169,6 +172,7 @@ namespace Hub.Services
                         .GetPublicDataQuery()
                         .FirstOrDefault(x => x.TerminalID == curTerminal.Id
                             && x.UserID == curAccount.Id
+                            && x.ExternalDomainId == terminalResponseAuthTokenDTO.ExternalDomainId
                             && x.ExternalAccountId == terminalResponseAuthTokenDTO.ExternalAccountId
                             && x.AdditionalAttributes == terminalResponseAuthTokenDTO.AdditionalAttributes
                         );
@@ -182,7 +186,9 @@ namespace Hub.Services
                     {
                         Token = terminalResponseAuthTokenDTO.Token,
                         ExternalAccountId = terminalResponseAuthTokenDTO.ExternalAccountId,
+                        ExternalAccountName = string.IsNullOrEmpty(terminalResponseAuthTokenDTO.ExternalAccountName) ? terminalResponseAuthTokenDTO.ExternalAccountId : terminalResponseAuthTokenDTO.ExternalAccountName,
                         ExternalDomainId = terminalResponseAuthTokenDTO.ExternalDomainId,
+                        ExternalDomainName = string.IsNullOrEmpty(terminalResponseAuthTokenDTO.ExternalDomainName) ? terminalResponseAuthTokenDTO.ExternalDomainId : terminalResponseAuthTokenDTO.ExternalDomainName,
                         TerminalID = curTerminal.Id,
                         UserDO = curAccount,
                         AdditionalAttributes = terminalResponseAuthTokenDTO.AdditionalAttributes,
@@ -196,6 +202,9 @@ namespace Hub.Services
                 {
                     authToken.Token = terminalResponseAuthTokenDTO.Token;
                     authToken.ExternalAccountId = terminalResponseAuthTokenDTO.ExternalAccountId;
+                    authToken.ExternalAccountName = string.IsNullOrEmpty(terminalResponseAuthTokenDTO.ExternalAccountName) ? terminalResponseAuthTokenDTO.ExternalDomainId : terminalResponseAuthTokenDTO.ExternalAccountName;
+                    authToken.ExternalDomainId = terminalResponseAuthTokenDTO.ExternalDomainId;
+                    authToken.ExternalDomainName = string.IsNullOrEmpty(terminalResponseAuthTokenDTO.ExternalDomainName) ? terminalResponseAuthTokenDTO.ExternalDomainId : terminalResponseAuthTokenDTO.ExternalDomainName;
                 }
 
                 uow.SaveChanges();
@@ -216,7 +225,7 @@ namespace Hub.Services
 
                 return new AuthenticateResponse()
                 {
-                    AuthorizationToken = authToken,
+                    AuthorizationToken = Mapper.Map<AuthorizationTokenDTO>(authToken),
                     Error = null
                 };
             }
@@ -270,7 +279,9 @@ namespace Hub.Services
                 {
                     authTokenByExternalAccountId.Token = authTokenDTO.Token;
                     authTokenByExternalState.ExternalAccountId = authTokenDTO.ExternalAccountId;
+                    authTokenByExternalState.ExternalAccountName = string.IsNullOrEmpty(authTokenDTO.ExternalAccountName) ? authTokenDTO.ExternalAccountId : authTokenDTO.ExternalAccountName;
                     authTokenByExternalState.ExternalDomainId = authTokenDTO.ExternalDomainId;
+                    authTokenByExternalState.ExternalDomainName = string.IsNullOrEmpty(authTokenDTO.ExternalDomainName) ? authTokenDTO.ExternalDomainId : authTokenDTO.ExternalDomainName;
                     authTokenByExternalAccountId.ExternalStateToken = null;
                     authTokenByExternalState.AdditionalAttributes = authTokenDTO.AdditionalAttributes;
 
@@ -282,7 +293,9 @@ namespace Hub.Services
                 {
                     authTokenByExternalState.Token = authTokenDTO.Token;
                     authTokenByExternalState.ExternalAccountId = authTokenDTO.ExternalAccountId;
+                    authTokenByExternalState.ExternalAccountName = string.IsNullOrEmpty(authTokenDTO.ExternalAccountName) ? authTokenDTO.ExternalAccountId : authTokenDTO.ExternalAccountName;
                     authTokenByExternalState.ExternalDomainId = authTokenDTO.ExternalDomainId;
+                    authTokenByExternalState.ExternalDomainName = string.IsNullOrEmpty(authTokenDTO.ExternalDomainName) ? authTokenDTO.ExternalDomainId : authTokenDTO.ExternalDomainName;
                     authTokenByExternalState.ExternalStateToken = null;
                     authTokenByExternalState.AdditionalAttributes = authTokenDTO.AdditionalAttributes;
 
@@ -293,7 +306,7 @@ namespace Hub.Services
 
                 return new AuthenticateResponse()
                 {
-                    AuthorizationToken = authTokenByExternalAccountId ?? authTokenByExternalState,
+                    AuthorizationToken = Mapper.Map<AuthorizationTokenDTO>(authTokenByExternalAccountId ?? authTokenByExternalState),
                     Error = null
                 };
             }

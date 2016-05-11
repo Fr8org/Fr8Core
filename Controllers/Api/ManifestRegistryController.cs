@@ -1,14 +1,10 @@
 ﻿using AutoMapper;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using StructureMap;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Web.Http;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Utilities;
 
 namespace HubWeb.Controllers.Api
@@ -63,8 +59,8 @@ namespace HubWeb.Controllers.Api
         }
 
         [HttpGet]
-        [ActionName("getDescriptionWithMaxVersion")]
-        public IHttpActionResult GetDescriptionWithMaxVersion(string name)
+        [ActionName("getDescriptionWithLastVersion")]
+        public IHttpActionResult GetDescriptionWithLastVersion(string name)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

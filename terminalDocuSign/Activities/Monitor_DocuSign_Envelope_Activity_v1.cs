@@ -3,15 +3,15 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
 using Data.Validations;
 using DocuSign.eSign.Api;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Managers;
 using terminalDocuSign.Services.New_Api;
 using TerminalBase.Infrastructure;
@@ -249,7 +249,7 @@ namespace terminalDocuSign.Actions
                 allFields.AddRange(eventFields);
 
                 //crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(fields)));
-                crateStorage.Add(Data.Crates.Crate.FromContent("Log Messages", logMessages));
+                crateStorage.Add(Fr8Data.Crates.Crate.FromContent("Log Messages", logMessages));
                 if (curSelectedOption == "template")
                 {
                     allFields.AddRange(GetEnvelopeData(authTokenDO, envelopeId, null));
@@ -257,7 +257,7 @@ namespace terminalDocuSign.Actions
 
                 // TODO: This is probably obsolete crate, however lookup of that particular crate is hardcoded in QueryFr8Warehouse_v1#GetCurrentEnvelopeId.
                 //          This was possibly required by Generate_DocuSign_Report.
-                crateStorage.Add(Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(eventFields)));
+                crateStorage.Add(Fr8Data.Crates.Crate.FromContent("DocuSign Envelope Payload Data", new StandardPayloadDataCM(eventFields)));
 
                 // Crate that should be used, since it is base on CrateDescriptionCM.
                 crateStorage.Add(Crate.CreateDesignTimeFieldsCrate(AllFieldsCrateName, AvailabilityType.RunTime, allFields.ToArray()));
@@ -313,7 +313,7 @@ namespace terminalDocuSign.Actions
 
         private Crate GetAvailableRunTimeTableCrate()
         {
-            var availableRunTimeCrates = Data.Crates.Crate.FromContent("Available Run Time Crates", new CrateDescriptionCM(
+            var availableRunTimeCrates = Fr8Data.Crates.Crate.FromContent("Available Run Time Crates", new CrateDescriptionCM(
                     new CrateDescriptionDTO
                     {
                         ManifestType = MT.FieldDescription.GetEnumDisplayName(),

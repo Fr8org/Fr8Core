@@ -1,6 +1,6 @@
 ﻿module dockyard.model {
     export class IncomingCratesDTO {
-        incomingFields: FieldDTO[];
-		incomingCrates: CrateDescriptionDTO[];
+        availableFields: FieldDTO[];
+		availableCrates: CrateDescriptionDTO[];
 	}
 }
