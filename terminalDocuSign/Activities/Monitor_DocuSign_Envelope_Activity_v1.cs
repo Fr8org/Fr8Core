@@ -294,7 +294,7 @@ namespace terminalDocuSign.Actions
             //just update the user selected envelope events in the follow up configuration
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                var allFields = CreateDocuSignEventFields(null);
+                var allFields = CreateDocuSignEventFields(null, AllFieldsCrateName);
                 UpdateSelectedEvents(crateStorage);
                 string selectedOption, selectedValue, selectedTemplate;
                 GetTemplateRecipientPickerValue(curActivityDO, out selectedOption, out selectedValue, out selectedTemplate);
