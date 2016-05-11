@@ -458,6 +458,9 @@ module dockyard.directives.paneConfigureAction {
                         }
 
                         var oldAction = this.$scope.currentAction;
+                        if (oldAction.label !== res.label) {
+                            this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ActionUpdated], res);
+                        }
                         if (res.childrenActivities && res.childrenActivities.length > 0 && (!oldAction.childrenActivities || oldAction.childrenActivities.length < 1)) {
                             // If the directive is used for configuring solutions,
                             // the SolutionController would listen to this event 

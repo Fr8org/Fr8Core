@@ -404,13 +404,11 @@ module dockyard.controllers {
         private setupMessageProcessing() {
             //Process Configure Action Pane events
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionUpdated],
-                (event: ng.IAngularEvent, eventArgs: pca.ActionUpdatedEventArgs) => this.PaneConfigureAction_ActionUpdated(eventArgs));
+                (event: ng.IAngularEvent, eventArgs: model.ActivityDTO) => this.PaneConfigureAction_ActionUpdated(eventArgs));
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionRemoved],
                 (event: ng.IAngularEvent, eventArgs: pca.ActionRemovedEventArgs) => this.PaneConfigureAction_ActionRemoved(eventArgs));
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ChildActionsReconfiguration],
                 (event: ng.IAngularEvent, childActionReconfigEventArgs: pca.ChildActionReconfigurationEventArgs) => this.PaneConfigureAction_ChildActionsReconfiguration(childActionReconfigEventArgs));
-
-
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_DownStreamReconfiguration],
                 (event: ng.IAngularEvent, eventArgs: pca.DownStreamReConfigureEventArgs) => this.PaneConfigureAction_ReConfigureDownStreamActivities(eventArgs));
 
@@ -695,10 +693,13 @@ module dockyard.controllers {
 
         /*
             Handles message 'ConfigureActionPane_ActionUpdated'
+            TODO : we should update entire activity
         */
-        private PaneConfigureAction_ActionUpdated(eventArgs: pca.ActionUpdatedEventArgs) {
-
-        }
+        private PaneConfigureAction_ActionUpdated(updatedAction: model.ActivityDTO) {
+            var action = this.findActionById(updatedAction.id);
+            action.name = updatedAction.name;
+            action.label = updatedAction.label;
+        }   
 
         /*
             Handles message 'SelectActionPane_ActionTypeSelected'
