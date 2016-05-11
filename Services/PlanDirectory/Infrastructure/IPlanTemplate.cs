@@ -1,10 +1,16 @@
-﻿using PlanDirectory.Interfaces;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
+using PlanDirectory.Interfaces;
 
 namespace PlanDirectory.Infrastructure
 {
     public interface IPlanTemplate
     {
-        void Publish(PublishPlanTemplateDTO planTemplate);
-        void Unpublish(PublishPlanTemplateDTO planTemplate);
+        Task Initialize();
+
+        Task<IEnumerable<SearchPlanTemplateDTO>> Search(string text);
+
+        Task Publish(PublishPlanTemplateDTO planTemplate);
+        Task Unpublish(PublishPlanTemplateDTO planTemplate);
     }
 }

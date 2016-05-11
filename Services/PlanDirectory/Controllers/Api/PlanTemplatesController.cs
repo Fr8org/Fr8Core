@@ -1,4 +1,5 @@
-﻿using System.Web.Http;
+﻿using System.Threading.Tasks;
+using System.Web.Http;
 using StructureMap;
 using Hub.Infrastructure;
 using PlanDirectory.Infrastructure;
@@ -19,25 +20,26 @@ namespace PlanDirectory.Controllers
         [HttpPost]
         [Fr8ApiAuthorize]
         [PlanDirectoryHMACAuthenticate]
-        public IHttpActionResult Publish(PublishPlanTemplateDTO planTemplate)
+        public async Task<IHttpActionResult> Publish(PublishPlanTemplateDTO planTemplate)
         {
-            _planTemplate.Publish(planTemplate);
+            await _planTemplate.Publish(planTemplate);
             return Ok();
         }
 
         [HttpPost]
         [Fr8ApiAuthorize]
         [PlanDirectoryHMACAuthenticate]
-        public IHttpActionResult Unpublish(PublishPlanTemplateDTO planTemplate)
+        public async Task<IHttpActionResult> Unpublish(PublishPlanTemplateDTO planTemplate)
         {
-            _planTemplate.Unpublish(planTemplate);
+            await _planTemplate.Unpublish(planTemplate);
             return Ok();
         }
 
         [HttpPost]
-        public IHttpActionResult Search(string text)
+        public async Task<IHttpActionResult> Search(string text)
         {
-            throw new System.NotImplementedException();
+            var searchResult = await _planTemplate.Search(text);
+            return Ok(searchResult);
         }
     }
 }

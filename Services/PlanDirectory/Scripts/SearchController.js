@@ -9,7 +9,7 @@
             };
 
             $scope.submitSearch = function () {
-                $http.post('')
+                $http.post(urlPrefix + '/api/')
 
                 return false;
             };
