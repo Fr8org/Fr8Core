@@ -1,15 +1,15 @@
-﻿using Fr8Data.DataTransferObjects.PlanTemplates;
+﻿using PlanDirectory.Interfaces;
 
 namespace PlanDirectory.Infrastructure
 {
     public class PlanTemplate : IPlanTemplate
     {
-        public void Publish(PlanTemplateDTO planTemplate)
+        public void Publish(PublishPlanTemplateDTO planTemplate)
         {
             // TODO: not implemented yet.
         }
 
-        public void Unpublish(PlanTemplateDTO planTemplate)
+        public void Unpublish(PublishPlanTemplateDTO planTemplate)
         {
             // TODO: not implemented yet.
         }

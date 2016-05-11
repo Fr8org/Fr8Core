@@ -1,0 +1,13 @@
+﻿body {
+    margin: 10px !important;
+}
+
+.search-bar-container {
+    text-align: center;
+    margin-top: 50px;
+}
+
+.search-bar {
+    display: inline-block;
+    width: 40%;
+}

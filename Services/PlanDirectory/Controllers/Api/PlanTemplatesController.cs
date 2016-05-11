@@ -1,8 +1,8 @@
 ﻿using System.Web.Http;
-using AutoMapper;
 using StructureMap;
-using Fr8Data.DataTransferObjects.PlanTemplates;
+using Hub.Infrastructure;
 using PlanDirectory.Infrastructure;
+using PlanDirectory.Interfaces;
 
 namespace PlanDirectory.Controllers
 {
@@ -17,21 +17,27 @@ namespace PlanDirectory.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult Publish(PlanTemplateDTO planTemplate)
+        [Fr8ApiAuthorize]
+        [PlanDirectoryHMACAuthenticate]
+        public IHttpActionResult Publish(PublishPlanTemplateDTO planTemplate)
         {
-            // var planTemplateCM = Mapper.Map<PlanTemplateCM>(planTemplate);
-            // _planTemplate.Publish(planTemplateCM);
-
+            _planTemplate.Publish(planTemplate);
             return Ok();
         }
 
         [HttpPost]
-        public IHttpActionResult Unpublish(PlanTemplateDTO planTemplate)
+        [Fr8ApiAuthorize]
+        [PlanDirectoryHMACAuthenticate]
+        public IHttpActionResult Unpublish(PublishPlanTemplateDTO planTemplate)
         {
-            // var planTemplateCM = Mapper.Map<PlanTemplateCM>(planTemplate);
-            // _planTemplate.Unpublish(planTemplateCM);
-
+            _planTemplate.Unpublish(planTemplate);
             return Ok();
+        }
+
+        [HttpPost]
+        public IHttpActionResult Search(string text)
+        {
+            throw new System.NotImplementedException();
         }
     }
 }

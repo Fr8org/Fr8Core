@@ -1,10 +1,10 @@
-﻿using Fr8Data.DataTransferObjects.PlanTemplates;
+﻿using PlanDirectory.Interfaces;
 
 namespace PlanDirectory.Infrastructure
 {
     public interface IPlanTemplate
     {
-        void Publish(PlanTemplateDTO planTemplate);
-        void Unpublish(PlanTemplateDTO planTemplate);
+        void Publish(PublishPlanTemplateDTO planTemplate);
+        void Unpublish(PublishPlanTemplateDTO planTemplate);
     }
 }
