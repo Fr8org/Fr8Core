@@ -8,6 +8,7 @@ using Data.Interfaces;
 using Data.Repositories;
 using Data.Repositories.MultiTenant;
 using Data.Repositories.Plan;
+using Data.Repositories.PlanDescriptions;
 using StructureMap;
 
 namespace Data.Infrastructure
@@ -72,7 +73,7 @@ namespace Data.Infrastructure
                 return _recipientRepository ?? (_recipientRepository = new RecipientRepository(this));
             }
         }
-
+        
         private IProfileRepository _profileRepository;
         public IProfileRepository ProfileRepository => _profileRepository ?? (_profileRepository = new ProfileRepository(this));
 
@@ -538,6 +539,43 @@ namespace Data.Infrastructure
             }
         }
 
+        private ActivityDescriptionRepository _activityDescriptionRepository;
+        public IActivityDescriptionRepository ActivityDescriptionRepository
+        {
+            get
+            {
+                return _activityDescriptionRepository ?? (_activityDescriptionRepository = new ActivityDescriptionRepository(this));
+            }
+        }
+
+        private NodeTransitionRepository _nodeTransitionRepository;
+        public INodeTransitionRepository NodeTransitionRepository
+
+        {
+            get
+            {
+                return _nodeTransitionRepository ?? (_nodeTransitionRepository = new NodeTransitionRepository(this));
+            }
+        }
+
+        private PlanTemplateRepository _planTemplateRepository;
+        public IPlanTemplateRepository PlanTemplateRepository
+        {
+            get
+            {
+                return _planTemplateRepository ?? (_planTemplateRepository = new PlanTemplateRepository(this));
+            }
+        }
+
+        private PlanNodeDescriptionsRepository _planNodeDescriptionsRepository;
+        public IPlanNodeDescriptionsRepository PlanNodeDescriptionsRepository
+        {
+            get
+            {
+                return _planNodeDescriptionsRepository ?? (_planNodeDescriptionsRepository = new PlanNodeDescriptionsRepository(this));
+            }
+        }
+
         public void Save()
         {
             _context.SaveChanges();
@@ -585,7 +623,7 @@ namespace Data.Infrastructure
                 }
             }
             catch
-            {}
+            { }
 
             _context.DetectChanges();
             var addedEntities = _context.AddedEntities;
@@ -616,7 +654,7 @@ namespace Data.Infrastructure
             OnEntitiesDeleted(new EntitiesStateEventArgs(this, deletedEntities));
         }
 
-        private void UpateRepository(Object[] addedEntities, Object[] modifiedEntities, Object[] deletedEntities,  object repository)
+        private void UpateRepository(Object[] addedEntities, Object[] modifiedEntities, Object[] deletedEntities, object repository)
         {
             var trackingChanges = repository as ITrackingChangesRepository;
 
@@ -642,6 +680,8 @@ namespace Data.Infrastructure
         {
             get { return _context; }
         }
+
+
 
         /// <summary>
         /// Occurs for entities added after they saved to db.

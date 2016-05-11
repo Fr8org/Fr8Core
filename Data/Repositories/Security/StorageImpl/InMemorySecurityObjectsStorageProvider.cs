@@ -5,10 +5,12 @@ using System.Text;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
+using Data.Interfaces.DataTransferObjects;
 using Data.Repositories.MultiTenant;
 using Data.Repositories.Security.Entities;
 using Data.Repositories.SqlBased;
 using Data.States;
+using Fr8Data.DataTransferObjects;
 using StructureMap;
 
 namespace Data.Repositories.Security.StorageImpl
@@ -110,7 +112,12 @@ namespace Data.Repositories.Security.StorageImpl
             throw new NotImplementedException();
         }
 
-        public List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, List<string> roleNames)
+        public List<PermissionDTO> GetAllPermissionsForUser(Guid profileId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, Guid profileId)
         {
             return new List<int>();
         }

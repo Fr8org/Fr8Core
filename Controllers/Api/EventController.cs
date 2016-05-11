@@ -87,11 +87,10 @@ namespace HubWeb.Controllers
 
         }
 
-        public static void ProcessEventsInternal(CrateDTO raw)
+        public static Task ProcessEventsInternal(CrateDTO raw)
         {
             var curCrateStandardEventReport = ObjectFactory.GetInstance<ICrateManager>().FromDto(raw);
-            var eventTask = ObjectFactory.GetInstance<IEvent>().ProcessInboundEvents(curCrateStandardEventReport);
-            Task.WaitAll(eventTask);
+            return ObjectFactory.GetInstance<IEvent>().ProcessInboundEvents(curCrateStandardEventReport);
         }
 
         [HttpPost]

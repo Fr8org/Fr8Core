@@ -169,7 +169,6 @@ namespace HubTests.Services
         {
             _isInvalidLoginRequired = true;
         }
-
         protected override CloudBlobContainer GetDefaultBlobContainer()
         {
             //if no customization required, just return the base version of the BLOB container

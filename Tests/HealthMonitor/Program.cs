@@ -31,6 +31,8 @@ namespace HealthMonitor
             var interactive = false;
             var killIISExpress = false;
             var doCleanUp = false;
+            var smtpUsername = string.Empty;
+            var smtpPassword = string.Empty;
 
             if (args != null)
             {
@@ -88,13 +90,20 @@ namespace HealthMonitor
                     }
                     else if (args[i] == "--killexpress")
                     {
-                        killIISExpress = true;
                     }
 
                     // Execute the clean-up script after the tests finished running. 
                     else if (args[i].ToLowerInvariant() == "--cleanup")
                     {
                         doCleanUp = true;
+                    }
+                    else if (args[i] == "--smtp-user")
+                    {
+                        smtpUsername = args[i];
+                    }
+                    else if (args[i] == "--smtp-pass")
+                    {
+                        smtpPassword = args[i];
                     }
                 }
 
@@ -131,7 +140,9 @@ namespace HealthMonitor
                     appName,
                     specificTest,
                     skipLocal,
-                    appInsightsInstrumentationKey
+                    appInsightsInstrumentationKey,
+                    smtpUsername,
+                    smtpPassword
                 );
             }
             finally
@@ -209,7 +220,9 @@ namespace HealthMonitor
             string appName,
             string test,
             bool skipLocal,
-            string appInsightsInstrumentationKey)
+            string appInsightsInstrumentationKey,
+            string smtpUsername,
+            string smtpPassword)
         {
             CoreExtensions.Host.InitializeService();
 
@@ -260,7 +273,7 @@ namespace HealthMonitor
                     var htmlReport = reportBuilder.BuildReport(appName, report);
 
                     var reportNotifier = new TestReportNotifier();
-                    reportNotifier.Notify(appName, htmlReport);
+                    reportNotifier.Notify(appName, htmlReport, smtpUsername, smtpPassword);
                 }
             }
             return report.Tests.Count(x => !x.Success);
