@@ -19,7 +19,7 @@ namespace terminalBox.Infrastructure
             var expiresIn = (int)(authToken.ExpiresAt - DateTime.UtcNow).TotalSeconds;
             if (expiresIn <= 0)
             {
-                
+                //TODO: Check token expiration
             }
             Box.V2.Auth.OAuthSession session = new Box.V2.Auth.OAuthSession(authToken.AccessToken, authToken.RefreshToken, expiresIn, "bearer");
             _boxClient = new BoxClient(config, session);
