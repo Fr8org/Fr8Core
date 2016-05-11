@@ -1001,6 +1001,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamCrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActivityResize.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\ModalResizable.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\SubplanHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Validators\ManifestDescriptionValidators.ts" />
     <TypeScriptCompile Include="Scripts\app\events\Fr8Events.ts" />
@@ -1049,6 +1050,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamDataChooser.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamDataChooser.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\directives\controls\fixture_UpstreamDataChooser.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\directives\controls\fixture_UpstreamFieldChooser.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\jpattern.ts" />
     <TypeScriptCompile Include="Scripts\lib\jpattern.d.ts" />
     <Content Include="Views\AngularTemplate\AccountDetails.cshtml" />
