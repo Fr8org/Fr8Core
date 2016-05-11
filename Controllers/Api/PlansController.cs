@@ -256,10 +256,9 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Deactivate(Guid planId)
         {
-            string activityDTO = await _plan.Deactivate(planId);
-            EventManager.PlanDeactivated(planId);
-
-            return Ok(activityDTO);
+            await _plan.Deactivate(planId);
+           
+            return Ok();
         }
 
         [HttpPost]
@@ -308,7 +307,7 @@ namespace HubWeb.Controllers
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
                         var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
-                        var currentPlanType = planDO.IsMonitoringPlan() ? PlanType.Monitoring.ToString() : PlanType.RunOnce.ToString();
+                        var currentPlanType = IsMonitoringPlan(planDO) ? PlanType.Monitoring.ToString() : PlanType.RunOnce.ToString();
                         return BadRequest(currentPlanType);
                     }
                 }
@@ -326,7 +325,39 @@ namespace HubWeb.Controllers
 
             return Run(planId, crates, null);
         }
-        
+
+        private bool IsMonitoringPlan(PlanDO plan)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var initialActivity = plan.StartingSubPlan.GetDescendantsOrdered()
+                    .OfType<ActivityDO>()
+                    .FirstOrDefault(x => uow.ActivityTemplateRepository.GetByKey(x.ActivityTemplateId).Category != ActivityCategory.Solution);
+
+                if (initialActivity == null)
+                {
+                    return false;
+                }
+
+                var activityTemplate = uow.ActivityTemplateRepository.GetByKey(initialActivity.ActivityTemplateId);
+
+                if (activityTemplate.Category == ActivityCategory.Monitors)
+                {
+                    return true;
+                }
+
+                var storage = _crate.GetStorage(initialActivity.CrateStorage);
+                
+                // first activity has event subsribtions. This means that this plan can be triggered by external event
+                if (storage.CrateContentsOfType<EventSubscriptionCM>().Any(x=>x.Subscriptions?.Count > 0))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
         private async Task<IHttpActionResult> Run(Guid planId, Crate[] payload, Guid? containerId)
         {
             var activateDTO = await _plan.Activate(planId, false);
@@ -364,7 +395,7 @@ namespace HubWeb.Controllers
                 {
                     if (planDO != null)
                     {
-                        currentPlanType = planDO.IsMonitoringPlan() ? PlanType.Monitoring : PlanType.RunOnce;
+                        currentPlanType = IsMonitoringPlan(planDO) ? PlanType.Monitoring : PlanType.RunOnce;
 
                         if (containerId == null)
                         {

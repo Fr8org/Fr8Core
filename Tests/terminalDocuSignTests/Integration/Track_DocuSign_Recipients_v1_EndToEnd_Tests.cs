@@ -264,7 +264,7 @@ namespace terminalDocuSignTests.Integration
             await HttpPostAsync<object, PlanFullDTO>(baseUrl + "plans?id=" + plan.Plan.Id, new { id = plan.Plan.Id, name = newName });
 
             //let's activate our plan
-            await HttpPostAsync<string, string>(baseUrl + "plans/activate?planId=" + plan.Plan.Id, null);
+            await HttpPostAsync<string, string>(baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
 
 
             //everything seems perfect -> let's fake a docusign event

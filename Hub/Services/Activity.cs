@@ -19,6 +19,7 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using Hub.Exceptions;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using Hub.Managers;
@@ -498,9 +499,37 @@ namespace Hub.Services
 
             curActivityDO.AuthorizationToken = uow.AuthorizationTokenRepository.FindTokenById(curActivityDO.AuthorizationTokenId);
 
-            await CallTerminalActivityAsync<ActivityDTO>(uow, "deactivate", curActivityDO, Guid.Empty);
+            var dto = Mapper.Map<ActivityDO, ActivityDTO>(curActivityDO);
+            bool skipDeactivation = false;
+
+            if (curActivityDO.AuthorizationToken != null)
+            {
+                try
+                {
+                    _authorizationToken.PrepareAuthToken(uow, dto);
+                }
+                catch (InvalidTokenRuntimeException)
+                {
+                    skipDeactivation = true;
+                }
+            }
+            else
+            {
+                skipDeactivation = true;
+            }
+
+            if (!skipDeactivation)
+            {
+                var fr8DataDTO = new Fr8DataDTO
+                {
+                    ActivityDTO = dto
+                };
+
+                await ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<ActivityDTO>("deactivate", fr8DataDTO, Guid.Empty.ToString());
+            }
 
             var root = exisiting.GetTreeRoot() as PlanDO;
+
             if (root?.PlanState == PlanState.Active)
             {
                 root.PlanState = PlanState.Inactive;

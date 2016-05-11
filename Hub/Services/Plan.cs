@@ -15,10 +15,8 @@ using System.Threading.Tasks;
 using Data.Infrastructure;
 using Data.Interfaces.Manifests;
 using Data.Repositories.Plan;
-using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
-using Fr8Data.DataTransferObjects.Helpers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Exceptions;
@@ -253,42 +251,41 @@ namespace Hub.Services
             return crateStorage.CrateContentsOfType<ValidationResultsCM>().SelectMany(x => x.ValidationErrors);
         }
 
-        public async Task<string> Deactivate(Guid curPlanId)
+        public async Task Deactivate(Guid planId)
         {
-            string result = "no action";
+            var deactivateTasks = new List<Task>();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = uow.PlanRepository.GetById<PlanDO>(curPlanId);
-
-
-                foreach (var curActionDO in plan.GetDescendants().OfType<ActivityDO>())
-                {
-                    try
-                    {
-                        await _activity.Deactivate(curActionDO);
-                        result = "success";
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new ApplicationException("Unable to deactivate plan.", ex);
-                    }
-                }
-
+                var plan = uow.PlanRepository.GetById<PlanDO>(planId);
 
                 plan.PlanState = PlanState.Inactive;
                 uow.SaveChanges();
+
+                foreach (var activity in plan.GetDescendants().OfType<ActivityDO>())
+                {
+                    deactivateTasks.Add(_activity.Deactivate(activity));
+                }
             }
 
-            return result;
+            try
+            {
+                await Task.WhenAll(deactivateTasks);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to deactivate plan", ex);
+            }
+
+            EventManager.PlanDeactivated(planId);
         }
 
 
         public IList<PlanDO> GetMatchingPlans(string userId, EventReportCM curEventReport)
         {
-            List<PlanDO> planSubscribers = new List<PlanDO>();
             if (String.IsNullOrEmpty(userId))
                 throw new ArgumentNullException("Parameter UserId is null");
+
             if (curEventReport == null)
                 throw new ArgumentNullException("Parameter Standard Event Report is null");
 

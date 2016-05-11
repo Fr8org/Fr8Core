@@ -20,7 +20,7 @@ namespace Hub.Interfaces
 
         IList<PlanDO> GetMatchingPlans(string userId, EventReportCM curEventReport);
         Task<ActivateActivitiesDTO> Activate(Guid planId, bool planBuilderActivate);
-        Task<string> Deactivate(Guid curPlanId);
+        Task Deactivate(Guid curPlanId);
 
         PlanDO GetPlanByActivityId(IUnitOfWork uow, Guid planActivityId);
         List<PlanDO> MatchEvents(List<PlanDO> curPlans, EventReportCM curEventReport);

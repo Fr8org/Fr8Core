@@ -95,16 +95,14 @@ namespace Hub.Security.ObjectDecorators
             _target.CreateOrUpdate(uow, submittedPlan);
         }
 
-        public Task<string> Deactivate(Guid curPlanId)
+        public Task Deactivate(Guid curPlanId)
         {
             if (_securityServices.AuthorizeActivity(PermissionType.EditObject, curPlanId.ToString(), nameof(PlanNodeDO)))
             {
                 return _target.Deactivate(curPlanId);
             }
-            else
-            {
-                throw new HttpException(403, "You are not authorized to perform this activity!");
-            }
+           
+            throw new HttpException(403, "You are not authorized to perform this activity!");
         }
 
         public async Task Delete(IUnitOfWork uow, Guid id)
