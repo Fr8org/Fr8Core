@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using StructureMap;
-using System.IO;
 using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using Newtonsoft.Json;
+using StructureMap;
+using TerminalBase.Infrastructure;
 
-namespace TerminalBase.Infrastructure
+namespace TerminalBase.Services
 {
     public abstract class DataHubCommunicatorBase : IHubCommunicator
     {

@@ -28,6 +28,7 @@ namespace Infrastructure.StructureMap
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
                 For<IHMACAuthenticator>().Use<HMACAuthenticator>();
                 For<IHMACService>().Use<Fr8HMACService>();
+                For<IRestfulServiceClient>().Singleton().Use<RestfulServiceClient>().SelectConstructor(() => new RestfulServiceClient());
             }
         }
 

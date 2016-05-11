@@ -8,16 +8,16 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.DataTransferObjects.Helpers;
 using Fr8Data.Helpers;
-using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using TerminalBase.Infrastructure;
-using Newtonsoft.Json.Linq;
 using TerminalBase.Errors;
+using TerminalBase.Models;
+using TerminalBase.Services;
 
 namespace TerminalBase.BaseClasses
 {
-    public abstract class EnhancedTerminalActivityv2<T> : BaseTerminalActivityv2
+    public abstract class EnhancedTerminalActivity<T> : BaseTerminalActivity
        where T : StandardConfigurationControlsCM
     {
         /**********************************************************************************/
@@ -28,84 +28,17 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        private UpstreamQueryManager _upstreamQueryManager;
-        protected bool IsAuthenticationRequired { get; }
-        protected T ConfigurationControls { get; private set; }
-        protected UpstreamQueryManager UpstreamQueryManager => _upstreamQueryManager ?? (_upstreamQueryManager = new UpstreamQueryManager(ActivityContext, HubCommunicator));
+        protected T ActivityUI { get; private set; }
+        
         protected UiBuilder UiBuilder { get; private set; }
-        protected int LoopIndex => GetLoopIndex();
+        
 
         /**********************************************************************************/
         // Functions
         /**********************************************************************************/
-
-
-        protected EnhancedTerminalActivityv2(bool isAuthenticationRequired)
+        protected EnhancedTerminalActivity(bool isAuthenticationRequired) : base(isAuthenticationRequired)
         {
-            IsAuthenticationRequired = isAuthenticationRequired;
             UiBuilder = new UiBuilder();
-        } 
-
-        /**********************************************************************************/
-
-        private bool AuthorizeIfNecessary()
-        {
-            if (IsAuthenticationRequired)
-            {
-                return CheckAuthentication();
-            }
-
-            return false;
-        }
-
-        protected virtual bool IsTokenInvalidation(Exception ex)
-        {
-            return false;
-        }
-
-        /**********************************************************************************/
-
-        public sealed override async Task Configure()
-        {
-            try
-            {
-                if (AuthorizeIfNecessary())
-                {
-                    return;
-                }
-
-                var configurationType = GetConfigurationRequestType();
-                var runtimeCrateManager = new CrateSignaller(Storage, MyTemplate.Name);
-
-                switch (configurationType)
-                {
-                    case ConfigurationRequestType.Initial:
-                        await InitialConfiguration(runtimeCrateManager);
-                        break;
-
-                    case ConfigurationRequestType.Followup:
-                        await FollowupConfiguration(runtimeCrateManager);
-                        break;
-
-                    default:
-                        throw new ArgumentOutOfRangeException($"Unsupported configuration type: {configurationType}");
-                }
-
-            }
-            catch (Exception ex)
-            {
-                if (IsTokenInvalidation(ex))
-                {
-                    AddAuthenticationCrate(true);
-                }
-
-                throw;
-            }
-        }
-
-        protected virtual ConfigurationRequestType GetConfigurationRequestType()
-        {
-            return Storage.Count == 0 ? ConfigurationRequestType.Initial : ConfigurationRequestType.Followup;
         }
 
         /**********************************************************************************/
@@ -120,29 +53,24 @@ namespace TerminalBase.BaseClasses
         
         /**********************************************************************************/
 
-        private async Task InitialConfiguration(CrateSignaller crateSignaller)
+        public override async Task Initialize()
         {
-            ConfigurationControls = CrateConfigurationControls();
+            ActivityUI = CrateActivityUI();
             Storage.Clear();
-
             Storage.Add(Crate.FromContent(ConfigurationControlsLabel, ConfigurationControls, AvailabilityType.Configuration));
-
-            await Initialize(crateSignaller);
-
+            await InitializeETA();
             SyncConfControlsBack();
         }
 
         /**********************************************************************************/
 
-        private async Task FollowupConfiguration(CrateSignaller crateSignaller)
+        public override async Task FollowUp()
         {
             SyncConfControls();
-
             if (await Validate())
             {
-                await Configure(crateSignaller);
+                await ConfigureETA();
             }
-
             SyncConfControlsBack();
         }
 
@@ -150,14 +78,10 @@ namespace TerminalBase.BaseClasses
 
         public sealed override async Task Activate()
         {
-            if (AuthorizeIfNecessary())
-            {
-                return;
-            }
             SyncConfControls();
             if (await Validate())
             {
-                await Activate();
+                await ActivateETA();
             }
         }
 
@@ -166,7 +90,7 @@ namespace TerminalBase.BaseClasses
         public sealed override async Task Deactivate()
         {
             SyncConfControls();
-            await Deactivate();
+            await DeactivateETA();
         }
 
 
@@ -205,15 +129,15 @@ namespace TerminalBase.BaseClasses
             }
             catch (ActivityExecutionException ex)
             {
-                Error(ex.Message, ex.ErrorCode);
+                RaiseError(ex.Message, ex.ErrorCode);
             }
             catch (AggregateException ex)
             {
-                Error(ex.Flatten().Message);
+                RaiseError(ex.Flatten().Message);
             }
             catch (Exception ex)
             {
-                Error(ex.Message);
+                RaiseError(ex.Message);
             }
         }
         
@@ -237,7 +161,7 @@ namespace TerminalBase.BaseClasses
         
         /**********************************************************************************/
 
-        protected virtual T CrateConfigurationControls()
+        protected virtual T CrateActivityUI()
         {
             var uiBuilderConstructor = typeof (T).GetConstructor(new [] {typeof (UiBuilder)});
 
@@ -256,8 +180,8 @@ namespace TerminalBase.BaseClasses
             return AssignNamesForUnnamedControls((T)defaultConstructor.Invoke(null));
         }
 
-        protected abstract Task Initialize(CrateSignaller crateSignaller);
-        protected abstract Task Configure(CrateSignaller crateSignaller);
+        protected abstract Task InitializeETA();
+        protected abstract Task ConfigureETA();
 
         /**********************************************************************************/
 
@@ -285,11 +209,6 @@ namespace TerminalBase.BaseClasses
         }
 
         /**********************************************************************************/
-
-        protected virtual Task<bool> Validate()
-        {
-            return Task.FromResult(true);
-        }
 
         private const string ConfigurationValuesCrateLabel = "Configuration Values";
         /// <summary>
@@ -341,23 +260,21 @@ namespace TerminalBase.BaseClasses
         // SyncConfControls takes properties of controls in StandardConfigurationControlsCM from activity's storage and copies them into ActivityUi.
         private void SyncConfControls()
         {
-            var ui = Storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-
-            if (ui == null)
+            if (ConfigurationControls == null)
             {
                 throw new InvalidOperationException("Configuration controls crate is missing");
             }
 
-            ConfigurationControls = CrateConfigurationControls();
-            ConfigurationControls.SyncWith(ui);
+            ActivityUI = CrateActivityUI();
+            ActivityUI.SyncWith(ConfigurationControls);
             
-            if (ui.Controls != null)
+            if (ConfigurationControls.Controls != null)
             {
                 var dynamicControlsCollection = Fr8ReflectionHelper.GetMembers(ConfigurationControls.GetType()).Where(x => x.CanRead && x.GetCustomAttribute<DynamicControlsAttribute>() != null && CheckIfMemberIsControlsCollection(x)).ToDictionary(x => x.Name, x => x);
 
                 if (dynamicControlsCollection.Count > 0)
                 {
-                    foreach (var control in ui.Controls)
+                    foreach (var control in ConfigurationControls.Controls)
                     {
                         if (string.IsNullOrWhiteSpace(control.Name))
                         {

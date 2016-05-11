@@ -1,7 +1,7 @@
 ﻿using System.Linq;
 using System.Web.Mvc;
 
-namespace HubWeb.Infrastructure
+namespace HubWeb.Infrastructure_HubWeb
 {
     public class AngularTemplateCacheAttribute : OutputCacheAttribute
     {

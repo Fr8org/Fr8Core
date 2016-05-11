@@ -1,25 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
-using StructureMap;
-using Utilities.Configuration.Azure;
-using Newtonsoft.Json;
-using AutoMapper;
-using System.Configuration;
 using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using Infrastructure.Communication;
 using Infrastructure.Interfaces;
+using Newtonsoft.Json;
+using StructureMap;
+using TerminalBase.Infrastructure;
+using Utilities.Configuration.Azure;
 
-namespace TerminalBase.Infrastructure
+namespace TerminalBase.Services
 {
     public class DefaultHubCommunicator : IHubCommunicator
     {

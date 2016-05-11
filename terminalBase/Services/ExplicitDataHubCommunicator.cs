@@ -1,4 +1,4 @@
-﻿namespace TerminalBase.Infrastructure
+﻿namespace TerminalBase.Services
 {
     public class ExplicitDataHubCommunicator : DataHubCommunicatorBase
     {

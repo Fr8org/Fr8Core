@@ -7,8 +7,10 @@ using Data.Entities;
 using Data.States;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using Fr8Data.States;
 using TerminalSqlUtilities;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Infrastructure
 {
@@ -17,9 +19,9 @@ namespace terminalFr8Core.Infrastructure
         private const string DefaultDbProvider = "System.Data.SqlClient";
 
         public async Task<Dictionary<string, DbType>> ExtractColumnTypes(
-            BaseTerminalActivity activity, ActivityDO activityDO)
+            IHubCommunicator hubCommunicator, ActivityDO activityDO)
         {
-            var upstreamCrates = await activity.GetCratesByDirection<FieldDescriptionsCM>(
+            var upstreamCrates = await hubCommunicator.GetCratesByDirection<FieldDescriptionsCM>(
                 activityDO,
                 CrateDirection.Upstream
             );

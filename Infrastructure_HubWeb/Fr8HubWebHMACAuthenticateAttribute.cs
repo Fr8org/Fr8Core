@@ -1,14 +1,13 @@
-﻿using System.Web.Http.Filters;
-using System;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Http.Filters;
 using Hub.Infrastructure;
-using StructureMap;
 using Hub.Interfaces;
 using Infrastructure.Security;
+using StructureMap;
 
-namespace HubWeb.Infrastructure
+namespace HubWeb.Infrastructure_HubWeb
 {
     public class Fr8HubWebHMACAuthenticateAttribute : fr8HMACAuthenticateAttribute
     {

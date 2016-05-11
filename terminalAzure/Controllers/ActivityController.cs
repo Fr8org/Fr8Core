@@ -6,7 +6,9 @@ using TerminalBase.BaseClasses;
 using AutoMapper;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Managers;
+using StructureMap;
 using TerminalBase.Infrastructure;
+using TerminalBase.Services;
 
 namespace terminalAzure.Controllers
 {    
@@ -14,11 +16,11 @@ namespace terminalAzure.Controllers
     public class ActivityController : ApiController
     {
         private const string curTerminal = "terminalAzure";
-        private readonly ActivityExecutionManager ActivityExecutionManager;
+        private readonly ActivityExecutor _activityExecutor;
 
-        public ActivityController(ActivityExecutionManager activityExecutionManager)
+        public ActivityController()
         {
-            ActivityExecutionManager = activityExecutionManager;
+            _activityExecutor = ObjectFactory.GetInstance<ActivityExecutor>();
         }
 
         [HttpPost]
@@ -26,7 +28,7 @@ namespace terminalAzure.Controllers
         [Authorize]
         public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
-            return ActivityExecutionManager.HandleFr8Request(curTerminal, actionType, curDataDTO);
+            return _activityExecutor.HandleFr8Request(curTerminal, actionType, curDataDTO);
         }
 
         //----------------------------------------------------------

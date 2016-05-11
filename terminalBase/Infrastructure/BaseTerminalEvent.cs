@@ -7,6 +7,7 @@ using Fr8Data.Crates.Helpers;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Managers;
 using Infrastructure.Communication;
+using Infrastructure.Interfaces;
 using Utilities.Configuration.Azure;
 
 namespace TerminalBase.Infrastructure

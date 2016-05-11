@@ -10,7 +10,7 @@ using Data.Interfaces;
 using Fr8Data.DataTransferObjects;
 using Hub.Interfaces;
 using HubWeb.Controllers.Helpers;
-using HubWeb.Infrastructure;
+using HubWeb.Infrastructure_HubWeb;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 

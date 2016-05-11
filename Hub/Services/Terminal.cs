@@ -11,6 +11,7 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Hub.Interfaces;
 using Infrastructure.Communication;
+using Infrastructure.Interfaces;
 using StructureMap;
 using Utilities.Configuration.Azure;
 

@@ -15,7 +15,6 @@ using HubWeb.ViewModels;
 using Newtonsoft.Json;
 using Hub.Managers;
 using Utilities.Interfaces;
-using HubWeb.Infrastructure;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
@@ -25,6 +24,7 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.DataTransferObjects.Helpers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using HubWeb.Infrastructure_HubWeb;
 
 namespace HubWeb.Controllers
 {

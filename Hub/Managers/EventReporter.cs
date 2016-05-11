@@ -15,6 +15,7 @@ using System.Data.Entity.Infrastructure;
 using Fr8Data.Constants;
 using Fr8Data.DataTransferObjects;
 using Infrastructure.Communication;
+using Infrastructure.Interfaces;
 using Utilities.Interfaces;
 
 //NOTES: Do NOT put Incidents here. Put them in IncidentReporter

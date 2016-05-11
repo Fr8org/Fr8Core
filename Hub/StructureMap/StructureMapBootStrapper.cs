@@ -99,7 +99,6 @@ namespace Hub.StructureMap
                 For<IOAuthAuthorizer>().Use<GoogleAuthorizer>().Named("Google");
 
                 For<IImapClient>().Use<ImapClientWrapper>();
-
                 For<ITerminalTransmitter>().Use<TerminalTransmitter>();
 
                 For<IPlan>().Use<Hub.Services.Plan>().DecorateWith((context, service) => new PlanSecurityDecorator(service, ObjectFactory.GetInstance<ISecurityServices>()));

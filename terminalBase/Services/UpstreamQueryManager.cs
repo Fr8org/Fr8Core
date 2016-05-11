@@ -6,9 +6,11 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using TerminalBase.Models;
 
-namespace TerminalBase.BaseClasses
+namespace TerminalBase.Services
 {
     public class UpstreamQueryManager
     {

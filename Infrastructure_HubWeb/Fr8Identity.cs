@@ -1,12 +1,6 @@
-﻿using Microsoft.AspNet.Identity;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Security.Principal;
-using System.Web;
+﻿using System.Security.Claims;
 
-namespace HubWeb.Infrastructure
+namespace HubWeb.Infrastructure_HubWeb
 {
     public sealed class Fr8Identity : ClaimsIdentity
     {

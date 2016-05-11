@@ -245,6 +245,7 @@
     <Compile Include="Services\MT\MTSearchHelper.MtQueryProviderT.cs" />
     <Compile Include="Services\MT\MTTypesHelper.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="TerminalData.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj">

@@ -9,6 +9,7 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using Infrastructure.Communication;
+using Infrastructure.Interfaces;
 
 namespace Infrastructure.Communication
 {

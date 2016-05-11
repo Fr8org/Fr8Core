@@ -17,6 +17,7 @@ using Newtonsoft.Json;
 using StructureMap;
 using Hub.Exceptions;
 using Infrastructure.Communication;
+using Infrastructure.Interfaces;
 
 namespace Hub.Services
 {

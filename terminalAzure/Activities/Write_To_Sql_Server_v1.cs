@@ -17,7 +17,7 @@ using TerminalSqlUtilities;
 
 namespace terminalAzure.Activities
 {
-    public class Write_To_Sql_Server_v1 : BaseTerminalActivityv2
+    public class Write_To_Sql_Server_v1 : BaseTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -30,6 +30,10 @@ namespace terminalAzure.Activities
             Terminal = TerminalData.TerminalDTO
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
+        public Write_To_Sql_Server_v1() : base(false)
+        {
+        }
 
         //If the user provides no Connection String value, provide an empty Connection String field for the user to populate
         public override Task Initialize()
@@ -133,12 +137,12 @@ namespace terminalAzure.Activities
                 throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
             }
 
-            if (ConfigurationControlsCM == null)
+            if (ConfigurationControls == null)
             {
                 throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
             }
 
-            var connStringField = ConfigurationControlsCM.Controls.First();
+            var connStringField = ConfigurationControls.Controls.First();
             if (string.IsNullOrEmpty(connStringField?.Value))
             {
                 throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
@@ -246,5 +250,7 @@ namespace terminalAzure.Activities
             Success();
             return Task.FromResult(0);
         }
+
+        
     }
 }

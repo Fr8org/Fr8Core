@@ -6,7 +6,7 @@ using Fr8Data.Helpers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 
-namespace TerminalBase.BaseClasses
+namespace TerminalBase.Services
 {
     public class CrateSignaller
     {

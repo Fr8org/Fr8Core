@@ -4,7 +4,6 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using HubWeb.Infrastructure;
 using StructureMap;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
@@ -14,6 +13,7 @@ using System.Web.Http.Description;
 using Data.States;
 using AutoMapper;
 using Fr8Data.DataTransferObjects;
+using HubWeb.Infrastructure_HubWeb;
 
 
 namespace HubWeb.Controllers

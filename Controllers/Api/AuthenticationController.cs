@@ -11,7 +11,7 @@ using System.Security.Claims;
 using Fr8Data.DataTransferObjects;
 using Microsoft.Owin.Security;
 using Microsoft.AspNet.Identity;
-using HubWeb.Infrastructure;
+using HubWeb.Infrastructure_HubWeb;
 
 namespace HubWeb.Controllers
 {

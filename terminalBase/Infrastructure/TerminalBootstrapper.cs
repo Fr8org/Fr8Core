@@ -1,5 +1,6 @@
 ﻿using StructureMap;
 using StructureMap.Configuration.DSL;
+using TerminalBase.Services;
 
 namespace TerminalBase.Infrastructure
 {

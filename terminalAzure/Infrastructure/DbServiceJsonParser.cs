@@ -8,6 +8,7 @@ using Fr8Data.Manifests;
 using Newtonsoft.Json.Linq;
 using StructureMap;
 using TerminalBase.BaseClasses;
+using TerminalBase.Models;
 using TerminalSqlUtilities;
 
 namespace terminalAzure.Infrastructure

@@ -5,6 +5,8 @@ using Microsoft.Owin.Hosting;
 using Owin;
 using StructureMap;
 using StructureMap.Configuration.DSL;
+using TerminalBase.BaseClasses;
+using TerminalBase.Services;
 using TerminalSqlUtilities;
 
 namespace terminalAzure
@@ -17,6 +19,7 @@ namespace terminalAzure
             {
                 For<ICrateManager>().Use<CrateManager>();
                 For<IDbProvider>().Use<SqlClientDbProvider>();
+                For<ActivityExecutor>().Use<ActivityExecutor>();
             }
         }
 

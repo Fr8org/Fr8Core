@@ -87,7 +87,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Communication\IRestfulServiceClient.cs" />
+    <Compile Include="Interfaces\IRestfulServiceClient.cs" />
     <Compile Include="Communication\RestfulServiceClient.cs" />
     <Compile Include="Communication\RestfulServiceException.cs" />
     <Compile Include="Interfaces\IHMACAuthenticator.cs" />

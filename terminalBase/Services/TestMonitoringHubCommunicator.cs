@@ -1,5 +1,5 @@
 ﻿
-namespace TerminalBase.Infrastructure
+namespace TerminalBase.Services
 {
     public class TestMonitoringHubCommunicator : DataHubCommunicatorBase
     {

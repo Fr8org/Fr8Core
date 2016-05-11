@@ -1,11 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Security.Claims;
-using System.Web;
+﻿using System.Security.Claims;
 using System.Web.Mvc;
 
-namespace HubWeb.Infrastructure
+namespace HubWeb.Infrastructure_HubWeb
 {
     public static class HtmlHelpers
     {

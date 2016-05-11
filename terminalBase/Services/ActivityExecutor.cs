@@ -1,21 +1,20 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using System.Web.Http;
 using AutoMapper;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Managers;
+using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using TerminalBase.Interfaces;
+using TerminalBase.Models;
 
-namespace TerminalBase.BaseClasses
+namespace TerminalBase.Services
 {
-    public class ActivityExecutionManager
+    public class ActivityExecutor
     {
         protected readonly IHubCommunicator HubCommunicator;
         protected readonly ICrateManager CrateManager;
-        protected ActivityExecutionManager(IHubCommunicator hubCommunicator, ICrateManager crateManager)
+        public ActivityExecutor(IHubCommunicator hubCommunicator, ICrateManager crateManager)
         {
             HubCommunicator = hubCommunicator;
             CrateManager = crateManager;
@@ -23,32 +22,39 @@ namespace TerminalBase.BaseClasses
 
         public async Task<object> HandleFr8Request(string curTerminal, string curActionPath, Fr8DataDTO curDataDTO)
         {
-            IActivityFactory factory = ActivityStore.GetValue(curDataDTO.ActivityDTO.ActivityTemplate);
-            if (factory == null)
+            try
             {
-                throw new Exception("Activity template registration not found");
+                IActivityFactory factory = ActivityStore.GetValue(curDataDTO.ActivityDTO.ActivityTemplate);
+                if (factory == null)
+                {
+                    throw new Exception("Activity template registration not found");
+                }
+
+                ActivityContext activityContext = DeserializeRequest(curDataDTO);
+                IActivity activity;
+
+                switch (curActionPath.ToLower())
+                {
+                    case "configure":
+                        activity = factory.Create();
+                        await activity.Configure(activityContext);
+                        return SerializeResponse(activityContext);
+
+                    case "activate":
+                        activity = factory.Create();
+                        await activity.Activate(activityContext);
+                        return SerializeResponse(activityContext);
+
+                    case "run":
+                        var executionContext = await CreateContainerExecutionContext(curDataDTO);
+                        activity = factory.Create();
+                        await activity.Run(activityContext, executionContext);
+                        return SerializeResponse(executionContext);
+                }
             }
-
-            ActivityContext activityContext = DeserializeRequest(curDataDTO);
-            IActivity activity;
-
-            switch (curActionPath.ToLower())
+            catch (Exception e)
             {
-                case "configure":
-                    activity = factory.Create(activityContext);
-                    await activity.Configure();
-                    return SerializeResponse(activityContext);
-
-                case "activate":
-                    activity = factory.Create(activityContext);
-                    await activity.Activate();
-                    return SerializeResponse(activityContext);
-
-                case "run":
-                    var executionContext = await CreateContainerExecutionContext(curDataDTO);
-                    activity = factory.Create(activityContext, executionContext);
-                    await activity.Run();
-                    return SerializeResponse(executionContext);
+                int a = 12;
             }
 
             throw new Exception("Unsupported request");

@@ -383,5 +383,25 @@ namespace terminalFr8Core.Actions
         }
 
         #endregion Execution.
+
+        public BuildQuery_v1(bool isAuthenticationRequired) : base(isAuthenticationRequired)
+        {
+        }
+
+        protected override ActivityTemplateDTO MyTemplate { get; }
+        public override Task Run()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task Initialize()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override Task FollowUp()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
