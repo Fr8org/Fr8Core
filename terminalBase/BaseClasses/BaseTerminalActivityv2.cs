@@ -38,7 +38,7 @@ namespace TerminalBase.BaseClasses
         protected AuthorizationToken AuthorizationToken => ActivityContext.AuthorizationToken;
         protected OperationalStateCM OperationalState => GetOperationalStateCrate(Payload);
         protected ICrateStorage Payload => ExecutionContext.PayloadStorage;
-        protected StandardConfigurationControlsCM ConfigurationControls => _configurationControls ?? (_configurationControls = GetConfigurationControls());
+        protected StandardConfigurationControlsCM ConfigurationControlsCM => _configurationControls ?? (_configurationControls = GetConfigurationControls());
         #endregion
 
         public BaseTerminalActivityv2()
@@ -276,7 +276,7 @@ namespace TerminalBase.BaseClasses
                 predicate = x => x.Type == controlType && x.Name == name;
             }
 
-            return (T)ConfigurationControls.Controls.FirstOrDefault(predicate);
+            return (T)ConfigurationControlsCM.Controls.FirstOrDefault(predicate);
         }
 
         public abstract Task Run();

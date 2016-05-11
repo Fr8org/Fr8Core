@@ -133,12 +133,12 @@ namespace terminalAzure.Activities
                 throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
             }
 
-            if (ConfigurationControls == null)
+            if (ConfigurationControlsCM == null)
             {
                 throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
             }
 
-            var connStringField = ConfigurationControls.Controls.First();
+            var connStringField = ConfigurationControlsCM.Controls.First();
             if (string.IsNullOrEmpty(connStringField?.Value))
             {
                 throw new TerminalCodedException(TerminalErrorCode.SQL_SERVER_CONNECTION_STRING_MISSING);
