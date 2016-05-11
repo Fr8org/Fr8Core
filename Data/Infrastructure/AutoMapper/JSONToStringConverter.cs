@@ -1,7 +1,5 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using AutoMapper;
+﻿using AutoMapper;
 using Newtonsoft.Json;
-using Utilities.Serializers.Json;
 
 namespace Data.Infrastructure.AutoMapper
 {

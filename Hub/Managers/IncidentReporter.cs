@@ -1,16 +1,13 @@
 ﻿using System;
 using Data.Entities;
-using Microsoft.SqlServer.Server;
 using StructureMap;
 using Data.Exceptions;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
+using Fr8Data.DataTransferObjects;
 using Hub.Interfaces;
 using Hub.Services;
-using Utilities;
 using Utilities.Configuration.Azure;
 using Utilities.Logging;
 

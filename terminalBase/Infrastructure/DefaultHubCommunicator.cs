@@ -1,30 +1,25 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Formatting;
-using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using Hub.Managers;
 using StructureMap;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Utilities.Configuration.Azure;
-using Data.Constants;
-using Data.Interfaces.Manifests;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using AutoMapper;
 using System.Configuration;
-using Data.Interfaces;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace TerminalBase.Infrastructure
 {
@@ -167,7 +162,7 @@ namespace TerminalBase.Infrastructure
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                       + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/available_data"
                       + "?id=" + activityDO.Id
-                      + "&direction=" + (int) direction
+                      + "&direction=" + (int)direction
                       + "&availability=" + (int)availability;
             var uri = new Uri(url, UriKind.Absolute);
 
@@ -216,7 +211,7 @@ namespace TerminalBase.Infrastructure
         public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, string userId)
         {
             var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/available?tag=";
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/getAvailableActivitiesWithTag?tag=";
 
             if (string.IsNullOrEmpty(tag))
             {
@@ -474,6 +469,16 @@ namespace TerminalBase.Infrastructure
                     + string.Format("/authentication/GetAuthToken?curFr8UserId={0}&externalAccountId={1}&terminalId={2}", curFr8UserId, externalAccountId, TerminalId);
             var uri = new Uri(url);
             return await _restfulServiceClient.GetAsync<AuthorizationTokenDTO>(uri, null, await GetHMACHeader(uri, curFr8UserId));
+        }
+
+        public async Task ScheduleEvent(string externalAccountId, string curFr8UserId, string minutes)
+        {
+            var hubAlarmsUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+               + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion")
+               + string.Format("/alarms/schedule?external_account_id={0}&fr8AccountId={1}&minutes={2}&terminalId={3}",
+               externalAccountId, curFr8UserId, minutes, TerminalId);
+            var uri = new Uri(hubAlarmsUrl);
+            await _restfulServiceClient.PostAsync(uri, null, await GetHMACHeader(uri, curFr8UserId));
         }
     }
 }

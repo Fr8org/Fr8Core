@@ -7,14 +7,14 @@ using NUnit.Framework;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using HealthMonitorUtility;
 using terminalDocuSign.Services.New_Api;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using AutoMapper;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 
 namespace terminalDocuSignTests.Integration
 {

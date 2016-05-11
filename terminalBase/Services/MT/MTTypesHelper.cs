@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.Repositories.MultiTenant;
-using Data.States;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.States;
 
 namespace TerminalBase.Services.MT
 {

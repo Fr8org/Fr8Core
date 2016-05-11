@@ -112,40 +112,6 @@ namespace UtilitiesTesting.Fixtures
             return containeList;
 		}
 
-        public static ContainerDO TestContainerForFactsControllerTest()
-        {
-            var containerDO = new ContainerDO()
-            {
-                Id = TestContainer_Id_1(),
-                Name = "Container",
-                PlanId = TestPlan4().Id,
-                State = State.Executing
-            };
-
-            return containerDO;
-        }
-
-        public static IList<FactDO> TestFactsForFactsControllerTest()
-        {
-            IList<FactDO> facts = new List<FactDO>();
-            var container = TestContainerForFactsControllerTest();
-            facts.Add(new FactDO()
-            {
-                Id = 1,
-                CreateDate = DateTime.UtcNow,
-                ObjectId = container.Id.ToString(),
-            });
-
-            facts.Add(new FactDO()
-            {
-                Id = 2,
-                CreateDate = DateTime.UtcNow.AddDays(1),
-                ObjectId = container.Id.ToString(),
-            });
-
-            return facts;
-        }
-
         public static IList<ContainerDO> TestControllerContainersByUser()
         {
             IList<ContainerDO> containerList = new List<ContainerDO>();

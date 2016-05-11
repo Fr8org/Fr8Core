@@ -146,27 +146,5 @@
     <script src="https://secure-a.vimeocdn.com/js/froogaloop2.min.js"></script>
     <script src="http://alvarotrigo.com/fullPage/jquery.fullPage.min.js"></script>
     @Scripts.Render("~/bundles/js/main")
-
-    <script type="text/javascript">
-        // this function is used to get values and sent pass these values to “ProcessSubmittedEmail” action method on "HomeController" using ajax
-        //and display contant result to user using alert
-        function SendMail() {
-            $.ajax({
-                url: "/Home/ProcessSubmittedEmail",
-                type: "POST",
-                async: true,
-                data: { 'name': $('#name').val(), 'emailId': $('#emailId').val(), 'message': $('#message').val() },
-                success: function (result) {
-                    if (result == "success") {
-                        $('#name').val(""); $('#emailId').val(""); $('#message').val("");
-                        $('#spMessage').html("Email Submitted");
-                    }
-                    else {
-                        $('#spMessage').html(result);
-                    }
-                }
-            });
-        }
-    </script>
 </body>
 </html>

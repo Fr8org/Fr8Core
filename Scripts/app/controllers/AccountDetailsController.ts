@@ -5,6 +5,9 @@ module dockyard.controllers {
 
     export interface IAccountDetailsScope extends ng.IScope {
         user: interfaces.IUserDTO;
+        profiles: Array<interfaces.IProfileDTO>;
+        submit: (isValid: boolean) => void;
+        cancel: () => void;
     }
 
     class AccountDetailsController {
@@ -14,18 +17,35 @@ module dockyard.controllers {
         // See http://docs.angularjs.org/guide/di
         public static $inject = [
             '$scope',
-            'UserService',
-            '$state'
+            '$state',
+            'UserService'
         ];
 
         constructor(
             private $scope: IAccountDetailsScope,
-            private UserService: services.IUserService,
-            private $state: ng.ui.IState) {
+            private $state: ng.ui.IStateService,
+            private UserService: services.IUserService){
+//            private $state: ng.ui.IStateService) {
 
-            UserService.get({ id: $state.params.id }).$promise.then(function (data) {
+            UserService.getProfiles().$promise.then(function(data) {
+                $scope.profiles = data;
+            });
+
+            UserService.get({ id: $state.params['id']}).$promise.then(function (data) {
                 $scope.user = data;
             });
+
+            //Save button
+            $scope.submit = function (isValid) {
+                if (isValid) {
+                    var result = UserService.updateUserProfile({ userId: $scope.user.id, profileId: $scope.user.profileId });
+                    result.$promise.then(() => { $state.go('accounts'); });
+                }
+            };
+
+            $scope.cancel = function () {
+                $state.go('accounts'); 
+            };
         }
     }
 

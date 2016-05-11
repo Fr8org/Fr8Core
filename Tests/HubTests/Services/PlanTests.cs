@@ -1,15 +1,10 @@
 ﻿using System.Linq;
-using Data.Constants;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Data.States;
 using HubTests.Services.Container;
-using Hub.Interfaces;
 using NUnit.Framework;
-using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using InternalInterface = Hub.Interfaces;
 
 namespace HubTests.Services
 {
@@ -30,7 +25,7 @@ namespace HubTests.Services
                 var curUserAccount = FixtureData.TestDockyardAccount1();
                 curPlanDO.Fr8Account = curUserAccount;
 
-                Plan.CreateOrUpdate(uow, curPlanDO, false);
+                Plan.CreateOrUpdate(uow, curPlanDO);
 
                 uow.SaveChanges();
 

@@ -345,6 +345,11 @@ header#site-header:after {
 
 .company .inner-bg {
     background-image: url('/Content/img/backgrounds/welocome-bg.jpg');
+    opacity:0.65;
+}
+
+.company-page-background {
+    background-color: rgb(38, 165, 153);
 }
 
 .company h2 {

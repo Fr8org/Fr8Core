@@ -3,17 +3,18 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Cryptography.X509Certificates;
 using AutoMapper;
-using Data.Crates;
+using Fr8Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.DataTransferObjects.Helpers;
-using Data.Interfaces.Manifests;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.DataTransferObjects.Helpers;
+using Fr8Data.Manifests;
 using Data.States;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StructureMap;
 using Utilities.AutoMapper;
-using Data.Interfaces.Manifests;
+using Fr8Data.DataTransferObjects.PlanTemplates;
+using Data.Interfaces.DataTransferObjects.PlanTemplates;
 
 namespace Data.Infrastructure.AutoMapper
 {
@@ -133,8 +134,7 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<CriteriaDTO, CriteriaDO>()
                 .ForMember(x => x.ConditionsJSON, opts => opts.ResolveUsing(y => y.Conditions));
 
-            Mapper.CreateMap<PlanDO, PlanFullDTO>()
-                .ConvertUsing<PlanDOFullConverter>();
+            Mapper.CreateMap<PlanDO, PlanFullDTO>().ConvertUsing<PlanDOFullConverter>();
 
             Mapper.CreateMap<PlanEmptyDTO, PlanFullDTO>();
 
@@ -159,7 +159,7 @@ namespace Data.Infrastructure.AutoMapper
             Mapper.CreateMap<ContainerDO, ContainerDTO>()
                 .ForMember(
                     x => x.CurrentActivityResponse,
-                    x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentActivityResponse != null ? Enum.Parse(typeof(Data.Constants.ActivityResponse), z.CurrentActivityResponse.Type) : null))
+                    x => x.ResolveUsing(y => ExtractOperationStateData(y, z => z.CurrentActivityResponse != null ? Enum.Parse(typeof(Fr8Data.Constants.ActivityResponse), z.CurrentActivityResponse.Type) : null))
                 )
                 .ForMember(
                     x => x.CurrentClientActivityName,
@@ -188,6 +188,20 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.AuthenticationTypeTemplate, opts => opts.Ignore());
 
 
+            Mapper.CreateMap<PlanTemplateDO, PlanTemplateDTO>();
+            Mapper.CreateMap<PlanTemplateDTO, PlanTemplateDO>();
+
+            Mapper.CreateMap<PlanNodeDescriptionDO, PlanNodeDescriptionDTO>();
+            Mapper.CreateMap<PlanNodeDescriptionDTO, PlanNodeDescriptionDO>();
+
+            Mapper.CreateMap<ActivityDescriptionDO, ActivityDescriptionDTO>();
+            Mapper.CreateMap<ActivityDescriptionDTO, ActivityDescriptionDO>();
+
+            Mapper.CreateMap<NodeTransitionDO, NodeTransitionDTO>();
+            Mapper.CreateMap<NodeTransitionDTO, NodeTransitionDO>();
+
+            Mapper.CreateMap<PlanNodeTransitionType, String>().ConvertUsing(e => e.ToString().ToLower());
+            Mapper.CreateMap<string, PlanNodeTransitionType>().ConvertUsing(e => (PlanNodeTransitionType)Enum.Parse(typeof(PlanNodeTransitionType), e, true));
 
 
         }

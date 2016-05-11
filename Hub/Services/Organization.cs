@@ -3,12 +3,11 @@ using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories.Security;
-using Data.Repositories.Security.Entities;
-using Data.States;
 using Hub.Interfaces;
 using StructureMap;
-using Data.Interfaces.DataTransferObjects;
 using AutoMapper;
+using Fr8Data.DataTransferObjects;
+using Hub.Managers;
 
 namespace Hub.Services
 {
@@ -73,30 +72,22 @@ namespace Hub.Services
             };
             uow.OrganizationRepository.Add(organization);
 
-            //create roles for new organization
-            uow.AspNetRolesRepository.Add(new AspNetRolesDO()
+            //create role for new organization and add System Administrator Profile to this role
+            var memberOfOrganizationRole = new AspNetRolesDO()
             {
-                Name = MemberOfOrganizationRoleName(organizationName)
-            });
+                Name = MemberOfOrganizationRoleName(organizationName),
+            };
+            uow.AspNetRolesRepository.Add(memberOfOrganizationRole);
 
             var adminRole = new AspNetRolesDO()
             {
-                Name = AdminOfOrganizationRoleName(organizationName)
+                Name = AdminOfOrganizationRoleName(organizationName),
             };
             uow.AspNetRolesRepository.Add(adminRole);
 
             isNewOrganization = true;
                 
             uow.SaveChanges();
-
-            //link adminRole with ManageInternalUsers Permission, used for add/edit users that belong to this organization
-            var securityObjectStorage = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
-            //todo: check this
-            //securityObjectStorage.InsertRolePermission(new RolePermission()
-            //    {
-            //        Permission = new PermissionDO() {  = Permission.ManageInternalUsers.ToString()},
-            //        Role = new RoleDO() { RoleId = adminRole.Id, }
-            //    });
 
             return organization;
         }

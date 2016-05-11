@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Google.GData.Client;
 using Google.GData.Spreadsheets;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
 using System.Threading.Tasks;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 
 namespace terminalGoogle.Services
 {

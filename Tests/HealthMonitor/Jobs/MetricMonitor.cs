@@ -3,10 +3,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
 using HealthMonitor.Utility;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using terminalAtlassian;
 using terminalAtlassianTests.Fixtures;
 using Microsoft.ApplicationInsights;
@@ -76,12 +72,6 @@ namespace HealthMonitor.Jobs
                 parameters.Add("Database", provider.Database);
                 TrackMetric(scope, FormatMetricName(scope, "Active_Test_Plans"), activeTestPlans, parameters);
             }
-        }
-
-        [Test]
-        public void Get_Current_Database_File_Stats()
-        {
-            GetStatsInDatabase(Program.Context.ConnectionString);
         }
 
         [Test]

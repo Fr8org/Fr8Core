@@ -1,6 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using FluentValidation;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 
 namespace HubWeb.ViewModels.Validators
 {
