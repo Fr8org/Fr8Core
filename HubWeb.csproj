@@ -115,12 +115,12 @@
       <HintPath>packages\Google.Apis.1.11.1\lib\net45\Google.Apis.PlatformServices.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Hangfire.Core, Version=1.5.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Hangfire.Core.1.5.3\lib\net45\Hangfire.Core.dll</HintPath>
+    <Reference Include="Hangfire.Core, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Hangfire.Core.1.6.0-beta2\lib\net45\Hangfire.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Hangfire.SqlServer, Version=1.5.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>packages\Hangfire.SqlServer.1.5.3\lib\net45\Hangfire.SqlServer.dll</HintPath>
+    <Reference Include="Hangfire.SqlServer, Version=1.6.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>packages\Hangfire.SqlServer.1.6.0-beta2\lib\net45\Hangfire.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="Hangfire.StructureMap, Version=1.5.3.0, Culture=neutral, processorArchitecture=MSIL">
@@ -390,6 +390,7 @@
     <Compile Include="Controllers\Api\ConfigurationController.cs" />
     <Compile Include="Controllers\Api\ManifestRegistryController.cs" />
     <Compile Include="Controllers\Api\ManifestsController.cs" />
+    <Compile Include="Controllers\Api\PlanTemplatesController.cs" />
     <Compile Include="Controllers\Api\SubPlansController.cs" />
     <Compile Include="Controllers\Api\PlansController.cs" />
     <Compile Include="Controllers\Api\TerminalsController.cs" />
@@ -1000,6 +1001,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamCrateChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamFieldChooser.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActivityResize.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\ModalResizable.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\SubplanHeader.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Validators\ManifestDescriptionValidators.ts" />
     <TypeScriptCompile Include="Scripts\app\events\Fr8Events.ts" />
@@ -1008,12 +1010,14 @@
     <TypeScriptCompile Include="Scripts\app\controllers\AuthenticationDialogController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\ManageAuthTokenController.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IManifestRegistry.ts" />
+    <TypeScriptCompile Include="Scripts\app\interfaces\IProfile.ts" />
     <TypeScriptCompile Include="Scripts\app\model\AlertDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\HistoryDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\IncomingCratesDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ManifestDescriptionDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\CrateDescriptionDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\OrganizationDTO.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\Profile.ts" />
     <TypeScriptCompile Include="Scripts\app\model\SubordinateSubplan.ts" />
     <TypeScriptCompile Include="Scripts\app\services\AuthService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ConfigureTrackerService.ts" />
@@ -1046,6 +1050,7 @@
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamDataChooser.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamDataChooser.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\directives\controls\fixture_UpstreamDataChooser.ts" />
+    <TypeScriptCompile Include="Scripts\tests\utils\directives\controls\fixture_UpstreamFieldChooser.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\jpattern.ts" />
     <TypeScriptCompile Include="Scripts\lib\jpattern.d.ts" />
     <Content Include="Views\AngularTemplate\AccountDetails.cshtml" />
