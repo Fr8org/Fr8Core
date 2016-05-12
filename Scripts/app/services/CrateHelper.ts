@@ -195,20 +195,30 @@
                 }
             }
         }
+        
+        private setFieldValidationErrors(field: model.ControlDefinitionDTO, validationResults: model.ValidationResults) {
+            for (var j = 0; j < validationResults.validationErrors.length; j++) {
+                for (var k = 0; k < validationResults.validationErrors[j].controlNames.length; k++) {
+                    if (validationResults.validationErrors[j].controlNames[k] === field.name) {
+                        field.errorMessage = validationResults.validationErrors[j].errorMessage;
+                        break;
+                    }
+                }
+            }
+        }
+
+        public setValidationErrors(fields: Array<model.ControlDefinitionDTO>, validationResults: model.ValidationResults) {
+            for (var i = 0; i < fields.length; i++) {
+                this.setFieldValidationErrors(fields[i], validationResults);
+            }
+        }
 
         public populateErrorsFromCrateStorage(fields: Array<model.ControlDefinitionDTO>, validationResults: model.ValidationResults) {
             //now we should look for crates with manifestType Standard Design Time Fields
             //to set or override our DropdownListBox items
             for (var i = 0; i < fields.length; i++) {
-
-                for (var j = 0; j < validationResults.validationErrors.length; j++) {
-                    for (var k = 0; k < validationResults.validationErrors[j].controlNames.length; k++) {
-                        if (validationResults.validationErrors[j].controlNames[k] === fields[i].name) {
-                            fields[i].errorMessage = validationResults.validationErrors[j].errorMessage;
-                            break;
-                        }
-                    }
-                }
+            
+                this.setFieldValidationErrors(fields[i], validationResults);
 
                 // Handle nested fields
                 let field: any = fields[i];

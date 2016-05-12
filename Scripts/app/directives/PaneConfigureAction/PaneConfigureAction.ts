@@ -16,7 +16,8 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_ExecutePlan,
         PaneConfigureAction_ConfigureFocusElement,
         PaneConfigureAction_AuthCompleted,
-        PaneConfigureAction_DownStreamReconfiguration
+        PaneConfigureAction_DownStreamReconfiguration,
+        PaneConfigureAction_UpdateValidationMessages
     }
 
     export class ActionReconfigureEventArgs {
@@ -92,6 +93,16 @@ module dockyard.directives.paneConfigureAction {
 
         constructor(id: string) {
             this.id = id;
+        }
+    }
+
+    export class UpdateValidationMessagesEventArgs {
+        public id: string;
+        public validationResults: model.ValidationResults;
+
+        constructor(id: string, validationResults: model.ValidationResults) {
+            this.id = id;
+            this.validationResults = validationResults;
         }
     }
 
@@ -204,6 +215,12 @@ module dockyard.directives.paneConfigureAction {
                             $scope.$emit(MessageType[MessageType.PaneConfigureAction_DownStreamReconfiguration], new DownStreamReConfigureEventArgs($scope.currentAction));
                         }
                     });
+                }
+            });
+
+            $scope.$on(MessageType[MessageType.PaneConfigureAction_UpdateValidationMessages], (event: ng.IAngularEvent, e: UpdateValidationMessagesEventArgs) => {
+                if (e.id === $scope.currentAction.id) {
+                    crateHelper.setValidationErrors($scope.currentAction.configurationControls.fields, e.validationResults);
                 }
             });
 

@@ -76,11 +76,6 @@ namespace terminalDocuSign.Actions
             };
         }
 
-        public override Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            return Task.FromResult(curActivityDO);
-        }
-
         public override Task ValidateActivity(ActivityDO curActivityDO, ICrateStorage crateStorage, ValidationManager validationManager)
         {
             ActivityUi activityUi = GetConfigurationControls(crateStorage);

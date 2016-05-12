@@ -31,11 +31,7 @@ namespace terminalDocuSign.Actions
                                               <p>This Activity also highlights the use of the Loop activity, which can process any amount of table data, one row at a time.</p>
                                               <iframe src='https://player.vimeo.com/video/162762690' width='500' height='343' frameborder='0' webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>";
 
-        public override Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            return Task.FromResult<ActivityDO>(curActivityDO);
-        }
-
+       
         protected override string ActivityUserFriendlyName => SolutionName;
 
         /// <summary>

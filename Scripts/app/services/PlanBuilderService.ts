@@ -75,12 +75,14 @@ module dockyard.services {
         '$q',
         '$location',
         'ngToast',
+        '$rootScope',
         function (
             $resource: ng.resource.IResourceService,
             $http: ng.IHttpService,
             $q: ng.IQService,
             $location: ng.ILocationService,
-            ngToast: any
+            ngToast: any,
+            $rootScope: ng.IScope
         ): IPlanService {
 
             var resource = <IPlanService>$resource(
@@ -165,7 +167,7 @@ module dockyard.services {
             resource.runAndProcessClientAction =
                 (id: string): ng.IPromise<model.ContainerDTO> => {
                     var d = $q.defer();
-
+                    
                     resource.run(id)
                         .then((container: model.ContainerDTO) => {
                             if (container
@@ -189,6 +191,16 @@ module dockyard.services {
                                 messageToShow += "Terminal: " + container.error.currentTerminal + "<br/>";
                                 messageToShow += "Message: " + container.error.message;
                                 ngToast.danger(messageToShow);
+                            }
+
+                            // if we have validation errors, send them to activities
+                            if (container && container.validationErrors != null) {
+                                for (var key in container.validationErrors) {
+                                    $rootScope.$broadcast(
+                                        directives.paneConfigureAction.MessageType[directives.paneConfigureAction.MessageType.PaneConfigureAction_UpdateValidationMessages],
+                                        new directives.paneConfigureAction.UpdateValidationMessagesEventArgs(key, container.validationErrors[key])
+                                    );
+                                }
                             }
 
                             d.resolve(container);
