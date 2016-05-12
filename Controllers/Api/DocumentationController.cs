@@ -36,9 +36,9 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
+        [ActionName("activity")]
         [AllowAnonymous]
-        [Route("activity")]
-        public async Task<IHttpActionResult> ActivityDocumentation([FromBody] ActivityDTO curActivityDTO)
+        public async Task<IHttpActionResult> Activity([FromBody] ActivityDTO curActivityDTO)
         {
             var curDocSupport = curActivityDTO.Documentation;
             if (curDocSupport.StartsWith("Terminal=", StringComparison.InvariantCultureIgnoreCase))

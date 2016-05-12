@@ -30,7 +30,7 @@ namespace HubTests.Controllers
         public async Task ActivityDocumentation_WhenDocumentationIsForTerminal_ReturnsSolutionsDocumentations()
         {
             var controller = new DocumentationController(_activityMock.Object, _terminalMock.Object);
-            var result = await controller.ActivityDocumentation(new ActivityDTO { Documentation = "Terminal=t" });
+            var result = await controller.Activity(new ActivityDTO { Documentation = "Terminal=t" });
             Assert.IsTrue(result is OkNegotiatedContentResult<List<SolutionPageDTO>>, "Wrong result type is returned for terminal documentation type");
             _terminalMock.Verify(x => x.GetSolutionDocumentations("t"), Times.Once(), "Terminal documentation was not requested");
         }
@@ -39,7 +39,7 @@ namespace HubTests.Controllers
         public async Task ActivityDocumentation_WhenDocumentationIsForMainPage_ReturnsSolutionDocumentation()
         {
             var controller = new DocumentationController(_activityMock.Object, _terminalMock.Object);
-            var result = await controller.ActivityDocumentation(new ActivityDTO { Documentation = "MainPage" });
+            var result = await controller.Activity(new ActivityDTO { Documentation = "MainPage" });
             Assert.IsTrue(result is OkNegotiatedContentResult<SolutionPageDTO>, "Wrong result type is returned for solution documentation type");
             _activityMock.Verify(x => x.GetActivityDocumentation<SolutionPageDTO>(It.IsAny<ActivityDTO>(), true), Times.Once(), "Solution documentation was not requested");
         }
@@ -48,7 +48,7 @@ namespace HubTests.Controllers
         public async Task ActivityDocumentation_WhenDocumentationTypeIsIncorrect_ReturnsBadRequest()
         {
             var controller = new DocumentationController(_activityMock.Object, _terminalMock.Object);
-            var result = await controller.ActivityDocumentation(new ActivityDTO { Documentation = "something" });
+            var result = await controller.Activity(new ActivityDTO { Documentation = "something" });
             Assert.IsTrue(result is BadRequestErrorMessageResult, "Wrong result type is returned for incorrect documentation type");
         }
     }
