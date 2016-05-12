@@ -27,5 +27,13 @@ namespace PlanDirectory.Controllers.Api
 
             return Ok(new { token });
         }
+
+        [HttpGet]
+        [ActionName("is_authenticated")]
+        public IHttpActionResult IsAuthenicated()
+        {
+            var authenticated = User.Identity.IsAuthenticated;
+            return Ok(new { authenticated });
+        }
     }
 }

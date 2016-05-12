@@ -3,8 +3,9 @@
         '$scope',
         '$http',
         '$q',
+        '$uibModal',
         'urlPrefix',
-        function ($scope, $http, $q, urlPrefix) {
+        function ($scope, $http, $q, $uibModal, urlPrefix) {
             $scope.searchForm = {
                 searchText: ''
             };
@@ -35,7 +36,29 @@
                                 $scope.pages.push(i + 1);
                             }
 
+                            resolve();
+                        })
+                        .catch(function (err) {
+                            reject(err);
+                        })
+                        .finally(function () {
                             Metronic.unblockUI();
+                        });
+                });
+
+                return promise;
+            };
+
+            var checkAuthentication = function () {
+                var url = urlPrefix + '/api/authentication/is_authenticated';
+
+                var promise = $q(function (resolve, reject) {
+                    $http.get(url)
+                        .then(function (res) {
+                            resolve(res.data.authenticated);
+                        })
+                        .catch(function (err) {
+                            reject(err);
                         });
                 });
 
@@ -46,6 +69,48 @@
                 doSearch(pageStart);
             };
 
+            $scope.createPlan = function (planTemplate) {
+                Metronic.blockUI({ animate: true });
+
+                checkAuthentication()
+                    .then(function (authenticated) {
+                        if (!authenticated) {
+                            $uibModal.open({
+                                templateUrl: '/AuthenticateDialog.html',
+                                controller: 'AuthenticateDialogController'
+                            });
+
+                            Metronic.unblockUI();
+                        }
+                        else {
+                            var url = urlPrefix + '/api/plantemplates/createplan';
+                            var data = { planTemplateId: planTemplate.PlanTemplateId };
+                            $http.post(url, data)
+                                .then(function () {
+                                    $uibModal.open({
+                                        templateUrl: '/PlanCreatedDialog.html',
+                                        controller: 'PlanCreatedDialogController'
+                                    });
+
+                                    Metronic.unblockUI();
+                                });
+                        }
+                    })
+                    .finally(function () {
+                        Metronic.unblockUI();
+                    });
+            };
+
             doSearch(1);
+        }
+    ])
+    .controller('AuthenticateDialogController', [
+        '$scope',
+        function ($scope) {
+        }
+    ])
+    .controller('PlanCreatedDialogController', [
+        '$scope',
+        function ($scope) {
         }
     ]);

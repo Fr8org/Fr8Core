@@ -174,7 +174,11 @@
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Content\dockyard_logo.png" />
     <Content Include="Content\metronic\components.css" />
+    <Content Include="Content\metronic\jquery.blockui.min.js" />
+    <Content Include="Content\metronic\loading.gif" />
+    <Content Include="Content\metronic\ui.js" />
     <Content Include="Content\plan-directory.css" />
     <Content Include="Global.asax" />
     <Content Include="gulpfile.js" />
@@ -211,6 +215,7 @@
     <Compile Include="Infrastructure\IAuthTokenManager.cs" />
     <Compile Include="Infrastructure\PlanDirectoryAuthorizeAttribute.cs" />
     <Compile Include="Infrastructure\PlanDirectoryBootStrapper.cs" />
+    <Compile Include="Interfaces\CreatePlanDTO.cs" />
     <Compile Include="Interfaces\PublishPlanTemplateDTO.cs" />
     <Compile Include="Interfaces\SearchRequestDTO.cs" />
     <Compile Include="Interfaces\SearchResultDTO.cs" />

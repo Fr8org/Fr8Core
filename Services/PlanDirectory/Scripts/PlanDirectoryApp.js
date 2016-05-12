@@ -1,1 +1,1 @@
-﻿angular.module('PlanDirectoryApp', []);
+﻿angular.module('PlanDirectoryApp', [ 'ui.bootstrap' ]);
