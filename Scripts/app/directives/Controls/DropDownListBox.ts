@@ -71,7 +71,7 @@ module dockyard.directives.dropDownListBox {
                         .then((data: model.IncomingCratesDTO) => {
                             var listItems: Array<model.DropDownListItem> = [];
 
-                                angular.forEach(data.availableFields, (it) => {
+                            angular.forEach(data.availableFields, (it) => {
                                     var i, j;
                                     var found = false;
                                     for (i = 0; i < listItems.length; ++i) {

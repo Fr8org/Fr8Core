@@ -18,10 +18,10 @@ using Utilities.Configuration.Azure;
 
 namespace terminalFr8Core.Actions
 {
-    public class CollectData_v1 : BaseTerminalActivity
+    public class AppBuilder_v1 : BaseTerminalActivity
     {
         private const string RuntimeCrateLabelPrefix = "Standard Data Table";
-        private const string RuntimeFieldCrateLabelPrefix = "Run Time Fields From CollectData";
+        private const string RuntimeFieldCrateLabelPrefix = "Run Time Fields From AppBuilder";
         private const string RunFromSubmitButtonLabel = "RunFromSubmitButton";
         public const string CollectionControlsLabel = "Collection";
         protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
@@ -56,7 +56,7 @@ namespace terminalFr8Core.Actions
             await PushUserNotification(new TerminalNotificationDTO
             {
                 Type = "Success",
-                ActivityName = "CollectData",
+                ActivityName = "AppBuilder",
                 ActivityVersion = "1",
                 TerminalName = "terminalFr8Core",
                 TerminalVersion = "1",
@@ -130,6 +130,11 @@ namespace terminalFr8Core.Actions
         {
             var crateStorage = CrateManager.GetStorage(curActivityDO);
             var configControls = GetConfigurationControls(crateStorage);
+            if(configControls.Controls[0].Value != null)
+            {
+                curActivityDO.Label = configControls.Controls[0].Value;
+                return curActivityDO;
+            }
             var controlContainer = configControls.FindByName<MetaControlContainer>("control_container");
             if (!controlContainer.MetaDescriptions.Any())
             {
@@ -141,6 +146,7 @@ namespace terminalFr8Core.Actions
             var collectionControls = GetMetaControls(curActivityDO);
             if (collectionControls != null)
             {
+                
                 var submitButton = collectionControls.FindByName<Button>("submit_button");
                 if (submitButton.Clicked)
                 {
@@ -206,7 +212,7 @@ namespace terminalFr8Core.Actions
         }
 
         private string GetFileDescriptionLabel(ControlDefinitionDTO filepicker, int labeless_filepickers)
-        { return filepicker.Label ?? ("File from Collect Data #" + ++labeless_filepickers); }
+        { return filepicker.Label ?? ("File from App Builder #" + ++labeless_filepickers); }
 
         private void PublishTextBox(IUpdatableCrateStorage pStorage, TextBox textBox)
         {
@@ -322,12 +328,17 @@ namespace terminalFr8Core.Actions
             generatedConfigControls.Add(submitButton);
             return Crate<StandardConfigurationControlsCM>.FromContent(CollectionControlsLabel, new StandardConfigurationControlsCM(generatedConfigControls.ToArray()), AvailabilityType.Configuration);
         }
-
         protected Crate CreateInitialControlsCrate()
         {
+            var Label = new TextBox
+            {
+                Label = "App Name",
+                Name = "AppLabel",
+                Events = new List<ControlEvent> { ControlEvent.RequestConfig }
+            };
             var infoText = new TextBlock()
             {
-                Value = "Create a form to collect data. Fr8 will generate a URL that you can distribute to users. The URL will launch this plan and collect data.",
+                Value = "Create a form to app builder. Fr8 will generate a URL that you can distribute to users. The URL will launch this plan and collect data.",
                 Name = "info_text"
             };
 
@@ -338,7 +349,7 @@ namespace terminalFr8Core.Actions
                 Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
             };
 
-            return PackControlsCrate(infoText, cc);
+            return PackControlsCrate(Label,infoText, cc);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
