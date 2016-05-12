@@ -86,7 +86,8 @@ namespace Data.Repositories.Security.StorageImpl.Cache
                     if (!permissionSets.Any())
                     {
                         permissionSets = uow.PermissionSetRepository.GetQuery().Where(x => x.ProfileId == profileId).ToList();
-                        _cache.AddOrUpdateProfile(profileId.ToString(), permissionSets);
+                        var clonedPermissionSets = permissionSets.Select(x => x.Clone()).ToList();
+                        _cache.AddOrUpdateProfile(profileId.ToString(), clonedPermissionSets);
                     }
                     foreach (var set in permissionSets)
                     {
