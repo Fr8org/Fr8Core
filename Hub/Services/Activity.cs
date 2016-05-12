@@ -241,52 +241,15 @@ namespace Hub.Services
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-
                     var curAction = uow.PlanRepository.GetById<ActivityDO>(id);
                     if (curAction == null)
                     {
                         throw new InvalidOperationException("Unknown PlanNode with id: " + id);
                     }
-
-                    var downStreamActivities = _planNode.GetDownstreamActivities(uow, curAction).OfType<ActivityDO>();
-                    //we should clear values of configuration controls
-                    var directChildren = curAction.GetDescendants().OfType<ActivityDO>();
-
-                    var changedActivities = new HashSet<Guid>();
-
-                    changedActivities.Add(id);
-
-                    //there is no sense of updating children of action being deleted. 
-                    foreach (var downStreamActivity in downStreamActivities.Except(directChildren))
-                    {
-                        var currentActivity = downStreamActivity;
-
-                        using (var crateStorage = _crate.UpdateStorage(() => currentActivity.CrateStorage))
-                        {
-                            bool hasChanges = false;
-                            foreach (var configurationControls in crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>())
-                            {
-                                foreach (IResettable resettable in configurationControls.Controls)
-                                {
-                                    resettable.Reset();
-                                    hasChanges = true;
-                                }
-                            }
-
-                            if (!hasChanges)
-                            {
-                                crateStorage.DiscardChanges();
-                            }
-                            else
-                            {
-                                changedActivities.Add(downStreamActivity.Id);
-                            }
-                        }
-                    }
-
-                    await DeactivateActivities(changedActivities);
-
+                    
                     curAction.RemoveFromParent();
+
+                    await CallActivityDeactivate(uow, curAction.Id);
 
                     uow.SaveChanges();
                 }

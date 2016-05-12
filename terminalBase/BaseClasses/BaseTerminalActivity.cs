@@ -857,13 +857,13 @@ namespace TerminalBase.BaseClasses
             bool requestUpstream = false,
             bool requestConfig = false)
         {
-            var crateDescriptions = await GetCratesByDirection<CrateDescriptionCM>(curActivityDO, CrateDirection.Upstream);
-            var runTimeCrateDescriptions = crateDescriptions.Where(c => c.Availability == AvailabilityType.RunTime || c.Availability == AvailabilityType.Always).SelectMany(c => c.Content.CrateDescriptions);
+            var crateDescriptions = await HubCommunicator.GetAvailableData(curActivityDO, CrateDirection.Upstream, AvailabilityType.Always, CurrentFr8UserId);
+
             var control = new CrateChooser
             {
                 Label = label,
                 Name = name,
-                CrateDescriptions = runTimeCrateDescriptions.ToList(),
+                CrateDescriptions = crateDescriptions.AvailableCrates,
                 SingleManifestOnly = singleManifest,
                 RequestUpstream = requestUpstream
             };
