@@ -136,7 +136,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PlanDirectory", "Services\PlanDirectory\PlanDirectory.csproj", "{2B78433B-BA79-470B-BEF6-DBA5C1904865}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fr8Data", "Fr8Data\Fr8Data.csproj", "{A3178D71-A2C3-45B9-8334-ADCC7C313541}"
-EndProjectGlobal
+EndProject
+Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		alexlocal|Any CPU = alexlocal|Any CPU
 		alexlocal|x86 = alexlocal|x86
