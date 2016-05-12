@@ -108,6 +108,35 @@ namespace Hub.Services
 
         }
 
+        public bool IsMonitoringPlan(IUnitOfWork uow, PlanDO plan)
+        {
+            var initialActivity = plan.StartingSubPlan.GetDescendantsOrdered()
+                .OfType<ActivityDO>()
+                .FirstOrDefault(x => uow.ActivityTemplateRepository.GetByKey(x.ActivityTemplateId).Category != ActivityCategory.Solution);
+
+            if (initialActivity == null)
+            {
+                return false;
+            }
+
+            var activityTemplate = uow.ActivityTemplateRepository.GetByKey(initialActivity.ActivityTemplateId);
+
+            if (activityTemplate.Category == ActivityCategory.Monitors)
+            {
+                return true;
+            }
+
+            var storage = _crate.GetStorage(initialActivity.CrateStorage);
+
+            // first activity has event subsribtions. This means that this plan can be triggered by external event
+            if (storage.CrateContentsOfType<EventSubscriptionCM>().Any(x => x.Subscriptions?.Count > 0))
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public IList<PlanDO> GetByName(IUnitOfWork uow, Fr8AccountDO account, string name, PlanVisibility visibility)
         {
             if (name != null)

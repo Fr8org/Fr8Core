@@ -61,6 +61,11 @@ namespace Hub.Security.ObjectDecorators
             }
         }
 
+        public bool IsMonitoringPlan(IUnitOfWork uow, PlanDO planDo)
+        {
+            return _target.IsMonitoringPlan(uow, planDo);
+        }
+
         public PlanDO Copy(IUnitOfWork uow, PlanDO curPlanDO, string name)
         {
             if (_securityServices.AuthorizeActivity(PermissionType.ReadObject, curPlanDO.Id.ToString(), nameof(PlanNodeDO)))
@@ -105,11 +110,11 @@ namespace Hub.Security.ObjectDecorators
             throw new HttpException(403, "You are not authorized to perform this activity!");
         }
 
-        public async Task Delete(IUnitOfWork uow, Guid id)
+        public async Task Delete(Guid id)
         {
             if (_securityServices.AuthorizeActivity(PermissionType.DeleteObject, id.ToString(), nameof(PlanNodeDO)))
             {
-               await _target.Delete(uow, id);
+               await _target.Delete(id);
             }
             else
             {

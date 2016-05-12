@@ -262,13 +262,9 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         public IHttpActionResult Delete(Guid id)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                _plan.Delete(uow, id);
+            _plan.Delete(id);
 
-                uow.SaveChanges();
-                return Ok(id);
-            }
+            return Ok(id);
         }
 
 
@@ -334,7 +330,7 @@ namespace HubWeb.Controllers
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
                         var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
-                        var currentPlanType = IsMonitoringPlan(planDO) ? PlanType.Monitoring.ToString() : PlanType.RunOnce.ToString();
+                        var currentPlanType = _plan.IsMonitoringPlan(uow, planDO) ? PlanType.Monitoring.ToString() : PlanType.RunOnce.ToString();
                         return BadRequest(currentPlanType);
                     }
                 }
@@ -351,38 +347,6 @@ namespace HubWeb.Controllers
             var crates = payload.Select(c => _crate.FromDto(c)).ToArray();
 
             return Run(planId, crates, null);
-        }
-
-        private bool IsMonitoringPlan(PlanDO plan)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var initialActivity = plan.StartingSubPlan.GetDescendantsOrdered()
-                    .OfType<ActivityDO>()
-                    .FirstOrDefault(x => uow.ActivityTemplateRepository.GetByKey(x.ActivityTemplateId).Category != ActivityCategory.Solution);
-
-                if (initialActivity == null)
-                {
-                    return false;
-                }
-
-                var activityTemplate = uow.ActivityTemplateRepository.GetByKey(initialActivity.ActivityTemplateId);
-
-                if (activityTemplate.Category == ActivityCategory.Monitors)
-                {
-                    return true;
-                }
-
-                var storage = _crate.GetStorage(initialActivity.CrateStorage);
-                
-                // first activity has event subsribtions. This means that this plan can be triggered by external event
-                if (storage.CrateContentsOfType<EventSubscriptionCM>().Any(x=>x.Subscriptions?.Count > 0))
-                {
-                    return true;
-                }
-            }
-
-            return false;
         }
 
         private async Task<IHttpActionResult> Run(Guid planId, Crate[] payload, Guid? containerId)
@@ -422,7 +386,7 @@ namespace HubWeb.Controllers
                 {
                     if (planDO != null)
                     {
-                        currentPlanType = IsMonitoringPlan(planDO) ? PlanType.Monitoring : PlanType.RunOnce;
+                        currentPlanType = _plan.IsMonitoringPlan(uow, planDO) ? PlanType.Monitoring : PlanType.RunOnce;
 
                         if (containerId == null)
                         {
@@ -460,6 +424,19 @@ namespace HubWeb.Controllers
 
                         var containerDTO = Mapper.Map<ContainerDTO>(container);
                         containerDTO.CurrentPlanType = currentPlanType;
+
+                        // THIS CODE IS HERE ONLY TO SUPPORT CURRENT UI LOGIC THAT DISPLAYS PLAN LISTS.
+                        // It should be updated to show  as 'running' only:
+                        //   1. Plans that have at least one executing container
+                        //   2. Active monitoring plans
+                        if (currentPlanType == PlanType.RunOnce)
+                        {
+                            using (var planStatUpdateUow = ObjectFactory.GetInstance<IUnitOfWork>())
+                            {
+                                planStatUpdateUow.PlanRepository.GetById<PlanDO>(planId).PlanState = PlanState.Inactive;
+                                planStatUpdateUow.SaveChanges();
+                            }
+                        }
 
                         EventManager.ContainerExecutionCompleted(container);
 

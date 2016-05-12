@@ -16,7 +16,7 @@ namespace Hub.Interfaces
         IList<PlanDO> GetByName(IUnitOfWork uow, Fr8AccountDO account, string name, PlanVisibility visibility);
         void CreateOrUpdate(IUnitOfWork uow, PlanDO submittedPlan);
         PlanDO Create(IUnitOfWork uow, string name, string category = "");
-        Task Delete(IUnitOfWork uow, Guid id);
+        Task Delete(Guid id);
 
         IList<PlanDO> GetMatchingPlans(string userId, EventReportCM curEventReport);
         Task<ActivateActivitiesDTO> Activate(Guid planId, bool planBuilderActivate);
@@ -24,6 +24,7 @@ namespace Hub.Interfaces
 
         PlanDO GetPlanByActivityId(IUnitOfWork uow, Guid planActivityId);
         List<PlanDO> MatchEvents(List<PlanDO> curPlans, EventReportCM curEventReport);
+        bool IsMonitoringPlan(IUnitOfWork uow, PlanDO planDo);
 
         PlanDO Copy(IUnitOfWork uow, PlanDO curPlanDO, string name);
 
