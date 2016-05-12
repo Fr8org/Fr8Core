@@ -63,6 +63,10 @@
       <Project>{990241EA-6CF0-4026-B57C-A9031463C7C0}</Project>
       <Name>Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Fr8Data\Fr8Data.csproj">
+      <Project>{a3178d71-a2c3-45b9-8334-adcc7c313541}</Project>
+      <Name>Fr8Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HealthMonitorUtility\HealthMonitorUtility.csproj">
       <Project>{459FE39A-A5CC-41D8-B06E-8FAE3A1A623B}</Project>
       <Name>HealthMonitorUtility</Name>

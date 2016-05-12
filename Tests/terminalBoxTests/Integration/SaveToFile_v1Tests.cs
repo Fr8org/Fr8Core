@@ -1,5 +1,5 @@
 ﻿using System.Threading.Tasks;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 using HealthMonitor.Utility;
 using NUnit.Framework;
 using terminalBoxTests.Fixtures;

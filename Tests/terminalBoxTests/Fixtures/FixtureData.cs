@@ -1,6 +1,5 @@
-﻿using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+﻿using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Ploeh.AutoFixture;
 
 namespace terminalBoxTests.Fixtures
