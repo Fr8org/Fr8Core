@@ -59,6 +59,13 @@ namespace HubTests.Controllers
         }
 
         [Test]
+        public void PlansController_ShouldHaveHMACOnCreateMethod()
+        {
+            var createMethod = typeof(PlansController).GetMethod("Create", new Type[] { typeof(Guid), typeof(string), typeof(string), typeof(int?), typeof(Guid?), typeof(Guid?) });
+            ShouldHaveFr8HMACAuthorizeOnFunction(createMethod);
+        }
+
+        [Test]
         public void PlansController_ShouldHaveHMACOnPostMethod()
         {
 

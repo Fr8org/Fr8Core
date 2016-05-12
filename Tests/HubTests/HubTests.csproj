@@ -234,6 +234,7 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Controllers\DocumentationControllerTest.cs" />
     <Compile Include="Controllers\ActivityControllerTest.cs" />
     <Compile Include="Controllers\Api\ApiControllerTestBase.cs" />
     <Compile Include="Controllers\AuthenticationControllerTest.cs" />

@@ -9,7 +9,6 @@ using Data.Entities;
 using Data.Interfaces;
 using Fr8Data.DataTransferObjects;
 using Hub.Interfaces;
-using HubWeb.Controllers.Helpers;
 using HubWeb.Infrastructure;
 using Microsoft.AspNet.Identity;
 using StructureMap;
@@ -20,13 +19,11 @@ namespace HubWeb.Controllers
     public class ActivitiesController : ApiController
     {
         private readonly IActivity _activity;
-        private readonly IActivityTemplate _activityTemplate;
         private readonly ITerminal _terminal;
 
         public ActivitiesController()
         {
             _activity = ObjectFactory.GetInstance<IActivity>();
-            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             _terminal = ObjectFactory.GetInstance<ITerminal>();
         }
 
@@ -34,50 +31,19 @@ namespace HubWeb.Controllers
         {
             _activity = service;
         }
-        
+
 
         [HttpPost]
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Create(Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
+        public async Task<IHttpActionResult> Create(Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, Guid? authorizationTokenId = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var userId = User.Identity.GetUserId();
-
-                var result = await _activity.CreateAndConfigure(uow, userId, activityTemplateId, label, name, order, parentNodeId, createPlan, authorizationTokenId);
-
-                if (result is ActivityDO)
-                {
+                var result = await _activity.CreateAndConfigure(uow, userId, activityTemplateId, label, name, order, parentNodeId, false, authorizationTokenId) as ActivityDO;
                     return Ok(Mapper.Map<ActivityDTO>(result));
                 }
-
-                if (result is PlanDO)
-                {
-                    return Ok(PlanMappingHelper.MapPlanToDto(uow, (PlanDO)result));
                 }
-
-                throw new Exception("Unsupported type " + result.GetType());
-            }
-        }
-
-        [HttpPost]
-        public async Task<IHttpActionResult> CreateSolution(string solutionName)
-        {
-            var userId = User.Identity.GetUserId();
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var activityTemplate = _activityTemplate.GetQuery().FirstOrDefault(at => at.Name == solutionName);
-
-                if (activityTemplate == null)
-                {
-                    throw new ArgumentException(String.Format("actionTemplate (solution) name {0} is not found in the database.", solutionName));
-                }
-
-                var result = await _activity.CreateAndConfigure(uow, userId,
-                    activityTemplate.Id, null, activityTemplate.Label, null, null, true, null);
-                return Ok(PlanMappingHelper.MapPlanToDto(uow, (PlanDO)result));
-            }
-        }
 
 
         //WARNING. there's lots of potential for confusion between this POST method and the GET method following it.
@@ -142,57 +108,11 @@ namespace HubWeb.Controllers
         [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> Save(ActivityDTO curActionDTO)
         {
-            ActivityDO submittedActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
+            var submittedActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
 
             var resultActionDTO = await _activity.SaveOrUpdateActivity(submittedActivityDO);
 
             return Ok(resultActionDTO);
-        }
-
-        [HttpPost]
-        [AllowAnonymous]
-        public async Task<IHttpActionResult> Documentation([FromBody] ActivityDTO curActivityDTO)
-        {
-            var curDocSupport = curActivityDTO.Documentation;
-            //check if the DocumentationSupport comma separated string has the correct form
-            if (!ValidateDocumentationSupport(curDocSupport))
-                return BadRequest();
-            if (curDocSupport.StartsWith("Terminal="))
-            {
-                var terminalName = curDocSupport.Split('=')[1];
-                var solutionPages = await _terminal.GetSolutionDocumentations(terminalName);
-                return Ok(solutionPages);
-            }
-            if (curDocSupport.Contains("MainPage"))
-            {
-                var solutionPageDTO = await _activity.GetActivityDocumentation<SolutionPageDTO>(curActivityDTO, true);
-                return Ok(solutionPageDTO);
-            }
-            if (curDocSupport.Contains("HelpMenu"))
-            {
-                var activityRepsonceDTO = await _activity.GetActivityDocumentation<ActivityResponseDTO>(curActivityDTO);
-                return Ok(activityRepsonceDTO);
-            }
-            return BadRequest();
-        }
-        /// <summary>
-        /// We currently provide only one substring value, namely 'Terminal=','MainPage' and 'HelpMenu'
-        /// </summary>
-        /// <param name="docSupport"></param>
-        /// <returns></returns>
-        private bool ValidateDocumentationSupport(string docSupport)
-        {
-            var curStringArray = docSupport.Replace(" ", "").Split(',');
-            var containsOneSubstring = curStringArray.Count() == 1;
-            var hasTerminalName = curStringArray.Any(x => x.StartsWith("Terminal="));
-            var hasMainPage = curStringArray.Contains("MainPage");
-            var hasHelpMenu = curStringArray.Contains("HelpMenu");
-            if ((containsOneSubstring && hasTerminalName) 
-                || (containsOneSubstring && hasMainPage) 
-                || (containsOneSubstring && hasHelpMenu))
-                return true;
-            else
-                throw new Exception("Incorrect documentation support values");
         }
     }
 }

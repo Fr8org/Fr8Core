@@ -44,7 +44,7 @@ namespace terminaBaselTests.Tools.Activities
         public async Task<Tuple<ActivityDTO, PlanDTO, Guid>> CreateAndConfigure_MailMergeIntoDocuSign_Solution(string dataSourceValue,
             string dataSourceSelectedKey, string docuSignTemplateValue, string docuSignTemplateSelectedKey, bool addNewDocuSignTemplate)
         {
-            var solutionCreateUrl = _baseHubITest.GetHubApiBaseUrl() + "activities/createSolution?solutionName=Mail_Merge_Into_DocuSign";
+            var solutionCreateUrl = _baseHubITest.GetHubApiBaseUrl() + "plans/createSolution?solutionName=Mail_Merge_Into_DocuSign";
 
             //
             // Create solution
