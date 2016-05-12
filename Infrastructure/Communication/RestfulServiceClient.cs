@@ -44,11 +44,11 @@ namespace Infrastructure.Communication
         {
         }
 
-          public RestfulServiceClient(HttpClient _client)
-            : this(new JsonMediaTypeFormatter(), _client)
+        public RestfulServiceClient(HttpClient _client)
+          : this(new JsonMediaTypeFormatter(), _client)
         {
-        }      
-        
+        }
+
         /// <summary>
         /// Creates an instance with specified formatter for requests and responses
         /// </summary>
@@ -65,7 +65,7 @@ namespace Infrastructure.Communication
 #endif
             }
 
-            _innerClient = client; 
+            _innerClient = client;
             _formatter = formatter;
             _formatterLogger = new FormatterLogger();
         }
@@ -118,7 +118,7 @@ namespace Infrastructure.Communication
                 stopWatch.Stop();
                 var isSuccess = raisedException == null;
                 //log details
-                var logDetails = string.Format(HttpLogFormat, isSuccess ? "YES" : "NO", 
+                var logDetails = string.Format(HttpLogFormat, isSuccess ? "YES" : "NO",
                     DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss.fff", CultureInfo.InvariantCulture),
                     stopWatch.ElapsedMilliseconds.ToString(CultureInfo.InvariantCulture),
                     CorrelationId, statusCode, prettyStatusCode);
@@ -151,13 +151,13 @@ namespace Infrastructure.Communication
         //    }
         //    return response;
         //}
-        
+
         protected virtual string ExtractErrorMessage(string responseContent)
         {
             return responseContent;
         }
 
-#region InternalRequestMethods
+        #region InternalRequestMethods
         private async Task<HttpResponseMessage> GetInternalAsync(Uri requestUri, string CorrelationId, Dictionary<string, string> headers)
         {
             using (var request = new HttpRequestMessage(HttpMethod.Get, requestUri))
@@ -202,7 +202,7 @@ namespace Infrastructure.Communication
             }
         }
 
-#endregion
+        #endregion
 
         private void AddHeaders(HttpRequestMessage request, Dictionary<string, string> headers)
         {
@@ -218,7 +218,7 @@ namespace Infrastructure.Communication
         private async Task<T> DeserializeResponseAsync<T>(HttpResponseMessage response)
         {
             var responseStream = await response.Content.ReadAsStreamAsync();
-           
+
             var responseObject = await _formatter.ReadFromStreamAsync(
                 typeof(T),
                 responseStream,
@@ -234,7 +234,7 @@ namespace Infrastructure.Communication
             set { _innerClient.BaseAddress = value; }
         }
 
-#region GenericRequestMethods
+        #region GenericRequestMethods
         /// <summary>
         /// Downloads file as a MemoryStream from given URL
         /// </summary>
@@ -306,9 +306,9 @@ namespace Infrastructure.Communication
             return await PutAsync(requestUri, (HttpContent)new ObjectContent(typeof(TContent), content, _formatter), CorrelationId, headers);
         }
 
-#endregion
+        #endregion
 
-#region HttpContentRequestMethods
+        #region HttpContentRequestMethods
         public async Task<string> PostAsync(Uri requestUri, HttpContent content, string CorrelationId = null, Dictionary<string, string> headers = null)
         {
             using (var response = await PostInternalAsync(requestUri, content, CorrelationId, headers))
@@ -342,7 +342,7 @@ namespace Infrastructure.Communication
             }
         }
 
-#endregion
+        #endregion
 
     }
 }

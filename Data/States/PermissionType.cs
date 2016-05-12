@@ -9,5 +9,7 @@
         RunObject = 5,
         ViewAllObjects = 6,
         ModifyAllObjects = 7,
+        ManageFr8Users = 8,
+        ManageInternalUsers = 9
     }
 }

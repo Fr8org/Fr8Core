@@ -209,7 +209,7 @@ namespace TerminalBase.Services
         public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, string userId)
         {
             var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/available?tag=";
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/getAvailableActivitiesWithTag?tag=";
 
             if (string.IsNullOrEmpty(tag))
             {
@@ -455,6 +455,16 @@ namespace TerminalBase.Services
                     + string.Format("/authentication/GetAuthToken?curFr8UserId={0}&externalAccountId={1}&terminalId={2}", curFr8UserId, externalAccountId, TerminalId);
             var uri = new Uri(url);
             return await _restfulServiceClient.GetAsync<AuthorizationTokenDTO>(uri, null, await GetHMACHeader(uri, curFr8UserId));
+        }
+
+        public async Task ScheduleEvent(string externalAccountId, string curFr8UserId, string minutes)
+        {
+            var hubAlarmsUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+               + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion")
+               + string.Format("/alarms/schedule?external_account_id={0}&fr8AccountId={1}&minutes={2}&terminalId={3}",
+               externalAccountId, curFr8UserId, minutes, TerminalId);
+            var uri = new Uri(hubAlarmsUrl);
+            await _restfulServiceClient.PostAsync(uri, null, await GetHMACHeader(uri, curFr8UserId));
         }
     }
 }

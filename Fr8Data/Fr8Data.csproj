@@ -94,6 +94,11 @@
     <Compile Include="DataTransferObjects\CrateStorageDTO.cs" />
     <Compile Include="DataTransferObjects\CredentialsDTO.cs" />
     <Compile Include="DataTransferObjects\CriteriaDTO.cs" />
+    <Compile Include="DataTransferObjects\PermissionDTO.cs" />
+    <Compile Include="DataTransferObjects\PlanTemplates\ActivityDescriptionDTO.cs" />
+    <Compile Include="DataTransferObjects\PlanTemplates\NodeTransitionDTO.cs" />
+    <Compile Include="DataTransferObjects\PlanTemplates\PlanNodeDescriptionDTO.cs" />
+    <Compile Include="DataTransferObjects\PlanTemplates\PlanTemplateDTO.cs" />
     <Compile Include="DataTransferObjects\ErrorDTO.cs" />
     <Compile Include="DataTransferObjects\EventCM.cs" />
     <Compile Include="DataTransferObjects\EventLoggingDTO.cs" />
@@ -123,6 +128,7 @@
     <Compile Include="DataTransferObjects\PlanDTO.cs" />
     <Compile Include="DataTransferObjects\PlanEmptyDTO.cs" />
     <Compile Include="DataTransferObjects\PlanFullDTO.cs" />
+    <Compile Include="DataTransferObjects\ProfileDTO.cs" />
     <Compile Include="DataTransferObjects\QueryDTO.cs" />
     <Compile Include="DataTransferObjects\SlackPayloadDTO.cs" />
     <Compile Include="DataTransferObjects\SolutionPageDTO.cs" />
