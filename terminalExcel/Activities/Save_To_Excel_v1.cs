@@ -320,7 +320,7 @@ namespace terminalExcel.Actions
                 ActivityVersion = "1",
                 TerminalName = "terminalFr8Core",
                 TerminalVersion = "1",
-                Message = $"The Excel file can be downloaded by navigating to this URL: {url}",
+                Message = $"The Excel file can be downloaded by navigating to this URL: {Uri.EscapeDataString(url)}",
                 //"api/v1/plans/clone?id=" + curActivityDO.RootPlanNodeId,
                 Subject = "Excel File"
             });
