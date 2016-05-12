@@ -4,12 +4,18 @@ using Salesforce.Common;
 using StructureMap;
 using System;
 using System.Threading.Tasks;
+using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Hub.Managers;
+using Moq;
+using TerminalBase.Infrastructure;
 
 namespace terminalSalesforceTests.Fixtures
 {
     public static class HealthMonitor_FixtureData
     {
+        private static readonly CrateManager CrateManager = new CrateManager();
         public static async Task<AuthorizationTokenDTO> Salesforce_AuthToken()
         {
             var auth = new AuthenticationClient();
@@ -24,6 +30,16 @@ namespace terminalSalesforceTests.Fixtures
                 Token = auth.AccessToken,
                 AdditionalAttributes = string.Format("refresh_token=;instance_url={0};api_version={1}", auth.InstanceUrl, auth.ApiVersion)
             };                                                                                                                            
+        }
+        public static void ConfigureHubToReturnEmptyPayload()
+        {
+            var result = new PayloadDTO(Guid.Empty);
+            using (var storage = CrateManager.GetUpdatableStorage(result))
+            {
+                storage.Add(Crate.FromContent(string.Empty, new OperationalStateCM()));
+            }
+            ObjectFactory.Container.GetInstance<Mock<IHubCommunicator>>().Setup(x => x.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
+                               .Returns(Task.FromResult(result));
         }
 
         public static async Task<AuthorizationTokenDO> CreateSalesforceAuthToken()
