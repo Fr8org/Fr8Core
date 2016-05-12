@@ -18,7 +18,7 @@ using UtilitiesTesting;
 
 namespace terminalSalesforceTests.Activities
 {
-    [TestFixture, Ignore]
+    [TestFixture]
     [Category("terminalSalesforceTests")]
     public class Post_To_Chatter_v2Tests : BaseTest
     {
@@ -39,6 +39,7 @@ namespace terminalSalesforceTests.Activities
                                                           }));
             salesforceManagerMock.Setup(x => x.PostToChatter(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<AuthorizationTokenDO>()))
                                  .Returns(Task.FromResult("feedid"));
+            ObjectFactory.Container.Inject(salesforceManagerMock);
             ObjectFactory.Container.Inject(salesforceManagerMock.Object);
             var hubCommunicatorMock = new Mock<IHubCommunicator>();
             ObjectFactory.Container.Inject(hubCommunicatorMock);
@@ -72,7 +73,7 @@ namespace terminalSalesforceTests.Activities
         }
 
         [Test]
-        public async Task Run_WhenAllValuesAreSet_PostsToChatter()
+        public async Task Run_WhenQueriesSalesforceAndObjectsAreReturned_PostsToTheirChatters()
         {
             var activity = new Post_To_Chatter_v2();
             var activityDO = await activity.Configure(new ActivityDO(), Token);
@@ -89,8 +90,31 @@ namespace terminalSalesforceTests.Activities
             var operationalState = payloadStorage.FirstCrate<OperationalStateCM>().Content;
             Assert.AreEqual(ActivityResponse.Success.ToString(), operationalState.CurrentActivityResponse.Type, "Run must return success if all values are specified");
             var resultPayload = payloadStorage.FirstCrateOrDefault<StandardPayloadDataCM>();
-            Assert.IsNotNull(resultPayload, "Successfull run should create standard payload data crate");
+            Assert.IsNotNull(resultPayload, "Successfull run should create standard payload data crate when Salesforce objects exist");
             Assert.AreEqual("feedid", resultPayload.Content.PayloadObjects[0].PayloadObject[0].Value, "Run didn't produce crate with proper posted feed Id");
+        }
+
+        [Test]
+        public async Task Run_WhenQueriesSalesforceAndNothingIsReturned_ReturnsSuccessButNoPayload()
+        {
+            var activity = new Post_To_Chatter_v2();
+            var activityDO = await activity.Configure(new ActivityDO(), Token);
+            activityDO.UpdateControls<Post_To_Chatter_v2.ActivityUi>(x =>
+            {
+                x.FeedTextSource.TextValue = "message";
+                x.FeedTextSource.ValueSource = "specific";
+                x.QueryForChatterOption.Selected = true;
+                x.ChatterFilter.Value = string.Empty;
+                x.ChatterSelector.selectedKey = SalesforceObjectType.Account.ToString();
+            });
+            ObjectFactory.GetInstance<Mock<ISalesforceManager>>().Setup(x => x.Query(It.IsAny<SalesforceObjectType>(), It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationTokenDO>()))
+                         .Returns(Task.FromResult(new StandardTableDataCM { Table = new List<TableRowDTO>() }));
+            var result = await activity.Run(activityDO, Guid.Empty, Token);
+            var payloadStorage = new CrateManager().GetStorage(result);
+            var operationalState = payloadStorage.FirstCrate<OperationalStateCM>().Content;
+            Assert.AreEqual(ActivityResponse.Success.ToString(), operationalState.CurrentActivityResponse.Type, "Run must return success if all values are specified");
+            var resultPayload = payloadStorage.FirstCrateOrDefault<StandardPayloadDataCM>();
+            Assert.IsNull(resultPayload, "Successfull run should not create standard payload data crate when no Salesforce objects exist");
         }
     }
 }

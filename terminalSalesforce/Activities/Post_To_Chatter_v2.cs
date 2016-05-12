@@ -181,9 +181,12 @@ namespace terminalSalesforce.Actions
                 {
                     Success($"No {SelectedChatter} that satisfies specified conditions were found. No message were posted");
                 }
-                var resultPayload = new StandardPayloadDataCM();
-                resultPayload.PayloadObjects.AddRange(tasks.Select(x => new PayloadObjectDTO(new FieldDTO(FeedIdKeyName, x.Result))));
-                CurrentPayloadStorage.Add(Crate<StandardPayloadDataCM>.FromContent(PostedFeedCrateLabel, resultPayload));
+                else
+                {
+                    var resultPayload = new StandardPayloadDataCM();
+                    resultPayload.PayloadObjects.AddRange(tasks.Select(x => new PayloadObjectDTO(new FieldDTO(FeedIdKeyName, x.Result))));
+                    CurrentPayloadStorage.Add(Crate<StandardPayloadDataCM>.FromContent(PostedFeedCrateLabel, resultPayload));
+                }
             }
             else
             {
