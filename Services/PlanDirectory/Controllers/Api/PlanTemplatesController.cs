@@ -18,8 +18,8 @@ namespace PlanDirectory.Controllers
         }
 
         [HttpPost]
-        [Fr8ApiAuthorize]
-        [PlanDirectoryHMACAuthenticate]
+        // [Fr8ApiAuthorize]
+        // [PlanDirectoryHMACAuthenticate]
         public async Task<IHttpActionResult> Publish(PublishPlanTemplateDTO planTemplate)
         {
             await _planTemplate.Publish(planTemplate);
@@ -27,8 +27,8 @@ namespace PlanDirectory.Controllers
         }
 
         [HttpPost]
-        [Fr8ApiAuthorize]
-        [PlanDirectoryHMACAuthenticate]
+        // [Fr8ApiAuthorize]
+        // [PlanDirectoryHMACAuthenticate]
         public async Task<IHttpActionResult> Unpublish(PublishPlanTemplateDTO planTemplate)
         {
             await _planTemplate.Unpublish(planTemplate);
@@ -36,9 +36,17 @@ namespace PlanDirectory.Controllers
         }
 
         [HttpPost]
-        public async Task<IHttpActionResult> Search(string text)
+        public async Task<IHttpActionResult> Search(
+            string text, int? pageStart = null, int? pageSize = null)
         {
-            var searchResult = await _planTemplate.Search(text);
+            var searchRequest = new SearchRequestDTO()
+            {
+                Text = text,
+                PageStart = pageStart.GetValueOrDefault(),
+                PageSize = pageSize.GetValueOrDefault()
+            };
+
+            var searchResult = await _planTemplate.Search(searchRequest);
             return Ok(searchResult);
         }
     }

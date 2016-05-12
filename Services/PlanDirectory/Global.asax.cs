@@ -13,7 +13,7 @@ namespace PlanDirectory
 {
     public class Global : System.Web.HttpApplication
     {
-        protected void Application_Start(object sender, EventArgs args)
+        protected async void Application_Start(object sender, EventArgs args)
         {
             GlobalConfiguration.Configure(WebApiConfig.Register);
             RouteConfig.RegisterRoutes(RouteTable.Routes);
@@ -27,6 +27,8 @@ namespace PlanDirectory
             Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
             var segmentWriteKey = new ConfigRepository().Get("SegmentWriteKey");
             Analytics.Initialize(segmentWriteKey);
+
+            await ObjectFactory.GetInstance<IPlanTemplate>().Initialize();
         }
     }
 }

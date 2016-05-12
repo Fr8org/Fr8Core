@@ -7,7 +7,6 @@ using PlanDirectory.Infrastructure;
 
 namespace PlanDirectory.Controllers
 {
-    [PlanDirectoryAuthorize]
     public class HomeController : Controller
     {
         private readonly IAuthTokenManager _authTokenManager;
@@ -25,7 +24,6 @@ namespace PlanDirectory.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
         public ActionResult AuthenticateByToken(string token)
         {
             var fr8AccountId = _authTokenManager.GetFr8AccountId(token);
@@ -47,7 +45,6 @@ namespace PlanDirectory.Controllers
         }
 
         [HttpGet]
-        [AllowAnonymous]
         public ActionResult Reauthenticate()
         {
             return View();

@@ -212,7 +212,8 @@
     <Compile Include="Infrastructure\PlanDirectoryAuthorizeAttribute.cs" />
     <Compile Include="Infrastructure\PlanDirectoryBootStrapper.cs" />
     <Compile Include="Interfaces\PublishPlanTemplateDTO.cs" />
-    <Compile Include="Interfaces\SearchPlanTemplateDTO.cs" />
+    <Compile Include="Interfaces\SearchRequestDTO.cs" />
+    <Compile Include="Interfaces\SearchResultDTO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Infrastructure\IPlanTemplate.cs" />
     <Compile Include="Infrastructure\PlanTemplate.Impl.cs" />

@@ -11,3 +11,40 @@
     display: inline-block;
     width: 40%;
 }
+
+.result-container {
+    text-align: center;
+}
+
+.result-container .item {
+    position: relative;
+    display: inline-block;
+    width: 60%;
+    text-align: left;
+
+    padding: 5px;
+    border: 1px solid #eaeaea;
+    margin: 5px 0 5px 0;
+}
+
+.result-container .item .info-row {
+    margin-top: 5px;
+    margin-right: 150px;
+}
+
+.result-container .item .info-row.first {
+    margin-top: 0;
+}
+
+.result-container .item .label {
+    color: black;
+    font-weight: bold;
+    margin: 0;
+    padding: 0;
+}
+
+.result-container .item .create-plan-btn {
+    position: absolute;
+    right: 10px;
+    top: 10px;
+}

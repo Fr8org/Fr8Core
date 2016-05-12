@@ -36,5 +36,22 @@
             </form>
         </div>
     </div>
+    <div class="result-container">
+        <div class="item" ng-repeat="pt in planTemplates">
+            <button class="btn green create-plan-btn">Create Plan</button>
+            <div class="info-row first">
+                <div class="label">Name:</div>
+                <div class="value">{{pt.Name}}</div>
+            </div>
+            <div class="info-row">
+                <div class="label">Description:</div>
+                <div class="value">{{pt.Description}}</div>
+            </div>
+        </div>
+
+        <div class="pager">
+        </div>
+    </div>
+
 </body>
 </html>

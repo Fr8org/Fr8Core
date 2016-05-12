@@ -8,7 +8,7 @@ namespace PlanDirectory.Infrastructure
     {
         Task Initialize();
 
-        Task<IEnumerable<SearchPlanTemplateDTO>> Search(string text);
+        Task<SearchResultDTO> Search(SearchRequestDTO request);
 
         Task Publish(PublishPlanTemplateDTO planTemplate);
         Task Unpublish(PublishPlanTemplateDTO planTemplate);

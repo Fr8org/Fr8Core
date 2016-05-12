@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Utilities.Configuration.Azure;
@@ -10,27 +11,47 @@ namespace PlanDirectory.Infrastructure
 {
     public class PlanTemplate : IPlanTemplate
     {
-        private const string PlanTemplateIndexName = "PlanTemplateIndex";
+        private const string PlanTemplateIndexName = "plan-template-index";
 
 
         public async Task Initialize()
         {
             using (var searchClient = CreateAzureSearchClient())
             {
+                // await DeletePlanTemplateIndexIfExists(searchClient);
                 await EnsurePlanTemplateIndexExists(searchClient);
             }
         }
 
-        public async Task<IEnumerable<SearchPlanTemplateDTO>> Search(string text)
+        public async Task<SearchResultDTO> Search(SearchRequestDTO request)
         {
             using (var searchClient = CreateAzureSearchClient())
             {
-                var indexClient = searchClient.Indexes.GetClient(PlanTemplateIndexName);
+                using (var indexClient = searchClient.Indexes.GetClient(PlanTemplateIndexName))
+                {
+                    var sp = new SearchParameters();
+                    sp.OrderBy = new List<string>() { "name" };
+                    sp.IncludeTotalResultCount = true;
 
-                var searchResult = await indexClient.Documents.SearchAsync<SearchPlanTemplateDTO>(text);
-                var resultingDocuments = searchResult.Results.Select(x => x.Document).ToList();
+                    if (request.PageStart > 0 && request.PageSize > 0)
+                    {
+                        sp.Skip = (request.PageStart - 1) * request.PageSize;
+                        sp.Top = request.PageSize;
+                    }
 
-                return resultingDocuments;
+                    var text = string.IsNullOrEmpty(request.Text) ? "*" : request.Text;
+
+                    var searchResult = await indexClient.Documents.SearchAsync(text, sp);
+                    var resultingDocuments = searchResult.Results.Select(x => ConvertSearchDocumentToDto(x.Document)).ToList();
+
+                    var dto = new SearchResultDTO()
+                    {
+                        PlanTemplates = resultingDocuments,
+                        TotalCount = searchResult.Count.GetValueOrDefault()
+                    };
+
+                    return dto;
+                }
             }
         }
 
@@ -38,17 +59,20 @@ namespace PlanDirectory.Infrastructure
         {
             using (var searchClient = CreateAzureSearchClient())
             {
-                var indexClient = searchClient.Indexes.GetClient(PlanTemplateIndexName);
+                using (var indexClient = searchClient.Indexes.GetClient(PlanTemplateIndexName))
+                {
 
-                var document = ConvertToSearchPlanTemplate(planTemplate);
+                    var document = ConvertToSearchDocument(planTemplate);
 
-                var batch = IndexBatch.New(
-                    new IndexAction<SearchPlanTemplateDTO>[]
-                    {
-                        IndexAction.Upload(document)
-                    }
-                );
-                await indexClient.Documents.IndexAsync(batch);
+                    var batch = IndexBatch.New(
+                        new IndexAction[]
+                        {
+                            IndexAction.Upload(document)
+                        }
+                    );
+
+                    var indexResult = await indexClient.Documents.IndexAsync(batch);
+                }
             }
         }
 
@@ -56,17 +80,18 @@ namespace PlanDirectory.Infrastructure
         {
             using (var searchClient = CreateAzureSearchClient())
             {
-                var indexClient = searchClient.Indexes.GetClient(PlanTemplateIndexName);
+                using (var indexClient = searchClient.Indexes.GetClient(PlanTemplateIndexName))
+                {
+                    var document = ConvertToSearchDocument(planTemplate);
 
-                var document = ConvertToSearchPlanTemplate(planTemplate);
-
-                var batch = IndexBatch.New(
-                    new IndexAction<SearchPlanTemplateDTO>[]
-                    {
-                        IndexAction.Delete(document)
-                    }
-                );
-                await indexClient.Documents.IndexAsync(batch);
+                    var batch = IndexBatch.New(
+                        new IndexAction[]
+                        {
+                            IndexAction.Delete(document)
+                        }
+                    );
+                    await indexClient.Documents.IndexAsync(batch);
+                }
             }
         }
 
@@ -99,25 +124,37 @@ namespace PlanDirectory.Infrastructure
                 Name = PlanTemplateIndexName,
                 Fields = new[]
                 {
-                    new Field("planTemplateId", DataType.Int32) { IsKey = true },
-                    new Field("name", DataType.String),
-                    new Field("description", DataType.String)
+                    new Field("planTemplateId", DataType.String) { IsKey = true },
+                    new Field("name", DataType.String) { IsSearchable = true, IsFilterable = true, IsSortable = true },
+                    new Field("description", DataType.String) { IsSearchable = true, IsFilterable = true }
                 }
             };
 
             return definition;
         }
 
-        private SearchPlanTemplateDTO ConvertToSearchPlanTemplate(PublishPlanTemplateDTO dto)
+        private Document ConvertToSearchDocument(PublishPlanTemplateDTO dto)
         {
-            var searchPlanTemplateDTO = new SearchPlanTemplateDTO()
+            var document = new Document()
             {
-                PlanTemplateId = dto.PlanTemplateId,
-                Name = dto.Name,
-                Description = dto.Description
+                { "planTemplateId", dto.PlanTemplateId.ToString() },
+                { "name", dto.Name },
+                { "description", dto.Description }
             };
 
-            return searchPlanTemplateDTO;
+            return document;
+        }
+
+        private PublishPlanTemplateDTO ConvertSearchDocumentToDto(Document doc)
+        {
+            var dto = new PublishPlanTemplateDTO()
+            {
+                PlanTemplateId = Int32.Parse((string)doc["planTemplateId"]),
+                Name = (string)doc["name"],
+                Description = (string)doc["description"]
+            };
+
+            return dto;
         }
 
         private async Task EnsurePlanTemplateIndexExists(SearchServiceClient searchClient)
@@ -126,6 +163,15 @@ namespace PlanDirectory.Infrastructure
             if (!exists)
             {
                 await searchClient.Indexes.CreateAsync(CreateIndexDefinition());
+            }
+        }
+
+        private async Task DeletePlanTemplateIndexIfExists(SearchServiceClient searchClient)
+        {
+            var exists = await searchClient.Indexes.ExistsAsync(PlanTemplateIndexName);
+            if (exists)
+            {
+                await searchClient.Indexes.DeleteAsync(PlanTemplateIndexName);
             }
         }
     }
