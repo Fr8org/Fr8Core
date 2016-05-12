@@ -11,22 +11,33 @@
     <link rel="stylesheet" href="~/Content/metronic/components.css" />
 
     <link rel="stylesheet" href="~/Content/plan-directory.css" />
-
+    
     <script src="~/bower_components/angular/angular.min.js"></script>
     <script src="~/bower_components/jquery/dist/jquery.min.js"></script>
 
+    <script src="~/Content/metronic/jquery.blockui.min.js"></script>
+
+    <script src="~/Content/metronic/ui.js"></script>
     <script src="~/Scripts/PlanDirectoryApp.js"></script>
     <script src="~/Scripts/SearchController.js"></script>
 
     <script>
+        window.urlPrefix = '@Url.Content("~").Substring(0, Url.Content("~").Length - 1)';
+
         angular.module('PlanDirectoryApp')
-            .constant('urlPrefix', '@Url.Content("~").Substring(0, Url.Content("~").Length - 1)');
+            .constant('urlPrefix', window.urlPrefix);
     </script>
 </head>
 <body ng-controller="SearchController">
+    <div class="header-container">
+        <div class="header">
+            <div class="logo"></div>
+            <div class="label">Plan Directory</div>
+        </div>
+    </div>
     <div class="search-bar-container">
         <div class="search-bar">
-            <form ng-submit="submitSearch()">
+            <form ng-submit="submitSearch(1)">
                 <div class="input-group">
                     <input type="text" class="form-control" ng-model="searchForm.searchText" placeholder="Search for Plans" />
                     <span class="input-group-btn">
@@ -49,9 +60,11 @@
             </div>
         </div>
 
-        <div class="pager">
+        <div class="pager" ng-if="pages && pages.length > 1">
+            <div class="btn-group">
+                <button type="button" class="btn" ng-class="{ 'btn-default': page !== currentPage, 'green': page === currentPage }" ng-repeat="page in pages" ng-click="submitSearch(page)">{{page}}</button>
+            </div>
         </div>
     </div>
-
 </body>
 </html>

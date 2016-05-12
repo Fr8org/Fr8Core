@@ -4,7 +4,6 @@
 
 .search-bar-container {
     text-align: center;
-    margin-top: 50px;
 }
 
 .search-bar {
@@ -47,4 +46,32 @@
     position: absolute;
     right: 10px;
     top: 10px;
+}
+
+.header-container {
+    text-align: center;
+    position: relative;
+}
+
+.header {
+    display: inline-block;
+    width: 60%;
+}
+
+.header .label {
+    text-align: left;
+    font-weight: bold;
+    font-size: 32px;
+    color: #697882;
+
+    position: absolute;
+    left: 50%;
+    top: 45px;
+    margin-left: -230px;
+}
+
+.logo {
+    background-image: url('dockyard_logo.png');
+    width: 143px;
+    height: 85px;
 }
