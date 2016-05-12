@@ -464,8 +464,9 @@ namespace Hub.Services
 
             var dto = Mapper.Map<ActivityDO, ActivityDTO>(curActivityDO);
             bool skipDeactivation = false;
+            var template = _activityTemplate.GetByKey(curActivityDO.ActivityTemplateId);
 
-            if (curActivityDO.AuthorizationToken != null)
+            if (curActivityDO.AuthorizationToken != null || !template.NeedsAuthentication)
             {
                 try
                 {
@@ -478,12 +479,7 @@ namespace Hub.Services
             }
             else
             {
-                var template = _activityTemplate.GetByKey(curActivityDO.ActivityTemplateId);
-
-                if (template.NeedsAuthentication)
-                {
-                    skipDeactivation = true;
-                }
+               skipDeactivation = true;
             }
 
             if (!skipDeactivation)

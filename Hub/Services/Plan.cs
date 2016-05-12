@@ -174,23 +174,45 @@ namespace Hub.Services
             return plan;
         }
 
-        public async Task Delete(IUnitOfWork uow, Guid id)
+        public async Task Delete(Guid id)
         {
-            var plan = uow.PlanRepository.GetById<PlanDO>(id);
+            Exception deactivationFailure = null;
 
-            if (plan == null)
+            try
             {
-                throw new EntityNotFoundException<PlanDO>(id);
+                await Deactivate(id);
+            }
+            catch (Exception ex)
+            {
+                deactivationFailure = ex;
             }
 
-            plan.PlanState = PlanState.Deleted;
-
-            await Deactivate(id);
-
-            //Plan deletion will only update its PlanState = Deleted
-            foreach (var container in _container.LoadContainers(uow, plan))
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                container.State = State.Deleted;
+                var plan = uow.PlanRepository.GetById<PlanDO>(id);
+
+                if (plan == null)
+                {
+                    throw new EntityNotFoundException<PlanDO>(id);
+                }
+
+                //Plan deletion will only update its PlanState = Deleted
+                foreach (var container in _container.LoadContainers(uow, plan))
+                {
+                    container.State = State.Deleted;
+                }
+
+                if (deactivationFailure == null)
+                {
+                    plan.PlanState = PlanState.Deleted;
+                }
+
+                uow.SaveChanges();
+            }
+
+            if (deactivationFailure != null)
+            {
+                throw deactivationFailure;
             }
         }
 
@@ -218,14 +240,14 @@ namespace Hub.Services
                 await Task.WhenAll(activitiesTask);
 
                 foreach (var resultActivate in activitiesTask.Select(x => x.Result))
-                        {
+                {
                     var errors = new ValidationErrorsDTO(ExtractValidationErrors(resultActivate));
 
                     if (errors.ValidationErrors.Count > 0)
-                        {
+                    {
                         result.ValidationErrors[resultActivate.Id] = errors;
-                        }
-                        }
+                    }
+                }
 
                 if (result.ValidationErrors.Count == 0)
                 {
@@ -236,7 +258,6 @@ namespace Hub.Services
             }
 
             return result;
-
         }
 
         /// <summary>
