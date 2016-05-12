@@ -85,7 +85,7 @@ namespace TerminalBase.Services
 
         #endregion
 
-        public async Task<PayloadDTO> GetPayload(ActivityDTO activityDO, Guid containerId, string userId)
+        public async Task<PayloadDTO> GetPayload(Guid containerId, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/containers/payload?id="
@@ -96,7 +96,7 @@ namespace TerminalBase.Services
             return payloadDTOTask;
         }
 
-        public async Task<UserDTO> GetCurrentUser(ActivityDTO activityDO, Guid containerId, string userId)
+        public async Task<UserDTO> GetCurrentUser(Guid containerId, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/user/getUserData?id=" + userId;
@@ -106,7 +106,7 @@ namespace TerminalBase.Services
             return curUser;
         }
 
-        public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDTO activityDO, CrateDirection direction, string userId)
+        public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(Guid activityId, CrateDirection direction, string userId)
         {
             var directionSuffix = (direction == CrateDirection.Upstream)
                 ? "upstream/"
@@ -115,7 +115,7 @@ namespace TerminalBase.Services
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/"
                 + directionSuffix
-                + "?id=" + activityDO.Id;
+                + "?id=" + activityId;
             var uri = new Uri(url, UriKind.Absolute);
 
             var curActivities = await _restfulServiceClient.GetAsync<List<ActivityDTO>>(uri, null, await GetHMACHeader(uri, userId));
@@ -131,7 +131,7 @@ namespace TerminalBase.Services
             return curCrates;
         }
 
-        public async Task<List<Crate>> GetCratesByDirection(ActivityDTO activityDO, CrateDirection direction, string userId)
+        public async Task<List<Crate>> GetCratesByDirection(Guid activityId, CrateDirection direction, string userId)
         {
             var directionSuffix = (direction == CrateDirection.Upstream)
                 ? "upstream/"
@@ -140,7 +140,7 @@ namespace TerminalBase.Services
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/"
                 + directionSuffix
-                + "?id=" + activityDO.Id;
+                + "?id=" + activityId;
 
             var uri = new Uri(url, UriKind.Absolute);
             var curActivities = await _restfulServiceClient.GetAsync<List<ActivityDTO>>(uri, null, await GetHMACHeader(uri, userId));
@@ -155,11 +155,11 @@ namespace TerminalBase.Services
             return curCrates;
         }
 
-        public async Task<IncomingCratesDTO> GetAvailableData(ActivityDTO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
+        public async Task<IncomingCratesDTO> GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                       + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/available_data"
-                      + "?id=" + activityDO.Id
+                      + "?id=" + activityId
                       + "&direction=" + (int) direction
                       + "&availability=" + (int)availability;
             var uri = new Uri(url, UriKind.Absolute);
@@ -168,10 +168,10 @@ namespace TerminalBase.Services
             return availableData;
         }
 
-        public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(ActivityDTO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
+        public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability, string userId)
         {
             var mergedFields = new FieldDescriptionsCM();
-            var availableData = await GetAvailableData(activityDO, direction, availability, userId);
+            var availableData = await GetAvailableData(activityId, direction, availability, userId);
 
             mergedFields.Fields.AddRange(availableData.AvailableFields);
 

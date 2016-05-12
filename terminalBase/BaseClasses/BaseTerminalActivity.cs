@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using StructureMap;
@@ -59,6 +60,8 @@ namespace TerminalBase.BaseClasses
         protected StandardConfigurationControlsCM ConfigurationControls => _configurationControls ?? (_configurationControls = GetConfigurationControls());
         protected int LoopIndex => GetLoopIndex();
         protected UpstreamQueryManager UpstreamQueryManager => _upstreamQueryManager ?? (_upstreamQueryManager = new UpstreamQueryManager(ActivityContext, HubCommunicator));
+        protected Guid ActivityId => ActivityContext.ActivityPayload.Id;
+        protected string CurrentUserId => ActivityContext.UserId;
         #endregion
 
         #region RETURN_CODES
@@ -348,6 +351,12 @@ namespace TerminalBase.BaseClasses
         protected virtual bool IsTokenInvalidation(Exception ex)
         {
             return false;
+        }
+
+        //wrapper for support test method
+        public virtual async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(CrateDirection direction)
+        {
+            return await HubCommunicator.GetCratesByDirection<TManifest>(ActivityId, direction, CurrentUserId);
         }
 
         public async Task Run(ActivityContext activityContext, ContainerExecutionContext containerExecutionContext)

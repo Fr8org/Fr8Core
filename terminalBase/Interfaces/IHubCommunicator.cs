@@ -12,12 +12,12 @@ namespace TerminalBase.Infrastructure
 {
     public interface IHubCommunicator
     {
-        Task<PayloadDTO> GetPayload(ActivityDTO activityDO, Guid containerId, string userId);
-        Task<UserDTO> GetCurrentUser(ActivityDTO activityDO, Guid containerId, string userId);
-        Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(ActivityDTO activityDO, CrateDirection direction, AvailabilityType availability, string userId);
-        Task<IncomingCratesDTO> GetAvailableData(ActivityDTO activityDO, CrateDirection direction, AvailabilityType availability, string userId);
-        Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDTO activityDO, CrateDirection direction, string userId);
-        Task<List<Crate>> GetCratesByDirection(ActivityDTO activityDO, CrateDirection direction, string userId);
+        Task<PayloadDTO> GetPayload(Guid containerId, string userId);
+        Task<UserDTO> GetCurrentUser(Guid containerId, string userId);
+        Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability, string userId);
+        Task<IncomingCratesDTO> GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability, string userId);
+        Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(Guid activityId, CrateDirection direction, string userId);
+        Task<List<Crate>> GetCratesByDirection(Guid activityId, CrateDirection direction, string userId);
 
         Task CreateAlarm(AlarmDTO alarmDTO, string userId);
 

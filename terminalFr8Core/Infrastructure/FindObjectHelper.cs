@@ -11,6 +11,7 @@ using Fr8Data.States;
 using TerminalSqlUtilities;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using TerminalBase.Models;
 
 namespace terminalFr8Core.Infrastructure
 {
@@ -19,11 +20,12 @@ namespace terminalFr8Core.Infrastructure
         private const string DefaultDbProvider = "System.Data.SqlClient";
 
         public async Task<Dictionary<string, DbType>> ExtractColumnTypes(
-            IHubCommunicator hubCommunicator, ActivityDO activityDO)
+            IHubCommunicator hubCommunicator, ActivityContext activityContext)
         {
             var upstreamCrates = await hubCommunicator.GetCratesByDirection<FieldDescriptionsCM>(
-                activityDO,
-                CrateDirection.Upstream
+                activityContext.ActivityPayload.Id,
+                CrateDirection.Upstream,
+                activityContext.UserId
             );
 
             if (upstreamCrates == null) { return null; }
