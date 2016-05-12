@@ -478,7 +478,12 @@ namespace Hub.Services
             }
             else
             {
-                skipDeactivation = true;
+                var template = _activityTemplate.GetByKey(curActivityDO.ActivityTemplateId);
+
+                if (template.NeedsAuthentication)
+                {
+                    skipDeactivation = true;
+                }
             }
 
             if (!skipDeactivation)

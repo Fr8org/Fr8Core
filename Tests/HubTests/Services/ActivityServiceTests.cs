@@ -11,6 +11,7 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
+using Data.Interfaces.Manifests;
 using Data.States;
 using Fr8Data.Constants;
 using Fr8Data.Crates;
@@ -23,6 +24,7 @@ using TerminalBase.Infrastructure;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Action = Hub.Services.Activity;
+using IContainer = StructureMap.IContainer;
 
 namespace HubTests.Services
 {
@@ -440,6 +442,133 @@ namespace HubTests.Services
             Assert.IsTrue(_eventReceived, "Unable to receive event about activity start");
         }
 
+        private ActivityDO ActivationTestsSetup(IContainer container, Dictionary<string, int> callCount)
+        {
+            var terminalTransmitterMock = new TerminalTransmitterMock();
+
+            terminalTransmitterMock.CallActivityBody = (action, dto) =>
+            {
+                int count;
+
+                if (callCount.TryGetValue(action, out count))
+                {
+                    callCount[action] = count + 1;
+                }
+                else
+                {
+                    callCount[action] = 1;
+                }
+
+                return dto.ActivityDTO;
+            };
+
+            ActivityDO activityDo = FixtureData.TestActivityStateInProcess();
+            activityDo.CrateStorage = JsonConvert.SerializeObject(new ActivityDTO());
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActivityTemplateRepository.Add(activityDo.ActivityTemplate);
+                uow.PlanRepository.Add(new PlanDO()
+                {
+                    Name = "sdfsdf",
+                    PlanState = PlanState.Inactive,
+                    ChildNodes = { activityDo }
+                });
+                uow.SaveChanges();
+            }
+
+            container.Inject(typeof(ITerminalTransmitter), terminalTransmitterMock);
+
+            return activityDo;
+        }
+
+        [Test]
+        public async Task ActivationIsCalledOnce()
+        {
+            var container = ObjectFactory.Container;
+            
+            var callCount = new Dictionary<string, int>();
+
+            callCount["activate"] = 0;
+
+            var activityDo = ActivationTestsSetup(container, callCount);
+            
+            await container.GetInstance<IActivity>().Activate(activityDo);
+            await container.GetInstance<IActivity>().Activate(activityDo);
+            await container.GetInstance<IActivity>().Activate(activityDo);
+
+            Assert.AreEqual(1, callCount["activate"], "Activation of deactivated activity should be called once");
+        }
+        
+        [Test]
+        public async Task ActivityDoesntChangeStateOnValidationErrors()
+        {
+            var container = ObjectFactory.Container;
+
+            var callCount = new Dictionary<string, int>();
+
+            callCount["activate"] = 0;
+
+            var activityDo = ActivationTestsSetup(container, callCount);
+            var terminalTransmitterMock = new TerminalTransmitterMock();
+
+            terminalTransmitterMock.CallActivityBody = (action, dto) =>
+            {
+                if (action == "activate")
+                {
+                    using (var updatableStorage = _crate.GetUpdatableStorage(dto.ActivityDTO))
+                    {
+                        updatableStorage.Add(Crate.FromContent("Validation Errors", new ValidationResultsCM
+                        {
+                            ValidationErrors =
+                            {
+                                new ValidationResultDTO
+                                {
+                                    ErrorMessage = "Generic error"
+                                }
+                            }
+                        }));
+                    }
+                }
+
+                return dto.ActivityDTO;
+            };
+
+            container.Inject(typeof(ITerminalTransmitter), terminalTransmitterMock);
+
+            await container.GetInstance<IActivity>().Activate(activityDo);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Assert.AreEqual(ActivationState.Deactivated, uow.PlanRepository.GetById<ActivityDO>(activityDo.Id).ActivationState, "Activity with validation errors should stay deactivated");
+            }
+        }
+
+        [Test]
+        public async Task DeactivationIsCalledOnce()
+        {
+            var container = ObjectFactory.Container;
+            var callCount = new Dictionary<string, int>();
+
+            callCount["deactivate"] = 0;
+
+            var activityDo = ActivationTestsSetup(container, callCount);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.PlanRepository.GetById<ActivityDO>(activityDo.Id).ActivationState = ActivationState.Activated;
+                uow.SaveChanges();
+            }
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                await container.GetInstance<IActivity>().Configure(uow, "user", activityDo);
+                await container.GetInstance<IActivity>().Configure(uow, "user", activityDo);
+                await container.GetInstance<IActivity>().Configure(uow, "user", activityDo);
+            }
+
+            Assert.AreEqual(1, callCount["deactivate"], "Deactivation of activated activity should be called once");
+        }
 
         private void EventManager_EventActivityStarted(ActivityDO activity, ContainerDO container)
         {
