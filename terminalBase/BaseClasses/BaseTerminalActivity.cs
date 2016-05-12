@@ -1223,8 +1223,8 @@ namespace TerminalBase.BaseClasses
         public string ParseConditionToText(List<FilterConditionDTO> filterData)
         {
             var parsedConditions = new List<string>();
-
-            filterData.ForEach(condition =>
+            
+            filterData?.ForEach(condition =>
             {
                 string parsedCondition = condition.Field;
 
@@ -1252,7 +1252,7 @@ namespace TerminalBase.BaseClasses
                         throw new NotSupportedException(string.Format("Not supported operator: {0}", condition.Operator));
                 }
 
-                parsedCondition += string.Format("'{0}'", condition.Value);
+                parsedCondition += $"'{condition.Value}'";
                 parsedConditions.Add(parsedCondition);
             });
 
