@@ -134,23 +134,22 @@ namespace terminalFr8Core.Actions
             if (ConfigurationControls.Controls.Any(c => c.Name == "Error"))
             {
                 ConfigurationControls.Controls.RemoveAll(c => c.Name == "Error");
+                }
             }
-        }
 
         private void AddErrorText(string error)
         {
             if (ConfigurationControls.Controls.Any(c => c.Name == "Error"))
             {
                 ConfigurationControls.Controls.RemoveAll(c => c.Name == "Error");
-            }
+                }
             ConfigurationControls.Controls.Add(new TextBlock
-            {
-                ErrorMessage = error,
-                Name = "Error",
-                Value = error,
-                CssClass = "well well-lg"
-            });
-        }
+                {
+                    Name = "Error",
+                    Value = error,
+                    CssClass = "well well-lg"
+                });
+            }
 
         private async Task<Crate> CreateControlsCrate()
         {

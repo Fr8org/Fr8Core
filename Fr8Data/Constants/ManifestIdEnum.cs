@@ -115,7 +115,13 @@ namespace Fr8Data.Constants
         DocuSignEnvelope_v2 = 36,
 
         [Display(Name = "Standard Business Fact")]
-        StandardBusinessFact = 37
+        StandardBusinessFact = 37,
+
+        [Display(Name = "Plan Template")]
+        PlanTemplate = 38,
+        
+        [Display(Name = "Validation Results")]
+        ValidationResults = 39
     }
 }
 

@@ -35,7 +35,6 @@ namespace TerminalBase.Infrastructure
         Task<ActivityPayload> CreateAndConfigureActivity(Guid templateId, string userId, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null);
         Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO, string userId);
         Task RunPlan(Guid planId, List<CrateDTO> payload, string userId);
-        Task<PlanDTO> ActivatePlan(PlanDTO planDO, string userId);
         Task<List<CrateDTO>> GetStoredManifests(string currentFr8UserId, List<CrateDTO> cratesForMTRequest);
         Task<IEnumerable<PlanDTO>> GetPlansByName(string name, string userId, PlanVisibility visibility = PlanVisibility.Standard);
         Task<FileDTO> SaveFile(string name, Stream stream, string userId);

@@ -13,7 +13,6 @@ module dockyard.controllers {
         goToPlanPage: (plan: interfaces.IPlanVM) => void;
         goToPlanDetailsPage: (plan: interfaces.IPlanVM) => void;
         deletePlan: (plan: interfaces.IPlanVM) => void;
-        activatePlan: (plan: interfaces.IPlanVM) => void;
         deactivatePlan: (plan: interfaces.IPlanVM) => void;
 
         reArrangePlans: (plan: interfaces.IPlanVM) => void;
@@ -98,7 +97,6 @@ module dockyard.controllers {
             $scope.goToPlanPage = <(plan: interfaces.IPlanVM) => void>angular.bind(this, this.goToPlanPage);
             $scope.goToPlanDetailsPage = <(plan: interfaces.IPlanVM) => void>angular.bind(this, this.goToPlanDetailsPage);
             $scope.deletePlan = <(plan: interfaces.IPlanVM) => void>angular.bind(this, this.deletePlan);
-            $scope.activatePlan = <(plan: interfaces.IPlanVM) => void>angular.bind(this, this.activatePlan);
             $scope.deactivatePlan = <(plan: interfaces.IPlanVM) => void>angular.bind(this, this.deactivatePlan);
             $scope.reArrangePlans = <(plan: interfaces.IPlanVM) => void>angular.bind(this, this.reArrangePlans);
             $scope.updatePlansLastUpdated = <(id: any, date: any) => void>angular.bind(this, this.updatePlanLastUpdated);
@@ -196,23 +194,7 @@ module dockyard.controllers {
                 }
             }
         }
-
-        private activatePlan(plan) {
-            this.PlanService.activate({ planId: plan.id, planBuilderActivate: false }).$promise.then((result) => {
-                if (result != null && result.status === "validation_error" && result.redirectToPlan) {
-                    this.goToPlanPage(plan.id);
-                }
-                else {
-                    location.reload();
-                }
-            }, (failResponse) => {
-                //activation failed
-                if (failResponse.data.details === "GuestFail") {
-                    location.href = "DockyardAccount/RegisterGuestUser";
-                }
-            });
-
-        }
+        
         private deactivatePlan(plan) {
             this.PlanService.deactivate({ planId: plan.id }).$promise.then((result) => {
                 this.getActivePlans();

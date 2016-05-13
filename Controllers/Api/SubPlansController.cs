@@ -7,6 +7,7 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Fr8Data.DataTransferObjects;
+using Hub.Infrastructure;
 using Hub.Interfaces;
 
 namespace HubWeb.Controllers
@@ -112,7 +113,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activity = await _subPlan.GetFirstActivity(uow, id);
+                var activity = _subPlan.GetFirstActivity(uow, id);
                 return Ok(Mapper.Map<ActivityDTO>(activity));
             }
         }

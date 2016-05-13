@@ -80,20 +80,21 @@ namespace terminalFr8Core.Activities
             return JumpToActivity(curPayloadDTO, curActivityDO.Id);
         }
 
-        protected override async Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
+        public override Task ValidateActivity(ActivityDO curActivityDO, ICrateStorage crateStorage, ValidationManager validationManager)
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                var controlsMS = GetConfigurationControls(crateStorage);
-                if (controlsMS != null)
-                {
-                    var crateChooser = GetControl<CrateChooser>(controlsMS, "Available_Crates");
+            var controlsMS = GetConfigurationControls(crateStorage);
 
-                    crateChooser.ErrorMessage = !crateChooser.CrateDescriptions.Any(c => c.Selected)
-                        ? "Please select an item from the list." : string.Empty;
+            if (controlsMS != null)
+            {
+                var crateChooser = GetControl<CrateChooser>(controlsMS, "Available_Crates");
+
+                if (!crateChooser.CrateDescriptions.Any(c => c.Selected))
+                {
+                    validationManager.SetError("Please select an item from the list", crateChooser);
                 }
             }
-            return await Task.FromResult<ICrateStorage>(null);
+
+            return Task.FromResult(0);
         }
 
         internal static int? GetDataListSize(Crate crateToProcess)

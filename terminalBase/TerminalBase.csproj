@@ -146,6 +146,9 @@
     <Compile Include="Infrastructure\States\ConfigurationRequestType.cs" />
     <Compile Include="Infrastructure\JsonParser.cs" />
     <Compile Include="Infrastructure\TerminalBootstrapper.cs" />
+    <Compile Include="Infrastructure\TestMonitoringHubCommunicator.cs" />
+    <Compile Include="Infrastructure\ValidationExtensions.cs" />
+    <Compile Include="Infrastructure\ValidationManager.cs" />
     <Compile Include="Services\TestMonitoringHubCommunicator.cs" />
     <Compile Include="Infrastructure\Validations.cs" />
     <Compile Include="Errors\TerminalCodedException.cs" />

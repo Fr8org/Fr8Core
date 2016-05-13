@@ -323,15 +323,6 @@ namespace TerminalBase.Services
             await _restfulServiceClient.PostAsync<List<CrateDTO>>(uri, payload, null, await GetHMACHeader(uri, userId, payload));
         }
 
-        public async Task<PlanDTO> ActivatePlan(PlanDTO planDTO, string userId)
-        {
-            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plans/activate?planId=" + planDTO.Plan.Id;
-            var uri = new Uri(url);
-
-            return await _restfulServiceClient.PostAsync<PlanDTO>(uri, null, await GetHMACHeader(uri, userId));
-        }
-
         public async Task<IEnumerable<PlanDTO>> GetPlansByName(string name, string userId, PlanVisibility visibility = PlanVisibility.Standard)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
