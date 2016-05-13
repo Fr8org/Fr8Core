@@ -11,8 +11,7 @@ module dockyard.directives.upstreamDataChooser {
         setItem: (item: any) => void;
         selectField: (field: model.FieldDTO) => void;
         openModal: () => void;
-        ok: () => void;
-        cancel: () => void;
+        createModal: () => void;
     }
 
     export class UpstreamFieldChooserController {
@@ -30,9 +29,7 @@ module dockyard.directives.upstreamDataChooser {
             var alertMessage = new model.AlertDTO();
             alertMessage.title = "Notification";
             alertMessage.body = 'There are no upstream fields available right now. To learn more,<a href= "/documentation/UpstreamCrates.html" target= "_blank" > click here </a><i class="fa fa-question-circle" > </i>';
-
-            $scope.openModal = () => {
-                getUpstreamFields().then(() => { 
+            $scope.createModal = () => {
                 if ($scope.field.listItems.length !== 0) {
                     modalInstance = $modal.open({
                         animation: true,
@@ -44,7 +41,11 @@ module dockyard.directives.upstreamDataChooser {
                             }
                         }
                     });
-                    }
+                }
+            }
+            $scope.openModal = () => {
+                getUpstreamFields().then(() => { 
+                    $scope.createModal();
                 });
             }
             $scope.setItem = (item) => {
