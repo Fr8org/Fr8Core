@@ -24,6 +24,7 @@ using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
 using Utilities;
+using Hub.Exceptions;
 
 namespace Hub.Services
 {
@@ -447,6 +448,10 @@ namespace Hub.Services
             catch (ArgumentException e)
             {
                 EventManager.TerminalRunFailed("<no terminal url>", JsonConvert.SerializeObject(Mapper.Map<ActivityDTO>(curActivityDO)), e.Message, curActivityDO.Id.ToString());
+                throw;
+            }
+            catch (InvalidTokenRuntimeException)
+            {
                 throw;
             }
             catch (Exception e)
