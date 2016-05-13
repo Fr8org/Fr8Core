@@ -32,6 +32,15 @@ namespace TerminalBase.BaseClasses
 
         private const string ConfigurationValuesCrateLabel = "Configuration Values";
         
+<<<<<<< HEAD:terminalBase/BaseClasses/EnhancedTerminalActivity.cs
+=======
+        /**********************************************************************************/
+
+        private bool _isRunTime;
+        private ICrateStorage _currentPayloadStorage;
+        private OperationalStateCM _operationalState;
+
+>>>>>>> refs/remotes/origin/dev:terminalBase/BaseClasses/EnhancedTerminalActivityT.cs
         /**********************************************************************************/
 
         private bool _isRunTime;
@@ -104,8 +113,37 @@ namespace TerminalBase.BaseClasses
         public sealed override async Task Activate()
         {
             SyncConfControls();
+<<<<<<< HEAD:terminalBase/BaseClasses/EnhancedTerminalActivity.cs
             if (await Validate())
 =======
+        protected ValidationManager CreateValidationManager()
+        {
+            var validationResults = CurrentActivityStorage.CrateContentsOfType<ValidationResultsCM>().FirstOrDefault();
+
+            if (validationResults == null)
+            {
+                validationResults = new ValidationResultsCM();
+                CurrentActivityStorage.Add(Crate.FromContent("Validation Errors", validationResults));
+=======
+
+            CurrentActivityStorage.Remove<ValidationResultsCM>();
+
+            var validationManager = CreateValidationManager();
+            
+            await Validate(validationManager);
+
+            if (!validationManager.HasErrors)
+            {
+                CurrentActivityStorage.Remove<ValidationResultsCM>();
+                await Configure(crateSignaller);
+>>>>>>> refs/remotes/origin/dev:terminalBase/BaseClasses/EnhancedTerminalActivityT.cs
+            }
+
+            return new ValidationManager(validationResults);
+        }
+
+        /**********************************************************************************/
+
         protected ValidationManager CreateValidationManager()
         {
             var validationResults = CurrentActivityStorage.CrateContentsOfType<ValidationResultsCM>().FirstOrDefault();
@@ -309,13 +347,19 @@ namespace TerminalBase.BaseClasses
         /**********************************************************************************/
 
 <<<<<<< HEAD:terminalBase/BaseClasses/EnhancedTerminalActivity.cs
+<<<<<<< HEAD:terminalBase/BaseClasses/EnhancedTerminalActivity.cs
         private const string ConfigurationValuesCrateLabel = "Configuration Values";
 =======
+=======
+>>>>>>> refs/remotes/origin/dev:terminalBase/BaseClasses/EnhancedTerminalActivityT.cs
         protected virtual Task Validate(ValidationManager validationManager)
         {
             return Task.FromResult(true);
         }
 
+<<<<<<< HEAD:terminalBase/BaseClasses/EnhancedTerminalActivity.cs
+>>>>>>> refs/remotes/origin/dev:terminalBase/BaseClasses/EnhancedTerminalActivityT.cs
+=======
 >>>>>>> refs/remotes/origin/dev:terminalBase/BaseClasses/EnhancedTerminalActivityT.cs
         /// <summary>
         /// Get or sets value of configuration field with the given key stored in current activity storage
@@ -642,6 +686,7 @@ namespace TerminalBase.BaseClasses
         /**********************************************************************************/
         // we don't want uncontrollable extensibility
 <<<<<<< HEAD:terminalBase/BaseClasses/EnhancedTerminalActivity.cs
+<<<<<<< HEAD:terminalBase/BaseClasses/EnhancedTerminalActivity.cs
         //protected sealed override Task<ICrateStorage> ValidateActivity(ActivityDTO curActivityDTO)
         //{
         //    return base.ValidateActivity(curActivityDTO);
@@ -702,6 +747,8 @@ namespace TerminalBase.BaseClasses
         //    return base.GetUpstreamFileHandleCrates(activityDO);
         //}
 =======
+=======
+>>>>>>> refs/remotes/origin/dev:terminalBase/BaseClasses/EnhancedTerminalActivityT.cs
         public sealed override Task ValidateActivity(ActivityDO activityDo, ICrateStorage currActivityCrateStorage, ValidationManager validationManager)
         {
             return base.ValidateActivity(activityDo, currActivityCrateStorage, validationManager);

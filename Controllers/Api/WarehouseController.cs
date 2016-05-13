@@ -5,7 +5,6 @@ using StructureMap;
 using Data.Interfaces;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using HubWeb.Infrastructure_HubWeb;
 using Hub.Infrastructure;
 using Hub.Managers;
 using HubWeb.Infrastructure;

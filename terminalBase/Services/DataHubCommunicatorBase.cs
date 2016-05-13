@@ -232,7 +232,11 @@ namespace TerminalBase.Services
         {
             throw new NotImplementedException();
         }
+<<<<<<< HEAD:terminalBase/Services/DataHubCommunicatorBase.cs
 
+=======
+        
+>>>>>>> refs/remotes/origin/dev:terminalBase/Infrastructure/DataHubCommunicatorBase.cs
         public Task<IEnumerable<PlanDTO>> GetPlansByName(string name, string userId, PlanVisibility visibility = PlanVisibility.Standard)
         {
             throw new NotImplementedException();

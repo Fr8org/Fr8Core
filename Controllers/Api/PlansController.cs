@@ -18,7 +18,6 @@ using HubWeb.ViewModels;
 using Newtonsoft.Json;
 using Hub.Infrastructure;
 using Hub.Managers;
-using Utilities.Interfaces;
 using HubWeb.Infrastructure;
 using Utilities.Interfaces;
 using Data.Infrastructure;
@@ -28,7 +27,6 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.DataTransferObjects.Helpers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using HubWeb.Infrastructure_HubWeb;
 
 namespace HubWeb.Controllers
 {
@@ -267,8 +265,8 @@ namespace HubWeb.Controllers
         {
             _plan.Delete(id);
 
-                return Ok(id);
-            }
+            return Ok(id);
+        }
 
 
         [ActionName("triggersettings"), ResponseType(typeof(List<ExternalEventDTO>))]
@@ -277,13 +275,13 @@ namespace HubWeb.Controllers
         {
             return Ok("This is no longer used due to V2 Event Handling mechanism changes.");
         }
-
+        
         [HttpPost]
         [Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Deactivate(Guid planId)
         {
             await _plan.Deactivate(planId);
-
+           
             return Ok();
         }
 
@@ -340,7 +338,7 @@ namespace HubWeb.Controllers
             }
 
             return await Run(planId, curPayload, containerId);
-                    }
+        }
 
         [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
         [Fr8HubWebHMACAuthenticate]
@@ -350,7 +348,7 @@ namespace HubWeb.Controllers
             var crates = payload.Select(c => _crate.FromDto(c)).ToArray();
 
             return Run(planId, crates, null);
-                }
+        }
 
         private async Task<IHttpActionResult> Run(Guid planId, Crate[] payload, Guid? containerId)
         {
@@ -364,7 +362,7 @@ namespace HubWeb.Controllers
                     ValidationErrors = activateDTO.ValidationErrors
                 });
             }
-
+            
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 ContainerDO container;
@@ -413,7 +411,7 @@ namespace HubWeb.Controllers
                         {
                             container = await _plan.Continue(containerId.Value);
                             _pusherNotifier.NotifyUser($"Continue execution of the supsended Plan \"{planDO.Name}\"",
-                                NotificationChannel.GenericSuccess, 
+                                NotificationChannel.GenericSuccess,
                                 User.Identity.Name);
                         }
 
@@ -445,7 +443,7 @@ namespace HubWeb.Controllers
 
                         return Ok(containerDTO);
                     }
-
+                    
                     return BadRequest();
                 }
                 catch (InvalidTokenRuntimeException exception)
@@ -505,6 +503,6 @@ namespace HubWeb.Controllers
             var message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, messageToNotify);
             _pusherNotifier.NotifyUser(message, NotificationChannel.GenericFailure, username);
 
-                        }
+        }
     }
 }

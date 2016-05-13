@@ -8,6 +8,9 @@ using TerminalBase.Infrastructure;
 =======
 using AutoMapper;
 using Data.Interfaces.Manifests;
+<<<<<<< HEAD
+>>>>>>> refs/remotes/origin/dev
+=======
 >>>>>>> refs/remotes/origin/dev
 using Fr8Data.Constants;
 using Fr8Data.Control;
@@ -323,6 +326,7 @@ namespace TerminalBase.BaseClasses
             return upstreamFieldsCrate;
         }
 <<<<<<< HEAD
+<<<<<<< HEAD
 
         protected virtual ConfigurationRequestType GetConfigurationRequestType()
         {
@@ -362,6 +366,13 @@ namespace TerminalBase.BaseClasses
             }
 
             return (T)ConfigurationControls.Controls.FirstOrDefault(predicate);
+=======
+       
+        //if the Action doesn't provide a specific method to override this, we just return null = no validation errors
+        public virtual Task ValidateActivity(ActivityDO activityDo, ICrateStorage currActivityCrateStorage, ValidationManager validationManager)
+        {
+            return Task.FromResult(0);
+>>>>>>> refs/remotes/origin/dev
         }
 
         private bool AuthorizeIfNecessary()
@@ -433,8 +444,11 @@ namespace TerminalBase.BaseClasses
         protected void AddControl(ControlDefinitionDTO control)
         {
 <<<<<<< HEAD
+<<<<<<< HEAD
             ConfigurationControls.Controls.Add(control);
 =======
+=======
+>>>>>>> refs/remotes/origin/dev
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
                 crateStorage.Remove<ValidationResultsCM>();
