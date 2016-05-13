@@ -199,7 +199,7 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Activities\CollectData_v1.cs" />
+    <Compile Include="Activities\AppBuilder_v1.cs" />
     <Compile Include="Activities\FilterObjectListByIncomingMessage_v1.cs" />
     <Compile Include="Activities\GetDataFromFr8Warehouse_v1.cs" />
     <Compile Include="Activities\Monitor_Fr8_Events_v1.cs" />

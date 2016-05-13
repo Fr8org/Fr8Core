@@ -263,17 +263,17 @@ namespace Hub.Services
                     case ActivityResponse.Error:
                         var currentActivity = _uow.PlanRepository.GetById<ActivityDO>(topFrame.NodeId);
                         ErrorDTO error = activityResponse.TryParseErrorDTO(out error) ? error : null;
-                        var errorCode = (ActivityErrorCode)Enum.Parse(typeof(ActivityErrorCode), error.ErrorCode);
-                        if (errorCode == ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID)
+                        ActivityErrorCode errorCode;
+
+                        if (Enum.TryParse(error?.ErrorCode, out errorCode) && errorCode == ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID)
                         {
                             throw new InvalidTokenRuntimeException(Mapper.Map<ActivityDO, ActivityDTO>(currentActivity), 
                                 Mapper.Map<ContainerDO, ContainerDTO>(_container), 
                                 error?.Message ?? string.Empty);
                         }
-                        else
-                        {
-                            throw new ErrorResponseException(Mapper.Map<ContainerDO, ContainerDTO>(_container), error?.Message);
-                        }
+                        
+                        throw new ErrorResponseException(Mapper.Map<ContainerDO, ContainerDTO>(_container), error?.Message);
+                       
                     case ActivityResponse.ExecuteClientActivity:
                         break;
 

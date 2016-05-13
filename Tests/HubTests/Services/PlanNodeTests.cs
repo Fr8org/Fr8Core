@@ -44,7 +44,7 @@ namespace HubTests.Services
             }
 
             IPlanNode planNodeService = ObjectFactory.GetInstance<IPlanNode>();
-            var fieldsCrate = planNodeService.GetAvailableData(testActionTree.ChildNodes.Last().Id, CrateDirection.Upstream, AvailabilityType.NotSet);
+            var fieldsCrate = planNodeService.GetIncomingData(testActionTree.ChildNodes.Last().Id, CrateDirection.Upstream, AvailabilityType.NotSet);
             Assert.NotNull(fieldsCrate);
             Assert.NotNull(fieldsCrate.AvailableFields);
             Assert.AreEqual(66, fieldsCrate.AvailableFields.Count);

@@ -31,7 +31,14 @@ param(
 	[int]$terminalVerson = 1,
 
 	[Parameter(Mandatory = $false)]
-	[boolean]$inheritEndpoints = $false
+	[boolean]$inheritEndpoints = $false,
+
+    [Parameter(Mandatory = $true)]
+	[string]$smtpUsername,
+
+    [Parameter(Mandatory = $true)]
+	[string]$smtpPassword
+
 )
 
 $ErrorActionPreference = 'Stop'
@@ -81,6 +88,13 @@ if(Test-Path $ConfigFile)
 	# Update CoreWebServerUrl
 	$urlNode = $roleNode.ConfigurationSettings.Setting | where {$_.name -eq 'CoreWebServerUrl'}
 	$urlNode.value=$coreWebServerUrl
+
+	#Update SMTP Credentials
+	Write-Host "Setting SMTP Credentials"
+	$usernameNode = $roleNode.ConfigurationSettings.Setting | where {$_.name -eq 'OutboundUserName'}
+	$userNameNode.value = $smtpUsername
+	$passwordNode = $roleNode.ConfigurationSettings.Setting | where {$_.name -eq 'OutboundPassword'}
+	$passwordNode.value = $smtpPassword
 
 	# Update TerminalEndpoint
     Write-Host "New terminal endpoint URLs:"
