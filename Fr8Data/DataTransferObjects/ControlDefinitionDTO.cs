@@ -72,10 +72,7 @@ namespace Fr8Data.DataTransferObjects
 
         [JsonProperty("showDocumentation")]
         public ActivityResponseDTO ShowDocumentation { get; set; }
-
-        [JsonProperty("errorMessage")]
-        public string ErrorMessage { get; set; }
-
+       
         [JsonProperty("isHidden")]
         public bool IsHidden { get; set; }
 

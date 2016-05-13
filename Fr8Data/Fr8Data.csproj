@@ -137,6 +137,8 @@
     <Compile Include="DataTransferObjects\TerminalDTO.cs" />
     <Compile Include="DataTransferObjects\TerminalNotificationDTO.cs" />
     <Compile Include="DataTransferObjects\UserDTO.cs" />
+    <Compile Include="DataTransferObjects\ValidationErrorsDTO.cs" />
+    <Compile Include="DataTransferObjects\ValidationResultDTO.cs" />
     <Compile Include="DataTransferObjects\WebServiceActivitySetDTO.cs" />
     <Compile Include="DataTransferObjects\WebServiceDTO.cs" />
     <Compile Include="Helpers\FieldMemberAccessor.cs" />
@@ -189,6 +191,7 @@
     <Compile Include="Manifests\StandardRoutingDirectiveCM.cs" />
     <Compile Include="Manifests\StandardSecurityCM.cs" />
     <Compile Include="Manifests\StandardTableDataCM.cs" />
+    <Compile Include="Manifests\ValidationResultsCM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="States\ActivityCategory.cs" />
     <Compile Include="States\ActivityType.cs" />

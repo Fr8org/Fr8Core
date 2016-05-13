@@ -1,10 +1,12 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 using Data.Entities;
+using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Moq;
 using terminalDocuSign.Actions;
 using terminalDocuSign.Services.New_Api;
+using TerminalBase.Infrastructure;
 
 namespace terminalDocuSignTests.Fixtures
 {
@@ -26,8 +28,13 @@ namespace terminalDocuSignTests.Fixtures
         public static BaseDocuSignActivity FailedBaseDocuSignActivity()
         {
             var result = new Mock<BaseDocuSignActivity>();
-            result.Setup(x => x.ValidateActivityInternal(It.IsAny<ActivityDO>()))
-                  .Returns(new ValidationResult("Failed"));
+            result.Setup(x => x.ValidateActivity(It.IsAny<ActivityDO>(), It.IsAny<ICrateStorage>(), It.IsAny<ValidationManager>()))
+                .Returns((ActivityDO x, ICrateStorage y, ValidationManager validationManager) =>
+                {
+                    validationManager.SetError("Error");
+                    return Task.FromResult(0);
+                });
+
             return result.Object;
         }
 

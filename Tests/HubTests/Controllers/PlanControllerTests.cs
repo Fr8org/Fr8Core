@@ -78,13 +78,7 @@ namespace HubTests.Controllers
 
             ShouldHaveFr8HMACAuthorizeOnFunction(typeof(PlansController), "GetByName");
         }
-
-        [Test]
-        public void PlansController_ShouldHaveHMACOnActivateMethod()
-        {
-            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(PlansController), "Activate");
-        }
-
+        
         [Test]
         public void PlanController_CanAddNewPlan()
         {
@@ -268,38 +262,7 @@ namespace HubTests.Controllers
             Assert.AreEqual(postEditGetResult.Content.Id, postResult.Content.Plan.Id);
         }
 
-
-
-        [Test, Ignore]
-        public void ProcessController_CanUpdateDocuSignTemplate()
-        {
-            //Arrange
-            var PlanDto = FixtureData.CreateTestPlanDTO();
-
-            var docuSignTemplateList = new List<string>();
-            docuSignTemplateList.Add("58521204-58af-4e65-8a77-4f4b51fef626");
-
-            var externalEventList = new List<int?>();
-            externalEventList.AddRange(new int?[] { 1, 3 });
-
-            //Act: first add a process template, then modify it. 
-            PlansController ptc = CreatePlanController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
-            var response = ptc.Post(PlanDto);
-            PlanDto.Name = "updated";
-            response = ptc.Post(PlanDto);
-
-            //Assert
-            var okResult = response as OkNegotiatedContentResult<PlanEmptyDTO>;
-            Assert.NotNull(okResult);
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                Assert.AreEqual(0, ptc.ModelState.Count()); //must be no errors
-                var ptdo = uow.PlanRepository.GetPlanQueryUncached().SingleOrDefault(pt => pt.Fr8Account.Id == _testUserAccount.Id && pt.Name == PlanDto.Name);
-                Assert.IsNotNull(ptdo);
-                Assert.AreEqual(PlanDto.Name, ptdo.Name);
-            }
-        }
-
+        
         [Test]
         public void ShouldGetFullPlan()
         {
