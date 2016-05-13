@@ -147,26 +147,21 @@ module dockyard.controllers {
                 actionsArray.push(action);
                 this.reConfigure(actionsArray);
             };
-            var addLabelModal;
 
-            $scope.openAddLabelModal = (action: model.ActivityDTO) => {
-                var self = this;
-                var modalScope = <any>self.$scope.$new(true);
-                modalScope.action = angular.copy(action);
-                modalScope.submitForm = function () {
-                    action.label = modalScope.action.label;
-                    $scope.reConfigureAction(action);
-                    addLabelModal.close(action);
-                };
-                modalScope.cancel = function () {
-                    addLabelModal.dismiss('cancel');
-                }
+            $scope.openAddLabelModal = (action: model.ActivityDTO) => { 
 
-                addLabelModal = $modal.open({
+                var modalInstance = $modal.open({
                     animation: true,
                     templateUrl: '/AngularTemplate/ActivityLabelModal',
-                    scope: modalScope,
+                    controller: 'ActivityLabelModalController',
+                    resolve: {
+                        label: () => action.label
+                    }
                 })
+                modalInstance.result.then(function (label: string) {
+                    action.label = label;
+                    ActionService.save(action);
+                });
             }
             this.$scope.chooseAuthToken = (action: model.ActivityDTO) => {
                 this.chooseAuthToken(action);
@@ -890,4 +885,17 @@ module dockyard.controllers {
         }
     }
     app.controller('PlanBuilderController', PlanBuilderController);
+    app.controller('ActivityLabelModalController', ['$scope', '$modalInstance','label', ($scope: any, $modalInstance: any, label: string): void => {
+
+        $scope.label = label;
+
+        $scope.submitForm = () => {
+            $modalInstance.close($scope.label);
+        };
+
+        $scope.cancel = () => {
+            $modalInstance.dismiss();
+        };
+
+    }]);
 }
