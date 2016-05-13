@@ -32,7 +32,7 @@ module dockyard.directives.upstreamDataChooser {
             alertMessage.body = 'There are no upstream fields available right now. To learn more,<a href= "/documentation/UpstreamCrates.html" target= "_blank" > click here </a><i class="fa fa-question-circle" > </i>';
 
             $scope.openModal = () => {
-                getUpstreamFields();
+                getUpstreamFields().then(() => { 
                 if ($scope.field.listItems.length !== 0) {
                     modalInstance = $modal.open({
                         animation: true,
@@ -44,7 +44,8 @@ module dockyard.directives.upstreamDataChooser {
                             }
                         }
                     });
-                }
+                    }
+                });
             }
             $scope.setItem = (item) => {
                 $scope.field.value = item;
@@ -55,7 +56,7 @@ module dockyard.directives.upstreamDataChooser {
             };
 
             var getUpstreamFields = () => {
-                UpstreamExtractor
+                return UpstreamExtractor
                     .getAvailableData($scope.currentAction.id, 'NotSet')
                     .then((data: dockyard.model.IncomingCratesDTO) => {
                         var listItems: Array<model.DropDownListItem> = [];
