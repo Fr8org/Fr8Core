@@ -202,6 +202,28 @@ namespace Fr8Data.Crates
 
         /**********************************************************************************/
         /// <summary>
+        /// Remove all crates with the content of given type
+        /// </summary>
+        /// <typeparam name="T"></typeparam>
+        /// <returns></returns>
+        public static T GetOrAdd<T>(this ICrateStorage storage, Func<Crate<T>> createNewCrate)
+        {
+            var exising = storage.CrateContentsOfType<T>().FirstOrDefault();
+
+            if (exising == null)
+            {
+                var newCrate = createNewCrate();
+
+                storage.Add(newCrate);
+
+                return newCrate.Content;
+            }
+
+            return exising;
+        }
+
+        /**********************************************************************************/
+        /// <summary>
         /// Remove all crates by the manifest id
         /// </summary>
         /// <param name="manifestId"></param>

@@ -1,16 +1,16 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using System.Web.Http;
-using Data.Interfaces;
-using HubWeb.Infrastructure;
 using StructureMap;
-using Hub.Managers;
-using System.Collections.Generic;
+using Data.Interfaces;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using Hub.Infrastructure;
+using Hub.Managers;
+using HubWeb.Infrastructure;
 
 namespace HubWeb.Controllers
 {
-
     [Fr8ApiAuthorize]
     public class WarehouseController : ApiController
     {

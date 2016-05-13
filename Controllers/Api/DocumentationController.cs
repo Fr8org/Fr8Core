@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using Fr8Data.DataTransferObjects;
+using Hub.Infrastructure;
 using Hub.Interfaces;
 using StructureMap;
 using Utilities;

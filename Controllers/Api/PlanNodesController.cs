@@ -4,14 +4,15 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
-using HubWeb.Infrastructure;
 using StructureMap;
 using Data.Infrastructure.StructureMap;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
+using Hub.Infrastructure;
 using Hub.Interfaces;
 using Hub.Managers;
-using Data.States;
+using HubWeb.Infrastructure;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.States;
 

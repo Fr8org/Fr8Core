@@ -85,12 +85,17 @@ namespace terminalDocuSign.Actions
 
         protected override string ActivityUserFriendlyName => "Get DocuSign Envelope";
 
-        protected internal override ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
+        public override Task ValidateActivity(ActivityDO curActivityDO, ICrateStorage crateStorage, ValidationManager validationManager)
         {
-            var control = (TextSource)FindControl(CrateManager.GetStorage(curActivityDO), "EnvelopeIdSelector");
+            var control = (TextSource)FindControl(crateStorage, "EnvelopeIdSelector");
             var envelopeId = GetEnvelopeId(control);
-            control.ErrorMessage = string.IsNullOrEmpty(envelopeId) ? "Envelope Id is not set" : string.Empty;
-            return string.IsNullOrEmpty(control.ErrorMessage) ? ValidationResult.Success : new ValidationResult(control.ErrorMessage);
+
+            if (string.IsNullOrEmpty(envelopeId))
+            {
+                validationManager.SetError("Envelope Id is not set", control);
+            }
+
+            return Task.FromResult(0);
         }
 
         protected internal override async Task<PayloadDTO> RunInternal(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)

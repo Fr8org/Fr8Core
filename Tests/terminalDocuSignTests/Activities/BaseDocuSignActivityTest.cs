@@ -1,13 +1,14 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using System.Threading.Tasks;
 using Data.Entities;
+using Fr8Data.Crates;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
 using terminalDocuSign.Actions;
 using terminalDocuSign.Services.New_Api;
 using terminalDocuSignTests.Fixtures;
+using TerminalBase.Infrastructure;
 using UtilitiesTesting.Asserts;
 using UtilitiesTesting.Fixtures;
 
@@ -44,8 +45,8 @@ namespace terminalDocuSignTests.Activities
         public void Run_WhenActivityIsValid_RunsSuccessfully()
         {
             var activityMock = new Mock<BaseDocuSignActivity>();
-            activityMock.Setup(x => x.ValidateActivityInternal(It.IsAny<ActivityDO>()))
-                        .Returns(ValidationResult.Success);
+            activityMock.Setup(x => x.ValidateActivity(It.IsAny<ActivityDO>(), It.IsAny<ICrateStorage>(), It.IsAny<ValidationManager>())).Returns(Task.FromResult(0));
+                        
             activityMock.Setup(x => x.RunInternal(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsNotNull<AuthorizationTokenDO>()))
                         .Returns(Task.FromResult(FixtureData.PayloadDTO2()))
                         .Verifiable("RunInternal was not invoked when activity has auth token and is valid");
