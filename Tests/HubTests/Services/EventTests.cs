@@ -89,19 +89,14 @@ namespace HubTests.Services
             _planNodes = planNodes;
         }
 
-        public IEnumerable<TViewModel> GetAllActivities<TViewModel>()
-        {
-            return _activity.GetAllActivities<TViewModel>();
-        }
-
         public Task<ActivityDTO> SaveOrUpdateActivity(ActivityDO currentActivityDo)
         {
             return _activity.SaveOrUpdateActivity(currentActivityDo);
         }
 
-        public Task<ActivityDTO> Configure(IUnitOfWork uow, string userId, ActivityDO curActivityDO, bool saveResult = true)
+        public Task<ActivityDTO> Configure(IUnitOfWork uow, string userId, ActivityDO curActivityDO)
         {
-            return _activity.Configure(uow, userId, curActivityDO, saveResult);
+            return _activity.Configure(uow, userId, curActivityDO);
         }
 
         public ActivityDO GetById(IUnitOfWork uow, Guid id)
@@ -109,10 +104,7 @@ namespace HubTests.Services
             return _activity.GetById(uow, id);
         }
 
-        public ActivityDO MapFromDTO(ActivityDTO curActivityDTO)
-        {
-            return _activity.MapFromDTO(curActivityDTO);
-        }
+       
 
         public Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
         {
@@ -136,7 +128,7 @@ namespace HubTests.Services
             return _activity.Activate(curActivityDO);
         }
 
-        public Task<ActivityDTO> Deactivate(ActivityDO curActivityDO)
+        public Task Deactivate(ActivityDO curActivityDO)
         {
             return _activity.Deactivate(curActivityDO);
         }
@@ -151,9 +143,9 @@ namespace HubTests.Services
             return _activity.GetSolutionNameList(terminalName);
         }
 
-        public void Delete(Guid id)
+        public Task Delete(Guid id)
         {
-            _activity.Delete(id);
+            return _activity.Delete(id);
         }
     }
 

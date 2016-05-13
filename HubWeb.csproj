@@ -381,6 +381,8 @@
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\Api\ActivitiesController.cs" />
+    <Compile Include="Controllers\Api\ActivityTemplatesController.cs" />
+    <Compile Include="Controllers\Api\DocumentationController.cs" />
     <Compile Include="Controllers\Api\OrganizationController.cs" />
     <Compile Include="Controllers\Api\Fr8BaseApiController.cs" />
     <Compile Include="Controllers\Api\NotificationsController.cs" />
@@ -443,7 +445,6 @@
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
-    <Compile Include="App_Start\Startup.Auth.cs" />
     <Compile Include="Controllers\DockyardAccountController.cs" />
     <Compile Include="Controllers\AdminController.cs" />
     <Compile Include="Controllers\DashboardController.cs" />
@@ -1013,6 +1014,7 @@
     <TypeScriptCompile Include="Scripts\app\interfaces\IManifestRegistry.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IProfile.ts" />
     <TypeScriptCompile Include="Scripts\app\model\AlertDTO.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\ValidationResults.ts" />
     <TypeScriptCompile Include="Scripts\app\model\HistoryDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\IncomingCratesDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\ManifestDescriptionDTO.ts" />
@@ -4538,14 +4540,6 @@
     <ProjectReference Include="Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="terminalBase\TerminalBase.csproj">
-      <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
-      <Name>TerminalBase</Name>
-    </ProjectReference>
-    <ProjectReference Include="Tests\UtilitiesTesting\UtilitiesTesting.csproj">
-      <Project>{6B855C3F-07A9-4787-9FDE-29FA567C43E2}</Project>
-      <Name>UtilitiesTesting</Name>
     </ProjectReference>
     <ProjectReference Include="Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>

@@ -67,6 +67,12 @@ module dockyard.directives.designerHeader {
                     // mark plan as Active
                     $scope.plan.planState = 2;
                     var promise = PlanService.runAndProcessClientAction($scope.plan.id);
+                    promise.then((container: model.ContainerDTO) => {
+                        //if we have validation errors - reset plan state to Inactive. Plans with errors can't be activated    
+                        if (container.validationErrors && container.validationErrors != null) {
+                            $scope.plan.planState = 1;
+                        }
+                    });
                     promise.finally(() => {
                         $scope.resetPlanStatus();
 

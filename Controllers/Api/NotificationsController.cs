@@ -1,6 +1,8 @@
-﻿using HubWeb.Infrastructure;
+﻿using System.Web.Http;
 using StructureMap;
-using System.Web.Http;
+using Data.Interfaces.DataTransferObjects;
+using Hub.Infrastructure;
+using HubWeb.Infrastructure;
 using Fr8Data.DataTransferObjects;
 using Utilities.Interfaces;
 

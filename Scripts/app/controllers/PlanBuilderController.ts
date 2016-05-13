@@ -387,7 +387,7 @@ module dockyard.controllers {
 
         
         private createNewSolution(solutionName: string) {
-            var plan = this.ActionService.createSolution({
+            var plan = this.PlanService.createSolution({
                 solutionName: solutionName
             });
             plan.$promise.then((curPlan: interfaces.IPlanFullDTO) => {

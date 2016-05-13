@@ -22,6 +22,9 @@ module dockyard.directives.textSource {
         
         var uniqueDirectiveId = 1;
         var controller = ['$scope', 'UIHelperService', ($scope: ITextSourceScope, uiHelperService: services.IUIHelperService) => {
+            
+            $scope.field.valueSource = 'specific';
+
             $scope.uniqueDirectiveId = ++uniqueDirectiveId;
             $scope.onChange = (fieldName: string) => {
                 if ($scope.change != null && angular.isFunction($scope.change)) {
@@ -51,14 +54,15 @@ module dockyard.directives.textSource {
                 }
             });
 
-            $scope.onFocus = (fieldName: string) => {
+            $scope.onFocus = (fieldName) => {
                 $scope.$emit(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureFocusElement],
                     new pca.ConfigureFocusElementArgs($scope.field));
             };
 
-            $scope.onUpStreamChange = (fieldName: string) => {
+            $scope.onUpStreamChange = (field) => {
                 $scope.field.valueSource = 'upstream';
-                $scope.onFocus(fieldName);
+                $scope.field.selectedKey = field.value;
+                $scope.onFocus(field);
             }
             
         }];

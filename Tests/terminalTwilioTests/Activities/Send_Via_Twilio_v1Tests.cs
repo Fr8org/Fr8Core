@@ -51,9 +51,6 @@ namespace terminalTwilioTests.Activities
 
             var activityDO = FixtureData.ConfigureTwilioActivity();
             var actionService = new Mock<IActivity>();
-            actionService
-                .Setup(c => c.MapFromDTO(It.IsAny<ActivityDTO>()))
-                .Returns(activityDO);
             ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(actionService.Object));
             var activity = FixtureData.ConfigureTwilioActivity();
             var baseTerminalAction = new Mock<BaseTerminalActivity>();

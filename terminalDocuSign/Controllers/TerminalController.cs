@@ -114,7 +114,7 @@ namespace terminalDocuSign.Controllers
                 Name = "Prepare_DocuSign_Events_For_Storage",
                 Label = "Prepare DocuSign Events For Storage",
                 Version = "1",
-                Category = ActivityCategory.Forwarders,
+                Category = ActivityCategory.Monitors,
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 WebService = webService,

@@ -626,6 +626,10 @@
     <Compile Include="Migrations\201605102018494_Move_Profile_To_Fr8Account.Designer.cs">
       <DependentUpon>201605102018494_Move_Profile_To_Fr8Account.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201605111857439_ActivityActivationState.cs" />
+    <Compile Include="Migrations\201605111857439_ActivityActivationState.Designer.cs">
+      <DependentUpon>201605111857439_ActivityActivationState.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -728,6 +732,7 @@
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="Repositories\TerminalSubscriptionRepository.cs" />
     <Compile Include="Repositories\WebServiceRepository.cs" />
+    <Compile Include="States\ActivationState.cs" />
     <Compile Include="States\ActivityTemplateState.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
     <Compile Include="States\DefaultProfiles.cs" />
@@ -790,7 +795,6 @@
     <Compile Include="States\InvitationType.cs" />
     <Compile Include="States\ParticipationStatus.cs" />
     <Compile Include="States\PlanState.cs" />
-    <Compile Include="States\ProcessTemplateType.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AccessLevelTemplate.cs" />
     <Compile Include="States\Templates\_AuthenticationTypeTemplate.cs" />
@@ -1195,6 +1199,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201605102018494_Move_Profile_To_Fr8Account.resx">
       <DependentUpon>201605102018494_Move_Profile_To_Fr8Account.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605111857439_ActivityActivationState.resx">
+      <DependentUpon>201605111857439_ActivityActivationState.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
