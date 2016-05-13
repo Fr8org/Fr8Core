@@ -91,7 +91,7 @@ module dockyard.directives.upstreamDataChooser {
                         }
                         else {
                             $scope.field.listItems = listItems;
-                            $scope.tableParams = new NgTableParams({ count: 50 }, { data: $scope.field.listItems, counts: [], groupBy: 'sourceCrateLabel', groupOptions: { isExpanded: false } });
+                            $scope.tableParams = new NgTableParams({ count: 50 }, { data: $scope.field.listItems, counts: [], groupBy: 'sourceCrateLabel' });
                         }
                     });
             };
