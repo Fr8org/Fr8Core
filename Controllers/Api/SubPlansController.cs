@@ -113,7 +113,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activity = await _subPlan.GetFirstActivity(uow, id);
+                var activity = _subPlan.GetFirstActivity(uow, id);
                 return Ok(Mapper.Map<ActivityDTO>(activity));
             }
         }

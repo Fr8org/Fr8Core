@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using StructureMap;
@@ -9,6 +8,7 @@ using Data.States;
 using Hub.Managers;
 using TerminalBase.Infrastructure;
 using AutoMapper;
+using Data.Interfaces.Manifests;
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
@@ -348,99 +348,49 @@ namespace TerminalBase.BaseClasses
         {
             return await HubCommunicator.UpdatePlan(plan, CurrentFr8UserId);
         }
-
-        protected async Task<Crate> ValidateFields(List<FieldValidationDTO> requiredFieldList)
-        {
-            var result = await HubCommunicator.ValidateFields(requiredFieldList, CurrentFr8UserId);
-
-            var validationErrorList = new List<FieldDTO>();
-            //lets create necessary validationError crates
-            for (var i = 0; i < result.Count; i++)
-            {
-                var fieldCheckResult = result[i];
-                if (fieldCheckResult == FieldValidationResult.NotExists)
-                {
-                    validationErrorList.Add(new FieldDTO() { Key = requiredFieldList[i].FieldName, Value = "Required" });
-                }
-            }
-
-            if (validationErrorList.Any())
-            {
-                return CrateManager.CreateDesignTimeFieldsCrate("Validation Errors", validationErrorList.ToArray());
-            }
-
-            return null;
-        }
-
-        protected async Task<CrateDTO> ValidateByStandartDesignTimeFields(ActivityDO curActivityDO, FieldDescriptionsCM designTimeFields)
-        {
-            var fields = designTimeFields.Fields;
-            var validationList = fields.Select(f => new FieldValidationDTO(curActivityDO.Id, f.Key)).ToList();
-            return CrateManager.ToDto(await ValidateFields(validationList));
-        }
-
+       
         //if the Action doesn't provide a specific method to override this, we just return null = no validation errors
-        protected virtual async Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
+        public virtual Task ValidateActivity(ActivityDO activityDo, ICrateStorage currActivityCrateStorage, ValidationManager validationManager)
         {
-            return await Task.FromResult<ICrateStorage>(null);
+            return Task.FromResult(0);
         }
 
         protected async Task<ActivityDO> ProcessConfigurationRequest(ActivityDO curActivityDO, ConfigurationEvaluator configurationEvaluationResult, AuthorizationTokenDO authToken)
         {
             var configRequestType = configurationEvaluationResult(curActivityDO);
+
             if (configRequestType == ConfigurationRequestType.Initial)
             {
                 return await InitialConfigurationResponse(curActivityDO, authToken);
             }
 
-            else if (configRequestType == ConfigurationRequestType.Followup)
+            if (configRequestType == ConfigurationRequestType.Followup)
             {
-                var validationErrors = await ValidateActivity(curActivityDO);
-                if (validationErrors != null)
-                {
-                    using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-                    {
-                        crateStorage.AddRange(validationErrors);
-                    }
-                    return curActivityDO;
-                }
-
-                //clean any existing crates with "Validation Errors" that can be present from previous
                 using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                 {
-                    crateStorage.RemoveByLabel("Validation Errors");
+                    crateStorage.Remove<ValidationResultsCM>();
+
+                    var currentValidationResults = new ValidationResultsCM();
+                    var validationManager = new ValidationManager(currentValidationResults);
+
+                    await ValidateActivity(curActivityDO, crateStorage, validationManager);
+
+                    if (validationManager.HasErrors)
+                    {
+                        crateStorage.Add(Crate.FromContent("Validation Results", currentValidationResults));
+                        crateStorage.Flush();
+                        return curActivityDO;
+                    }
                 }
 
                 var result = await FollowupConfigurationResponse(curActivityDO, authToken);
-                UpdateRuntimeAvailableCrates(result);
+
                 return result;
             }
 
-            throw new InvalidDataException("Activity's Configuration Store does not contain connection_string field.");
+            throw new NotSupportedException($"Unsupported ConfigurationRequestType: {configRequestType}");
         }
-
-        private void UpdateRuntimeAvailableCrates(ActivityDO curActivityDO)
-        {
-            using (var activityStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                activityStorage.RemoveByLabel(RuntimeAvailableCratesLabel);
-                var crateDescriptions = GetRuntimeAvailableCrateDescriptions(curActivityDO)?.ToArray();
-                if (crateDescriptions?.Length > 0)
-                {
-                    activityStorage.Add(Crate.FromContent(RuntimeAvailableCratesLabel, new CrateDescriptionCM(crateDescriptions), AvailabilityType.RunTime));
-                }
-            }
-        }
-        /// <summary>
-        /// Returns the list of items that describe crates available at runtime for downstream activities
-        /// NOTE: do not create <see cref="Hub.Managers.IUpdatableCrateStorage" /> for passed activity inside this method
-        /// as it may lead to unpredictable consequences
-        /// </summary>
-        protected virtual IEnumerable<CrateDescriptionDTO> GetRuntimeAvailableCrateDescriptions(ActivityDO curActivityDO)
-        {
-            yield break;
-        }
-
+        
         /// <summary>
         /// Configure infrastructure.
         /// </summary>
@@ -469,16 +419,21 @@ namespace TerminalBase.BaseClasses
 
         public virtual async Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
-            //Returns Task<ActivityDTO> using FromResult as the return type is known
-            var validationErrors = await ValidateActivity(curActivityDO);
-            if (validationErrors != null)
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+                crateStorage.Remove<ValidationResultsCM>();
+
+                var currentValidationResults = new ValidationResultsCM();
+                var validationManager = new ValidationManager(currentValidationResults);
+                
+                await ValidateActivity(curActivityDO, crateStorage, validationManager);
+
+                if (validationManager.HasErrors)
                 {
-                    crateStorage.AddRange(validationErrors);
+                    crateStorage.Add(Crate.FromContent("Validation errors", currentValidationResults));
                 }
-                return curActivityDO;
             }
+
             return await Task.FromResult<ActivityDO>(curActivityDO);
         }
 
@@ -902,13 +857,13 @@ namespace TerminalBase.BaseClasses
             bool requestUpstream = false,
             bool requestConfig = false)
         {
-            var crateDescriptions = await GetCratesByDirection<CrateDescriptionCM>(curActivityDO, CrateDirection.Upstream);
-            var runTimeCrateDescriptions = crateDescriptions.Where(c => c.Availability == AvailabilityType.RunTime || c.Availability == AvailabilityType.Always).SelectMany(c => c.Content.CrateDescriptions);
+            var crateDescriptions = await HubCommunicator.GetAvailableData(curActivityDO, CrateDirection.Upstream, AvailabilityType.Always, CurrentFr8UserId);
+
             var control = new CrateChooser
             {
                 Label = label,
                 Name = name,
-                CrateDescriptions = runTimeCrateDescriptions.ToList(),
+                CrateDescriptions = crateDescriptions.AvailableCrates,
                 SingleManifestOnly = singleManifest,
                 RequestUpstream = requestUpstream
             };
