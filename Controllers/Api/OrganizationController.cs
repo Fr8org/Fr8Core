@@ -2,6 +2,7 @@
 using System.Web.Http.Description;
 using StructureMap;
 using Fr8Data.DataTransferObjects;
+using Hub.Infrastructure;
 using Hub.Interfaces;
 
 namespace HubWeb.Controllers
