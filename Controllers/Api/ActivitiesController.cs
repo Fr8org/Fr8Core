@@ -21,23 +21,16 @@ namespace HubWeb.Controllers
     {
         private readonly IActivity _activity;
         private readonly ITerminal _terminal;
-        private readonly ISubPlan _subPlan;
 
         public ActivitiesController()
         {
             _activity = ObjectFactory.GetInstance<IActivity>();
-            _subPlan = ObjectFactory.GetInstance<ISubPlan>();
             _terminal = ObjectFactory.GetInstance<ITerminal>();
         }
 
         public ActivitiesController(IActivity service)
         {
             _activity = service;
-        }
-
-        public ActivitiesController(ISubPlan service)
-        {
-            _subPlan = service;
         }
 
 
@@ -49,9 +42,9 @@ namespace HubWeb.Controllers
             {
                 var userId = User.Identity.GetUserId();
                 var result = await _activity.CreateAndConfigure(uow, userId, activityTemplateId, label, name, order, parentNodeId, false, authorizationTokenId) as ActivityDO;
-                return Ok(Mapper.Map<ActivityDTO>(result));
-            }
-        }
+                    return Ok(Mapper.Map<ActivityDTO>(result));
+                }
+                }
 
 
         //WARNING. there's lots of potential for confusion between this POST method and the GET method following it.
@@ -86,11 +79,7 @@ namespace HubWeb.Controllers
         [HttpDelete]
         public async Task<IHttpActionResult> Delete(Guid id, bool confirmed = false)
         {
-            var isDeleted = await _subPlan.DeleteActivity(User.Identity.GetUserId(), id, confirmed);
-            if (!isDeleted)
-            {
-                return ResponseMessage(new HttpResponseMessage(HttpStatusCode.PreconditionFailed));
-            }
+            await _activity.Delete(id);
             return Ok();
         }
 
@@ -98,7 +87,7 @@ namespace HubWeb.Controllers
         [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> DeleteActivity(Guid id)
         {
-            await _subPlan.DeleteActivity(User.Identity.GetUserId(), id, true);
+            await _activity.Delete(id);
             return Ok();
         }
 
@@ -109,11 +98,7 @@ namespace HubWeb.Controllers
         [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> DeleteChildNodes(Guid activityId)
         {
-            var isDeleted = await _subPlan.DeleteAllChildNodes(activityId);
-            if (!isDeleted)
-            {
-                return ResponseMessage(new HttpResponseMessage(HttpStatusCode.PreconditionFailed));
-            }
+            await _activity.Delete(activityId);
             return Ok();
         }
 

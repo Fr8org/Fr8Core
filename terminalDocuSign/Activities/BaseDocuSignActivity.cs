@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Entities;
+using Data.Interfaces.Manifests;
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
@@ -15,6 +15,7 @@ using StructureMap;
 using terminalDocuSign.Services.New_Api;
 using TerminalBase.BaseClasses;
 using TerminalBase.Errors;
+using TerminalBase.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
@@ -141,28 +142,7 @@ namespace terminalDocuSign.Actions
                 control.ListItems = templates.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
             }
         }
-
-        public virtual async System.Threading.Tasks.Task<Data.Entities.ActivityDO> Activate(Data.Entities.ActivityDO curActivityDO, Data.Entities.AuthorizationTokenDO authTokenDO)
-        {
-            return await base.Activate(curActivityDO, authTokenDO);
-        }
-
-        protected override async Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
-        {
-            var result = ValidateActivityInternal(curActivityDO);
-            if (result == ValidationResult.Success)
-            {
-                return await Task.FromResult<ICrateStorage>(null);
-            }
-            return await Task.FromResult(new CrateStorage(Crate<FieldDescriptionsCM>.FromContent("Validation Errors",
-                                                                                                 new FieldDescriptionsCM(new FieldDTO("Error Message", result.ErrorMessage)))));
-        }
-
-        protected internal virtual ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
-        {
-            return ValidationResult.Success;
-        }
-
+        
         public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(activityDO, containerId);
@@ -171,10 +151,15 @@ namespace terminalDocuSign.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var result = ValidateActivityInternal(activityDO);
-            if (result != ValidationResult.Success)
+            var crateStorage = CrateManager.GetStorage(activityDO);
+            var validationCrate = new ValidationResultsCM();
+            var validationManager = new ValidationManager(validationCrate);
+
+            await ValidateActivity(activityDO, crateStorage, validationManager);
+
+            if (validationManager.HasErrors)
             {
-                return Error(payloadCrates, $"Could not run {ActivityUserFriendlyName} because of the below issues:{Environment.NewLine}{result.ErrorMessage}", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                return Error(payloadCrates, $"Could not run {ActivityUserFriendlyName} because of the below issues:{Environment.NewLine}{validationCrate}", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
 
             try
