@@ -17,10 +17,6 @@ namespace terminalBox.Infrastructure
         {
             var config = new BoxConfig(BoxHelpers.ClientId, BoxHelpers.Secret, new Uri(BoxHelpers.RedirectUri));
             var expiresIn = (int)(authToken.ExpiresAt - DateTime.UtcNow).TotalSeconds;
-            if (expiresIn <= 0)
-            {
-                //TODO: Check token expiration
-            }
             Box.V2.Auth.OAuthSession session = new Box.V2.Auth.OAuthSession(authToken.AccessToken, authToken.RefreshToken, expiresIn, "bearer");
             _boxClient = new BoxClient(config, session);
         }
@@ -29,7 +25,6 @@ namespace terminalBox.Infrastructure
         {
             var folders = await _boxClient.FoldersManager.GetFolderItemsAsync("0", 500);
             return new ReadOnlyDictionary<string, string>(folders.Entries.ToDictionary(f => f.Id, f => f.Name));
-
         }
 
         public async Task<string> SaveFile(string fileName, Stream content)
