@@ -276,7 +276,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Crates\Helpers\EventReportCrateFactory.cs" />
     <Compile Include="Exceptions\AmbiguityException.cs" />
     <Compile Include="Exceptions\AuthenticationExeception.cs" />
     <Compile Include="Exceptions\ErrorResponseException.cs" />
@@ -299,11 +298,8 @@
     <Compile Include="Interfaces\IOrganization.cs" />
     <Compile Include="Security\AuthorizeActivityInterceptor.cs" />
     <Compile Include="Security\HangFireAuthorizationFilter.cs" />
-    <Compile Include="Security\HMACAuthenticator.cs" />
     <Compile Include="Interfaces\IAuthorization.cs" />
     <Compile Include="Interfaces\IFindObjectsPlan.cs" />
-    <Compile Include="Interfaces\IHMACAuthenticator.cs" />
-    <Compile Include="Interfaces\IHMACService.cs" />
     <Compile Include="Interfaces\IManifest.cs" />
     <Compile Include="Interfaces\IField.cs" />
     <Compile Include="Interfaces\IPlanNode.cs" />
@@ -339,9 +335,6 @@
     <Compile Include="Managers\APIManagers\Packagers\Json\JsonContent.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Terminal\ITerminalTransmitter.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Terminal\TerminalTransmitter.cs" />
-    <Compile Include="Managers\APIManagers\Transmitters\Restful\IRestfulServiceClient.cs" />
-    <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulServiceClient.cs" />
-    <Compile Include="Managers\APIManagers\Transmitters\Restful\RestfulServiceException.cs" />
     <Compile Include="Managers\EventReporter.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\AppFlowMetadata.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\Google\AuthorizationCodeFlow.cs" />
@@ -378,7 +371,6 @@
     </Compile>
     <Compile Include="Security\DockyardIdentityManager.cs" />
     <Compile Include="Security\DockyardUserStore.cs" />
-    <Compile Include="Security\Fr8HMACService.cs" />
     <Compile Include="Security\ObjectDecorators\PlanSecurityDecorator.cs" />
     <Compile Include="Security\SecurityServices.cs" />
     <Compile Include="Services\Container.ExecutionSession.cs" />
@@ -420,6 +412,10 @@
       <Project>{a3178d71-a2c3-45b9-8334-adcc7c313541}</Project>
       <Name>Fr8Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj">
+      <Project>{9f4b5c92-3535-4d4c-b1e4-37beb1ae5c42}</Project>
+      <Name>Infrastructure</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
       <Name>Utilities</Name>
@@ -444,6 +440,7 @@
     <Content Include="Resources\perfect-krawsant.png" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="Crates\" />
     <Folder Include="Diagnostics\" />
     <Folder Include="Enums\" />
     <Folder Include="Managers\APIManagers\Packagers\Docusign\" />

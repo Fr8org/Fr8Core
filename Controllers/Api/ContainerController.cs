@@ -13,6 +13,7 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
 using Fr8Data.DataTransferObjects;
+using HubWeb.Infrastructure_HubWeb;
 using Newtonsoft.Json;
 
 namespace HubWeb.Controllers

@@ -64,6 +64,7 @@
     <Compile Include="Crates\CrateStorageSerializer.DefaultSerializer.cs" />
     <Compile Include="Crates\CrateT.cs" />
     <Compile Include="Crates\DenySerializationConverter.cs" />
+    <Compile Include="Crates\Helpers\EventReportCrateFactory.cs" />
     <Compile Include="Crates\Helpers\LoggingDataCrateFactory.cs" />
     <Compile Include="Crates\ICrateStorage.cs" />
     <Compile Include="Crates\ICrateStorageSerializer.cs" />
@@ -151,6 +152,11 @@
     <Compile Include="Infrastructure\JsonNet\CreateTimeConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\TerminalActivityTemplateConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\WebServiceConverter.cs" />
+    <Compile Include="Infrastructure\StringToCrateStorageDTOConverter.cs" />
+    <Compile Include="Managers\CrateManager.cs" />
+    <Compile Include="Managers\CrateManager.StorageUpdater.cs" />
+    <Compile Include="Managers\CrateMangerExtensions.cs" />
+    <Compile Include="Managers\ICrateManager.cs" />
     <Compile Include="Manifests\ChartOfAccountsCM.cs" />
     <Compile Include="Manifests\CrateDescriptionCM.cs" />
     <Compile Include="Manifests\CrateManifestTypes.cs" />
@@ -197,7 +203,9 @@
     <Compile Include="States\ActivityType.cs" />
     <Compile Include="States\AuthenticationType.cs" />
     <Compile Include="States\AvailabilityType.cs" />
+    <Compile Include="States\CrateDirection.cs" />
     <Compile Include="States\PlanVisibility.cs" />
+    <Compile Include="States\TerminalStatus.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Dispatcher;
+using Infrastructure.StructureMap;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
 using StructureMap;
-using Data.Infrastructure.AutoMapper;
-using Hub.StructureMap;
 using TerminalBase.Infrastructure;
 
 namespace TerminalBase.BaseClasses
 {
-    public class BaseConfiguration : IHttpControllerTypeResolver
+    public abstract class BaseConfiguration : IHttpControllerTypeResolver
     {
         protected HttpConfiguration _configuration = new HttpConfiguration();
 
@@ -23,6 +20,7 @@ namespace TerminalBase.BaseClasses
             ObjectFactory.Initialize();
             ObjectFactory.Configure(StructureMapBootStrapper.LiveConfiguration);
             TerminalBootstrapper.ConfigureLive();
+            AutoMapperBootstrapper.ConfigureAutoMapper();
 
             if (terminalStructureMapRegistryConfigExpression != null)
             {
@@ -35,8 +33,11 @@ namespace TerminalBase.BaseClasses
                 _configuration.Services.Replace(typeof(IHttpControllerTypeResolver), this);
             }
 
-            DataAutoMapperBootStrapper.ConfigureAutoMapper();
+
+            RegisterActivities();
         }
+
+        protected abstract void RegisterActivities();
 
         protected virtual void ConfigureFormatters()
         {

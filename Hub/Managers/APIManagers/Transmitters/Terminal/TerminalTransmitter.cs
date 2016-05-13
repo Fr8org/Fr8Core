@@ -4,7 +4,8 @@ using System.Threading.Tasks;
 using Fr8Data.DataTransferObjects;
 using StructureMap;
 using Hub.Interfaces;
-using Hub.Managers.APIManagers.Transmitters.Restful;
+using Infrastructure.Communication;
+using Infrastructure.Interfaces;
 using Utilities.Logging;
 
 namespace Hub.Managers.APIManagers.Transmitters.Terminal

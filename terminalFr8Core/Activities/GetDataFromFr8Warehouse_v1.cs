@@ -6,22 +6,21 @@ using System.Reflection;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.Internal;
-using Newtonsoft.Json;
-using StructureMap;
 using Data.Interfaces;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using Newtonsoft.Json;
+using StructureMap;
+using terminalFr8Core.Services.MT;
 using TerminalBase.BaseClasses;
-using TerminalBase.Services;
-using TerminalBase.Services.MT;
+using MTSearchHelper = terminalFr8Core.Services.MT.MTSearchHelper;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
-    public class GetDataFromFr8Warehouse_v1
-        : EnhancedTerminalActivity<GetDataFromFr8Warehouse_v1.ActivityUi>
+    public class GetDataFromFr8Warehouse_v1: EnhancedTerminalActivity<GetDataFromFr8Warehouse_v1.ActivityUi>
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
@@ -75,44 +74,12 @@ namespace terminalFr8Core.Actions
         {
         }
 
-        protected override async Task Initialize(CrateSignaller crateSignaller)
-        {
-            ConfigurationControls.AvailableObjects.ListItems = GetObjects();
-            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
-
-            await Task.Yield();
-        }
-
-        protected override async Task Configure(CrateSignaller crateSignaller)
-        {
-            var selectedObject = ConfigurationControls.AvailableObjects.Value;
-            var hasSelectedObject = !string.IsNullOrEmpty(selectedObject);
-            if (hasSelectedObject)
-            {
-                Guid selectedObjectId;
-                if (Guid.TryParse(ConfigurationControls.AvailableObjects.Value, out selectedObjectId))
-                {
-                    CurrentActivityStorage.ReplaceByLabel(
-                        Crate.FromContent(
-                            "Queryable Criteria",
-                            new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(selectedObjectId, AvailabilityType.RunTime))
-                        )
-                    );
-                }
-            }
-
-            ConfigurationControls.QueryBuilder.IsHidden = !hasSelectedObject;
-            ConfigurationControls.SelectObjectLabel.IsHidden = hasSelectedObject;
-            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
-
-            await Task.Yield();
-        }
-
-        protected override async Task RunCurrentActivity()
+        protected override ActivityTemplateDTO MyTemplate { get; }
+        protected override async Task RunETA()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var selectedObjectId = Guid.Parse(ConfigurationControls.AvailableObjects.Value);
+                var selectedObjectId = Guid.Parse(ActivityUI.AvailableObjects.Value);
                 var mtType = uow.MultiTenantObjectRepository.FindTypeReference(selectedObjectId);
                 if (mtType == null)
                 {
@@ -120,21 +87,15 @@ namespace terminalFr8Core.Actions
                 }
 
                 var conditions = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(
-                    ConfigurationControls.QueryBuilder.Value
+                    ActivityUI.QueryBuilder.Value
                 );
-                
+
                 var manifestType = mtType.ClrType;
                 var queryBuilder = MTSearchHelper.CreateQueryProvider(manifestType);
                 var converter = CrateManifestToRowConverter(manifestType);
-                var foundObjects = queryBuilder
-                    .Query(
-                        uow,
-                        AuthorizationToken.UserID,
-                        conditions
-                    )
+                var foundObjects = queryBuilder.Query(uow,AuthorizationToken.UserId,conditions)
                     .ToArray();
                 
-
                 var searchResult = new StandardTableDataCM();
 
                 if (foundObjects.Length > 0)
@@ -161,14 +122,39 @@ namespace terminalFr8Core.Actions
                     searchResult.Table.Add(converter(foundObject));
                 }
 
-                CurrentPayloadStorage.Add(
-                    Crate.FromContent(
-                        RunTimeCrateLabel,
-                        searchResult
-                    )
-                );
+                Payload.Add(Crate.FromContent(RunTimeCrateLabel,searchResult));
             }
 
+            await Task.Yield();
+        }
+
+        protected override async Task InitializeETA()
+        {
+            ActivityUI.AvailableObjects.ListItems = GetObjects();
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            await Task.Yield();
+        }
+
+        protected override async Task ConfigureETA()
+        {
+            var selectedObject = ActivityUI.AvailableObjects.Value;
+            var hasSelectedObject = !string.IsNullOrEmpty(selectedObject);
+            if (hasSelectedObject)
+            {
+                Guid selectedObjectId;
+                if (Guid.TryParse(ActivityUI.AvailableObjects.Value, out selectedObjectId))
+                {
+                    Storage.ReplaceByLabel(
+                        Crate.FromContent(
+                            "Queryable Criteria",
+                            new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(selectedObjectId, AvailabilityType.RunTime))
+                        )
+                    );
+                }
+            }
+            ActivityUI.QueryBuilder.IsHidden = !hasSelectedObject;
+            ActivityUI.SelectObjectLabel.IsHidden = hasSelectedObject;
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
             await Task.Yield();
         }
 
@@ -229,5 +215,7 @@ namespace terminalFr8Core.Actions
                     .ToList();
             }
         }
+
+        
     }
 }

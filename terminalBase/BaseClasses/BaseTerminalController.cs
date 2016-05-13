@@ -3,10 +3,8 @@ using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
-using Data.Entities;
 using TerminalBase.Infrastructure;
 using Newtonsoft.Json;
-using Data.Infrastructure;
 using Utilities.Logging;
 using Utilities;
 using System.Net.Http;
@@ -87,7 +85,7 @@ namespace TerminalBase.BaseClasses
             return _baseTerminalEvent.SendEventOrIncidentReport(terminalName, "Terminal Incident");
         }
 
-
+        /*
         private void BindTestHubCommunicator(object curObject, string explicitData)
         {
             var baseTerminalAction = curObject as BaseTerminalActivity;
@@ -134,7 +132,7 @@ namespace TerminalBase.BaseClasses
             }
 
             baseTerminalAction.HubCommunicator.Configure(terminalName);
-        }
+        }*/
 
         /// <summary>
         /// Reports event when process an action
@@ -197,39 +195,39 @@ namespace TerminalBase.BaseClasses
 
             if (_integrationTestMode)
             {
-                BindTestHubCommunicator(curObject, curDataDTO.ExplicitData);
+                //BindTestHubCommunicator(curObject, curDataDTO.ExplicitData);
             }
 
-            var curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
+            var curActivityDTO = Mapper.Map<ActivityDTO>(curActionDTO);
             //this is a comma separated string
             var curDocumentation = curActionDTO.Documentation;
 
-            var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
+            var curAuthTokenDO = curActionDTO.AuthToken;
 
-            Task<ActivityDO> response;
-            var currentUserId = curAuthTokenDO?.UserID;
+            Task<ActivityDTO> response;
+            var currentUserId = curAuthTokenDO?.UserId;
             var currentUserEmail = curAuthTokenDO?.ExternalAccountId;
             //Set Current user of action
-            SetCurrentUser(curObject, currentUserId, currentUserEmail);
-            ConfigureHubCommunicator(curObject, curTerminal);
+            //SetCurrentUser(curObject, currentUserId, currentUserEmail);
+            //ConfigureHubCommunicator(curObject, curTerminal);
             try
             {
                 // null checking
                 curActionDTO = curActionDTO ?? new ActivityDTO();
                 curActionDTO.ActivityTemplate = curActionDTO.ActivityTemplate ?? new ActivityTemplateDTO();
                 curActionDTO.ActivityTemplate.Terminal = curActionDTO.ActivityTemplate.Terminal ?? new TerminalDTO();
-                curActivityDO = curActivityDO ?? new ActivityDO();
+                curActivityDTO = curActivityDTO ?? new ActivityDTO();
 
                 //log when request start proceeding
-                LogWhenRequestRecived(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDO.Id.ToString());
+                LogWhenRequestRecived(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDTO.Id.ToString());
 
                 switch (curActionPath.ToLower())
                 {
                     case "configure":
                         {
-                            var resultActionDO = await (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curAuthTokenDO });
+                            var resultActionDO = await (Task<ActivityDTO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDTO, curAuthTokenDO });
 
-                            LogWhenRequestResponded(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDO.Id.ToString());
+                            LogWhenRequestResponded(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDTO.Id.ToString());
 
                             return Mapper.Map<ActivityDTO>(resultActionDO);
                         }
@@ -238,62 +236,62 @@ namespace TerminalBase.BaseClasses
                         {
                             OnStartActivity(curTerminal, activityTemplateName, IntegrationTestMode);
                             var resultPayloadDTO = await (Task<PayloadDTO>)curMethodInfo
-                                .Invoke(curObject, new Object[] { curActivityDO, curDataDTO.ContainerId, curAuthTokenDO });
+                                .Invoke(curObject, new Object[] { curActivityDTO, curDataDTO.ContainerId, curAuthTokenDO });
                             await OnCompletedActivity(curTerminal, IntegrationTestMode);
 
-                            LogWhenRequestResponded(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDO.Id.ToString());
+                            LogWhenRequestResponded(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDTO.Id.ToString());
 
                             return resultPayloadDTO;        
                         }
                     case "initialconfigurationresponse":
                         {
-                            Task<ActivityDO> resutlActionDO = (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curAuthTokenDO });
+                            Task<ActivityDTO> resutlActionDO = (Task<ActivityDTO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDTO, curAuthTokenDO });
 
                             var resultICR = await resutlActionDO.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
 
-                            LogWhenRequestResponded(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDO.Id.ToString());
+                            LogWhenRequestResponded(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDTO.Id.ToString());
 
                             return resultICR;
                         }
                     case "followupconfigurationresponse":
                         {
-                            Task<ActivityDO> resutlActionDO = (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curAuthTokenDO });
+                            Task<ActivityDTO> resutlActionDO = (Task<ActivityDTO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDTO, curAuthTokenDO });
 
                             var resultFCR = await resutlActionDO.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
 
-                            LogWhenRequestResponded(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDO.Id.ToString());
+                            LogWhenRequestResponded(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDTO.Id.ToString());
 
                             return resultFCR;
                         }
                     case "activate":
                         {
                             //activate is an optional method so it may be missing
-                            if (curMethodInfo == null) return Mapper.Map<ActivityDTO>(curActivityDO);
+                            if (curMethodInfo == null) return Mapper.Map<ActivityDTO>(curActivityDTO);
 
-                            Task<ActivityDO> resutlActionDO = (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curAuthTokenDO });
+                            Task<ActivityDTO> resutlActionDO = (Task<ActivityDTO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDTO, curAuthTokenDO });
 
                             var resultA = await resutlActionDO.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
 
-                            LogWhenRequestResponded(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDO.Id.ToString());
+                            LogWhenRequestResponded(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDTO.Id.ToString());
 
                             return resultA;
                         }
                     case "deactivate":
                         {
                             //deactivate is an optional method so it may be missing
-                            if (curMethodInfo == null) return Mapper.Map<ActivityDTO>(curActivityDO);
+                            if (curMethodInfo == null) return Mapper.Map<ActivityDTO>(curActivityDTO);
 
-                            Task<ActivityDO> resutlActionDO;
+                            Task<ActivityDTO> resutlActionDO;
                             var param = curMethodInfo.GetParameters();
                             if (param.Length == 2)
-                                resutlActionDO = (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO, curAuthTokenDO });
+                                resutlActionDO = (Task<ActivityDTO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDTO, curAuthTokenDO });
                             else
                             {
-                                response = (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO });
+                                response = (Task<ActivityDTO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDTO });
 
                                 var resultD = await response.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
 
-                                LogWhenRequestResponded(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDO.Id.ToString());
+                                LogWhenRequestResponded(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDTO.Id.ToString());
 
                                 return resultD;
                             }
@@ -307,14 +305,14 @@ namespace TerminalBase.BaseClasses
                             return getDefaultDocumentation();
                         }
 
-                        var resultDCN = await HandleDocumentationRequest(curObject, curMethodInfo, curActivityDO, curDocumentation); 
+                        var resultDCN = await HandleDocumentationRequest(curObject, curMethodInfo, curActivityDTO, curDocumentation); 
                         
-                        LogWhenRequestResponded(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDO.Id.ToString());
+                        LogWhenRequestResponded(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDTO.Id.ToString());
 
                         return resultDCN;
                     }
                     default:
-                        response = (Task<ActivityDO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDO });
+                        response = (Task<ActivityDTO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDTO });
 
                         var result = await response.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
 
@@ -332,9 +330,9 @@ namespace TerminalBase.BaseClasses
 
                 //Logger.GetLogger().Error($"Exception caught while processing {curActionPath} for {this.GetType()}", e);
                 Logger.LogError($"Exception caught while processing {curActionPath} for {this.GetType()} with exception {e.Data} and stack trace {e.StackTrace} and message {e.GetFullExceptionMessage()}", curTerminal);
-                var endpoint = (curActivityDO.ActivityTemplate != null && curActivityDO.ActivityTemplate.Terminal != null && curActivityDO.ActivityTemplate.Terminal.Endpoint != null) ? curActivityDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
-                EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActivityDO, settings), e, curActivityDO.Id.ToString());
-
+                var endpoint = (curActivityDTO.ActivityTemplate != null && curActivityDTO.ActivityTemplate.Terminal != null && curActivityDTO.ActivityTemplate.Terminal.Endpoint != null) ? curActivityDTO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
+                //EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActivityDTO, settings), e, curActivityDTO.Id.ToString());
+                //TODO check this
                 throw;              
             }
         }
@@ -387,18 +385,18 @@ namespace TerminalBase.BaseClasses
             return content;
         }
 
-        private async Task<dynamic> HandleDocumentationRequest(object classInstance,MethodInfo curMethodInfo, ActivityDO curActivityDO, string curDocumentation)
+        private async Task<dynamic> HandleDocumentationRequest(object classInstance,MethodInfo curMethodInfo, ActivityDTO curActivityDTO, string curDocumentation)
         {
             if (!curDocumentation.IsNullOrEmpty() && curDocumentation.Split(',').Contains("MainPage"))
             {
                 Task<SolutionPageDTO> resultSolutionPageDTO = (Task<SolutionPageDTO>)curMethodInfo
-                    .Invoke(classInstance, new Object[] { curActivityDO, curDocumentation });
+                    .Invoke(classInstance, new Object[] { curActivityDTO, curDocumentation });
                 return await resultSolutionPageDTO;
             }
             if (!curDocumentation.IsNullOrEmpty() && curDocumentation.Split(',').Contains("HelpMenu"))
             {
                 Task<ActivityResponseDTO> resultActivityRepsonceDTO = (Task<ActivityResponseDTO>)curMethodInfo
-                    .Invoke(classInstance, new Object[] { curActivityDO, curDocumentation });
+                    .Invoke(classInstance, new Object[] { curActivityDTO, curDocumentation });
                 return await resultActivityRepsonceDTO;
             }
             return Task.FromResult(new ActivityResponseDTO {Type = ActivityResponse.Error.ToString(), Body = "Unknown display method"});
