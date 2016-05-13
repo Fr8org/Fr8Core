@@ -468,6 +468,7 @@ namespace TerminalBase.Infrastructure
                       $"{CloudConfigurationManager.GetSetting("HubApiVersion")}/authentication/RenewToken";
             var uri = new Uri(url);
             await _restfulServiceClient.PostAsync<AuthorizationTokenDTO>(uri, null, await GetHMACHeader(uri, userId));
+        }
 
         public async Task ScheduleEvent(string externalAccountId, string curFr8UserId, string minutes)
         {

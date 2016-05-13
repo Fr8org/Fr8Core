@@ -299,6 +299,7 @@ namespace TerminalBase.Infrastructure
         public Task RenewToken(AuthorizationTokenDTO authTokenDTO, string userId)
         {
             throw new NotImplementedException();
+        }
 
         public Task ScheduleEvent(string externalAccountId, string curFr8UserId, string minutes)
         {

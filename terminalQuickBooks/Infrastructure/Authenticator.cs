@@ -14,6 +14,7 @@ using Data.Interfaces.DataTransferObjects;
 using DevDefined.OAuth.Consumer;
 using DevDefined.OAuth.Framework;
 using DevDefined.OAuth.Storage.Basic;
+using Fr8Data.DataTransferObjects;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using StructureMap;
 using terminalQuickBooks.Interfaces;

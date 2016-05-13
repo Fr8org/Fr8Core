@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Fr8Data.Manifests;
 using Newtonsoft.Json;
 using terminalQuickBooks.Infrastructure;
 using TerminalBase.BaseClasses;

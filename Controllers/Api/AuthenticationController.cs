@@ -150,12 +150,16 @@ namespace HubWeb.Controllers
             var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
             var uri = new Uri(ConfigurationManager.AppSettings["PlanDirectoryUrl"] + "/api/authentication/token");
-            var headers = await hmacService.GenerateHMACHeader(uri, "PlanDirectory", CloudConfigurationManager.GetSetting("PlanDirectorySecret"), User.Identity.GetUserId());
+            var headers =
+                await
+                    hmacService.GenerateHMACHeader(uri, "PlanDirectory",
+                        CloudConfigurationManager.GetSetting("PlanDirectorySecret"), User.Identity.GetUserId());
 
             var json = await client.PostAsync<JObject>(uri, headers: headers);
             var token = json.Value<string>("token");
 
-            return Ok(new { token });
+            return Ok(new {token});
+        }
 
         [HttpPost]
         [Fr8ApiAuthorize]
