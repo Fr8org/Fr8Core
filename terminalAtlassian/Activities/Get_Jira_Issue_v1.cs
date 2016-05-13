@@ -78,7 +78,7 @@ namespace terminalAtlassian.Actions
 
         private Crate CrateJiraIssueDetailsDescriptionCrate(List<FieldDTO> curJiraIssue)
         {
-            return Fr8Data.Crates.Crate.FromContent("Jira Issue Details", new FieldDescriptionsCM(curJiraIssue), Fr8Data.States.AvailabilityType.Configuration);
+            return Fr8Data.Crates.Crate.FromContent("Jira Issue Details", new FieldDescriptionsCM(curJiraIssue), Fr8Data.States.AvailabilityType.RunTime);
         }
 
         private Crate CrateJiraIssueDetailsPayloadCrate(List<FieldDTO> curJiraIssue)
