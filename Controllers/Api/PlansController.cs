@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
@@ -356,6 +357,33 @@ namespace HubWeb.Controllers
 
             if (activateDTO.ValidationErrors.Count > 0)
             {
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
+                    var failedActivities = new List<string>();
+
+                    foreach (var key in activateDTO.ValidationErrors.Keys)
+                    {
+                        var activity = uow.PlanRepository.GetById<PlanNodeDO>(key) as ActivityDO;
+
+                        if (activity != null)
+                        {
+                            var label = string.IsNullOrWhiteSpace(activity.Label) ? activity.Name : activity.Label;
+                            if (string.IsNullOrWhiteSpace(label))
+                            {
+                                label = activity.Id.ToString();
+                            }
+
+                            failedActivities.Add(label);
+                        }
+                    }
+
+                    var activitiesList = string.Join(", ", failedActivities);
+                    _pusherNotifier.NotifyUser($"Validation failed for activities: {activitiesList} from plan \"{planDO.Name}\". See activity configuration pane for details.",
+                        NotificationChannel.GenericFailure,
+                        User.Identity.Name);
+                }
+
                 return Ok(new ContainerDTO
                 {
                     PlanId = planId,
