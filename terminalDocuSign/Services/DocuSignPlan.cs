@@ -192,9 +192,8 @@ namespace terminalDocuSign.Services
                             if (firstActivity != null)
                             {
                                 await _hubCommunicator.ApplyNewToken(firstActivity.Id, Guid.Parse(authTokenDTO.Id), curFr8UserId);
-                                var existingPlanDO = Mapper.Map<PlanDO>(existingPlan.Plan);
-                                await _hubCommunicator.ActivatePlan(existingPlanDO, curFr8UserId);
-                                Logger.LogInfo($"#### Existing MADSE plan activated with planId: {existingPlanDO.Id}", DocuSignManager.DocusignTerminalName);
+                                await _hubCommunicator.RunPlan(existingPlan.Plan.Id, new List<CrateDTO>(),  curFr8UserId);
+                                Logger.LogInfo($"#### Existing MADSE plan activated with planId: {existingPlan.Plan.Id}", DocuSignManager.DocusignTerminalName);
                                 return existingPlan.Plan.Id.to_S();
                             }
                         }
@@ -240,10 +239,9 @@ namespace terminalDocuSign.Services
             SetSelectedCrates(storeMTDataActivity);
             //save this
             await _hubCommunicator.ConfigureActivity(storeMTDataActivity, curFr8UserId);
-            var planDO = Mapper.Map<PlanDO>(monitorDocusignPlan.Plan);
-            await _hubCommunicator.ActivatePlan(planDO, curFr8UserId);
+            await _hubCommunicator.RunPlan(monitorDocusignPlan.Plan.Id, new List<CrateDTO>(),  curFr8UserId);
 
-            Logger.LogInfo($"#### New MADSE plan activated with planId: {planDO.RootPlanNodeId}", DocuSignManager.DocusignTerminalName);
+            Logger.LogInfo($"#### New MADSE plan activated with planId: {monitorDocusignPlan.Plan.Id}", DocuSignManager.DocusignTerminalName);
         }
 
         private void SetSelectedCrates(ActivityDTO storeMTDataActivity)

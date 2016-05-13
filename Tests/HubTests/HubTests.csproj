@@ -317,9 +317,9 @@
     <Compile Include="Services\SubscriptionServiceTests.cs" />
     <Compile Include="Services\TagTests.cs" />
     <Compile Include="Services\TerminalServiceTests.cs" />
+    <Compile Include="Services\TerminalTransmitterMock.cs" />
     <Compile Include="Services\UserServiceTests.cs" />
     <Compile Include="Utilities\DateUtilityTests.cs" />
-    <Compile Include="Validations\ValidationsTest.cs" />
     <Compile Include="Wrapper\DcousingAccountTest.cs" />
   </ItemGroup>
   <ItemGroup>

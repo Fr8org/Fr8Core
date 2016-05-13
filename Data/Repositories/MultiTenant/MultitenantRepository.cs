@@ -58,7 +58,7 @@ namespace Data.Repositories.MultiTenant
 
         public void Add(Manifest instance, string fr8AccountId)
         {
-            if (instance == null)
+            if (instance == null || string.IsNullOrWhiteSpace(fr8AccountId))
             {
                 return;
             }

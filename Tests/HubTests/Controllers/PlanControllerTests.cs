@@ -78,13 +78,7 @@ namespace HubTests.Controllers
 
             ShouldHaveFr8HMACAuthorizeOnFunction(typeof(PlansController), "GetByName");
         }
-
-        [Test]
-        public void PlansController_ShouldHaveHMACOnActivateMethod()
-        {
-            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(PlansController), "Activate");
-        }
-
+        
         [Test]
         public void PlanController_CanAddNewPlan()
         {
