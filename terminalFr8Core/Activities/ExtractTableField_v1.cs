@@ -331,7 +331,6 @@ namespace terminalFr8Core.Actions
 
                 configControls.Controls.Add(new TextBlock
                 {
-                    ErrorMessage = error,
                     Name = "Error",
                     Value = error,
                     CssClass = "well well-lg"

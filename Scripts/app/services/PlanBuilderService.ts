@@ -10,7 +10,6 @@ module dockyard.services {
         getFull: (id: Object) => interfaces.IPlanFullDTO;
         getByActivity: (id: { id: string }) => interfaces.IPlanVM;
         execute: (id: { id: number }, payload: { payload: string }, success: any, error: any) => void;
-        activate: (data: { planId: string, planBuilderActivate: boolean }) => any;
         create: (args: { activityTemplateId: number, name: string, label: string, parentNodeId: number }) => ng.resource.IResource<model.PlanDTO>;
         createSolution: (args: { solutionName: string }) => ng.resource.IResource<model.PlanFullDTO>;
         deactivate: (data: { planId: string }) => ng.resource.IResource<string>;
@@ -76,12 +75,14 @@ module dockyard.services {
         '$q',
         '$location',
         'ngToast',
+        '$rootScope',
         function (
             $resource: ng.resource.IResourceService,
             $http: ng.IHttpService,
             $q: ng.IQService,
             $location: ng.ILocationService,
-            ngToast: any
+            ngToast: any,
+            $rootScope: ng.IScope
         ): IPlanService {
 
             var resource = <IPlanService>$resource(
@@ -130,15 +131,7 @@ module dockyard.services {
                             id: '@id'
                         }
                     },
-                    'activate': {
-                        method: 'POST',
-                        isArray: false,
-                        url: '/api/plans/activate/',
-                        params: {
-                            planId: '@planId',
-                            planBuilderActivate: '@planBuilderActivate'
-                        }
-                    },
+                    
                     'create': {
                         method: 'POST',
                         url: '/api/plans/create'
@@ -210,6 +203,16 @@ module dockyard.services {
                                 messageToShow += "Terminal: " + container.error.currentTerminal + "<br/>";
                                 messageToShow += "Message: " + container.error.message;
                                 ngToast.danger(messageToShow);
+                            }
+
+                            // if we have validation errors, send them to activities
+                            if (container && container.validationErrors != null) {
+                                for (var key in container.validationErrors) {
+                                    $rootScope.$broadcast(
+                                        directives.paneConfigureAction.MessageType[directives.paneConfigureAction.MessageType.PaneConfigureAction_UpdateValidationMessages],
+                                        new directives.paneConfigureAction.UpdateValidationMessagesEventArgs(key, container.validationErrors[key])
+                                    );
+                                }
                             }
 
                             d.resolve(container);

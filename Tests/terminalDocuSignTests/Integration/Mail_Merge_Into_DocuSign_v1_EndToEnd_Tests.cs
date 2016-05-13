@@ -127,12 +127,13 @@ namespace terminalDocuSignTests.Integration
 
             using (var updatableStorage = Crate.UpdateStorage(() => fr8CoreLoop.CrateStorage))
             {
-                var chooser = (CrateChooser)updatableStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls.FirstOrDefault(c => c.Name == "Available_Crates");
+                updatableStorage.Clear();
+                /*var chooser = (CrateChooser)updatableStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls.FirstOrDefault(c => c.Name == "Available_Crates");
 
                 if (chooser?.CrateDescriptions != null)
                 {
                     chooser.CrateDescriptions = new List<CrateDescriptionDTO>();
-                }
+                }*/
             }
             
             fr8CoreLoop = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", fr8CoreLoop);
@@ -146,7 +147,7 @@ namespace terminalDocuSignTests.Integration
 
             var payloadDataCrate = crateChooser.CrateDescriptions.SingleOrDefault(c => c.ManifestId == (int)MT.StandardPayloadData);
 
-            Assert.NotNull(payloadDataCrate, "StandardPayloadData was not found in rateChooser.CrateDescriptions. Available crate descriptions are: " + string.Join("\n", crateChooser.CrateDescriptions.Select(x=> $"{x.Label} of type {x.ManifestType}")));
+            Assert.NotNull(payloadDataCrate, "StandardPayloadData was not found in crateChooser.CrateDescriptions. Available crate descriptions are: " + string.Join("\n", crateChooser.CrateDescriptions.Select(x=> $"{x.Label} of type {x.ManifestType}")));
 
             payloadDataCrate.Selected = true;
             using (var updatableStorage = Crate.GetUpdatableStorage(fr8CoreLoop))
@@ -238,7 +239,7 @@ namespace terminalDocuSignTests.Integration
             //await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
         }
 
-        [Test]
+     /*   [Test]
         public async Task Mail_Merge_Into_DocuSign_EndToEnd_Upstream_Values_From_Google_Check_Tabs()
         {
             //
@@ -441,7 +442,7 @@ namespace terminalDocuSignTests.Integration
             //
             //await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
         }
-
+        */
         private async Task<Guid> ExtractGoogleDefaultToken()
         {
             var errorMessage = $"Authorization token for Google is not found for the integration testing user {TestUserEmail}. Please go to the target instance of fr8 and log in with the integration testing user credentials. Then add a Google action to any plan and be sure to set the \"Use for all Activities\" checkbox on the Authorize Accounts dialog while authenticating. Reason: ";

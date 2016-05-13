@@ -240,12 +240,7 @@ namespace TerminalBase.Infrastructure
         {
             throw new NotImplementedException();
         }
-
-        public Task<PlanDO> ActivatePlan(PlanDO planDO, string userId)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public Task<IEnumerable<PlanDTO>> GetPlansByName(string name, string userId, PlanVisibility visibility = PlanVisibility.Standard)
         {
             throw new NotImplementedException();

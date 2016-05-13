@@ -139,39 +139,5 @@ namespace Data.Entities
             Category = plan.Category;
             LastUpdated = plan.LastUpdated;
         }
-
-        public bool IsOngoingPlan()
-        {
-            bool isOngoingPlan = false;
-            var initialActivity = this.StartingSubPlan.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault() as ActivityDO;
-            if (initialActivity != null)
-            {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    var activityTemplate = uow.ActivityTemplateRepository.GetByKey(initialActivity.ActivityTemplateId);
-                    if (activityTemplate.Category == ActivityCategory.Solution)
-                    {
-                        // Handle solutions
-                        initialActivity = initialActivity.ChildNodes.OrderBy(x => x.Ordering).FirstOrDefault() as ActivityDO;
-                        if (initialActivity != null)
-                        {
-                            activityTemplate = uow.ActivityTemplateRepository.GetByKey(initialActivity.ActivityTemplateId);
-                        }
-                        else
-                        {
-                            return isOngoingPlan;
-                        }
-                    }
-
-                    if (activityTemplate != null && activityTemplate.Category == ActivityCategory.Monitors)
-                    {
-                        isOngoingPlan = true;
-                    }
-                }
-            }
-            return isOngoingPlan;
-        }
-
-
     }
 }
