@@ -96,9 +96,8 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        private async Task Run(Func<Task> runMode)
+        public sealed override async Task Run()
         {
-
             if (IsAuthenticationRequired && NeedsAuthentication())
             {
                 RaiseNeedsAuthenticationError();
@@ -116,7 +115,7 @@ namespace TerminalBase.BaseClasses
 
                 OperationalState.CurrentActivityResponse = null;
 
-                await runMode();
+                await RunETA();
 
                 if (OperationalState.CurrentActivityResponse == null)
                 {
@@ -182,17 +181,13 @@ namespace TerminalBase.BaseClasses
 
         protected abstract Task InitializeETA();
         protected abstract Task ConfigureETA();
+        protected abstract Task RunETA();
 
         /**********************************************************************************/
 
-        protected abstract Task RunCurrentActivity();
+
 
         /**********************************************************************************/
-
-        protected virtual Task RunChildActivities()
-        {
-            return Task.FromResult(0);
-        }
 
         /**********************************************************************************/
 

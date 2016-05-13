@@ -20,40 +20,16 @@ namespace terminalFr8Core.Actions
 
         #region Configuration.
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        private void AddRunNowButton()
         {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-
-            {
-                return ConfigurationRequestType.Initial;
-            }
-            else
-            {
-                return ConfigurationRequestType.Followup;
-            }
-        }
-
-        protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                AddRunNowButton(crateStorage);
-            }
-
-            return Task.FromResult(curActivityDO);
-
-        }
-
-        private void AddRunNowButton(ICrateStorage crateStorage)
-        {
-            AddControl(crateStorage,
+            AddControl(
                 new RunPlanButton()
                 {
                     Name = "RunPlan",
                     Label = "Run Plan",
                 });
 
-            AddControl(crateStorage,
+            AddControl(
                 new ControlDefinitionDTO(ControlTypes.ManagePlan)
                 {
                     Name = "ManagePlan",
@@ -63,14 +39,27 @@ namespace terminalFr8Core.Actions
 
         #endregion Configuration.
 
-
-        #region Execution.
-
-        public async Task<PayloadDTO> Run(ActivityDO curActionDTO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public ManagePlan_v1() : base(false)
         {
-            return Success(await GetPayload(curActionDTO, containerId));
+
         }
 
-        #endregion Execution.
+        protected override ActivityTemplateDTO MyTemplate { get; }
+        public override Task Run()
+        {
+            Success();
+            return Task.FromResult(0);
+        }
+
+        public override Task Initialize()
+        {
+            AddRunNowButton();
+            return Task.FromResult(0);
+        }
+
+        public override Task FollowUp()
+        {
+            return Task.FromResult(0);
+        }
     }
 }

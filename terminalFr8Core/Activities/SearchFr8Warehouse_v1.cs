@@ -2,23 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Hub.Managers;
-using Newtonsoft.Json;
-using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using TerminalBase.Services.MT;
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using Newtonsoft.Json;
+using StructureMap;
+using terminalFr8Core.Services.MT;
+using TerminalBase.BaseClasses;
+using TerminalBase.Models;
 using Utilities.Logging;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class SearchFr8Warehouse_v1 : BaseTerminalActivity
     {
@@ -85,92 +84,21 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        public SearchFr8Warehouse_v1()
+        public SearchFr8Warehouse_v1() : base(false)
         {
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+
+
+        public override Task RunChildActivities()
         {
-            var payload = await GetPayload(curActivityDO, containerId);
-            return Success(payload);
-        }
-
-        public override async Task<PayloadDTO> ExecuteChildActivities(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-        {
-            var payload = await GetPayload(curActivityDO, containerId);
-
-            var configurationControls = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
-
-            if (configurationControls == null)
-            {
-                return Error(payload, "Action was not configured correctly");
-            }
-
             // Merge data from QueryMT action.
-            var payloadCrateStorage = CrateManager.FromDto(payload.CrateStorage);
-            var queryMTResult = payloadCrateStorage
+            var queryMTResult = Payload
                 .CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "Found MT Objects")
                 .FirstOrDefault();
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
-            {
-                crateStorage.Add(Fr8Data.Crates.Crate.FromContent("Sql Query Result", queryMTResult));
-            }
-
-            return ExecuteClientActivity(payload, "ShowTableReport");
-        }
-
-
-        protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.Add(PackControls(new ActionUi()));
-                var designTimefieldLists = GetFr8WarehouseTypes(authTokenDO);
-                var availableMtObjects = CrateManager.CreateDesignTimeFieldsCrate("Queryable Objects", designTimefieldLists.ToArray());
-                crateStorage.Add(availableMtObjects);
-                crateStorage.AddRange(PackDesignTimeData());
-            }
-            return Task.FromResult(curActivityDO);
-        }
-
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
-        {
-            try
-            {
-                var configurationcontrols = GetConfigurationControls(activityDO);
-                var fr8ObjectDropDown = GetControl(configurationcontrols, "Select Fr8 Warehouse Object");
-                var fr8ObjectID = fr8ObjectDropDown.Value;
-                var continueButton = configurationcontrols.FindByName<Button>("Continue");
-
-                if (ButtonIsClicked(continueButton))
-                {
-                    if (!ValidateSolutionInputs(fr8ObjectID))
-                    {
-                        AddRemoveCrateAndError(activityDO, fr8ObjectID, "Please select the Fr8 Object");
-                        return activityDO;
-                    }
-                    else {
-                        AddRemoveCrateAndError(activityDO, fr8ObjectID, "");
-                    }
-
-                    activityDO.ChildNodes.Clear();
-                    await GenerateSolutionActivities(activityDO, fr8ObjectID);
-                    UpdateOperationCrate(activityDO);
-                }
-                else {
-                    LoadAvailableFr8ObjectNames(activityDO, fr8ObjectID);
-                }
-            }
-            catch (Exception e)
-            {
-                // This message will get display in Terminal Activity Response.
-                //Logger.GetLogger().Error("Error while configuring the search Fr8 Warehouse action" + e.Message, e);
-                Logger.LogError($"Error while configuring the search Fr8 Warehouse action {e}");
-                throw;
-            }
-
-            return activityDO;
+            Payload.Add(Crate.FromContent("Sql Query Result", queryMTResult));
+            ExecuteClientActivity("ShowTableReport");
+            return Task.FromResult(0);
         }
 
         /// <summary>
@@ -189,21 +117,18 @@ namespace terminalFr8Core.Actions
                 return Task.FromResult(curSolutionPage);
             }
             return
-                Task.FromResult(
-                    GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage cases"));
+                Task.FromResult(GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage cases"));
         }
 
-        protected async Task<ActivityDO> GenerateSolutionActivities(ActivityDO activityDO, string fr8ObjectID)
+        protected async Task GenerateSolutionActivities(string fr8ObjectID)
         {
             var queryFr8WarehouseAT = await GetActivityTemplate("terminalFr8Core", "QueryFr8Warehouse");
             var queryFr8WarehouseAction = await AddAndConfigureChildActivity(
-                activityDO, queryFr8WarehouseAT
+                ActivityId, queryFr8WarehouseAT
             );
 
-            using (var crateStorage = CrateManager.GetUpdatableStorage(queryFr8WarehouseAction))
-            {
                 // We insteady of using getConfiguration control used the same GetConfiguration control required actionDO
-                var queryFr8configurationControls = crateStorage.
+                var queryFr8configurationControls = queryFr8WarehouseAction.CrateStorage.
                     CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
                 var radioButtonGroup = queryFr8configurationControls
@@ -225,76 +150,53 @@ namespace terminalFr8Core.Actions
                     fr8ObjectDropDown.Selected = true;
                     fr8ObjectDropDown.Value = fr8ObjectID;
                     fr8ObjectDropDown.selectedKey = fr8ObjectID;
-
                     FilterPane upstreamCrateChooser1 = radioButtonGroup.Radios[1].Controls[1] as FilterPane;
-
-                    var configurationControls = GetConfigurationControls(activityDO);
-                    var queryBuilderControl = configurationControls.FindByName<QueryBuilder>("QueryBuilder");
+                    var queryBuilderControl = GetControl<QueryBuilder>("QueryBuilder");
                     var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(queryBuilderControl.Value);
-
                     FilterDataDTO filterPaneDTO = new FilterDataDTO();
                     filterPaneDTO.Conditions = criteria;
                     filterPaneDTO.ExecutionType = FilterExecutionType.WithFilter;
                     upstreamCrateChooser1.Value = JsonConvert.SerializeObject(filterPaneDTO);
                     upstreamCrateChooser1.Selected = true;
                 }
-            }
 
             queryFr8WarehouseAction = await ConfigureChildActivity(
-                activityDO,
+                ActivityContext.ActivityPayload,
                 queryFr8WarehouseAction
             );
 
-            return activityDO;
         }
 
-        private void LoadAvailableFr8ObjectNames(ActivityDO actvityDO, string fr8ObjectID)
+        private void LoadAvailableFr8ObjectNames(string fr8ObjectID)
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(actvityDO))
+            var designTimeQueryFields = MTTypesHelper.GetFieldsByTypeId(Guid.Parse(fr8ObjectID));
+            var criteria = Storage.FirstOrDefault(d => d.Label == "Queryable Criteria");
+            if (criteria != null)
             {
-                var designTimeQueryFields = MTTypesHelper.GetFieldsByTypeId(Guid.Parse(fr8ObjectID));
-                var criteria = crateStorage.FirstOrDefault(d => d.Label == "Queryable Criteria");
-                if (criteria != null)
-                {
-                    crateStorage.Remove(criteria);
-                }
-                crateStorage.Add(
-                    Fr8Data.Crates.Crate.FromContent(
-                        "Queryable Criteria",
-                        new FieldDescriptionsCM(designTimeQueryFields)
-                    )
-                );
+                Storage.Remove(criteria);
             }
+            Storage.Add(Crate.FromContent("Queryable Criteria",new FieldDescriptionsCM(designTimeQueryFields)));
         }
 
-        private void UpdateOperationCrate(ActivityDO activityDO, string errorMessage = null)
+        private void UpdateOperationCrate(string errorMessage = null)
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
+            Storage.RemoveByManifestId((int)MT.OperationalStatus);
+            var operationalStatus = new OperationalStateCM
             {
-                crateStorage.RemoveByManifestId((int)MT.OperationalStatus);
-                var operationalStatus = new OperationalStateCM();
-
-                operationalStatus.CurrentActivityResponse =
-                    ActivityResponseDTO.Create(ActivityResponse.ExecuteClientActivity);
-                operationalStatus.CurrentClientActivityName = "RunImmediately";
-                var operationsCrate = Fr8Data.Crates.Crate.FromContent("Operational Status", operationalStatus);
-                crateStorage.Add(operationsCrate);
-            }
+                CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.ExecuteClientActivity),
+                CurrentClientActivityName = "RunImmediately"
+            };
+            var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
+            Storage.Add(operationsCrate);
         }
 
-        private void AddRemoveCrateAndError(ActivityDO activityDO,string fr8ObjectID,string errorMessage)
+        private void AddRemoveCrateAndError(string fr8ObjectID, string errorMessage)
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
-            {
-                crateStorage.Remove<StandardQueryCM>();
-                var queryCrate = ExtractQueryCrate(crateStorage, fr8ObjectID);
-                crateStorage.Add(queryCrate);
-
-                var configurationcontrols = crateStorage.
-                  CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-                var fr8ObjectDropDown = GetControl(configurationcontrols, "Select Fr8 Warehouse Object");
-                fr8ObjectDropDown.ErrorMessage = errorMessage;
-            }
+            Storage.Remove<StandardQueryCM>();
+            var queryCrate = ExtractQueryCrate(fr8ObjectID);
+            Storage.Add(queryCrate);
+            var fr8ObjectDropDown = GetControl<DropDownList>("Select Fr8 Warehouse Object");
+            fr8ObjectDropDown.ErrorMessage = errorMessage;
         }
 
         private bool ValidateSolutionInputs(string fr8Object)
@@ -306,17 +208,7 @@ namespace terminalFr8Core.Actions
             return true;
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
-        {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-            return ConfigurationRequestType.Followup;
-        }
-
-        private static ControlDefinitionDTO CreateTextBoxQueryControl(
-            string key)
+        private static ControlDefinitionDTO CreateTextBoxQueryControl(string key)
         {
             return new TextBox()
             {
@@ -324,24 +216,13 @@ namespace terminalFr8Core.Actions
             };
         }
 
-        private Crate<StandardQueryCM> ExtractQueryCrate(ICrateStorage storage, string mtObject)
+        private Crate<StandardQueryCM> ExtractQueryCrate(string mtObject)
         {
-            var configurationControls = storage
-                .CrateContentsOfType<StandardConfigurationControlsCM>()
-                .SingleOrDefault();
-
-            if (configurationControls == null)
-            {
-                throw new ApplicationException("Action was not configured correctly");
-            }
-
             var actionUi = new ActionUi();
-            actionUi.ClonePropertiesFrom(configurationControls);
-
+            actionUi.ClonePropertiesFrom(ConfigurationControls);
             var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(
                 actionUi.QueryBuilder.Value
             );
-
             var queryCM = new StandardQueryCM(
                 new QueryDTO()
                 {
@@ -355,7 +236,7 @@ namespace terminalFr8Core.Actions
 
         private IEnumerable<Crate> PackDesignTimeData()
         {
-            yield return Fr8Data.Crates.Crate.FromContent("Fr8 Search Report", new FieldDescriptionsCM(new FieldDTO
+            yield return Crate.FromContent("Fr8 Search Report", new FieldDescriptionsCM(new FieldDTO
             {
                 Key = "Fr8 Search Report",
                 Value = "Table",
@@ -364,12 +245,11 @@ namespace terminalFr8Core.Actions
         }
 
         // create the dropdown design time fields.
-        private List<FieldDTO> GetFr8WarehouseTypes(AuthorizationTokenDO oAuthToken)
+        private List<FieldDTO> GetFr8WarehouseTypes(AuthorizationToken oAuthToken)
         {
             using (var unitWork = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var warehouseTypes = new List<FieldDTO>();
-
                 foreach (var mtTypeReference in unitWork.MultiTenantObjectRepository.ListTypeReferences())
                 {
                     warehouseTypes.Add(new FieldDTO
@@ -378,7 +258,6 @@ namespace terminalFr8Core.Actions
                         Value = mtTypeReference.Id.ToString("N")
                     });
                 }
-                
                 return warehouseTypes;
             }
         }
@@ -392,5 +271,58 @@ namespace terminalFr8Core.Actions
             return false;
         }
 
+        protected override ActivityTemplateDTO MyTemplate { get; }
+        public override Task Run()
+        {
+            Success();
+            return Task.FromResult(0);
+        }
+
+        public override Task Initialize()
+        {
+            Storage.Add(PackControls(new ActionUi()));
+            var designTimefieldLists = GetFr8WarehouseTypes(ActivityContext.AuthorizationToken);
+            var availableMtObjects = CrateManager.CreateDesignTimeFieldsCrate("Queryable Objects", designTimefieldLists.ToArray());
+            Storage.Add(availableMtObjects);
+            Storage.AddRange(PackDesignTimeData());
+            return Task.FromResult(0);
+        }
+
+        public override async Task FollowUp()
+        {
+            try
+            {
+                var fr8ObjectDropDown = GetControl<DropDownList>("Select Fr8 Warehouse Object");
+                var fr8ObjectID = fr8ObjectDropDown.Value;
+                var continueButton = GetControl<Button>("Continue");
+                if (ButtonIsClicked(continueButton))
+                {
+                    if (!ValidateSolutionInputs(fr8ObjectID))
+                    {
+                        AddRemoveCrateAndError(fr8ObjectID, "Please select the Fr8 Object");
+                        return;
+                    }
+                    else
+                    {
+                        AddRemoveCrateAndError(fr8ObjectID, "");
+                    }
+
+                    ActivityContext.ActivityPayload.ChildrenActivities.Clear();
+                    await GenerateSolutionActivities(fr8ObjectID);
+                    UpdateOperationCrate();
+                }
+                else
+                {
+                    LoadAvailableFr8ObjectNames(fr8ObjectID);
+                }
+            }
+            catch (Exception e)
+            {
+                // This message will get display in Terminal Activity Response.
+                //Logger.GetLogger().Error("Error while configuring the search Fr8 Warehouse action" + e.Message, e);
+                Logger.LogError($"Error while configuring the search Fr8 Warehouse action {e}");
+                throw;
+            }
+        }
     }
 }

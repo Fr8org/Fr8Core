@@ -7,6 +7,7 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using TerminalBase.Models;
 
 namespace TerminalBase.Infrastructure
 {
@@ -29,9 +30,9 @@ namespace TerminalBase.Infrastructure
         Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields, string userId);
         Task<AuthorizationTokenDTO> GetAuthToken(string authTokenId, string curFr8UserId);
         Task ScheduleEvent(string externalAccountId, string curFr8UserId, string minutes);
-        Task<ActivityDTO> ConfigureActivity(ActivityDTO activityDTO, string userId);
-        Task<ActivityDTO> SaveActivity(ActivityDTO activityDTO, string userId);
-        Task<ActivityDTO> CreateAndConfigureActivity(Guid templateId, string userId, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null);
+        Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload, string userId);
+        Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload, string userId);
+        Task<ActivityPayload> CreateAndConfigureActivity(Guid templateId, string userId, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null);
         Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO, string userId);
         Task RunPlan(Guid planId, List<CrateDTO> payload, string userId);
         Task<PlanDTO> ActivatePlan(PlanDTO planDO, string userId);

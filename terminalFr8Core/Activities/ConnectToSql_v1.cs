@@ -54,10 +54,6 @@ namespace terminalFr8Core.Activities
 
         #endregion Configuration.
 
-        #region Execution.
-
-        #endregion Execution.
-
         public override async Task Run()
         {
             Success();

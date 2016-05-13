@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Entities;
-using Data.States;
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
@@ -16,7 +15,7 @@ using TerminalBase;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class Loop_v1 : BaseTerminalActivity
     {

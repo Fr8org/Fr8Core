@@ -13,6 +13,7 @@ using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using TerminalBase.Errors;
+using TerminalBase.Helpers;
 using TerminalBase.Interfaces;
 using TerminalBase.Models;
 using TerminalBase.Services;
@@ -37,6 +38,7 @@ namespace TerminalBase.BaseClasses
 
         #region FIELDS
 
+        private List<ActivityTemplateDTO> _activityTemplateCache = null;
         protected static readonly string ConfigurationControlsLabel = "Configuration_Controls";
         protected ICrateManager CrateManager { get; private set; }
         public IHubCommunicator HubCommunicator { get; set; }
@@ -50,7 +52,7 @@ namespace TerminalBase.BaseClasses
         #endregion
 
         #region SHORTCUTS
-
+        private ControlHelper _controlHelper;
         private UpstreamQueryManager _upstreamQueryManager;
         private StandardConfigurationControlsCM _configurationControls;
         protected ICrateStorage Storage => ActivityContext.ActivityPayload.CrateStorage;
@@ -60,8 +62,12 @@ namespace TerminalBase.BaseClasses
         protected StandardConfigurationControlsCM ConfigurationControls => _configurationControls ?? (_configurationControls = GetConfigurationControls());
         protected int LoopIndex => GetLoopIndex();
         protected UpstreamQueryManager UpstreamQueryManager => _upstreamQueryManager ?? (_upstreamQueryManager = new UpstreamQueryManager(ActivityContext, HubCommunicator));
+        protected ControlHelper ControlHelper => _controlHelper ?? (_controlHelper = new ControlHelper(ActivityContext, HubCommunicator));
         protected Guid ActivityId => ActivityContext.ActivityPayload.Id;
         protected string CurrentUserId => ActivityContext.UserId;
+        protected Task<ActivityPayload> SaveToHub(ActivityPayload activity) => HubCommunicator.SaveActivity(activity, CurrentUserId);
+        public Task<FieldDescriptionsCM> GetDesignTimeFields(CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet) => HubCommunicator.GetDesignTimeFieldsByDirection(ActivityId, direction, availability, CurrentUserId);
+
         #endregion
 
         #region RETURN_CODES
@@ -211,6 +217,35 @@ namespace TerminalBase.BaseClasses
             return false;
         }
 
+        protected async Task PushUserNotification(string type, string subject, string message)
+        {
+            var notificationMsg = new TerminalNotificationDTO
+            {
+                Type = type,
+                Subject = subject,
+                Message = message,
+                ActivityName = MyTemplate.Name,
+                ActivityVersion = MyTemplate.Version,
+                TerminalName = MyTemplate.Terminal.Name,
+                TerminalVersion = MyTemplate.Terminal.Version
+            };
+            await HubCommunicator.NotifyUser(notificationMsg, CurrentUserId);
+        }
+
+        protected string ExtractPayloadFieldValue(string fieldKey)
+        {
+            var fieldValues = Payload.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(fieldKey))
+                .Where(s => !string.IsNullOrEmpty(s))
+                .ToArray();
+            if (fieldValues.Length > 0)
+                return fieldValues[0];
+            var baseEvent = new BaseTerminalEvent();
+            var exceptionMessage = $"No field found with specified key: {fieldKey}.";
+            //This is required for proper logging of the Incidents
+            baseEvent.SendTerminalErrorIncident(MyTemplate.Terminal.Name, exceptionMessage, MyTemplate.Name, CurrentUserId);
+            throw new ApplicationException(exceptionMessage);
+        }
+
         protected void AddAuthenticationCrate(bool revocation)
         {
             var terminalAuthType = ActivityContext.ActivityPayload.ActivityTemplate.Terminal.AuthenticationType;
@@ -268,6 +303,21 @@ namespace TerminalBase.BaseClasses
             throw new NullReferenceException("No Loop was found inside the provided OperationalStateCM crate");
         }
 
+        protected async Task<ActivityPayload> ConfigureChildActivity(ActivityPayload parent, ActivityPayload child)
+        {
+            var result = await HubCommunicator.ConfigureActivity(child, CurrentUserId);
+            parent.ChildrenActivities.Remove(child);
+            parent.ChildrenActivities.Add(result);
+            return result;
+        }
+
+        protected async Task<Crate<FieldDescriptionsCM>> MergeUpstreamFields(string label)
+        {
+            var curUpstreamFields = (await GetDesignTimeFields(CrateDirection.Upstream)).Fields.ToArray();
+            var upstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
+            return upstreamFieldsCrate;
+        }
+
         protected virtual ConfigurationRequestType GetConfigurationRequestType()
         {
             return Storage.Count == 0 ? ConfigurationRequestType.Initial : ConfigurationRequestType.Followup;
@@ -321,7 +371,7 @@ namespace TerminalBase.BaseClasses
 
         protected void AddLabelControl(string name, string label, string text)
         {
-            AddControl(GenerateTextBlock(label, text, "well well-lg", name));
+            AddControl(ControlHelper.GenerateTextBlock(label, text, "well well-lg", name));
         }
 
         protected void AddControl(ControlDefinitionDTO control)
@@ -329,28 +379,33 @@ namespace TerminalBase.BaseClasses
             ConfigurationControls.Controls.Add(control);
         }
 
-        /// <summary>
-        /// Creates TextBlock control and fills it with label, value and CssClass
-        /// </summary>
-        /// <param name="curLabel">Label</param>
-        /// <param name="curValue">Value</param>
-        /// <param name="curCssClass">Css Class</param>
-        /// <param name="curName">Name</param>
-        /// <returns>TextBlock control</returns>
-        protected TextBlock GenerateTextBlock(string curLabel, string curValue, string curCssClass, string curName = "unnamed")
-        {
-            return new TextBlock
-            {
-                Name = curName,
-                Label = curLabel,
-                Value = curValue,
-                CssClass = curCssClass
-            };
-        }
-
         protected virtual bool IsTokenInvalidation(Exception ex)
         {
             return false;
+        }
+
+        protected async Task<ActivityPayload> AddAndConfigureChildActivity(Guid parentActivityId, ActivityTemplateDTO activityTemplate, string name = null, string label = null, int? order = null)
+        {
+            //assign missing properties
+            label = string.IsNullOrEmpty(label) ? activityTemplate.Label : label;
+            name = string.IsNullOrEmpty(name) ? activityTemplate.Label : label;
+            return await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, CurrentUserId, name, order, parentActivityId);
+        }
+
+        protected void UpdateDesignTimeCrateValue(string label, params FieldDTO[] fields)
+        {
+            var crate = Storage.CratesOfType<FieldDescriptionsCM>().FirstOrDefault(x => x.Label == label);
+
+            if (crate == null)
+            {
+                crate = CrateManager.CreateDesignTimeFieldsCrate(label, fields);
+                Storage.Add(crate);
+            }
+            else
+            {
+                crate.Content.Fields.Clear();
+                crate.Content.Fields.AddRange(fields);
+            }
         }
 
         //wrapper for support test method
@@ -359,10 +414,75 @@ namespace TerminalBase.BaseClasses
             return await HubCommunicator.GetCratesByDirection<TManifest>(ActivityId, direction, CurrentUserId);
         }
 
+        //wrapper for support test method
+        public virtual async Task<List<Crate>> GetCratesByDirection(CrateDirection direction)
+        {
+            return await HubCommunicator.GetCratesByDirection(ActivityId, direction, CurrentUserId);
+        }
+
+        protected async Task<ActivityTemplateDTO> GetActivityTemplate(Guid activityTemplateId)
+        {
+            var allActivityTemplates = _activityTemplateCache ?? (_activityTemplateCache = await HubCommunicator.GetActivityTemplates(CurrentUserId));
+
+            var foundActivity = allActivityTemplates.FirstOrDefault(a => a.Id == activityTemplateId);
+
+
+            if (foundActivity == null)
+            {
+                throw new Exception($"ActivityTemplate was not found. Id: {activityTemplateId}");
+            }
+
+            return foundActivity;
+        }
+
+        protected async Task<ActivityTemplateDTO> GetActivityTemplate(string terminalName, string activityTemplateName, string activityTemplateVersion = "1", string terminalVersion = "1")
+        {
+            var allActivityTemplates = _activityTemplateCache ?? (_activityTemplateCache = await HubCommunicator.GetActivityTemplates(CurrentUserId));
+
+            var foundActivity = allActivityTemplates.FirstOrDefault(a =>
+                        a.Terminal.Name == terminalName && a.Terminal.Version == terminalVersion &&
+                        a.Name == activityTemplateName && a.Version == activityTemplateVersion);
+
+
+            if (foundActivity == null)
+            {
+                throw new Exception($"ActivityTemplate was not found. TerminalName: {terminalName}\nTerminalVersion: {terminalVersion}\nActivitiyTemplateName: {activityTemplateName}\nActivityTemplateVersion: {activityTemplateVersion}");
+            }
+
+            return foundActivity;
+        }
+
+        public SolutionPageDTO GetDefaultDocumentation(string solutionName, double solutionVersion, string terminalName, string body)
+        {
+            var curSolutionPage = new SolutionPageDTO
+            {
+                Name = solutionName,
+                Version = solutionVersion,
+                Terminal = terminalName,
+                Body = body
+            };
+
+            return curSolutionPage;
+        }
+
+        public ActivityResponseDTO GenerateErrorResponse(string errorMessage)
+        {
+            return new ActivityResponseDTO
+            {
+                Body = errorMessage,
+                Type = ActivityResponse.ShowDocumentation.ToString()
+            };
+        }
+
         public async Task Run(ActivityContext activityContext, ContainerExecutionContext containerExecutionContext)
         {
             InitializeActivity(activityContext, containerExecutionContext);
             await Run();
+        }
+
+        public virtual Task RunChildActivities()
+        {
+            return Task.FromResult(0);
         }
 
         public abstract Task Run();

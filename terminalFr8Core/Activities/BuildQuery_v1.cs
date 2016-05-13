@@ -202,7 +202,7 @@ namespace terminalFr8Core.Actions
             var findObjectHelper = new FindObjectHelper();
 
             var columnDefinitions = await ExtractColumnDefinitions();
-            var columnTypeMap = await findObjectHelper.ExtractColumnTypes(this, activityDO);
+            var columnTypeMap = await findObjectHelper.ExtractColumnTypes(HubCommunicator, ActivityContext);
 
             var matchedColumns = findObjectHelper.MatchColumnsForSelectedObject(
                 columnDefinitions, selectedObject, columnTypeMap);
@@ -264,7 +264,7 @@ namespace terminalFr8Core.Actions
 
         public override async Task Initialize()
         {
-            var columnDefinitions = await ExtractColumnDefinitions(curActivityDO);
+            var columnDefinitions = await ExtractColumnDefinitions();
             List<FieldDTO> tablesList = null;
             if (columnDefinitions != null)
             {

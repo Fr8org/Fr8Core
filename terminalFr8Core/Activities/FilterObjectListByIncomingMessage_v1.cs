@@ -4,16 +4,17 @@ using System.Threading.Tasks;
 using Hub.Services;
 using System.Linq;
 using System.Collections.Generic;
-using Data.Entities;
-using Hub.Managers;
 using Utilities;
 using System.Globalization;
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
 using Fr8Data.Helpers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using TerminalBase.Errors;
+using TerminalBase.Services;
 
 namespace terminalFr8Core.Actions
 {
@@ -79,40 +80,40 @@ namespace terminalFr8Core.Actions
 
         public FilterObjectListByIncomingMessage_v1() : base(false)
         {
-            ActivityName = "Match Incoming Text and Build Object List";
+            //ActivityName = "Match Incoming Text and Build Object List";
         }
 
-        protected override async Task Initialize(CrateSignaller crateSignaller)
+        protected override async Task InitializeETA()
         {
-            var activityTemplates = await HubCommunicator.GetActivityTemplates(ActivityTemplate.TableDataGeneratorTag, CurrentFr8UserId);
+            var activityTemplates = await HubCommunicator.GetActivityTemplates(ActivityTemplate.TableDataGeneratorTag, CurrentUserId);
             activityTemplates.Sort((x, y) => x.Name.CompareTo(y.Name));
-            ConfigurationControls.DataSourceSelector.ListItems = activityTemplates
+            ActivityUI.DataSourceSelector.ListItems = activityTemplates
                                                                  .Select(x => new ListItem { Key = x.Label, Value = x.Id.ToString() })
                                                                  .ToList();
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller)
+        protected override async Task ConfigureETA()
         {
             //Remove child activity if its not specified or add it if is not yet added
-            if (string.IsNullOrEmpty(ConfigurationControls.DataSourceSelector.Value))
+            if (string.IsNullOrEmpty(ActivityUI.DataSourceSelector.Value))
             {
-                await HubCommunicator.DeleteExistingChildNodesFromActivity(CurrentActivity.Id, CurrentFr8UserId);
-                CurrentActivity.ChildNodes.Clear();
+                await HubCommunicator.DeleteExistingChildNodesFromActivity(ActivityId, CurrentUserId);
+                ActivityContext.ActivityPayload.ChildrenActivities.Clear();
                 PreviousSelectedDataSourceId = null;
                 CachedData = null;
             }
-            else if (string.IsNullOrEmpty(PreviousSelectedDataSourceId) || PreviousSelectedDataSourceId != ConfigurationControls.DataSourceSelector.Value)
+            else if (string.IsNullOrEmpty(PreviousSelectedDataSourceId) || PreviousSelectedDataSourceId != ActivityUI.DataSourceSelector.Value)
             {
-                var activityTemplate = await GetActivityTemplate(Guid.Parse(ConfigurationControls.DataSourceSelector.Value));
-                await HubCommunicator.DeleteExistingChildNodesFromActivity(CurrentActivity.Id, CurrentFr8UserId);
-                CurrentActivity.ChildNodes.Clear();
-                await AddAndConfigureChildActivity(CurrentActivity, activityTemplate, order: 1);
-                PreviousSelectedDataSourceId = ConfigurationControls.DataSourceSelector.Value;
+                var activityTemplate = await GetActivityTemplate(Guid.Parse(ActivityUI.DataSourceSelector.Value));
+                await HubCommunicator.DeleteExistingChildNodesFromActivity(ActivityId, CurrentUserId);
+                ActivityContext.ActivityPayload.ChildrenActivities.Clear();
+                await AddAndConfigureChildActivity(ActivityId, activityTemplate, order: 1);
+                PreviousSelectedDataSourceId = ActivityUI.DataSourceSelector.Value;
                 CachedData = null;
             }
         }
 
-        protected override async Task RunCurrentActivity()
+        protected override async Task RunETA()
         {
             if (IsInitialRun)
             {
@@ -131,10 +132,10 @@ namespace terminalFr8Core.Actions
                 throw new ActivityExecutionException($"Data source activity didn't generated {MT.StandardTableData.GetEnumDisplayName()} crate");
             }
             //If child activity did ran this time we need to remove the data its produced from payload (as it represents unfiltered data)
-            CurrentPayloadStorage.Remove(dataToFilter);
+            Payload.Remove(dataToFilter);
             var dataProperties = GetDataProperties(dataToFilter.Content);
             var result = FilterData(IncomingText, dataToFilter, dataProperties);
-            CurrentPayloadStorage.Add(result);
+            Payload.Add(result);
             IsInitialRun = true;
             //We don't want to run child activity again as we already used its data
             RequestSkipChildren();
@@ -143,7 +144,7 @@ namespace terminalFr8Core.Actions
         protected override Task RunChildActivities()
         {
             //We want to run our activity in filtering mode after child activity is completed
-            RequestJumpToActivity(CurrentActivity.Id);
+            RequestJumpToActivity(ActivityId);
             IsInitialRun = false;
             return Task.FromResult(0);
         }
@@ -230,7 +231,7 @@ namespace terminalFr8Core.Actions
             {
                 //TODO: we expect that activities that generate table data have to publish crate description with this data
                 //If this assumption won't be accepted then we'll have to compare payload before and after child activity is executed to get the data generated by child activity
-                var childActivityStorage = CrateManager.GetStorage((ActivityDO)CurrentActivity.GetOrderedChildren()[0]);
+                var childActivityStorage = ActivityContext.ActivityPayload.ChildrenActivities.OrderBy(x => x.Ordering).ToList()[0].CrateStorage;
                 var dataDescription = childActivityStorage.FirstCrateOrDefault<CrateDescriptionCM>()
                                                          ?.Content
                                                           .CrateDescriptions
@@ -239,7 +240,7 @@ namespace terminalFr8Core.Actions
                 {
                     return null;
                 }
-                return CurrentPayloadStorage.FirstCrateOrDefault<StandardTableDataCM>(x => x.Label == dataDescription.Label);
+                return Payload.FirstCrateOrDefault<StandardTableDataCM>(x => x.Label == dataDescription.Label);
             }
         }
 
@@ -247,19 +248,19 @@ namespace terminalFr8Core.Actions
         {
             get
             {
-                return CurrentActivityStorage.FirstCrateOrDefault<StandardTableDataCM>();
+                return Storage.FirstCrateOrDefault<StandardTableDataCM>();
             }
             set
             {
                 if (value == null)
                 {
-                    CurrentActivityStorage.Remove<StandardTableDataCM>();
+                    Storage.Remove<StandardTableDataCM>();
                     this[CacheCratedAt] = null;
                 }
                 else
                 {
-                    CurrentActivityStorage.Remove<StandardTableDataCM>();
-                    CurrentActivityStorage.Add(value);
+                    Storage.Remove<StandardTableDataCM>();
+                    Storage.Add(value);
                     this[CacheCratedAt] = DateTime.UtcNow.ToString(CacheDateFormat); 
                 }
             }
@@ -267,16 +268,16 @@ namespace terminalFr8Core.Actions
 
         private bool IsInitialRun
         {
-            get { return !CurrentPayloadStorage.Any(x => x.Label == CurrentActivity.Id.ToString()); }
+            get { return Payload.All(x => x.Label != ActivityId.ToString()); }
             set
             {
                 if (value)
                 {
-                    CurrentPayloadStorage.RemoveByLabel(CurrentActivity.Id.ToString());
+                    Payload.RemoveByLabel(ActivityId.ToString());
                 }
                 else
                 {
-                    CurrentPayloadStorage.ReplaceByLabel(Crate<StandardPayloadDataCM>.FromContent(CurrentActivity.Id.ToString(), new StandardPayloadDataCM()));
+                    Payload.ReplaceByLabel(Crate<StandardPayloadDataCM>.FromContent(ActivityId.ToString(), new StandardPayloadDataCM()));
                 }
             }
         }
@@ -287,21 +288,21 @@ namespace terminalFr8Core.Actions
             {
                 throw new ActivityExecutionException("Data source is not specified", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
-            if (CurrentActivity.ChildNodes.Count == 0)
+            if (ActivityContext.ActivityPayload.ChildrenActivities.Count == 0)
             {
                 throw new ActivityExecutionException("Data source activity is missing");
             }
-            var datasourceActivity = (ActivityDO)CurrentActivity.GetOrderedChildren()[0];
-            if (datasourceActivity.ActivityTemplateId != Guid.Parse(SelectedDataSourceActivityId))
+            var datasourceActivity = ActivityContext.ActivityPayload.ChildrenActivities.OrderBy(x => x.Ordering).ToList()[0];
+            if (datasourceActivity.ActivityTemplate.Id != Guid.Parse(SelectedDataSourceActivityId))
             {
                 throw new ActivityExecutionException("Data source activity is other than specified in data source");
             }
         }
         //Wrappers for control properties
-        private string IncomingText { get { return CurrentPayloadStorage.FindField(ConfigurationControls.IncomingTextSelector.selectedKey); } }
+        private string IncomingText => Payload.FindField(ActivityUI.IncomingTextSelector.selectedKey);
 
-        private string SelectedDataSourceActivityId { get { return ConfigurationControls.DataSourceSelector.Value; } }
-        
+        private string SelectedDataSourceActivityId => ActivityUI.DataSourceSelector.Value;
+
         public bool CachedDataIsOld
         {
             get
@@ -317,8 +318,10 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        private string SpecifiedDataProperties { get { return ConfigurationControls.KeywordPropertiesSource.Value; } }
-        
+        private string SpecifiedDataProperties => ActivityUI.KeywordPropertiesSource.Value;
+
         #endregion
+
+        protected override ActivityTemplateDTO MyTemplate { get; }
     }
 }

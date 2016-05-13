@@ -20,8 +20,7 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using TerminalBase.Services;
-using TerminalBase.Services.MT;
+using terminalFr8Core.Services.MT;
 using MTSearchHelper = terminalFr8Core.Services.MT.MTSearchHelper;
 
 namespace terminalFr8Core.Actions
@@ -116,49 +115,6 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        public override async Task<ActivityDO> Configure(ActivityDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
-        {
-            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authTokenDO);
-        }
-
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
-        {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            return ConfigurationRequestType.Followup;
-        }
-
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            var configurationCrate = PackControls(new ActivityUi());
-            FillObjectsSource(configurationCrate, "AvailableObjects");
-            FillUpstreamCrateManifestTypeDDLSource(configurationCrate);
-            await FillUpstreamCrateLabelDDLSource(configurationCrate, curActivityDO);
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.Add(configurationCrate);             
-                crateStorage.Add(
-                    Fr8Data.Crates.Crate.FromContent(
-                        "Found MT Objects",
-                        new FieldDescriptionsCM(
-                            new FieldDTO
-                            {
-                                Key = "Found MT Objects",
-                                Value = "Table",
-                                Availability = AvailabilityType.RunTime
-                            }
-                        )
-                    )
-                );
-            }
-
-            return curActivityDO;
-        }
-
         /*private async Task<Crate<FieldDescriptionsCM>>
             ExtractUpstreamQueryCrates(ActivityDO activityDO)
         {
@@ -176,175 +132,17 @@ namespace terminalFr8Core.Actions
             return crate;
         }*/
 
-        protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                var ui = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
-
-                if (ui == null)
-                {
-                    throw new InvalidOperationException("Action was not configured correctly");
-                }
-
-                var config = new ActivityUi();
-                config.ClonePropertiesFrom(ui);
-                Guid selectedObjectId;
-
-                crateStorage.RemoveByLabel("Queryable Criteria");
-
-                if (Guid.TryParse(config.AvailableObjects.Value, out selectedObjectId))
-                {
-                    // crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", GetFieldsByTypeId(selectedObjectId).ToArray()));
-                    crateStorage.Add(
-                        Crate.FromContent(
-                            "Queryable Criteria",
-                            new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(selectedObjectId))
-                        )
-                    );
-                }
-            }
-
-            return Task.FromResult(curActivityDO);
-        }
-
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-        {
-            var payload = await GetPayload(curActivityDO, containerId);
-            var payloadCrateStorage = CrateManager.GetStorage(payload);
-
-            var ui = GetConfigurationControls(curActivityDO);
-
-            if (ui == null)
-            {
-                return Error(payload, "Action was not configured correctly");
-            }
-
-            var queryPicker = ui.FindByName<RadioButtonGroup>("QueryPicker");
-
-            List<FilterConditionDTO> conditions;
-            Guid? selectedObjectId = null;
-
-            if (queryPicker.Radios[0].Selected)
-            {
-                var upstreamCrateChooser = (UpstreamCrateChooser)(queryPicker).Radios[0].Controls[0];
-
-                var queryCM = await ExtractUpstreamQuery(curActivityDO, upstreamCrateChooser);
-                if (queryCM == null || queryCM.Queries == null || queryCM.Queries.Count == 0)
-                {
-                    return Error(payload, "No upstream crate found");
-                }
-
-                var query = queryCM.Queries[0];
-
-                conditions = query.Criteria ?? new List<FilterConditionDTO>();
-                selectedObjectId = ExtractUpstreamTypeId(query);
-            }
-            else
-            {
-                var filterPane = (FilterPane)queryPicker.Radios[1].Controls[1];
-                var availableObjects = (DropDownList)queryPicker.Radios[1].Controls[0];
-                var criteria = JsonConvert.DeserializeObject<FilterDataDTO>(filterPane.Value);
-
-                if (availableObjects.Value == null)
-                {
-                    return Error(payload, "This action is designed to query the Fr8 Warehouse for you, but you don't currently have any objects stored there.");
-                }
-
-                Guid objectId;
-                if (Guid.TryParse(availableObjects.Value, out objectId))
-                {
-                    selectedObjectId = objectId;
-                }
-
-                conditions = (criteria.ExecutionType == FilterExecutionType.WithoutFilter)
-                    ? new List<FilterConditionDTO>()
-                    : criteria.Conditions;
-            }
-
-            // If no object is found in MT database, return empty result.
-            if (!selectedObjectId.HasValue)
-            {
-                var searchResult = new StandardPayloadDataCM();
-
-                using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
-                {
-                    crateStorage.Add(Fr8Data.Crates.Crate.FromContent("Found MT Objects", searchResult));
-                }
-
-                return Success(payload);
-            }
-
-            //STARTING NASTY CODE
-            //TODO discuss this with Alex (bahadir)
-            var envIdCondition = conditions.FirstOrDefault(c => c.Field == "EnvelopeId");
-            if (envIdCondition != null && envIdCondition.Value == "FromPayload")
-            {
-                envIdCondition.Value = GetCurrentEnvelopeId(payloadCrateStorage);
-            }
-            //END OF NASTY CODE
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var objectId = selectedObjectId.GetValueOrDefault();
-                var mtType = uow.MultiTenantObjectRepository.FindTypeReference(objectId);
-
-                if (mtType == null)
-                {
-                    return Error(payload, "Invalid object selected");
-                }
-
-                Type manifestType = mtType.ClrType;
-
-                var queryBuilder = MTSearchHelper.CreateQueryProvider(manifestType);
-                var converter = CrateManifestToRowConverter(manifestType);
-                var foundObjects = queryBuilder.Query(
-                    uow,
-                    authTokenDO.UserID,
-                    conditions.ToList()
-                )
-                .ToArray();
-
-                var searchResult = new StandardPayloadDataCM();
-
-                foreach (var foundObject in foundObjects)
-                {
-                    searchResult.PayloadObjects.Add(converter(foundObject));
-                }
-
-                using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
-                {
-                    crateStorage.Add(Fr8Data.Crates.Crate.FromContent("Found MT Objects", searchResult));
-                }
-            }
-
-            return Success(payload);
-        }
-
-        private async Task<StandardQueryCM> ExtractUpstreamQuery(
-            ActivityDO activityDO,
-            UpstreamCrateChooser queryPicker)
+        private async Task<StandardQueryCM> ExtractUpstreamQuery(UpstreamCrateChooser queryPicker)
         {
             var upstreamQueryCrateLabel = queryPicker.SelectedCrates[0].Label.Value;
-
             if (string.IsNullOrEmpty(upstreamQueryCrateLabel))
             {
                 return null;
             }
-
-            var upstreamQueryCrate =
-                (await GetCratesByDirection<StandardQueryCM>(
-                    activityDO,
-                    CrateDirection.Upstream
-                ))
+            var upstreamQueryCrate = (await GetCratesByDirection<StandardQueryCM>(CrateDirection.Upstream))
                 .FirstOrDefault(x => x.Label == upstreamQueryCrateLabel);
 
-            if (upstreamQueryCrate == null)
-            {
-                return null;
-            }
-
-            return upstreamQueryCrate.Content;
+            return upstreamQueryCrate?.Content;
         }
 
         // This is weird to use query's name as the way to address MT type. 
@@ -354,19 +152,13 @@ namespace terminalFr8Core.Actions
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var type = uow.MultiTenantObjectRepository.ListTypeReferences().FirstOrDefault(x => x.Alias == query.Name);
-
-                if (type == null)
-                {
-                    return null;
-                }
-
-                return type.Id;
+                return type?.Id;
             }
         }
 
-        private string GetCurrentEnvelopeId(ICrateStorage storage)
+        private string GetCurrentEnvelopeId()
         {
-            var envelopePayloadCrate = storage.CrateContentsOfType<StandardPayloadDataCM>(c => c.Label == "DocuSign Envelope Payload Data").Single();
+            var envelopePayloadCrate = Payload.CrateContentsOfType<StandardPayloadDataCM>(c => c.Label == "DocuSign Envelope Payload Data").Single();
             var envelopeId = envelopePayloadCrate.PayloadObjects.SelectMany(o => o.PayloadObject).Single(po => po.Key == "EnvelopeId").Value;
             return envelopeId;
         }
@@ -454,25 +246,152 @@ namespace terminalFr8Core.Actions
             return fields.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
         }
 
-        private async Task FillUpstreamCrateLabelDDLSource(Crate configurationCrate, ActivityDO activityDO)
+        private async Task FillUpstreamCrateLabelDDLSource(Crate configurationCrate)
         {
             var selectedCrateDetails = GetSelectedCrateDetails(configurationCrate);
             var control = selectedCrateDetails.Label;
-            control.ListItems = await GetExtractUpstreamQueryList(activityDO);
+            control.ListItems = await GetExtractUpstreamQueryList();
         }
 
-        private async Task<List<ListItem>> GetExtractUpstreamQueryList(ActivityDO activityDO)
+        private async Task<List<ListItem>> GetExtractUpstreamQueryList()
         {
-            var upstreamCrates = await GetCratesByDirection<StandardQueryCM>(
-                activityDO,
-                CrateDirection.Upstream
-            );
-
+            var upstreamCrates = await GetCratesByDirection<StandardQueryCM>(CrateDirection.Upstream);
             return upstreamCrates
                  .Select(x => new ListItem() { Key = x.Label, Value = x.Label })
                  .ToList();
         }
 
         #endregion
+
+        public QueryFr8Warehouse_v1() : base(false)
+        {
+        }
+
+        protected override ActivityTemplateDTO MyTemplate { get; }
+        public override async Task Run()
+        {
+            var queryPicker = GetControl<RadioButtonGroup>("QueryPicker");
+            List<FilterConditionDTO> conditions;
+            Guid? selectedObjectId = null;
+
+            if (queryPicker.Radios[0].Selected)
+            {
+                var upstreamCrateChooser = (UpstreamCrateChooser)(queryPicker).Radios[0].Controls[0];
+
+                var queryCM = await ExtractUpstreamQuery(upstreamCrateChooser);
+                if (queryCM?.Queries == null || queryCM.Queries.Count == 0)
+                {
+                    RaiseError("No upstream crate found");
+                    return;
+                }
+
+                var query = queryCM.Queries[0];
+
+                conditions = query.Criteria ?? new List<FilterConditionDTO>();
+                selectedObjectId = ExtractUpstreamTypeId(query);
+            }
+            else
+            {
+                var filterPane = (FilterPane)queryPicker.Radios[1].Controls[1];
+                var availableObjects = (DropDownList)queryPicker.Radios[1].Controls[0];
+                var criteria = JsonConvert.DeserializeObject<FilterDataDTO>(filterPane.Value);
+
+                if (availableObjects.Value == null)
+                {
+                    RaiseError("This action is designed to query the Fr8 Warehouse for you, but you don't currently have any objects stored there.");
+                    return;
+                }
+
+                Guid objectId;
+                if (Guid.TryParse(availableObjects.Value, out objectId))
+                {
+                    selectedObjectId = objectId;
+                }
+
+                conditions = (criteria.ExecutionType == FilterExecutionType.WithoutFilter)
+                    ? new List<FilterConditionDTO>()
+                    : criteria.Conditions;
+            }
+
+            // If no object is found in MT database, return empty result.
+            if (!selectedObjectId.HasValue)
+            {
+                var searchResult = new StandardPayloadDataCM();
+                Payload.Add(Crate.FromContent("Found MT Objects", searchResult));
+                Success();
+                return;
+            }
+
+            //STARTING NASTY CODE
+            //TODO discuss this with Alex (bahadir)
+            var envIdCondition = conditions.FirstOrDefault(c => c.Field == "EnvelopeId");
+            if (envIdCondition != null && envIdCondition.Value == "FromPayload")
+            {
+                envIdCondition.Value = GetCurrentEnvelopeId();
+            }
+            //END OF NASTY CODE
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var objectId = selectedObjectId.GetValueOrDefault();
+                var mtType = uow.MultiTenantObjectRepository.FindTypeReference(objectId);
+
+                if (mtType == null)
+                {
+                    RaiseError("Invalid object selected");
+                    return;
+                }
+                Type manifestType = mtType.ClrType;
+                var queryBuilder = MTSearchHelper.CreateQueryProvider(manifestType);
+                var converter = CrateManifestToRowConverter(manifestType);
+                var foundObjects = queryBuilder.Query(uow,CurrentUserId,conditions.ToList()).ToArray();
+                var searchResult = new StandardPayloadDataCM();
+                foreach (var foundObject in foundObjects)
+                {
+                    searchResult.PayloadObjects.Add(converter(foundObject));
+                }
+                Payload.Add(Crate.FromContent("Found MT Objects", searchResult));
+            }
+
+            Success();
+        }
+
+        public override async Task Initialize()
+        {
+            var configurationCrate = PackControls(new ActivityUi());
+            FillObjectsSource(configurationCrate, "AvailableObjects");
+            FillUpstreamCrateManifestTypeDDLSource(configurationCrate);
+            await FillUpstreamCrateLabelDDLSource(configurationCrate);
+
+            Storage.Add(configurationCrate);
+            Storage.Add(Crate.FromContent("Found MT Objects", new FieldDescriptionsCM(
+                        new FieldDTO
+                        {
+                            Key = "Found MT Objects",
+                            Value = "Table",
+                            Availability = AvailabilityType.RunTime
+                        }
+                    )
+                )
+            );
+        }
+
+        public override Task FollowUp()
+        {
+            var config = new ActivityUi();
+            config.ClonePropertiesFrom(ConfigurationControls);
+            Guid selectedObjectId;
+            Storage.RemoveByLabel("Queryable Criteria");
+            if (Guid.TryParse(config.AvailableObjects.Value, out selectedObjectId))
+            {
+                // crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", GetFieldsByTypeId(selectedObjectId).ToArray()));
+                Storage.Add(
+                    Crate.FromContent("Queryable Criteria",
+                        new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(selectedObjectId))
+                    )
+                );
+            }
+            return Task.FromResult(0);
+        }
     }
 }

@@ -6,6 +6,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
+using AutoMapper;
 using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
@@ -16,6 +17,7 @@ using Infrastructure.Interfaces;
 using Newtonsoft.Json;
 using StructureMap;
 using TerminalBase.Infrastructure;
+using TerminalBase.Models;
 using Utilities.Configuration.Azure;
 
 namespace TerminalBase.Services
@@ -252,23 +254,27 @@ namespace TerminalBase.Services
             await _restfulServiceClient.PostAsync<ManageAuthToken_Apply[]>(uri, token, null, await GetHMACHeader(uri, userId, token));
         }
 
-        public async Task<ActivityDTO> ConfigureActivity(ActivityDTO activityDTO, string userId)
+        public async Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                       + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/activities/configure";
             var uri = new Uri(url);
-            return await _restfulServiceClient.PostAsync<ActivityDTO, ActivityDTO>(uri, activityDTO, null, await GetHMACHeader(uri, userId, activityDTO));
+            var activityDTO = Mapper.Map<ActivityDTO>(activityPayload);
+            var resultActivityDTO = await _restfulServiceClient.PostAsync<ActivityDTO, ActivityDTO>(uri, activityDTO, null, await GetHMACHeader(uri, userId, activityDTO));
+            return Mapper.Map<ActivityPayload>(resultActivityDTO);
         }
 
-        public async Task<ActivityDTO> SaveActivity(ActivityDTO activityDTO, string userId)
+        public async Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                       + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/activities/save";
             var uri = new Uri(url);
-            return await _restfulServiceClient.PostAsync<ActivityDTO, ActivityDTO>(uri, activityDTO, null, await GetHMACHeader(uri, userId, activityDTO));
+            var activityDTO = Mapper.Map<ActivityDTO>(activityPayload);
+            var resultActivityDTO = await _restfulServiceClient.PostAsync<ActivityDTO, ActivityDTO>(uri, activityDTO, null, await GetHMACHeader(uri, userId, activityDTO));
+            return Mapper.Map<ActivityPayload>(resultActivityDTO);
         }
 
-        public async Task<ActivityDTO> CreateAndConfigureActivity(Guid templateId, string userId, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
+        public async Task<ActivityPayload> CreateAndConfigureActivity(Guid templateId, string userId, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                       + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/activities/create";
@@ -295,7 +301,8 @@ namespace TerminalBase.Services
             }
 
             var uri = new Uri(url + formattedPostUrl);
-            return await _restfulServiceClient.PostAsync<ActivityDTO>(uri, null, await GetHMACHeader(uri, userId));
+            var resultActivityDTO = await _restfulServiceClient.PostAsync<ActivityDTO>(uri, null, await GetHMACHeader(uri, userId));
+            return Mapper.Map<ActivityPayload>(resultActivityDTO);
         }
 
         public async Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO, string userId)

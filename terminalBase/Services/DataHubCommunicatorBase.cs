@@ -12,6 +12,7 @@ using Fr8Data.States;
 using Newtonsoft.Json;
 using StructureMap;
 using TerminalBase.Infrastructure;
+using TerminalBase.Models;
 
 namespace TerminalBase.Services
 {
@@ -49,7 +50,7 @@ namespace TerminalBase.Services
             return Task.FromResult<object>(null);
         }
 
-        public Task<PayloadDTO> GetPayload(ActivityDTO activityDO, Guid containerId, string userId)
+        public Task<PayloadDTO> GetPayload(Guid containerId, string userId)
         {
             var payload = new PayloadDTO(containerId)
             {
@@ -71,7 +72,7 @@ namespace TerminalBase.Services
             return Task.FromResult(payload);
         }
 
-        public Task<UserDTO> GetCurrentUser(ActivityDTO activityDO, Guid containerId, string userId)
+        public Task<UserDTO> GetCurrentUser(Guid containerId, string userId)
         {
             return Task.FromResult<UserDTO>(
                 new UserDTO()
@@ -84,7 +85,7 @@ namespace TerminalBase.Services
             );
         }
 
-        public Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDTO activityDO, CrateDirection direction, string userId)
+        public Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(Guid activityId, CrateDirection direction, string userId)
         {
             var searchLabel = direction == CrateDirection.Upstream
                 ? LabelPrefix + "_UpstreamCrate"
@@ -100,13 +101,13 @@ namespace TerminalBase.Services
             return Task.FromResult(crates);
         }
 
-        public Task<List<Crate>> GetCratesByDirection(ActivityDTO activityDTO, CrateDirection direction, string userId)
+        public Task<List<Crate>> GetCratesByDirection(Guid activityId, CrateDirection direction, string userId)
         {
             var searchLabel = direction == CrateDirection.Upstream
                 ? LabelPrefix + "_UpstreamCrate"
                 : LabelPrefix + "_DownstreamCrate";
 
-            var crateStorage = Crate.GetStorage(activityDTO);
+            var crateStorage = Crate.GetStorage(ExplicitData);
             var crates = crateStorage
                 .Where(x => x.Label.StartsWith(searchLabel))
                 .ToList();
@@ -177,22 +178,22 @@ namespace TerminalBase.Services
             return Task.FromResult(new List<FieldValidationResult>());
         }
 
-        public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(ActivityDTO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
+        public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability, string userId)
         {
             //This code only supports integration testing scenarios
 
             var mergedFields = new FieldDescriptionsCM();
-            var availableData = await GetAvailableData(activityDO, direction, availability, userId);
+            var availableData = await GetAvailableData(activityId, direction, availability, userId);
 
             mergedFields.Fields.AddRange(availableData.AvailableFields);
 
             return mergedFields;
         }
 
-        public async Task<IncomingCratesDTO> GetAvailableData(ActivityDTO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
+        public async Task<IncomingCratesDTO> GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability, string userId)
         {
-            var fields = await GetCratesByDirection<FieldDescriptionsCM>(activityDO, direction, userId);
-            var crates = await GetCratesByDirection<CrateDescriptionCM>(activityDO, direction, userId);
+            var fields = await GetCratesByDirection<FieldDescriptionsCM>(activityId, direction, userId);
+            var crates = await GetCratesByDirection<CrateDescriptionCM>(activityId, direction, userId);
             var availableData = new IncomingCratesDTO();
 
             availableData.AvailableFields.AddRange(fields.SelectMany(x => x.Content.Fields).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
@@ -207,17 +208,17 @@ namespace TerminalBase.Services
             throw new NotImplementedException();
         }
 
-        public Task<ActivityDTO> ConfigureActivity(ActivityDTO activityDTO, string userId)
+        public Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload, string userId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ActivityDTO> SaveActivity(ActivityDTO activityDO, string userId)
+        public Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload, string userId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ActivityDTO> CreateAndConfigureActivity(Guid templateId, string userId, string name = null, int? order = null, Guid? parentNodeId = default(Guid?), bool createPlan = false, Guid? authorizationTokenId = null)
+        public Task<ActivityPayload> CreateAndConfigureActivity(Guid templateId, string userId, string name = null, int? order = null, Guid? parentNodeId = default(Guid?), bool createPlan = false, Guid? authorizationTokenId = null)
         {
             throw new NotImplementedException();
         }

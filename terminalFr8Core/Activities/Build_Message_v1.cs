@@ -50,28 +50,28 @@ namespace terminalFr8Core.Actions
         {
         }
 
-        protected override Task Initialize(CrateSignaller crateSignaller)
-        {
-            return Task.FromResult(0);
-        }
-
         private Crate PackMessageCrate(string body = null)
         {
             return Crate.FromContent(ActivityUi.RuntimeCrateLabel,
-                                     new StandardPayloadDataCM(new FieldDTO(ConfigurationControls.Name.Value, body)));
-        }
-
-        protected override Task Configure(CrateSignaller crateSignaller)
-        {
-            crateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ActivityUi.RuntimeCrateLabel)
-                               .AddField(ConfigurationControls.Name.Value);
-
-            return Task.FromResult(0);
+                                     new StandardPayloadDataCM(new FieldDTO(ActivityUI.Name.Value, body)));
         }
 
         private static readonly Regex FieldPlaceholdersRegex = new Regex(@"\[.*?\]");
 
-        protected override async Task RunCurrentActivity()
+        protected override Task InitializeETA()
+        {
+            return Task.FromResult(0);
+        }
+
+        protected override Task ConfigureETA()
+        {
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ActivityUi.RuntimeCrateLabel)
+                               .AddField(ActivityUI.Name.Value);
+
+            return Task.FromResult(0);
+        }
+
+        protected override async Task RunETA()
         {
             await Task.Factory.StartNew(RunCurrentActivityImpl);
         }
@@ -79,7 +79,7 @@ namespace terminalFr8Core.Actions
         private void RunCurrentActivityImpl()
         {
             var availableFields = ExtractAvaialbleFieldsFromPayload();
-            var message = ConfigurationControls.Body.Value;
+            var message = ActivityUI.Body.Value;
             if (availableFields.Count > 0 && !string.IsNullOrEmpty(message))
             {
                 var messageBodyBuilder = new StringBuilder(message);
@@ -95,16 +95,16 @@ namespace terminalFr8Core.Actions
                 }
                 message = messageBodyBuilder.ToString();
             }
-            CurrentPayloadStorage.Add(PackMessageCrate(message));
+            Payload.Add(PackMessageCrate(message));
         }
 
         private List<FieldDTO> ExtractAvaialbleFieldsFromPayload()
         {
             var result = new List<FieldDTO>();
 
-            result.AddRange(CurrentPayloadStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.AllValues()));
+            result.AddRange(Payload.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.AllValues()));
 
-            foreach (var tableCrate in CurrentPayloadStorage.CratesOfType<StandardTableDataCM>().Select(x => x.Content))
+            foreach (var tableCrate in Payload.CratesOfType<StandardTableDataCM>().Select(x => x.Content))
             {
                 //We should take first row of data only if there is at least one data row. We never take header row if it exists
                 var rowToTake = tableCrate.FirstRowHeaders
@@ -122,5 +122,7 @@ namespace terminalFr8Core.Actions
             }
             return result;
         }
+
+        protected override ActivityTemplateDTO MyTemplate { get; }
     }
 }
