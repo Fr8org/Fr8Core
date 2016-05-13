@@ -62,7 +62,7 @@ namespace terminalQuickBooks.Services
                     ExternalAccountId = authTokenDO.ExternalAccountId,
                     Token = authTokenDO.Token
                 };
-                _hubCommunicator.RenewToken(tokenDto, userId);
+                _hubCommunicator.RenewToken(tokenDto.Id, tokenDto.ExternalAccountId, tokenDto.Token, userId);
 
                 // After token refresh we need to get new accessToken and accessTokenSecret from it
                 tokens = authTokenDO.Token.Split(new[] { Authenticator.TokenSeparator }, StringSplitOptions.None);

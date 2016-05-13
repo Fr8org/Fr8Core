@@ -158,15 +158,24 @@ namespace HubWeb.Controllers
             var json = await client.PostAsync<JObject>(uri, headers: headers);
             var token = json.Value<string>("token");
 
-            return Ok(new {token});
+            return Ok(new { token });
         }
 
         [HttpPost]
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
-        public IHttpActionResult RenewToken(AuthorizationTokenDTO authTokenDTO)
+        public IHttpActionResult RenewToken(string id, string externalAccountId, string token)
         {
-            _authorization.RenewToken(Guid.Parse(authTokenDTO.Id), authTokenDTO.ExternalAccountId, authTokenDTO.Token);
+            _authorization.RenewToken(Guid.Parse(id), externalAccountId, token);
+            return Ok();
+        }
+
+        [HttpPost]
+        [Fr8ApiAuthorize]
+        [Fr8HubWebHMACAuthenticate]
+        public IHttpActionResult RenewToken([FromBody]AuthorizationTokenDTO token)
+        {
+            _authorization.RenewToken(Guid.Parse(token.Id), token.ExternalAccountId, token.Token);
             return Ok();
         }
     }

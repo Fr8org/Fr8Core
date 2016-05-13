@@ -633,13 +633,13 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var authToken = uow.AuthorizationTokenRepository
-                    .GetPublicDataQuery()
-                    .SingleOrDefault(x => x.Id == authTokenId);
+                    .FindTokenById(authTokenId);
 
                 if (authToken == null)
                     return;
                 authToken.ExternalAccountId = externalAccountId;
                 authToken.Token = token;
+                uow.SaveChanges();
             }
         }
 

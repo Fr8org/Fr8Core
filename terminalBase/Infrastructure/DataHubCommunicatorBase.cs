@@ -261,6 +261,11 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(0);
         }
 
+        public Task RenewToken(string id, string externalAccountId, string token, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task DeletePlan(Guid planId, string userId)
         {
             throw new NotImplementedException();
