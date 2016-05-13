@@ -141,7 +141,7 @@ namespace terminalFr8Core.Actions
             RequestSkipChildren();
         }
 
-        protected override Task RunChildActivities()
+        public override Task RunChildActivities()
         {
             //We want to run our activity in filtering mode after child activity is completed
             RequestJumpToActivity(ActivityId);

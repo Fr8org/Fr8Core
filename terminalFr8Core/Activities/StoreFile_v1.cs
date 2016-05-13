@@ -18,46 +18,6 @@ namespace terminalFr8Core.Activities
 {
     public class StoreFile_v1 : BaseTerminalActivity
     {
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
-        {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-            var controlsMS = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-
-            if (controlsMS == null)
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            return ConfigurationRequestType.Followup;
-        }
-
-
-        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
-        }
-
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            //build a controls crate to render the pane
-            var configurationControlsCrate = CreateControlsCrate();
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
-                await UpdateUpstreamFileCrates(curActivityDO, crateStorage);
-            }
-
-            return curActivityDO;
-        }
-
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-        {
-            
-        }
 
         private MemoryStream GenerateStreamFromString(string s)
         {
@@ -106,7 +66,6 @@ namespace terminalFr8Core.Activities
         protected override ActivityTemplateDTO MyTemplate { get; }
         public override async Task Run()
         {
-
             var textSourceControl = GetControl<TextSource>("File Crate label");
             var fileNameField = GetControl<TextBox>("File_Name");
             var fileCrateLabel = textSourceControl.GetValue(Payload);
@@ -140,8 +99,12 @@ namespace terminalFr8Core.Activities
             Success();
         }
 
-        public override Task Initialize()
+        public override async Task Initialize()
         {
+            //build a controls crate to render the pane
+            var configurationControlsCrate = CreateControlsCrate();
+            Storage.Add(configurationControlsCrate);
+            await UpdateUpstreamFileCrates(curActivityDO, crateStorage);
         }
 
         public override Task FollowUp()

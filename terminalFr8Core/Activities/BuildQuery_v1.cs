@@ -118,10 +118,9 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Update previously stored value of selected object type.
         /// </summary>
-        private void UpdateSelectedObjectCrate(ICrateStorage storage, string selectedObject)
+        private void UpdateSelectedObjectCrate(string selectedObject)
         {
             UpdateDesignTimeCrateValue(
-                storage,
                 "Selected Object",
                 new FieldDTO() { Key = selectedObject, Value = selectedObject }
             );
@@ -213,12 +212,12 @@ namespace terminalFr8Core.Actions
         /// <summary>
         /// Update queryable criteria list.
         /// </summary>
-        private async Task UpdateQueryableCriteria(ActivityDO activityDO, string selectedObject)
+        private async Task UpdateQueryableCriteria(string selectedObject)
         {
-            var matchedColumns = await MatchColumnsForSelectedObject(activityDO, selectedObject);
+            var matchedColumns = await MatchColumnsForSelectedObject(selectedObject);
 
             // TODO: FR-2347, fix here.
-            UpdateDesignTimeCrateValue(Storage, "Queryable Criteria", matchedColumns.ToArray());
+            UpdateDesignTimeCrateValue("Queryable Criteria", matchedColumns.ToArray());
         }
 
         /// <summary>
@@ -276,8 +275,7 @@ namespace terminalFr8Core.Actions
                     "No upstream crates found to extract table definitions.");
                 return;
             }
-            var controlsCrate = EnsureControlsCrate(crateStorage);
-
+            EnsureControlsCrate();
             AddSelectObjectDdl();
             AddLabelControl("SelectObjectError", "No object selected", "Please select object from the list above.");
             Storage.RemoveByLabel("Available Tables");
@@ -287,31 +285,27 @@ namespace terminalFr8Core.Actions
 
         public override async Task FollowUp()
         {
-                RemoveControl<TextBlock>("SelectObjectError");
+            RemoveControl<TextBlock>("SelectObjectError");
 
-                var selectedObject = ExtractSelectedObjectFromControl();
-                if (string.IsNullOrEmpty(selectedObject))
-                {
-                    AddLabelControl("SelectObjectError","No object selected", "Please select object from the list above.");
-                    return;
-                }
-                else
-                {
-                    var prevSelectedObject = ExtractSelectedObjectFromCrate();
-                    if (prevSelectedObject != selectedObject)
-                    {
-                        RemoveControl<QueryBuilder>("SelectedQuery");
-                        AddQueryBuilder();
-
-                        await UpdateQueryableCriteria(crateStorage, curActivityDO, selectedObject);
-                    }
-                }
-
-                UpdateSelectedObjectCrate(selectedObject);
-                UpdateSelectedQueryCrate();
+            var selectedObject = ExtractSelectedObjectFromControl();
+            if (string.IsNullOrEmpty(selectedObject))
+            {
+                AddLabelControl("SelectObjectError","No object selected", "Please select object from the list above.");
+                return;
             }
+            else
+            {
+                var prevSelectedObject = ExtractSelectedObjectFromCrate();
+                if (prevSelectedObject != selectedObject)
+                {
+                    RemoveControl<QueryBuilder>("SelectedQuery");
+                    AddQueryBuilder();
 
-            return curActivityDO;
+                    await UpdateQueryableCriteria(selectedObject);
+                }
+            }
+            UpdateSelectedObjectCrate(selectedObject);
+            UpdateSelectedQueryCrate();
         }
     }
 }

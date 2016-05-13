@@ -3,12 +3,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-<<<<<<< HEAD:terminalBase/BaseClasses/EnhancedTerminalActivity.cs
-=======
-using Data.Entities;
-using Data.Interfaces.Manifests;
-using Data.States;
->>>>>>> refs/remotes/origin/dev:terminalBase/BaseClasses/EnhancedTerminalActivityT.cs
 using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
@@ -16,9 +10,7 @@ using Fr8Data.DataTransferObjects.Helpers;
 using Fr8Data.Helpers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using TerminalBase.Infrastructure;
 using TerminalBase.Errors;
-using TerminalBase.Models;
 using TerminalBase.Services;
 
 namespace TerminalBase.BaseClasses
@@ -30,27 +22,14 @@ namespace TerminalBase.BaseClasses
         // Declarations
         /**********************************************************************************/
 
-        private const string ConfigurationValuesCrateLabel = "Configuration Values";
-        
-<<<<<<< HEAD:terminalBase/BaseClasses/EnhancedTerminalActivity.cs
-=======
-        /**********************************************************************************/
-
-        private bool _isRunTime;
-        private ICrateStorage _currentPayloadStorage;
-        private OperationalStateCM _operationalState;
-
->>>>>>> refs/remotes/origin/dev:terminalBase/BaseClasses/EnhancedTerminalActivityT.cs
-        /**********************************************************************************/
-
         private bool _isRunTime;
 
         /**********************************************************************************/
 
         protected T ActivityUI { get; private set; }
-        
+
         protected UiBuilder UiBuilder { get; private set; }
-        
+
 
         /**********************************************************************************/
         // Functions
@@ -69,7 +48,7 @@ namespace TerminalBase.BaseClasses
                 throw new InvalidOperationException(message);
             }
         }
-        
+
         /**********************************************************************************/
 
         public override async Task Initialize()
@@ -86,124 +65,19 @@ namespace TerminalBase.BaseClasses
         public override async Task FollowUp()
         {
             SyncConfControls();
-<<<<<<< HEAD:terminalBase/BaseClasses/EnhancedTerminalActivity.cs
             if (await Validate())
             {
                 await ConfigureETA();
-=======
-
-            CurrentActivityStorage.Remove<ValidationResultsCM>();
-
-            var validationManager = CreateValidationManager();
-            
-            await Validate(validationManager);
-
-            if (!validationManager.HasErrors)
-            {
-                CurrentActivityStorage.Remove<ValidationResultsCM>();
-                await Configure(crateSignaller);
->>>>>>> refs/remotes/origin/dev:terminalBase/BaseClasses/EnhancedTerminalActivityT.cs
             }
             SyncConfControlsBack();
         }
 
         /**********************************************************************************/
 
-<<<<<<< HEAD:terminalBase/BaseClasses/EnhancedTerminalActivity.cs
         public sealed override async Task Activate()
         {
             SyncConfControls();
-<<<<<<< HEAD:terminalBase/BaseClasses/EnhancedTerminalActivity.cs
             if (await Validate())
-=======
-        protected ValidationManager CreateValidationManager()
-        {
-            var validationResults = CurrentActivityStorage.CrateContentsOfType<ValidationResultsCM>().FirstOrDefault();
-
-            if (validationResults == null)
-            {
-                validationResults = new ValidationResultsCM();
-                CurrentActivityStorage.Add(Crate.FromContent("Validation Errors", validationResults));
-=======
-
-            CurrentActivityStorage.Remove<ValidationResultsCM>();
-
-            var validationManager = CreateValidationManager();
-            
-            await Validate(validationManager);
-
-            if (!validationManager.HasErrors)
-            {
-                CurrentActivityStorage.Remove<ValidationResultsCM>();
-                await Configure(crateSignaller);
->>>>>>> refs/remotes/origin/dev:terminalBase/BaseClasses/EnhancedTerminalActivityT.cs
-            }
-
-            return new ValidationManager(validationResults);
-        }
-
-        /**********************************************************************************/
-
-        protected ValidationManager CreateValidationManager()
-        {
-            var validationResults = CurrentActivityStorage.CrateContentsOfType<ValidationResultsCM>().FirstOrDefault();
-
-            if (validationResults == null)
-            {
-                validationResults = new ValidationResultsCM();
-                CurrentActivityStorage.Add(Crate.FromContent("Validation Errors", validationResults));
-            }
-
-            return new ValidationManager(validationResults);
-        }
-
-        /**********************************************************************************/
-
-        public sealed override async Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            if (AuthorizeIfNecessary(curActivityDO, authTokenDO))
-            {
-                return curActivityDO;
-            }
-
-            AuthorizationToken = authTokenDO;
-            CurrentActivity = curActivityDO;
-
-            UpstreamQueryManager = new UpstreamQueryManager(CurrentActivity, HubCommunicator, CurrentFr8UserId);
-
-            using (var storage = CrateManager.GetUpdatableStorage(CurrentActivity))
-            {
-                CurrentActivityStorage = storage;
-
-                SyncConfControls();
-
-                CurrentActivityStorage.Remove<ValidationResultsCM>();
-
-                var validationManager = CreateValidationManager();
-
-                await Validate(validationManager);
-
-                if (!validationManager.HasErrors)
-                {
-                    CurrentActivityStorage.Remove<ValidationResultsCM>();
-                    await Activate();
-                }
-               
-            }
-
-            return curActivityDO;
-        }
-
-        /**********************************************************************************/
-
-        public sealed override async Task<ActivityDO> Deactivate(ActivityDO curActivityDO)
-        {
-            CurrentActivity = curActivityDO;
-
-            UpstreamQueryManager = new UpstreamQueryManager(CurrentActivity, HubCommunicator, CurrentFr8UserId);
-
-            using (var storage = CrateManager.GetUpdatableStorage(CurrentActivity))
->>>>>>> refs/remotes/origin/dev:terminalBase/BaseClasses/EnhancedTerminalActivityT.cs
             {
                 await ActivateETA();
             }
@@ -239,24 +113,7 @@ namespace TerminalBase.BaseClasses
 
                 OperationalState.CurrentActivityResponse = null;
 
-<<<<<<< HEAD:terminalBase/BaseClasses/EnhancedTerminalActivity.cs
                 await RunETA();
-=======
-                try
-                {
-                    var validationCm = new ValidationResultsCM();
-                    var validationManager = new ValidationManager(validationCm);
-
-                    await Validate(validationManager);
-
-                    if (validationManager.HasErrors)
-                    {
-                        Error("Activity was incorrectly configured: " + validationCm);
-                        return processPayload;
-                    }
-
-                    OperationalState.CurrentActivityResponse = null;
->>>>>>> refs/remotes/origin/dev:terminalBase/BaseClasses/EnhancedTerminalActivityT.cs
 
                 if (OperationalState.CurrentActivityResponse == null)
                 {
@@ -280,7 +137,7 @@ namespace TerminalBase.BaseClasses
                 RaiseError(ex.Message);
             }
         }
-        
+
         /**********************************************************************************/
 
         protected T AssignNamesForUnnamedControls(T configurationControls)
@@ -298,19 +155,19 @@ namespace TerminalBase.BaseClasses
 
             return configurationControls;
         }
-        
+
         /**********************************************************************************/
 
         protected virtual T CrateActivityUI()
         {
-            var uiBuilderConstructor = typeof (T).GetConstructor(new [] {typeof (UiBuilder)});
+            var uiBuilderConstructor = typeof(T).GetConstructor(new[] { typeof(UiBuilder) });
 
             if (uiBuilderConstructor != null)
             {
-                return AssignNamesForUnnamedControls((T) uiBuilderConstructor.Invoke(new object[] {UiBuilder}));
+                return AssignNamesForUnnamedControls((T)uiBuilderConstructor.Invoke(new object[] { UiBuilder }));
             }
 
-            var defaultConstructor = typeof (T).GetConstructor(new Type[0]);
+            var defaultConstructor = typeof(T).GetConstructor(new Type[0]);
 
             if (defaultConstructor == null)
             {
@@ -346,21 +203,7 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-<<<<<<< HEAD:terminalBase/BaseClasses/EnhancedTerminalActivity.cs
-<<<<<<< HEAD:terminalBase/BaseClasses/EnhancedTerminalActivity.cs
         private const string ConfigurationValuesCrateLabel = "Configuration Values";
-=======
-=======
->>>>>>> refs/remotes/origin/dev:terminalBase/BaseClasses/EnhancedTerminalActivityT.cs
-        protected virtual Task Validate(ValidationManager validationManager)
-        {
-            return Task.FromResult(true);
-        }
-
-<<<<<<< HEAD:terminalBase/BaseClasses/EnhancedTerminalActivity.cs
->>>>>>> refs/remotes/origin/dev:terminalBase/BaseClasses/EnhancedTerminalActivityT.cs
-=======
->>>>>>> refs/remotes/origin/dev:terminalBase/BaseClasses/EnhancedTerminalActivityT.cs
         /// <summary>
         /// Get or sets value of configuration field with the given key stored in current activity storage
         /// </summary>
@@ -417,7 +260,7 @@ namespace TerminalBase.BaseClasses
 
             ActivityUI = CrateActivityUI();
             ActivityUI.SyncWith(ConfigurationControls);
-            
+
             if (ConfigurationControls.Controls != null)
             {
                 var dynamicControlsCollection = Fr8ReflectionHelper.GetMembers(ConfigurationControls.GetType()).Where(x => x.CanRead && x.GetCustomAttribute<DynamicControlsAttribute>() != null && CheckIfMemberIsControlsCollection(x)).ToDictionary(x => x.Name, x => x);
@@ -505,7 +348,7 @@ namespace TerminalBase.BaseClasses
 
             return false;
         }
-        
+
         /**********************************************************************************/
         // Activity logic can update state of configuration controls. But as long we have copied  configuration controls crate from the storage into 
         // new instance of ActivityUi changes made to ActivityUi won't be reflected in storage.
@@ -623,7 +466,7 @@ namespace TerminalBase.BaseClasses
         protected void RequestJumpToActivity(Guid targetActivityId)
         {
             SetResponse(ActivityResponse.JumpToActivity);
-            OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() {Details = targetActivityId});
+            OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetActivityId });
         }
 
         /**********************************************************************************/
@@ -656,7 +499,7 @@ namespace TerminalBase.BaseClasses
 
             if (!string.IsNullOrWhiteSpace(message) || details != null)
             {
-                OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() {Message = message, Details = details});
+                OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Message = message, Details = details });
             }
         }
 
@@ -685,8 +528,6 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
         // we don't want uncontrollable extensibility
-<<<<<<< HEAD:terminalBase/BaseClasses/EnhancedTerminalActivity.cs
-<<<<<<< HEAD:terminalBase/BaseClasses/EnhancedTerminalActivity.cs
         //protected sealed override Task<ICrateStorage> ValidateActivity(ActivityDTO curActivityDTO)
         //{
         //    return base.ValidateActivity(curActivityDTO);
@@ -746,69 +587,6 @@ namespace TerminalBase.BaseClasses
         //{
         //    return base.GetUpstreamFileHandleCrates(activityDO);
         //}
-=======
-=======
->>>>>>> refs/remotes/origin/dev:terminalBase/BaseClasses/EnhancedTerminalActivityT.cs
-        public sealed override Task ValidateActivity(ActivityDO activityDo, ICrateStorage currActivityCrateStorage, ValidationManager validationManager)
-        {
-            return base.ValidateActivity(activityDo, currActivityCrateStorage, validationManager);
-        }
-
-        public  override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
-        {
-            return base.ConfigurationEvaluator(curActivityDO);
-        }
-
-        protected sealed override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            return base.InitialConfigurationResponse(curActivityDO, authTokenDO);
-        }
-
-        protected sealed override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            return base.FollowupConfigurationResponse(curActivityDO, authTokenDO);
-        }
-
-        public sealed override Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDO activityDO, CrateDirection direction)
-        {
-            return base.GetCratesByDirection<TManifest>(activityDO, direction);
-        }
-
-        public sealed override Task<List<Crate>> GetCratesByDirection(ActivityDO activityDO, CrateDirection direction)
-        {
-            return base.GetCratesByDirection(activityDO, direction);
-        }
-
-        public sealed override Task<FieldDescriptionsCM> GetDesignTimeFields(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
-        {
-            return base.GetDesignTimeFields(activityDO, direction, availability);
-        }
-
-        public sealed override Task<List<CrateManifestType>> BuildUpstreamManifestList(ActivityDO activityDO)
-        {
-            return base.BuildUpstreamManifestList(activityDO);
-        }
-
-        public sealed override Task<List<string>> BuildUpstreamCrateLabelList(ActivityDO activityDO)
-        {
-            return base.BuildUpstreamCrateLabelList(activityDO);
-        }
-
-        public sealed override Task<Crate<FieldDescriptionsCM>> GetUpstreamManifestListCrate(ActivityDO activityDO)
-        {
-            return base.GetUpstreamManifestListCrate(activityDO);
-        }
-
-        public sealed override Task<Crate<FieldDescriptionsCM>> GetUpstreamCrateLabelListCrate(ActivityDO activityDO)
-        {
-            return base.GetUpstreamCrateLabelListCrate(activityDO);
-        }
-
-        protected sealed override Task<List<Crate<StandardFileDescriptionCM>>> GetUpstreamFileHandleCrates(ActivityDO activityDO)
-        {
-            return base.GetUpstreamFileHandleCrates(activityDO);
-        }
->>>>>>> refs/remotes/origin/dev:terminalBase/BaseClasses/EnhancedTerminalActivityT.cs
 
         /**********************************************************************************/
     }
