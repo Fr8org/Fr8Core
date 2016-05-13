@@ -173,7 +173,7 @@ namespace terminalBaseTests.BaseClasses
 
                 Assert.NotNull(manifestList);
                 Assert.AreEqual(manifestList.Count(), manifestList.Distinct().Count());
-                Assert.AreEqual(3, manifestList.Count());
+                Assert.AreEqual(4, manifestList.Count());
 
                 foreach (var manifest in manifestList)
                 {
