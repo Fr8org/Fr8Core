@@ -97,7 +97,7 @@ namespace terminalTwilio.Actions
             {
                 FieldDTO smsFieldDTO = ParseSMSNumberAndMsg(controlsCrate, payloadCrates);
                 string smsNumber = smsFieldDTO.Key;
-                string smsBody = smsFieldDTO.Value + " - https://fr8.co/c/"+containerId;
+                string smsBody = smsFieldDTO.Value + " - https://fr8.co/c/" + containerId;
 
                 try
                 {
@@ -121,7 +121,7 @@ namespace terminalTwilio.Actions
                 PackCrate_WarningMessage(curActivityDO, appEx.Message, "SMS Number");
                 return Error(payloadCrates, appEx.Message);
             }
-            
+
             return Success(payloadCrates);
         }
 
@@ -171,7 +171,7 @@ namespace terminalTwilio.Actions
 
             return Task.FromResult(0);
         }
-        
+
 
         private string GetSMSNumber(TextSource control, ICrateStorage payloadCrates)
         {
@@ -181,8 +181,8 @@ namespace terminalTwilio.Actions
                 throw new ApplicationException("TextSource control was expected but not found.");
             }
             smsNumber = control.GetValue(payloadCrates).Trim();
-            if (smsNumber.Length == 10 && !smsNumber.Contains("+"))
-                smsNumber = "+1" + smsNumber;
+
+            smsNumber = GeneralisePhoneNumper(smsNumber);
 
             return smsNumber;
         }
@@ -230,21 +230,29 @@ namespace terminalTwilio.Actions
             }
         }
 
+        private string GeneralisePhoneNumper(string smsNumber)
+        {
+            PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
+            smsNumber = new string(smsNumber.Where(s => char.IsDigit(s) || s == '+' || (phoneUtil.IsAlphaNumber(smsNumber) && char.IsLetter(s))).ToArray());
+            if (smsNumber.Length == 10 && !smsNumber.Contains("+"))
+                smsNumber = "+1" + smsNumber; //we assume that default region is USA
+            return smsNumber;
+        }
+
         private bool ValidateSMSNumber(ValidationManager validationManager, string smsNumber, ControlDefinitionDTO control)
         {
             try
             {
+                PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
+
                 if (String.IsNullOrEmpty(smsNumber))
                 {
                     validationManager.SetError("No SMS Number Provided", control);
                     return false;
                 }
 
-                smsNumber = smsNumber.Trim();
-                if (smsNumber.Length == 10 && !smsNumber.Contains("+"))
-                    smsNumber = "+1" + smsNumber;
+                smsNumber = GeneralisePhoneNumper(smsNumber);
 
-                PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
                 bool isAlphaNumber = phoneUtil.IsAlphaNumber(smsNumber);
                 PhoneNumber phoneNumber = phoneUtil.Parse(smsNumber, "");
                 if (isAlphaNumber || !phoneUtil.IsValidNumber(phoneNumber))
