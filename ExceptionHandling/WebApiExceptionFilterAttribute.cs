@@ -8,7 +8,6 @@ using Newtonsoft.Json;
 using StructureMap;
 using Hub.Exceptions;
 using Hub.Managers;
-using TerminalBase;
 using Utilities;
 using Microsoft.ApplicationInsights;
 using System.Collections.Generic;
@@ -81,22 +80,9 @@ namespace HubWeb.ExceptionHandling
             // if debugging enabled send back the details of exception as well
             if (HttpContext.Current.IsDebuggingEnabled || string.Equals(CloudConfigurationManager.GetSetting("ForceExtendedDebuggingInfo"), "true", StringComparison.InvariantCultureIgnoreCase))
             {
-                if (ex is TerminalCodedException) 
-                {
-                    var terminalEx = (TerminalCodedException)ex;
-                    
-                    errorDto.Details = new
-                    {
-                        errorCode = terminalEx.ErrorCode, 
-                        message = terminalEx.ErrorCode.GetEnumDescription()
-                    };
-                }
-                else 
-                {
-                    errorDto.Details = new {exception = context.Exception};
-                }
+                errorDto.Details = new {exception = context.Exception};
             }
-            
+
             context.Response.Content = new StringContent(JsonConvert.SerializeObject(errorDto), Encoding.UTF8, "application/json");
         }
     }

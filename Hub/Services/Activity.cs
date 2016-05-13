@@ -11,6 +11,7 @@ using System.Threading.Tasks;
 using Data.Infrastructure.Security;
 using Data.Repositories.Plan;
 using Data.Infrastructure.StructureMap;
+using Data.Interfaces.Manifests;
 using Data.States;
 using Fr8Data.Constants;
 using Fr8Data.Control;
@@ -18,6 +19,7 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using Hub.Exceptions;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using Hub.Managers;
@@ -44,129 +46,18 @@ namespace Hub.Services
             _activityTemplate = activityTemplate;
             _planNode = planNode;
         }
-        
-        public IEnumerable<TViewModel> GetAllActivities<TViewModel>()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                return uow.PlanRepository.GetActivityQueryUncached().Select(Mapper.Map<TViewModel>);
-            }
-        }
 
-        private ActivityDTO SaveOrUpdateActivityCore(ActivityDO submittedActivityData)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                // SaveAndUpdateActivity(uow, submittedActivityData, new List<ActivityDO>());
-                SaveAndUpdateActivity(uow, submittedActivityData);
-
-                uow.SaveChanges();
-
-                var result = uow.PlanRepository.GetById<ActivityDO>(submittedActivityData.Id);
-
-                return Mapper.Map<ActivityDTO>(result);
-            }
-        }
 
         public async Task<ActivityDTO> SaveOrUpdateActivity(ActivityDO submittedActivityData)
         {
             if (submittedActivityData.Id == Guid.Empty)
             {
-                return SaveOrUpdateActivityCore(submittedActivityData);
+                return await SaveOrUpdateActivityCore(submittedActivityData);
             }
-           
+
             using (await _configureLock.Lock(submittedActivityData.Id))
             {
-                return SaveOrUpdateActivityCore(submittedActivityData);
-            }
-        }
-
-        private void UpdateActivityProperties(IUnitOfWork uow, ActivityDO submittedActivity)
-        {
-            var existingAction = uow.PlanRepository.GetById<ActivityDO>(submittedActivity.Id);
-
-            if (existingAction == null)
-            {
-                throw new Exception("Action was not found");
-            }
-
-            UpdateActivityProperties(existingAction, submittedActivity);
-            uow.SaveChanges();
-        }
-
-        private static void UpdateActivityProperties(ActivityDO existingActivity, ActivityDO submittedActivity)
-        {
-            // it is unlikely that we have scenarios when activity template can be changed after activity was created
-            //existingActivity.ActivityTemplateId = submittedActivity.ActivityTemplateId;
-
-            existingActivity.Label = submittedActivity.Label;
-            existingActivity.Name = submittedActivity.Name;
-            existingActivity.CrateStorage = submittedActivity.CrateStorage;
-            existingActivity.Ordering = submittedActivity.Ordering;
-        }
-
-        private static void RestoreSystemProperties(ActivityDO existingActivity, ActivityDO submittedActivity)
-        {
-            submittedActivity.AuthorizationTokenId = existingActivity.AuthorizationTokenId;
-        }
-
-        // private void SaveAndUpdateActivity(IUnitOfWork uow, ActivityDO submittedActiviy, List<ActivityDO> pendingConfiguration)
-        private void SaveAndUpdateActivity(IUnitOfWork uow, ActivityDO submittedActiviy)
-        {
-            PlanTreeHelper.Visit(submittedActiviy, x =>
-            {
-                if (x.Id == Guid.Empty)
-                {
-                    x.Id = Guid.NewGuid();
-                }
-            });
-
-            PlanNodeDO plan;
-            PlanNodeDO originalAction;
-            if (submittedActiviy.ParentPlanNodeId != null)
-            {
-                plan = uow.PlanRepository.Reload<PlanNodeDO>(submittedActiviy.ParentPlanNodeId);
-                originalAction = plan.ChildNodes.FirstOrDefault(x => x.Id == submittedActiviy.Id);
-            }
-            else
-            {
-                originalAction = uow.PlanRepository.Reload<PlanNodeDO>(submittedActiviy.Id);
-                plan = originalAction.ParentPlanNode;
-            }
-
-
-            if (originalAction != null)
-            {
-                plan.ChildNodes.Remove(originalAction);
-
-                // Add child subplans.
-                foreach (var subPlan in originalAction.ChildNodes.OfType<SubPlanDO>())
-                {
-                    submittedActiviy.ChildNodes.Add(subPlan);
-                }
-
-                var originalActions = PlanTreeHelper.Linearize(originalAction)
-                    .OfType<ActivityDO>()
-                    .ToDictionary(x => x.Id, x => x);
-
-                foreach (var submitted in PlanTreeHelper.Linearize(submittedActiviy))
-                {
-                    ActivityDO existingActivity;
-
-                    if (originalActions.TryGetValue(submitted.Id, out existingActivity))
-                    {
-                        RestoreSystemProperties(existingActivity, (ActivityDO)submitted);
-                    }
-                }
-            }
-
-            if (submittedActiviy.Ordering <= 0)
-            {
-                plan.AddChildWithDefaultOrdering(submittedActiviy);
-            }
-            else
-            {
-                plan.ChildNodes.Add(submittedActiviy);
+                return await SaveOrUpdateActivityCore(submittedActivityData);
             }
         }
 
@@ -213,7 +104,7 @@ namespace Hub.Services
 
                 if (parentNode is PlanDO)
                 {
-                    if (((PlanDO)parentNode).StartingSubPlan == null)
+                    if (((PlanDO) parentNode).StartingSubPlan == null)
                     {
                         parentNode.ChildNodes.Add(parentNode = new SubPlanDO
                         {
@@ -223,7 +114,7 @@ namespace Hub.Services
                     }
                     else
                     {
-                        parentNode = ((PlanDO)parentNode).StartingSubPlan;
+                        parentNode = ((PlanDO) parentNode).StartingSubPlan;
                     }
 
                 }
@@ -242,7 +133,9 @@ namespace Hub.Services
 
             uow.SaveChanges();
 
-            await ConfigureSingleActivity(uow, userId, activity);
+            var configuredActivity = await CallActivityConfigure(uow, userId, activity);
+
+            UpdateActivityProperties(uow, configuredActivity);
 
             if (createPlan)
             {
@@ -252,162 +145,114 @@ namespace Hub.Services
             return activity;
         }
 
-        private async Task<ActivityDO> CallActivityConfigure(IUnitOfWork uow, string userId, ActivityDO curActivityDO)
+        [AuthorizeActivity(Permission = PermissionType.EditObject, ParamType = typeof(ActivityDO), TargetType = typeof(PlanNodeDO))]
+        public async Task<ActivityDTO> Configure(IUnitOfWork uow, string userId, ActivityDO submittedActivity)
         {
-            var plan = curActivityDO.RootPlanNode as PlanDO;
-
-            if (plan?.PlanState == PlanState.Deleted)
+            if (submittedActivity == null)
             {
-                var message = "Cannot configure activity when plan is deleted";
-
-                EventManager.TerminalConfigureFailed(
-                   _activityTemplate.GetTerminalUrl(curActivityDO.ActivityTemplateId),
-                    JsonConvert.SerializeObject(Mapper.Map<ActivityDTO>(curActivityDO)),
-                    message,
-                    curActivityDO.Id.ToString()
-                    );
-
-                throw new ApplicationException(message);
+                throw new ArgumentNullException(nameof(submittedActivity));
             }
 
-            var tempActionDTO = Mapper.Map<ActivityDTO>(curActivityDO);
-
-            if (!_authorizationToken.ValidateAuthenticationNeeded(uow, userId, tempActionDTO))
+            using (await _configureLock.Lock(submittedActivity.Id))
             {
-                curActivityDO = Mapper.Map<ActivityDO>(tempActionDTO);
+                await DeactivateActivity(uow, submittedActivity.Id);
 
+                var configuredActivity = await CallActivityConfigure(uow, userId, submittedActivity);
+
+                SaveAndUpdateActivity(uow, configuredActivity);
+
+                uow.SaveChanges();
+
+                configuredActivity = uow.PlanRepository.GetById<ActivityDO>(submittedActivity.Id);
+
+                return Mapper.Map<ActivityDTO>(configuredActivity);
+            }
+        }
+
+        [AuthorizeActivity(Permission = PermissionType.EditObject, ParamType = typeof(ActivityDO), TargetType = typeof(PlanNodeDO))]
+        public async Task<ActivityDTO> Activate(ActivityDO submittedActivity)
+        {
+            using (await _configureLock.Lock(submittedActivity.Id))
+            {
                 try
                 {
-                    tempActionDTO = await CallTerminalActivityAsync<ActivityDTO>(uow, "configure", curActivityDO, Guid.Empty);
-                    _authorizationToken.RevokeTokenIfNeeded(uow, tempActionDTO);
-                }
-                catch (ArgumentException e)
-                {
-                    EventManager.TerminalConfigureFailed("<no terminal url>", JsonConvert.SerializeObject(Mapper.Map<ActivityDTO>(curActivityDO)), e.Message, curActivityDO.Id.ToString());
-                    throw;
-                }
-                catch (RestfulServiceException e)
-                {
-                    // terminal requested token invalidation
-                    if (e.StatusCode == 419)
+                    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
-                        _authorizationToken.InvalidateToken(uow, userId, tempActionDTO);
-                    }
-                    else
-                    {
-                        JsonSerializerSettings settings = new JsonSerializerSettings
+                        var existingAction = uow.PlanRepository.GetById<ActivityDO>(submittedActivity.Id);
+
+                        if (existingAction == null)
                         {
-                            PreserveReferencesHandling = PreserveReferencesHandling.Objects
-                        };
-                        var endpoint = _activityTemplate.GetTerminalUrl(curActivityDO.ActivityTemplateId) ?? "<no terminal url>";
-                        EventManager.TerminalConfigureFailed(endpoint, JsonConvert.SerializeObject(Mapper.Map<ActivityDTO>(curActivityDO), settings), e.Message, curActivityDO.Id.ToString());
-                        throw;
+                            throw new Exception("Action was not found");
+                        }
+
+                        if (existingAction.ActivationState == ActivationState.Activated)
+                        {
+                            return Mapper.Map<ActivityDTO>(submittedActivity);
+                        }
+
+                        submittedActivity.AuthorizationToken = uow.AuthorizationTokenRepository.FindTokenById(submittedActivity.AuthorizationTokenId);
+
+                        var activatedActivityDTO = await CallTerminalActivityAsync<ActivityDTO>(uow, "activate", submittedActivity, Guid.Empty);
+                        var activatedActivityDo = Mapper.Map<ActivityDO>(activatedActivityDTO);
+
+                        var storage = _crate.GetStorage(activatedActivityDo);
+
+                        var validationCrate = storage.CrateContentsOfType<ValidationResultsCM>().FirstOrDefault();
+
+                        if (validationCrate == null || !validationCrate.HasErrors)
+                        {
+                            existingAction.ActivationState = ActivationState.Activated;
+                        }
+
+                        UpdateActivityProperties(existingAction, activatedActivityDo);
+
+                        uow.SaveChanges();
+
+                        EventManager.ActionActivated(activatedActivityDo);
+
+                        return Mapper.Map<ActivityDTO>(activatedActivityDo);
                     }
                 }
                 catch (Exception e)
                 {
-                    JsonSerializerSettings settings = new JsonSerializerSettings
-                    {
-                        PreserveReferencesHandling = PreserveReferencesHandling.Objects
-                    };
-
-                    var endpoint = _activityTemplate.GetTerminalUrl(curActivityDO.ActivityTemplateId) ?? "<no terminal url>";
-                    EventManager.TerminalConfigureFailed(endpoint, JsonConvert.SerializeObject(Mapper.Map<ActivityDTO>(curActivityDO), settings), e.Message, curActivityDO.Id.ToString());
+                    ReportActivityInvocationError(submittedActivity, e.Message, EventManager.TerminalActionActivationFailed);
                     throw;
                 }
             }
-
-            return Mapper.Map<ActivityDO>(tempActionDTO);
-        }
-
-        private async Task<ActivityDO> ConfigureSingleActivity(IUnitOfWork uow, string userId, ActivityDO curActivityDO)
-        {
-            curActivityDO = await CallActivityConfigure(uow, userId, curActivityDO);
-
-            UpdateActivityProperties(uow, curActivityDO);
-
-            return curActivityDO;
         }
 
         [AuthorizeActivity(Permission = PermissionType.EditObject, ParamType = typeof(ActivityDO), TargetType = typeof(PlanNodeDO))]
-        public async Task<ActivityDTO> Configure(IUnitOfWork uow,
-            string userId, ActivityDO curActivityDO, bool saveResult = true)
+        public async Task Deactivate(ActivityDO curActivityDO)
         {
-            if (curActivityDO == null)
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                throw new ArgumentNullException(nameof(curActivityDO));
+                await CallActivityDeactivate(uow, curActivityDO.Id);
+                uow.SaveChanges();
             }
-
-            using (await _configureLock.Lock(curActivityDO.Id))
-            {
-                curActivityDO = await CallActivityConfigure(uow, userId, curActivityDO);
-
-                if (saveResult)
-                {
-                    // SaveAndUpdateActivity(uow, curActivityDO, new List<ActivityDO>());
-                    SaveAndUpdateActivity(uow, curActivityDO);
-
-                    uow.SaveChanges();
-                    curActivityDO = uow.PlanRepository.GetById<ActivityDO>(curActivityDO.Id);
-                    return Mapper.Map<ActivityDTO>(curActivityDO);
-                }
-            }
-
-            return Mapper.Map<ActivityDTO>(curActivityDO);
-        }
-
-        public ActivityDO MapFromDTO(ActivityDTO curActivityDTO)
-        {
-            ActivityDO submittedActivity = Mapper.Map<ActivityDO>(curActivityDTO);
-            return submittedActivity;
         }
 
         [AuthorizeActivity(Permission = PermissionType.DeleteObject, ParamType = typeof(Guid), TargetType = typeof(PlanNodeDO))]
-        public void Delete(Guid id)
+        public async Task Delete(Guid id)
         {
             //we are using Kludge solution for now
             //https://maginot.atlassian.net/wiki/display/SH/Action+Deletion+and+Reordering
 
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (await _configureLock.Lock(id))
             {
-
-                var curAction = uow.PlanRepository.GetById<ActivityDO>(id);
-                if (curAction == null)
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    throw new InvalidOperationException("Unknown PlanNode with id: " + id);
-                }
-
-                var downStreamActivities = _planNode.GetDownstreamActivities(uow, curAction).OfType<ActivityDO>();
-                //we should clear values of configuration controls
-                var directChildren = curAction.GetDescendants().OfType<ActivityDO>();
-
-                //there is no sense of updating children of action being deleted. 
-                foreach (var downStreamActivity in downStreamActivities.Except(directChildren))
-                {
-                    var currentActivity = downStreamActivity;
-
-                    using (var crateStorage = _crate.UpdateStorage(() => currentActivity.CrateStorage))
+                    var curAction = uow.PlanRepository.GetById<ActivityDO>(id);
+                    if (curAction == null)
                     {
-                        bool hasChanges = false;
-                        foreach (var configurationControls in crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>())
-                        {
-                            foreach (IResettable resettable in configurationControls.Controls)
-                            {
-                                resettable.Reset();
-                                hasChanges = true;
-                            }
-                        }
-
-                        if (!hasChanges)
-                        {
-                            crateStorage.DiscardChanges();
-                        }
+                        throw new InvalidOperationException("Unknown PlanNode with id: " + id);
                     }
+                    
+                    curAction.RemoveFromParent();
+
+                    await CallActivityDeactivate(uow, curAction.Id);
+
+                    uow.SaveChanges();
                 }
-
-                curAction.RemoveFromParent();
-
-                uow.SaveChanges();
             }
         }
 
@@ -444,61 +289,254 @@ namespace Hub.Services
                 return payloadDTO;
 
             }
-            catch (ArgumentException e)
-            {
-                EventManager.TerminalRunFailed("<no terminal url>", JsonConvert.SerializeObject(Mapper.Map<ActivityDTO>(curActivityDO)), e.Message, curActivityDO.Id.ToString());
-                throw;
-            }
             catch (Exception e)
             {
-                JsonSerializerSettings settings = new JsonSerializerSettings
-                {
-                    PreserveReferencesHandling = PreserveReferencesHandling.Objects
-                };
-
-                var endpoint = _activityTemplate.GetTerminalUrl(curActivityDO.ActivityTemplateId) ?? "<no terminal url>";
-                EventManager.TerminalRunFailed(endpoint, JsonConvert.SerializeObject(Mapper.Map<ActivityDTO>(curActivityDO), settings), e.Message, curActivityDO.Id.ToString());
+                ReportActivityInvocationError(curActivityDO, e.Message, EventManager.TerminalRunFailed);
                 throw;
             }
         }
 
-        [AuthorizeActivity(Permission = PermissionType.EditObject, ParamType = typeof(ActivityDO), TargetType = typeof(PlanNodeDO))]
-        public async Task<ActivityDTO> Activate(ActivityDO curActivityDO)
-        {
-            try
-            {
-                //if this action contains nested actions, do not pass them to avoid 
-                // circular reference error during JSON serialization (FR-1769)
-                //curActivityDO = Mapper.Map<ActivityDO>(curActivityDO); // this doesn't clone activity
-
-                curActivityDO = (ActivityDO)curActivityDO.Clone();
-
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    var result = await CallTerminalActivityAsync<ActivityDTO>(uow, "activate", curActivityDO, Guid.Empty);
-
-                    EventManager.ActionActivated(curActivityDO);
-                    return result;
-                }
-            }
-            catch (ArgumentException)
-            {
-                EventManager.TerminalActionActivationFailed("<no terminal url>", JsonConvert.SerializeObject(Mapper.Map<ActivityDTO>(curActivityDO)), curActivityDO.Id.ToString());
-                throw;
-            }
-            catch
-            {
-                EventManager.TerminalActionActivationFailed(_activityTemplate.GetTerminalUrl(curActivityDO.ActivityTemplateId) ?? "<no terminal url>", JsonConvert.SerializeObject(Mapper.Map<ActivityDTO>(curActivityDO)), curActivityDO.Id.ToString());
-                throw;
-            }
-        }
-
-        public async Task<ActivityDTO> Deactivate(ActivityDO curActivityDO)
+        private async Task<ActivityDTO> SaveOrUpdateActivityCore(ActivityDO submittedActivity)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                return await CallTerminalActivityAsync<ActivityDTO>(uow, "deactivate", curActivityDO, Guid.Empty);
+                await DeactivateActivity(uow, submittedActivity.Id);
+
+                SaveAndUpdateActivity(uow, submittedActivity);
+
+                uow.SaveChanges();
+
+                var result = uow.PlanRepository.GetById<ActivityDO>(submittedActivity.Id);
+
+                return Mapper.Map<ActivityDTO>(result);
             }
+        }
+
+        private void UpdateActivityProperties(IUnitOfWork uow, ActivityDO submittedActivity)
+        {
+            var existingAction = uow.PlanRepository.GetById<ActivityDO>(submittedActivity.Id);
+
+            if (existingAction == null)
+            {
+                throw new Exception("Action was not found");
+            }
+
+            UpdateActivityProperties(existingAction, submittedActivity);
+            uow.SaveChanges();
+        }
+
+        private static void UpdateActivityProperties(ActivityDO existingActivity, ActivityDO submittedActivity)
+        {
+            // it is unlikely that we have scenarios when activity template can be changed after activity was created
+            //existingActivity.ActivityTemplateId = submittedActivity.ActivityTemplateId;
+
+            existingActivity.Label = submittedActivity.Label;
+            existingActivity.CrateStorage = submittedActivity.CrateStorage;
+            existingActivity.Ordering = submittedActivity.Ordering;
+        }
+
+        private static void RestoreSystemProperties(ActivityDO existingActivity, ActivityDO submittedActivity)
+        {
+            submittedActivity.ActivationState = existingActivity.ActivationState;
+            submittedActivity.AuthorizationTokenId = existingActivity.AuthorizationTokenId;
+        }
+
+        private void SaveAndUpdateActivity(IUnitOfWork uow, ActivityDO submittedActiviy)
+        {
+            PlanTreeHelper.Visit(submittedActiviy, x =>
+            {
+                if (x.Id == Guid.Empty)
+                {
+                    x.Id = Guid.NewGuid();
+                }
+            });
+
+            PlanNodeDO plan;
+            PlanNodeDO originalAction;
+            if (submittedActiviy.ParentPlanNodeId != null)
+            {
+                plan = uow.PlanRepository.Reload<PlanNodeDO>(submittedActiviy.ParentPlanNodeId);
+                originalAction = plan.ChildNodes.FirstOrDefault(x => x.Id == submittedActiviy.Id);
+            }
+            else
+            {
+                originalAction = uow.PlanRepository.Reload<PlanNodeDO>(submittedActiviy.Id);
+                plan = originalAction.ParentPlanNode;
+            }
+
+
+            if (originalAction != null)
+            {
+                plan.ChildNodes.Remove(originalAction);
+
+                // Add child subplans.
+                foreach (var subPlan in originalAction.ChildNodes.OfType<SubPlanDO>())
+                {
+                    submittedActiviy.ChildNodes.Add(subPlan);
+                }
+
+                var originalActions = PlanTreeHelper.Linearize(originalAction)
+                    .OfType<ActivityDO>()
+                    .ToDictionary(x => x.Id, x => x);
+
+                foreach (var submitted in PlanTreeHelper.Linearize(submittedActiviy))
+                {
+                    ActivityDO existingActivity;
+
+                    if (originalActions.TryGetValue(submitted.Id, out existingActivity))
+                    {
+                        RestoreSystemProperties(existingActivity, (ActivityDO) submitted);
+                    }
+                }
+            }
+
+            if (submittedActiviy.Ordering <= 0)
+            {
+                plan.AddChildWithDefaultOrdering(submittedActiviy);
+            }
+            else
+            {
+                plan.ChildNodes.Add(submittedActiviy);
+            }
+        }
+
+        private async Task DeactivateActivity(IUnitOfWork uow, Guid activityId)
+        {
+            var exising = uow.PlanRepository.GetById<ActivityDO>(activityId);
+
+            if (exising != null)
+            {
+                await DeactivateActivities(exising.GetDescendants().Select(x => x.Id));
+            }
+        }
+
+        private async Task DeactivateActivities(IEnumerable<Guid> activityIds)
+        {
+            List<Task> tasks = new List<Task>();
+
+            var activities = activityIds.ToArray();
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                foreach (var activityId in activities)
+                {
+                    tasks.Add(CallActivityDeactivate(uow, activityId));
+                }
+
+                try
+                {
+                    await Task.WhenAll(tasks);
+                    uow.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    var failedTasks = new List<Guid>();
+
+                    for (int index = 0; index < tasks.Count; index++)
+                    {
+                        var task = tasks[index];
+
+                        if (task.Exception != null)
+                        {
+                            failedTasks.Add(activities[index]);
+                        }
+                    }
+
+                    uow.SaveChanges();
+
+                    throw new Exception("Following activities have failed to deactivate: " + string.Join(", ", failedTasks.Select(x => x.ToString())), ex);
+                }
+            }
+        }
+
+        private async Task CallActivityDeactivate(IUnitOfWork uow, Guid activityId)
+        {
+            var exisiting = uow.PlanRepository.GetById<ActivityDO>(activityId);
+
+            if (exisiting == null || exisiting.ActivationState == ActivationState.Deactivated)
+            {
+                return;
+            }
+
+            var curActivityDO = (ActivityDO) exisiting.Clone();
+
+            curActivityDO.AuthorizationToken = uow.AuthorizationTokenRepository.FindTokenById(curActivityDO.AuthorizationTokenId);
+
+            var dto = Mapper.Map<ActivityDO, ActivityDTO>(curActivityDO);
+            bool skipDeactivation = false;
+            var template = _activityTemplate.GetByKey(curActivityDO.ActivityTemplateId);
+
+            if (curActivityDO.AuthorizationToken != null || !template.NeedsAuthentication)
+            {
+                try
+                {
+                    _authorizationToken.PrepareAuthToken(uow, dto);
+                }
+                catch (InvalidTokenRuntimeException)
+                {
+                    skipDeactivation = true;
+                }
+            }
+            else
+            {
+               skipDeactivation = true;
+            }
+
+            if (!skipDeactivation)
+            {
+                var fr8DataDTO = new Fr8DataDTO
+                {
+                    ActivityDTO = dto
+                };
+
+                await ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<ActivityDTO>("deactivate", fr8DataDTO, Guid.Empty.ToString());
+            }
+
+            var root = exisiting.GetTreeRoot() as PlanDO;
+
+            if (root?.PlanState == PlanState.Active)
+            {
+                root.PlanState = PlanState.Inactive;
+            }
+
+            exisiting.ActivationState = ActivationState.Deactivated;
+        }
+
+
+        private async Task<ActivityDO> CallActivityConfigure(IUnitOfWork uow, string userId, ActivityDO submittedActivity)
+        {
+            var tempActionDTO = Mapper.Map<ActivityDTO>(submittedActivity);
+
+            if (!_authorizationToken.ValidateAuthenticationNeeded(uow, userId, tempActionDTO))
+            {
+                submittedActivity = Mapper.Map<ActivityDO>(tempActionDTO);
+
+                try
+                {
+                    tempActionDTO = await CallTerminalActivityAsync<ActivityDTO>(uow, "configure", submittedActivity, Guid.Empty);
+                    _authorizationToken.RevokeTokenIfNeeded(uow, tempActionDTO);
+                }
+                catch (RestfulServiceException e)
+                {
+                    // terminal requested token invalidation
+                    if (e.StatusCode == 419)
+                    {
+                        _authorizationToken.InvalidateToken(uow, userId, tempActionDTO);
+                    }
+                    else
+                    {
+                        ReportActivityInvocationError(submittedActivity, e.Message, EventManager.TerminalConfigureFailed);
+                        throw;
+                    }
+                }
+                catch (Exception e)
+                {
+                    ReportActivityInvocationError(submittedActivity, e.Message, EventManager.TerminalConfigureFailed);
+                    throw;
+                }
+            }
+
+            return Mapper.Map<ActivityDO>(tempActionDTO);
         }
 
         private Task<TResult> CallTerminalActivityAsync<TResult>(
@@ -531,13 +569,23 @@ namespace Hub.Services
             {
                 var containerDO = uow.ContainerRepository.GetByKey(containerId);
                 EventManager.ContainerSent(containerDO, curActivityDO);
-                var reponse = ObjectFactory.GetInstance<ITerminalTransmitter>()
-                    .CallActivityAsync<TResult>(activityName, fr8DataDTO, containerId.ToString());
+
+                var reponse = ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<TResult>(activityName, fr8DataDTO, containerId.ToString());
+
                 EventManager.ContainerReceived(containerDO, curActivityDO);
                 return reponse;
             }
+
             return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<TResult>(activityName, fr8DataDTO, containerId.ToString());
         }
+
+        private void ReportActivityInvocationError(ActivityDO activity, string error, Action<string, string, string, string> reportingAction)
+        {
+            var endpoint = _activityTemplate.GetTerminalUrl(activity.ActivityTemplateId) ?? "<no terminal url>";
+            EventManager.TerminalConfigureFailed(endpoint, null, error, activity.Id.ToString());
+        }
+
+
         //This method finds and returns single SolutionPageDTO that holds some documentation of Activities that is obtained from a solution by aame
         /// <summary>
         /// 
@@ -615,6 +663,7 @@ namespace Hub.Services
             //Call the terminal
             return await ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<T>(actionName, fr8Data, curContainerId.ToString());
         }
+
         public List<string> GetSolutionNameList(string terminalName)
         {
             var solutionNameList = new List<string>();
@@ -622,8 +671,8 @@ namespace Hub.Services
             {
                 var curActivities = uow.ActivityTemplateRepository.GetAll()
                     .Where(a => a.Terminal.Name == terminalName
-                        && a.Category == ActivityCategory.Solution)
-                        .ToList();
+                                && a.Category == ActivityCategory.Solution)
+                    .ToList();
                 solutionNameList.AddRange(curActivities.Select(activity => activity.Name));
             }
             return solutionNameList;

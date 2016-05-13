@@ -10,14 +10,15 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using Hub.Infrastructure;
+using Hub.Interfaces;
 using Hub.Managers;
+using Hub.Security;
 using Utilities;
 using Utilities.Configuration.Azure;
-using Hub.Interfaces;
 using Hangfire;
 using Hangfire.StructureMap;
 using Hangfire.Dashboard;
-using Hub.Security;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
@@ -33,7 +34,8 @@ namespace HubWeb
         public async void Configuration(IAppBuilder app, bool selfHostMode)
         {
             //ConfigureDaemons();
-            ConfigureAuth(app);
+            // ConfigureAuth(app);
+            OwinInitializer.ConfigureAuth(app, "/DockyardAccount/Index");
 
 
             ConfigureHangfire(app, "DockyardDB");

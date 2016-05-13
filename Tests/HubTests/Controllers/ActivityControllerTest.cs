@@ -182,14 +182,14 @@ namespace HubTests.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var subPlanMock = new Mock<ISubPlan>();
+                var activityMock = new Mock<IActivity>();
 
-                subPlanMock.Setup(a => a.DeleteActivity(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(true);
+                activityMock.Setup(a => a.Delete(It.IsAny<Guid>())).Returns(Task.FromResult(0));
 
                 ActivityDO activityDO = new FixtureData(uow).TestActivity3();
-                var controller = new ActivitiesController(subPlanMock.Object);
+                var controller = new ActivitiesController(activityMock.Object);
                 await controller.Delete(activityDO.Id);
-                subPlanMock.Verify(a => a.DeleteActivity(null, activityDO.Id, false));
+                activityMock.Verify(a => a.Delete(activityDO.Id));
             }
         }
 

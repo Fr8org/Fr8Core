@@ -1,19 +1,9 @@
 ﻿using System;
-using System.Data.Entity;
-using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Http;
 using StructureMap;
-using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Infrastructure.StructureMap;
+using Hub.Infrastructure;
 using Hub.Interfaces;
-using System.Net.Http;
-using System.Security.Claims;
-using Microsoft.Owin.Security;
-using Microsoft.AspNet.Identity;
-using HubWeb.Infrastructure;
 
 namespace HubWeb.Controllers
 {
