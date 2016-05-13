@@ -117,8 +117,11 @@ namespace Fr8Data.Constants
         [Display(Name = "Standard Business Fact")]
         StandardBusinessFact = 37,
 
+        [Display(Name = "Plan Template")]
+        PlanTemplate = 38,
+        
         [Display(Name = "Validation Results")]
-        ValidationResults = 38
+        ValidationResults = 39
     }
 }
 

@@ -8,6 +8,7 @@ using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
 using Fr8Data.DataTransferObjects;
+using Hub.Infrastructure;
 using Hub.Interfaces;
 using HubWeb.Infrastructure;
 using Microsoft.AspNet.Identity;

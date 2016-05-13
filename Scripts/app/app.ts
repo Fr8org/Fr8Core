@@ -94,10 +94,19 @@ initialization can be disabled and Layout.init() should be called on page load c
 ***/
 
 /* Setup Layout Part - Header */
-app.controller('HeaderController', ['$scope', ($scope) => {
+app.controller('HeaderController', ['$scope', '$http', '$window', ($scope, $http, $window) => {
     $scope.$on('$includeContentLoaded', () => {
         Layout.initHeader(); // init header
     });
+
+    $scope.goToPlanDirectory = function (planDirectoryUrl) {
+        $http.post('/api/authentication/authenticatePlanDirectory', {})
+            .then(function (res) {
+                var token = res.data.token;
+                var url = planDirectoryUrl + '/AuthenticateByToken?token=' + token;
+                $window.location.href = url;
+            });
+    };
 }]);
 
 /* Setup Layout Part - Footer */
