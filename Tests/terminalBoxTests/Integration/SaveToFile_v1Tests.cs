@@ -1,6 +1,12 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Fr8Data.Control;
+using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using HealthMonitor.Utility;
+using Hub.Managers;
 using NUnit.Framework;
 using terminalBoxTests.Fixtures;
 
@@ -22,21 +28,42 @@ namespace terminalBoxTests.Integration
         {
             // Arrange
             var configureUrl = GetTerminalConfigureUrl();
-            var requestActionDTO = FixtureData.SaveToFileTestAction();
+            var dataDTO = FixtureData.SaveToFileTestAction();
             var runUrl = GetTerminalRunUrl();
-            var tableCrate = FixtureData.GetStandardTableDataCM();
-            AddUpstreamCrate(requestActionDTO, tableCrate);
-            
             // Act
-            var responseActionDTO =
+            var responseDTO =
                 await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
                     configureUrl,
-                    requestActionDTO
+                    dataDTO
                 );
 
+            dataDTO.ActivityDTO = responseDTO;
+
+            using (var crateStorage = Crate.GetUpdatableStorage(dataDTO.ActivityDTO))
+            {
+                // Add upstream table data
+                var tableCrate = FixtureData.GetStandardTableDataCM();
+                AddPayloadCrate(dataDTO, tableCrate);
+
+                // Select table data in CrateChooser
+                var controls = crateStorage
+                    .CrateContentsOfType<StandardConfigurationControlsCM>()
+                    .Single();
+
+                var fileChooser = controls.FindByName<CrateChooser>("FileChooser");
+                fileChooser.CrateDescriptions = new List<CrateDescriptionDTO>()
+                {
+                    new CrateDescriptionDTO() {Label = "", Selected = true}
+                };
+
+                AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+                dataDTO.ActivityDTO.AuthToken = FixtureData.GetBoxAuthToken();
+            }
+
+
             var payload = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(
-                    configureUrl,
-                    requestActionDTO
+                    runUrl,
+                    dataDTO
                 );
             // Assert
             Assert.NotNull(payload);

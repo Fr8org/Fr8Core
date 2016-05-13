@@ -1,4 +1,5 @@
-﻿using Fr8Data.DataTransferObjects;
+﻿using Fr8Data.Control;
+using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Ploeh.AutoFixture;
 
@@ -38,7 +39,7 @@ namespace terminalBoxTests.Fixtures
                 .Create();
         }
 
-        private static AuthorizationTokenDTO GetBoxAuthToken()
+        public static AuthorizationTokenDTO GetBoxAuthToken()
         {
             return new AuthorizationTokenDTO
             {
