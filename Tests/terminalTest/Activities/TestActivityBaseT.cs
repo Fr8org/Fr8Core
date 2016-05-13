@@ -1,4 +1,4 @@
-﻿using Data.Interfaces.Manifests;
+﻿using Fr8Data.Manifests;
 using TerminalBase.BaseClasses;
 
 namespace terminalTest.Actions

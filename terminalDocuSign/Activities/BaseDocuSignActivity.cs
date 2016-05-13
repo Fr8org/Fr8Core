@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Managers;
 using StructureMap;
 using terminalDocuSign.Services.New_Api;
@@ -48,7 +48,7 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        protected List<FieldDTO> CreateDocuSignEventFields(DocuSignEnvelopeCM_v2 envelope)
+        protected List<FieldDTO> CreateDocuSignEventFields(DocuSignEnvelopeCM_v2 envelope, string label = null)
         {
             string curRecipientEmail = "";
             string curRecipientUserName = "";
@@ -61,13 +61,13 @@ namespace terminalDocuSign.Actions
             }
 
             return new List<FieldDTO>{
-                new FieldDTO("CurrentRecipientEmail", curRecipientEmail, AvailabilityType.RunTime) { Tags = "EmailAddress" },
-                new FieldDTO("CurrentRecipientUserName", curRecipientUserName, AvailabilityType.RunTime) { Tags = "UserName" },
-                new FieldDTO("Status", envelope?.Status,  AvailabilityType.RunTime),
-                new FieldDTO("CreateDate",  envelope?.CreateDate?.ToString()) { Tags = "Date" },
-                new FieldDTO("SentDate", envelope?.SentDate?.ToString(), AvailabilityType.RunTime) { Tags = "Date" },
-                new FieldDTO("Subject", envelope?.Subject, AvailabilityType.RunTime),
-                new FieldDTO("EnvelopeId", envelope?.EnvelopeId, AvailabilityType.RunTime),
+                new FieldDTO("CurrentRecipientEmail", curRecipientEmail, AvailabilityType.RunTime) { Tags = "EmailAddress",SourceCrateLabel = label },
+                new FieldDTO("CurrentRecipientUserName", curRecipientUserName, AvailabilityType.RunTime) { Tags = "UserName", SourceCrateLabel = label },
+                new FieldDTO("Status", envelope?.Status,  AvailabilityType.RunTime) { SourceCrateLabel = label},
+                new FieldDTO("CreateDate",  envelope?.CreateDate?.ToString()) { Tags = "Date",SourceCrateLabel = label },
+                new FieldDTO("SentDate", envelope?.SentDate?.ToString(), AvailabilityType.RunTime) { Tags = "Date", SourceCrateLabel = label },
+                new FieldDTO("Subject", envelope?.Subject, AvailabilityType.RunTime) { SourceCrateLabel = label},
+                new FieldDTO("EnvelopeId", envelope?.EnvelopeId, AvailabilityType.RunTime) { SourceCrateLabel = label},
             };
         }
 

@@ -1,22 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Metadata.W3cXsd2001;
-using System.Security.Claims;
-using System.Security.Principal;
 using System.Web.Http.Results;
 using NUnit.Framework;
 using StructureMap;
-using StructureMap.AutoMocking;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Fr8Data.DataTransferObjects;
 using HubTests.Controllers.Api;
-using Hub.Interfaces;
 using HubWeb.Controllers;
-using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
 
@@ -77,12 +71,6 @@ namespace HubTests.Controllers
         public void ContainerController_ShouldHaveFr8ApiAuthorizeOnGetPayloadMethod()
         {
             ShouldHaveFr8ApiAuthorizeOnFunction(typeof(ContainersController), "GetPayload");
-        }
-
-        [Test]
-        public void ContainerController_ShouldHaveFr8ApiAuthorizeOnGetIdsByNameMethod()
-        {
-            ShouldHaveFr8ApiAuthorizeOnFunction(typeof(ContainersController), "GetIdsByName");
         }
 
         [Test]

@@ -1,8 +1,5 @@
 ﻿using System;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Newtonsoft.Json;
+using Fr8Data.Manifests;
 using terminalSalesforce.Services;
 using TerminalBase.BaseClasses;
 

@@ -1,7 +1,6 @@
 ﻿using System;
 using Newtonsoft.Json;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 
 namespace terminalAtlassianTests.Fixtures
 {

@@ -1,8 +1,4 @@
-﻿using Data.Control;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
+﻿using Data.Entities;
 using DocuSign.eSign.Api;
 using DocuSign.eSign.Client;
 using DocuSign.eSign.Model;
@@ -12,12 +8,14 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
-using System.Web;
 using Data.Validations;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services.NewApi;
 using Utilities.Configuration.Azure;
 using System.IO;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using TerminalBase.Errors;
 
 namespace terminalDocuSign.Services.New_Api
@@ -60,9 +58,9 @@ namespace terminalDocuSign.Services.New_Api
                 AuthenticationApi authApi = new AuthenticationApi(conf);
                 try
                 {
-                    LoginInformation loginInfo = authApi.Login();
-                    result.AccountId = loginInfo.LoginAccounts[0].AccountId; //it seems that althought one DocuSign account can have multiple users - only one is returned, the one that oAuth token was created for
-                }
+                LoginInformation loginInfo = authApi.Login();
+                result.AccountId = loginInfo.LoginAccounts[0].AccountId; //it seems that althought one DocuSign account can have multiple users - only one is returned, the one that oAuth token was created for
+            }
                 catch (Exception ex)
                 {
                     throw new AuthorizationTokenExpiredOrInvalidException();
@@ -237,16 +235,16 @@ namespace terminalDocuSign.Services.New_Api
         {
             try
             {
-                var result = new List<FieldDTO>();
-                var recipients = GetRecipients(conf, api, id);
-                result.AddRange(MapRecipientsToFieldDTO(recipients));
-                foreach (var recipient in recipients.Signers)
-                {
-                    result.AddRange(GetTabs(conf, api, id, recipient));
-                }
-
-                return result;
+            var result = new List<FieldDTO>();
+            var recipients = GetRecipients(conf, api, id);
+            result.AddRange(MapRecipientsToFieldDTO(recipients));
+            foreach (var recipient in recipients.Signers)
+            {
+                result.AddRange(GetTabs(conf, api, id, recipient));
             }
+
+            return result;
+        }
             catch (Exception ex)
             {
                 throw new AuthorizationTokenExpiredOrInvalidException();

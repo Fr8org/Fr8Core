@@ -1,12 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Net.Http;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
+using Fr8Data.DataTransferObjects;
 using Newtonsoft.Json.Linq;
 using StructureMap;
-using Data.Interfaces.DataTransferObjects;
 using terminalYammer.Interfaces;
 using Utilities.Configuration.Azure;
 using terminalYammer.Model;

@@ -1,9 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 using HealthMonitor.Utility;
 using NUnit.Framework;
 
@@ -45,7 +43,7 @@ namespace HubTests.Integration
         {
             var solutionNames = new List<string> { "Mail Merge Into DocuSign", "Extract Data From Envelopes", "Track DocuSign Recipients" };
             var baseUrl = GetHubApiBaseUrl();
-            var getSolutionListUrl = baseUrl + "activities/Documentation";
+            var getSolutionListUrl = baseUrl + "documentation/activity";
             var emptyActivityDTO = new ActivityDTO { Documentation = "Terminal=terminalDocuSign", ActivityTemplate = new ActivityTemplateDTO() };
             var solutionPages = await HttpPostAsync<ActivityDTO, List<SolutionPageDTO>>(getSolutionListUrl, emptyActivityDTO);
             Assert.IsNotNull(solutionPages);
@@ -75,7 +73,7 @@ namespace HubTests.Integration
         {
             var solutionNames = new List<string> { "Find Objects Solution", "Search Fr8 Warehouse" };
             var baseUrl = GetHubApiBaseUrl();
-            var getSolutionListUrl = baseUrl + "activities/Documentation";
+            var getSolutionListUrl = baseUrl + "documentation/activity";
             var emptyActivityDTO = new ActivityDTO { Documentation = "Terminal=terminalFr8Core", ActivityTemplate = new ActivityTemplateDTO() };
             var solutionPages = await HttpPostAsync<ActivityDTO, List<SolutionPageDTO>>(getSolutionListUrl, emptyActivityDTO);
             Assert.IsNotNull(solutionPages);

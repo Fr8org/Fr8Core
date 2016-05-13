@@ -1,10 +1,5 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.DataTransferObjects.Helpers;
-using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
@@ -14,6 +9,9 @@ using terminalSalesforce.Actions;
 using terminalSalesforce.Services;
 using terminalSalesforce.Infrastructure;
 using Data.Entities;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 
 namespace terminalSalesforceTests.Intergration
 {

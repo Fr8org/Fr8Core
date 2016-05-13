@@ -1,18 +1,9 @@
 ﻿using System;
-using System.Configuration;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Data.Constants;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using StructureMap;
-using Data.Interfaces.DataTransferObjects;
-using Data.Entities;
+using Fr8Data.DataTransferObjects;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using terminalSlack.Interfaces;
-using terminalSlack.Services;
 
 namespace terminalSlack.Controllers
 {

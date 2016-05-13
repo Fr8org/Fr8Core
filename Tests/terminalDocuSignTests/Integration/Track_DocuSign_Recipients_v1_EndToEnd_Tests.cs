@@ -1,20 +1,16 @@
 ﻿using System;
+using System.Linq;
 using NUnit.Framework;
-using Data.Interfaces.DataTransferObjects;
 using HealthMonitor.Utility;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text;
-using System.Net;
-using System.Collections.Generic;
-using System.Linq;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Hub.Managers;
-using Data.Interfaces.Manifests;
-using terminalDocuSignTests.Fixtures;
 using Newtonsoft.Json.Linq;
-using Data.Crates;
-using Data.Control;
-using Data.States;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -79,7 +75,7 @@ namespace terminalDocuSignTests.Integration
 
             string baseUrl = GetHubApiBaseUrl();
 
-            var solutionCreateUrl = baseUrl + "activities/create?solutionName=Track_DocuSign_Recipients";
+            var solutionCreateUrl = baseUrl + "plans/createSolution?solutionName=Track_DocuSign_Recipients";
 
 
             //

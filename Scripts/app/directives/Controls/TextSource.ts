@@ -9,7 +9,8 @@ module dockyard.directives.textSource {
         onChange: any;
         onFocus: any;
         uniqueDirectiveId: number;
-        isFocused : boolean;
+        isFocused: boolean;
+        onUpStreamChange: any;
     }
 
     //Setup aliases
@@ -21,6 +22,9 @@ module dockyard.directives.textSource {
         
         var uniqueDirectiveId = 1;
         var controller = ['$scope', 'UIHelperService', ($scope: ITextSourceScope, uiHelperService: services.IUIHelperService) => {
+            
+            $scope.field.valueSource = 'specific';
+
             $scope.uniqueDirectiveId = ++uniqueDirectiveId;
             $scope.onChange = (fieldName: string) => {
                 if ($scope.change != null && angular.isFunction($scope.change)) {
@@ -54,6 +58,12 @@ module dockyard.directives.textSource {
                 $scope.$emit(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureFocusElement],
                     new pca.ConfigureFocusElementArgs($scope.field));
             };
+
+            $scope.onUpStreamChange = (fieldName: string) => {
+                $scope.field.valueSource = 'upstream';
+                $scope.onFocus(fieldName);
+            }
+            
         }];
 
         var link = function($scope, $element, attrs) {
@@ -63,7 +73,7 @@ module dockyard.directives.textSource {
                     var theElement = $element.find("input[type='text']")[0];
                     theElement.focus();
                     $scope.field.valueSource = 'specific';
-                }
+                } 
             });
         }
 

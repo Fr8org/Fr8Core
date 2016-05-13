@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Data;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
-using Data.Interfaces;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -75,7 +72,7 @@ namespace terminalDocuSignTests.Integration
 
         private async Task<PlanDTO> CreateSolution()
         {
-            var solutionCreateUrl = _baseUrl + "activities/create?solutionName=Generate_DocuSign_Report";
+            var solutionCreateUrl = _baseUrl + "plans/createSolution?solutionName=Generate_DocuSign_Report";
             
             var plan = await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
 

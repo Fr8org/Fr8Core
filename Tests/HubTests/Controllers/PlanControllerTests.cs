@@ -7,11 +7,10 @@ using StructureMap;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Fr8Data.DataTransferObjects;
 using HubTests.Controllers.Api;
 using HubWeb.Controllers;
-using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
 namespace HubTests.Controllers
@@ -57,6 +56,13 @@ namespace HubTests.Controllers
         public void PlansController_ShouldHaveFr8ApiAuthorize()
         {
             ShouldHaveFr8ApiAuthorize(typeof(PlansController));
+        }
+
+        [Test]
+        public void PlansController_ShouldHaveHMACOnCreateMethod()
+        {
+            var createMethod = typeof(PlansController).GetMethod("Create", new Type[] { typeof(Guid), typeof(string), typeof(string), typeof(int?), typeof(Guid?), typeof(Guid?) });
+            ShouldHaveFr8HMACAuthorizeOnFunction(createMethod);
         }
 
         [Test]
@@ -280,7 +286,7 @@ namespace HubTests.Controllers
             PlansController ptc = CreatePlanController(_testUserAccount.Id, _testUserAccount.EmailAddress.Address);
             var response = ptc.Post(PlanDto);
             PlanDto.Name = "updated";
-            response = ptc.Post(PlanDto, true);
+            response = ptc.Post(PlanDto);
 
             //Assert
             var okResult = response as OkNegotiatedContentResult<PlanEmptyDTO>;

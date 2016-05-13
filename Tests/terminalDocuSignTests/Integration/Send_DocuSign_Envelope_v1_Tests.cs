@@ -1,13 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using Data.Control;
-using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using HealthMonitor.Utility;
 using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Restful;
@@ -16,7 +12,6 @@ using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
 using terminalDocuSignTests.Fixtures;
-using UtilitiesTesting.Fixtures;
 
 namespace terminalDocuSignTests
 {

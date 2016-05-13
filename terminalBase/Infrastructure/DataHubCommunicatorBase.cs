@@ -4,15 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using StructureMap;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
-using Data.Constants;
 using System.IO;
-using Data.Interfaces;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace TerminalBase.Infrastructure
 {
@@ -302,6 +302,10 @@ namespace TerminalBase.Infrastructure
         }
 
         public Task RenewToken(AuthorizationTokenDTO authTokenDTO, string userId)
+        {
+            throw new NotImplementedException();
+
+        public Task ScheduleEvent(string externalAccountId, string curFr8UserId, string minutes)
         {
             throw new NotImplementedException();
         }

@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Collections.Generic;
 using System.Linq;
 using RestSharp.Serializers;
 using NUnit.Framework;
 using StructureMap;
-using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Interfaces;
-using Hub.StructureMap;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 

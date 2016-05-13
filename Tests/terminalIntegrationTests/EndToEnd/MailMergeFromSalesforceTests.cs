@@ -2,26 +2,24 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using terminalIntegrationTests.Fixtures;
 using terminalSalesforce.Services;
 using Data.Entities;
 using terminalSalesforce.Infrastructure;
 using HealthMonitor.Utility;
-using Data.Interfaces.DataTransferObjects;
 using Hub.Managers;
 using terminalSalesforce.Actions;
-using Data.Interfaces.Manifests;
-using Data.Crates;
-using Data.Utility;
-using Data.Constants;
 using terminaBaselTests.Tools.Terminals;
-using Data.Control;
 using Data.States;
 using terminalDocuSign.Services.New_Api;
 using terminalDocuSign.Services;
 using DocuSign.eSign.Api;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 
 namespace terminalIntegrationTests.EndToEnd
 {
@@ -192,7 +190,7 @@ namespace terminalIntegrationTests.EndToEnd
 
         private async Task<PlanDTO> CreatePlan()
         {
-            var solutionCreateUrl = GetHubApiBaseUrl() + "activities/create?solutionName=Mail_Merge_From_Salesforce";
+            var solutionCreateUrl = GetHubApiBaseUrl() + "plans/createSolution?solutionName=Mail_Merge_From_Salesforce";
             return await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
         }
 

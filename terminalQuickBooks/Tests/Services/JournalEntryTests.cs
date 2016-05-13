@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Linq;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 using Intuit.Ipp.Data;
 using NUnit.Framework;
 using StructureMap;

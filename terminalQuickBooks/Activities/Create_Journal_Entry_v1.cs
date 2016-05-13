@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Control;
 using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Data.States;
+using Fr8Data.Control;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Hub.Managers;
 using TerminalBase.BaseClasses;
 using StructureMap;
 using terminalQuickBooks.Interfaces;

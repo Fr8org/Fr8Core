@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
 using Data.Entities;
 using Data.States;
 using TerminalBase.BaseClasses;
 using AutoMapper;
+using Fr8Data.DataTransferObjects;
 using TerminalBase.Infrastructure;
 
 namespace terminalAzure.Controllers
