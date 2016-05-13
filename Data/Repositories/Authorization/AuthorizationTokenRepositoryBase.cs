@@ -20,6 +20,7 @@ namespace Data.Repositories
 
         private readonly List<AuthorizationTokenDO> _adds = new List<AuthorizationTokenDO>();
         private readonly List<AuthorizationTokenDO> _deletes = new List<AuthorizationTokenDO>();
+        private readonly List<AuthorizationTokenDO> _updates = new List<AuthorizationTokenDO>();
         private static readonly MemoryCache TokenCache = new MemoryCache("AuthTokenCache");
         private static TimeSpan _expiration = TimeSpan.FromMinutes(10);
 
@@ -110,37 +111,50 @@ namespace Data.Repositories
                 return null;
             }
 
-            return FindTokenById(id.Value.ToString());
-        }
-
-        /*********************************************************************************/
-
-        public AuthorizationTokenDO FindTokenById(string id)
-        {
             AuthorizationTokenDO token;
+            var cacheKey = GetCacheKey(id.Value);
 
             lock (TokenCache)
             {
-                token = (AuthorizationTokenDO) TokenCache.Get(id);
+                token = (AuthorizationTokenDO)TokenCache.Get(cacheKey);
                 if (token != null)
                 {
+                    Track(token);
                     return token;
                 }
             }
 
-            token = EnrichAndTrack(GetQuery().FirstOrDefault(x => x.Id.ToString() == id));
+            token = EnrichAndTrack(GetByKey(id.Value));
 
-            lock (TokenCache)
+            if (token != null)
             {
-                TokenCache.Remove(id);
-                TokenCache.Add(new CacheItem(id, token), new CacheItemPolicy
+                lock (TokenCache)
                 {
-                    SlidingExpiration = _expiration
-                });
+                    UpdateCache(token);
+                }
             }
 
             return token;
+        }
 
+        /*********************************************************************************/
+
+        private void UpdateCache(AuthorizationTokenDO authorizationToken)
+        {
+            var cacheKey = GetCacheKey(authorizationToken.Id);
+            
+            TokenCache.Remove(cacheKey);
+            TokenCache.Add(new CacheItem(cacheKey, authorizationToken.Clone()), new CacheItemPolicy
+            {
+                SlidingExpiration = _expiration
+            });
+        }
+
+        /*********************************************************************************/
+
+        private string GetCacheKey(Guid tokenId)
+        {
+            return tokenId.ToString("N");
         }
 
         /*********************************************************************************/
@@ -216,13 +230,47 @@ namespace Data.Repositories
 
         public void TrackUpdates(IEnumerable<object> entities)
         {
+            foreach (var entity in entities.OfType<AuthorizationTokenDO>())
+            {
+                _updates.Add(entity);
+            }
         }
 
         /*********************************************************************************/
 
         public void SaveChanges()
         {
-            ProcessChanges(_adds, _changesTackers.Values.Where(x=>x.HasChanges).Select(x=>x.ActualValue), _deletes);
+            var tokenUpdates = _changesTackers.Values.Where(x => x.HasChanges).Select(x => x.ActualValue).ToArray();
+
+            lock (TokenCache)
+            {
+                foreach (var update in _updates)
+                {
+                    var cacheKey = GetCacheKey(update.Id);
+                    var token = (AuthorizationTokenDO)TokenCache.Get(cacheKey);
+
+                    if (token == null)
+                    {
+                        continue;
+                    }
+
+                    update.Token = token.Token;
+
+                    UpdateCache(update);
+                }
+
+                foreach (var update in tokenUpdates)
+                {
+                    UpdateCache(update);
+                }
+
+                foreach (var token in _adds)
+                {
+                    UpdateCache(token);
+                }
+            }
+
+            ProcessChanges(_adds, tokenUpdates, _deletes);
             
             foreach (var value in _changesTackers)
             {
@@ -242,6 +290,7 @@ namespace Data.Repositories
 
             _adds.Clear();
             _deletes.Clear();
+            _updates.Clear();
         }
 
         /*********************************************************************************/

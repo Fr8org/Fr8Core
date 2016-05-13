@@ -81,5 +81,10 @@ namespace Data.Entities
                 return $"{domain}\\{account}";
             }
         }
+
+        public AuthorizationTokenDO Clone()
+        {
+            return (AuthorizationTokenDO)MemberwiseClone();
+        }
     }
 }

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
@@ -43,16 +44,19 @@ namespace HubTests.Repositories
         {
             foreach (var authorizationTokenDo in adds)
             {
+                _testSupportService.Tokens[authorizationTokenDo.Id] = authorizationTokenDo.Token;
                 _testSupportService.AddedTokens[authorizationTokenDo.Id] = authorizationTokenDo.Token;
             }
 
             foreach (var authorizationTokenDo in updates)
             {
+                _testSupportService.Tokens[authorizationTokenDo.Id] = authorizationTokenDo.Token;
                 _testSupportService.UpdatedTokens[authorizationTokenDo.Id] = authorizationTokenDo.Token;
             }
 
             foreach (var authorizationTokenDo in deletes)
             {
+                _testSupportService.Tokens.Remove(authorizationTokenDo.Id);
                 _testSupportService.DeletedTokens.Add(authorizationTokenDo.Id);
             }
         }
@@ -161,14 +165,12 @@ namespace HubTests.Repositories
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                
-
-                var tFound = uow.AuthorizationTokenRepository.FindTokenById(t1.Id.ToString());
+                var tFound = uow.AuthorizationTokenRepository.FindTokenById(t1.Id);
                 
                 Assert.AreEqual(0, tester.AddedTokens.Count);
                 Assert.AreEqual(0, tester.UpdatedTokens.Count);
                 Assert.AreEqual(0, tester.DeletedTokens.Count);
-                Assert.AreEqual(1, tester.QueriedTokens.Count);
+                Assert.AreEqual(0, tester.QueriedTokens.Count);
 
                 Assert.AreEqual(t1.Id, tFound.Id);
                 Assert.AreEqual(t1.Token, tFound.Token);
@@ -332,6 +334,111 @@ namespace HubTests.Repositories
                 Assert.AreEqual(0, tester.UpdatedTokens.Count);
                 Assert.AreEqual(0, tester.DeletedTokens.Count);
                 Assert.AreEqual(0, tester.QueriedTokens.Count);
+            }
+        }
+
+        [Test]
+        public void CanCacheTokens()
+        {
+            var tester = ObjectFactory.GetInstance<AuthorizationRepTestSupportService>();
+            AuthorizationTokenDO t3;
+            var id = new Guid("{35B123A2-E8D9-49B2-A52E-AD8E5449668B}");
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                t3 = NewToken(uow, id, "t3");
+
+                uow.SaveChanges();
+            }
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                tester.Reset();
+
+                var token =  uow.AuthorizationTokenRepository.FindTokenById(id);
+                
+                Assert.AreEqual(t3.Token, token.Token, "Invalid token was read from cache: unexpected secure part");
+                Assert.AreEqual(0, tester.QueriedTokens.Count, "Failed to resolve token from cache");
+            }
+        }
+
+        [Test]
+        public void CanUpdateCachedToken()
+        {
+            var id = new Guid("{35B123A2-E8D9-49B2-A52E-AD8E5449668B}");
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                NewToken(uow, id, "t3");
+
+                uow.SaveChanges();
+            }
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var token = uow.AuthorizationTokenRepository.FindTokenById(id);
+
+                token.Token = "update";
+                token.AdditionalAttributes = "attr";
+                
+                uow.SaveChanges();
+            }
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var token = uow.AuthorizationTokenRepository.FindTokenById(id);
+
+                Assert.AreEqual("update", token.Token, "Invalid token: unexpected secure part");
+                Assert.AreEqual("attr", token.AdditionalAttributes, "Invalid token: unexpected AdditionalAttributes");
+            }
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var token = uow.AuthorizationTokenRepository.GetPublicDataQuery().First(x=>x.Id == id);
+
+                Assert.AreEqual("attr", token.AdditionalAttributes, "Invalid token from public query: unexpected AdditionalAttributes");
+            }
+        }
+
+        [Test]
+        public void CanUpdateFromPublicQueryToken()
+        {
+            var id = new Guid("{35B123A2-E8D9-49B2-A52E-AD8E5449668B}");
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                NewToken(uow, id, "t3");
+
+                uow.SaveChanges();
+            }
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.AuthorizationTokenRepository.FindTokenById(id);
+            }
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var token = uow.AuthorizationTokenRepository.GetPublicDataQuery().First(x => x.Id == id);
+
+                token.AdditionalAttributes = "attr";
+
+                uow.SaveChanges();
+            }
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var token = uow.AuthorizationTokenRepository.FindTokenById(id);
+
+                Assert.AreEqual("t3", token.Token, "Invalid token: unexpected secure part");
+                Assert.AreEqual("attr", token.AdditionalAttributes, "Invalid token: unexpected AdditionalAttributes");
+            }
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var token = uow.AuthorizationTokenRepository.GetPublicDataQuery().First(x => x.Id == id);
+
+                Assert.AreEqual("attr", token.AdditionalAttributes, "Invalid token from public query: unexpected AdditionalAttributes");
             }
         }
     }
