@@ -22,6 +22,9 @@ module dockyard.directives.textSource {
         
         var uniqueDirectiveId = 1;
         var controller = ['$scope', 'UIHelperService', ($scope: ITextSourceScope, uiHelperService: services.IUIHelperService) => {
+            
+            $scope.field.valueSource = 'specific';
+
             $scope.uniqueDirectiveId = ++uniqueDirectiveId;
             $scope.onChange = (fieldName: string) => {
                 if ($scope.change != null && angular.isFunction($scope.change)) {

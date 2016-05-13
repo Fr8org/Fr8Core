@@ -334,8 +334,8 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
-                Name = "CollectData",
-                Label = "Collect Data",
+                Name = "AppBuilder",
+                Label = "App Builder",
                 Version = "1",
                 Category = ActivityCategory.Processors,
                 NeedsAuthentication = false,

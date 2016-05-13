@@ -76,51 +76,44 @@ namespace terminalDocuSign.Actions
             };
         }
 
-        public override Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override Task ValidateActivity(ActivityDO curActivityDO, ICrateStorage crateStorage, ValidationManager validationManager)
         {
-            return Task.FromResult(curActivityDO);
-        }
+            ActivityUi activityUi = GetConfigurationControls(crateStorage);
 
-        protected internal override ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
-        {
-            var errorMessages = new List<string>();
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            if (activityUi == null)
             {
-                ActivityUi activityUi = GetConfigurationControls(crateStorage);
-                if (activityUi == null)
-                {
-                    return new ValidationResult(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
-                }
-                errorMessages.Add(activityUi.EnvelopeSignedOption.ErrorMessage
-                                  = AtLeastOneNotificationIsSelected(activityUi)
-                                        ? string.Empty
-                                        : "At least one notification option must be selected");
-
-                errorMessages.Add(activityUi.TemplateRecipientOptionSelector.ErrorMessage
-                                  = EnvelopeConditionIsSelected(activityUi)
-                                        ? string.Empty
-                                        : "At least one envelope option must be selected");
-
-                errorMessages.Add(activityUi.Recipient.ErrorMessage
-                    = RecipientIsRequired(activityUi)
-                        ? DocuSignValidationUtils.ValueIsSet(activityUi.Recipient)
-                            ? activityUi.Recipient.Value.IsValidEmailAddress()
-                                ? string.Empty
-                                : DocuSignValidationUtils.RecipientIsNotValidErrorMessage
-                            : DocuSignValidationUtils.RecipientIsNotSpecifiedErrorMessage
-                        : string.Empty);
-
-                errorMessages.Add(activityUi.TemplateList.ErrorMessage
-                                  = TemplateIsRequired(activityUi)
-                                        ? DocuSignValidationUtils.AtLeastOneItemExists(activityUi.TemplateList)
-                                              ? DocuSignValidationUtils.ItemIsSelected(activityUi.TemplateList)
-                                                    ? string.Empty
-                                                    : DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage
-                                              : DocuSignValidationUtils.NoTemplateExistsErrorMessage
-                                        : string.Empty);
+                validationManager.SetError(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
+                return Task.FromResult(0);
             }
-            errorMessages.RemoveAll(string.IsNullOrEmpty);
-            return errorMessages.Count == 0 ? ValidationResult.Success : new ValidationResult(string.Join(Environment.NewLine, errorMessages));
+
+            if (!AtLeastOneNotificationIsSelected(activityUi))
+            {
+                validationManager.SetError("At least one notification option must be selected", activityUi.EnvelopeSignedOption);
+            }
+
+            if (!EnvelopeConditionIsSelected(activityUi))
+            {
+                validationManager.SetError("At least one envelope option must be selected", activityUi.TemplateRecipientOptionSelector);
+            }
+
+            if (RecipientIsRequired(activityUi))
+            {
+                if (DocuSignValidationUtils.ValueIsSet(activityUi.Recipient))
+                {
+                    validationManager.ValidateEmail(activityUi.Recipient, DocuSignValidationUtils.RecipientIsNotValidErrorMessage);
+                }
+                else
+                {
+                    validationManager.SetError(DocuSignValidationUtils.RecipientIsNotSpecifiedErrorMessage, activityUi.Recipient);
+                }
+            }
+
+            if (TemplateIsRequired(activityUi))
+            {
+               validationManager.ValidateTemplateList(activityUi.TemplateList);
+            }
+
+            return Task.FromResult(0);
         }
 
         protected override string ActivityUserFriendlyName => "Monitor DocuSign Envelope Activity";
@@ -294,7 +287,7 @@ namespace terminalDocuSign.Actions
             //just update the user selected envelope events in the follow up configuration
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
             {
-                var allFields = CreateDocuSignEventFields(null);
+                var allFields = CreateDocuSignEventFields(null, AllFieldsCrateName);
                 UpdateSelectedEvents(crateStorage);
                 string selectedOption, selectedValue, selectedTemplate;
                 GetTemplateRecipientPickerValue(curActivityDO, out selectedOption, out selectedValue, out selectedTemplate);

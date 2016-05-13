@@ -2,11 +2,12 @@
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Description;
+using StructureMap;
 using Fr8Data.Constants;
 using Fr8Data.DataTransferObjects;
-using HubWeb.Infrastructure;
-using StructureMap;
+using Data.Interfaces.DataTransferObjects;using Hub.Infrastructure;
 using Hub.Interfaces;
+using HubWeb.Infrastructure;
 
 namespace HubWeb.Controllers
 {

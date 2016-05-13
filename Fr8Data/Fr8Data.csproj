@@ -93,6 +93,7 @@
     <Compile Include="DataTransferObjects\CrateStorageDTO.cs" />
     <Compile Include="DataTransferObjects\CredentialsDTO.cs" />
     <Compile Include="DataTransferObjects\CriteriaDTO.cs" />
+    <Compile Include="DataTransferObjects\PermissionDTO.cs" />
     <Compile Include="DataTransferObjects\PlanTemplates\ActivityDescriptionDTO.cs" />
     <Compile Include="DataTransferObjects\PlanTemplates\NodeTransitionDTO.cs" />
     <Compile Include="DataTransferObjects\PlanTemplates\PlanNodeDescriptionDTO.cs" />
@@ -126,6 +127,7 @@
     <Compile Include="DataTransferObjects\PlanDTO.cs" />
     <Compile Include="DataTransferObjects\PlanEmptyDTO.cs" />
     <Compile Include="DataTransferObjects\PlanFullDTO.cs" />
+    <Compile Include="DataTransferObjects\ProfileDTO.cs" />
     <Compile Include="DataTransferObjects\QueryDTO.cs" />
     <Compile Include="DataTransferObjects\SlackPayloadDTO.cs" />
     <Compile Include="DataTransferObjects\SolutionPageDTO.cs" />
@@ -135,6 +137,8 @@
     <Compile Include="DataTransferObjects\TerminalDTO.cs" />
     <Compile Include="DataTransferObjects\TerminalNotificationDTO.cs" />
     <Compile Include="DataTransferObjects\UserDTO.cs" />
+    <Compile Include="DataTransferObjects\ValidationErrorsDTO.cs" />
+    <Compile Include="DataTransferObjects\ValidationResultDTO.cs" />
     <Compile Include="DataTransferObjects\WebServiceActivitySetDTO.cs" />
     <Compile Include="DataTransferObjects\WebServiceDTO.cs" />
     <Compile Include="Helpers\FieldMemberAccessor.cs" />
@@ -187,6 +191,7 @@
     <Compile Include="Manifests\StandardRoutingDirectiveCM.cs" />
     <Compile Include="Manifests\StandardSecurityCM.cs" />
     <Compile Include="Manifests\StandardTableDataCM.cs" />
+    <Compile Include="Manifests\ValidationResultsCM.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="States\ActivityCategory.cs" />
     <Compile Include="States\ActivityType.cs" />

@@ -1,4 +1,6 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
@@ -39,33 +41,30 @@ namespace HubTests.Services
         }
 
         [Test]
-        public void PlanService_CanDelete()
+        public async Task PlanService_CanDelete()
         {
+            Guid planId;
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curPlanDO = FixtureData.TestPlanWithStartingSubPlans_ID0();
+
                 uow.PlanRepository.Add(curPlanDO);
                 uow.SaveChanges();
 
                 Assert.AreNotEqual(curPlanDO.Id, 0);
 
-                var currPlanDOId = curPlanDO.Id;
-                Plan.Delete(uow, curPlanDO.Id);
-                var result = uow.PlanRepository.GetById<PlanDO>(currPlanDOId);
+                planId = curPlanDO.Id;
+            }
+
+            await Plan.Delete(planId);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var result = uow.PlanRepository.GetById<PlanDO>(planId);
 
                 Assert.NotNull(result);
             }
-        }
-        
-        [Test]
-        [Ignore("ActivityTemplates are not being added to ActivityTemplate respository. Should be fixed if test is needed")]
-        public void Activate_NoMatchingParentActivityId_ReturnsNoActivity()
-        {
-            var curPlanDO = FixtureData.TestPlanNoMatchingParentActivity();
-
-            var result = Plan.Activate(curPlanDO.Id, true).Result;
-
-            Assert.AreEqual(result.Status, "no activity");
         }
     }
 }

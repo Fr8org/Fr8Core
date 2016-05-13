@@ -88,11 +88,10 @@ namespace HubTests.Managers
                        }).Returns(Task.FromResult(storeMtDataAction as PlanNodeDO));
 
                 _setupMock.Setup(
-                 a => a.Configure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<ActivityDO>(), It.IsAny<Boolean>())).Callback(() =>
+                 a => a.Configure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<ActivityDO>())).Callback(() =>
                  {
                  }).Returns(Task.FromResult(new Fr8Data.DataTransferObjects.ActivityDTO()));
 
-                _setupMock.Setup(a => a.MapFromDTO(new Fr8Data.DataTransferObjects.ActivityDTO()));
 
                 ObjectFactory.Container.Inject(typeof(IActivity), _setupMock.Object);
             }

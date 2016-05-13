@@ -11,10 +11,6 @@ namespace Data.Entities
         public DateTimeOffset LastUpdated { get; set; }
         public DateTimeOffset CreateDate { get; set; }
 
-        [ForeignKey("Profile")]
-        public Guid? ProfileId { get; set; }
-        public virtual ProfileDO Profile { get; set; }
-
         public void BeforeCreate()
         {
             if (CreateDate == default(DateTimeOffset))
