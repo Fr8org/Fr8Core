@@ -35,6 +35,9 @@ namespace HubWeb.Controllers
     {
 
         private readonly Hub.Interfaces.IPlan _plan;
+
+        private readonly IActivityTemplate _activityTemplate;
+        private readonly IActivity _activity;
         private readonly IFindObjectsPlan _findObjectsPlan;
         private readonly ISecurityServices _security;
         private readonly ICrateManager _crate;
@@ -47,18 +50,42 @@ namespace HubWeb.Controllers
             _findObjectsPlan = ObjectFactory.GetInstance<IFindObjectsPlan>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
+            _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
+            _activity = ObjectFactory.GetInstance<IActivity>();
         }
 
-        //[HttpGet]
-        //public async Task<IHttpActionResult> Clone(Guid id)
-        //{
-        //    //let's clone the plan and redirect user to that cloned plan url
-        //    var clonedPlan = await _plan.Clone(id);
-        //    var baseUri = Request.RequestUri.GetLeftPart(UriPartial.Authority);
-        //    var clonedPlanUrl = baseUri + "/dashboard/plans/" + clonedPlan.Id + "/builder?viewMode=kiosk&view=Collection";
-        //    return Redirect(clonedPlanUrl);
-        //}
+        [HttpPost]
+        [Fr8HubWebHMACAuthenticate]
+        public async Task<IHttpActionResult> Create(Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, Guid? authorizationTokenId = null)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var userId = User.Identity.GetUserId();
+                var result = await _activity.CreateAndConfigure(uow, userId, activityTemplateId, label, name, order, parentNodeId, true, authorizationTokenId) as PlanDO;
+                return Ok(Mapper.Map<PlanDTO>(result));
+            }
+        }
 
+        [HttpPost]
+        public async Task<IHttpActionResult> CreateSolution(string solutionName)
+        {
+            var userId = User.Identity.GetUserId();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var activityTemplate = _activityTemplate.GetQuery().FirstOrDefault(at => at.Name == solutionName);
+                if (activityTemplate == null)
+                {
+                    throw new ArgumentException($"actionTemplate (solution) name {solutionName} is not found in the database.");
+                }
+                var result = await _activity.CreateAndConfigure(
+                    uow, 
+                    userId, 
+                    activityTemplate.Id, 
+                    name: activityTemplate.Label, 
+                    createPlan: true);
+                return Ok(PlanMappingHelper.MapPlanToDto(uow, (PlanDO)result));
+            }
+        }
 
         [Fr8HubWebHMACAuthenticate]
         [ResponseType(typeof(PlanDTO))]

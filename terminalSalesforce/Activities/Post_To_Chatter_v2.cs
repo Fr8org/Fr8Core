@@ -170,11 +170,10 @@ namespace terminalSalesforce.Actions
                                                               new[] { "Id" },
                                                               ParseConditionToText(JsonConvert.DeserializeObject<List<FilterConditionDTO>>(ChatterFilter)),
                                                               AuthorizationToken);
-              
                 var tasks = new List<Task<string>>(chatters.Table.Count);
                 foreach (var chatterId in chatters.DataRows.Select(x => x.Row[0].Cell.Value))
                 {
-                    tasks.Add(_salesforceManager.PostToChatter(feedText, chatterId, AuthorizationToken));
+                    tasks.Add(_salesforceManager.PostToChatter(StripHTML(feedText), chatterId, AuthorizationToken));
                 }
                 await Task.WhenAll(tasks);
                 //If we did not find any chatter object we don't fail activity execution but rather returns empty list and inform caller about it 
@@ -182,9 +181,12 @@ namespace terminalSalesforce.Actions
                 {
                     Success($"No {SelectedChatter} that satisfies specified conditions were found. No message were posted");
                 }
-                var resultPayload = new StandardPayloadDataCM();
-                resultPayload.PayloadObjects.AddRange(tasks.Select(x => new PayloadObjectDTO(new FieldDTO(FeedIdKeyName, x.Result))));
-                CurrentPayloadStorage.Add(Crate<StandardPayloadDataCM>.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM()));
+                else
+                {
+                    var resultPayload = new StandardPayloadDataCM();
+                    resultPayload.PayloadObjects.AddRange(tasks.Select(x => new PayloadObjectDTO(new FieldDTO(FeedIdKeyName, x.Result))));
+                    CurrentPayloadStorage.Add(Crate<StandardPayloadDataCM>.FromContent(PostedFeedCrateLabel, resultPayload));
+                }
             }
             else
             {

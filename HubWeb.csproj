@@ -381,6 +381,8 @@
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
     <Compile Include="Controllers\Api\ActivitiesController.cs" />
+    <Compile Include="Controllers\Api\ActivityTemplatesController.cs" />
+    <Compile Include="Controllers\Api\DocumentationController.cs" />
     <Compile Include="Controllers\Api\OrganizationController.cs" />
     <Compile Include="Controllers\Api\Fr8BaseApiController.cs" />
     <Compile Include="Controllers\Api\NotificationsController.cs" />
