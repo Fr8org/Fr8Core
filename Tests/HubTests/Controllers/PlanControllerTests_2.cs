@@ -66,7 +66,7 @@ namespace HubTests.Controllers
 
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(3)] = new SuspenderActivityMock(CrateManager);
 
-                plan.PlanState = PlanState.Active;
+                plan.PlanState = PlanState.Running;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
                 var userAcct = FixtureData.TestUser1();
                 uow.UserRepository.Add(userAcct);

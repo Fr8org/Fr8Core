@@ -149,7 +149,7 @@ namespace HubTests.Security
                     Id = FixtureData.GetTestGuidById(23),
                     Description = "HealthDemo Integration Test",
                     Name = "StandardEventTesting",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     Fr8Account = tokenDO.UserDO
                 };
                 uow.PlanRepository.Add(planDO);
@@ -204,7 +204,7 @@ namespace HubTests.Security
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { activityDO }
                 });
 
@@ -296,7 +296,7 @@ namespace HubTests.Security
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { activityDO }
                 });
                 uow.SaveChanges();
@@ -347,7 +347,7 @@ namespace HubTests.Security
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { activityDO }
                 });
 
@@ -385,7 +385,7 @@ namespace HubTests.Security
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { activityDO }
                 });
 

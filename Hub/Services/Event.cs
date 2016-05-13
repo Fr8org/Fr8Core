@@ -116,7 +116,7 @@ namespace Hub.Services
         {
             //find this Account's Plans
             var initialPlansList = uow.PlanRepository.GetPlanQueryUncached()
-                .Where(pt => pt.Fr8AccountId == curDockyardAccount.Id && pt.PlanState == PlanState.Active).ToList();
+                .Where(pt => pt.Fr8AccountId == curDockyardAccount.Id && pt.PlanState == PlanState.Running).ToList();
             var subscribingPlans = _plan.MatchEvents(initialPlansList, eventReportMS);
 
             Logger.LogInfo($"Upon receiving event for account '{eventReportMS.ExternalAccountId}' {subscribingPlans.Count} of {initialPlansList.Count} will be notified");

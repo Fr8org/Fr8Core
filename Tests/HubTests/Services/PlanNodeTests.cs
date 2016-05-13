@@ -32,7 +32,7 @@ namespace HubTests.Services
         {
             var plan = new PlanDO();
             plan.Name = "sdfasdfasdf";
-            plan.PlanState = PlanState.Active;
+            plan.PlanState = PlanState.Running;
             var testActionTree = FixtureData.TestActivity2Tree();
 
             plan.ChildNodes.Add(testActionTree);
@@ -64,7 +64,7 @@ namespace HubTests.Services
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { root }
                 });
 
@@ -114,7 +114,7 @@ namespace HubTests.Services
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { FixtureData.TestActivityTree() }
                 });
 
@@ -145,7 +145,7 @@ namespace HubTests.Services
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { FixtureData.TestActivityTree() }
                 });
 

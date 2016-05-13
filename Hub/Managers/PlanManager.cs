@@ -48,7 +48,7 @@ namespace Hub.Managers
                     if (existingPlan != null)
                     {
                         //if plan is already created, just make it active and return
-                        existingPlan.PlanState = PlanState.Active;
+                        existingPlan.PlanState = PlanState.Running;
                         uow.SaveChanges();
                         return;
                     }
@@ -59,7 +59,7 @@ namespace Hub.Managers
                         Name = "LogFr8InternalEvents",
                         Description = "Log Fr8Internal Events",
                         Fr8Account = curFr8Account,
-                        PlanState = PlanState.Active,
+                        PlanState = PlanState.Running,
                         Tag = "Monitor",
                         Id = Guid.NewGuid(),
                     };
