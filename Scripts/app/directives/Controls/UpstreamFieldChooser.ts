@@ -60,29 +60,31 @@ module dockyard.directives.upstreamDataChooser {
                     .then((data: dockyard.model.IncomingCratesDTO) => {
                         var listItems: Array<model.DropDownListItem> = [];
 
-                        angular.forEach(data.availableFields, it => {
-                            var i, j;
-                            var found = false;
-                            for (i = 0; i < listItems.length; ++i) {
-                                if (listItems[i].key === it.key) {
-                                    found = true;
-                                    break;
+                        angular.forEach(data.availableCrates, crate => {
+                            angular.forEach(crate.fields, it => {
+                                var i, j;
+                                var found = false;
+                                for (i = 0; i < listItems.length; ++i) {
+                                    if (listItems[i].key === it.key) {
+                                        found = true;
+                                        break;
+                                    }
                                 }
-                            }
-                            if (!found) {
-                                listItems.push(<model.DropDownListItem>it);
-                            }
-                        });
-                        listItems.sort((x, y) => {
-                            if (x.key < y.key) {
-                                return -1;
-                            }
-                            else if (x.key > y.key) {
-                                return 1;
-                            }
-                            else {
-                                return 0;
-                            }
+                                if (!found) {
+                                    listItems.push(<model.DropDownListItem>it);
+                                }
+                            });
+                            listItems.sort((x, y) => {
+                                if (x.key < y.key) {
+                                    return -1;
+                                }
+                                else if (x.key > y.key) {
+                                    return 1;
+                                }
+                                else {
+                                    return 0;
+                                }
+                            });
                         });
                         if (listItems.length === 0) {
                             uiHelperService.openConfirmationModal(alertMessage);
