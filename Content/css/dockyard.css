@@ -235,6 +235,17 @@
     float: left;
 }
 
+.action-arrow-right-jumptarget {
+    display: block;
+    margin-left: 14px;
+}
+
+.action-add-jumptarget {
+    position: absolute;
+    top: 81px;
+    right: -66px;
+}
+
 .jump-target-text {
     padding-top: 15px; 
     margin-left: 60px;
@@ -443,6 +454,15 @@ div.action-header {
 .action-categories {
     margin-top: 144px;
     transition: all 0.2s ease-out;
+}
+
+.action-categories:hover {
+    background-color: #EFF3F8;
+    padding-left: 5px;
+    margin-right: -31px;
+    padding-right: 20px;
+    margin-left: 23px;
+    z-index: 100;
 }
 
 .action-category {

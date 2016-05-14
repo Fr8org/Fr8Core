@@ -8,6 +8,9 @@ module dockyard.directives {
         return {
             restrict: 'E',
             templateUrl: '/AngularTemplate/ActionPicker',
+            scope: {
+                jumptarget : '@'
+            },
             link: (scope: IActionPickerScope, element: any, attr: any) => {
                 $(document).bind('click', (event) => {
                     var isClickedElementChildOfPopup = element
@@ -25,6 +28,8 @@ module dockyard.directives {
             },
             controller: ['$scope', '$element', 'WebServiceService', '$timeout',
                 ($scope: IActionPickerScope, $element: ng.IRootElementService, webServiceService: services.IWebServiceService, $timeout: ng.ITimeoutService) => {
+
+                    console.log($scope);
 
                     $scope.actionCategories = [
                         { id: 1, name: "Monitor", description: "Learn when something happen", icon: "eye" },
