@@ -630,7 +630,7 @@ namespace Data.Infrastructure
             var modifiedEntities = _context.ModifiedEntities;
             var deletedEntities = _context.DeletedEntities;
 
-            UpateRepository(addedEntities, modifiedEntities, deletedEntities, AuthorizationTokenRepository);
+            ((AuthorizationTokenRepositoryBase)AuthorizationTokenRepository).SaveChanges();
 
             try
             {
@@ -654,22 +654,6 @@ namespace Data.Infrastructure
             OnEntitiesDeleted(new EntitiesStateEventArgs(this, deletedEntities));
         }
 
-        private void UpateRepository(Object[] addedEntities, Object[] modifiedEntities, Object[] deletedEntities, object repository)
-        {
-            var trackingChanges = repository as ITrackingChangesRepository;
-
-            if (trackingChanges != null)
-            {
-                var entityType = trackingChanges.EntityType;
-
-                trackingChanges.TrackAdds(addedEntities.Where(x => entityType.IsInstanceOfType(x)));
-                trackingChanges.TrackDeletes(deletedEntities.Where(x => entityType.IsInstanceOfType(x)));
-                trackingChanges.TrackUpdates(modifiedEntities.Where(x => entityType.IsInstanceOfType(x)));
-                
-                trackingChanges.SaveChanges();
-            }
-        }
-
         public bool IsEntityModified<TEntity>(TEntity entity) 
             where TEntity : class
         {
@@ -680,8 +664,6 @@ namespace Data.Infrastructure
         {
             get { return _context; }
         }
-
-
 
         /// <summary>
         /// Occurs for entities added after they saved to db.
