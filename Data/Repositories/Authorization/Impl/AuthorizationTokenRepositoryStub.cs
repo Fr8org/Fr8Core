@@ -3,16 +3,17 @@ using System.Collections.Generic;
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Repositories.Authorization;
 
 namespace Data.Repositories
 {
     class AuthorizationTokenRepositoryStub : AuthorizationTokenRepositoryBase
     {
-        public AuthorizationTokenRepositoryStub(IUnitOfWork uow) : base(uow)
+        public AuthorizationTokenRepositoryStub(IAuthorizationTokenStorageProvider storageProvider) : base(storageProvider)
         {
         }
 
-        protected override void ProcessChanges(IEnumerable<AuthorizationTokenDO> adds, IEnumerable<AuthorizationTokenDO> updates, IEnumerable<AuthorizationTokenDO> deletes)
+        protected override void ProcessSecureDataChanges(IEnumerable<AuthorizationTokenDO> adds, IEnumerable<AuthorizationTokenDO> updates, IEnumerable<AuthorizationTokenDO> deletes)
         {
             if (adds.Any() || updates.Any() || deletes.Any())
             {

@@ -88,7 +88,7 @@ namespace terminalIntegrationTests.Fixtures
                 {
                     Token = tokenDTO.Token,
                     TerminalID = terminalId,
-                    UserDO = userDO,
+                    UserID = userDO.Id,
                     AdditionalAttributes = tokenDTO.AdditionalAttributes,
                     ExpiresAt = DateTime.Today.AddMonths(1)
                 };
