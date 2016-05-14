@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Threading.Tasks;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces.DataTransferObjects;
 using DevDefined.OAuth.Consumer;
 using DevDefined.OAuth.Framework;
@@ -46,6 +47,7 @@ namespace terminalQuickBooks.Services
             DateTime expiresDate;
             if (DateTime.TryParse(expiresAt, out expiresDate) == false)
             {
+                EventManager.TokenValidationFailed(authTokenDO.Token, "Terminal Quickbooks token is invalid");
                 throw new ArgumentException(nameof(expiresAt));
             }
             // Token renew should fit into 151-180 days period,
@@ -71,7 +73,9 @@ namespace terminalQuickBooks.Services
 
             if (DateTime.Now > expiresDate)
             {
-                throw new TerminalQuickbooksTokenExpiredException("Quickbooks token is expired. Please, get the new one");
+                var message = "Quickbooks token is expired. Please, get the new one";
+                EventManager.TokenValidationFailed(authTokenDO.Token, message);
+                throw new TerminalQuickbooksTokenExpiredException(message);
             }
 
             var oauthValidator = new OAuthRequestValidator(
