@@ -286,11 +286,6 @@ namespace HubTests.Repositories
                 Assert.IsTrue(tester.DeletedTokens.Contains(t1.Id));
                 Assert.IsFalse(tester.DeletedTokens.Contains(t2.Id));
             }
-
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-               // Assert.AreEqual(1, new GenericRepository<AuthorizationTokenDO>(uow).GetQuery().Count());
-            }
         }
 
         [Test]

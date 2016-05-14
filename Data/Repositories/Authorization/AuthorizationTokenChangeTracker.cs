@@ -31,6 +31,12 @@ namespace Data.Repositories
             _propertiesTrackingReference = _tokenInstance.Clone();
         }
 
+        public void InjectSecretData(string secret)
+        {
+            _tokenInstance.Token = secret;
+            _propertiesTrackingReference.Token = secret;
+        }
+
         public void ResetChanges()
         {
             Changes = null;

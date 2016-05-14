@@ -16,6 +16,7 @@ namespace Data.Repositories
         /*********************************************************************************/
 
         private static readonly MemoryCache TokenCache = new MemoryCache("AuthTokenCache");
+        private static readonly MemoryCache TokenSecureCache = new MemoryCache("AuthTokenSecureCache");
         private static readonly TimeSpan Expiration = TimeSpan.FromMinutes(10);
 
         private readonly Dictionary<Guid, AuthorizationTokenChangeTracker> _changesTackers = new Dictionary<Guid, AuthorizationTokenChangeTracker>();
@@ -131,44 +132,26 @@ namespace Data.Repositories
                 return null;
             }
 
-            return Sync(id, () =>
-            {
-                var token = _storageProvider.GetByKey(id.Value);
-
-                if (token != null)
-                {
-                    token.Token = QuerySecurePart(token.Id);
-                }
-
-                return token;
-            });
+            return Sync(id, () => _storageProvider.GetByKey(id.Value), true);
         }
 
         /*********************************************************************************/
 
         private AuthorizationTokenDO SyncAndLoadSecretData(AuthorizationTokenDO token)
         {
-            return Sync(token?.Id, () =>
-            {
-                if (token != null)
-                {
-                    token.Token = QuerySecurePart(token.Id);
-                }
-
-                return token;
-            });
+            return Sync(token?.Id, () => token, true);
         }
 
         /*********************************************************************************/
 
         private AuthorizationTokenDO Sync(AuthorizationTokenDO token)
         {
-            return Sync(token?.Id, () => token);
+            return Sync(token?.Id, () => token, false);
         }
 
         /*********************************************************************************/
 
-        private AuthorizationTokenDO Sync(Guid? id, Func<AuthorizationTokenDO> fallback)
+        private AuthorizationTokenDO Sync(Guid? id, Func<AuthorizationTokenDO> fallback, bool querySecureData)
         {
             if (id == null)
             {
@@ -183,6 +166,11 @@ namespace Data.Repositories
                 if (tracker.State == EntityState.Deleted)
                 {
                     return null;
+                }
+
+                if (querySecureData && tracker.ActualValue.Token == null)
+                {
+                    tracker.InjectSecretData(QuerySecureDataCached(id.Value));
                 }
 
                 return tracker.ActualValue;
@@ -201,13 +189,29 @@ namespace Data.Repositories
             if (token == null)
             {
                 token = fallback();
+
+                lock (TokenCache)
+                {
+                    // double check: if someone has written value to cache while we were quierying data
+                    // use value from cache for consistency
+                    var tokenFromCache = (AuthorizationTokenDO)TokenCache.Get(cacheKey);
+
+                    if (tokenFromCache != null)
+                    {
+                        token = tokenFromCache;
+                    }
+                    else
+                    {
+                        UpdateCache(token);
+                    }
+                }
             }
 
             token = token?.Clone();
 
-            lock (TokenCache)
+            if (token != null && querySecureData && token.Token == null)
             {
-                UpdateCache(token);
+                token.Token = QuerySecureDataCached(id.Value);
             }
 
             token = Track(token, EntityState.Modified);
@@ -215,6 +219,47 @@ namespace Data.Repositories
             return token;
         }
         
+        /*********************************************************************************/
+
+        private string QuerySecureDataCached(Guid? id)
+        {
+            if (id == null)
+            {
+                return null;
+            }
+
+            var cacheKey = GetCacheKey(id.Value);
+            string data;
+
+            lock (TokenCache)
+            {
+                data = (string)TokenSecureCache[cacheKey];
+
+                if (data != null)
+                {
+                    return data;
+                }
+            }
+
+            data = QuerySecurePart(id.Value);
+
+            lock (TokenCache)
+            {
+                // double check: if someone has written value to cache while we were quierying data
+                // use value from cache for consistency
+                var dataFromCache = (string)TokenSecureCache[cacheKey];
+
+                if (dataFromCache != null)
+                {
+                    return dataFromCache;
+                }
+
+                UpdateSecureCache(id.Value, data);
+            }
+
+            return data;
+        }
+
         /*********************************************************************************/
 
         private void UpdateCache(AuthorizationTokenDO authorizationToken)
@@ -226,6 +271,23 @@ namespace Data.Repositories
             {
                 SlidingExpiration = Expiration
             });
+        }
+
+        /*********************************************************************************/
+
+        private void UpdateSecureCache(Guid id, string data)
+        {
+            var cacheKey = GetCacheKey(id);
+
+            TokenSecureCache.Remove(cacheKey);
+
+            if (data != null)
+            {
+                TokenSecureCache.Add(new CacheItem(cacheKey, data), new CacheItemPolicy
+                {
+                    SlidingExpiration = Expiration
+                });
+            }
         }
 
         /*********************************************************************************/
@@ -280,18 +342,26 @@ namespace Data.Repositories
                     UpdateCache(token);
                 }
 
-                foreach (var authorizationTokenDo in _changesTackers.Values.Where(x => x.State == EntityState.Deleted).Select(x=>x.ActualValue))
+                foreach (var authorizationTokenDo in adds.Concat(securepdates))
                 {
-                    TokenCache.Remove(GetCacheKey(authorizationTokenDo.Id));
+                    UpdateSecureCache(authorizationTokenDo.Id, authorizationTokenDo.Token);
+                }
+
+                foreach (var authorizationTokenDo in deletes)
+                {
+                    var key = GetCacheKey(authorizationTokenDo.Id);
+
+                    TokenCache.Remove(key);
+                    TokenSecureCache.Remove(key);
                 }
             }
 
             ProcessSecureDataChanges(adds, securepdates, deletes);
 
             var changes = new AuthorizationTokenChanges();
-            
-            changes.Insert.AddRange(_changesTackers.Values.Where(x => x.State == EntityState.Added).Select(x => x.ActualValue));
-            changes.Delete.AddRange(_changesTackers.Values.Where(x => x.State == EntityState.Deleted).Select(x => x.ActualValue));
+
+            changes.Insert.AddRange(adds);
+            changes.Delete.AddRange(deletes);
 
             foreach (var tracker in _changesTackers.Values.Where(x => x.State == EntityState.Modified && x.HasChanges))
             {
