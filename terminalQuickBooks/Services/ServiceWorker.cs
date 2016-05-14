@@ -30,15 +30,13 @@ namespace terminalQuickBooks.Services
             CloudConfigurationManager.GetSetting("QuickBooksAppToken").ToString(CultureInfo.InvariantCulture);
 
         private readonly IAuthenticator _authenticator;
-        private readonly IHubCommunicator _hubCommunicator;
 
         public ServiceWorker()
         {
             _authenticator = ObjectFactory.GetInstance<IAuthenticator>();
-            _hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
         }
 
-        public ServiceContext CreateServiceContext(AuthorizationTokenDO authTokenDO, string userId)
+        public ServiceContext CreateServiceContext(AuthorizationTokenDO authTokenDO, string userId, IHubCommunicator hubCommunicator)
         {
             var tokens = authTokenDO.Token.Split(new[] { Authenticator.TokenSeparator }, StringSplitOptions.None);
             var accessToken = tokens[0];
@@ -62,7 +60,8 @@ namespace terminalQuickBooks.Services
                     ExternalAccountId = authTokenDO.ExternalAccountId,
                     Token = authTokenDO.Token
                 };
-                _hubCommunicator.RenewToken(tokenDto.Id, tokenDto.ExternalAccountId, tokenDto.Token, userId);
+
+                hubCommunicator.RenewToken(tokenDto, userId);
 
                 // After token refresh we need to get new accessToken and accessTokenSecret from it
                 tokens = authTokenDO.Token.Split(new[] { Authenticator.TokenSeparator }, StringSplitOptions.None);
@@ -83,9 +82,9 @@ namespace terminalQuickBooks.Services
             return new ServiceContext(AppToken, companyId, IntuitServicesType.QBO, oauthValidator);
         }
 
-        public DataService GetDataService(AuthorizationTokenDO authTokenDO, string userId)
+        public DataService GetDataService(AuthorizationTokenDO authTokenDO, string userId, IHubCommunicator hubCommunicator)
         {
-            var curServiceContext = CreateServiceContext(authTokenDO, userId);
+            var curServiceContext = CreateServiceContext(authTokenDO, userId, hubCommunicator);
             //Modify required settings for the Service Context
             curServiceContext.IppConfiguration.BaseUrl.Qbo = "https://sandbox-quickbooks.api.intuit.com/";
             curServiceContext.IppConfiguration.MinorVersion.Qbo = "4";

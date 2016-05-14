@@ -63,7 +63,7 @@ namespace terminalQuickBooks.Actions
             //Check that all required fields exists in the StandardAccountingTransactionDTO object
             StandardAccountingTransactionCM.ValidateAccountingTransation(curStandardAccountingTransactionDTO);
             //Use service to create Journal Entry Object
-            _journalEntry.Create(curStandardAccountingTransactionDTO, GetQuickbooksAuthToken(), CurrentFr8UserId);
+            _journalEntry.Create(curStandardAccountingTransactionDTO, GetQuickbooksAuthToken(), CurrentFr8UserId, HubCommunicator);
         }
     }
 }

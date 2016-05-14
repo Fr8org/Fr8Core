@@ -1,6 +1,7 @@
 ﻿using System;
 using Data.Entities;
 using Fr8Data.DataTransferObjects;
+using TerminalBase.Infrastructure;
 
 namespace terminalQuickBooks.Interfaces
 {
@@ -11,6 +12,7 @@ namespace terminalQuickBooks.Interfaces
         void Create(
             StandardAccountingTransactionDTO curStandardAccountingTransactionCM,
             AuthorizationTokenDO authTokenDO,
-            string userId);
+            string userId,
+            IHubCommunicator hubCommunicator);
     }
 }

@@ -77,33 +77,5 @@ namespace terminalQuickBooks.Tests.Services
             Assert.AreEqual(PostingTypeEnum.Credit.ToString(), curSecondLine.DebitOrCredit);
             Assert.AreEqual("That is the second line description", curSecondLine.Description);
         }
-
-        /// <summary>
-        /// Method is created for testing purposes
-        /// It takes StandardAccountingTransactionDTO as an input, converts it into journal entry, looks for similar journal entries in the Sandbox,
-        /// takes first occurance from the list, and returns converted back crate object
-        /// </summary>
-        /// <param name="StandardAccountingTransactionDTO"></param>
-        /// <param name="authTokenDO"></param>
-        /// <param name="userId"></param>
-        /// <returns></returns>
-        public StandardAccountingTransactionDTO Find(
-            StandardAccountingTransactionDTO curAccountingTransactionDto, 
-            AuthorizationTokenDO authTokenDO,
-            string userId)
-        {
-            var curJournalEntry = _journalEntry.CreateQbJournalEntry(curAccountingTransactionDto);
-            var curDataService = _serviceWorker.GetDataService(authTokenDO, userId);
-            Intuit.Ipp.Data.JournalEntry resultJournalEntry;
-            try
-            {
-                resultJournalEntry = curDataService.FindAll(curJournalEntry).ToList().First();
-                return _journalEntry.GetAccountingTransactionData(resultJournalEntry);
-            }
-            catch (Exception curException)
-            {
-                throw curException;
-            }
-        }
     }
 }

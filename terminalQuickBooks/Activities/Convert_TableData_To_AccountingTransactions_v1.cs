@@ -222,7 +222,7 @@ namespace terminalQuickBooks.Actions
                     var crate = crateStorage.CrateContentsOfType<ChartOfAccountsCM>();
                     ChartOfAccountsCrate = crate != null
                         ? crate.Single()
-                        : _chartOfAccounts.GetChartOfAccounts(GetQuickbooksAuthToken(), CurrentFr8UserId);
+                        : _chartOfAccounts.GetChartOfAccounts(GetQuickbooksAuthToken(), CurrentFr8UserId, HubCommunicator);
                     curDebitAccount = GetDebitAccount(crateStorage);
                     memoText = GetMemoText(crateStorage);
                     //Check that the required input is provided by the user
@@ -251,7 +251,7 @@ namespace terminalQuickBooks.Actions
             ChartOfAccountsCM chartOfAccounts;
             //Check if private variable is null
             if (ChartOfAccountsCrate == null)
-                chartOfAccounts = _chartOfAccounts.GetChartOfAccounts(GetQuickbooksAuthToken(), CurrentFr8UserId);
+                chartOfAccounts = _chartOfAccounts.GetChartOfAccounts(GetQuickbooksAuthToken(), CurrentFr8UserId, HubCommunicator);
             else
                 chartOfAccounts = ChartOfAccountsCrate;
             sources.Add(

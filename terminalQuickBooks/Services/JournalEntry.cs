@@ -6,6 +6,7 @@ using Intuit.Ipp.Data;
 using Intuit.Ipp.DataService;
 using StructureMap;
 using terminalQuickBooks.Interfaces;
+using TerminalBase.Infrastructure;
 
 namespace terminalQuickBooks.Services
 {
@@ -107,16 +108,14 @@ namespace terminalQuickBooks.Services
         /// <summary>
         /// Creates Journal Entry in the developers account in Sandbox in Intuit https://sandbox.qbo.intuit.com/app/journal
         /// </summary>
-        /// <param name="curAccountingTransactionDto"></param>
-        /// <param name="authTokenDO"/>
-        /// <paramref name="userId"/>
         public void Create(
             StandardAccountingTransactionDTO curAccountingTransactionDto, 
             AuthorizationTokenDO authTokenDO,
-            string userId)
+            string userId,
+            IHubCommunicator hubCommunicator)
         {
             var curJournalEntry = CreateQbJournalEntry(curAccountingTransactionDto);
-            var curDataService = _serviceWorker.GetDataService(authTokenDO, userId);
+            var curDataService = _serviceWorker.GetDataService(authTokenDO, userId, hubCommunicator);
             try
             {
                 curDataService.Add(curJournalEntry);

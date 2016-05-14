@@ -5,6 +5,7 @@ using Data.Entities;
 using Fr8Data.Manifests;
 using StructureMap;
 using terminalQuickBooks.Interfaces;
+using TerminalBase.Infrastructure;
 
 namespace terminalQuickBooks.Services
 {
@@ -17,10 +18,10 @@ namespace terminalQuickBooks.Services
         /// <param name="authTokenDO"></param>
         /// <param name="userId"/>
         /// <returns>List of Accounts of Intuit type</returns>
-        public List<Intuit.Ipp.Data.Account> GetAccountList(AuthorizationTokenDO authTokenDO, string userId)
+        public List<Intuit.Ipp.Data.Account> GetAccountList(AuthorizationTokenDO authTokenDO, string userId, IHubCommunicator hubCommunicator)
         {
             var _serviceWorker = ObjectFactory.GetInstance<IServiceWorker>();
-            var curDataService = _serviceWorker.GetDataService(authTokenDO, userId);
+            var curDataService = _serviceWorker.GetDataService(authTokenDO, userId, hubCommunicator);
             var curAccountList = curDataService.FindAll(new Intuit.Ipp.Data.Account()).ToList();
             return curAccountList;
         }
@@ -30,9 +31,9 @@ namespace terminalQuickBooks.Services
         /// <param name="authTokenDO"></param>
         /// <param name="userId"/>
         /// <returns></returns>
-        public ChartOfAccountsCM GetChartOfAccounts(AuthorizationTokenDO authTokenDO, string userId)
+        public ChartOfAccountsCM GetChartOfAccounts(AuthorizationTokenDO authTokenDO, string userId, IHubCommunicator hubCommunicator)
         {
-            var listOfAccounts = GetAccountList(authTokenDO, userId);
+            var listOfAccounts = GetAccountList(authTokenDO, userId, hubCommunicator);
             if (listOfAccounts.Count == 0)
             {
                 throw new Exception("No Accounts found in the QuickBooks account");

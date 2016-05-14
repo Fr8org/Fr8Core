@@ -181,6 +181,11 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(new List<FieldValidationResult>());
         }
 
+        public Task<AuthorizationTokenDTO> GetAuthToken(string authTokenId, string curFr8UserId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
         {
             //This code only supports integration testing scenarios
@@ -292,11 +297,6 @@ namespace TerminalBase.Infrastructure
         }
 
         public Task<List<CrateDTO>> GetStoredManifests(string currentFr8UserId, List<CrateDTO> cratesForMTRequest)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<AuthorizationTokenDTO> GetAuthToken(string authTokenId, string curFr8UserId)
         {
             throw new NotImplementedException();
         }
