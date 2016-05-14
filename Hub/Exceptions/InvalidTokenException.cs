@@ -26,7 +26,7 @@ namespace Hub.Exceptions
         }
 
         public InvalidTokenRuntimeException(ActivityDTO activityDTO) : 
-            base()
+            base(null, null)
         {
             FailedActivityDTO = activityDTO;
         }
