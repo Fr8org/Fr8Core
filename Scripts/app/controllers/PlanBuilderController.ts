@@ -30,6 +30,7 @@ module dockyard.controllers {
         addAction(group: model.ActionGroup): void;
         deleteAction: (action: model.ActivityDTO) => void;
         reConfigureAction: (action: model.ActivityDTO) => void;
+        openAddLabelModal: (action: model.ActivityDTO) => void;
         isReConfiguring: boolean;
         chooseAuthToken: (action: model.ActivityDTO) => void;
         selectAction(action): void;
@@ -146,6 +147,22 @@ module dockyard.controllers {
                 actionsArray.push(action);
                 this.reConfigure(actionsArray);
             };
+
+            $scope.openAddLabelModal = (action: model.ActivityDTO) => { 
+
+                var modalInstance = $modal.open({
+                    animation: true,
+                    templateUrl: '/AngularTemplate/ActivityLabelModal',
+                    controller: 'ActivityLabelModalController',
+                    resolve: {
+                        label: () => action.label
+                    }
+                })
+                modalInstance.result.then(function (label: string) {
+                    action.label = label;
+                    ActionService.save(action);
+                });
+            }
             this.$scope.chooseAuthToken = (action: model.ActivityDTO) => {
                 this.chooseAuthToken(action);
             };
@@ -868,4 +885,17 @@ module dockyard.controllers {
         }
     }
     app.controller('PlanBuilderController', PlanBuilderController);
+    app.controller('ActivityLabelModalController', ['$scope', '$modalInstance','label', ($scope: any, $modalInstance: any, label: string): void => {
+
+        $scope.label = label;
+
+        $scope.submitForm = () => {
+            $modalInstance.close($scope.label);
+        };
+
+        $scope.cancel = () => {
+            $modalInstance.dismiss();
+        };
+
+    }]);
 }

@@ -16,8 +16,8 @@ namespace Hub.Interfaces
 
         List<PlanNodeDO> GetDownstreamActivities(IUnitOfWork uow, PlanNodeDO curActivityDO);
 
-        List<T> GetCrateManifestsByDirection<T>(Guid activityId, CrateDirection direction,
-            AvailabilityType availability, bool includeCratesFromActivity = true) where T: Manifest;
+        List<CrateDescriptionCM> GetCrateManifestsByDirection(Guid activityId, CrateDirection direction,
+            AvailabilityType availability, bool includeCratesFromActivity = true);
 
         //Task Process(Guid curActivityId, ActivityExecutionMode curActionExecutionMode, ContainerDO curContainerDO);
 

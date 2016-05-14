@@ -69,12 +69,12 @@ module dockyard.tests.unit.directives.controls {
         });
 
         it('should open modal', () => {
-            scope.openModal();
+            scope.createModal();
             expect(modal.open).toHaveBeenCalled();
         });
 
         it('should set new upstream field', () => {
-            scope.openModal();
+            scope.createModal();
             scope.setItem(scope.field.listItems[0].key);
             expect(scope.field.value).toBe(scope.field.listItems[0].key);
         });
@@ -100,10 +100,10 @@ module dockyard.tests.unit.directives.controls {
             });
 
             it('should not change the value of second control if first control value is changed', () => {
-                scope.openModal();
+                scope.createModal();
                 scope.setItem(scope.field.listItems[0].key);
                 expect(scope.field.value).toBe(scope.field.listItems[0].key);
-                scope1.openModal();
+                scope1.createModal();
                 scope1.setItem(scope1.field.listItems[1].key);
                 expect(scope.field.value).toBe(scope.field.listItems[0].key);
                 expect(scope1.field.value).toBe(scope1.field.listItems[1].key);
