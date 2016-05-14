@@ -25,8 +25,6 @@ module dockyard.controllers.NotifierController {
             '$scope'
         ];
 
-        
-
         constructor(
             private UserService: services.IUserService,
             private PusherNotifierService: services.IPusherNotifierService,
@@ -34,10 +32,13 @@ module dockyard.controllers.NotifierController {
             private $mdSidenav: any,
             private $scope: INotifierControllerScope) {
 
+
             UserService.getCurrentUser().$promise.then(data => {
                 $scope.eventList = [];
-                
-                PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, dockyard.services.pusherNotifierSuccessEvent, (data: any) => {
+
+                var channel: string = data.emailAddress;
+
+                PusherNotifierService.bindEventToChannel(channel, dockyard.services.pusherNotifierSuccessEvent, (data: any) => {
                     /*this.$mdSidenav('right')
                         .toggle()
                         .then(function () {
@@ -50,14 +51,14 @@ module dockyard.controllers.NotifierController {
 
                 });
 
-                PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, dockyard.services.pusherNotifierTerminalEvent, (data: any) => {
+                PusherNotifierService.bindEventToChannel(channel, dockyard.services.pusherNotifierTerminalEvent, (data: any) => {
                     var event = new Fr8InternalEvent();
                     event.type = dockyard.services.pusherNotifierTerminalEvent;
                     event.data = data;
                     this.$scope.eventList.splice(0, 0, event);
                 });
 
-                PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, dockyard.services.pusherNotifierExecutionEvent, (data: any) => {
+                PusherNotifierService.bindEventToChannel(channel, dockyard.services.pusherNotifierExecutionEvent, (data: any) => {
                    /* this.$mdSidenav('right')
                         .toggle()
                         .then(function () {
@@ -73,7 +74,7 @@ module dockyard.controllers.NotifierController {
                     //});
                 });
 
-                PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, dockyard.services.pusherNotifierFailureEvent, (data: any) => {
+                PusherNotifierService.bindEventToChannel(channel, dockyard.services.pusherNotifierFailureEvent, (data: any) => {
                     /*this.$mdSidenav('right')
                         .toggle()   
                         .then(function () {

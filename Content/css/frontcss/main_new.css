@@ -39,21 +39,6 @@ textarea {
     resize: vertical;
 }
 
-a {
-    color: #1B2D63;
-}
-
-    a:hover {
-        text-decoration: none;
-        color: #F2E9DF;
-    }
-
-    a:focus {
-        outline: none;
-        text-decoration: none;
-        color: #1B2D63;
-    }
-
 ul {
     list-style: square;
 }
@@ -329,6 +314,7 @@ header#site-header:after {
     font-family: 'Francois One', sans-serif;
     font-weight: 200;
     text-transform: uppercase;
+    text-align: center;
 }
 
 /* Counteracts Material styles */
