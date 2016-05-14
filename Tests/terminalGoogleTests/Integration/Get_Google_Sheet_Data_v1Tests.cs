@@ -6,11 +6,9 @@ using Fr8Data.Manifests;
 using HealthMonitor.Utility;
 using Hub.Managers;
 using Hub.StructureMap;
-using Moq;
 using NUnit.Framework;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
-
 
 namespace terminalGoogleTests.Integration
 {
