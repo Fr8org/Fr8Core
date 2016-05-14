@@ -5,7 +5,11 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using HealthMonitor.Utility;
 using Hub.Managers;
+using Hub.StructureMap;
+using Moq;
 using NUnit.Framework;
+using terminalGoogle.DataTransferObjects;
+using terminalGoogle.Interfaces;
 
 
 namespace terminalGoogleTests.Integration
@@ -30,7 +34,6 @@ namespace terminalGoogleTests.Integration
         public async Task Get_Google_Sheet_Data_Initial_Configuration_Check_Crate_Structure()
         {
             var configureUrl = GetTerminalConfigureUrl();
-
             var dataDTO = HealthMonitor_FixtureData.Get_Google_Sheet_Data_v1_InitialConfiguration_Fr8DataDTO();
             dataDTO.ActivityDTO.AuthToken = HealthMonitor_FixtureData.Google_AuthToken1();
             var responseActionDTO =

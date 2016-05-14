@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Data.Entities;
+using Data.Infrastructure;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Newtonsoft.Json;
@@ -10,6 +11,7 @@ using terminalGoogle.Interfaces;
 using terminalGoogle.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using Utilities.Logging;
 
 namespace terminalGoogle.Actions
 {
@@ -52,17 +54,29 @@ namespace terminalGoogle.Actions
             var result = Task.Run(async () => await _googleIntegration.IsTokenInfoValid(token)).Result;
             if (result == false)
             {
-                var newToken = _googleIntegration.RefreshToken(token);
-                var tokenDTO = new AuthorizationTokenDTO()
+                // Tries to refresh token. If refresh is successful, updates current token silently
+                try
                 {
-                    Id = authTokenDO.Id.ToString(),
-                    ExternalAccountId = authTokenDO.ExternalAccountId,
-                    Token = JsonConvert.SerializeObject(newToken)
-                };
-                authTokenDO.Token = newToken.AccessToken;
-                HubCommunicator.RenewToken(tokenDTO, CurrentFr8UserId);
+                    var newToken = _googleIntegration.RefreshToken(token);
+                    var tokenDTO = new AuthorizationTokenDTO()
+                    {
+                        Id = authTokenDO.Id.ToString(),
+                        ExternalAccountId = authTokenDO.ExternalAccountId,
+                        Token = JsonConvert.SerializeObject(newToken)
+                    };
+                    authTokenDO.Token = tokenDTO.Token;
+                    HubCommunicator.RenewToken(tokenDTO, CurrentFr8UserId);
+                    return false;
+                }
+                catch (Exception exception)
+                {
+                    var message = "Token is invalid and refresh failed with exception: " + exception.Message;
+                    EventManager.TokenValidationFailed(authTokenDO.Token, message);
+                    Logger.LogError(message);
+                    return true;
+                }
             }
-            return !result;
+            return false;
         }
     }
 }
