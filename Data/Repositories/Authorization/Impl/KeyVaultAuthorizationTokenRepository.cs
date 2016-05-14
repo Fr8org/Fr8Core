@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
+using Data.Repositories.Authorization;
 using Microsoft.Azure.KeyVault;
 using Microsoft.IdentityModel.Clients.ActiveDirectory;
 using Segment;
@@ -33,12 +34,12 @@ namespace Data.Repositories
             }
         }
 
-        public KeyVaultAuthorizationTokenRepository(IUnitOfWork uow) 
-            : base(uow)
+        public KeyVaultAuthorizationTokenRepository(IAuthorizationTokenStorageProvider storageProvider) 
+            : base(storageProvider)
         {
         }
         
-        protected override void ProcessChanges(
+        protected override void ProcessSecureDataChanges(
             IEnumerable<AuthorizationTokenDO> adds,
             IEnumerable<AuthorizationTokenDO> updates,
             IEnumerable<AuthorizationTokenDO> deletes)
@@ -127,7 +128,7 @@ namespace Data.Repositories
                         {
                             if (!tasks[i].IsCompleted)
                             {
-                                EventManager.KeyVaultFailed("ProcessChanges", new Exception(taskInfo[i]));
+                                EventManager.KeyVaultFailed("ProcessSecureDataChanges", new Exception(taskInfo[i]));
                             }
                         }
                     }

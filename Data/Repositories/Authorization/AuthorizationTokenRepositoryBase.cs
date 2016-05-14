@@ -1,36 +1,26 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Runtime.Caching;
 using Data.Entities;
-using Data.Interfaces;
+using Data.Repositories.Authorization;
 using Utilities.Configuration.Azure;
 
 namespace Data.Repositories
 {
-    public abstract class AuthorizationTokenRepositoryBase : GenericRepository<AuthorizationTokenDO>,
-        IAuthorizationTokenRepository, ITrackingChangesRepository
+    public abstract partial class AuthorizationTokenRepositoryBase : IAuthorizationTokenRepository
     {
         /*********************************************************************************/
         // Declarations
         /*********************************************************************************/
 
-        private readonly Dictionary<Guid, AuthorizationTokenChangeTracker> _changesTackers =
-            new Dictionary<Guid, AuthorizationTokenChangeTracker>();
-
-        private readonly List<AuthorizationTokenDO> _adds = new List<AuthorizationTokenDO>();
-        private readonly List<AuthorizationTokenDO> _deletes = new List<AuthorizationTokenDO>();
-        private readonly List<AuthorizationTokenDO> _updates = new List<AuthorizationTokenDO>();
         private static readonly MemoryCache TokenCache = new MemoryCache("AuthTokenCache");
-        private static TimeSpan _expiration = TimeSpan.FromMinutes(10);
+        private static readonly TimeSpan Expiration = TimeSpan.FromMinutes(10);
 
-        /*********************************************************************************/
-
-        public Type EntityType
-        {
-            get { return typeof (AuthorizationTokenDO); }
-        }
-
+        private readonly Dictionary<Guid, AuthorizationTokenChangeTracker> _changesTackers = new Dictionary<Guid, AuthorizationTokenChangeTracker>();
+        private readonly IAuthorizationTokenStorageProvider _storageProvider;
+        
         /*********************************************************************************/
         // Functions
         /*********************************************************************************/
@@ -43,24 +33,58 @@ namespace Data.Repositories
 
             if (!string.IsNullOrWhiteSpace(expStr) && int.TryParse(expStr, out exp))
             {
-                _expiration = TimeSpan.FromMinutes(exp);
+                Expiration = TimeSpan.FromMinutes(exp);
             }
         }
 
         /*********************************************************************************/
 
-        protected AuthorizationTokenRepositoryBase(IUnitOfWork uow)
-            : base(uow)
+        protected AuthorizationTokenRepositoryBase(IAuthorizationTokenStorageProvider storageProvider)
         {
+            _storageProvider = storageProvider;
+           
+        }
+
+        /*********************************************************************************/
+        
+        public int Count()
+        {
+            return _storageProvider.GetQuery().Count();
+        }
+
+        /*********************************************************************************/
+
+        public void Add(AuthorizationTokenDO authorizationTokenDo)
+        {
+            AuthorizationTokenChangeTracker tracker;
+
+            if (_changesTackers.TryGetValue(authorizationTokenDo.Id, out tracker))
+            {
+                if (!ReferenceEquals(tracker.ActualValue, authorizationTokenDo))
+                {
+                    throw new InvalidOperationException($"AuthorizationToken with Id = {authorizationTokenDo.Id} was already added");
+                }
+               
+                return;
+            }
+
+            Track(authorizationTokenDo, EntityState.Added);
+        }
+
+        /*********************************************************************************/
+
+        public void Remove(AuthorizationTokenDO authorizationTokenDo)
+        {
+            Track(authorizationTokenDo, EntityState.Deleted);
         }
 
         /*********************************************************************************/
 
         public IQueryable<AuthorizationTokenDO> GetPublicDataQuery()
         {
-            return GetQuery();
+            return InterceptingProvider.Intercept(_storageProvider.GetQuery(), this);
         }
-
+        
         /*********************************************************************************/
 
         public AuthorizationTokenDO FindToken(string userId, int terminalId, int? state)
@@ -69,37 +93,33 @@ namespace Data.Repositories
 
             if (state == null)
             {
-                token = GetQuery().FirstOrDefault(x => x.UserID == userId && x.TerminalID == terminalId);
+                token = _storageProvider.GetQuery().FirstOrDefault(x => x.UserID == userId && x.TerminalID == terminalId);
             }
             else
             {
-                token =
-                    GetQuery()
-                        .FirstOrDefault(
-                            x => x.UserID == userId && x.TerminalID == terminalId && x.AuthorizationTokenState == state);
+                token = _storageProvider.GetQuery().FirstOrDefault(x => x.UserID == userId && x.TerminalID == terminalId && x.AuthorizationTokenState == state);
             }
 
-            return EnrichAndTrack(token);
+            return SyncAndLoadSecretData(token);
         }
-
-        /*********************************************************************************/
-
-        public int Count()
-        {
-            return GetQuery().Count();
-        }
-
+        
         /*********************************************************************************/
 
         public AuthorizationTokenDO FindTokenByExternalAccount(string externalAccountId, int terminalId, string userId)
         {
-            return EnrichAndTrack(
-                GetQuery()
-                    .FirstOrDefault(x => x.ExternalAccountId == externalAccountId
-                                         && x.TerminalID == terminalId
-                                         && x.UserID == userId
-                    )
-                );
+            return SyncAndLoadSecretData(_storageProvider.GetQuery()
+                                                                      .FirstOrDefault(x => x.ExternalAccountId == externalAccountId
+                                                                      && x.TerminalID == terminalId
+                                                                      && x.UserID == userId));
+        }
+
+        /*********************************************************************************/
+
+        public AuthorizationTokenDO FindTokenByExternalState(string externalStateToken, int terminalId)
+        {
+            return SyncAndLoadSecretData(_storageProvider.GetQuery()
+                                                                      .FirstOrDefault(x => x.TerminalID == terminalId
+                                                                      && x.ExternalStateToken == externalStateToken));
         }
 
         /*********************************************************************************/
@@ -111,32 +131,90 @@ namespace Data.Repositories
                 return null;
             }
 
+            return Sync(id, () =>
+            {
+                var token = _storageProvider.GetByKey(id.Value);
+
+                if (token != null)
+                {
+                    token.Token = QuerySecurePart(token.Id);
+                }
+
+                return token;
+            });
+        }
+
+        /*********************************************************************************/
+
+        private AuthorizationTokenDO SyncAndLoadSecretData(AuthorizationTokenDO token)
+        {
+            return Sync(token?.Id, () =>
+            {
+                if (token != null)
+                {
+                    token.Token = QuerySecurePart(token.Id);
+                }
+
+                return token;
+            });
+        }
+
+        /*********************************************************************************/
+
+        private AuthorizationTokenDO Sync(AuthorizationTokenDO token)
+        {
+            return Sync(token?.Id, () => token);
+        }
+
+        /*********************************************************************************/
+
+        private AuthorizationTokenDO Sync(Guid? id, Func<AuthorizationTokenDO> fallback)
+        {
+            if (id == null)
+            {
+                return null;
+            }
+
+            AuthorizationTokenChangeTracker tracker;
+
+            // if we've already loaded this before (local cache)
+            if (_changesTackers.TryGetValue(id.Value, out tracker))
+            {
+                if (tracker.State == EntityState.Deleted)
+                {
+                    return null;
+                }
+
+                return tracker.ActualValue;
+            }
+
+            // try load from cache (global cache)
             AuthorizationTokenDO token;
             var cacheKey = GetCacheKey(id.Value);
 
             lock (TokenCache)
             {
                 token = (AuthorizationTokenDO)TokenCache.Get(cacheKey);
-                if (token != null)
-                {
-                    Track(token);
-                    return token;
-                }
             }
 
-            token = EnrichAndTrack(GetByKey(id.Value));
-
-            if (token != null)
+            // load from the db
+            if (token == null)
             {
-                lock (TokenCache)
-                {
-                    UpdateCache(token);
-                }
+                token = fallback();
             }
+
+            token = token?.Clone();
+
+            lock (TokenCache)
+            {
+                UpdateCache(token);
+            }
+
+            token = Track(token, EntityState.Modified);
 
             return token;
         }
-
+        
         /*********************************************************************************/
 
         private void UpdateCache(AuthorizationTokenDO authorizationToken)
@@ -146,7 +224,7 @@ namespace Data.Repositories
             TokenCache.Remove(cacheKey);
             TokenCache.Add(new CacheItem(cacheKey, authorizationToken.Clone()), new CacheItemPolicy
             {
-                SlidingExpiration = _expiration
+                SlidingExpiration = Expiration
             });
         }
 
@@ -156,146 +234,87 @@ namespace Data.Repositories
         {
             return tokenId.ToString("N");
         }
-
+      
         /*********************************************************************************/
 
-        public AuthorizationTokenDO FindTokenByExternalState(
-            string externalStateToken, int terminalId)
+        private AuthorizationTokenDO Track(AuthorizationTokenDO token, EntityState state)
         {
-            return EnrichAndTrack(
-                GetQuery().FirstOrDefault(x => x.TerminalID == terminalId
-                    && x.ExternalStateToken == externalStateToken)
-            );
-        }
+            AuthorizationTokenChangeTracker changeTracker;
 
-        /*********************************************************************************/
-
-        private AuthorizationTokenDO EnrichAndTrack(AuthorizationTokenDO token)
-        {
             if (token == null)
             {
                 return null;
             }
 
-            AuthorizationTokenChangeTracker changeTracker;
-
             if (!_changesTackers.TryGetValue(token.Id, out changeTracker))
             {
-                token.Token = QuerySecurePart(token.Id);
+                changeTracker = new AuthorizationTokenChangeTracker(token, state);
 
-                _changesTackers[token.Id] = new AuthorizationTokenChangeTracker(token.Token, token);
-            }
-
-            return token;
-        }
-
-        /*********************************************************************************/
-
-        private AuthorizationTokenChangeTracker Track(AuthorizationTokenDO token)
-        {
-            AuthorizationTokenChangeTracker changeTracker;
-
-            if (!_changesTackers.TryGetValue(token.Id, out changeTracker))
-            {
-                changeTracker = new AuthorizationTokenChangeTracker(token.Token, token);
                 _changesTackers[token.Id] = changeTracker;
             }
-
-            return changeTracker;
-        }
-
-        /*********************************************************************************/
-
-        public void TrackAdds(IEnumerable<object> entities)
-        {
-            foreach (var entity in entities.OfType<AuthorizationTokenDO>())
+            else
             {
-                _adds.Add(entity);
-                Track(entity).ResetChanges();
+                changeTracker.State = state;
             }
+         
+            return changeTracker.ActualValue;
         }
-
-        /*********************************************************************************/
-
-        public void TrackDeletes(IEnumerable<object> entities)
-        {
-            foreach (var entity in entities.OfType<AuthorizationTokenDO>())
-            {
-                _deletes.Add(entity);
-                _changesTackers.Remove(entity.Id);
-            }
-        }
-
-        /*********************************************************************************/
-
-        public void TrackUpdates(IEnumerable<object> entities)
-        {
-            foreach (var entity in entities.OfType<AuthorizationTokenDO>())
-            {
-                _updates.Add(entity);
-            }
-        }
-
+        
         /*********************************************************************************/
 
         public void SaveChanges()
         {
-            var tokenUpdates = _changesTackers.Values.Where(x => x.HasChanges).Select(x => x.ActualValue).ToArray();
+            var securepdates = _changesTackers.Values.Where(x => x.State == EntityState.Modified && x.IsSecureDataChanged).Select(x => x.ActualValue).ToArray();
+            var deletes = _changesTackers.Values.Where(x => x.State == EntityState.Deleted).Select(x => x.ActualValue).ToArray();
+            var adds = _changesTackers.Values.Where(x => x.State == EntityState.Added).Select(x => x.ActualValue).ToArray();
+
+            foreach (var authorizationTokenChangeTracker in _changesTackers)
+            {
+                authorizationTokenChangeTracker.Value.DetectChanges();
+            }
 
             lock (TokenCache)
             {
-                foreach (var update in _updates)
-                {
-                    var cacheKey = GetCacheKey(update.Id);
-                    var token = (AuthorizationTokenDO)TokenCache.Get(cacheKey);
-
-                    if (token == null)
-                    {
-                        continue;
-                    }
-
-                    update.Token = token.Token;
-
-                    UpdateCache(update);
-                }
-
-                foreach (var update in tokenUpdates)
-                {
-                    UpdateCache(update);
-                }
-
-                foreach (var token in _adds)
+                foreach (var token in _changesTackers.Values.Where(x => x.State == EntityState.Added || x.HasChanges).Select(x => x.ActualValue))
                 {
                     UpdateCache(token);
                 }
+
+                foreach (var authorizationTokenDo in _changesTackers.Values.Where(x => x.State == EntityState.Deleted).Select(x=>x.ActualValue))
+                {
+                    TokenCache.Remove(GetCacheKey(authorizationTokenDo.Id));
+                }
             }
 
-            ProcessChanges(_adds, tokenUpdates, _deletes);
+            ProcessSecureDataChanges(adds, securepdates, deletes);
+
+            var changes = new AuthorizationTokenChanges();
             
-            foreach (var value in _changesTackers)
+            changes.Insert.AddRange(_changesTackers.Values.Where(x => x.State == EntityState.Added).Select(x => x.ActualValue));
+            changes.Delete.AddRange(_changesTackers.Values.Where(x => x.State == EntityState.Deleted).Select(x => x.ActualValue));
+
+            foreach (var tracker in _changesTackers.Values.Where(x => x.State == EntityState.Modified && x.HasChanges))
             {
-                if (value.Value.HasChanges)
-                {
-                    value.Value.ResetChanges();
-                }
+                changes.Update.Add(new AuthorizationTokenChanges.ChangedToken(tracker.ActualValue, tracker.Changes));
             }
 
-            lock (TokenCache)
-            {
-                foreach (var authorizationTokenDo in _deletes)
-                {
-                    TokenCache.Remove(authorizationTokenDo.Id.ToString("N"));
-                }
-            }
+            _storageProvider.Update(changes);
 
-            _adds.Clear();
-            _deletes.Clear();
-            _updates.Clear();
+            foreach (var tracker in _changesTackers.ToArray())
+            {
+                if (tracker.Value.State == EntityState.Deleted)
+                {
+                    _changesTackers.Remove(tracker.Key);
+                    continue;
+                }
+
+                tracker.Value.ResetChanges();
+            }
         }
 
         /*********************************************************************************/
 
-        protected abstract void ProcessChanges(IEnumerable<AuthorizationTokenDO> adds, IEnumerable<AuthorizationTokenDO> updates, IEnumerable<AuthorizationTokenDO> deletes);
+        protected abstract void ProcessSecureDataChanges(IEnumerable<AuthorizationTokenDO> adds, IEnumerable<AuthorizationTokenDO> updates, IEnumerable<AuthorizationTokenDO> deletes);
         protected abstract string QuerySecurePart(Guid id);
 
         /*********************************************************************************/
