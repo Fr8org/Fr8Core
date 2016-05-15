@@ -496,6 +496,7 @@
     <Content Include="Api\EventResponse.aspx" />
     <Content Include="Api\GetEmailHTML.aspx" />
     <Content Include="Content\css\CDNRelatedStyles.css" />
+    <Content Include="Content\css\dockyard\activity-stream.css" />
     <Content Include="Content\css\dockyard\authentication-dialog.css" />
     <Content Include="Content\css\dockyard\collapse.css" />
     <Content Include="Content\css\dockyard\container-transition.css" />
