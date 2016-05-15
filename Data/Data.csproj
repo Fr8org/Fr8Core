@@ -630,6 +630,10 @@
     <Compile Include="Migrations\201605111857439_ActivityActivationState.Designer.cs">
       <DependentUpon>201605111857439_ActivityActivationState.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201605131245044_AddedClassPropertyToFr8AccountDO.cs" />
+    <Compile Include="Migrations\201605131245044_AddedClassPropertyToFr8AccountDO.Designer.cs">
+      <DependentUpon>201605131245044_AddedClassPropertyToFr8AccountDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -1207,6 +1211,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201605111857439_ActivityActivationState.resx">
       <DependentUpon>201605111857439_ActivityActivationState.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605131245044_AddedClassPropertyToFr8AccountDO.resx">
+      <DependentUpon>201605131245044_AddedClassPropertyToFr8AccountDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
