@@ -46,6 +46,8 @@ module dockyard.directives.upstreamDataChooser {
             $scope.openModal = () => {
                 getUpstreamFields().then(() => { 
                     $scope.createModal();
+                }, () => {
+                    uiHelperService.openConfirmationModal(alertMessage);
                 });
             }
             $scope.setItem = (item) => {
@@ -89,7 +91,7 @@ module dockyard.directives.upstreamDataChooser {
                             });
                         });
                         if (listItems.length === 0) {
-                            uiHelperService.openConfirmationModal(alertMessage);
+                            throw Error();
                         }
                         else {
                             $scope.field.listItems = listItems;

@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Data.Entities;
-using Data.Interfaces;
+using Data.Repositories.Authorization;
 
 namespace Data.Repositories
 {
@@ -9,12 +9,12 @@ namespace Data.Repositories
     {
         private static readonly Dictionary<Guid, string>  TokenData = new Dictionary<Guid, string>();
 
-        public AuthorizationTokenRepositoryForTests(IUnitOfWork uow) 
-            : base(uow)
+        public AuthorizationTokenRepositoryForTests(IAuthorizationTokenStorageProvider storageProvider) 
+            : base(storageProvider)
         {
         }
 
-        protected override void ProcessChanges(IEnumerable<AuthorizationTokenDO> adds, IEnumerable<AuthorizationTokenDO> updates, IEnumerable<AuthorizationTokenDO> deletes)
+        protected override void ProcessSecureDataChanges(IEnumerable<AuthorizationTokenDO> adds, IEnumerable<AuthorizationTokenDO> updates, IEnumerable<AuthorizationTokenDO> deletes)
         {
             foreach (var authorizationTokenDo in adds)
             {

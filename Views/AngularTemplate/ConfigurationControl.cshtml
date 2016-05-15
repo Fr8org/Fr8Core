@@ -45,6 +45,9 @@
     <div ng-if='field.type == "FilePicker"'>
         <label class='control-label'>{{::field.label}}</label>
         <file-picker field='field' change="onChange"></file-picker>
+        <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
+            <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
+        </div>
     </div>
 
     <!--
@@ -82,6 +85,9 @@
     -->
     <div ng-if='field.type == "FilterPane"'>
         <filter-pane current-action='currentAction' field='field' change='onChange'></filter-pane>
+        <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
+            <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
+        </div>
     </div>
 
     <!--
@@ -90,6 +96,9 @@
     <div ng-if='field.type == "QueryBuilder"'>
         <label class='control-label'>{{::field.label}}</label>
         <query-builder current-action='currentAction' field='field'></query-builder>
+        <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
+            <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
+        </div>
     </div>
 
     <!--
@@ -98,6 +107,9 @@
     <div ng-if='field.type == "MappingPane"'>
         <label class='control-label'>{{::field.label}}</label>
         <mapping-pane current-action='currentAction' field='field'></mapping-pane>
+        <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
+            <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
+        </div>
     </div>
 
     <!--
@@ -115,6 +127,9 @@
     <div ng-if='field.type == "FieldList"'>
         <label class="conrol-label">{{::field.label}}</label>
         <field-list field="field" change="onChange"></field-list>
+        <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
+            <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
+        </div>
     </div>
 
     <!--
@@ -129,6 +144,9 @@
         -->
     <div ng-if='field.type == "TextSource"'>
         <text-source current-action="currentAction" change="onChange" data-field-name='{{::field.name}}' field="field"></text-source>
+        <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
+            <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
+        </div>
     </div>
 
     <!--
@@ -137,6 +155,9 @@
     <div ng-if='field.type == "TextArea"'>
         <label ng-if="field.label !== null && field.label.length > 0" class='control-label'>{{::field.label}}</label>
         <text-area field='field'></text-area>
+        <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
+            <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
+        </div>
     </div>
 
     <!--
@@ -152,6 +173,9 @@
     <div ng-if='field.type == "Duration"'>
         <label ng-if="field.label !== null && field.label.length > 0" class='control-label'>{{::field.label}}</label>
         <duration field="field"></duration>
+        <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
+            <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
+        </div>
     </div>
 
     <!--
@@ -166,6 +190,9 @@
     -->
     <div ng-if='field.type == "UpstreamDataChooser"'>
         <upstream-data-chooser field="field" current-action='currentAction' change="onChange"></upstream-data-chooser>
+        <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
+            <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
+        </div>
     </div>
 
     <!--
@@ -173,6 +200,9 @@
     -->
     <div ng-if='field.type === "UpstreamFieldChooser"'>
         <upstream-field-chooser field="field" current-action="currentAction"></upstream-field-chooser>
+        <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
+            <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
+        </div>
     </div>
 
     <!--
@@ -180,6 +210,9 @@
     -->
     <div ng-if='field.type === "UpstreamCrateChooser"'>
         <upstream-crate-chooser field="field" current-action="currentAction" change="onChange"></upstream-crate-chooser>
+        <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
+            <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
+        </div>
     </div>
 
     <!--
@@ -187,16 +220,25 @@
         -->
     <div ng-if='field.type == "SourceableCriteria"'>
         <sourceable-criteria change="onChange" data-field-name='{{::field.name}}' field="field"></sourceable-criteria>
+        <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
+            <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
+        </div>
     </div>
 
     <!-- DatePicker -->
     <div ng-if='field.type == "DatePicker"'>
-        <date-picker field="field" />
+        <date-picker field="field"/>
+        <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
+            <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
+        </div>
     </div>
 
     <!-- CrateChooser -->
     <div ng-if='field.type == "CrateChooser"'>
         <crate-chooser field="field" current-action="currentAction" change="onChange"></crate-chooser>
+        <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
+            <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
+        </div>
     </div>
 
 
@@ -214,21 +256,33 @@
     <!-- ControlList -->
     <div ng-if='field.type == "ControlList"'>
         <control-list field="field" current-action="currentAction" change="onChange" plan="plan"></control-list>
+        <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
+            <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
+        </div>
     </div>
 
     <!-- Select Data -->
     <div ng-if='field.type == "SelectData"'>
         <select-data field="field" current-action="currentAction" plan="plan"></select-data>
+        <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
+            <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
+        </div>
     </div>
 
     <!-- External Object Chooser -->
     <div ng-if='field.type == "ExternalObjectChooser"'>
         <external-object-chooser field="field" current-action="currentAction" plan="plan"></external-object-chooser>
+        <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
+            <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
+        </div>
     </div>
 
     <!-- Build Message Appender -->
     <div ng-if='field.type == "BuildMessageAppender"'>
         <build-message-appender current-action="currentAction" field='field' click='onClick' change='onChange' data-field-name='{{::field.name}}'></build-message-appender>
+        <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
+            <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
+        </div>
     </div>
 
 
