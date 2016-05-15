@@ -43,6 +43,9 @@ namespace Data.Entities
 
         //it's important to persist the DocuSignAccountId. The rest of the DocuSignAccount data is accessed through the DocuSignAccount wrapper class
         public string DocusignAccountId { get; set; }
+        //This property helps differentiate visitors of the web pages in analytic tools
+        //This should be either 'Internal' or 'External'
+        public string Class { get; set; }
 
         //[NotMapped]`
         //public DocuSignAccount DocuSignAccount { get; set; }
