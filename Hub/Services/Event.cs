@@ -78,7 +78,7 @@ namespace Hub.Services
                     try
                     {
                         Fr8AccountDO systemUser = uow.UserRepository.GetOrCreateUser(systemUserEmail);
-                        FindAndExecuteAccountPlans(uow, eventReportMS, curCrateStandardEventReport, systemUser);
+                        FindAndExecuteAccountPlans(uow, eventReportMS, curCrateStandardEventReport, systemUser.Id);
                     }
                     catch (Exception ex)
                     {
@@ -91,7 +91,6 @@ namespace Hub.Services
                     //For team-wide events we use ExternalDomainId property (e.g. received Slack message should run all plans for respective Slack team)
                     var authTokenList = uow.AuthorizationTokenRepository
                         .GetPublicDataQuery()
-                        .Include(x => x.UserDO)
                         .Where(x => x.ExternalAccountId.Contains(eventReportMS.ExternalAccountId)
                                 || (x.ExternalDomainId != null && x.ExternalDomainId == eventReportMS.ExternalDomainId))
                         .ToArray();
@@ -100,7 +99,7 @@ namespace Hub.Services
                     {
                         try
                         {
-                            FindAndExecuteAccountPlans(uow, eventReportMS, curCrateStandardEventReport, authToken.UserDO);
+                            FindAndExecuteAccountPlans(uow, eventReportMS, curCrateStandardEventReport, authToken.UserID);
                         }
                         catch (Exception ex)
                         {
@@ -112,11 +111,11 @@ namespace Hub.Services
         }
 
         private void FindAndExecuteAccountPlans(IUnitOfWork uow, EventReportCM eventReportMS,
-               Crate curCrateStandardEventReport, Fr8AccountDO curDockyardAccount = null)
+               Crate curCrateStandardEventReport, string curDockyardAccountId = null)
         {
             //find this Account's Plans
             var initialPlansList = uow.PlanRepository.GetPlanQueryUncached()
-                .Where(pt => pt.Fr8AccountId == curDockyardAccount.Id && pt.PlanState == PlanState.Active).ToList();
+                .Where(pt => pt.Fr8AccountId == curDockyardAccountId && pt.PlanState == PlanState.Active).ToList();
             var subscribingPlans = _plan.MatchEvents(initialPlansList, eventReportMS);
 
             Logger.LogInfo($"Upon receiving event for account '{eventReportMS.ExternalAccountId}' {subscribingPlans.Count} of {initialPlansList.Count} will be notified");

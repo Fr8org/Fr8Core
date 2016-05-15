@@ -13,11 +13,10 @@ using InternalInterface = Hub.Interfaces;
 using Hub.Managers;
 using System.Threading.Tasks;
 using Data.Infrastructure;
+using Data.Interfaces.Manifests;
 using Data.Repositories.Plan;
-using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
-using Fr8Data.DataTransferObjects.Helpers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Exceptions;
@@ -40,7 +39,7 @@ namespace Hub.Services
         private readonly IPusherNotifier _pusher;
 
         public Plan(InternalInterface.IContainer container, Fr8Account dockyardAccount, IActivity activity,
-            ICrateManager crate, ISecurityServices security,  IJobDispatcher dispatcher, IPusherNotifier pusher)
+            ICrateManager crate, ISecurityServices security, IJobDispatcher dispatcher, IPusherNotifier pusher)
         {
             _container = container;
             _dockyardAccount = dockyardAccount;
@@ -68,15 +67,15 @@ namespace Hub.Services
                 ? planQuery.Where(pt => pt.Fr8Account.Id == account.Id)
                 : planQuery.Where(pt => pt.Id == planQueryDTO.Id && pt.Fr8Account.Id == account.Id);
 
-            planQuery = !string.IsNullOrEmpty(planQueryDTO.Category) 
-                ? planQuery.Where(c => c.Category == planQueryDTO.Category) 
+            planQuery = !string.IsNullOrEmpty(planQueryDTO.Category)
+                ? planQuery.Where(c => c.Category == planQueryDTO.Category)
                 : planQuery.Where(c => string.IsNullOrEmpty(c.Category));
 
             if (!string.IsNullOrEmpty(planQueryDTO.Filter))
             {
                 planQuery = planQuery.Where(c => c.Name.Contains(planQueryDTO.Filter) || c.Description.Contains(planQueryDTO.Filter));
             }
-            
+
             planQuery = planQueryDTO.Status == null
                 ? planQuery.Where(pt => pt.PlanState != PlanState.Deleted)
                 : planQuery.Where(pt => pt.PlanState == planQueryDTO.Status);
@@ -97,7 +96,7 @@ namespace Hub.Services
 
             var totalPlanCountForCurrentCriterias = planQuery.Count();
 
-            planQuery = planQuery.Skip(planQueryDTO.PlanPerPage.Value * (planQueryDTO.Page.Value-1))
+            planQuery = planQuery.Skip(planQueryDTO.PlanPerPage.Value * (planQueryDTO.Page.Value - 1))
                     .Take(planQueryDTO.PlanPerPage.Value);
 
             return new PlanResultDTO
@@ -107,6 +106,35 @@ namespace Hub.Services
                 TotalPlanCount = totalPlanCountForCurrentCriterias
             };
 
+        }
+
+        public bool IsMonitoringPlan(IUnitOfWork uow, PlanDO plan)
+        {
+            var initialActivity = plan.StartingSubPlan.GetDescendantsOrdered()
+                .OfType<ActivityDO>()
+                .FirstOrDefault(x => uow.ActivityTemplateRepository.GetByKey(x.ActivityTemplateId).Category != ActivityCategory.Solution);
+
+            if (initialActivity == null)
+            {
+                return false;
+            }
+
+            var activityTemplate = uow.ActivityTemplateRepository.GetByKey(initialActivity.ActivityTemplateId);
+
+            if (activityTemplate.Category == ActivityCategory.Monitors)
+            {
+                return true;
+            }
+
+            var storage = _crate.GetStorage(initialActivity.CrateStorage);
+
+            // first activity has event subsribtions. This means that this plan can be triggered by external event
+            if (storage.CrateContentsOfType<EventSubscriptionCM>().Any(x => x.Subscriptions?.Count > 0))
+            {
+                return true;
+            }
+
+            return false;
         }
 
         public IList<PlanDO> GetByName(IUnitOfWork uow, Fr8AccountDO account, string name, PlanVisibility visibility)
@@ -175,32 +203,53 @@ namespace Hub.Services
             return plan;
         }
 
-        public void Delete(IUnitOfWork uow, Guid id)
+        public async Task Delete(Guid id)
         {
-            var plan = uow.PlanRepository.GetById<PlanDO>(id);
+            Exception deactivationFailure = null;
 
-            if (plan == null)
+            try
             {
-                throw new EntityNotFoundException<PlanDO>(id);
+                await Deactivate(id);
+            }
+            catch (Exception ex)
+            {
+                deactivationFailure = ex;
             }
 
-            plan.PlanState = PlanState.Deleted;
-
-            //Plan deletion will only update its PlanState = Deleted
-            foreach (var container in _container.LoadContainers(uow, plan))
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                container.State = State.Deleted;
+                var plan = uow.PlanRepository.GetById<PlanDO>(id);
+
+                if (plan == null)
+                {
+                    throw new EntityNotFoundException<PlanDO>(id);
+                }
+
+                //Plan deletion will only update its PlanState = Deleted
+                foreach (var container in _container.LoadContainers(uow, plan))
+                {
+                    container.State = State.Deleted;
+                }
+
+                if (deactivationFailure == null)
+                {
+                    plan.PlanState = PlanState.Deleted;
+                }
+
+                uow.SaveChanges();
+            }
+
+            if (deactivationFailure != null)
+            {
+                throw deactivationFailure;
             }
         }
 
-
         public async Task<ActivateActivitiesDTO> Activate(Guid curPlanId, bool planBuilderActivate)
         {
-            var result = new ActivateActivitiesDTO
-            {
-                Status = "no action",
-                ActivitiesCollections = new List<ActivityDTO>()
-            };
+            var result = new ActivateActivitiesDTO();
+
+            List<Task<ActivityDTO>> activitiesTask = new List<Task<ActivityDTO>>();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -212,49 +261,47 @@ namespace Hub.Services
                     throw new ApplicationException("Cannot activate deleted plan");
                 }
 
-                foreach (var curActionDO in plan.GetDescendants().OfType<ActivityDO>())
+                try
                 {
-                    try
+                    foreach (var curActionDO in plan.GetDescendants().OfType<ActivityDO>())
                     {
-                        var resultActivate = await _activity.Activate(curActionDO);
+                        activitiesTask.Add(_activity.Activate(curActionDO));
+                    }
 
-                        ContainerDTO errorContainerDTO;
-                        result.Status = "success";
-
-                        var validationErrorChecker = CheckForExistingValidationErrors(resultActivate, out errorContainerDTO);
-                        if (validationErrorChecker)
+                    await Task.WhenAll(activitiesTask);
+                }
+                catch (AggregateException ex)
+                {
+                    foreach (Exception e in ex.InnerExceptions)
+                    {
+                        if (e is InvalidTokenRuntimeException)
                         {
-                            result.Status = "validation_error";
-                            result.Container = errorContainerDTO;
-                        }
-
-                        //if the activate call is comming from the Plan Builder just render again the action group with the errors
-                        if (planBuilderActivate)
-                        {
-                            result.ActivitiesCollections.Add(resultActivate);
-                        }
-                        else if (validationErrorChecker)
-                        {
-                            //if the activate call is comming from the Plans List then show the first error message and redirect to plan builder 
-                            //so the user could fix the configuration
-                            result.RedirectToPlanBuilder = true;
-
-                            return result;
+                            ReportAuthError(plan.Fr8Account, (InvalidTokenRuntimeException)e);
                         }
                     }
-                    catch (Exception ex)
+                    throw;
+                }
+                catch (InvalidTokenRuntimeException ex)
+                {
+                    ReportAuthError(plan.Fr8Account, (InvalidTokenRuntimeException)ex);
+                    throw;
+                }
+
+                foreach (var resultActivate in activitiesTask.Select(x => x.Result))
+                {
+                    var errors = new ValidationErrorsDTO(ExtractValidationErrors(resultActivate));
+
+                    if (errors.ValidationErrors.Count > 0)
                     {
-                        throw new ApplicationException(string.Format("Process template activation failed for action {0}.", curActionDO.Name), ex);
+                        result.ValidationErrors[resultActivate.Id] = errors;
                     }
                 }
 
-
-                if (result.Status != "validation_error")
+                if (result.ValidationErrors.Count == 0)
                 {
                     plan.PlanState = PlanState.Active;
                     plan.LastUpdated = DateTimeOffset.UtcNow;
                     uow.SaveChanges();
-                    uow.PlanRepository.Reload<PlanDO>(plan.Id);
                 }
             }
 
@@ -267,75 +314,47 @@ namespace Hub.Services
         /// <param name="curActivityDTO"></param>
         /// <param name="containerDTO">Use containerDTO as a wrapper for the Error with proper ActivityResponse and error DTO</param>
         /// <returns></returns>
-        private bool CheckForExistingValidationErrors(ActivityDTO curActivityDTO, out ContainerDTO containerDTO)
+        public IEnumerable<ValidationResultDTO> ExtractValidationErrors(ActivityDTO curActivityDTO)
         {
-            containerDTO = new ContainerDTO();
-
             var crateStorage = _crate.GetStorage(curActivityDTO);
-
-            var configControls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().ToList();
-            //search for an error inside the config controls and return back if exists
-            foreach (var controlGroup in configControls)
-            {
-                var control = controlGroup.Controls.FirstOrDefault(x => !string.IsNullOrEmpty(x.ErrorMessage));
-                if (control != null)
-                {
-                    var containerDO = new ContainerDO() { CrateStorage = string.Empty, Name = string.Empty };
-
-                    using (var tempCrateStorage = _crate.UpdateStorage(() => containerDO.CrateStorage))
-                    {
-                        var operationalState = new OperationalStateCM();
-                        operationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Error);
-                        operationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(control.ErrorMessage, ErrorType.Generic, string.Empty, null, curActivityDTO.ActivityTemplate.Name, curActivityDTO.ActivityTemplate.Terminal.Label));
-
-                        var operationsCrate = Crate.FromContent("Operational Status", operationalState);
-                        tempCrateStorage.Add(operationsCrate);
-                    }
-
-                    containerDTO = Mapper.Map<ContainerDTO>(containerDO);
-                    return true;
-                }
-            }
-
-            return false;
+            return crateStorage.CrateContentsOfType<ValidationResultsCM>().SelectMany(x => x.ValidationErrors);
         }
 
-        public async Task<string> Deactivate(Guid curPlanId)
+        public async Task Deactivate(Guid planId)
         {
-            string result = "no action";
+            var deactivateTasks = new List<Task>();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = uow.PlanRepository.GetById<PlanDO>(curPlanId);
-
-
-                foreach (var curActionDO in plan.GetDescendants().OfType<ActivityDO>())
-                {
-                    try
-                    {
-                        await _activity.Deactivate(curActionDO);
-                        result = "success";
-                    }
-                    catch (Exception ex)
-                    {
-                        throw new ApplicationException("Process template activation failed.", ex);
-                    }
-                }
-
+                var plan = uow.PlanRepository.GetById<PlanDO>(planId);
 
                 plan.PlanState = PlanState.Inactive;
                 uow.SaveChanges();
+
+                foreach (var activity in plan.GetDescendants().OfType<ActivityDO>())
+                {
+                    deactivateTasks.Add(_activity.Deactivate(activity));
+                }
             }
 
-            return result;
+            try
+            {
+                await Task.WhenAll(deactivateTasks);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Failed to deactivate plan", ex);
+            }
+
+            EventManager.PlanDeactivated(planId);
         }
 
 
         public IList<PlanDO> GetMatchingPlans(string userId, EventReportCM curEventReport)
         {
-            List<PlanDO> planSubscribers = new List<PlanDO>();
             if (String.IsNullOrEmpty(userId))
                 throw new ArgumentNullException("Parameter UserId is null");
+
             if (curEventReport == null)
                 throw new ArgumentNullException("Parameter Standard Event Report is null");
 
@@ -425,25 +444,27 @@ namespace Hub.Services
         /// <returns></returns>
         public ContainerDO Create(IUnitOfWork uow, PlanDO curPlan, params Crate[] curPayload)
         {
-            //let's exclude null payload crates
-            curPayload = curPayload.Where(c => c != null).ToArray();
-
             var containerDO = new ContainerDO { Id = Guid.NewGuid() };
 
             containerDO.PlanId = curPlan.Id;
             containerDO.Name = curPlan.Name;
             containerDO.State = State.Unstarted;
 
-                using (var crateStorage = _crate.UpdateStorage(() => containerDO.CrateStorage))
+            using (var crateStorage = _crate.UpdateStorage(() => containerDO.CrateStorage))
+            {
+                if (curPayload?.Length > 0)
                 {
-                if (curPayload.Length > 0)
-                {
-                    crateStorage.AddRange(curPayload);
-                    crateStorage.Remove<OperationalStateCM>();
+                    foreach (var crate in curPayload)
+                    {
+                        if (crate != null && !crate.IsOfType<OperationalStateCM>())
+                        {
+                            crateStorage.Add(crate);
+                        }
+                    }
                 }
-                
+
                 var operationalState = new OperationalStateCM();
-                
+
                 operationalState.CallStack.PushFrame(new OperationalStateCM.StackFrame
                 {
                     NodeName = "Starting subplan",
@@ -485,21 +506,7 @@ namespace Hub.Services
             }
             catch (InvalidTokenRuntimeException ex)
             {
-                string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with " +
-                        $"{ex?.FailedActivityDTO.ActivityTemplate.WebService.Name}. Plan execution has stopped. ";
-
-                errorMessage += $"Please re-authorize Fr8 to connect to {ex?.FailedActivityDTO.ActivityTemplate.WebService.Name} " +
-                        $"by clicking on the Settings dots in the upper " +
-                        $"right corner of the activity and then selecting Choose Authentication. ";
-
-                // Try getting specific the instructions provided by the terminal.
-                if (!String.IsNullOrEmpty(ex.Message))
-                {
-                    errorMessage += "Additional instructions from the terminal: ";
-                    errorMessage += ex.Message;
-                }
-
-                _pusher.NotifyUser(errorMessage, NotificationChannel.GenericFailure, user.UserName);
+                ReportAuthError(user, ex);
                 curContainerDO.State = State.Failed;
                 throw;
             }
@@ -519,10 +526,23 @@ namespace Hub.Services
             }
         }
 
-        public async Task<ContainerDO> Run(IUnitOfWork uow, PlanDO curPlan, params Crate[] curPayload)
+        private void ReportAuthError(Fr8AccountDO user, InvalidTokenRuntimeException ex)
         {
-            var curContainerDO = Create(uow, curPlan, curPayload);
-            return await Run(uow, curContainerDO);
+            string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with " +
+                    $"{ex?.FailedActivityDTO.ActivityTemplate.WebService.Name}. Plan execution has stopped. ";
+
+            errorMessage += $"Please re-authorize Fr8 to connect to {ex?.FailedActivityDTO.ActivityTemplate.WebService.Name} " +
+                    $"by clicking on the Settings dots in the upper " +
+                    $"right corner of the activity and then selecting Choose Authentication. ";
+
+            // Try getting specific the instructions provided by the terminal.
+            if (!String.IsNullOrEmpty(ex.Message))
+            {
+                errorMessage += "Additional instructions from the terminal: ";
+                errorMessage += ex.Message;
+            }
+
+            _pusher.NotifyUser(errorMessage, NotificationChannel.GenericFailure, user.UserName);
         }
 
         public void Enqueue(Guid curPlanId, params Crate[] curEventReport)
@@ -563,18 +583,23 @@ namespace Hub.Services
             Logger.LogInfo($"Finished executing plan {curPlan} as a reaction to external event");
         }
 
-        public async Task<ContainerDO> Run(Guid planId, params Crate[] curPayload)
+        public async Task<ContainerDO> Run(Guid planId, Crate[] curPayload)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var curPlan = uow.PlanRepository.GetById<PlanDO>(planId);
-                string containerId="";
+                string containerId = "";
+
                 if (curPlan == null)
+                {
                     throw new ArgumentNullException("planId");
+                }
                 try
                 {
                     var curContainerDO = Create(uow, curPlan, curPayload);
+
                     containerId = curContainerDO.Id.ToString();
+
                     return await Run(uow, curContainerDO);
                 }
                 catch (Exception ex)
@@ -583,11 +608,6 @@ namespace Hub.Services
                     throw;
                 }
             }
-        }
-
-        public async Task<ContainerDO> Run(PlanDO curPlan, params Crate[] curPayload)
-        {
-            return await Run(curPlan.Id, curPayload);
         }
 
         public async Task<ContainerDO> Continue(Guid containerId)

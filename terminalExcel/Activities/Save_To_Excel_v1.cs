@@ -4,6 +4,7 @@ using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Web;
 using Data.Entities;
 using Fr8Data.Constants;
 using Fr8Data.Control;
@@ -327,7 +328,7 @@ namespace terminalExcel.Actions
                 ActivityVersion = "1",
                 TerminalName = "terminalFr8Core",
                 TerminalVersion = "1",
-                Message = $"The Excel file can be downloaded by navigating to this URL: {url}",
+                Message = $"The Excel file can be downloaded by navigating to this URL: {new Uri(url).AbsoluteUri}",
                 //"api/v1/plans/clone?id=" + curActivityDO.RootPlanNodeId,
                 Subject = "Excel File"
             });

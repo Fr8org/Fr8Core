@@ -1,5 +1,6 @@
-﻿<!--TextBlock control main container-->
-<div class="col-sm-12" style="margin-bottom:6px">  
+﻿
+<!--TextBlock control main container-->
+<div class="" style="margin-bottom: 6px; padding-left: 8px;">  
     <md-button class="md-raised fr8-text-source-button fr8-full-width" ng-click="field.isCollapsed=!field.isCollapsed;"  ng-class="[{'': !field.isCollapsed},{'fr8-text-source-button-pressed':field.isCollapsed}]">{{field.initialLabel}}</md-button>
     <!--Toggel wrapper -->
     <div class="fr8-text-source-panel collapsed" ng-class="[{'expanded': !field.isCollapsed},{'fr8-borders':field.isCollapsed}]">
@@ -14,7 +15,7 @@
             <input ng-click="onChange(field.name)"  ng-checked="field.valueSource=='upstream'" name="pca_chk_ts_{{uniqueDirectiveId}}" type="radio" id="pca__chk{{field.$$hashKey}}__crate{{uniqueDirectiveId}}" value="upstream" ng-model="field.valueSource" stop-click-propagation/>
             <label for="pca__chk{{field.$$hashKey}}__crate{{uniqueDirectiveId}}" stop-click-propagation>use this incoming value:<a href="/documentation/UpstreamCrates.html" class="documentation-link"><i class="fa fa-question-circle"></i></a></label>
             <div>
-                <upstream-field-chooser class="upstream-field-chooser" field="field" current-action="currentAction" change='onChange'></upstream-field-chooser>
+                <upstream-field-chooser ng-click="field.valueSource='upstream'" class="upstream-field-chooser" field="field" current-action="currentAction" change='onUpStreamChange'></upstream-field-chooser>
             </div>
         </div>
     </div>

@@ -46,7 +46,7 @@ namespace HubTests.Controllers
         [Test]
         public void ActivityController_ShouldHaveHMACOnCreateMethod()
         {
-            var createMethod = typeof(ActivitiesController).GetMethod("Create", new Type[] { typeof(Guid), typeof(string), typeof(string), typeof(int?), typeof(Guid?), typeof(bool), typeof(Guid?) });
+            var createMethod = typeof(ActivitiesController).GetMethod("Create", new[] { typeof(Guid), typeof(string), typeof(string), typeof(int?), typeof(Guid?), typeof(Guid?) });
             ShouldHaveFr8HMACAuthorizeOnFunction(createMethod);
         }
 
@@ -54,12 +54,6 @@ namespace HubTests.Controllers
         public void ActivityController_ShouldHaveHMACOnConfigureMethod()
         {
             ShouldHaveFr8HMACAuthorizeOnFunction(typeof(ActivitiesController), "Configure");
-        }
-
-        [Test, Ignore]
-        public void ActivityController_ShouldHaveHMACOnDocumentationMethod()
-        {
-            ShouldHaveFr8HMACAuthorizeOnFunction(typeof(ActivitiesController), "Documentation");
         }
 
         [Test]
@@ -188,14 +182,14 @@ namespace HubTests.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var subPlanMock = new Mock<ISubPlan>();
+                var activityMock = new Mock<IActivity>();
 
-                subPlanMock.Setup(a => a.DeleteActivity(It.IsAny<string>(), It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(true);
+                activityMock.Setup(a => a.Delete(It.IsAny<Guid>())).Returns(Task.FromResult(0));
 
                 ActivityDO activityDO = new FixtureData(uow).TestActivity3();
-                var controller = new ActivitiesController(subPlanMock.Object);
+                var controller = new ActivitiesController(activityMock.Object);
                 await controller.Delete(activityDO.Id);
-                subPlanMock.Verify(a => a.DeleteActivity(null, activityDO.Id, false));
+                activityMock.Verify(a => a.Delete(activityDO.Id));
             }
         }
 
@@ -302,29 +296,6 @@ namespace HubTests.Controllers
 
             Assert.IsNotNull(okResult);
             Assert.IsNotNull(okResult.Content);
-        }
-
-        [Test]
-        [ExpectedException(typeof(Exception))]
-        public async Task ActivityController_IncorrectDocumentationSupport()
-        {
-            var docSupportList = new List<string>
-            {
-                "Terminal=terminalDocuSign, MainPage, HelpMenu",
-                "MainPage, HelpMenu",
-                "Terminal=terminalDocuSign, HelpMenu",
-                "Terminal=terminalDocuSign, MainPage"
-            };
-            foreach (var docSupport in docSupportList)
-                await ActivityController_IncorrectDocumentationSupport_ThrowsException(docSupport);
-        }
-
-        private async Task ActivityController_IncorrectDocumentationSupport_ThrowsException(string docSupport)
-        {
-            var controller = new ActivitiesController();
-            var emptyActivity = new ActivityDTO { Documentation = docSupport };
-            var response = await controller.Documentation(emptyActivity);
-            var okResult = response as OkNegotiatedContentResult<List<string>>;
         }
     }
 }

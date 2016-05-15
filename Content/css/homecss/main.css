@@ -77,17 +77,6 @@ body #jpreBar {
 }
 
 /* --------------------- */
-/* LINKS
-/* --------------------- */
-a {
-  color: #26A599;
-}
-a:hover, a:focus {
-  color: #A5DAD4;
-  text-decoration: none;
-}
-
-/* --------------------- */
 /* SECTION
 /* --------------------- */
 .section {

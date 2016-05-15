@@ -1,4 +1,5 @@
 ﻿using Hangfire;
+using Hub.Infrastructure;
 using Hub.Interfaces;
 using HubWeb.Infrastructure;
 using StructureMap;

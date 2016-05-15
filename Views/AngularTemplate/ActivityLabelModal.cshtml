@@ -1,0 +1,12 @@
+<div class="modal-header">
+    <div class="modal-body">
+        <form name="form" novalidate ng-submit="submitForm()">
+            <div class="form-group" ng-class="{ 'has-error': !form.activityLabel.$valid }">
+                <label>Activity Label: </label>
+                <input type="text" class="form-control" ng-model="label" name="activityLabel" />
+            </div>
+            <button class="btn btn-primary" type="submit">OK</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+        </form>
+</div>
+</div>

@@ -1,22 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json;
 
 namespace Fr8Data.DataTransferObjects
 {
     public class ActivateActivitiesDTO
     {
-        [JsonProperty("status")]
-        public string Status { get; set; }
-
-        [JsonProperty("errorMessage")]
-        public string ErrorMessage { get; set; }
-
-        public ContainerDTO Container { get; set; }
-
-        [JsonProperty("redirectToPlan")]
-        public bool RedirectToPlanBuilder { get; set; }
-    
-        [JsonProperty("activitiesCollection")]
-        public List<ActivityDTO> ActivitiesCollections { get; set; } 
+        [JsonProperty("validationErrors")]
+        public Dictionary<Guid, ValidationErrorsDTO> ValidationErrors { get; set; } = new Dictionary<Guid, ValidationErrorsDTO>();
     }
 }
