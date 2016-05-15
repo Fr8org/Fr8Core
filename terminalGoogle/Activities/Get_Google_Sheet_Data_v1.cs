@@ -120,6 +120,7 @@ namespace terminalGoogle.Actions
 
         protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
+            List<Crate> crates = new List<Crate>();
             var googleAuth = GetGoogleAuthToken();
             var spreadsheets = await _googleApi.GetSpreadsheets(googleAuth);
             ConfigurationControls.SpreadsheetList.ListItems = spreadsheets
@@ -178,6 +179,16 @@ namespace terminalGoogle.Actions
                 var table = await GetSelectedSpreadSheet();
                 var hasHeaderRow = TryAddHeaderRow(table);
                 CurrentActivityStorage.ReplaceByLabel(Crate.FromContent(RunTimeCrateLabel,new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
+
+                var fieldsCrate = TabularUtilities.PrepareFieldsForOneRowTable(hasHeaderRow, false, table, columnHeaders.Select(ch => ch.Key).ToList());
+                if (fieldsCrate != null)
+                {
+                    CurrentActivityStorage.ReplaceByLabel(fieldsCrate);
+                }
+                else
+                {
+                    CurrentActivityStorage.RemoveByLabel(TabularUtilities.ExtractedFieldsCrateLabel);
+                }
             }
             crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
@@ -224,6 +235,12 @@ namespace terminalGoogle.Actions
             var table = await GetSelectedSpreadSheet();
             var hasHeaderRow = TryAddHeaderRow(table);
             CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
+
+            var fieldsCrate = TabularUtilities.PrepareFieldsForOneRowTable(hasHeaderRow, true, table, null); // assumes that hasHeaderRow is always true
+            if (fieldsCrate != null)
+            {
+                CurrentPayloadStorage.ReplaceByLabel(fieldsCrate);
+            }
         }
     }
 }
