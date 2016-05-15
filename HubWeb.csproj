@@ -618,6 +618,7 @@
     <Content Include="Content\img\icons\youtube.png" />
     <Content Include="Content\img\Management\Alex_Edelstein.png" />
     <Content Include="Content\img\Management\placeholder_headshot.png" />
+    <Content Include="Content\img\Management\Stuart_Gold.png" />
     <Content Include="Content\img\MicrosoftExchangelogo.png" />
     <Content Include="Content\img\minus.png" />
     <Content Include="Content\img\plus.png" />
@@ -948,6 +949,7 @@
     <Content Include="Config\log4net.tests.healthMonitor.Release.config" />
     <Content Include="Views\AngularTemplate\FilterPane.cshtml" />
     <Content Include="Views\AngularTemplate\MiniHeader.cshtml" />
+    <Content Include="Views\AngularTemplate\ActivityLabelModal.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />

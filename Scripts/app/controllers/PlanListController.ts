@@ -137,7 +137,7 @@ module dockyard.controllers {
             
 
                 UserService.getCurrentUser().$promise.then(data => {
-                                     PusherNotifierService.bindEventToChannel('fr8pusher_' + data.emailAddress, dockyard.services.pusherNotifierExecutionEvent, (data: any) => {
+                                     PusherNotifierService.bindEventToChannel(data.emailAddress, dockyard.services.pusherNotifierExecutionEvent, (data: any) => {
                                              this.updatePlanLastUpdated(data.PlanId, data.PlanLastUpdated);
                                      })
                     if (angular.isNumber(data.organizationId)) {
