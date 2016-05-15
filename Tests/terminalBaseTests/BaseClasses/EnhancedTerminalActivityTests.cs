@@ -61,7 +61,7 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected override Task Configure(CrateSignaller crateSignaller)
+        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             CalledMethods |= CalledMethod.Configure;
             CheckBasicPropeties();
@@ -176,7 +176,7 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected override Task Configure(CrateSignaller crateSignaller)
+        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             OnConfigure?.Invoke(ConfigurationControls);
 
@@ -245,7 +245,7 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected override Task Configure(CrateSignaller crateSignaller)
+        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             OnConfigure?.Invoke(ConfigurationControls);
             return Task.FromResult(0);
@@ -277,7 +277,7 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected override Task Configure(CrateSignaller crateSignaller)
+        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             return Task.FromResult(0);
         }

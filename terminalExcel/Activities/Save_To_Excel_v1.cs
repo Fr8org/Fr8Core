@@ -15,6 +15,7 @@ using Fr8Data.Manifests.Helpers;
 using Fr8Data.States;
 using terminalUtilities.Excel;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalExcel.Actions
 {
@@ -146,7 +147,7 @@ namespace terminalExcel.Actions
             ConfigurationControls.ExistingSpreadsheetsList.ListItems = await GetCurrentUsersFiles();
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller)
+        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             //If different existing spreadsheet is selected then we have to load worksheet list for it
             if (ConfigurationControls.UseExistingSpreadsheetOption.Selected && !string.IsNullOrEmpty(ConfigurationControls.ExistingSpreadsheetsList.Value))

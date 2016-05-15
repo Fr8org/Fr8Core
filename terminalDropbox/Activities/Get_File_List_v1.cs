@@ -12,6 +12,7 @@ using Fr8Data.Crates;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using TerminalBase.Errors;
+using TerminalBase.Infrastructure;
 
 namespace terminalDropbox.Actions
 {
@@ -52,7 +53,7 @@ namespace terminalDropbox.Actions
             CurrentActivityStorage.ReplaceByLabel(PackDropboxFileListCrate(fileNames));
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller)
+        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             var fileList = await _dropboxService.GetFileList(GetDropboxAuthToken());
             ConfigurationControls.FileList.ListItems = fileList
