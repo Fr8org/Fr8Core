@@ -11,6 +11,7 @@ using Fr8Data.Manifests;
 using Fr8Data.States;
 using terminalUtilities.Excel;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalExcel.Actions
 {
@@ -83,7 +84,7 @@ namespace terminalExcel.Actions
             crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller)
+        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             CurrentActivityStorage.RemoveByLabel(ColumnHeadersCrateLabel);
             //If file is not uploaded we hide file description
