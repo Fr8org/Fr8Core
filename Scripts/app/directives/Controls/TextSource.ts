@@ -71,25 +71,29 @@ module dockyard.directives.textSource {
 
 
         var link = function ($scope, $element, attrs) {
-            let controls = <Array<model.ControlDefinitionDTO>>$scope.currentAction.configurationControls.fields;
 
-            //crutch, it would be nice to write test for this.
-            let index = _.findIndex(controls, f => f.type.toLowerCase() === 'textsource');
-            if (index > -1) {
-                (<any>controls[index]).groupLabel = true;
-                
-                let tailControls = _.rest(controls, index + 1);
-                
-                while (index > -1) {
-                    index = _.findIndex(tailControls, f => f.type.toLowerCase() === 'textsource');
-                    tailControls = _.rest(tailControls);
+            if ($scope.currentAction) {
+                let controls = <Array<model.ControlDefinitionDTO>>$scope.currentAction.configurationControls.fields;
 
-                    if (index > 0) {
-                        (<any>controls[index]).groupLabel = true;
-                        tailControls = _.rest(controls, index + 1);
+                //crutch, it would be nice to write test for this.
+                let index = _.findIndex(controls, f => f.type.toLowerCase() === 'textsource');
+                if (index > -1) {
+                    (<any>controls[index]).groupLabel = true;
+
+                    let tailControls = _.rest(controls, index + 1);
+
+                    while (index > -1) {
+                        index = _.findIndex(tailControls, f => f.type.toLowerCase() === 'textsource');
+                        tailControls = _.rest(tailControls);
+
+                        if (index > 0) {
+                            (<any>controls[index]).groupLabel = true;
+                            tailControls = _.rest(controls, index + 1);
+                        }
                     }
-                }
-            }    
+                }        
+            }
+            
             
 
             //watch function for programatically setting focus on html element
