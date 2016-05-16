@@ -107,6 +107,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BaseClasses\StatefullTerminalActivity.cs" />
     <Compile Include="Helpers\ControlHelper.cs" />
     <Compile Include="Services\ActivityStore.cs" />
     <Compile Include="BaseClasses\BaseTerminalActivity.cs" />
