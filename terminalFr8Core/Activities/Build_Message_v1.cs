@@ -9,6 +9,7 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Actions
 {
@@ -61,7 +62,7 @@ namespace terminalFr8Core.Actions
                                      new StandardPayloadDataCM(new FieldDTO(ConfigurationControls.Name.Value, body)));
         }
 
-        protected override Task Configure(CrateSignaller crateSignaller)
+        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             crateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ActivityUi.RuntimeCrateLabel)
                                .AddField(ConfigurationControls.Name.Value);

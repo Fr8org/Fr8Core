@@ -2,7 +2,7 @@
     <!--UpstreamDataChooser main container-->
     <h3 class="modal-title">Select Available Upstream Field:</h3>
     <table ng-table="tableParams" class="table table-condensed table-bordered table-hover modal-body">
-        <tr class="ng-table-group" ng-repeat-start="group in $groups" ng-init="group.$hideRows = true">
+        <tr class="ng-table-group" ng-repeat-start="group in $groups" ng-init="group.$hideRows = false">
 
             <td colspan="3">
                 <a href="" ng-click="group.$hideRows = !group.$hideRows; expand()">

@@ -14,6 +14,7 @@ using TerminalBase.BaseClasses;
 using Hub.Managers;
 using StructureMap;
 using terminalUtilities;
+using TerminalBase.Infrastructure;
 
 namespace terminalExcel.Actions
 {
@@ -81,7 +82,7 @@ namespace terminalExcel.Actions
             crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller)
+        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             FieldDTO selectedFileDescription;
             //If file is not uploaded we hide file description

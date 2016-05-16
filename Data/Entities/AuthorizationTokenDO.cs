@@ -1,13 +1,20 @@
-﻿using Data.States;
-using Data.States.Templates;
+﻿using Data.States.Templates;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text;
+using System.Linq;
+using Fr8Data.Helpers;
 
 namespace Data.Entities
 {
     public class AuthorizationTokenDO : BaseObject
     {
+        public static readonly IMemberAccessor[] Members;
+
+        static AuthorizationTokenDO()
+        {
+            Members = Fr8ReflectionHelper.GetMembers(typeof(AuthorizationTokenDO)).ToArray();
+        }
+
         public AuthorizationTokenDO()
         {
             Id = Guid.NewGuid();
@@ -80,6 +87,18 @@ namespace Data.Entities
                 }
                 return $"{domain}\\{account}";
             }
+        }
+
+        public AuthorizationTokenDO Clone()
+        {
+            var clone = new AuthorizationTokenDO();
+
+            foreach (var memberAccessor in Members.Where(x=>x.CanRead && x.CanWrite))
+            {
+                memberAccessor.SetValue(clone, memberAccessor.GetValue(this));
+            }
+
+            return clone;
         }
     }
 }
