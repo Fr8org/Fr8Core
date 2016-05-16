@@ -92,6 +92,7 @@ namespace terminalGoogleTests.Integration
             //  Assert.AreEqual("(2,1)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[0].Cell.Value);
             //Assert.AreEqual("(2,2)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[1].Cell.Value);
         }
+
         /// <summary>
         /// Spreadsheet with the following structure is passed: {{(1,1)},{(2,2)}}
         /// Required fields are tested
@@ -126,6 +127,41 @@ namespace terminalGoogleTests.Integration
             // Due to performance issue, remove functionalilty to load table contents
            // Assert.AreEqual("(2,1)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[0].Cell.Value);
         }
+
+        [Test, Category("Integration.terminalGoogle")]
+        public async Task Get_Google_Sheet_Data_v1_FollowupConfiguration_OneRow_Table()
+        {
+            var configureUrl = GetTerminalConfigureUrl();
+
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = fixture.Get_Google_Sheet_Data_v1_Followup_Configuration_Request_ActivityDTO_With_Crates();
+
+            //Act
+            fixture.Get_Google_Sheet_Data_v1_AddPayload(requestActionDTO, "OneRow_WithHeader");
+            var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
+            //As the ActionDTO is preconfigured configure url actually calls the follow up configuration
+            var responseActionDTO =
+               await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
+                   configureUrl,
+                   dataDTO
+               );
+
+            //Assert
+            Assert.NotNull(responseActionDTO);
+            Assert.NotNull(responseActionDTO.CrateStorage);
+
+            var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
+            Assert.AreEqual(6, crateStorage.Count);
+            Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
+            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count());
+            Assert.AreEqual(3, crateStorage.CratesOfType<FieldDescriptionsCM>().Count());
+            Assert.IsTrue(crateStorage.CratesOfType<FieldDescriptionsCM>().Any(c => c.Label == "ExtractedFields"));
+            Assert.IsTrue(crateStorage.CratesOfType<FieldDescriptionsCM>().Single(c => c.Label == "ExtractedFields").Content.Fields.Count() == 4);
+
+            // Due to performance issue, remove functionalilty to load table contents
+            // Assert.AreEqual("(2,1)", crateStorage.CratesOfType<StandardTableDataCM>().Single().Content.Table[0].Row[0].Cell.Value);
+        }
+
         /// <summary>
         /// Spreadsheet with the following structure is passed: {{(1,1),(1,2)}}
         /// Required fields are tested
@@ -299,6 +335,30 @@ namespace terminalGoogleTests.Integration
             ////Assert
             Assert.AreEqual("Table Generated From Google Sheet Data", tableDataCrate.Label);
         }
+
+        [Test, Category("Integration.terminalGoogle")]
+        public async Task Get_Google_Sheet_Data_v1_Run_OneRow_ResponseContainsExtractedFields()
+        {
+            //Arrange
+            var runUrl = GetTerminalRunUrl();
+            HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
+            var requestActionDTO = fixture.Get_Google_Sheet_Data_v1_Followup_Configuration_Request_ActivityDTO_With_Crates();
+            fixture.Get_Google_Sheet_Data_v1_AddPayload(requestActionDTO, "OneRow_WithHeader");
+            var dataDTO = new Fr8DataDTO { ActivityDTO = requestActionDTO };
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+            ////Act
+            var response = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
+            var storage = Crate.GetStorage(response);
+            var tableDataCrate = storage.CratesOfType<StandardTableDataCM>().Single();
+            ////Assert
+            Assert.AreEqual("Table Generated From Google Sheet Data", tableDataCrate.Label);
+
+            var payload = storage.CratesOfType<StandardPayloadDataCM>();
+            Assert.AreEqual(1, payload.Count(), "Reponse payload doesn't contain extracted fields data from file");
+            Assert.AreEqual(4, payload.First().Content.PayloadObjects[0].PayloadObject.Count(), "Reponse payload doesn't contain extracted fields data from file");
+
+        }
+
         /////////////
         /// Run Tests End
         /////////////
