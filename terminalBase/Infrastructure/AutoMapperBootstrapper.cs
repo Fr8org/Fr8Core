@@ -37,12 +37,22 @@ namespace TerminalBase.Infrastructure
                 .ForMember(x => x.UserId, opts => opts.MapFrom(x => x.ActivityDTO.AuthToken.UserId))
                 .ForMember(x => x.AuthorizationToken, opts => opts.MapFrom(x => x.ActivityDTO.AuthToken))
                 .ForMember(x => x.ActivityPayload, opts => opts.MapFrom(x => x.ActivityDTO));
+
+            Mapper.CreateMap<ContainerExecutionContext, PayloadDTO>()
+                .ForMember(x => x.ContainerId, opts => opts.MapFrom(src => src.ContainerId))
+                .ForMember(x => x.CrateStorage, opts => opts.ResolveUsing(CrateStorageDTOResolver));
         }
 
         public static ICrateStorage GetCrateStorage(ActivityDTO activityDTO)
         {
             var crateManager = ObjectFactory.GetInstance<ICrateManager>();
             return crateManager.GetStorage(activityDTO);
+        }
+
+        public static CrateStorageDTO CrateStorageDTOResolver(ContainerExecutionContext executionContext)
+        {
+            var crateManager = ObjectFactory.GetInstance<ICrateManager>();
+            return crateManager.ToDto(executionContext.PayloadStorage);
         }
 
         public static CrateStorageDTO CrateStorageDTOResolver(ActivityPayload activityPayload)

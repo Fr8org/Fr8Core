@@ -3,23 +3,34 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using Hub.Managers;
 using terminalUtilities.Excel;
 using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 using Utilities.Configuration.Azure;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class AppBuilder_v1 : BaseTerminalActivity
     {
+
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "AppBuilder",
+            Label = "App Builder",
+            Version = "1",
+            Category = ActivityCategory.Processors,
+            NeedsAuthentication = false,
+            MinPaneWidth = 400,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         private const string RuntimeCrateLabelPrefix = "Standard Data Table";
         private const string RuntimeFieldCrateLabelPrefix = "Run Time Fields From AppBuilder";
         private const string RunFromSubmitButtonLabel = "RunFromSubmitButton";
@@ -244,7 +255,7 @@ namespace terminalFr8Core.Actions
         {
         }
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
+        
         public override async Task Run()
         {
 

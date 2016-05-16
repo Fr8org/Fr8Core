@@ -153,6 +153,7 @@ node_modules
 
 _NCrunch_Dockyard/
 Scripts/templateCache.js
+Views/Shared/CDN/
 */azure.publish/*
 /terminalYammer/log4net.terminals.Release.config
 /terminalYammer/log4net.terminals.Dev.config

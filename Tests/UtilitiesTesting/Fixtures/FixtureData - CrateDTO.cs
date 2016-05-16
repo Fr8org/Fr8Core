@@ -30,7 +30,7 @@ namespace UtilitiesTesting.Fixtures
             fields.Add(new FieldDTO() { Key = "Doctor", Value = Guid.NewGuid().ToString() });
             fields.Add(new FieldDTO() { Key = "Condition", Value = Guid.NewGuid().ToString() });
 
-            return new List<Crate>() { Crate.FromContent("DocuSignTemplateUserDefinedFields", new FieldDescriptionsCM() { Fields = fields }) };
+            return new List<Crate>() { Crate.FromContent("DocuSignTemplateUserDefinedFields", new FieldDescriptionsCM() { Fields = fields }), Crate.FromContent("Crate label", new CrateDescriptionCM() { CrateDescriptions = new List<CrateDescriptionDTO>() { new CrateDescriptionDTO()  } }) };
 
         }
 

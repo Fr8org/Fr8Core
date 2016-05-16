@@ -11,8 +11,7 @@ module dockyard.directives.upstreamDataChooser {
         setItem: (item: any) => void;
         selectField: (field: model.FieldDTO) => void;
         openModal: () => void;
-        ok: () => void;
-        cancel: () => void;
+        createModal: () => void;
     }
 
     export class UpstreamFieldChooserController {
@@ -30,9 +29,7 @@ module dockyard.directives.upstreamDataChooser {
             var alertMessage = new model.AlertDTO();
             alertMessage.title = "Notification";
             alertMessage.body = 'There are no upstream fields available right now. To learn more,<a href= "/documentation/UpstreamCrates.html" target= "_blank" > click here </a><i class="fa fa-question-circle" > </i>';
-
-            $scope.openModal = () => {
-                getUpstreamFields();
+            $scope.createModal = () => {
                 if ($scope.field.listItems.length !== 0) {
                     modalInstance = $modal.open({
                         animation: true,
@@ -46,6 +43,13 @@ module dockyard.directives.upstreamDataChooser {
                     });
                 }
             }
+            $scope.openModal = () => {
+                getUpstreamFields().then(() => { 
+                    $scope.createModal();
+                }, () => {
+                    uiHelperService.openConfirmationModal(alertMessage);
+                });
+            }
             $scope.setItem = (item) => {
                 $scope.field.value = item;
                 modalInstance.close($scope.field.value);
@@ -55,41 +59,43 @@ module dockyard.directives.upstreamDataChooser {
             };
 
             var getUpstreamFields = () => {
-                UpstreamExtractor
+                return UpstreamExtractor
                     .getAvailableData($scope.currentAction.id, 'NotSet')
                     .then((data: dockyard.model.IncomingCratesDTO) => {
                         var listItems: Array<model.DropDownListItem> = [];
 
-                        angular.forEach(data.availableFields, it => {
-                            var i, j;
-                            var found = false;
-                            for (i = 0; i < listItems.length; ++i) {
-                                if (listItems[i].key === it.key) {
-                                    found = true;
-                                    break;
+                        angular.forEach(data.availableCrates, crate => {
+                            angular.forEach(crate.fields, it => {
+                                var i, j;
+                                var found = false;
+                                for (i = 0; i < listItems.length; ++i) {
+                                    if (listItems[i].key === it.key) {
+                                        found = true;
+                                        break;
+                                    }
                                 }
-                            }
-                            if (!found) {
-                                listItems.push(<model.DropDownListItem>it);
-                            }
-                        });
-                        listItems.sort((x, y) => {
-                            if (x.key < y.key) {
-                                return -1;
-                            }
-                            else if (x.key > y.key) {
-                                return 1;
-                            }
-                            else {
-                                return 0;
-                            }
+                                if (!found) {
+                                    listItems.push(<model.DropDownListItem>it);
+                                }
+                            });
+                            listItems.sort((x, y) => {
+                                if (x.key < y.key) {
+                                    return -1;
+                                }
+                                else if (x.key > y.key) {
+                                    return 1;
+                                }
+                                else {
+                                    return 0;
+                                }
+                            });
                         });
                         if (listItems.length === 0) {
-                            uiHelperService.openConfirmationModal(alertMessage);
+                            throw Error();
                         }
                         else {
                             $scope.field.listItems = listItems;
-                            $scope.tableParams = new NgTableParams({ count: 50 }, { data: $scope.field.listItems, counts: [], groupBy: 'sourceCrateLabel', groupOptions: { isExpanded: false } });
+                            $scope.tableParams = new NgTableParams({ count: 50 }, { data: $scope.field.listItems, counts: [], groupBy: 'sourceCrateLabel' });
                         }
                     });
             };
@@ -102,7 +108,7 @@ module dockyard.directives.upstreamDataChooser {
         public link: (scope: IUpstreamFieldChooser, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public controller: any;
 
-        public template = '<button class="btn btn-primary btn-xs" ng-click="openModal()">Select</button><span>{{field.value}}</span>';
+        public template = '<div style="padding:5px 0"><button class="btn btn-primary btn-xs" ng-click="openModal()">Select</button><span>{{field.value}}</span></div>';
         public restrict = 'E';
         public scope = {
             field: '=',

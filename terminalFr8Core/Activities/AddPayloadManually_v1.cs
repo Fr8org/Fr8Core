@@ -1,29 +1,20 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using TerminalBase.Infrastructure;
-using TerminalBase.BaseClasses;
-using Data.Entities;
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using Hub.Managers;
-using TerminalBase.Models;
+using Newtonsoft.Json;
+using TerminalBase.BaseClasses;
 using Utilities;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class AddPayloadManually_v1 : BaseTerminalActivity
     {
-
-        private const string RunTimeCrateLabel = "ManuallyAddedPayload";
-        private const string CrateSignalLabel = "Available Run Time Crates";
-
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "AddPayloadManually",
@@ -35,6 +26,8 @@ namespace terminalFr8Core.Actions
             WebService = TerminalData.WebServiceDTO
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+        private const string RunTimeCrateLabel = "ManuallyAddedPayload";
+        private const string CrateSignalLabel = "Available Run Time Crates";
 
         public AddPayloadManually_v1() : base(false)
         {
@@ -87,16 +80,15 @@ namespace terminalFr8Core.Actions
                 userDefinedPayload.ForEach(x =>
                 {
                     x.Value = x.Key;
-                    x.Availability = Fr8Data.States.AvailabilityType.RunTime;
+                    x.Availability = AvailabilityType.RunTime;
                 });
                 
                 Storage.RemoveByLabel(RunTimeCrateLabel);
-                var crate = Fr8Data.Crates.Crate.FromContent(RunTimeCrateLabel, new FieldDescriptionsCM() { Fields = userDefinedPayload });
-                crate.Availability = Fr8Data.States.AvailabilityType.RunTime;
+                var crate = Crate.FromContent(RunTimeCrateLabel, new FieldDescriptionsCM() { Fields = userDefinedPayload });
+                crate.Availability = AvailabilityType.RunTime;
                 Storage.Add(crate);
             }
 
-            Success();
             return Task.FromResult(0);
         }
 

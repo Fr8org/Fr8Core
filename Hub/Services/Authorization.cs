@@ -9,15 +9,15 @@ using Data.Interfaces;
 using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using Fr8Infrastructure.Interfaces;
 using Hub.Interfaces;
 using Hub.Managers;
 using Newtonsoft.Json;
 using StructureMap;
 using Hub.Exceptions;
-using Infrastructure.Communication;
-using Infrastructure.Interfaces;
 
 namespace Hub.Services
 {
@@ -191,7 +191,7 @@ namespace Hub.Services
                         ExternalDomainId = terminalResponseAuthTokenDTO.ExternalDomainId,
                         ExternalDomainName = string.IsNullOrEmpty(terminalResponseAuthTokenDTO.ExternalDomainName) ? terminalResponseAuthTokenDTO.ExternalDomainId : terminalResponseAuthTokenDTO.ExternalDomainName,
                         TerminalID = curTerminal.Id,
-                        UserDO = curAccount,
+                        UserID = curAccount.Id,
                         AdditionalAttributes = terminalResponseAuthTokenDTO.AdditionalAttributes,
                         ExpiresAt = DateTime.Today.AddMonths(1)
                     };
@@ -348,7 +348,7 @@ namespace Hub.Services
 
                     authToken = new AuthorizationTokenDO()
                     {
-                        UserDO = curAccount,
+                        UserID = curAccount.Id,
                         TerminalID = curTerminal.Id,
                         ExpiresAt = DateTime.Today.AddMonths(1),
                         ExternalStateToken = externalAuthUrlDTO.ExternalStateToken

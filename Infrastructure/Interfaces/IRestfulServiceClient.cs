@@ -4,7 +4,7 @@ using System.IO;
 using System.Net.Http;
 using System.Threading.Tasks;
 
-namespace Infrastructure.Interfaces
+namespace Fr8Infrastructure.Interfaces
 {
     public interface IRestfulServiceClient
     {

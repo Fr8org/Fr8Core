@@ -17,6 +17,19 @@ namespace terminalFr8Core.Activities
 {
     public class Show_Report_Onscreen_v1 : BaseTerminalActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Show_Report_Onscreen",
+            Label = "Show Report Onscreen",
+            Version = "2",
+            Category = ActivityCategory.Processors,
+            NeedsAuthentication = false,
+            MinPaneWidth = 380,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
@@ -57,7 +70,6 @@ namespace terminalFr8Core.Activities
         {
         }
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
         public override Task Run()
         {
             var actionUi = new ActivityUi();

@@ -1,19 +1,31 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using TerminalBase.BaseClasses;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using TerminalBase.BaseClasses;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class Build_Message_v1 : EnhancedTerminalActivity<Build_Message_v1.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Build_Message",
+            Label = "Build a Message",
+            Category = ActivityCategory.Processors,
+            Version = "1",
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public const string RuntimeCrateLabel = "Build Message";
@@ -123,6 +135,6 @@ namespace terminalFr8Core.Actions
             return result;
         }
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
+        
     }
 }

@@ -1,13 +1,13 @@
 using System.Net.Http;
 using System.Net.Http.Formatting;
-using Infrastructure.Communication;
-using Infrastructure.Interfaces;
-using Infrastructure.Security;
+using Fr8Infrastructure.Communication;
+using Fr8Infrastructure.Interfaces;
+using Fr8Infrastructure.Security;
 using Moq;
 using StructureMap;
 using StructureMap.Configuration.DSL;
 
-namespace Infrastructure.StructureMap
+namespace Fr8Infrastructure.StructureMap
 {
     public class StructureMapBootStrapper
     {

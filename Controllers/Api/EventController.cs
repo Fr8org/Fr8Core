@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using System.Web.Http;
 using Fr8Data.Constants;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using StructureMap;
 using Hub.Interfaces;

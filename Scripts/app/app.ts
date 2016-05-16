@@ -25,7 +25,8 @@ var app = angular.module("app", [
     "ngMaterial",
     "angularResizable",
     "mdColorPicker",
-    "md.data.table"
+    "md.data.table",
+    "fr8.collapse"
 ]);
 
 /* For compatibility with older versions of script files. Can be safely deleted later. */

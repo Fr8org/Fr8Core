@@ -27,6 +27,18 @@ namespace terminalFr8Core.Actions
 {
     public class QueryFr8Warehouse_v1 : BaseTerminalActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "QueryFr8Warehouse",
+            Label = "Query Fr8 Warehouse",
+            Category = ActivityCategory.Processors,
+            Version = "1",
+            MinPaneWidth = 550,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
@@ -267,7 +279,6 @@ namespace terminalFr8Core.Actions
         {
         }
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
         public override async Task Run()
         {
             var queryPicker = GetControl<RadioButtonGroup>("QueryPicker");

@@ -1,25 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Configuration;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Data.Entities;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using Hub.Managers;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
+using Fr8Data.States;
+using Newtonsoft.Json;
 using terminalFr8Core.Infrastructure;
+using TerminalBase.BaseClasses;
 using TerminalBase.Models;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class FindObjects_Solution_v1 : BaseTerminalActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "FindObjects_Solution",
+            Label = "Find Objects Solution",
+            Category = ActivityCategory.Solution,
+            Version = "1",
+            MinPaneWidth = 330,
+            Type = ActivityType.Solution,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
+
         private const string SolutionName = "Find Objects Solution";
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "terminalFr8Core";
@@ -297,7 +309,6 @@ namespace terminalFr8Core.Actions
                 Task.FromResult(GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage cases"));
         }
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
         public override Task Run()
         {
             return Task.FromResult(0);

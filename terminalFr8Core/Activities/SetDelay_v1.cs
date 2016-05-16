@@ -4,6 +4,7 @@ using AutoMapper;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.States;
 using TerminalBase;
 using TerminalBase.BaseClasses;
 
@@ -11,6 +12,19 @@ namespace terminalFr8Core.Activities
 {
     public class SetDelay_v1 : BaseTerminalActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "SetDelay",
+            Label = "Delay Action Processing",
+            Category = ActivityCategory.Processors,
+            Version = "1",
+            MinPaneWidth = 330,
+            Type = ActivityType.Standard,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         private const int MinDurationSeconds = 10;
         private AlarmDTO CreateAlarm(TimeSpan duration)
         {
@@ -52,7 +66,6 @@ namespace terminalFr8Core.Activities
         {
         }
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
         public override async Task Run()
         {
             //find our action state in operations crate

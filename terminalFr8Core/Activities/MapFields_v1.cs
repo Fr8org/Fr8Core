@@ -2,22 +2,32 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
+using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using Hub.Managers;
 using Newtonsoft.Json;
-using StructureMap;
 using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
     public class MapFields_v1 : BaseTerminalActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "MapFields",
+            Label = "Map Fields",
+            Category = ActivityCategory.Processors,
+            Terminal = TerminalData.TerminalDTO,
+            Tags = $"{Tags.AggressiveReload},{Tags.Internal}",
+            Version = "1",
+            MinPaneWidth = 380,
+            WebService = TerminalData.WebServiceDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public MapFields_v1() : base(false)
         {
             
@@ -85,7 +95,6 @@ namespace terminalFr8Core.Activities
             }
         }
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
         public override async Task Run()
         {
             var curMappingControl = GetControl<MappingPane>("Selected_Mapping");

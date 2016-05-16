@@ -1,4 +1,4 @@
-var gulp = require('gulp');
+﻿var gulp = require('gulp');
 var bower = require('gulp-bower');
 var concat = require('gulp-concat');
 var path = require('path');
@@ -132,6 +132,8 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Validators/ManifestDescriptionValidators.js',
         'Scripts/app/directives/ActionPicker.js',
         'Scripts/app/directives/ActivityResize.js',
+        'Scripts/app/directives/collapse/collapse.directive.js',
+        'Scripts/app/directives/collapse/collapse.module.js',
         'Scripts/app/directives/ModalResizable.js',
         'Scripts/app/filters/ActionNameFormatter.js',
         'Scripts/app/filters/DateTimeFormatter.js',

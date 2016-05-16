@@ -75,10 +75,6 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DocuSign.Integration.Client, Version=1.6.1.0, Culture=neutral, PublicKeyToken=7fca6fcbbc219ede, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Utilities\DocuSign.Integration.Client.dll</HintPath>
-    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
@@ -317,10 +313,6 @@
       <Name>Fr8Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\HubTests\HubTests.csproj">
-      <Project>{1e8dd13a-846b-4c36-a9c4-5997c5fd74ff}</Project>
-      <Name>HubTests</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\HubTests\HubTests.csproj">
       <Project>{1e8dd13a-846b-4c36-a9c4-5997c5fd74ff}</Project>
       <Name>HubTests</Name>
     </ProjectReference>

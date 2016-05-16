@@ -7,6 +7,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using Fr8Data.Crates;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Hub.Interfaces;
 using Hub.Managers;

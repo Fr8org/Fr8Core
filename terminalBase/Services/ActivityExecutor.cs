@@ -45,7 +45,13 @@ namespace TerminalBase.Services
                         await activity.Activate(activityContext);
                         return SerializeResponse(activityContext);
 
+                    case "deactivate":
+                        activity = factory.Create();
+                        await activity.Deactivate(activityContext);
+                        return SerializeResponse(activityContext);
+
                     case "run":
+                        await HubCommunicator.Configure(curTerminal);
                         var executionContext = await CreateContainerExecutionContext(curDataDTO);
                         activity = factory.Create();
                         await activity.Run(activityContext, executionContext);
@@ -67,7 +73,7 @@ namespace TerminalBase.Services
                 throw new ArgumentNullException(nameof(curDataDTO.ContainerId), "NULL Container ID");
             }
 
-            var payload = await HubCommunicator.GetPayload(curDataDTO.ActivityDTO, curDataDTO.ContainerId.Value, curDataDTO.ActivityDTO.AuthToken.UserId);
+            var payload = await HubCommunicator.GetPayload(curDataDTO.ContainerId.Value, curDataDTO.ActivityDTO.AuthToken.UserId);
             return new ContainerExecutionContext
             {
                 PayloadStorage = CrateManager.GetUpdatableStorage(payload),

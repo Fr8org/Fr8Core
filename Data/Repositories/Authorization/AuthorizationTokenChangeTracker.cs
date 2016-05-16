@@ -1,34 +1,63 @@
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
 using Data.Entities;
+using Fr8Data.Helpers;
 
 namespace Data.Repositories
 {
     internal class AuthorizationTokenChangeTracker
     {
-        private string _originalData;
         private readonly AuthorizationTokenDO _tokenInstance;
+        private AuthorizationTokenDO _propertiesTrackingReference;
+        public List<IMemberAccessor> Changes;
 
-        public bool HasChanges
+        public EntityState State
         {
-            get { return _originalData != _tokenInstance.Token; }
+            get;
+            set;
         }
 
-        public AuthorizationTokenDO ActualValue
-        {
-            get
-            {
-                return _tokenInstance;
-            }
-        }
+        public bool IsSecureDataChanged => _propertiesTrackingReference.Token != _tokenInstance.Token;
 
-        public AuthorizationTokenChangeTracker(string original, AuthorizationTokenDO tokenInstance)
+        public bool HasChanges => Changes?.Count > 0;
+
+        public AuthorizationTokenDO ActualValue => _tokenInstance;
+
+        public AuthorizationTokenChangeTracker( AuthorizationTokenDO tokenInstance, EntityState state)
         {
-            _originalData = original;
+            State = state;
             _tokenInstance = tokenInstance;
+            _propertiesTrackingReference = _tokenInstance.Clone();
+        }
+
+        public void InjectSecretData(string secret)
+        {
+            _tokenInstance.Token = secret;
+            _propertiesTrackingReference.Token = secret;
         }
 
         public void ResetChanges()
         {
-            _originalData = ActualValue.Token;
+            Changes = null;
+            State = EntityState.Modified;
+            _propertiesTrackingReference = _tokenInstance.Clone();
+        }
+        
+        public void DetectChanges()
+        {
+            Changes = new List<IMemberAccessor>();
+
+            if (State == EntityState.Modified)
+            {
+                foreach (var memberAccessor in AuthorizationTokenDO.Members.Where(x => x.CanRead && x.CanWrite))
+                {
+                    if (!Equals(memberAccessor.GetValue(this._tokenInstance), memberAccessor.GetValue(_propertiesTrackingReference)))
+                    {
+                        Changes.Add(memberAccessor);
+                    }
+                }
+            }
         }
     }
 }

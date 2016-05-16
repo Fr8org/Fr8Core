@@ -3,23 +3,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using Data.Entities;
-using Data.States;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using Hub.Managers;
-using StructureMap.Diagnostics;
 using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
 
     public class ConvertRelatedFieldsIntoTable_v1 : BaseTerminalActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "ConvertRelatedFieldsIntoTable",
+            Label = "Convert Related Fields Into a Table",
+            Category = ActivityCategory.Processors,
+            Version = "1",
+            MinPaneWidth = 400,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         private const string FirstIntegerRegexPattern = "\\d+";
 
         private IEnumerable<FieldDTO> ExtractFieldsContainingPrefix(IEnumerable<FieldDTO> fields, String prefix)
@@ -83,7 +90,6 @@ namespace terminalFr8Core.Actions
         {
         }
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
         public override async Task Run()
         {
             var upstreamDataChooser = GetControl<UpstreamDataChooser>("Upstream_data_chooser");

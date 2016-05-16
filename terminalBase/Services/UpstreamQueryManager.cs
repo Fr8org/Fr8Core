@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
@@ -16,38 +17,37 @@ namespace TerminalBase.Services
     {
         private readonly ActivityContext _activityContext;
         private readonly IHubCommunicator _hubCommunicator;
-        private readonly ActivityDTO _activityDTO;
+        private Guid ActivityId => _activityContext.ActivityPayload.Id;
 
         public UpstreamQueryManager(ActivityContext activityContext, IHubCommunicator hubCommunicator)
         {
             _activityContext = activityContext;
             _hubCommunicator = hubCommunicator;
-            _activityDTO = Mapper.Map<ActivityDTO>(activityContext.ActivityPayload);
         }
 
         public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(CrateDirection direction)
         {
-            return await _hubCommunicator.GetCratesByDirection<TManifest>(_activityDTO, direction, _activityContext.UserId);
+            return await _hubCommunicator.GetCratesByDirection<TManifest>(ActivityId, direction, _activityContext.UserId);
         }
 
         public async Task<List<TManifest>> GetCrateManifestsByDirection<TManifest>(CrateDirection direction)
         {
-            return (await _hubCommunicator.GetCratesByDirection<TManifest>(_activityDTO, direction, _activityContext.UserId)).Select(x => x.Content).ToList();
+            return (await _hubCommunicator.GetCratesByDirection<TManifest>(ActivityId, direction, _activityContext.UserId)).Select(x => x.Content).ToList();
         }
 
         public async Task<List<Crate>> GetCratesByDirection(CrateDirection direction)
         {
-            return await _hubCommunicator.GetCratesByDirection(_activityDTO, direction, _activityContext.UserId);
+            return await _hubCommunicator.GetCratesByDirection(ActivityId, direction, _activityContext.UserId);
         }
 
         public async Task<FieldDescriptionsCM> GetFieldDescriptions(CrateDirection direction, AvailabilityType availability)
         {
-            return await _hubCommunicator.GetDesignTimeFieldsByDirection(_activityDTO, direction, availability, _activityContext.UserId);
+            return await _hubCommunicator.GetDesignTimeFieldsByDirection(ActivityId, direction, availability, _activityContext.UserId);
         }
 
         public async Task<Crate<FieldDescriptionsCM>> GetFieldDescriptionsCrate(string label, AvailabilityType availability)
         {
-            var curUpstreamFields = await _hubCommunicator.GetDesignTimeFieldsByDirection(_activityDTO, CrateDirection.Upstream, availability, _activityContext.UserId);
+            var curUpstreamFields = await _hubCommunicator.GetDesignTimeFieldsByDirection(ActivityId, CrateDirection.Upstream, availability, _activityContext.UserId);
             return Crate<FieldDescriptionsCM>.FromContent(label, curUpstreamFields);
         }
 

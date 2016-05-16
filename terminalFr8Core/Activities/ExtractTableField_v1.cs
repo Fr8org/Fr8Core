@@ -1,23 +1,31 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
-using Data.States;
-using Hub.Managers;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using TerminalBase.BaseClasses;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class ExtractTableField_v1 : BaseTerminalActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "ExtractTableField",
+            Label = "Extract Table Field",
+            Version = "1",
+            MinPaneWidth = 330,
+            Category = ActivityCategory.Processors,
+            NeedsAuthentication = false,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         private const string ImmediatelyToRightKey = "Immediately to the right";
         private const string ImmediatelyToRightValue = "immediately_to_the_right";
 
@@ -199,7 +207,6 @@ namespace terminalFr8Core.Actions
         {
         }
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
         public override async Task Run()
         {
             var tableChooser = GetControl<CrateChooser>("TableChooser");

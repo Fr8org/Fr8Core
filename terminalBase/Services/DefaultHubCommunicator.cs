@@ -13,7 +13,7 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using Infrastructure.Interfaces;
+using Fr8Infrastructure.Interfaces;
 using Newtonsoft.Json;
 using StructureMap;
 using TerminalBase.Infrastructure;
@@ -175,7 +175,7 @@ namespace TerminalBase.Services
             var mergedFields = new FieldDescriptionsCM();
             var availableData = await GetAvailableData(activityId, direction, availability, userId);
 
-            mergedFields.Fields.AddRange(availableData.AvailableFields);
+            mergedFields.Fields.AddRange(availableData.AvailableCrates.SelectMany(x => x.Fields));
 
             return mergedFields;
         }
@@ -322,11 +322,7 @@ namespace TerminalBase.Services
 
             await _restfulServiceClient.PostAsync<List<CrateDTO>>(uri, payload, null, await GetHMACHeader(uri, userId, payload));
         }
-<<<<<<< HEAD:terminalBase/Services/DefaultHubCommunicator.cs
 
-=======
-        
->>>>>>> refs/remotes/origin/dev:terminalBase/Infrastructure/DefaultHubCommunicator.cs
         public async Task<IEnumerable<PlanDTO>> GetPlansByName(string name, string userId, PlanVisibility visibility = PlanVisibility.Standard)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")

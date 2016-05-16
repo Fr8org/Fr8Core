@@ -5,7 +5,7 @@ using System.Web;
 using System.Web.Http.Filters;
 using Utilities.Configuration.Azure;
 using System.Threading;
-using Infrastructure.Security;
+using Fr8Infrastructure.Security;
 
 namespace TerminalBase.Infrastructure
 {

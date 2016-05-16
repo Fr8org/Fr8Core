@@ -18,7 +18,18 @@ namespace terminalFr8Core.Activities
 {
     public class StoreFile_v1 : BaseTerminalActivity
     {
-
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "StoreFile",
+            Label = "Store File",
+            Category = ActivityCategory.Processors,
+            Version = "1",
+            MinPaneWidth = 330,
+            Type = ActivityType.Standard,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
         private MemoryStream GenerateStreamFromString(string s)
         {
             var stream = new MemoryStream();
@@ -29,14 +40,14 @@ namespace terminalFr8Core.Activities
             return stream;
         }
 
-        public async Task UpdateUpstreamFileCrates(ActivityDO curActivityDO, ICrateStorage storage)
+        public async Task UpdateUpstreamFileCrates()
         {
             // Build a crate with the list of available upstream fields
-            var curUpstreamFieldsCrate = storage.SingleOrDefault(c => c.ManifestType.Id == (int)MT.FieldDescription
+            var curUpstreamFieldsCrate = Storage.SingleOrDefault(c => c.ManifestType.Id == (int)MT.FieldDescription
                                                                                 && c.Label == "Upstream Terminal-Provided File Crates");
             if (curUpstreamFieldsCrate != null)
             {
-                storage.Remove(curUpstreamFieldsCrate);
+                Storage.Remove(curUpstreamFieldsCrate);
             }
 
             var upstreamFileCrates = await GetCratesByDirection<StandardFileDescriptionCM>(CrateDirection.Upstream);
@@ -44,7 +55,7 @@ namespace terminalFr8Core.Activities
             var curUpstreamFields = upstreamFileCrates.Select(c => new FieldDTO(c.Label, c.Label)).ToArray();
 
             curUpstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided File Crates", curUpstreamFields);
-            storage.Add(curUpstreamFieldsCrate);
+            Storage.Add(curUpstreamFieldsCrate);
             
         }
 
@@ -63,7 +74,6 @@ namespace terminalFr8Core.Activities
         {
         }
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
         public override async Task Run()
         {
             var textSourceControl = GetControl<TextSource>("File Crate label");
@@ -71,19 +81,21 @@ namespace terminalFr8Core.Activities
             var fileCrateLabel = textSourceControl.GetValue(Payload);
             if (string.IsNullOrEmpty(fileCrateLabel))
             {
-                return Error(curPayloadDTO, "No Label was selected on design time", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                RaiseError("No Label was selected on design time", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                return;
             }
             if (string.IsNullOrEmpty(fileNameField.Value))
             {
-                return Error(curPayloadDTO, "No file name was given on design time", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                RaiseError("No file name was given on design time", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                return;
             }
 
 
             //we should upload this file to our file storage
-            var userSelectedFileManifest = payloadStorage.CrateContentsOfType<StandardFileDescriptionCM>(f => f.Label == fileCrateLabel).FirstOrDefault();
+            var userSelectedFileManifest = Payload.CrateContentsOfType<StandardFileDescriptionCM>(f => f.Label == fileCrateLabel).FirstOrDefault();
             if (userSelectedFileManifest == null)
             {
-                return Error(curPayloadDTO, "No StandardFileDescriptionCM Crate was found with label " + fileCrateLabel, ActivityErrorCode.PAYLOAD_DATA_MISSING);
+                RaiseError("No StandardFileDescriptionCM Crate was found with label " + fileCrateLabel, ActivityErrorCode.PAYLOAD_DATA_MISSING);
             }
 
 
@@ -104,11 +116,12 @@ namespace terminalFr8Core.Activities
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
             Storage.Add(configurationControlsCrate);
-            await UpdateUpstreamFileCrates(curActivityDO, crateStorage);
+            await UpdateUpstreamFileCrates();
         }
 
         public override Task FollowUp()
         {
+            return Task.FromResult(0);
         }
     }
 }

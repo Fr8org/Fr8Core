@@ -3,22 +3,32 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using Hub.Managers;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using TerminalSqlUtilities;
-using terminalFr8Core.Infrastructure;
-using Data.Entities;
-using Data.States;
+using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using terminalFr8Core.Infrastructure;
+using TerminalBase.BaseClasses;
+using TerminalSqlUtilities;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class ExecuteSql_v1 : BaseTerminalActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "ExecuteSql",
+            Label = "Execute Sql Query",
+            Category = ActivityCategory.Processors,
+            Version = "1",
+            Tags = Tags.Internal,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
+
         private const string DefaultDbProvider = "System.Data.SqlClient";
 
         #region Execution
@@ -117,7 +127,6 @@ namespace terminalFr8Core.Actions
         {
         }
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
         public override async Task Run()
         {
             var findObjectHelper = new FindObjectHelper();

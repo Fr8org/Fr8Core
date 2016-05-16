@@ -6,10 +6,10 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Http;
 using System.Web.Http.Filters;
-using Infrastructure.Interfaces;
+using Fr8Infrastructure.Interfaces;
 using StructureMap;
 
-namespace Infrastructure.Security
+namespace Fr8Infrastructure.Security
 {
     public abstract class fr8HMACAuthenticateAttribute : Attribute, IAuthenticationFilter
     {

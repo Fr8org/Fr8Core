@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net.Http;
-using System.Net.Http.Formatting;
-using System.Threading.Tasks;
-using log4net;
-using Utilities.Logging;
 using System.Diagnostics;
 using System.Globalization;
 using System.IO;
-using Infrastructure.Communication;
-using Infrastructure.Interfaces;
+using System.Net.Http;
+using System.Net.Http.Formatting;
+using System.Threading.Tasks;
+using Fr8Infrastructure.Interfaces;
+using log4net;
+using Utilities.Logging;
 
-namespace Infrastructure.Communication
+namespace Fr8Infrastructure.Communication
 {
     public class RestfulServiceClient : IRestfulServiceClient
     {

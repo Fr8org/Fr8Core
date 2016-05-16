@@ -1,29 +1,34 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Hub.Managers;
-using StructureMap;
-using Data.Entities;
 using Data.Interfaces;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using Data.States;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using StructureMap;
+using TerminalBase.BaseClasses;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class SaveToFr8Warehouse_v1 : BaseTerminalActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "SaveToFr8Warehouse",
+            Label = "Save To Fr8 Warehouse",
+            Category = ActivityCategory.Processors,
+            Version = "1",
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
         public SaveToFr8Warehouse_v1() : base(false)
         {
         }
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
         public override Task Run()
         {
             // get the selected event from the drop down

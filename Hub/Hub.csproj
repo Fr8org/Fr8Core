@@ -224,7 +224,6 @@
       <Private>True</Private>
     </Reference>
     <Reference Include="System.Runtime.Caching" />
-    <Reference Include="System.Threading.Tasks" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.Helpers.dll</HintPath>
       <Private>True</Private>
@@ -285,7 +284,6 @@
     <Compile Include="Helper\LZString.cs" />
     <Compile Include="Infrastructure\AsyncMultiLock.cs" />
     <Compile Include="Infrastructure\FilterConditionPredicateBuilder.cs" />
-    <Compile Include="Infrastructure\fr8HMACAuthenticateAttribute.cs" />
     <Compile Include="Infrastructure\Fr8Identity.cs" />
     <Compile Include="Infrastructure\Fr8Principle.cs" />
     <Compile Include="Infrastructure\Fr8ApiAuthorizeAttribute.cs" />
@@ -307,11 +305,7 @@
     <Compile Include="Interfaces\IActivity.cs" />
     <Compile Include="Interfaces\ITag.cs" />
     <Compile Include="Interfaces\ITime.cs" />
-    <Compile Include="Managers\CrateManager.StorageUpdater.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Managers\CrateMangerExtensions.cs" />
-    <Compile Include="Managers\ICrateManager.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="Interfaces\IExpectedResponse.cs" />
     <Compile Include="Interfaces\IFile.cs" />
@@ -385,7 +379,6 @@
     <Compile Include="Services\ActivityTemplate.cs" />
     <Compile Include="Services\AuthData.cs" />
     <Compile Include="Services\Authorization.cs" />
-    <Compile Include="Managers\CrateManager.cs" />
     <Compile Include="Services\Fr8Account.cs" />
     <Compile Include="Services\EmailAddress.cs" />
     <Compile Include="Services\Email.cs" />
@@ -412,9 +405,9 @@
       <Project>{a3178d71-a2c3-45b9-8334-adcc7c313541}</Project>
       <Name>Fr8Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Infrastructure\Infrastructure.csproj">
+    <ProjectReference Include="..\Infrastructure\Fr8Infrastructure.csproj">
       <Project>{9f4b5c92-3535-4d4c-b1e4-37beb1ae5c42}</Project>
-      <Name>Infrastructure</Name>
+      <Name>Fr8Infrastructure</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>

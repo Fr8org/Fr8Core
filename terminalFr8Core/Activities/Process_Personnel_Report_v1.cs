@@ -18,6 +18,19 @@ namespace terminalFr8Core.Activities
 {
     public class Process_Personnel_Report_v1 : BaseTerminalActivity
     {
+
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Process_Personnel_Report",
+            Label = "Process Personnel Report",
+            Category = ActivityCategory.Processors,
+            Version = "1",
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         private Crate CreateControlsCrate()
         {
             var infobox = new TextBlock()
@@ -37,7 +50,6 @@ namespace terminalFr8Core.Activities
         {
         }
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
         public override async Task Run()
         {
             var dspayloadDTO = Payload.FirstOrDefault(a => a.Label == "DocuSign Envelope Data");

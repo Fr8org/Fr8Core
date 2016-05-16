@@ -3,12 +3,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Entities;
+using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using Fr8Data.States;
+using Fr8Infrastructure.Interfaces;
 using Hub.Managers;
-using Infrastructure.Interfaces;
 using Newtonsoft.Json;
 using StructureMap;
 using TerminalBase.BaseClasses;
@@ -20,6 +22,19 @@ namespace terminalFr8Core.Activities
     // The generic interface inheritance.
     public class Select_Fr8_Object_v1 : BaseTerminalActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Select_Fr8_Object",
+            Label = "Select Fr8 Object",
+            Category = ActivityCategory.Processors,
+            Version = "1",
+            MinPaneWidth = 330,
+            Tags = Tags.Internal,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
@@ -81,7 +96,6 @@ namespace terminalFr8Core.Activities
         {
         }
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
         public override Task Run()
         {
             Success();

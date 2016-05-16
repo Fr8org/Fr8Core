@@ -1,20 +1,31 @@
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TerminalBase.Infrastructure;
-using TerminalBase.BaseClasses;
-using Data.Entities;
-using Hub.Managers;
+using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using TerminalBase.BaseClasses;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class Monitor_Fr8_Events_v1 : BaseTerminalActivity
     {
+
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Monitor_Fr8_Events",
+            Label = "Monitor Fr8 Events",
+            Version = "1",
+            Category = ActivityCategory.Monitors,
+            NeedsAuthentication = false,
+            MinPaneWidth = 380,
+            Tags = Tags.Internal,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
         private Crate PackCrate_EventSubscriptions()
         {
             var subscriptions = new List<string>
@@ -37,7 +48,6 @@ namespace terminalFr8Core.Actions
         {
         }
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
         public override Task Run()
         {
             var curEventReport = Payload.CrateContentsOfType<EventReportCM>().First();

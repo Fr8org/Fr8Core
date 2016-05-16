@@ -55,6 +55,10 @@
       <HintPath>..\..\packages\Microsoft.AspNet.Identity.Core.2.0.1\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Microsoft.AspNet.Identity.EntityFramework.2.0.1\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Azure.Search, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Microsoft.Azure.Search.1.1.1\lib\net45\Microsoft.Azure.Search.dll</HintPath>
       <Private>True</Private>
@@ -239,6 +243,10 @@
     <ProjectReference Include="..\..\Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Infrastructure\Fr8Infrastructure.csproj">
+      <Project>{9f4b5c92-3535-4d4c-b1e4-37beb1ae5c42}</Project>
+      <Name>Fr8Infrastructure</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>

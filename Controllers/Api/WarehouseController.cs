@@ -4,10 +4,11 @@ using System.Web.Http;
 using StructureMap;
 using Data.Interfaces;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Hub.Infrastructure;
 using Hub.Managers;
-using HubWeb.Infrastructure;
+using HubWeb.Infrastructure_HubWeb;
 
 namespace HubWeb.Controllers
 {

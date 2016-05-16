@@ -27,9 +27,8 @@ namespace TerminalBase.BaseClasses
         /**********************************************************************************/
 
         protected T ActivityUI { get; private set; }
-
         protected UiBuilder UiBuilder { get; private set; }
-
+        protected bool DisableValidationOnFollowup { get; set; }
 
         /**********************************************************************************/
         // Functions
@@ -48,7 +47,7 @@ namespace TerminalBase.BaseClasses
                 throw new InvalidOperationException(message);
             }
         }
-
+        
         /**********************************************************************************/
 
         public override async Task Initialize()
@@ -65,8 +64,16 @@ namespace TerminalBase.BaseClasses
         public override async Task FollowUp()
         {
             SyncConfControls();
-            if (await Validate())
+            Storage.Remove<ValidationResultsCM>();
+            ValidationManager.Reset();
+            if (!DisableValidationOnFollowup)
             {
+                await Validate();
+            }
+
+            if (!ValidationManager.HasErrors || DisableValidationOnFollowup)
+            {
+                Storage.Remove<ValidationResultsCM>();
                 await ConfigureETA();
             }
             SyncConfControlsBack();
@@ -75,13 +82,13 @@ namespace TerminalBase.BaseClasses
         /**********************************************************************************/
 
         public sealed override async Task Activate()
-        {
-            SyncConfControls();
-            if (await Validate())
             {
-                await ActivateETA();
+                SyncConfControls();
+                if (await Validate())
+                {
+                    await ActivateETA();
+                }
             }
-        }
 
         /**********************************************************************************/
 
@@ -110,11 +117,8 @@ namespace TerminalBase.BaseClasses
                     RaiseError("Activity was incorrectly configured");
                     return;
                 }
-
                 OperationalState.CurrentActivityResponse = null;
-
                 await RunETA();
-
                 if (OperationalState.CurrentActivityResponse == null)
                 {
                     Success();
@@ -137,7 +141,7 @@ namespace TerminalBase.BaseClasses
                 RaiseError(ex.Message);
             }
         }
-
+        
         /**********************************************************************************/
 
         protected T AssignNamesForUnnamedControls(T configurationControls)
@@ -155,7 +159,7 @@ namespace TerminalBase.BaseClasses
 
             return configurationControls;
         }
-
+        
         /**********************************************************************************/
 
         protected virtual T CrateActivityUI()
@@ -260,7 +264,7 @@ namespace TerminalBase.BaseClasses
 
             ActivityUI = CrateActivityUI();
             ActivityUI.SyncWith(ConfigurationControls);
-
+            
             if (ConfigurationControls.Controls != null)
             {
                 var dynamicControlsCollection = Fr8ReflectionHelper.GetMembers(ConfigurationControls.GetType()).Where(x => x.CanRead && x.GetCustomAttribute<DynamicControlsAttribute>() != null && CheckIfMemberIsControlsCollection(x)).ToDictionary(x => x.Name, x => x);
@@ -348,7 +352,7 @@ namespace TerminalBase.BaseClasses
 
             return false;
         }
-
+        
         /**********************************************************************************/
         // Activity logic can update state of configuration controls. But as long we have copied  configuration controls crate from the storage into 
         // new instance of ActivityUi changes made to ActivityUi won't be reflected in storage.
