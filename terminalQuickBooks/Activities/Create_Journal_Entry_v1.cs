@@ -10,6 +10,7 @@ using Hub.Managers;
 using TerminalBase.BaseClasses;
 using StructureMap;
 using terminalQuickBooks.Interfaces;
+using TerminalBase.Infrastructure;
 
 namespace terminalQuickBooks.Actions
 {
@@ -39,7 +40,7 @@ namespace terminalQuickBooks.Actions
             }
         }
 
-        protected override Task Configure(CrateSignaller crateSignaller)
+        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             // No extra configuration required
             return Task.FromResult(0);

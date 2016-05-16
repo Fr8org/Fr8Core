@@ -192,7 +192,7 @@ namespace terminalQuickBooks.Actions
             CurrentActivityStorage.AddRange(await PackSources());
         }
 
-        protected override Task Configure(CrateSignaller crateSignaller)
+        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             MemoText = ConfigurationControls.Memo.Value;
             DebitAccount = GetDebitAccount(CurrentActivityStorage);
