@@ -9,6 +9,7 @@ using Fr8Data.Manifests;
 using Newtonsoft.Json;
 using terminalBox.Infrastructure;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalBox.Actions
 {
@@ -37,7 +38,7 @@ namespace terminalBox.Actions
             await Task.Yield();
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller)
+        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             await Task.Yield();
         }
