@@ -22,11 +22,12 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "Write_To_Sql_Server",
-            Label = "Write to Azure Sql Server",
-            Category = ActivityCategory.Forwarders,
+            Name = "FilterObjectListByIncomingMessage",
+            Label = "Filter Object List by Incoming Message",
             Version = "1",
-            MinPaneWidth = 330,
+            Category = ActivityCategory.Processors,
+            NeedsAuthentication = false,
+            MinPaneWidth = 400,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO
         };
@@ -314,7 +315,7 @@ namespace terminalFr8Core.Activities
         private string IncomingText => Payload.FindField(ActivityUI.IncomingTextSelector.selectedKey);
 
         private string SelectedDataSourceActivityId => ActivityUI.DataSourceSelector.Value;
-
+        
         public bool CachedDataIsOld
         {
             get
@@ -331,7 +332,7 @@ namespace terminalFr8Core.Activities
         }
 
         private string SpecifiedDataProperties => ActivityUI.KeywordPropertiesSource.Value;
-
+        
         #endregion
 
     }

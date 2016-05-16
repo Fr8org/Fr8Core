@@ -22,11 +22,11 @@ namespace terminalFr8Core.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "Write_To_Sql_Server",
-            Label = "Write to Azure Sql Server",
-            Category = ActivityCategory.Forwarders,
+            Name = "GetFileFromFr8Store",
+            Label = "Get File From Fr8 Store",
+            Category = ActivityCategory.Receivers,
             Version = "1",
-            MinPaneWidth = 330,
+            Type = ActivityType.Standard,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO
         };

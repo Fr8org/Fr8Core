@@ -1,10 +1,8 @@
 ﻿using System;
 using Data.Entities;
 using Data.Infrastructure.AutoMapper;
-using Newtonsoft.Json;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
 
 namespace Hub.Managers
 {

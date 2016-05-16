@@ -25,11 +25,11 @@ namespace terminalFr8Core.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "Write_To_Sql_Server",
-            Label = "Write to Azure Sql Server",
-            Category = ActivityCategory.Forwarders,
+            Name = "GetDataFromFr8Warehouse",
+            Label = "Get Data From Fr8 Warehouse",
+            Category = ActivityCategory.Processors,
             Version = "1",
-            MinPaneWidth = 330,
+            MinPaneWidth = 550,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO
         };
@@ -87,6 +87,35 @@ namespace terminalFr8Core.Activities
         {
         }
 
+        protected override async Task InitializeETA()
+        {
+            ActivityUI.AvailableObjects.ListItems = GetObjects();
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            await Task.Yield();
+        }
+
+        protected override async Task ConfigureETA()
+        {
+            var selectedObject = ActivityUI.AvailableObjects.Value;
+            var hasSelectedObject = !string.IsNullOrEmpty(selectedObject);
+            if (hasSelectedObject)
+            {
+                Guid selectedObjectId;
+                if (Guid.TryParse(ActivityUI.AvailableObjects.Value, out selectedObjectId))
+                {
+                    Storage.ReplaceByLabel(Crate.FromContent("Queryable Criteria",
+                            new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(selectedObjectId, AvailabilityType.RunTime))
+                        )
+                    );
+                }
+            }
+
+            ActivityUI.QueryBuilder.IsHidden = !hasSelectedObject;
+            ActivityUI.SelectObjectLabel.IsHidden = hasSelectedObject;
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            await Task.Yield();
+        }
+
         protected override async Task RunETA()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -101,7 +130,7 @@ namespace terminalFr8Core.Activities
                 var conditions = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(
                     ActivityUI.QueryBuilder.Value
                 );
-
+                
                 var manifestType = mtType.ClrType;
                 var queryBuilder = MTSearchHelper.CreateQueryProvider(manifestType);
                 var converter = CrateManifestToRowConverter(manifestType);
@@ -137,36 +166,6 @@ namespace terminalFr8Core.Activities
                 Payload.Add(Crate.FromContent(RunTimeCrateLabel,searchResult));
             }
 
-            await Task.Yield();
-        }
-
-        protected override async Task InitializeETA()
-        {
-            ActivityUI.AvailableObjects.ListItems = GetObjects();
-            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
-            await Task.Yield();
-        }
-
-        protected override async Task ConfigureETA()
-        {
-            var selectedObject = ActivityUI.AvailableObjects.Value;
-            var hasSelectedObject = !string.IsNullOrEmpty(selectedObject);
-            if (hasSelectedObject)
-            {
-                Guid selectedObjectId;
-                if (Guid.TryParse(ActivityUI.AvailableObjects.Value, out selectedObjectId))
-                {
-                    Storage.ReplaceByLabel(
-                        Crate.FromContent(
-                            "Queryable Criteria",
-                            new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(selectedObjectId, AvailabilityType.RunTime))
-                        )
-                    );
-                }
-            }
-            ActivityUI.QueryBuilder.IsHidden = !hasSelectedObject;
-            ActivityUI.SelectObjectLabel.IsHidden = hasSelectedObject;
-            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
             await Task.Yield();
         }
 

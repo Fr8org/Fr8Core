@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Entities;
+using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
@@ -23,11 +24,12 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "Write_To_Sql_Server",
-            Label = "Write to Azure Sql Server",
-            Category = ActivityCategory.Forwarders,
+            Name = "Select_Fr8_Object",
+            Label = "Select Fr8 Object",
+            Category = ActivityCategory.Processors,
             Version = "1",
             MinPaneWidth = 330,
+            Tags = Tags.Internal,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO
         };

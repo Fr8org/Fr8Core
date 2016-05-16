@@ -630,15 +630,24 @@
     <Compile Include="Migrations\201605111857439_ActivityActivationState.Designer.cs">
       <DependentUpon>201605111857439_ActivityActivationState.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201605131245044_AddedClassPropertyToFr8AccountDO.cs" />
+    <Compile Include="Migrations\201605131245044_AddedClassPropertyToFr8AccountDO.Designer.cs">
+      <DependentUpon>201605131245044_AddedClassPropertyToFr8AccountDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenChangeTracker.cs" />
-    <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryForTests.cs" />
-    <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryStub.cs" />
+    <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.InterceptingProvider.cs" />
+    <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.QueryInterceptor.cs" />
+    <Compile Include="Repositories\Authorization\Impl\AuthorizationTokenRepositoryForTests.cs" />
+    <Compile Include="Repositories\Authorization\Impl\AuthorizationTokenRepositoryStub.cs" />
     <Compile Include="Repositories\Authorization\IAuthorizationTokenRepository.cs" />
-    <Compile Include="Repositories\Authorization\KeyVaultAuthorizationTokenRepository.cs" />
+    <Compile Include="Repositories\Authorization\IAuthorizationTokenStorageProvider.cs" />
+    <Compile Include="Repositories\Authorization\Impl\EfAuthorizationTokenStorageProvider.cs" />
+    <Compile Include="Repositories\Authorization\Impl\KeyVaultAuthorizationTokenRepository.cs" />
+    <Compile Include="Repositories\Authorization\Impl\MockedDbAuthorizationTokenStorageProvider.cs" />
     <Compile Include="Repositories\PlanTemplates\ActivityDescriptionRepository.cs" />
     <Compile Include="Repositories\PlanTemplates\NodeTransitionRepository.cs" />
     <Compile Include="Repositories\PlanTemplates\PlanNodeDescriptionsRepository.cs" />
@@ -774,7 +783,7 @@
     <Compile Include="Repositories\MetaflowRepository.cs" />
     <Compile Include="Repositories\ExpectedResponseRepository.cs" />
     <Compile Include="Repositories\LogRepository.cs" />
-    <Compile Include="Repositories\Authorization\SqlAuthorizationTokenRepository.cs" />
+    <Compile Include="Repositories\Authorization\Impl\SqlAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\InvitationRepository.cs" />
     <Compile Include="Repositories\UserStatusRepository.cs" />
     <Compile Include="States\AccessLevel.cs" />
@@ -1200,6 +1209,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201605111857439_ActivityActivationState.resx">
       <DependentUpon>201605111857439_ActivityActivationState.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605131245044_AddedClassPropertyToFr8AccountDO.resx">
+      <DependentUpon>201605131245044_AddedClassPropertyToFr8AccountDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

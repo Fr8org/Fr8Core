@@ -16,7 +16,7 @@ using terminalUtilities.Excel;
 
 namespace HubTests
 {
-    [TestFixture,Ignore]
+    [TestFixture]
     [Category("ExcelUtils")]
     public class ExcelUtilsTests : BaseTest
     {
@@ -283,7 +283,7 @@ namespace HubTests
                 catch { }
             }
         }
-        [Test]
+        [Test] //this test requires internet connection
         public void GetColumnHeadersTest()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

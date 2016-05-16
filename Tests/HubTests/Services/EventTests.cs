@@ -164,8 +164,8 @@ namespace HubTests.Services
             }
         }
 
-        public List<T> GetCrateManifestsByDirection<T>(Guid activityId, CrateDirection direction,
-            AvailabilityType availability, bool includeCratesFromActivity = true) where T : Manifest
+        public List<CrateDescriptionCM> GetCrateManifestsByDirection(Guid activityId, CrateDirection direction,
+            AvailabilityType availability, bool includeCratesFromActivity = true)
         {
             throw new NotImplementedException();
         }

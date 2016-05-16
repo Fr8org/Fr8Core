@@ -17,10 +17,10 @@ namespace terminalFr8Core.Activities
             Name = "ConnectToSql",
             Label = "Connect To SQL",
             Category = ActivityCategory.Processors,
-            Terminal = TerminalData.TerminalDTO,
-            WebService = TerminalData.WebServiceDTO,
             Version = "1",
-            Tags = Tags.Internal
+            Tags = Tags.Internal,
+            Terminal = TerminalData.TerminalDTO,
+            WebService = TerminalData.WebServiceDTO
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

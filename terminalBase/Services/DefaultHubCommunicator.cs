@@ -175,7 +175,7 @@ namespace TerminalBase.Services
             var mergedFields = new FieldDescriptionsCM();
             var availableData = await GetAvailableData(activityId, direction, availability, userId);
 
-            mergedFields.Fields.AddRange(availableData.AvailableFields);
+            mergedFields.Fields.AddRange(availableData.AvailableCrates.SelectMany(x => x.Fields));
 
             return mergedFields;
         }

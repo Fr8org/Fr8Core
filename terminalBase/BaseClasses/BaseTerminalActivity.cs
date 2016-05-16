@@ -536,7 +536,6 @@ namespace TerminalBase.BaseClasses
                 {
                     AddAuthenticationCrate(true);
                 }
-
                 throw;
             }
         }

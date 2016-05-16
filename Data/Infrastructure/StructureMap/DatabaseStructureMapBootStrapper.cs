@@ -4,6 +4,7 @@ using Data.Entities;
 using Data.Infrastructure.AutoMapper;
 using Data.Interfaces;
 using Data.Repositories;
+using Data.Repositories.Authorization;
 using Data.Repositories.Cache;
 using Data.Repositories.Encryption;
 using Data.Repositories.Encryption.Impl;
@@ -94,6 +95,8 @@ namespace Data.Infrastructure.StructureMap
                     For<IAuthorizationTokenRepository>().Use<AuthorizationTokenRepositoryStub>();
                 }
 
+                For<IAuthorizationTokenStorageProvider>().Use<EfAuthorizationTokenStorageProvider>();
+
                 For<IPlanStorageProvider>().Use<PlanStorageProviderEf>();
                 For<ISqlConnectionProvider>().Use<SqlConnectionProvider>();
                 For<IMtObjectsStorage>().Use<SqlMtObjectsStorage>().Singleton();
@@ -128,6 +131,7 @@ namespace Data.Infrastructure.StructureMap
         {
             public TestMode()
             {
+                For<IAuthorizationTokenStorageProvider>().Use<MockedDbAuthorizationTokenStorageProvider>();
                 For<IAuthorizationTokenRepository>().Use<AuthorizationTokenRepositoryForTests>();
                 For<IDBContext>().Use<MockedDBContext>();
                 For<CloudFileManager>().Use<CloudFileManager>();

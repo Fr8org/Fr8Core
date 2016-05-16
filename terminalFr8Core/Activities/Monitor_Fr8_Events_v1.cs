@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
@@ -14,11 +15,13 @@ namespace terminalFr8Core.Activities
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "Write_To_Sql_Server",
-            Label = "Write to Azure Sql Server",
-            Category = ActivityCategory.Forwarders,
+            Name = "Monitor_Fr8_Events",
+            Label = "Monitor Fr8 Events",
             Version = "1",
-            MinPaneWidth = 330,
+            Category = ActivityCategory.Monitors,
+            NeedsAuthentication = false,
+            MinPaneWidth = 380,
+            Tags = Tags.Internal,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO
         };

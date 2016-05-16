@@ -14,11 +14,12 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "Write_To_Sql_Server",
-            Label = "Write to Azure Sql Server",
-            Category = ActivityCategory.Forwarders,
+            Name = "SetDelay",
+            Label = "Delay Action Processing",
+            Category = ActivityCategory.Processors,
             Version = "1",
             MinPaneWidth = 330,
+            Type = ActivityType.Standard,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO
         };

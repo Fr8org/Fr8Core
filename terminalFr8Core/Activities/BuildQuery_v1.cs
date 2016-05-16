@@ -18,13 +18,13 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "ConnectToSql",
-            Label = "Connect To SQL",
+            Name = "BuildQuery",
+            Label = "Build Query",
             Category = ActivityCategory.Processors,
-            Terminal = TerminalData.TerminalDTO,
-            WebService = TerminalData.WebServiceDTO,
             Version = "1",
-            Tags = Tags.Internal
+            Tags = Tags.Internal,
+            Terminal = TerminalData.TerminalDTO,
+            WebService = TerminalData.WebServiceDTO
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 

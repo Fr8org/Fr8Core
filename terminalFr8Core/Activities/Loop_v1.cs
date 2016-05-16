@@ -23,11 +23,13 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "Write_To_Sql_Server",
-            Label = "Write to Azure Sql Server",
-            Category = ActivityCategory.Forwarders,
+            Name = "Loop",
+            Label = "Loop",
+            Category = ActivityCategory.Processors,
             Version = "1",
             MinPaneWidth = 330,
+            Type = ActivityType.Loop,
+            Tags = Tags.AggressiveReload,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO
         };

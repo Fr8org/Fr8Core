@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Repositories.Authorization;
 
 namespace Data.Repositories
 {
@@ -19,15 +20,15 @@ namespace Data.Repositories
         // Functions
         /*********************************************************************************/
 
-        public SqlAuthorizationTokenRepository(IUnitOfWork uow) 
-            : base(uow)
+        public SqlAuthorizationTokenRepository(IUnitOfWork uow, IAuthorizationTokenStorageProvider storageProvider) 
+            : base(storageProvider)
         {
-            _secureDBSet = _uow.Db.Set<EncryptedAuthorizationData>();
+            _secureDBSet = uow.Db.Set<EncryptedAuthorizationData>();
         }
 
         /*********************************************************************************/
         
-        protected override void ProcessChanges(IEnumerable<AuthorizationTokenDO> adds, IEnumerable<AuthorizationTokenDO> updates, IEnumerable<AuthorizationTokenDO> deletes)
+        protected override void ProcessSecureDataChanges(IEnumerable<AuthorizationTokenDO> adds, IEnumerable<AuthorizationTokenDO> updates, IEnumerable<AuthorizationTokenDO> deletes)
         {
             foreach (var authorizationTokenDo in adds.Concat(updates))
             {

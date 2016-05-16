@@ -15,11 +15,12 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "Write_To_Sql_Server",
-            Label = "Write to Azure Sql Server",
-            Category = ActivityCategory.Forwarders,
+            Name = "ExtractTableField",
+            Label = "Extract Table Field",
             Version = "1",
             MinPaneWidth = 330,
+            Category = ActivityCategory.Processors,
+            NeedsAuthentication = false,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO
         };

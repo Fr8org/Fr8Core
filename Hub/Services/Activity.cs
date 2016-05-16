@@ -25,6 +25,7 @@ using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
 using Infrastructure.Communication;
 using Utilities;
+using Hub.Exceptions;
 
 namespace Hub.Services
 {
@@ -473,7 +474,7 @@ namespace Hub.Services
                 }
                 catch (InvalidTokenRuntimeException)
                 {
-                    skipDeactivation = true;
+                    throw;
                 }
             }
             else
