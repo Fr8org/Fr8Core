@@ -38,17 +38,6 @@ namespace terminalDocuSign.Controllers
                 new ActivityTemplateDTO
                 {
                     Version = "1",
-                    Name = "Process_Personal_Report",
-                    Label = "Process Personal Report",
-                    Category = ActivityCategory.Forwarders,
-                    Terminal = terminal,
-                    NeedsAuthentication = true,
-                    MinPaneWidth = 380,
-                    WebService = webService,
-                },
-                new ActivityTemplateDTO
-                {
-                    Version = "1",
                     Name = "Monitor_DocuSign_Envelope_Activity",
                     Label = "Monitor DocuSign Envelope Activity",
                     Category = ActivityCategory.Monitors,

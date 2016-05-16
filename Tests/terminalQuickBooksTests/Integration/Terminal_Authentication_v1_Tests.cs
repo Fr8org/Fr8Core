@@ -11,10 +11,7 @@ namespace terminalQuickBooksTests.Integration
     [Explicit]
     public class Terminal_Authentication_v1_Tests : BaseTerminalIntegrationTest
     {
-        public override string TerminalName
-        {
-            get { return "terminalQuickBooks"; }
-        }
+        public override string TerminalName => "terminalQuickBooks";
 
         /// <summary>
         /// Make sure http call fails with invalid authentication

@@ -56,75 +56,75 @@ namespace terminalExcel.Actions
 
                 Controls.Add(UpstreamCrateChooser);
                 NewSpreadsheetName = new TextBox
-                {
-                    Value = $"NewFr8Data{DateTime.Now.Date:dd-MM-yyyy}",
-                    Name = nameof(NewSpreadsheetName)
-                };
+                                     {
+                                         Value = $"NewFr8Data{DateTime.Now.Date:dd-MM-yyyy}",
+                                         Name = nameof(NewSpreadsheetName)
+                                     };
                 ExistingSpreadsheetsList = new DropDownList
-                {
-                    Name = nameof(ExistingSpreadsheetsList),
-                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
-                };
+                                           {
+                                               Name = nameof(ExistingSpreadsheetsList),
+                                               Events = new List<ControlEvent> { ControlEvent.RequestConfig }
+                                           };
                 UseNewSpreadsheetOption = new RadioButtonOption
-                {
-                    Selected = true,
-                    Name = nameof(UseNewSpreadsheetOption),
-                    Value = "Store in a new Excel Spreadsheet",
-                    Controls = new List<ControlDefinitionDTO> { NewSpreadsheetName }
-                };
+                                          {
+                                              Selected = true,
+                                              Name = nameof(UseNewSpreadsheetOption),
+                                              Value = "Store in a new Excel Spreadsheet",
+                                              Controls = new List<ControlDefinitionDTO> { NewSpreadsheetName }
+                                          };
                 UseExistingSpreadsheetOption = new RadioButtonOption()
-                {
-                    Selected = false,
-                    Name = nameof(UseExistingSpreadsheetOption),
-                    Value = "Store in an existing Spreadsheet",
-                    Controls = new List<ControlDefinitionDTO> { ExistingSpreadsheetsList }
-                };
+                                               {
+                                                   Selected = false,
+                                                   Name = nameof(UseExistingSpreadsheetOption),
+                                                   Value = "Store in an existing Spreadsheet",
+                                                   Controls = new List<ControlDefinitionDTO> { ExistingSpreadsheetsList }
+                                               };
                 SpreadsheetSelectionGroup = new RadioButtonGroup
-                {
-                    GroupName = nameof(SpreadsheetSelectionGroup),
-                    Name = nameof(SpreadsheetSelectionGroup),
-                    Events = new List<ControlEvent> { ControlEvent.RequestConfig },
-                    Radios = new List<RadioButtonOption>
+                                            {
+                                                GroupName = nameof(SpreadsheetSelectionGroup),
+                                                Name = nameof(SpreadsheetSelectionGroup),
+                                                Events = new List<ControlEvent> { ControlEvent.RequestConfig },
+                                                Radios = new List<RadioButtonOption>
                                                          {
                                                              UseNewSpreadsheetOption,
                                                              UseExistingSpreadsheetOption
                                                          }
-                };
+                                            };
                 Controls.Add(SpreadsheetSelectionGroup);
                 NewWorksheetName = new TextBox
-                {
-                    Value = "Sheet1",
-                    Name = nameof(NewWorksheetName)
-                };
+                                   {
+                                       Value = "Sheet1",
+                                       Name = nameof(NewWorksheetName)
+                                   };
                 ExistingWorksheetsList = new DropDownList
-                {
-                    Name = nameof(ExistingWorksheetsList),
-                };
+                                         {
+                                             Name = nameof(ExistingWorksheetsList),
+                                         };
                 UseNewWorksheetOption = new RadioButtonOption()
-                {
-                    Selected = true,
-                    Name = nameof(UseNewWorksheetOption),
-                    Value = "A new Sheet (Pane)",
-                    Controls = new List<ControlDefinitionDTO> { NewWorksheetName }
-                };
+                                        {
+                                            Selected = true,
+                                            Name = nameof(UseNewWorksheetOption),
+                                            Value = "A new Sheet (Pane)",
+                                            Controls = new List<ControlDefinitionDTO> { NewWorksheetName }
+                                        };
                 UseExistingWorksheetOption = new RadioButtonOption()
-                {
-                    Selected = false,
-                    Name = nameof(UseExistingWorksheetOption),
-                    Value = "Existing Pane",
-                    Controls = new List<ControlDefinitionDTO> { ExistingWorksheetsList }
-                };
+                                             {
+                                                 Selected = false,
+                                                 Name = nameof(UseExistingWorksheetOption),
+                                                 Value = "Existing Pane",
+                                                 Controls = new List<ControlDefinitionDTO> { ExistingWorksheetsList }
+                                             };
                 WorksheetSelectionGroup = new RadioButtonGroup()
-                {
-                    Label = "Inside the spreadsheet, store in",
-                    GroupName = nameof(WorksheetSelectionGroup),
-                    Name = nameof(WorksheetSelectionGroup),
-                    Radios = new List<RadioButtonOption>
+                                          {
+                                              Label = "Inside the spreadsheet, store in",
+                                              GroupName = nameof(WorksheetSelectionGroup),
+                                              Name = nameof(WorksheetSelectionGroup),
+                                              Radios = new List<RadioButtonOption>
                                                        {
                                                            UseNewWorksheetOption,
                                                            UseExistingWorksheetOption
                                                        }
-                };
+                                          };
                 Controls.Add(WorksheetSelectionGroup);
             }
         }
@@ -144,6 +144,7 @@ namespace terminalExcel.Actions
 
         protected override async Task Initialize(CrateSignaller crateSignaller)
         {
+            crateSignaller.MarkAvailableAtRuntime<StandardFileDescriptionCM>("StoredFile");
             ConfigurationControls.ExistingSpreadsheetsList.ListItems = await GetCurrentUsersFiles();
         }
 
@@ -296,7 +297,13 @@ namespace terminalExcel.Actions
                 }
 
                 var file = await HubCommunicator.SaveFile(fileName, stream, CurrentFr8UserId);
-                return file.CloudStorageUrl;
+                CurrentPayloadStorage.Add(Crate.FromContent("StoredFile", new StandardFileDescriptionCM
+                {
+                    Filename = file.Id.ToString(), // dirty hack
+                    TextRepresentation = file.OriginalFileName, // another hack
+                    Filetype = ".xlsx"
+                }));
+				return file.CloudStorageUrl;
             }
         }
 
@@ -326,7 +333,7 @@ namespace terminalExcel.Actions
                 //"api/v1/plans/clone?id=" + curActivityDO.RootPlanNodeId,
                 Subject = "Excel File"
             });
-        }
+    }
 
     }
 }

@@ -251,7 +251,6 @@
     <Compile Include="Activities\Get_DocuSign_Template_v1.cs" />
     <Compile Include="Activities\Mail_Merge_Into_DocuSign_v1.cs" />
     <Compile Include="Activities\Archive_DocuSign_Template_v1.cs" />
-    <Compile Include="Activities\Process_Personal_Report_v1.cs" />
     <Compile Include="Activities\Query_DocuSign_v2.cs" />
     <Compile Include="Activities\Search_DocuSign_History_v1.cs" />
     <Compile Include="Activities\Query_DocuSign_v1.cs" />

@@ -23,7 +23,9 @@ module dockyard.directives.textSource {
         var uniqueDirectiveId = 1;
         var controller = ['$scope', 'UIHelperService', ($scope: ITextSourceScope, uiHelperService: services.IUIHelperService) => {
             
-            $scope.field.valueSource = 'specific';
+            if (!$scope.field.valueSource) {
+                $scope.field.valueSource = 'specific';
+            }
 
             $scope.uniqueDirectiveId = ++uniqueDirectiveId;
             $scope.onChange = (fieldName: string) => {
@@ -54,7 +56,7 @@ module dockyard.directives.textSource {
                 }
             });
 
-            $scope.onFocus = (fieldName) => {
+            $scope.onFocus = (fieldname) => {
                 $scope.$emit(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureFocusElement],
                     new pca.ConfigureFocusElementArgs($scope.field));
             };
@@ -63,19 +65,49 @@ module dockyard.directives.textSource {
                 $scope.field.valueSource = 'upstream';
                 $scope.field.selectedKey = field.value;
                 $scope.onFocus(field);
+                $scope.onChange(field);
             }
             
         }];
 
-        var link = function($scope, $element, attrs) {
+
+
+
+        var link = function ($scope, $element, attrs) {
+
+            if ($scope.currentAction) {
+                let controls = <Array<model.ControlDefinitionDTO>>$scope.currentAction.configurationControls.fields;
+
+                //crutch, it would be nice to write test for this.
+                // what happens here: we show lable 'Avaliable fields'  only for first textSource element in textsource elements block
+                let index = _.findIndex(controls, f => f.type.toLowerCase() === 'textsource');
+                if (index > -1) {
+                    (<any>controls[index]).groupLabel = true;
+
+                    let tailControls = _.rest(controls, index + 1);
+
+                    while (index > -1) {
+                        index = _.findIndex(tailControls, f => f.type.toLowerCase() === 'textsource');
+                        tailControls = _.rest(tailControls);
+
+                        if (index > 0) {
+                            (<any>controls[index]).groupLabel = true;
+                            tailControls = _.rest(controls, index + 1);
+                        }
+                    }
+                }        
+            }
+            
+            
+
             //watch function for programatically setting focus on html element
-            $scope.$watch("isFocused", function (currentValue, previousValue) {
-                if (currentValue === true && !previousValue) {
-                    var theElement = $element.find("input[type='text']")[0];
-                    theElement.focus();
-                    $scope.field.valueSource = 'specific';
-                } 
-            });
+            //$scope.$watch("isFocused", function (currentValue, previousValue) {
+                //if (currentValue === true && !previousValue) {
+                //    var theElement = $element.find("input[type='text']")[0];
+                //    theElement.focus();
+                //    $scope.field.valueSource = 'specific';
+                //} 
+            //});
         }
 
         return {

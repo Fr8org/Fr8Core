@@ -1,6 +1,6 @@
-﻿
+﻿<label class="fr8-config-pane-padding" ng-if="field.groupLabel">Available Fields</label>
 <!--TextBlock control main container-->
-<div class="" style="margin-bottom: 6px; padding-left: 8px;">  
+<div class="fr8-config-pane-padding" style="margin-bottom: 6px; ">  
     <md-button class="md-raised fr8-text-source-button fr8-full-width" ng-click="field.isCollapsed=!field.isCollapsed;"  ng-class="[{'': !field.isCollapsed},{'fr8-text-source-button-pressed':field.isCollapsed}]">{{field.initialLabel}}</md-button>
     <!--Toggel wrapper -->
     <div class="fr8-text-source-panel collapsed" ng-class="[{'expanded': !field.isCollapsed},{'fr8-borders':field.isCollapsed}]">
@@ -12,7 +12,7 @@
                    class='form-control form-control-focus small-input' name='pca__txt{{field.$$hashKey}}__value' ng-click="field.valueSource='specific'" stop-click-propagation>
         </div>
         <div style="padding-left: 20px;" >
-            <input ng-click="onChange(field.name)"  ng-checked="field.valueSource=='upstream'" name="pca_chk_ts_{{uniqueDirectiveId}}" type="radio" id="pca__chk{{field.$$hashKey}}__crate{{uniqueDirectiveId}}" value="upstream" ng-model="field.valueSource" stop-click-propagation/>
+            <input ng-click="onUpStreamChange(field.name)"  ng-checked="field.valueSource=='upstream'" name="pca_chk_ts_{{uniqueDirectiveId}}" type="radio" id="pca__chk{{field.$$hashKey}}__crate{{uniqueDirectiveId}}" value="upstream" ng-model="field.valueSource" stop-click-propagation/>
             <label for="pca__chk{{field.$$hashKey}}__crate{{uniqueDirectiveId}}" stop-click-propagation>use this incoming value:<a href="/documentation/UpstreamCrates.html" class="documentation-link"><i class="fa fa-question-circle"></i></a></label>
             <div>
                 <upstream-field-chooser ng-click="field.valueSource='upstream'" class="upstream-field-chooser" field="field" current-action="currentAction" change='onUpStreamChange'></upstream-field-chooser>

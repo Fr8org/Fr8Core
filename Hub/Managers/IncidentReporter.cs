@@ -50,6 +50,7 @@ namespace Hub.Managers
             EventManager.EventUnexpectedError += UnexpectedError;
             EventManager.PlanActivationFailedEvent += PlanActivationFailed;
             EventManager.EventMultipleMonitorAllDocuSignEventsPlansPerAccountArePresent += EventManager_EventMultipleMonitorAllDocuSignEventsPlansPerAccountArePresent;
+            EventManager.EventTokenValidationFailed += TokenValidationFailed;
         }
 
         public void EventManager_EventMultipleMonitorAllDocuSignEventsPlansPerAccountArePresent(string external_email)
@@ -162,7 +163,7 @@ namespace Hub.Managers
                     Environment.NewLine,
                     "Container failure.",
                     "PlanName: " + (plan != null ? plan.Name : "unknown"),
-                    "PlanId: "+ (plan != null ? plan.Id.ToString() : "unknown"),
+                    "PlanId: " + (plan != null ? plan.Id.ToString() : "unknown"),
                     ex.Message,
                     ex.StackTrace ?? ""
                 ),
@@ -400,7 +401,7 @@ namespace Hub.Managers
                 _uow.SaveChanges();
             }
         }
-        
+
         private void ProcessEmailSendFailure(int emailId, string message)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -511,6 +512,21 @@ namespace Hub.Managers
                         template?.Name, fieldKey, activity.Id)
             };
             LogIncident(incidentDO);
+        }
+
+        private void TokenValidationFailed(string token, string errorMessage)
+        {
+            var incident = new IncidentDO
+            {
+                Fr8UserId = _sercurity.GetCurrentUser(),
+                Data = "Token validation failed with error: " + errorMessage,
+                ObjectId = _sercurity.GetCurrentUser(),
+                PrimaryCategory = "Terminal",
+                SecondaryCategory = "Authentication",
+                Activity = "Token Validation Failed"
+            };
+            Logger.LogError(errorMessage);
+            SaveAndLogIncident(incident);
         }
     }
 }
