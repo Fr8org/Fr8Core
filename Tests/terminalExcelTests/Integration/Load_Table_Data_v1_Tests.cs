@@ -34,23 +34,32 @@ namespace terminalExcelTests.Integration
 
         public override string TerminalName => "terminalExcel";
 
-        private async Task<ActivityDTO> ConfigureFollowUp(bool setFileName = false)
+        private async Task<ActivityDTO> ConfigureFollowUp(bool setFileName = false, string fileUri = null, ActivityDTO existingActivity = null)
         {
+            if (string.IsNullOrEmpty(fileUri))
+            {
+                fileUri = HealthMonitor_FixtureData.GetFilePath();
+            }
+
             var configureUrl = GetTerminalConfigureUrl();
             var dataDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_Fr8DataDTO(Guid.NewGuid());
-            var responseActivityDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
+            if (existingActivity == null)
+            {
+                existingActivity = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
+            }
+
             if (setFileName)
             {
-                using (var storage = _crateManager.GetUpdatableStorage(responseActivityDTO))
+                using (var storage = _crateManager.GetUpdatableStorage(existingActivity))
                 {
                     var activityUi = new Load_Excel_File_v1.ActivityUi();
-                    var controlsCrate = _crateManager.GetStorage(responseActivityDTO).FirstCrate<StandardConfigurationControlsCM>();
+                    var controlsCrate = _crateManager.GetStorage(existingActivity).FirstCrate<StandardConfigurationControlsCM>();
                     activityUi.SyncWith(controlsCrate.Content);
-                    activityUi.FilePicker.Value = HealthMonitor_FixtureData.GetFilePath();
+                    activityUi.FilePicker.Value = fileUri;
                     storage.ReplaceByLabel(Fr8Data.Crates.Crate.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
                 }
             }
-            dataDTO.ActivityDTO = responseActivityDTO;
+            dataDTO.ActivityDTO = existingActivity;
             return await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
         }
 
@@ -94,6 +103,31 @@ namespace terminalExcelTests.Integration
         }
 
         [Test]
+        public async Task Load_Table_Data_v1_FollowUp_Configuration_WithFileSelected_OneRow_CheckCrateStructure()
+        {
+            // Act
+            var responseFollowUpActionDTO = await ConfigureFollowUp(true, HealthMonitor_FixtureData.GetFilePath_OneRowWithWithHeader());
+
+            // Assert
+            Assert.NotNull(responseFollowUpActionDTO, "Response from followup configuration request is null");
+            Assert.NotNull(responseFollowUpActionDTO.CrateStorage, "Response from followup configuration request doesn't contain crate storage");
+            Assert.NotNull(responseFollowUpActionDTO.CrateStorage.Crates, "Response from followup configuration request doesn't contain crates in storage");
+
+            var crateStorage = _crateManager.GetStorage(responseFollowUpActionDTO);
+            Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(), "Activity storage doesn't contain configuration controls");
+            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count(), "Activity storage doesn't contain description of runtime available crates");
+            Assert.AreEqual(3, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(), "Although one-row table is supplied, there is no FieldDescriptionsCM crate with fields from the first row");
+            Assert.AreEqual(2,
+                            crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Availability == AvailabilityType.Always),
+                            "Activity storage doesn't contain crate with column headers that is avaialbe both at design time and runtime");
+
+            // Load file with multiple rows: crate with extracted fields must disappear
+            responseFollowUpActionDTO = await ConfigureFollowUp(true, null, responseFollowUpActionDTO);
+            crateStorage = _crateManager.GetStorage(responseFollowUpActionDTO);
+            Assert.AreEqual(2, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(), "Although a multi-row table has been uploaded, the crate with extracted fields did not seem to have disappeared");
+        }
+
+        [Test]
         public async Task Load_Table_Data_v1_FollowUp_Configuration_WithoutFileSet_CheckCrateStructure()
         {
             // Act
@@ -120,7 +154,7 @@ namespace terminalExcelTests.Integration
             var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
             dataDTO.ActivityDTO = activityDTO;
             AddOperationalStateCrate(dataDTO, new OperationalStateCM());
-            
+
             var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
 
             var operationalState = Crate.GetStorage(responsePayloadDTO).FirstCrate<OperationalStateCM>().Content;
@@ -141,6 +175,21 @@ namespace terminalExcelTests.Integration
         }
 
         [Test]
+        public async Task Load_Table_Data_v1_Run_WhenFileIsSelected_OneRow_ResponseContainsExtractedFields()
+        {
+            var activityDTO = await ConfigureFollowUp(true, HealthMonitor_FixtureData.GetFilePath_OneRowWithWithHeader());
+            var runUrl = GetTerminalRunUrl();
+            var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
+
+            var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
+
+            var payload = _crateManager.GetStorage(responsePayloadDTO).CratesOfType<StandardPayloadDataCM>();
+            Assert.AreEqual(1, payload.Count(), "Reponse payload doesn't contain extracted fields data from file");
+            Assert.AreEqual(4, payload.First().Content.PayloadObjects[0].PayloadObject.Count(), "Reponse payload doesn't contain extracted fields data from file");
+        }
+
+        [Test]
         public async Task Load_Table_Data_Activate_Returns_ActivityDTO()
         {
             //Arrange
@@ -153,12 +202,12 @@ namespace terminalExcelTests.Integration
                 storage.Add(Fr8Data.Crates.Crate.FromContent("Control", new StandardConfigurationControlsCM(new Load_Excel_File_v1.ActivityUi().Controls.ToArray()), AvailabilityType.Configuration));
             }
 
-                //Act
-                var responseActionDTO =
-                    await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
-                        configureUrl,
-                        requestActionDTO
-                    );
+            //Act
+            var responseActionDTO =
+                await HttpPostAsync<Fr8DataDTO, ActivityDTO>(
+                    configureUrl,
+                    requestActionDTO
+                );
 
             //Assert
             Assert.IsNotNull(responseActionDTO);

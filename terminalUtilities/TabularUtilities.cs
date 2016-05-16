@@ -18,12 +18,12 @@ namespace terminalUtilities
 
         /// <summary>
         /// If table contains only one row, extract it into a list of FieldDTO to save user 
-        /// from adding the Extarct Table Field action for such a common case. The function 
+        /// from adding the Extract Table Field action for such a common case. The function 
         /// assumes that fields in headersArray and rows follow in the same order. If they 
-        /// don't it will not produce correct results. 
+        /// don't, the function will not produce correct results. 
         /// </summary>
         /// <returns>Returns null if the input table contains 0 or more than 1 rows and a Crate 
-        /// with extracted values if the table contains exactly one row.</returns>
+        /// with the extracted fields if the table contains exactly one row.</returns>
         /// <param name="isFirstRowAsColumnNames">Whether the first row in rows contains headers.</param>
         /// <param name="isRunTime">If true, StandardPayloadDataCM rather than FieldDescriptionsCM (if false).</param>
         /// <param name="crates">The list containing crates for output.</param>
@@ -33,7 +33,7 @@ namespace terminalUtilities
         {
             if (!isFirstRowAsColumnNames && (headersArray == null || headersArray.Count == 0))
             {
-                throw new Exception("headerArray parameter needs to be supplied if isFirstRowAsColumnNames is false.");
+                throw new ArgumentException("headerArray parameter needs to be supplied if isFirstRowAsColumnNames is false.");
             }
 
             // Create individual fields if only one row
