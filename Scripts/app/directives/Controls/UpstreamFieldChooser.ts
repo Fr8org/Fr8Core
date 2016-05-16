@@ -26,9 +26,8 @@ module dockyard.directives.upstreamDataChooser {
             uiHelperService: services.IUIHelperService) {
 
             var modalInstance;
-            var alertMessage = new model.AlertDTO();
-            alertMessage.title = "Notification";
-            alertMessage.body = 'There are no upstream fields available right now. To learn more,<a href= "/documentation/UpstreamCrates.html" target= "_blank" > click here </a><i class="fa fa-question-circle" > </i>';
+            var noActivitiesWithUpstreamFiels = 'This Activity is looking for incoming data from "upstream" activities but can\'t find any right now. Try adding activities to the left of this activity that load or retrieve data from web services. To learn more,<a href= "/documentation/UpstreamCrates.html" target= "_blank" > click here </a><i class="fa fa-question-circle" > </i> ';
+            var activitiesNotConfiguredWithUpstreamFields = 'Activities to the left don\'t have "upstream" fields. To learn more,<a href= "/documentation/UpstreamCrates.html" target= "_blank" > click here </a><i class="fa fa-question-circle" > </i>';
             $scope.createModal = () => {
                 if ($scope.field.listItems.length !== 0) {
                     modalInstance = $modal.open({
@@ -46,7 +45,10 @@ module dockyard.directives.upstreamDataChooser {
             $scope.openModal = () => {
                 getUpstreamFields().then(() => { 
                     $scope.createModal();
-                }, () => {
+                }, (error) => {
+                    var alertMessage = new model.AlertDTO();
+                    alertMessage.title = "Notification";
+                    alertMessage.body = error.message;
                     uiHelperService.openConfirmationModal(alertMessage);
                 });
             }
@@ -91,7 +93,14 @@ module dockyard.directives.upstreamDataChooser {
                             });
                         });
                         if (listItems.length === 0) {
-                            throw Error();
+                            var error = '';
+                            if (data.availableCrates.length === 0) {
+                                error = noActivitiesWithUpstreamFiels;
+                            }
+                            else {
+                                error = activitiesNotConfiguredWithUpstreamFields
+                            }
+                            throw Error(error);
                         }
                         else {
                             $scope.field.listItems = listItems;
@@ -108,7 +117,7 @@ module dockyard.directives.upstreamDataChooser {
         public link: (scope: IUpstreamFieldChooser, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public controller: any;
 
-        public template = '<button class="btn btn-primary btn-xs" ng-click="openModal()">Select</button><span>{{field.value}}</span>';
+        public template = '<div style="padding:5px 0"><button class="btn btn-primary btn-xs" ng-click="openModal()">Select</button><span>{{field.value}}</span></div>';
         public restrict = 'E';
         public scope = {
             field: '=',
