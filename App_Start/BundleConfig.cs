@@ -140,6 +140,8 @@ namespace HubWeb.App_Start
                 .Include("~/Content/css/dockyard/container-transition.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/dockyard/query-builder.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/dockyard/authentication-dialog.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/dockyard/activity-stream.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/dockyard/collapse.css", new CssRewriteUrlTransform())
                 .Include("~/bower_components/angular-material-data-table/dist/md-data-table.min.css", new CssRewriteUrlTransform())
             );
 

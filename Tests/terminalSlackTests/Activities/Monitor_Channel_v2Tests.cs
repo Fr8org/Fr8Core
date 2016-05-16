@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Data.Entities;
+using Data.Interfaces.Manifests;
 using Fr8Data.Constants;
+using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
@@ -70,23 +73,33 @@ namespace terminalSlackTests.Activities
         }
 
         [Test]
-        public async Task Run_WhenNoMonitorOptionIsSelected_ReturnsError()
+        public async Task Run_WhenNoMonitorOptionIsSelected_ReturnsValidationError()
         {
             var activity = new Monitor_Channel_v2();
             var currentActivity = await activity.Configure(new ActivityDO(), AuthorizationToken);
+
+            using (var updatableStorage = CrateManager.UpdateStorage(() => currentActivity.CrateStorage))
+            {
+                var configurationControls = updatableStorage.FirstCrate<StandardConfigurationControlsCM>().Content;
+
+                configurationControls.FindByNameNested<CheckBox>("MonitorChannelsOption").Selected = false;
+                configurationControls.FindByNameNested<RadioButtonOption>("AllChannelsOption").Selected = false;
+            }
+            
             var payload = await activity.Run(currentActivity, Guid.Empty, AuthorizationToken);
             var operationalState = CrateManager.GetOperationalState(payload);
+
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalState.CurrentActivityResponse.Type, "Error response was not produced when no monitor option was selected");
         }
 
         [Test]
-        public async Task Run_WhenConfiguredProperly_SubscribesToSlackRtmEvents()
+        public async Task Activate_WhenConfiguredProperly_SubscribesToSlackRtmEvents()
         {
             var activity = new Monitor_Channel_v2();
             var currentActivity = await activity.Configure(new ActivityDO(), AuthorizationToken);
             currentActivity.UpdateControls<Monitor_Channel_v2.ActivityUi>(x => x.MonitorDirectMessagesOption.Selected = true);
             var planId = currentActivity.RootPlanNodeId = Guid.NewGuid();
-            await activity.Run(currentActivity, Guid.Empty, AuthorizationToken);
+            await activity.Activate(currentActivity, AuthorizationToken);
             ObjectFactory.GetInstance<Mock<ISlackEventManager>>().Verify(x => x.Subscribe(It.IsAny<AuthorizationTokenDO>(), planId.Value), "Subscription to Slack RTM was not created");
         }
 

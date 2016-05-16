@@ -73,6 +73,7 @@ namespace TerminalBase.BaseClasses
         protected UpstreamQueryManager UpstreamQueryManager { get; private set; }
         protected UiBuilder UiBuilder { get; private set; }
         protected int LoopIndex => GetLoopIndex(OperationalState);
+        protected bool DisableValidationOnFollowup { get; set; }
 
         /**********************************************************************************/
         // Functions
@@ -188,13 +189,16 @@ namespace TerminalBase.BaseClasses
             CurrentActivityStorage.Remove<ValidationResultsCM>();
 
             var validationManager = CreateValidationManager();
-            
-            await Validate(validationManager);
 
-            if (!validationManager.HasErrors)
+            if (!DisableValidationOnFollowup)
+            {
+                await Validate(validationManager);
+            }
+
+            if (!validationManager.HasErrors || DisableValidationOnFollowup)
             {
                 CurrentActivityStorage.Remove<ValidationResultsCM>();
-                await Configure(crateSignaller);
+                await Configure(crateSignaller, validationManager);
             }
 
             SyncConfControlsBack();
@@ -422,7 +426,7 @@ namespace TerminalBase.BaseClasses
         /**********************************************************************************/
 
         protected abstract Task Initialize(CrateSignaller crateSignaller);
-        protected abstract Task Configure(CrateSignaller crateSignaller);
+        protected abstract Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager);
 
         /**********************************************************************************/
 

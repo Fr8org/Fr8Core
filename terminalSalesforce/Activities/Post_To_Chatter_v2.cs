@@ -14,6 +14,7 @@ using Fr8Data.Manifests;
 using Fr8Data.States;
 using Newtonsoft.Json;
 using ServiceStack;
+using TerminalBase.Infrastructure;
 
 namespace terminalSalesforce.Actions
 {
@@ -120,7 +121,7 @@ namespace terminalSalesforce.Actions
                                                                               AvailabilityType.RunTime));
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller)
+        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             //If Salesforce object is empty then we should clear filters as they are no longer applicable
             if (string.IsNullOrEmpty(SelectedChatter))
