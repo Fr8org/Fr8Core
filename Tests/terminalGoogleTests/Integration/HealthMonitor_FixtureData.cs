@@ -44,10 +44,8 @@ namespace terminalGoogleTests.Integration
 
         private Crate PackCrate_GoogleForms()
         {
-            Crate crate;
-
             var curFields = new List<FieldDTO>() { new FieldDTO() { Key = "Survey Form", Value = "1z7mIQdHeFIpxBm92sIFB52B7SwyEO3IT5LiUcmojzn8" } }.ToArray();
-            crate = CrateManager.CreateDesignTimeFieldsCrate("Available Forms", curFields);
+            Crate crate = CrateManager.CreateDesignTimeFieldsCrate("Available Forms", curFields);
 
             return crate;
         }
@@ -261,7 +259,11 @@ namespace terminalGoogleTests.Integration
             {
                 Id = Guid.NewGuid(),
                 Name = "Get_Google_Sheet_Data_TEST",
-                Version = "1"
+                Version = "1",
+                Terminal = new TerminalDTO()
+                {
+                    AuthenticationType = 1
+                }
             };
         }
         public static Fr8DataDTO Get_Google_Sheet_Data_v1_InitialConfiguration_Fr8DataDTO()
