@@ -61,8 +61,8 @@ namespace terminalTwilio.Actions
         {
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
-                CreateSpecificOrUpstreamValueChooser("SMS Number", "SMS_Number", "Upstream Terminal-Provided Fields"),
-                CreateSpecificOrUpstreamValueChooser("SMS Body", "SMS_Body", "Upstream Terminal-Provided Fields")
+                CreateSpecificOrUpstreamValueChooser("SMS Number", "SMS_Number", "Upstream Terminal-Provided Fields", "", true),
+                CreateSpecificOrUpstreamValueChooser("SMS Body", "SMS_Body", "Upstream Terminal-Provided Fields", "", true)
             };
 
             return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
@@ -146,6 +146,8 @@ namespace terminalTwilio.Actions
 
         public override Task ValidateActivity(ActivityDO curActivityDO, ICrateStorage crateStorage, ValidationManager validationManager)
         {
+            validationManager.Reset();
+
             var configControl = GetConfigurationControls(crateStorage);
 
             if (configControl != null)
@@ -259,6 +261,7 @@ namespace terminalTwilio.Actions
                     validationManager.SetError("SMS Number Is Invalid", control);
                     return false;
                 }
+
             }
             catch (NumberParseException npe)
             {
