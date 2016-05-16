@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 using TerminalBase.BaseClasses;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
@@ -59,9 +59,11 @@ namespace terminalSlack.Controllers
                 return new AuthorizationTokenDTO
                 {
                     Token = oauthToken,
-                    ExternalAccountId = userInfo.UserName,
+                    ExternalAccountId = userInfo.UserId,
+                    ExternalAccountName = userInfo.UserName,
+                    ExternalDomainId = userInfo.TeamId,
+                    ExternalDomainName = userInfo.TeamName,
                     ExternalStateToken = state,
-                    ExternalDomainId = userInfo.TeamId
                 };
             }
             catch (Exception ex)

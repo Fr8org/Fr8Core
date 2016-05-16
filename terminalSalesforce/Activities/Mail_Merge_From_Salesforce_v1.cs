@@ -1,24 +1,21 @@
-﻿using Data.Control;
-using Data.Interfaces.Manifests;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
 using System.Threading.Tasks;
-using Data.Crates;
 using StructureMap;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
 using Hub.Services;
 using TerminalBase.Infrastructure.Behaviors;
 using Data.Entities;
-using AutoMapper;
-using Data.Interfaces;
-using Utilities.Configuration.Azure;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Managers;
-using Data.Constants;
 using ServiceStack;
+using TerminalBase.Infrastructure;
 
 namespace terminalSalesforce.Actions
 {
@@ -57,7 +54,7 @@ namespace terminalSalesforce.Actions
                     Source = new FieldSourceDTO
                     {
                         Label = QueryFilterCrateLabel,
-                        ManifestType = CrateManifestTypes.StandardQueryFields
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
                 };
                 MailSenderActivitySelector = new DropDownList
@@ -91,28 +88,27 @@ namespace terminalSalesforce.Actions
             _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
         }
 
-        protected override Task<bool> Validate()
+        protected override Task Validate(ValidationManager validationManager)
         {
             if (ConfigurationControls.RunMailMergeButton.Clicked)
             {
-                ConfigurationControls.SalesforceObjectSelector.ErrorMessage = string.IsNullOrEmpty(ConfigurationControls.SalesforceObjectSelector.selectedKey)
-                                                                          ? "Object is not selected"
-                                                                          : string.Empty;
-                ConfigurationControls.MailSenderActivitySelector.ErrorMessage = string.IsNullOrEmpty(ConfigurationControls.MailSenderActivitySelector.selectedKey)
-                                                                                ? "Mail sender is not selected"
-                                                                                : string.Empty;
-                var isValid = string.IsNullOrEmpty(ConfigurationControls.SalesforceObjectSelector.ErrorMessage)
-                           && string.IsNullOrEmpty(ConfigurationControls.MailSenderActivitySelector.ErrorMessage);
-                if (!isValid)
+                if (string.IsNullOrEmpty(ConfigurationControls.SalesforceObjectSelector.selectedKey))
                 {
+                    validationManager.SetError("Object is not selected", ConfigurationControls.SalesforceObjectSelector);
                     ConfigurationControls.RunMailMergeButton.Clicked = false;
                 }
-                return Task.FromResult(isValid);
+
+                if (string.IsNullOrEmpty(ConfigurationControls.MailSenderActivitySelector.selectedKey))
+                {
+                    validationManager.SetError("Mail sender is not selected", ConfigurationControls.MailSenderActivitySelector);
+                    ConfigurationControls.RunMailMergeButton.Clicked = false;
+                }
             }
+
             return Task.FromResult(true);
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             if (ConfigurationControls.RunMailMergeButton.Clicked)
             {
@@ -262,16 +258,17 @@ namespace terminalSalesforce.Actions
             }
             //Prepare new query filters from selected object properties
             var selectedObjectProperties = await _salesforceManager.GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
-            var queryFilterCrate = Crate<TypedFieldsCM>.FromContent(
+            var queryFilterCrate = Crate<FieldDescriptionsCM>.FromContent(
                 QueryFilterCrateLabel,
-                new TypedFieldsCM(selectedObjectProperties.OrderBy(x => x.Key)
-                                                                  .Select(x => new TypedFieldDTO(x.Key, x.Value, FieldType.String, new TextBox { Name = x.Key }))),
-                AvailabilityType.Configuration);
+                new FieldDescriptionsCM(selectedObjectProperties),
+                AvailabilityType.Configuration
+            );
+
             CurrentActivityStorage.ReplaceByLabel(queryFilterCrate);
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager.GetSalesforceObjectTypes().Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
             var activityTemplates = await HubCommunicator.GetActivityTemplates(ActivityTemplate.EmailDelivererTag, CurrentFr8UserId);
@@ -306,17 +303,17 @@ namespace terminalSalesforce.Actions
             {
                 if (curDocumentation.Contains("ExplainMailMerge"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution helps you to work with email and move data from them to DocuSign service"));
+                    return Task.FromResult(GenerateDocumentationResponse(@"This solution helps you to work with email and move data from them to DocuSign service"));
                 }
                 if (curDocumentation.Contains("ExplainService"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                    return Task.FromResult(GenerateDocumentationResponse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }
-                return Task.FromResult(GenerateErrorRepsonse("Unknown contentPath"));
+                return Task.FromResult(GenerateErrorResponse("Unknown contentPath"));
             }
             return
                 Task.FromResult(
-                    GenerateErrorRepsonse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+                    GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }

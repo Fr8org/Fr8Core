@@ -1,21 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Linq;
-using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.DataTransferObjects.Helpers;
-using Data.Interfaces.Manifests;
 using Data.States;
-using Hub.Interfaces;
-using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
+using Fr8Data.DataTransferObjects;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
@@ -100,7 +88,7 @@ namespace terminalIntegrationTests.Fixtures
                 {
                     Token = tokenDTO.Token,
                     TerminalID = terminalId,
-                    UserDO = userDO,
+                    UserID = userDO.Id,
                     AdditionalAttributes = tokenDTO.AdditionalAttributes,
                     ExpiresAt = DateTime.Today.AddMonths(1)
                 };

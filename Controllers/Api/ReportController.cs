@@ -1,18 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Web.Http;
+﻿using System.Web.Http;
 using StructureMap;
-using Data.Entities;
-using Data.Interfaces;
+using Hub.Infrastructure;
 using Hub.Interfaces;
-using Hub.Managers;
-using Hub.Services;
-using Utilities;
-using Utilities.Logging;
-using Data.Interfaces.DataTransferObjects;
-using System.Linq;
-using AutoMapper;
-using Microsoft.Ajax.Utilities;
+using Data.Interfaces;
+using Fr8Data.DataTransferObjects;
 
 namespace HubWeb.Controllers
 {

@@ -1,13 +1,14 @@
-﻿using Data.Control;
-using Data.Crates;
-using Data.Interfaces.Manifests;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TerminalBase.BaseClasses;
 using System.Threading.Tasks;
 using terminalSalesforce.Infrastructure;
 using StructureMap;
 using System.Linq;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.Manifests;
 using ServiceStack;
+using TerminalBase.Infrastructure;
 
 namespace terminalSalesforce.Actions
 {
@@ -71,14 +72,14 @@ namespace terminalSalesforce.Actions
             _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
         }
 
-        protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Initialize(CrateSignaller crateSignaller)
         {
             ActivitiesHelper.GetAvailableFields(ConfigurationControls.SalesforceObjectList);
 
             return Task.FromResult(0);
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             string curSfChosenObject = ConfigurationControls.SalesforceObjectList.selectedKey;
 
@@ -91,26 +92,23 @@ namespace terminalSalesforce.Actions
 
             CurrentActivityStorage.ReplaceByLabel(eventSubscriptionCrate);
 
-            runtimeCrateManager.ClearAvailableCrates();
-            runtimeCrateManager.MarkAvailableAtRuntime<SalesforceEventCM>("Salesforce Event");
+            crateSignaller.ClearAvailableCrates();
+            crateSignaller.MarkAvailableAtRuntime<SalesforceEventCM>("Salesforce Event");
 
             var selectedObjectProperties = await _salesforceManager.GetProperties(curSfChosenObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
 
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(GenerateRuntimeDataLabel(), true).AddFields(selectedObjectProperties);
+            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(GenerateRuntimeDataLabel(), true).AddFields(selectedObjectProperties);
         }
 
         protected override async Task RunCurrentActivity()
         {
             //get the event payload from the Salesforce notification event
             var sfEventPayloads = CurrentPayloadStorage.CratesOfType<EventReportCM>().ToList().SelectMany(er => er.Content.EventPayload).ToList();
-
-            //if the payload does not contain Salesforce Event Notificaiton Payload, then it means,
-            //user initially runs this plan. Just acknowledge that the plan is activated successfully and it monitors the Salesforce events
+            
             if (sfEventPayloads.Count == 0 || 
                 !sfEventPayloads.Any(payload => payload.Label.Equals("Salesforce Event Notification Payload")))
             {
-                await Activate(CurrentActivity, AuthorizationToken);
-                RequestHubExecutionTermination("Plan successfully activated. It will wait and respond to specified Salesforce Event messages.");
+                RequestHubExecutionTermination("External event data is missing");
                 return;
             }
 

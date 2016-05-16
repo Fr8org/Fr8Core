@@ -66,12 +66,12 @@ namespace HubWeb
         public ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)
         {
             return new Type[] {
-                    typeof(ActionListController),
                     typeof(ActivitiesController),
                     typeof(AlarmsController),
                     typeof(AuthenticationController),
                     typeof(ConfigurationController),
                     typeof(ContainersController),
+                    typeof(DocumentationController),
                     typeof(CriteriaController),
                     typeof(EventController),
                     typeof(FieldController),
@@ -79,6 +79,7 @@ namespace HubWeb
                     typeof(ManageAuthTokenController),
                     typeof(ManifestsController),
                     typeof(ReportController),
+                    typeof(PlanTemplatesController),
                     typeof(PlanNodesController),
                     typeof(PlansController),
                     typeof(TerminalsController),

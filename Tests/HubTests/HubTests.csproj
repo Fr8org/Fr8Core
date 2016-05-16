@@ -234,14 +234,13 @@
     </Otherwise>
   </Choose>
   <ItemGroup>
+    <Compile Include="Controllers\DocumentationControllerTest.cs" />
     <Compile Include="Controllers\ActivityControllerTest.cs" />
-    <Compile Include="Controllers\ActivityListControllerTest.cs" />
     <Compile Include="Controllers\Api\ApiControllerTestBase.cs" />
     <Compile Include="Controllers\AuthenticationControllerTest.cs" />
     <Compile Include="Controllers\ContainerControllerTests.cs" />
     <Compile Include="Controllers\CriteriaControllerTest.cs" />
     <Compile Include="Controllers\EventControllerTest.cs" />
-    <Compile Include="Controllers\FactsControllerTests.cs" />
     <Compile Include="Controllers\ManifestControllerTest.cs" />
     <Compile Include="Controllers\NotificationControllerTests.cs" />
     <Compile Include="Controllers\PlanControllerTests.cs" />
@@ -249,8 +248,6 @@
     <Compile Include="Controllers\UserApiControlle.cs" />
     <Compile Include="Controllers\UserControllerTests.cs" />
     <Compile Include="CsvReaderTests.cs" />
-    <Compile Include="Daemons\DaemonTests.cs" />
-    <Compile Include="Daemons\OutboundEmailTests.cs" />
     <Compile Include="Entities\ActivityRegistrationTests.cs" />
     <Compile Include="Entities\ActivityTests .cs" />
     <Compile Include="Entities\CustomerTests.cs" />
@@ -267,14 +264,12 @@
     <Compile Include="Integration\AccountITests.cs" />
     <Compile Include="Integration\ActivityControllerTests.cs" />
     <Compile Include="Fixtures\WebServicesControllerFixtureData.cs" />
-    <Compile Include="Integration\ReportControllerTest.cs" />
     <Compile Include="Integration\WebServicesControllerTests.cs" />
     <Compile Include="Managers\CommunicationManagerTest.cs" />
     <Compile Include="Managers\CrateManagerTests.cs" />
     <Compile Include="Managers\CrateManagerTests.Fixtures.cs" />
     <Compile Include="Managers\EventReporterTests.cs" />
     <Compile Include="Managers\IncidentReporterTests.cs" />
-    <Compile Include="Managers\OAuthAuthorizerTest.cs" />
     <Compile Include="Managers\PlanManagerTests.cs" />
     <Compile Include="ManifestDiscoveryTests.cs" />
     <Compile Include="MockedDB\MockedDBTests.cs" />
@@ -315,12 +310,11 @@
     <Compile Include="Services\HMACAuthenticatorTests.cs" />
     <Compile Include="Services\PlanNodeTests.cs" />
     <Compile Include="Services\PlanTests.cs" />
-    <Compile Include="Services\SubscriptionServiceTests.cs" />
     <Compile Include="Services\TagTests.cs" />
     <Compile Include="Services\TerminalServiceTests.cs" />
+    <Compile Include="Services\TerminalTransmitterMock.cs" />
     <Compile Include="Services\UserServiceTests.cs" />
     <Compile Include="Utilities\DateUtilityTests.cs" />
-    <Compile Include="Validations\ValidationsTest.cs" />
     <Compile Include="Wrapper\DcousingAccountTest.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -331,6 +325,10 @@
     <ProjectReference Include="..\..\Data\Data.csproj">
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Fr8Data\Fr8Data.csproj">
+      <Project>{a3178d71-a2c3-45b9-8334-adcc7c313541}</Project>
+      <Name>Fr8Data</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\HubWeb.csproj">
       <Project>{f7bd7117-4f1d-4215-b338-61ebdd0d0bfe}</Project>

@@ -27,12 +27,20 @@ module dockyard.controllers.KioskModeOrganizationHeaderController {
 
             UserService.getCurrentUser().$promise.then(function (currentUser: interfaces.IUserDTO) {
                 var organizationId = currentUser.organizationId;
-                OrganizationService.get({ id: organizationId }).$promise.then(function (organization: interfaces.IOrganizationVM) {
-                    $scope.name = organization.name;
-                    $scope.themeName = organization.themeName;
-                    $scope.backgroundColor = organization.backgroundColor;
-                    $scope.logoUrl = organization.logoUrl;
-                });
+                if (organizationId !== null) {
+                    OrganizationService.get({ id: organizationId }).$promise.then(function (organization: interfaces.IOrganizationVM) {
+                        $scope.name = organization.name;
+                        $scope.themeName = organization.themeName;
+                        $scope.backgroundColor = organization.backgroundColor;
+                        $scope.logoUrl = organization.logoUrl;
+                    });
+                }
+                else {
+                    $scope.name = "App Launcher";
+                    $scope.themeName = "Default Theme";
+                    $scope.backgroundColor = "#26A69A";
+                    $scope.logoUrl = "/Content/img/dockyard_logo.png";
+                }
             });
         }
     }

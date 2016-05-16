@@ -10,10 +10,10 @@
 <!-- END PAGE BREADCRUMB -->
 <!-- BEGIN MAIN CONTENT -->
 <div ng-controller="PlanBuilderController" class="margin-top-25" block-if="isBusy()">
-    <designer-header ng-show="current.plan" plan="current.plan"></designer-header>
+    <designer-header class="designer-header-fixed" ng-show="current.plan" plan="current.plan"></designer-header>
     <div ng-if="editingMode=='advanced'" class="col-md-12" style="border-bottom: 1px solid; margin-bottom: 10px;"></div>
     <div class="plan-loading-message" block-if="current.plan"></div>
-    <div ng-repeat="pSubPlan in processedSubPlans">
+    <div ng-repeat="pSubPlan in processedSubPlans" style="padding-top:50px;">
         <subplan-header ng-if="editingMode=='advanced'" subplan="pSubPlan.subPlan"></subplan-header>
         <div class="route-builder-container" layout-container>
             <div ng-repeat="group in pSubPlan.actionGroups" layout-action-group class="action-group" ng-style="{left: group.offsetLeft, top: group.offsetTop}">
@@ -29,11 +29,15 @@
                                                 <img ng-src="{{envelope.activity.activityTemplate.webService.iconPath}}" ng-if="envelope.activity.activityTemplate.webService.iconPath" />
                                             </div>
                                             <h2>
-                                                <span>{{envelope.activity.label}}</span>
+                                                <span ng-if="!envelope.activity.label">{{envelope.activity.name}}</span>
+                                                <span ng-if="envelope.activity.label !== null">{{envelope.activity.label}}</span>
                                             </h2>
                                             <span flex></span>
                                             <div class="action-reconfigure-status" ng-show="isReConfiguring === true">
                                                 updating                                              
+                                            </div>
+                                            <div class="action-name" ng-show="isReConfiguring === false && envelope.activity.label">
+                                                 {{envelope.activity.name}}
                                             </div>
                                             <md-menu>
                                                 <md-button class="md-icon-button" aria-label="More" ng-click="openMenu($mdOpenMenu, $event)">
@@ -50,6 +54,13 @@
                                                         <md-button ng-click="reConfigureAction(envelope.activity);">
                                                             <md-icon style="padding-top:3px" md-font-icon="fa fa-refresh"></md-icon>
                                                             Reconfigure
+                                                        </md-button>
+                                                    </md-menu-item>
+                                                    <md-menu-item>
+                                                        <md-button ng-click="openAddLabelModal(envelope.activity);">
+                                                            <md-icon style="padding-top:3px" md-font-icon="fa fa-pencil"></md-icon>
+                                                            <span ng-if="!envelope.activity.label">Add Label</span> 
+                                                            <span ng-if="envelope.activity.label">Change Label</span>
                                                         </md-button>
                                                     </md-menu-item>
                                                     <md-menu-divider></md-menu-divider>

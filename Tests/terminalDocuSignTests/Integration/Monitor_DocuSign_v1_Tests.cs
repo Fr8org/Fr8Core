@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Configuration;
 using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json.Linq;
-using NUnit.Framework;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using NUnit.Framework;
 using HealthMonitor.Utility;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using terminalDocuSignTests.Fixtures;
 using terminalDocuSign.Infrastructure;
 
@@ -31,15 +29,16 @@ namespace terminalDocuSignTests.Integration
 
         private void AssertCrateTypes(ICrateStorage crateStorage, bool expectValidationErrors = false)
         {
-            Assert.AreEqual(expectValidationErrors ? 4 : 3, crateStorage.Count);
+            Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count(), "Missing configuration controls");
+            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count(x => x.Label == "Available Run Time Crates"), "Missing Available Run Time Crates");
+            Assert.AreEqual(1, crateStorage.CratesOfType<EventSubscriptionCM>().Count(x => x.Label == "Standard Event Subscriptions"), "Missing Standard Event Subscriptions");
 
-            Assert.AreEqual(1, crateStorage.CratesOfType<StandardConfigurationControlsCM>().Count());
-            Assert.AreEqual(1, crateStorage.CratesOfType<CrateDescriptionCM>().Count(x => x.Label == "Available Run Time Crates"));
-            Assert.AreEqual(1, crateStorage.CratesOfType<EventSubscriptionCM>().Count(x => x.Label == "Standard Event Subscriptions"));
             if (expectValidationErrors)
             {
-                Assert.AreEqual(1, crateStorage.CratesOfType<FieldDescriptionsCM>().Count(x => x.Label == "Validation Errors"));
+                Assert.AreEqual(1, crateStorage.CratesOfType<ValidationResultsCM>().Count(x=>x.Content.HasErrors), "Missing validation errors");
             }
+
+            Assert.AreEqual(expectValidationErrors ? 4 : 3, crateStorage.Count, "Unexpected crates present");
         }
 
         private void AssertControls(StandardConfigurationControlsCM controls)
@@ -413,7 +412,7 @@ namespace terminalDocuSignTests.Integration
                 {
                     EventPayload = new CrateStorage()
                     {
-                        Data.Crates.Crate.FromContent(
+                        Fr8Data.Crates.Crate.FromContent(
                             "EventReport",
                             new StandardPayloadDataCM(
                                 new FieldDTO("TemplateName", activityDTO.Item2),

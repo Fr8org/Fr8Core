@@ -2,19 +2,21 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.Interfaces.Manifests.Helpers;
-using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.Manifests.Helpers;
+using Fr8Data.States;
 using Newtonsoft.Json;
 using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
 using TerminalBase.BaseClasses;
+using Google.GData.Client;
+using TerminalBase.Infrastructure;
 
 namespace terminalGoogle.Actions
 {
@@ -146,12 +148,12 @@ namespace terminalGoogle.Actions
             return JsonConvert.DeserializeObject<GoogleAuthDTO>((authTokenDO ?? AuthorizationToken).Token);
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             ConfigurationControls.ExistingSpreadsheetsList.ListItems = (await _googleSheet.GetSpreadsheets(GetGoogleAuthToken())).Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             //If different existing spreadsheet is selected then we have to load worksheet list for it
             if (ConfigurationControls.UseExistingSpreadsheetOption.Selected && !string.IsNullOrEmpty(ConfigurationControls.ExistingSpreadsheetsList.Value))
@@ -216,9 +218,23 @@ namespace terminalGoogle.Actions
                 throw new ActivityExecutionException($"Failed to run {ActivityName} because specified upstream crate was not found in payload");
             }
             var tableToSave = StandardTableDataCMTools.ExtractPayloadCrateDataToStandardTableData(crateToProcess);
-            var spreadsheetUri = await GetOrCreateSpreadsheet();
-            var worksheetUri = await GetOrCreateWorksheet(spreadsheetUri);
-            await _googleSheet.WriteData(spreadsheetUri, worksheetUri, tableToSave, GetGoogleAuthToken());
+            try
+            {
+                var spreadsheetUri = await GetOrCreateSpreadsheet();
+                var worksheetUri = await GetOrCreateWorksheet(spreadsheetUri);
+                await _googleSheet.WriteData(spreadsheetUri, worksheetUri, tableToSave, GetGoogleAuthToken());
+            }
+            catch (GDataRequestException ex)
+            {
+                if (ex?.InnerException.Message.IndexOf("(401) Unauthorized") > -1)
+                {
+                    throw new TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException();
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
         private async Task<string> GetOrCreateWorksheet(string spreadsheetUri)

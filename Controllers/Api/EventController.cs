@@ -1,24 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
-using System.Xml;
 using System.Web.Http;
-using Data.Constants;
-using Data.Crates;
+using Fr8Data.Constants;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using StructureMap;
-using Data.Crates.Helpers;
-using Data.Infrastructure;
-using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using Hub.Services;
 using Newtonsoft.Json;
-using System.Xml.Linq;
-using Data.Interfaces.Manifests;
-using Hangfire;
+using Utilities.Logging;
 
 namespace HubWeb.Controllers
 {
@@ -57,7 +48,7 @@ namespace HubWeb.Controllers
 
         [HttpPost]
         [ActionName("gen1_event")]
-        public IHttpActionResult ProcessGen1Event(CrateDTO submittedEventsCrate)
+        public IHttpActionResult CreateEventLog(CrateDTO submittedEventsCrate)
         {
             var eventCm = _crate.FromDto(submittedEventsCrate).Get<EventCM>();
 
@@ -96,11 +87,10 @@ namespace HubWeb.Controllers
 
         }
 
-        public static void ProcessEventsInternal(CrateDTO raw)
+        public static Task ProcessEventsInternal(CrateDTO raw)
         {
             var curCrateStandardEventReport = ObjectFactory.GetInstance<ICrateManager>().FromDto(raw);
-            var eventTask = ObjectFactory.GetInstance<IEvent>().ProcessInboundEvents(curCrateStandardEventReport);
-            Task.WaitAll(eventTask);
+            return ObjectFactory.GetInstance<IEvent>().ProcessInboundEvents(curCrateStandardEventReport);
         }
 
         [HttpPost]
@@ -121,6 +111,8 @@ namespace HubWeb.Controllers
                 throw new ArgumentNullException("CrateDTO Content is empty.");
 
             var eventReportMS = curCrateStandardEventReport.Get<EventReportCM>();
+            Logger.LogInfo($"Crate {raw.Id} with incoming event '{eventReportMS.EventNames}' is received for external account '{eventReportMS.ExternalAccountId}'");
+
 
             if (eventReportMS.EventPayload == null)
             {

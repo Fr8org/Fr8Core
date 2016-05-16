@@ -4,15 +4,15 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using StructureMap;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
-using Data.Constants;
 using System.IO;
-using Data.Interfaces;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace TerminalBase.Infrastructure
 {
@@ -181,6 +181,11 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(new List<FieldValidationResult>());
         }
 
+        public Task<AuthorizationTokenDTO> GetAuthToken(string authTokenId, string curFr8UserId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
         {
             //This code only supports integration testing scenarios
@@ -221,7 +226,7 @@ namespace TerminalBase.Infrastructure
             throw new NotImplementedException();
         }
 
-        public Task<ActivityDTO> CreateAndConfigureActivity(Guid templateId, string userId, string label = null, int? order = null, Guid? parentNodeId = default(Guid?), bool createPlan = false, Guid? authorizationTokenId = null)
+        public Task<ActivityDTO> CreateAndConfigureActivity(Guid templateId, string userId, string name = null, int? order = null, Guid? parentNodeId = default(Guid?), bool createPlan = false, Guid? authorizationTokenId = null)
         {
             throw new NotImplementedException();
         }
@@ -240,12 +245,7 @@ namespace TerminalBase.Infrastructure
         {
             throw new NotImplementedException();
         }
-
-        public Task<PlanDO> ActivatePlan(PlanDO planDO, string userId)
-        {
-            throw new NotImplementedException();
-        }
-
+        
         public Task<IEnumerable<PlanDTO>> GetPlansByName(string name, string userId, PlanVisibility visibility = PlanVisibility.Standard)
         {
             throw new NotImplementedException();
@@ -264,6 +264,11 @@ namespace TerminalBase.Infrastructure
         public Task NotifyUser(TerminalNotificationDTO notificationMessage, string userId)
         {
             return Task.FromResult(0);
+        }
+
+        public Task RenewToken(string id, string externalAccountId, string token, string userId)
+        {
+            throw new NotImplementedException();
         }
 
         public Task DeletePlan(Guid planId, string userId)
@@ -296,7 +301,12 @@ namespace TerminalBase.Infrastructure
             throw new NotImplementedException();
         }
 
-        public Task<AuthorizationTokenDTO> GetAuthToken(string authTokenId, string curFr8UserId)
+        public Task RenewToken(AuthorizationTokenDTO authTokenDTO, string userId)
+        {
+            return Task.FromResult(0);
+        }
+
+        public Task ScheduleEvent(string externalAccountId, string curFr8UserId, string minutes)
         {
             throw new NotImplementedException();
         }

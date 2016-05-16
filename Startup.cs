@@ -10,14 +10,15 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using Hub.Infrastructure;
+using Hub.Interfaces;
 using Hub.Managers;
+using Hub.Security;
 using Utilities;
 using Utilities.Configuration.Azure;
-using Hub.Interfaces;
 using Hangfire;
 using Hangfire.StructureMap;
 using Hangfire.Dashboard;
-using Hub.Security;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
@@ -33,7 +34,8 @@ namespace HubWeb
         public async void Configuration(IAppBuilder app, bool selfHostMode)
         {
             //ConfigureDaemons();
-            ConfigureAuth(app);
+            // ConfigureAuth(app);
+            OwinInitializer.ConfigureAuth(app, "/DockyardAccount/Index");
 
 
             ConfigureHangfire(app, "DockyardDB");
@@ -46,11 +48,6 @@ namespace HubWeb
 
         public void ConfigureHangfire(IAppBuilder app, string connectionString)
         {
-            var options = new BackgroundJobServerOptions
-            {
-                Queues = new[] { "hub" },
-            };
-
             GlobalConfiguration.Configuration
                 .UseSqlServerStorage(connectionString)
                 .UseStructureMapActivator(ObjectFactory.Container);
@@ -58,7 +55,7 @@ namespace HubWeb
             {
                 AuthorizationFilters = new[] { new HangFireAuthorizationFilter() },
             });
-            app.UseHangfireServer(options);
+            app.UseHangfireServer();
             GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
         }
 

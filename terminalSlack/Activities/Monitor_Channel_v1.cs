@@ -1,14 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalSlack.Actions
 {
@@ -82,7 +83,7 @@ namespace terminalSlack.Actions
             ActivityName = "Monitor Channel";
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             var oAuthToken = AuthorizationToken.Token;
             ConfigurationControls.ChannelList.ListItems = (await _slackIntegration.GetChannelList(oAuthToken, false))
@@ -91,23 +92,23 @@ namespace terminalSlack.Actions
                 .ToList();
             CurrentActivityStorage.Add(CreateChannelPropertiesCrate());
             CurrentActivityStorage.Add(CreateEventSubscriptionCrate());
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel);
+            crateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel);
         }
         
         private Crate CreateChannelPropertiesCrate()
         {
             var fields = new[]
             {
-                new FieldDTO() { Key = "token", Value = "token", Availability = AvailabilityType.Always },
-                new FieldDTO() { Key = "team_id", Value = "team_id", Availability = AvailabilityType.Always },
-                new FieldDTO() { Key = "team_domain", Value = "team_domain", Availability = AvailabilityType.Always },
-                new FieldDTO() { Key = "service_id", Value = "service_id", Availability = AvailabilityType.Always },
-                new FieldDTO() { Key = "timestamp", Value = "timestamp", Availability = AvailabilityType.Always },
-                new FieldDTO() { Key = "channel_id", Value = "channel_id", Availability = AvailabilityType.Always },
-                new FieldDTO() { Key = "channel_name", Value = "channel_name", Availability = AvailabilityType.Always },
-                new FieldDTO() { Key = "user_id", Value = "user_id", Availability = AvailabilityType.Always },
-                new FieldDTO() { Key = "user_name", Value = "user_name", Availability = AvailabilityType.Always },
-                new FieldDTO() { Key = "text", Value = "text", Availability = AvailabilityType.Always }
+                new FieldDTO() { Key = "token", Value = "token", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel},
+                new FieldDTO() { Key = "team_id", Value = "team_id", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel},
+                new FieldDTO() { Key = "team_domain", Value = "team_domain", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
+                new FieldDTO() { Key = "service_id", Value = "service_id", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
+                new FieldDTO() { Key = "timestamp", Value = "timestamp", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
+                new FieldDTO() { Key = "channel_id", Value = "channel_id", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
+                new FieldDTO() { Key = "channel_name", Value = "channel_name", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
+                new FieldDTO() { Key = "user_id", Value = "user_id", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
+                new FieldDTO() { Key = "user_name", Value = "user_name", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel },
+                new FieldDTO() { Key = "text", Value = "text", Availability = AvailabilityType.Always, Label = ResultPayloadCrateLabel }
             };
             var crate = Crate.FromContent(SlackMessagePropertiesCrateLabel, new FieldDescriptionsCM(fields), AvailabilityType.Always);
             return crate;
@@ -120,7 +121,7 @@ namespace terminalSlack.Actions
                                                                       new string[] { "Slack Outgoing Message" });
         }
 
-        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             //No extra configuration is required
             return Task.FromResult(0);
@@ -146,7 +147,7 @@ namespace terminalSlack.Actions
             }
             else
             {
-                RequestHubExecutionTermination("Plan successfully activated. It will wait and respond to specified Slack postings");
+                RequestHubExecutionTermination("External event data is missing.");
             }
             return Task.FromResult(0);
         }

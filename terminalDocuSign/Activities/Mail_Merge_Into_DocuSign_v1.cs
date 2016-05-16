@@ -4,12 +4,12 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Hub.Managers;
 using TerminalBase.Infrastructure;
 using TerminalBase.Infrastructure.Behaviors;
@@ -31,11 +31,7 @@ namespace terminalDocuSign.Actions
                                               <p>This Activity also highlights the use of the Loop activity, which can process any amount of table data, one row at a time.</p>
                                               <iframe src='https://player.vimeo.com/video/162762690' width='500' height='343' frameborder='0' webkitallowfullscreen mozallowfullscreen allowfullscreen></iframe>";
 
-        public override Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            return Task.FromResult<ActivityDO>(curActivityDO);
-        }
-
+       
         protected override string ActivityUserFriendlyName => SolutionName;
 
         /// <summary>
@@ -133,37 +129,39 @@ namespace terminalDocuSign.Actions
             return control;
         }
 
-        protected internal override ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
+        public override Task ValidateActivity(ActivityDO curActivityDO, ICrateStorage crateStorage, ValidationManager validationManager)
         {
-            var errorMessages = new List<string>();
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            var templateList = GetStdConfigurationControl<DropDownList>(crateStorage, "DocuSignTemplate");
+
+            if (!validationManager.ValidateControlExistance(templateList))
             {
-                var templateList = GetStdConfigurationControl<DropDownList>(crateStorage, "DocuSignTemplate");
-                if (templateList == null)
-                {
-                    return new ValidationResult(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
-                }
-                errorMessages.Add(templateList.ErrorMessage =
-                                  DocuSignValidationUtils.AtLeastOneItemExists(templateList)
-                                      ? DocuSignValidationUtils.ItemIsSelected(templateList)
-                                            ? string.Empty
-                                            : DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage
-                                      : DocuSignValidationUtils.NoTemplateExistsErrorMessage);
-                var sourceConfigControl = GetStdConfigurationControl<DropDownList>(crateStorage, "DataSource");
-                if (sourceConfigControl == null)
-                {
-                    return new ValidationResult(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
-                }
-                errorMessages.Add(sourceConfigControl.ErrorMessage =
-                    DocuSignValidationUtils.AtLeastOneItemExists(sourceConfigControl)
-                        ? DocuSignValidationUtils.ItemIsSelected(sourceConfigControl)
-                            ? string.Empty
-                            : "Data source is not selected"
-                        : "No data source exists");
+                return Task.FromResult(0);
             }
-            errorMessages.RemoveAll(string.IsNullOrEmpty);
-            return errorMessages.Count == 0 ? ValidationResult.Success : new ValidationResult(string.Join(Environment.NewLine, errorMessages.Where(x => !string.IsNullOrEmpty(x))));
+
+            validationManager.ValidateTemplateList(templateList);
+            
+            var sourceConfigControl = GetStdConfigurationControl<DropDownList>(crateStorage, "DataSource");
+
+            if (!validationManager.ValidateControlExistance(sourceConfigControl))
+            {
+                return Task.FromResult(0);
+            }
+
+            if (DocuSignValidationUtils.AtLeastOneItemExists(sourceConfigControl))
+            {
+                if (!DocuSignValidationUtils.ItemIsSelected(sourceConfigControl))
+                {
+                    validationManager.SetError("Data source is not selected", sourceConfigControl);
+                }
+            }
+            else
+            {
+                validationManager.SetError("No data source exists", sourceConfigControl);
+            }
+
+            return Task.FromResult(0);
         }
+
         /// <summary>
         /// If there's a value in select_file field of the crate, then it is a followup call.
         /// </summary>
@@ -472,17 +470,17 @@ namespace terminalDocuSign.Actions
             {
                 if (curDocumentation.Contains("ExplainMailMerge"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution helps you to work with email and move data from them to DocuSign service"));
+                    return Task.FromResult(GenerateDocumentationResponse(@"This solution helps you to work with email and move data from them to DocuSign service"));
                 }
                 if (curDocumentation.Contains("ExplainService"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                    return Task.FromResult(GenerateDocumentationResponse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }
-                return Task.FromResult(GenerateErrorRepsonse("Unknown contentPath"));
+                return Task.FromResult(GenerateErrorResponse("Unknown contentPath"));
             }
             return
                 Task.FromResult(
-                    GenerateErrorRepsonse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+                    GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }

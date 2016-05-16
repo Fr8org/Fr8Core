@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using Data.Control;
-using Data.Crates;
+using System.Threading.Tasks;
+
 using Data.Entities;
-using Data.Interfaces.Manifests;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.Manifests;
 using Hub.Managers;
 using NUnit.Framework;
 using StructureMap;
@@ -20,48 +22,58 @@ namespace terminalDocuSignTests.Activities
     public class Get_DocuSign_Template_v1_Tests : BaseTest
     {
         [Test]
-        public void ActivityIsValid_WhenIsNotConfigured_ReturnsFalse()
+        public async Task ActivityIsValid_WhenIsNotConfigured_ReturnsFalse()
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
             var target = new Get_DocuSign_Template_v1();
-            var result = target.ValidateActivityInternal(FixtureData.TestActivity1());
-            Assert.AreNotEqual(ValidationResult.Success, result);
-            Assert.AreEqual(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage, result.ErrorMessage);
+
+            var result = await Validate(target, FixtureData.TestActivity1());
+
+            AssertErrorMessage(result, DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
         }
 
         [Test]
-        public void ActivityIsValid_WhenThereAreNoTemplates_ReturnsFalse()
+        public async Task ActivityIsValid_WhenThereAreNoTemplates_ReturnsFalse()
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
             var target = new Get_DocuSign_Template_v1();
             var activityDO = FixtureData.TestActivity1();
-            activityDO = target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration()).Result;
-            var result = target.ValidateActivityInternal(activityDO);
-            Assert.AreNotEqual(ValidationResult.Success, result);
-            Assert.AreEqual(DocuSignValidationUtils.NoTemplateExistsErrorMessage, result.ErrorMessage);
+
+            activityDO = await target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration());
+
+            var result = await Validate(target, activityDO);
+
+            AssertErrorMessage(result, DocuSignValidationUtils.NoTemplateExistsErrorMessage);
         }
 
         [Test]
-        public void ActivityIsValid_WhenTemplateIsNotSelected_ReturnsFalse()
+        public async Task ActivityIsValid_WhenTemplateIsNotSelected_ReturnsFalse()
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithTemplates()));
             var target = new Get_DocuSign_Template_v1();
             var activityDO = FixtureData.TestActivity1();
-            activityDO = target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration()).Result;
-            var result = target.ValidateActivityInternal(activityDO);
-            Assert.AreNotEqual(ValidationResult.Success, result);
-            Assert.AreEqual(DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage, result.ErrorMessage);
+
+            activityDO = await target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration());
+
+            var result = await Validate(target, activityDO);
+
+            AssertErrorMessage(result, DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage);
         }
+
         [Test]
-        public void ActivityIsValid_WhenTemplatetIsSelected_ReturnsTrue()
+        public async Task ActivityIsValid_WhenTemplatetIsSelected_ReturnsTrue()
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithTemplates()));
             var target = new Get_DocuSign_Template_v1();
             var activityDO = FixtureData.TestActivity1();
-            activityDO = target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration()).Result;
+
+            activityDO = await target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration());
+
             SelectTemplate(activityDO);
-            var result = target.ValidateActivityInternal(activityDO);
-            Assert.AreEqual(ValidationResult.Success, result);
+
+            var result = await Validate(target, activityDO);
+
+            Assert.AreEqual(false, result.HasErrors);
         }
 
         private void SelectTemplate(ActivityDO activity)

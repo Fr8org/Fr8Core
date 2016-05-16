@@ -1,17 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using HealthMonitor.Utility;
 using Hub.Managers;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using terminalGoogle.Actions;
-using terminalGoogle.DataTransferObjects;
-using terminalGoogle.Services;
 using UtilitiesTesting.Fixtures;
 
 namespace terminaBaselTests.Tools.Activities
@@ -41,7 +38,8 @@ namespace terminaBaselTests.Tools.Activities
                                                                         string newSpeadsheetName)
         {
             var activityName = "Save_To_Google_Sheet";
-            var saveToGoogleSheetActivityDTO = await AddGoogleActivityToPlan(plan, ordering, ActivityCategory.Forwarders, activityName);
+
+            var saveToGoogleSheetActivityDTO = await AddGoogleActivityToPlan(FixtureData.Save_To_Google_Sheet_v1_InitialConfiguration(), plan, ordering, ActivityCategory.Forwarders, activityName);
             //Activity won't be able to run if there is no upstream data
 
             var upstreamCrateDescriptions = await _baseHubITest.GetRuntimeCrateDescriptionsFromUpstreamActivities(saveToGoogleSheetActivityDTO.Id);
@@ -83,7 +81,7 @@ namespace terminaBaselTests.Tools.Activities
         {
             var activityName = "Get_Google_Sheet_Data";
 
-            var getFromGoogleSheetActivityDTO = await AddGoogleActivityToPlan(plan, ordering, ActivityCategory.Receivers, activityName);
+            var getFromGoogleSheetActivityDTO = await AddGoogleActivityToPlan(FixtureData.Get_Google_Sheet_Data_v1_InitialConfiguration(),plan, ordering, ActivityCategory.Receivers, activityName);
 
             return await ConfigureGetFromGoogleSheetActivity(getFromGoogleSheetActivityDTO, spreadsheetName, includeFixtureAuthToken);
         }
@@ -155,9 +153,9 @@ namespace terminaBaselTests.Tools.Activities
         /// <param name="activityCategory"></param>
         /// <param name="activityName"></param>
         /// <returns></returns>
-        private async Task<ActivityDTO> AddGoogleActivityToPlan(PlanDTO plan, int ordering, ActivityCategory activityCategory, string activityName)
+        private async Task<ActivityDTO> AddGoogleActivityToPlan(ActivityDTO activity, PlanDTO plan, int ordering, ActivityCategory activityCategory, string activityName)
         {
-            var googleActivityDTO = FixtureData.Get_Google_Sheet_Data_v1_InitialConfiguration();
+            var googleActivityDTO = activity;
             var activityCategoryParam = new[] { activityCategory };
             var activityTemplates = await _baseHubITest.HttpPostAsync<ActivityCategory[], List<WebServiceActivitySetDTO>>(
                                                                                                                           _baseHubITest.GetHubApiBaseUrl() + "webservices/activities", activityCategoryParam);

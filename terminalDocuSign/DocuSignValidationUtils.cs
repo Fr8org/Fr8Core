@@ -1,6 +1,6 @@
-﻿using System;
-using System.Net.Mail;
-using Data.Control;
+﻿using Fr8Data.Control;
+using Fr8Data.DataTransferObjects;
+using TerminalBase.Infrastructure;
 
 namespace terminalDocuSign
 {
@@ -31,6 +31,32 @@ namespace terminalDocuSign
         public static bool ValueIsSet(TextBox text)
         {
             return !string.IsNullOrWhiteSpace(text?.Value);
+        }
+
+        public static bool ValidateControlExistance(this ValidationManager validationManager, ControlDefinitionDTO control)
+        {
+            if (control == null)
+            {
+                validationManager.SetError(ControlsAreNotConfiguredErrorMessage);
+                return false;
+            }
+
+            return true;
+        }
+
+        public static void ValidateTemplateList(this ValidationManager validationManager, DropDownList items)
+        {
+            if (AtLeastOneItemExists(items))
+            {
+                if (!ItemIsSelected(items))
+                {
+                    validationManager.SetError(TemplateIsNotSelectedErrorMessage, items);
+                }
+            }
+            else
+            {
+                validationManager.SetError(NoTemplateExistsErrorMessage, items);
+            }
         }
     }
 }

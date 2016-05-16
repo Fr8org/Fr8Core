@@ -19,9 +19,15 @@ module dockyard.tests.unit.directives.controls {
     describe('UpstreamFieldChooser Control', () => {
         var $rootScope,
             $compile,
-            $element,
+            elem,
+            elem1,
+            element,
             scope,
-            directive = '<upstream-field-chooser field="field" current-action="action" />';
+            scope1,
+            directive = '<upstream-field-chooser field="field" current-action="action" change="onChange"></upstream-field-chooser>',
+            controller,
+            modal,
+            $httpBackend;
 
         beforeEach(module('app', 'templates'));
 
@@ -32,89 +38,75 @@ module dockyard.tests.unit.directives.controls {
         }]);
 
         beforeEach(() => {
-            inject((_$compile_, _$rootScope_) => {
+            inject((_$compile_, _$rootScope_, $controller, $modal, $injector, $timeout, NgTableParams) => {
                 $rootScope = _$rootScope_;
                 $compile = _$compile_;
-
                 scope = $rootScope.$new();
                 scope.field = $.extend(true, {}, fx.UpstreamDataChooser.sampleField);
+                scope.field.listItems = fx.UpstreamFieldChooser.incomingFields;
                 scope.action = $.extend(true, {}, fx.UpstreamDataChooser.sampleAction);
-                $element = compileTemplate(scope, directive, $compile);
+                scope.currentAction = $.extend(true, {}, fx.UpstreamDataChooser.sampleAction);
+                var element = angular.element('<upstream-field-chooser field="field" current-action="action" change="onChange"></upstream-field-chooser>');
+                elem = $compile(element)(scope);
+                scope = elem.isolateScope();
+                scope.$digest();
+                scope.change = null;
+                var openModal = jasmine.createSpyObj('openModal', ['close']);
+                modal = jasmine.createSpyObj('modal', ['show', 'hide', 'open']);
+                modal.open.and.callFake(function () {
+                    return openModal;
+                });
+                var modalConst = jasmine.createSpy('modal').and.callFake(function () { return modal; });
+                controller = $controller('UpstreamFieldChooserController', { $scope: scope, $element: elem, $attrs: null, $modal: modalConst(), $timeout: $timeout, NgTableParams: NgTableParams });
             });
         });
 
 
         /* SPECS */
 
-        it('should be compiled into a table', () => {
-            expect($element.find('table').length === 1).toBe(true);
+        it('should be compiled into a button', () => {
+            expect(elem.find('button').length === 1).toBe(true);
         });
 
-        it('should add a row for each field in the set', () => {
-            var $rows = $element.find('tbody tr:not(.ng-table-group)');
-            var crate = CH.findByLabel(fx.UpstreamDataChooser.sampleAction.crateStorage, 'Upstream Terminal-Provided Fields');
-            var fields = (<any>crate.contents).Fields;
-
-            expect(fields.length).toBe($rows.length);
-
-            $rows.each(function () {
-                var $row = $(this);
-                var html = $row.html();
-                var found = false;
-                for (var i = 0; i < fields.length; i++) {
-                    if (html.indexOf(fields[i].key) !== -1 && html.indexOf(fields[i].sourceCrateManifest.Type) !== -1) {
-                        found = true;
-                        break;
-                    }
-                }
-                expect(found).toBe(true);
-            });
+        it('should open modal', () => {
+            scope.createModal();
+            expect(modal.open).toHaveBeenCalled();
         });
 
-        it('should set the value of the control field to the clicked field row', () => {
-            var $rows = $element.find('tbody tr:not(.ng-table-group)');
-            var $toSelect = $rows.eq(2);
-            var name = $toSelect.find('td').eq(0).text();
-
-            $toSelect.click();
-            scope.$digest();
-
-            expect(scope.field.value).toBe(name);
-        });
-
-        it('should apply the current field value to the table selection', () => {
-            var $rows = $element.find('tbody tr:not(.ng-table-group)');
-            var $selected = $rows.filter('.active');
-
-            expect($selected.length > 0).toBe(true);
-            expect($selected.find('td').eq(0).text()).toBe(scope.field.value);
+        it('should set new upstream field', () => {
+            scope.createModal();
+            scope.setItem(scope.field.listItems[0].key);
+            expect(scope.field.value).toBe(scope.field.listItems[0].key);
         });
 
         describe('multiple controls', () => {
 
-            var directive1 = '<upstream-field-chooser field="field" current-action="action"></upstream-field-chooser><upstream-field-chooser field="field1" current-action="action1"></upstream-field-chooser>';
+            var directive1 = '<upstream-field-chooser field="field" current-action="action"></upstream-field-chooser><upstream-field-chooser field="field" current-action="action"></upstream-field-chooser>';
 
             beforeEach(() => {
-                scope.field = $.extend(true, {}, fx.UpstreamDataChooser.sampleField);
-                scope.action = $.extend(true, {}, fx.UpstreamDataChooser.sampleAction);
-                scope.field1 = $.extend(true, {}, fx.UpstreamDataChooser.fieldWithValues);
-                scope.action1 = $.extend(true, {}, fx.UpstreamDataChooser.sampleAction);
-                $element = compileTemplate(scope, directive1, $compile);
+                scope1 = $rootScope.$new();
+                scope1.field = $.extend(true, {}, fx.UpstreamDataChooser.fieldWithValues);
+                scope1.field.listItems = fx.UpstreamFieldChooser.incomingFields;
+                scope1.action = $.extend(true, {}, fx.UpstreamDataChooser.sampleAction);
+                scope1.currentAction = $.extend(true, {}, fx.UpstreamDataChooser.sampleAction);
+                elem1 = $compile(directive1)(scope1);
+                scope1 = elem1.isolateScope();
+                scope1.$digest();
+                scope1.change = null;
             });
 
-            it('should be compiled correctly into multiple tables', () => {
-                expect($element.find('table').length === 2).toBe(true);
+            it('should be compiled correctly into multiple buttons', () => {
+                expect(elem1.find('button').length === 2).toBe(true);
             });
 
             it('should not change the value of second control if first control value is changed', () => {
-                var $rows = $element.find('tbody').eq(0).find('tr:not(.ng-table-group)');
-                var $toSelect = $rows.eq(2);
-                var currValue = scope.field1.value;
-
-                $toSelect.click();
-                scope.$digest();
-
-                expect(scope.field1.value).toBe(currValue);
+                scope.createModal();
+                scope.setItem(scope.field.listItems[0].key);
+                expect(scope.field.value).toBe(scope.field.listItems[0].key);
+                scope1.createModal();
+                scope1.setItem(scope1.field.listItems[1].key);
+                expect(scope.field.value).toBe(scope.field.listItems[0].key);
+                expect(scope1.field.value).toBe(scope1.field.listItems[1].key);
             });
 
         });

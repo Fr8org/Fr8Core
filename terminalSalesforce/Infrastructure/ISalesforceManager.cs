@@ -1,9 +1,9 @@
 ﻿using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Data.Interfaces.Manifests;
 using System;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 
 namespace terminalSalesforce.Infrastructure
 {
@@ -13,7 +13,7 @@ namespace terminalSalesforce.Infrastructure
 
         Task<StandardTableDataCM> Query(SalesforceObjectType type, IEnumerable<string> propertiesToRetrieve, string filter, AuthorizationTokenDO authTokenDO);
         
-        Task<List<FieldDTO>> GetProperties(SalesforceObjectType type, AuthorizationTokenDO authTokenDO, bool updatableOnly = false);
+        Task<List<FieldDTO>> GetProperties(SalesforceObjectType type, AuthorizationTokenDO authTokenDO, bool updatableOnly = false, string label = null);
 
         T CreateSalesforceDTO<T>(ActivityDO activity, PayloadDTO payload) where T : new();
 

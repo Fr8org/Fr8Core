@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
+using Fr8Data.DataTransferObjects;
 using Newtonsoft.Json.Linq;
 using StructureMap;
-using Data.Interfaces.DataTransferObjects;
 using terminalSlack.Interfaces;
 using Utilities.Configuration.Azure;
 using Hub.Managers.APIManagers.Transmitters.Restful;
-using Newtonsoft.Json;
 
 namespace terminalSlack.Services
 {
@@ -80,7 +79,7 @@ namespace terminalSlack.Services
             }
 
             return result;
-            
+
         }
 
         public async Task<List<FieldDTO>> GetUserList(string oauthToken)
@@ -124,11 +123,11 @@ namespace terminalSlack.Services
         {
             var url = CloudConfigurationManager.GetSetting("SlackChatPostMessageUrl");
 
-            
 
-            
+
+
             var content = new FormUrlEncodedContent(
-                new[] { 
+                new[] {
                     new KeyValuePair<string, string>("token", oauthToken),
                     new KeyValuePair<string, string>("channel", channelId),
                     new KeyValuePair<string, string>("text", message)
@@ -136,15 +135,25 @@ namespace terminalSlack.Services
             );
 
             var responseJson = await _client.PostAsync<JObject>(new Uri(url), (HttpContent)content);
+            bool isOk;
             try
             {
-                return responseJson.Value<bool>("ok");
+                isOk = responseJson.Value<bool>("ok");
             }
-            catch
+            catch (Exception ex)
             {
                 return false;
             }
-            
+
+            if (!isOk)
+            {
+                string reason = responseJson.Value<string>("error");
+                if (reason.IndexOf("token") > -1)
+                {
+                    throw new TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException();
+                }
+            }
+            return isOk;
         }
     }
 }

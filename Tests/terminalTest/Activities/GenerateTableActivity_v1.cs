@@ -1,9 +1,10 @@
 ﻿using System.Threading.Tasks;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalTest.Actions
 {
@@ -22,15 +23,15 @@ namespace terminalTest.Actions
             }
         }
 
-        protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Initialize(CrateSignaller crateSignaller)
         {
             ConfigurationControls.Header.Value = CurrentActivity.Id.ToString();
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>("Table");
+            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>("Table");
 
             return Task.FromResult(0);
         }
 
-        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             return Task.FromResult(0);
         }

@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http.Description;
 using System.Web.Http;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
 using Utilities.Configuration.Azure;
-using Data.Interfaces.Manifests;
-using Data.Constants;
+using Fr8Data.Constants;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace terminalFr8Core.Controllers
 {
@@ -48,17 +48,8 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
-                Version = "1"
-            });
-
-            result.Add(new ActivityTemplateDTO
-            {
-                Name = "Process_Personnel_Report",
-                Label = "Process Personnel Report",
-                Category = ActivityCategory.Processors,
-                Terminal = terminal,
-                WebService = webService,
-                Version = "1"
+                Version = "1",
+                MinPaneWidth = 330
             });
 
             result.Add(new ActivityTemplateDTO
@@ -68,7 +59,7 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 Version = "1",
-                MinPaneWidth = 420,
+                MinPaneWidth = 550,
                 WebService = webService
             });
 
@@ -114,7 +105,8 @@ namespace terminalFr8Core.Controllers
                 Category = ActivityCategory.Processors,
                 Terminal = terminal,
                 WebService = webService,
-                Version = "1"
+                Version = "1",
+                MinPaneWidth = 330,
             });
 
             result.Add(new ActivityTemplateDTO
@@ -181,6 +173,7 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1",
+                MinPaneWidth = 330,
                 Type = ActivityType.Solution
             });
 
@@ -192,6 +185,7 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1",
+                MinPaneWidth = 330,
                 Type = ActivityType.Loop,
                 Tags = Tags.AggressiveReload
             });
@@ -204,6 +198,7 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1",
+                MinPaneWidth = 330,
                 Type = ActivityType.Standard
             });
 
@@ -273,6 +268,7 @@ namespace terminalFr8Core.Controllers
                 Terminal = terminal,
                 WebService = webService,
                 Version = "1",
+                MinPaneWidth = 330,
                 Type = ActivityType.Standard
             });
 
@@ -309,7 +305,7 @@ namespace terminalFr8Core.Controllers
                 NeedsAuthentication = false,
                 Terminal = terminal,
                 WebService = webService,
-                MinPaneWidth = 350,
+                MinPaneWidth = 550,
                 Tags = Tags.AggressiveReload
             });
 
@@ -318,6 +314,7 @@ namespace terminalFr8Core.Controllers
                 Name = "ExtractTableField",
                 Label = "Extract Table Field",
                 Version = "1",
+                MinPaneWidth = 330,
                 Category = ActivityCategory.Processors,
                 NeedsAuthentication = false,
                 Terminal = terminal,
@@ -326,8 +323,8 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
-                Name = "CollectData",
-                Label = "Collect Data",
+                Name = "AppBuilder",
+                Label = "App Builder",
                 Version = "1",
                 Category = ActivityCategory.Processors,
                 NeedsAuthentication = false,

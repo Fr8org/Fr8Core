@@ -1,21 +1,18 @@
-﻿using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Hub.Managers;
-using Newtonsoft.Json;
+﻿using Data.Entities;
 using StructureMap;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Control;
-using Data.Interfaces.Manifests;
-using Data.States;
 using terminalDropbox.Interfaces;
 using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 using terminalDropbox.Services;
 using System.IO;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.Manifests;
+using Fr8Data.States;
+using TerminalBase.Errors;
+using TerminalBase.Infrastructure;
 
 namespace terminalDropbox.Actions
 {
@@ -26,9 +23,9 @@ namespace terminalDropbox.Actions
             public DropDownList FileList { get; set; }
 
             public ActivityUi()
-        {
-                FileList = new DropDownList
             {
+                FileList = new DropDownList
+                {
                     Label = "Select a file",
                     Name = nameof(FileList),
                     Required = true,
@@ -47,32 +44,40 @@ namespace terminalDropbox.Actions
             _dropboxService = ObjectFactory.GetInstance<DropboxService>();
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             var fileNames = await _dropboxService.GetFileList(GetDropboxAuthToken());
             ConfigurationControls.FileList.ListItems = fileNames
                 .Select(filePath => new ListItem { Key = Path.GetFileName(filePath), Value = Path.GetFileName(filePath) }).ToList();
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardFileListCM>(RuntimeCrateLabel);
+            crateSignaller.MarkAvailableAtRuntime<StandardFileListCM>(RuntimeCrateLabel);
             CurrentActivityStorage.ReplaceByLabel(PackDropboxFileListCrate(fileNames));
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
-            {
+        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
+        {
             var fileList = await _dropboxService.GetFileList(GetDropboxAuthToken());
             ConfigurationControls.FileList.ListItems = fileList
                 .Select(filePath => new ListItem { Key = Path.GetFileName(filePath), Value = Path.GetFileName(filePath) }).ToList();
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardFileListCM>(RuntimeCrateLabel);
+            crateSignaller.MarkAvailableAtRuntime<StandardFileListCM>(RuntimeCrateLabel);
             CurrentActivityStorage.ReplaceByLabel(PackDropboxFileListCrate(fileList));
-            }
+        }
 
         private AuthorizationTokenDO GetDropboxAuthToken(AuthorizationTokenDO authTokenDO = null)
-            {
+        {
             return authTokenDO ?? AuthorizationToken;
-            }
+        }
 
         protected override async Task RunCurrentActivity()
         {
-            var fileNames = await _dropboxService.GetFileList(GetDropboxAuthToken());
+            IList<string> fileNames;
+            try
+            {
+                fileNames = await _dropboxService.GetFileList(GetDropboxAuthToken());
+            }
+            catch (Dropbox.Api.AuthException)
+            {
+                throw new AuthorizationTokenExpiredOrInvalidException();
+            }
             var dropboxFileList = PackDropboxFileListCrate(fileNames);
             CurrentPayloadStorage.Add(dropboxFileList);
         }
@@ -83,7 +88,7 @@ namespace terminalDropbox.Actions
             foreach (var filePath in fileList)
             {
                 var fileDesc = new StandardFileDescriptionCM()
-        {
+                {
                     Filename = Path.GetFileName(filePath),
                     Filetype = Path.GetExtension(filePath)
                 };
@@ -91,12 +96,12 @@ namespace terminalDropbox.Actions
 
                 fileDesc.DirectUrl = fileSharedUrl;
                 descriptionList.Add(fileDesc);
-        }
+            }
 
             return Crate<StandardFileListCM>.FromContent(
                 RuntimeCrateLabel,
                 new StandardFileListCM
-        {
+                {
                     FileList = descriptionList
                 },
                 AvailabilityType.Always);

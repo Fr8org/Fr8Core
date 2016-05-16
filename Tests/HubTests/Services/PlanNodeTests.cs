@@ -8,8 +8,8 @@ using NUnit.Framework;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using StructureMap;
-using Data.Interfaces.Manifests;
 using Data.Interfaces;
+using Fr8Data.States;
 
 namespace HubTests.Services
 {
@@ -44,10 +44,10 @@ namespace HubTests.Services
             }
 
             IPlanNode planNodeService = ObjectFactory.GetInstance<IPlanNode>();
-            var fieldsCrate = planNodeService.GetAvailableData(testActionTree.ChildNodes.Last().Id, CrateDirection.Upstream, AvailabilityType.NotSet);
+            var fieldsCrate = planNodeService.GetIncomingData(testActionTree.ChildNodes.Last().Id, CrateDirection.Upstream, AvailabilityType.NotSet);
             Assert.NotNull(fieldsCrate);
-            Assert.NotNull(fieldsCrate.AvailableFields);
-            Assert.AreEqual(66, fieldsCrate.AvailableFields.Count);
+            Assert.NotNull(fieldsCrate.AvailableCrates.SelectMany(x=> x.Fields).ToList());
+            Assert.AreEqual(66, fieldsCrate.AvailableCrates.SelectMany(x => x.Fields).ToList().Count);
         }
 
         [Test]

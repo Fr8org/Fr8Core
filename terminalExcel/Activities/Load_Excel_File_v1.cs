@@ -3,14 +3,15 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using terminalUtilities.Excel;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalExcel.Actions
 {
@@ -78,12 +79,12 @@ namespace terminalExcel.Actions
             ActivityName = "Load Excel File";
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             CurrentActivityStorage.RemoveByLabel(ColumnHeadersCrateLabel);
             //If file is not uploaded we hide file description
@@ -101,7 +102,7 @@ namespace terminalExcel.Actions
                     var selectedFileDescription = new FieldDTO(ConfigurationControls.FilePicker.Value, ExtractFileName(ConfigurationControls.FilePicker.Value));
                     var columnHeadersCrate = Crate.FromContent(
                         ColumnHeadersCrateLabel,
-                        await Task.Run(() => ExcelUtils.GetColumnHeadersData(selectedFileDescription.Key)),
+                        await Task.Run(() => ExcelUtils.GetColumnHeadersData(selectedFileDescription.Key,ColumnHeadersCrateLabel)),
                         AvailabilityType.Always
                     );
 
@@ -118,7 +119,7 @@ namespace terminalExcel.Actions
                 }
             }
 
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
             CurrentActivityStorage.Add(Crate.FromContent(FileCrateLabel, new StandardFileDescriptionCM() { Filename = FileCrateLabel }));
         }
 

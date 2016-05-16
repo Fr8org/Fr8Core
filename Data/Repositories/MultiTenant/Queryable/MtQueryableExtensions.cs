@@ -1,6 +1,6 @@
 using System;
 using System.Linq.Expressions;
-using Data.Interfaces.Manifests;
+using Fr8Data.Manifests;
 
 namespace Data.Repositories.MultiTenant.Queryable
 {

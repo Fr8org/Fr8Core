@@ -2,13 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
-using AutoMapper;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
+using Hub.Infrastructure;
 using Hub.Interfaces;
-using Hub.Services;
 using HubWeb.Infrastructure;
 
 namespace HubWeb.Controllers.Api
@@ -41,20 +40,20 @@ namespace HubWeb.Controllers.Api
             var groupedTerminals = terminals
                 .Where(x => authTokens.Any(y => y.TerminalID == x.Id))
                 .OrderBy(x => x.Name)
-                .Select(x => new ManageAuthToken_Terminal()
+                .Select(x => new ManageAuthToken_Terminal
                 {
                     Id = x.Id,
                     Name = x.Name,
                     Label = x.Label,
                     AuthTokens = authTokens
                         .Where(y => y.TerminalID == x.Id && !string.IsNullOrEmpty(y.ExternalAccountId))
-                        .OrderBy(y => y.ExternalAccountId)
-                        .Select(y => new ManageAuthToken_AuthToken()
+                        .Select(y => new ManageAuthToken_AuthToken
                         {
                             Id = y.Id,
-                            ExternalAccountName = y.ExternalAccountId,
+                            ExternalAccountName = y.DisplayName,
                             IsMain = y.IsMain
                         })
+                        .OrderBy(y => y.ExternalAccountName)
                         .ToList()
                 })
                 .ToList();
@@ -75,7 +74,7 @@ namespace HubWeb.Controllers.Api
         }
 
         [HttpPost]
-        public IHttpActionResult TerminalsByActivities(IEnumerable<Guid> actionIds)
+        public IHttpActionResult AuthenticateTerminalsByActivities(IEnumerable<Guid> activityIds)
         {
             var result = new List<ManageAuthToken_Terminal_Activity>();
 
@@ -84,9 +83,9 @@ namespace HubWeb.Controllers.Api
                 var accountId = User.Identity.GetUserId();
                 var authTokens = Authorization.GetAllTokens(accountId).ToArray();
 
-                foreach (Guid actionId in actionIds)
+                foreach (Guid activityId in activityIds)
                 {
-                    var activity =  uow.PlanRepository.GetActivityQueryUncached().FirstOrDefault(x => x.Id == actionId);
+                    var activity =  uow.PlanRepository.GetActivityQueryUncached().FirstOrDefault(x => x.Id == activityId);
 
                     if (activity == null)
                     {
@@ -95,10 +94,10 @@ namespace HubWeb.Controllers.Api
 
                     var template = _activityTemplate.GetByKey(activity.ActivityTemplateId);
                     result.Add(
-                        new ManageAuthToken_Terminal_Activity()
+                        new ManageAuthToken_Terminal_Activity
                         {
-                            ActivityId = actionId,
-                            Terminal = new ManageAuthToken_Terminal()
+                            ActivityId = activityId,
+                            Terminal = new ManageAuthToken_Terminal
                             {
                                 Id = template.Terminal.Id,
                                 Name = template.Terminal.Name,
@@ -108,13 +107,14 @@ namespace HubWeb.Controllers.Api
                                 AuthTokens = authTokens
                                     .Where(x => x.TerminalID == template.Terminal.Id)
                                     .Where(x => !string.IsNullOrEmpty(x.ExternalAccountId))
-                                    .Select(x => new ManageAuthToken_AuthToken()
+                                    .Select(x => new ManageAuthToken_AuthToken
                                     {
                                          Id = x.Id,
-                                         ExternalAccountName = x.ExternalAccountId,
+                                         ExternalAccountName = x.DisplayName,
                                          IsMain = x.IsMain,
                                          IsSelected = (x.Id == activity.AuthorizationTokenId)
                                     })
+                                    .OrderBy(x => x.ExternalAccountName)
                                     .ToList()
                             }
                         }
@@ -129,11 +129,11 @@ namespace HubWeb.Controllers.Api
 
         [Fr8HubWebHMACAuthenticate]
         [HttpPost]
-        public IHttpActionResult Apply(IEnumerable<ManageAuthToken_Apply> apply)
+        public IHttpActionResult Apply(IEnumerable<ManageAuthToken_Apply> authTokenList)
         {
             var userId = User.Identity.GetUserId();
 
-            foreach (var applyItem in apply)
+            foreach (var applyItem in authTokenList)
             {
                 Authorization.GrantToken(applyItem.ActivityId, applyItem.AuthTokenId);
 

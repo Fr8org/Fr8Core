@@ -6,32 +6,50 @@ using NUnit.Core;
 using System.Text;
 using System.Diagnostics;
 using System.Collections.Generic;
+using System.IO;
+using Utilities.Configuration.Azure;
 
 namespace HealthMonitor
 {
     public class Program
     {
+        public static readonly Context Context = new Context();
+
         static void Main(string[] args)
         {
-            var sendEmailReport = false;
             var appName = "Unspecified App";
+            var csName = "DockyardDB";
+            var allArguments = new Dictionary<string, object>();
+            var connectionString = ConfigurationManager.ConnectionStrings[csName].ConnectionString;
+            var sendEmailReport = false;
             var ensureTerminalsStartup = false;
             var selfHosting = false;
-            var connectionStringArg = string.Empty;
             var specificTest = string.Empty;
             var appInsightsInstrumentationKey = string.Empty;
             int errorCount = 0;
-            var overrideDbName = string.Empty;
-            var connectionString = string.Empty;
-            var csName = string.Empty;
             var skipLocal = false;
             var interactive = false;
             var killIISExpress = false;
+            var doCleanUp = false;
+            var smtpUsername = string.Empty;
+            var smtpPassword = string.Empty;
 
             if (args != null)
             {
                 for (var i = 0; i < args.Length; ++i)
                 {
+                    if (i > 0 && args[i - 1].StartsWith("--"))
+                    {
+                        if (!args[i].StartsWith("--"))
+                        {
+                            allArguments[args[i - 1].Substring(2)] = args[i];
+                        }
+                        else
+                        {
+                            allArguments[args[i - 1].Substring(2)] = true;
+                        }
+                    }
+
                     if (args[i] == "--email-report")
                     {
                         sendEmailReport = true;
@@ -43,10 +61,6 @@ namespace HealthMonitor
                     else if (i > 0 && args[i - 1] == "--app-name" && args[i] != null)
                     {
                         appName = args[i];
-                    }
-                    else if (i > 0 && args[i - 1] == "--connectionString" && args[i] != null)
-                    {
-                        connectionStringArg = args[i];
                     }
                     else if (args[i] == "--self-hosting")
                     {
@@ -66,13 +80,9 @@ namespace HealthMonitor
                     else if (i > 0 && args[i - 1] == "--aiik" && args[i] != null)
                     {
                         appInsightsInstrumentationKey = args[i];
+                        Context.InstrumentationKey = appInsightsInstrumentationKey;
                     }
 
-                    // Overrides database name in the provided connection string. 
-                    else if (i > 0 && args[i - 1] == "--overrideDbName" && args[i] != null)
-                    {
-                        overrideDbName = args[i];
-                    }
                     //This flag will signal HM to wait for user response before shut down (used when launched directly)
                     else if (args[i] == "--interactive")
                     {
@@ -81,6 +91,20 @@ namespace HealthMonitor
                     else if (args[i] == "--killexpress")
                     {
                         killIISExpress = true;
+                    }
+
+                    // Execute the clean-up script after the tests finished running. 
+                    else if (args[i].ToLowerInvariant() == "--cleanup")
+                    {
+                        doCleanUp = true;
+                    }
+                    else if (args[i] == "--smtp-user")
+                    {
+                        smtpUsername = args[i];
+                    }
+                    else if (args[i] == "--smtp-pass")
+                    {
+                        smtpPassword = args[i];
                     }
                 }
 
@@ -98,41 +122,10 @@ namespace HealthMonitor
                         //Do nothing. This may mean that user have no access to killing processes
                     }
                 }
-
-                if (!string.IsNullOrEmpty(overrideDbName) && string.IsNullOrEmpty(connectionStringArg))
-                {
-                    throw new ArgumentException("--overrideDbName can only be specified when --connectionString is specified.");
-                }
-
-                if (selfHosting)
-                {
-                    if (string.IsNullOrEmpty(connectionStringArg))
-                    {
-                        throw new ArgumentException("You should specify --connectionString \"{ConnectionStringName}={ConnectionString}\" argument when using self-hosted mode.");
-                    }
-
-                    var regex = new System.Text.RegularExpressions.Regex("([\\w\\d]{1,})=([\\s\\S]+)");
-                    var match = regex.Match(connectionStringArg);
-                    if (match == null || !match.Success || match.Groups.Count != 3)
-                    {
-                        throw new ArgumentException("Please specify connection string in the following format: \"{ConnectionStringName}={ConnectionString}\".");
-                    }
-
-                    connectionString = match.Groups[2].Value;
-                    csName = match.Groups[1].Value;
-
-                    if (!string.IsNullOrEmpty(overrideDbName))
-                    {
-                        // Override database name in the connection string
-                        var builder = new SqlConnectionStringBuilder(connectionString);
-                        builder.InitialCatalog = overrideDbName;
-                        connectionString = builder.ToString();
-                    }
-
-                    UpdateConnectionString(csName, connectionString);
-                }
-
             }
+
+            Context.ConnectionString = connectionString;
+            Context.AllArguments = allArguments;
 
             var selfHostInitializer = new SelfHostInitializer();
             if (selfHosting)
@@ -148,7 +141,9 @@ namespace HealthMonitor
                     appName,
                     specificTest,
                     skipLocal,
-                    appInsightsInstrumentationKey
+                    appInsightsInstrumentationKey,
+                    smtpUsername,
+                    smtpPassword
                 );
             }
             finally
@@ -158,21 +153,25 @@ namespace HealthMonitor
                     selfHostInitializer.Dispose();
                 }
             }
+
+            if (doCleanUp)
+            {
+                Trace.TraceWarning("Running clean-up scripts...");
+                new CleanupService().LaunchCleanup(connectionString);
+            }
+
+            if (errorCount > 0)
+            {
+                Trace.TraceWarning($"{errorCount} tests failed");
+            }
+
             if (interactive)
             {
                 Console.WriteLine("Tests are completed. Press ENTER to close the app");
                 Console.ReadLine();
             }
+
             Environment.Exit(errorCount);
-        }
-
-        private static void UpdateConnectionString(string key, string value)
-        {
-            System.Configuration.Configuration configuration = ConfigurationManager.OpenExeConfiguration(ConfigurationUserLevel.None);
-            configuration.ConnectionStrings.ConnectionStrings[key].ConnectionString = value;
-            configuration.Save();
-
-            ConfigurationManager.RefreshSection("connectionStrings");
         }
 
         private void EnsureTerminalsStartUp()
@@ -222,7 +221,9 @@ namespace HealthMonitor
             string appName,
             string test,
             bool skipLocal,
-            string appInsightsInstrumentationKey)
+            string appInsightsInstrumentationKey,
+            string smtpUsername,
+            string smtpPassword)
         {
             CoreExtensions.Host.InitializeService();
 
@@ -273,11 +274,9 @@ namespace HealthMonitor
                     var htmlReport = reportBuilder.BuildReport(appName, report);
 
                     var reportNotifier = new TestReportNotifier();
-                    reportNotifier.Notify(appName, htmlReport);
+                    reportNotifier.Notify(appName, htmlReport, smtpUsername, smtpPassword);
                 }
             }
-
-            //ReportToConsole(appName, report); We now have real-time reporting
             return report.Tests.Count(x => !x.Success);
         }
 

@@ -3,18 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Hub.Managers;
 using Newtonsoft.Json;
-using StructureMap;
-using terminalDocuSign.Actions;
 using terminalDocuSign.DataTransferObjects;
 using TerminalBase.Infrastructure;
-using terminalDocuSign.Services;
 
 namespace terminalDocuSign.Actions
 {
@@ -144,7 +141,7 @@ namespace terminalDocuSign.Actions
                 throw new Exception("Can't find activity template: Query_DocuSign");
             }
 
-            var storage = new CrateStorage(Data.Crates.Crate.FromContent("Config", config));
+            var storage = new CrateStorage(Fr8Data.Crates.Crate.FromContent("Config", config));
 
             storage.Add(PackControlsCrate(new TextArea
             {
@@ -161,7 +158,7 @@ namespace terminalDocuSign.Actions
                 {
                     ActivityTemplate = template,
                     CreateDate = DateTime.UtcNow,
-                    Label = template.Label,
+                    Name = template.Label,
                     Ordering = 1,
                     ActivityTemplateId = template.Id,
                 };

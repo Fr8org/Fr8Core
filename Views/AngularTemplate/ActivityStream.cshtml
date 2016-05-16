@@ -1,13 +1,18 @@
-﻿<div ng-controller="NotifierController" style="right:0px;position:absolute; width:100%; height:100%">
+﻿<div ng-controller="NotifierController" class="activity-stream">
     <md-content class="md-sidenav-right md-whiteframe-4dp activity-stream-template" md-component-id="right" md-is-locked-open="true" md-disable-backdrop>
         <md-toolbar class="md-theme-light">
             <h1 class="md-toolbar-tools">Activity</h1>
         </md-toolbar>
-        <md-content layout-padding>
-            <md-list flex>
-                <md-list-item class="secondary-button-padding" ng-repeat="event in eventList">
-                    <fr8-event style="margin-top: 10px; margin-bottom: 10px;" event="event.data" type="{{event.type}}"></fr8-event>
-                    <md-divider></md-divider>
+        <md-content>
+            <md-list flex>    
+                <md-list-item class="md-2-line fr8-collapse-heading"
+                    ng-repeat="event in eventList"
+                    fr8-event
+                    event="event.data"
+                    type="{{event.type}}"
+                    fr8-collapse-heading
+                    ng-click="$parent.fr8CollapseCtrl.toggle()"
+                    ng-class="{'fr8-collapse-collapsed': fr8CollapseCtrl.isCollapsed}">
                 </md-list-item>
             </md-list>
         </md-content>

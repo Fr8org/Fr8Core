@@ -75,10 +75,6 @@
     <Prefer32Bit>true</Prefer32Bit>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="DocuSign.Integration.Client, Version=1.6.1.0, Culture=neutral, PublicKeyToken=7fca6fcbbc219ede, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Utilities\DocuSign.Integration.Client.dll</HintPath>
-    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
       <Private>True</Private>
@@ -208,6 +204,11 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Management.Automation, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\..\..\Windows\assembly\GAC_MSIL\System.Management.Automation\1.0.0.0__31bf3856ad364e35\System.Management.Automation.dll</HintPath>
+      <EmbedInteropTypes>False</EmbedInteropTypes>
+    </Reference>
     <Reference Include="System.Net" />
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Net.Http.Extensions, Version=2.2.22.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
@@ -231,15 +232,17 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CleanupService.cs" />
     <Compile Include="Configuration\HealthMonitorConfigurationSection.cs" />
     <Compile Include="Configuration\SelfHostedTerminalsCollection.cs" />
     <Compile Include="Configuration\NotifiersConfigurationCollection.cs" />
     <Compile Include="Configuration\TestSuiteConfigurationCollection.cs" />
+    <Compile Include="Context.cs" />
+    <Compile Include="Jobs\MetricMonitor.cs" />
     <Compile Include="NUnitTestRunner.cs" />
     <Compile Include="NUnitTraceListener.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="NUnitTestPackageFactory.cs" />
     <Compile Include="HtmlReportBuilder.cs" />
     <Compile Include="TerminalStartUpAwaiter.cs" />
     <Compile Include="SelfHostInitializer.cs" />
@@ -301,11 +304,15 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\HubTests\HubTests.csproj">
-      <Project>{1e8dd13a-846b-4c36-a9c4-5997c5fd74ff}</Project>
-      <Name>HubTests</Name>
+    <ProjectReference Include="..\..\Utilities\Utilities.csproj">
+      <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
+      <Name>Utilities</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\HubTests\HubTests.csproj">
+    <ProjectReference Include="..\..\Fr8Data\Fr8Data.csproj">
+      <Project>{a3178d71-a2c3-45b9-8334-adcc7c313541}</Project>
+      <Name>Fr8Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\HubTests\HubTests.csproj">
       <Project>{1e8dd13a-846b-4c36-a9c4-5997c5fd74ff}</Project>
       <Name>HubTests</Name>
     </ProjectReference>
@@ -446,6 +453,14 @@
       <ProductName>.NET Framework 3.5 SP1</ProductName>
       <Install>false</Install>
     </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{82A7F48D-3B50-4B1E-B82E-3ADA8210C358}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="SQL\CountActiveTestPlans.sql" />
+    <Content Include="SQL\CountFileStats.sql" />
+    <Content Include="SQL\CountStats.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />

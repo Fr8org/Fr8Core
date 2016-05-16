@@ -1,17 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
 using Data.Entities;
-using Data.Interfaces.Manifests;
+using Fr8Data.Manifests;
 using Intuit.Ipp.Data;
-using terminalQuickBooks.Infrastructure;
+using TerminalBase.Infrastructure;
 
 namespace terminalQuickBooks.Interfaces
 {
     public interface IChartOfAccounts
     {
-        List<Account> GetAccountList(AuthorizationTokenDO authTokenDO);
-        ChartOfAccountsCM GetChartOfAccounts(AuthorizationTokenDO authTokenDO);
+        ChartOfAccountsCM GetChartOfAccounts(AuthorizationTokenDO authTokenDO, string userId, IHubCommunicator hubCommunicator);
     }
 }

@@ -1,8 +1,7 @@
 ﻿using System.Collections.Generic;
-using Data.Interfaces.Manifests;
 using terminalGoogle.DataTransferObjects;
-using Google.GData.Spreadsheets;
 using System.Threading.Tasks;
+using Fr8Data.Manifests;
 
 namespace terminalGoogle.Interfaces
 {

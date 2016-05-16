@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using terminalSlack.Interfaces;
 
 namespace terminalSlack.Services
@@ -22,27 +22,25 @@ namespace terminalSlack.Services
             var payloadFields = ParseSlackPayloadData(externalEventPayload);
             //Currently Slack username is stored in ExternalAccountId property of AuthorizationToken (in order to display it in authentication dialog)
             //TODO: this should be changed. We should have ExternalAccountName and ExternalDomainName for displaying purposes
-            var userName = payloadFields.FirstOrDefault(x => x.Key == "user_name")?.Value;
+            //This is for backwards compatibility. Messages received from Slack RTM mechanism will contain the owner of subscription whereas messegas received from WebHooks not
+            var userName = payloadFields.FirstOrDefault(x => x.Key == "owner_name")?.Value ?? payloadFields.FirstOrDefault(x => x.Key == "user_name")?.Value;
             var teamId = payloadFields.FirstOrDefault(x => x.Key == "team_id")?.Value;
             if (string.IsNullOrEmpty(userName) && string.IsNullOrEmpty(teamId))
             {
                 return null;
             }
-            var plansAffectedString = payloadFields.FirstOrDefault(x => x.Key == "plans_affected")?.Value;
-            var plansAffected = ParsePlansAffected(plansAffectedString);
             var eventReportContent = new EventReportCM
             {
                 EventNames = "Slack Outgoing Message",
                 ContainerDoId = "",
                 EventPayload = WrapPayloadDataCrate(payloadFields),
-                ExternalAccountId = userName,
+                ExternalAccountId = userName, 
                 //Now plans won't be run for entire team but rather for specific user again
                 //ExternalDomainId = teamId,
                 Manufacturer = "Slack",
-                PlansAffected = plansAffected
             };
             var curEventReport = Crate.FromContent("Standard Event Report", eventReportContent);
-            return Task.FromResult(curEventReport);
+            return Task.FromResult((Crate)curEventReport);
         }
 
         private List<Guid> ParsePlansAffected(string plansAffectedString)

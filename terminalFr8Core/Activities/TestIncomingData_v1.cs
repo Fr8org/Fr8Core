@@ -4,18 +4,16 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
-using System.Web.Razor.Generator;
-using AutoMapper;
-using Data.Control;
-using Data.Crates;
 using Newtonsoft.Json;
-using Data.Interfaces;
 using Data.Entities;
 using Data.Infrastructure;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Data.States;
-
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
@@ -315,7 +313,7 @@ namespace terminalFr8Core.Actions
                 Source = new FieldSourceDTO
                 {
                     Label = "Queryable Criteria",
-                    ManifestType = CrateManifestTypes.StandardQueryFields
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
                 },
                 // Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
             };
@@ -337,19 +335,7 @@ namespace terminalFr8Core.Actions
             // var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
             var queryFieldsCrate = Crate.FromContent(
                 "Queryable Criteria",
-                new TypedFieldsCM(
-                    curUpstreamFields.Select(
-                        x => new TypedFieldDTO(
-                            x.Key,
-                            x.Key,
-                            FieldType.String,
-                            new TextBox()
-                            {
-                                Name = "QueryField_" + x.Key
-                            }
-                        )
-                    )
-                )
+                new FieldDescriptionsCM(curUpstreamFields)
             );
 
             //build a controls crate to render the pane
@@ -374,19 +360,7 @@ namespace terminalFr8Core.Actions
             // var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
             var queryFieldsCrate = Crate.FromContent(
                 "Queryable Criteria",
-                new TypedFieldsCM(
-                    curUpstreamFields.Select(
-                        x => new TypedFieldDTO(
-                            x.Key,
-                            x.Key,
-                            FieldType.String,
-                            new TextBox()
-                            {
-                                Name = "QueryField_" + x.Key
-                            }
-                        )
-                    )
-                )
+                new FieldDescriptionsCM(curUpstreamFields)
             );
 
             using (var crateStorage = CrateManager.UpdateStorage(() => curActivityDO.CrateStorage))
@@ -407,7 +381,7 @@ namespace terminalFr8Core.Actions
 
             var hasControlsCrate = GetCratesByManifestType<StandardConfigurationControlsCM>(curActionDataPackageDO) != null;
 
-            var hasQueryFieldsCrate = GetCratesByManifestType<TypedFieldsCM>(curActionDataPackageDO) != null;
+            var hasQueryFieldsCrate = GetCratesByManifestType<FieldDescriptionsCM>(curActionDataPackageDO) != null;
 
             if (hasControlsCrate && hasQueryFieldsCrate)
             {
@@ -418,6 +392,37 @@ namespace terminalFr8Core.Actions
                 return ConfigurationRequestType.Initial;
             }
         }
+
+        protected async Task<Crate> ValidateFields(List<FieldValidationDTO> requiredFieldList)
+        {
+            var result = await HubCommunicator.ValidateFields(requiredFieldList, CurrentFr8UserId);
+
+            var validationErrorList = new List<FieldDTO>();
+            //lets create necessary validationError crates
+            for (var i = 0; i < result.Count; i++)
+            {
+                var fieldCheckResult = result[i];
+                if (fieldCheckResult == FieldValidationResult.NotExists)
+                {
+                    validationErrorList.Add(new FieldDTO() { Key = requiredFieldList[i].FieldName, Value = "Required" });
+                }
+            }
+
+            if (validationErrorList.Any())
+            {
+                return CrateManager.CreateDesignTimeFieldsCrate("Validation Errors", validationErrorList.ToArray());
+            }
+
+            return null;
+        }
+
+        protected async Task<CrateDTO> ValidateByStandartDesignTimeFields(ActivityDO curActivityDO, FieldDescriptionsCM designTimeFields)
+        {
+            var fields = designTimeFields.Fields;
+            var validationList = fields.Select(f => new FieldValidationDTO(curActivityDO.Id, f.Key)).ToList();
+            return CrateManager.ToDto(await ValidateFields(validationList));
+        }
+
 
         protected async Task<CrateDTO> ValidateActivity(ActivityDO curActivityDO)
         {
@@ -461,7 +466,7 @@ namespace terminalFr8Core.Actions
         {
             string curLabel = string.Empty;
 
-            if (typeof(TManifest) == typeof(TypedFieldsCM))
+            if (typeof(TManifest) == typeof(FieldDescriptionsCM))
             {
                 curLabel = "Queryable Criteria";
             } 

@@ -237,34 +237,13 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Constants\ActivityErrorCode.cs" />
-    <Compile Include="Constants\ActivityResponse.cs" />
-    <Compile Include="Constants\ActivityExecutionMode.cs" />
-    <Compile Include="Constants\FieldValidationResult.cs" />
-    <Compile Include="Constants\ActivityDirection.cs" />
-    <Compile Include="Constants\ManifestIdEnum.cs" />
-    <Compile Include="Constants\Tags.cs" />
-    <Compile Include="Control\Control.cs" />
-    <Compile Include="Crates\Crate.cs" />
-    <Compile Include="Crates\CrateManifestAttribute.cs" />
-    <Compile Include="Crates\CrateManifestType.cs" />
-    <Compile Include="Crates\CrateManifestTypeDescriptionAttribute.cs" />
-    <Compile Include="Crates\CrateStorage.cs" />
-    <Compile Include="Crates\CrateStorageExtensions.cs" />
-    <Compile Include="Crates\CrateStorageSerializer.cs" />
-    <Compile Include="Crates\CrateStorageSerializer.DefaultSerializer.cs" />
-    <Compile Include="Crates\CrateT.cs" />
-    <Compile Include="Crates\DenySerializationConverter.cs" />
-    <Compile Include="Crates\ICrateStorage.cs" />
-    <Compile Include="Crates\ICrateStorageSerializer.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="Crates\IManifestSerializer.cs" />
-    <Compile Include="Crates\ManifestDiscovery.cs" />
-    <Compile Include="Crates\ManifestTypeCache.cs" />
     <Compile Include="Entities\AspNetUserClaimDO.cs" />
     <Compile Include="Entities\EncryptedAuthorizationData.cs" />
     <Compile Include="Entities\OrganizationDO.cs" />
+    <Compile Include="Entities\PlanTemplates\ActivityDescriptionDO.cs" />
+    <Compile Include="Entities\PlanTemplates\NodeTransitionDO.cs" />
+    <Compile Include="Entities\PlanTemplates\PlanTemplateDO.cs" />
+    <Compile Include="Entities\PlanTemplates\PlanNodeDescriptionDO.cs" />
     <Compile Include="Entities\PermissionSetDO.cs" />
     <Compile Include="Entities\PlanNodeDO.cs" />
     <Compile Include="Entities\FileDO.cs" />
@@ -274,8 +253,7 @@
     <Compile Include="Expressions\ExpressionTransformation.cs" />
     <Compile Include="Expressions\ExpressionTransformation.PropertyInfo.cs" />
     <Compile Include="Expressions\ExpressionTransformation.TransformationVisitor.cs" />
-    <Compile Include="Infrastructure\Fr8ApiHelper.cs" />
-    <Compile Include="Helpers\Fr8ReflectionHelper.cs" />
+    <Compile Include="Infrastructure\DataExtensions.cs" />
     <Compile Include="Infrastructure\AutoMapper\JSONToStringConverter.cs" />
     <Compile Include="Infrastructure\AutoMapper\DataAutoMapperBootstrapper.cs" />
     <Compile Include="Infrastructure\AutoMapper\PlanDOFullConverter.cs" />
@@ -283,126 +261,14 @@
     <Compile Include="Infrastructure\AutoMapper\StringToJSONConverter.cs" />
     <Compile Include="Infrastructure\CloudFileManager.cs" />
     <Compile Include="Infrastructure\Fr8DbConfiguration.cs" />
-    <Compile Include="Infrastructure\JsonNet\ActivityTemplateActivityConverter.cs" />
-    <Compile Include="Infrastructure\JsonNet\AvailabilityConverter.cs" />
-    <Compile Include="Infrastructure\JsonNet\CreateTimeConverter.cs" />
-    <Compile Include="Infrastructure\JsonNet\TerminalActivityTemplateConverter.cs" />
-    <Compile Include="Infrastructure\JsonNet\WebServiceConverter.cs" />
     <Compile Include="Infrastructure\Security\AuthorizeActivityAttribute.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActivityDataPackageDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActivateActivitiesDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActivityResponseDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ExternalObjectHandleDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\IncomingCratesDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\OrganizationDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\TerminalNotificationDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\AlarmDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\AuthenticateResponse.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\CrateDescriptionDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\EventLoggingDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\HistoryItemDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\QueryFieldType.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\FieldValidationDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActivityDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActivityPayloadDTO.cs" />
     <Compile Include="Entities\ActivityDO.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
     <Compile Include="Entities\BaseDO.cs" />
     <Compile Include="Entities\CriteriaDO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActivityTemplateCategoryDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\AuthorizationTokenDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\CredentialsDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ExternalAuthenticationDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ExternalAuthUrlDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\FileDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\FilterConditionDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\FilterDataDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\FinancialLineDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\Helpers\ActivityResponseHelper.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\Fr8DataDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\LogItemDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ManageAuthTokenDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ManifestDescriptionDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\MappingFieldConfigurationDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\QueryFieldDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\StandardAccountingTransactionDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\TerminalDiscoveryDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActivityProcessResultDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActivityTemplateDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActivityNameDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActivityNameListDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ComponentActivitiesDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\CrateStorageDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\CrateDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\CriteriaDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ErrorDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\EventCM.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ExternalEventDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\FieldDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\FileDescriptionDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\PlanFullDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ManufacturerDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\PayloadDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ContainerDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\QueryDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\SubPlanDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\SolutionPageDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\PlanEmptyDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\SlackPayloadDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\TerminalDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\UserDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\WebServiceActivitySetDTO.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\WebServiceDTO.cs" />
     <Compile Include="Interfaces\IAspNetUserClaimDO.cs" />
     <Compile Include="Interfaces\IFileRepository.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ControlDefinitionDTOConverter.cs" />
     <Compile Include="Interfaces\ITrackingChangesRepository.cs" />
-    <Compile Include="Interfaces\Manifests\CrateDescriptionCM.cs" />
-    <Compile Include="Helpers\FieldMemberAccessor.cs" />
-    <Compile Include="Helpers\IMemberAccessor.cs" />
-    <Compile Include="Interfaces\Manifests\ExternalObjectHandlesCM.cs" />
-    <Compile Include="Interfaces\Manifests\DocuSignEnvelopeCM_v2.cs" />
-    <Compile Include="Interfaces\Manifests\Helpers\StandardTableDataCMTools.cs" />
-    <Compile Include="Interfaces\Manifests\ManifestDescriptionCM.cs" />
-    <Compile Include="Interfaces\Manifests\ChartOfAccountsCM.cs" />
-    <Compile Include="Interfaces\Manifests\CrateManifestTypes.cs" />
-    <Compile Include="Interfaces\Manifests\DocuSignTemplateCM.cs" />
-    <Compile Include="Interfaces\Manifests\DocuSignRecipientCM.cs" />
-    <Compile Include="Interfaces\Manifests\ManifestFieldAttribute.cs" />
-    <Compile Include="Interfaces\Manifests\MtPrimaryKeyAttribute.cs" />
-    <Compile Include="Helpers\PropertyMemberAccessor.cs" />
-    <Compile Include="Interfaces\Manifests\OperationalStateCM.CallStack.cs" />
-    <Compile Include="Interfaces\Manifests\OperationalStateCM.CallStackConverter.cs" />
-    <Compile Include="Interfaces\Manifests\OperationalStateCM.InternalStates.cs" />
-    <Compile Include="Interfaces\Manifests\SalesforceEventCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardAccountingTransactionCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardBusinessFactCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardFileListCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardFr8PlansCM .cs" />
-    <Compile Include="Interfaces\Manifests\DocuSignEnvelopeCM.cs" />
-    <Compile Include="Interfaces\Manifests\DocuSignEventCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardFr8TerminalCM.cs" />
-    <Compile Include="Interfaces\Manifests\Manifest.cs" />
-    <Compile Include="Interfaces\Manifests\StandardAuthenticationCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardConfigurationControlsCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardEmailMessageCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardFr8ContainersCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardFr8HubsCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardLoggingCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardParsingRecordCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardQueryCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardQueryFieldsCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardRoutingDirectiveCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardFileDescriptionCM.cs" />
-    <Compile Include="Interfaces\Manifests\OperationalStateCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardSecurityCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardTableDataCM.cs" />
-    <Compile Include="Interfaces\Manifests\StandardPayloadDataCM.cs" />
-    <Compile Include="Interfaces\Manifests\FieldDescriptionsCM.cs" />
-    <Compile Include="Interfaces\Manifests\EventReportCM.cs" />
-    <Compile Include="Interfaces\Manifests\EventSubscriptionCM.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\PlanDTO.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.cs" />
     <Compile Include="Migrations\201510120408332_InitialMigration.Designer.cs">
       <DependentUpon>201510120408332_InitialMigration.cs</DependentUpon>
@@ -740,15 +606,52 @@
     <Compile Include="Migrations\201605020854120_EncryptedCrateStorageAdded.Designer.cs">
       <DependentUpon>201605020854120_EncryptedCrateStorageAdded.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201605051106203_AddNameToActivity.cs" />
+    <Compile Include="Migrations\201605051106203_AddNameToActivity.Designer.cs">
+      <DependentUpon>201605051106203_AddNameToActivity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201605061523484_UpdateMTDatabaseWithNewCLRTypes.cs" />
+    <Compile Include="Migrations\201605061523484_UpdateMTDatabaseWithNewCLRTypes.Designer.cs">
+      <DependentUpon>201605061523484_UpdateMTDatabaseWithNewCLRTypes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201605092037130_AddExternalAccountAndDomainNameToAuthToken.cs" />
+    <Compile Include="Migrations\201605092037130_AddExternalAccountAndDomainNameToAuthToken.Designer.cs">
+      <DependentUpon>201605092037130_AddExternalAccountAndDomainNameToAuthToken.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201605091247127_Plan_Templates.cs" />
+    <Compile Include="Migrations\201605091247127_Plan_Templates.Designer.cs">
+      <DependentUpon>201605091247127_Plan_Templates.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201605102018494_Move_Profile_To_Fr8Account.cs" />
+    <Compile Include="Migrations\201605102018494_Move_Profile_To_Fr8Account.Designer.cs">
+      <DependentUpon>201605102018494_Move_Profile_To_Fr8Account.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201605111857439_ActivityActivationState.cs" />
+    <Compile Include="Migrations\201605111857439_ActivityActivationState.Designer.cs">
+      <DependentUpon>201605111857439_ActivityActivationState.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201605131245044_AddedClassPropertyToFr8AccountDO.cs" />
+    <Compile Include="Migrations\201605131245044_AddedClassPropertyToFr8AccountDO.Designer.cs">
+      <DependentUpon>201605131245044_AddedClassPropertyToFr8AccountDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.cs" />
     <Compile Include="Repositories\Authorization\AuthorizationTokenChangeTracker.cs" />
-    <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryForTests.cs" />
-    <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryStub.cs" />
+    <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.InterceptingProvider.cs" />
+    <Compile Include="Repositories\Authorization\AuthorizationTokenRepositoryBase.QueryInterceptor.cs" />
+    <Compile Include="Repositories\Authorization\Impl\AuthorizationTokenRepositoryForTests.cs" />
+    <Compile Include="Repositories\Authorization\Impl\AuthorizationTokenRepositoryStub.cs" />
     <Compile Include="Repositories\Authorization\IAuthorizationTokenRepository.cs" />
-    <Compile Include="Repositories\Authorization\KeyVaultAuthorizationTokenRepository.cs" />
+    <Compile Include="Repositories\Authorization\IAuthorizationTokenStorageProvider.cs" />
+    <Compile Include="Repositories\Authorization\Impl\EfAuthorizationTokenStorageProvider.cs" />
+    <Compile Include="Repositories\Authorization\Impl\KeyVaultAuthorizationTokenRepository.cs" />
+    <Compile Include="Repositories\Authorization\Impl\MockedDbAuthorizationTokenStorageProvider.cs" />
+    <Compile Include="Repositories\PlanTemplates\ActivityDescriptionRepository.cs" />
+    <Compile Include="Repositories\PlanTemplates\NodeTransitionRepository.cs" />
+    <Compile Include="Repositories\PlanTemplates\PlanNodeDescriptionsRepository.cs" />
+    <Compile Include="Repositories\PlanTemplates\PlanTemplateRepository.cs" />
     <Compile Include="Repositories\ProfileRepository.cs" />
     <Compile Include="Repositories\Cache\ICacheExpirationStrategy.cs" />
     <Compile Include="Repositories\Cache\IExpirationToken.cs" />
@@ -838,12 +741,11 @@
     <Compile Include="Repositories\SubscriptionRepository.cs" />
     <Compile Include="Repositories\TerminalSubscriptionRepository.cs" />
     <Compile Include="Repositories\WebServiceRepository.cs" />
-    <Compile Include="States\ActivityType.cs" />
-    <Compile Include="States\ActivityCategory.cs" />
-    <Compile Include="States\AuthenticationType.cs" />
+    <Compile Include="States\ActivationState.cs" />
     <Compile Include="States\ActivityTemplateState.cs" />
     <Compile Include="States\AuthorizationTokenState.cs" />
-    <Compile Include="States\AvailabilityType.cs" />
+    <Compile Include="States\DefaultProfiles.cs" />
+    <Compile Include="States\NotificationChannel.cs" />
     <Compile Include="States\CrateDirection.cs" />
     <Compile Include="States\CriteriaExecutionType.cs" />
     <Compile Include="Entities\HistoryItemDO.cs" />
@@ -855,7 +757,6 @@
     <Compile Include="Entities\SubscriptionDO.cs" />
     <Compile Include="Exceptions\EntityNotFoundException.cs" />
     <Compile Include="Infrastructure\EntityExtensions.cs" />
-    <Compile Include="Interfaces\DataTransferObjects\ActivityTypeListDTO.cs" />
     <Compile Include="Interfaces\IBaseDO.cs" />
     <Compile Include="Entities\ExpectedResponseDO.cs" />
     <Compile Include="Entities\InvitationDO.cs" />
@@ -883,11 +784,10 @@
     <Compile Include="Repositories\MetaflowRepository.cs" />
     <Compile Include="Repositories\ExpectedResponseRepository.cs" />
     <Compile Include="Repositories\LogRepository.cs" />
-    <Compile Include="Repositories\Authorization\SqlAuthorizationTokenRepository.cs" />
+    <Compile Include="Repositories\Authorization\Impl\SqlAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\InvitationRepository.cs" />
     <Compile Include="Repositories\UserStatusRepository.cs" />
     <Compile Include="States\AccessLevel.cs" />
-    <Compile Include="States\PlanVisibility.cs" />
     <Compile Include="States\PermissionType.cs" />
     <Compile Include="States\SubscriptionState.cs" />
     <Compile Include="States\Templates\_PermissionTypeTemplate.cs" />
@@ -904,7 +804,6 @@
     <Compile Include="States\InvitationType.cs" />
     <Compile Include="States\ParticipationStatus.cs" />
     <Compile Include="States\PlanState.cs" />
-    <Compile Include="States\ProcessTemplateType.cs" />
     <Compile Include="States\Roles.cs" />
     <Compile Include="States\Templates\_AccessLevelTemplate.cs" />
     <Compile Include="States\Templates\_AuthenticationTypeTemplate.cs" />
@@ -999,7 +898,6 @@
     <Compile Include="Repositories\UserAgentInfoRepository.cs" />
     <Compile Include="Repositories\UserRepository.cs" />
     <Compile Include="States\UserState.cs" />
-    <Compile Include="Crates\Helpers\LoggingDataCrateFactory.cs" />
     <Compile Include="Utility\JoinClasses\FileTags.cs" />
     <Compile Include="Utility\CopyPropertiesHelper.cs" />
     <Compile Include="Utility\PagingExtensions.cs" />
@@ -1025,6 +923,10 @@
     </None>
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Fr8Data\Fr8Data.csproj">
+      <Project>{a3178d71-a2c3-45b9-8334-adcc7c313541}</Project>
+      <Name>Fr8Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{D6C86CFF-37C0-49BE-9F77-4F876CE6A793}</Project>
       <Name>Utilities</Name>
@@ -1291,6 +1193,27 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201605020854120_EncryptedCrateStorageAdded.resx">
       <DependentUpon>201605020854120_EncryptedCrateStorageAdded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605051106203_AddNameToActivity.resx">
+      <DependentUpon>201605051106203_AddNameToActivity.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605061523484_UpdateMTDatabaseWithNewCLRTypes.resx">
+      <DependentUpon>201605061523484_UpdateMTDatabaseWithNewCLRTypes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605092037130_AddExternalAccountAndDomainNameToAuthToken.resx">
+      <DependentUpon>201605092037130_AddExternalAccountAndDomainNameToAuthToken.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605091247127_Plan_Templates.resx">
+      <DependentUpon>201605091247127_Plan_Templates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605102018494_Move_Profile_To_Fr8Account.resx">
+      <DependentUpon>201605102018494_Move_Profile_To_Fr8Account.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605111857439_ActivityActivationState.resx">
+      <DependentUpon>201605111857439_ActivityActivationState.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605131245044_AddedClassPropertyToFr8AccountDO.resx">
+      <DependentUpon>201605131245044_AddedClassPropertyToFr8AccountDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

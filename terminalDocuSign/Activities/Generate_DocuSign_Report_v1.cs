@@ -4,13 +4,13 @@ using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
 using Newtonsoft.Json;
@@ -47,13 +47,13 @@ namespace terminalDocuSign.Actions
         // This little class is storing information about how certian field displayed in Query Builder controls is query to the backed
         class FieldBackedRoutingInfo
         {
-            public readonly FieldType FieldType;
+            public readonly string FieldType;
             public readonly string DocusignQueryName;
             public readonly string MtDbPropertyName;
             public readonly Func<string, AuthorizationTokenDO, ControlDefinitionDTO> ControlFactory;
 
             public FieldBackedRoutingInfo(
-                FieldType fieldType,
+                string fieldType,
                 string docusignQueryName,
                 string mtDbPropertyName,
                 Func<string, AuthorizationTokenDO, ControlDefinitionDTO> controlFactory)
@@ -97,7 +97,7 @@ namespace terminalDocuSign.Actions
                     Source = new FieldSourceDTO
                     {
                         Label = "Queryable Criteria",
-                        ManifestType = CrateManifestTypes.StandardQueryFields
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
                 }));
 
@@ -224,7 +224,7 @@ namespace terminalDocuSign.Actions
             // Update report crate.
             using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
             {
-                crateStorage.Add(Data.Crates.Crate.FromContent("Sql Query Result", searchResult));
+                crateStorage.Add(Fr8Data.Crates.Crate.FromContent("Sql Query Result", searchResult));
             }
 
             return ExecuteClientActivity(payload, "ShowTableReport");
@@ -571,7 +571,7 @@ namespace terminalDocuSign.Actions
                             ActivityResponseDTO.Create(ActivityResponse.ExecuteClientActivity);
                         operationalStatus.CurrentClientActivityName = "RunImmediately";
 
-                        var operationsCrate = Data.Crates.Crate.FromContent("Operational Status", operationalStatus);
+                        var operationsCrate = Fr8Data.Crates.Crate.FromContent("Operational Status", operationalStatus);
                         crateStorage.Add(operationsCrate);
                     }
                 }
@@ -642,16 +642,16 @@ namespace terminalDocuSign.Actions
             return null;
         }
 
-        public TypedFieldDTO[] GetFieldListForQueryBuilder(AuthorizationTokenDO authToken)
+        public FieldDTO[] GetFieldListForQueryBuilder(AuthorizationTokenDO authToken)
         {
             return _queryBuilderFields
                 .Select(x =>
-                    new TypedFieldDTO(
-                        x.Key,
-                        x.Key,
-                        x.Value.FieldType,
-                        x.Value.ControlFactory(x.Key, authToken)
-                    )
+                    new FieldDTO()
+                    {
+                        Key = x.Key,
+                        Label = x.Key,
+                        FieldType = x.Value.FieldType
+                    }
                 )
                 .ToArray();
         }
@@ -701,12 +701,12 @@ namespace terminalDocuSign.Actions
 
         private IEnumerable<Crate> PackDesignTimeData(AuthorizationTokenDO authToken)
         {
-            yield return Data.Crates.Crate.FromContent(
+            yield return Fr8Data.Crates.Crate.FromContent(
                 "Queryable Criteria",
-                new TypedFieldsCM(GetFieldListForQueryBuilder(authToken))
+                new FieldDescriptionsCM(GetFieldListForQueryBuilder(authToken))
             );
 
-            yield return Data.Crates.Crate.FromContent(
+            yield return Fr8Data.Crates.Crate.FromContent(
                 "DocuSign Envelope Report",
                 new FieldDescriptionsCM(
                     new FieldDTO
@@ -727,6 +727,7 @@ namespace terminalDocuSign.Actions
             }
             return ConfigurationRequestType.Followup;
         }
+
         /// <summary>
         /// This method provides documentation in two forms:
         /// SolutionPageDTO for general information and 
@@ -746,17 +747,17 @@ namespace terminalDocuSign.Actions
             {
                 if (curDocumentation.Contains("ExplainMailMerge"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution work with DocuSign Reports"));
+                    return Task.FromResult(GenerateDocumentationResponse(@"This solution work with DocuSign Reports"));
                 }
                 if (curDocumentation.Contains("ExplainService"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                    return Task.FromResult(GenerateDocumentationResponse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }
-                return Task.FromResult(GenerateErrorRepsonse("Unknown contentPath"));
+                return Task.FromResult(GenerateErrorResponse("Unknown contentPath"));
             }
             return
                 Task.FromResult(
-                    GenerateErrorRepsonse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+                    GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }

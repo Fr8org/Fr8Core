@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.States;
 using NUnit.Framework;
 using HealthMonitor.Utility;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
-using Data.Crates;
 using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSignTests.Fixtures
@@ -249,7 +250,7 @@ namespace terminalDocuSignTests.Fixtures
                 Name = "Monitor_DocuSign_Envelope_Activity",
                 Version = "1",
                 Label = "Monitor DocuSign Envelope Activity",
-                Category = Data.States.ActivityCategory.Forwarders
+                Category = Fr8Data.States.ActivityCategory.Forwarders
             };
         }
 
@@ -261,7 +262,7 @@ namespace terminalDocuSignTests.Fixtures
                 Name = "Send_DocuSign_Envelope",
                 Label = "Send DocuSign Envelope",
                 Version = "1",
-                Category = Data.States.ActivityCategory.Forwarders
+                Category = Fr8Data.States.ActivityCategory.Forwarders
             };
         }
 
@@ -276,7 +277,7 @@ namespace terminalDocuSignTests.Fixtures
 
             var curDocuSignEnvelopeInfo = DocuSignEventParser.GetEnvelopeInformation(EnvelopePayload);
             var content = DocuSignEventParser.ParseXMLintoCM(curDocuSignEnvelopeInfo);
-            return new CrateStorage(Data.Crates.Crate.FromContent("DocuSign Connect Event", content));
+            return new CrateStorage(Fr8Data.Crates.Crate.FromContent("DocuSign Connect Event", content));
         }
         private static string EnvelopePayload = @"<?xml version=""1.0"" encoding=""UTF-8"" ?>
             <DocuSignEnvelopeInformation xmlns = ""http://www.docusign.net/API/3.0"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">

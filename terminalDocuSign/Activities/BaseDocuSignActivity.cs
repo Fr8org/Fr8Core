@@ -1,19 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
-using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Managers;
 using StructureMap;
 using terminalDocuSign.Services.New_Api;
 using TerminalBase.BaseClasses;
+using TerminalBase.Errors;
+using TerminalBase.Infrastructure;
 
 namespace terminalDocuSign.Actions
 {
@@ -47,7 +49,7 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        protected List<FieldDTO> CreateDocuSignEventFields(DocuSignEnvelopeCM_v2 envelope)
+        protected List<FieldDTO> CreateDocuSignEventFields(DocuSignEnvelopeCM_v2 envelope, string label = null)
         {
             string curRecipientEmail = "";
             string curRecipientUserName = "";
@@ -60,13 +62,13 @@ namespace terminalDocuSign.Actions
             }
 
             return new List<FieldDTO>{
-                new FieldDTO("CurrentRecipientEmail", curRecipientEmail, AvailabilityType.RunTime) { Tags = "EmailAddress" },
-                new FieldDTO("CurrentRecipientUserName", curRecipientUserName, AvailabilityType.RunTime) { Tags = "UserName" },
-                new FieldDTO("Status", envelope?.Status,  AvailabilityType.RunTime),
-                new FieldDTO("CreateDate",  envelope?.CreateDate?.ToString()) { Tags = "Date" },
-                new FieldDTO("SentDate", envelope?.SentDate?.ToString(), AvailabilityType.RunTime) { Tags = "Date" },
-                new FieldDTO("Subject", envelope?.Subject, AvailabilityType.RunTime),
-                new FieldDTO("EnvelopeId", envelope?.EnvelopeId, AvailabilityType.RunTime),
+                new FieldDTO("CurrentRecipientEmail", curRecipientEmail, AvailabilityType.RunTime) { Tags = "EmailAddress",SourceCrateLabel = label },
+                new FieldDTO("CurrentRecipientUserName", curRecipientUserName, AvailabilityType.RunTime) { Tags = "UserName", SourceCrateLabel = label },
+                new FieldDTO("Status", envelope?.Status,  AvailabilityType.RunTime) { SourceCrateLabel = label},
+                new FieldDTO("CreateDate",  envelope?.CreateDate?.ToString()) { Tags = "Date",SourceCrateLabel = label },
+                new FieldDTO("SentDate", envelope?.SentDate?.ToString(), AvailabilityType.RunTime) { Tags = "Date", SourceCrateLabel = label },
+                new FieldDTO("Subject", envelope?.Subject, AvailabilityType.RunTime) { SourceCrateLabel = label},
+                new FieldDTO("EnvelopeId", envelope?.EnvelopeId, AvailabilityType.RunTime) { SourceCrateLabel = label},
             };
         }
 
@@ -140,28 +142,7 @@ namespace terminalDocuSign.Actions
                 control.ListItems = templates.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
             }
         }
-
-        public virtual async System.Threading.Tasks.Task<Data.Entities.ActivityDO> Activate(Data.Entities.ActivityDO curActivityDO, Data.Entities.AuthorizationTokenDO authTokenDO)
-        {
-            return await base.Activate(curActivityDO, authTokenDO);
-        }
-
-        protected override async Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
-        {
-            var result = ValidateActivityInternal(curActivityDO);
-            if (result == ValidationResult.Success)
-            {
-                return await Task.FromResult<ICrateStorage>(null);
-            }
-            return await Task.FromResult(new CrateStorage(Crate<FieldDescriptionsCM>.FromContent("Validation Errors",
-                                                                                                 new FieldDescriptionsCM(new FieldDTO("Error Message", result.ErrorMessage)))));
-        }
-
-        protected internal virtual ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
-        {
-            return ValidationResult.Success;
-        }
-
+        
         public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payloadCrates = await GetPayload(activityDO, containerId);
@@ -170,12 +151,37 @@ namespace terminalDocuSign.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
-            var result = ValidateActivityInternal(activityDO);
-            if (result != ValidationResult.Success)
+            var crateStorage = CrateManager.GetStorage(activityDO);
+            var validationCrate = new ValidationResultsCM();
+            var payloadStorage = CrateManager.GetStorage(payloadCrates);
+            var validationManager = new ValidationManager(validationCrate, payloadStorage);
+
+            await ValidateActivity(activityDO, crateStorage, validationManager);
+
+            if (validationManager.HasErrors)
             {
-                return Error(payloadCrates, $"Could not run {ActivityUserFriendlyName} because of the below issues:{Environment.NewLine}{result.ErrorMessage}", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                return Error(payloadCrates, $"Could not run {ActivityUserFriendlyName} because of the below issues:{Environment.NewLine}{validationCrate}", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
-            return await RunInternal(activityDO, containerId, authTokenDO);
+
+            try
+            {
+                return await RunInternal(activityDO, containerId, authTokenDO);
+            }
+            catch (AuthorizationTokenExpiredOrInvalidException ex)
+            {
+                return InvalidTokenError(payloadCrates, ex.Message);
+            }
+            catch (DocuSign.eSign.Client.ApiException ex)
+            {
+                if (ex.ErrorCode == 401)
+                {
+                    return InvalidTokenError(payloadCrates);
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
         protected abstract string ActivityUserFriendlyName { get; }

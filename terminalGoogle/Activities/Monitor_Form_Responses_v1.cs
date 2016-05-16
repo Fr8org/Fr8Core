@@ -2,19 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Newtonsoft.Json;
 using TerminalBase.BaseClasses;
-using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services;
 using StructureMap;
 using terminalGoogle.Interfaces;
+using TerminalBase.Infrastructure;
 
 namespace terminalGoogle.Actions
 {
@@ -70,7 +69,7 @@ namespace terminalGoogle.Actions
             _googleIntegration = ObjectFactory.GetInstance<IGoogleIntegration>();
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             var googleAuth = GetGoogleAuthToken();
             var forms = await _googleDrive.GetGoogleForms(googleAuth);
@@ -78,10 +77,10 @@ namespace terminalGoogle.Actions
                 .Select(x => new ListItem { Key = x.Value, Value = x.Key })
                 .ToList();
             CurrentActivityStorage.Add(CreateEventSubscriptionCrate());
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             var googleAuth = GetGoogleAuthToken();
             var forms = await _googleDrive.GetGoogleForms(googleAuth);
@@ -100,8 +99,8 @@ namespace terminalGoogle.Actions
             }
             if (string.IsNullOrEmpty(ConfigurationControls.FormsList.selectedKey))
                 SelectedForm = null;
-            runtimeCrateManager.ClearAvailableCrates();
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel)
+            crateSignaller.ClearAvailableCrates();
+            crateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel)
                 .AddField("Full Name")
                 .AddField("TR ID")
                 .AddField("Email Address")
@@ -117,17 +116,29 @@ namespace terminalGoogle.Actions
             if (string.IsNullOrEmpty(formId))
                 throw new ArgumentNullException("Google Form selected is empty. Please select google form to receive.");
 
-            var scriptUrl = await _googleDrive.CreateFr8TriggerForDocument(googleAuth, formId);
-            await HubCommunicator.NotifyUser(new TerminalNotificationDTO
+            bool triggerEvent = false;
+            try
             {
-                Type = "Success",
-                ActivityName = "Monitor_Form_Responses",
-                ActivityVersion = "1",
-                TerminalName = "terminalGoogle",
-                TerminalVersion = "1",
-                Message = "You need to create fr8 trigger on current form please go to this url and run Initialize function manually. Ignore this message if you completed this step before. " + scriptUrl,
-                Subject = "Trigger creation URL"
-            }, CurrentFr8UserId);
+                triggerEvent = await _googleDrive.CreateFr8TriggerForDocument(googleAuth, formId, CurrentFr8UserEmail);
+            }
+            finally
+            {
+                if (!triggerEvent)
+                {
+                    //in case of fail as a backup plan use old manual script notification
+                    var scriptUrl = await _googleDrive.CreateManualFr8TriggerForDocument(googleAuth, formId);
+                    await HubCommunicator.NotifyUser(new TerminalNotificationDTO
+                    {
+                        Type = "Success",
+                        ActivityName = "Monitor_Form_Responses",
+                        ActivityVersion = "1",
+                        TerminalName = "terminalGoogle",
+                        TerminalVersion = "1",
+                        Message = "You need to create fr8 trigger on current form please go to this url and run Initialize function manually. Ignore this message if you completed this step before. " + scriptUrl,
+                        Subject = "Trigger creation URL"
+                    }, CurrentFr8UserId);
+                }
+            }
         }
 
         protected override Task RunCurrentActivity()
@@ -141,7 +152,7 @@ namespace terminalGoogle.Actions
             if (payloadFields == null)
             {
                 RequestHubExecutionTermination();
-                return Task.FromResult(0); ;
+                return Task.FromResult(0);
             }
             var formResponseFields = CreatePayloadFormResponseFields(payloadFields);
 

@@ -4,20 +4,17 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Hub.Managers;
 using terminalDocuSign.DataTransferObjects;
-using terminalDocuSign.Services;
 using TerminalBase.Infrastructure;
-using TerminalBase.Infrastructure.Behaviors;
 using terminalDocuSign.Services.New_Api;
-using terminalDocuSign.Actions;
 
 namespace terminalDocuSign.Actions
 {
@@ -166,32 +163,29 @@ namespace terminalDocuSign.Actions
             return curActivityDO;
         }
 
-        protected internal override ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
+        public override Task ValidateActivity(ActivityDO curActivityDO, ICrateStorage crateStorage, ValidationManager validationManager)
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            var configControls = GetConfigurationControls(crateStorage);
+            if (configControls == null)
             {
-                var configControls = GetConfigurationControls(crateStorage);
-                if (configControls == null)
-                {
-                    return new ValidationResult(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
-                }
-                var templateList = configControls.Controls.OfType<DropDownList>().Where(a => a.Name == "target_docusign_template").FirstOrDefault();
-                var documentsList = configControls.Controls.OfType<DropDownList>().Where(a => a.Name == "document_Override_DDLB").FirstOrDefault();
-                if (!DocuSignValidationUtils.AtLeastOneItemExists(templateList))
-                {
-                    return new ValidationResult(DocuSignValidationUtils.NoTemplateExistsErrorMessage);
-                }
-                if (!DocuSignValidationUtils.ItemIsSelected(templateList))
-                {
-                    return new ValidationResult(DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage);
-                }
-                if (!DocuSignValidationUtils.ItemIsSelected(documentsList))
-                {
-                    return new ValidationResult(DocuSignValidationUtils.DocumentIsNotValidErrorMessage);
-                }
-                return ValidationResult.Success;
+                validationManager.SetError(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
+                return Task.FromResult(0);
             }
-        }
 
+            var templateList = configControls.Controls.OfType<DropDownList>().FirstOrDefault(a => a.Name == "target_docusign_template");
+            var documentsList = configControls.Controls.OfType<DropDownList>().FirstOrDefault(a => a.Name == "document_Override_DDLB");
+
+            if (templateList != null)
+            {
+                validationManager.ValidateTemplateList(templateList);
+            }
+
+            if (!DocuSignValidationUtils.ItemIsSelected(documentsList))
+            {
+                validationManager.SetError(DocuSignValidationUtils.DocumentIsNotValidErrorMessage, documentsList);
+            }
+
+            return Task.FromResult(0);
+        }
     }
 }

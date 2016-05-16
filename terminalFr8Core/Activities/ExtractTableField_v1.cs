@@ -1,29 +1,18 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Globalization;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
-using System.Web;
-using AutoMapper.Internal;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Data.States;
 using Hub.Managers;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
-using TerminalBase;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using Utilities;
-using StructureMap;
-using Hub.Interfaces;
-using System.IO;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace terminalFr8Core.Actions
 {
@@ -342,7 +331,6 @@ namespace terminalFr8Core.Actions
 
                 configControls.Controls.Add(new TextBlock
                 {
-                    ErrorMessage = error,
                     Name = "Error",
                     Value = error,
                     CssClass = "well well-lg"

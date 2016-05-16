@@ -2,19 +2,17 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Crates;
 using Newtonsoft.Json;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using TerminalBase.Infrastructure;
 using TerminalBase.BaseClasses;
 using Data.Entities;
-using StructureMap;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Managers;
-using Data.Control;
-using Data.States;
 using Utilities;
 
 namespace terminalFr8Core.Actions
@@ -47,7 +45,7 @@ namespace terminalFr8Core.Actions
 
             using (var crateStorage = CrateManager.UpdateStorage(() => payloadCrates.CrateStorage))
             {
-                crateStorage.Add(Data.Crates.Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(userDefinedPayload)));
+                crateStorage.Add(Fr8Data.Crates.Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(userDefinedPayload)));
             }
             //
             //            var cratePayload = Crate.Create(
@@ -112,14 +110,14 @@ namespace terminalFr8Core.Actions
                 userDefinedPayload.ForEach(x =>
                 {
                     x.Value = x.Key;
-                    x.Availability = Data.States.AvailabilityType.RunTime;
+                    x.Availability = Fr8Data.States.AvailabilityType.RunTime;
                 });
 
                 using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                 {
                     crateStorage.RemoveByLabel(RunTimeCrateLabel);
-                    var crate = Data.Crates.Crate.FromContent(RunTimeCrateLabel, new FieldDescriptionsCM() { Fields = userDefinedPayload });
-                    crate.Availability = Data.States.AvailabilityType.RunTime;
+                    var crate = Fr8Data.Crates.Crate.FromContent(RunTimeCrateLabel, new FieldDescriptionsCM() { Fields = userDefinedPayload });
+                    crate.Availability = Fr8Data.States.AvailabilityType.RunTime;
                     crateStorage.Add(crate);
                 }
 

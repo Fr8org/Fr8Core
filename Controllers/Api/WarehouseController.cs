@@ -1,26 +1,16 @@
-﻿using System;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using System.Web.Http;
-using AutoMapper;
-using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Hub.Interfaces;
-using HubWeb.Controllers.Helpers;
-using HubWeb.Infrastructure;
-using Microsoft.AspNet.Identity;
 using StructureMap;
+using Data.Interfaces;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Hub.Infrastructure;
 using Hub.Managers;
-using Data.Interfaces.Manifests;
-using System.Collections.Generic;
-using Data.Crates;
+using HubWeb.Infrastructure;
 
 namespace HubWeb.Controllers
 {
-
     [Fr8ApiAuthorize]
     public class WarehouseController : ApiController
     {
@@ -46,7 +36,7 @@ namespace HubWeb.Controllers
                     var recordOfEnvelopeEvents = uow.MultiTenantObjectRepository.Query<DocuSignEnvelopeCM_v2>(userId, a => a.EnvelopeId == manifest.EnvelopeId);
                     foreach (var stored_manifest in recordOfEnvelopeEvents)
                     {
-                        result.Add(_crateManager.ToDto(Data.Crates.Crate.FromContent("RecordedEnvelope", stored_manifest, Data.States.AvailabilityType.RunTime)));
+                        result.Add(_crateManager.ToDto(Fr8Data.Crates.Crate.FromContent("RecordedEnvelope", stored_manifest, Fr8Data.States.AvailabilityType.RunTime)));
                     }
                 }
             }

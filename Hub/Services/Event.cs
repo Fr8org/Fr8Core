@@ -1,26 +1,18 @@
 ﻿using System;
-using System.Net.Http;
 using System.Threading.Tasks;
-using System.Web.Http;
-using System.Web.Http.Results;
 using StructureMap;
 using Data.Infrastructure;
-using Data.Interfaces.DataTransferObjects;
-using Hub.Exceptions;
 using Hub.Interfaces;
-using System.Configuration;
-using Data.Crates;
-using Data.Interfaces.Manifests;
 using Data.Interfaces;
 using Data.States;
 using Data.Entities;
 using System.Linq;
 using System.Collections.Generic;
 using System.Data.Entity;
-using Data.Exceptions;
-using Utilities;
-using Hub.Managers;
-using Hangfire;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Utilities.Logging;
 
 namespace Hub.Services
 {
@@ -80,12 +72,13 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                Logger.LogInfo($"Received external event for account '{eventReportMS.ExternalAccountId}'");
                 if (eventReportMS.ExternalAccountId == systemUserEmail)
                 {
                     try
                     {
                         Fr8AccountDO systemUser = uow.UserRepository.GetOrCreateUser(systemUserEmail);
-                        FindAndExecuteAccountPlans(uow, eventReportMS, curCrateStandardEventReport, systemUser);
+                        FindAndExecuteAccountPlans(uow, eventReportMS, curCrateStandardEventReport, systemUser.Id);
                     }
                     catch (Exception ex)
                     {
@@ -98,15 +91,15 @@ namespace Hub.Services
                     //For team-wide events we use ExternalDomainId property (e.g. received Slack message should run all plans for respective Slack team)
                     var authTokenList = uow.AuthorizationTokenRepository
                         .GetPublicDataQuery()
-                        .Include(x => x.UserDO)
                         .Where(x => x.ExternalAccountId.Contains(eventReportMS.ExternalAccountId)
                                 || (x.ExternalDomainId != null && x.ExternalDomainId == eventReportMS.ExternalDomainId))
                         .ToArray();
+                    Logger.LogInfo($"External event for account '{eventReportMS.ExternalAccountId}' relates to {authTokenList.Length} auth tokens");
                     foreach (var authToken in authTokenList)
                     {
                         try
                         {
-                            FindAndExecuteAccountPlans(uow, eventReportMS, curCrateStandardEventReport, authToken.UserDO);
+                            FindAndExecuteAccountPlans(uow, eventReportMS, curCrateStandardEventReport, authToken.UserID);
                         }
                         catch (Exception ex)
                         {
@@ -118,13 +111,14 @@ namespace Hub.Services
         }
 
         private void FindAndExecuteAccountPlans(IUnitOfWork uow, EventReportCM eventReportMS,
-               Crate curCrateStandardEventReport, Fr8AccountDO curDockyardAccount = null)
+               Crate curCrateStandardEventReport, string curDockyardAccountId = null)
         {
             //find this Account's Plans
             var initialPlansList = uow.PlanRepository.GetPlanQueryUncached()
-                .Where(pt => pt.Fr8AccountId == curDockyardAccount.Id && pt.PlanState == PlanState.Active).ToList();
+                .Where(pt => pt.Fr8AccountId == curDockyardAccountId && pt.PlanState == PlanState.Active).ToList();
             var subscribingPlans = _plan.MatchEvents(initialPlansList, eventReportMS);
 
+            Logger.LogInfo($"Upon receiving event for account '{eventReportMS.ExternalAccountId}' {subscribingPlans.Count} of {initialPlansList.Count} will be notified");
             //When there's a match, it means that it's time to launch a new Process based on this Plan, 
             //so make the existing call to Plan#LaunchProcess.
             _plan.Enqueue(

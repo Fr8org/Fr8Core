@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using Data.Interfaces.Manifests;
+using Fr8Data.Manifests;
 using HealthMonitor.Utility;
 using NUnit.Framework;
 
@@ -12,8 +9,7 @@ namespace terminalFr8CoreTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
-        private const int Fr8CoreActivityCount = 27;
-
+        private const int Fr8CoreActivityCount = 26;
         private const string TestIncomingDataName = "TestIncomingData";
         private const string MapFieldsName = "MapFields";
         private const string AddPayloadManuallyName = "AddPayloadManually";
@@ -37,7 +33,7 @@ namespace terminalFr8CoreTests.Integration
         private const string SearchFr8Warehouse = "SearchFr8Warehouse";
         private const string TestAndBranch = "TestAndBranch";
         private const string ExtractTableField = "ExtractTableField";
-        private const string CollectData = "CollectData";
+        private const string AppBuilder = "AppBuilder";
         private const string GetDataFromFr8Warehouse = "GetDataFromFr8Warehouse";
 
 
@@ -78,7 +74,7 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SearchFr8Warehouse));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == TestAndBranch));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ExtractTableField));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == CollectData));
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == AppBuilder));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == GetDataFromFr8Warehouse));
         }
     }

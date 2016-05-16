@@ -30,6 +30,7 @@ module dockyard.services {
         }
 
         public bindEventToChannel(channel: string, event: string, callback: Function, context?: any): void {
+            channel = this.buildChannelName(channel);
             var channelInstance = this.pusher.subscribe(channel);
             channelInstance.bind(event, callback, context);
         }
@@ -39,6 +40,7 @@ module dockyard.services {
         }
 
         public removeEvent(channel: string, event: string): void {
+            channel = this.buildChannelName(channel);
             var channelInstance = this.pusher.channel(channel);
             if (channelInstance != undefined) {
                 channelInstance.unbind(event);
@@ -46,6 +48,7 @@ module dockyard.services {
         }
 
         public removeEventHandler(channel: string, event: string, handler: Function): void {
+            channel = this.buildChannelName(channel);
             var channelInstance = this.pusher.channel(channel);
             if (channelInstance != undefined) {
                 channelInstance.unbind(event, handler);
@@ -53,6 +56,7 @@ module dockyard.services {
         }
 
         public removeAllHandlersForContext(channel: string, context: any) {
+            channel = this.buildChannelName(channel);
             var channelInstance = this.pusher.channel(channel);
             if (channelInstance != undefined) {
                 channelInstance.unbind(null, null, context);
@@ -60,6 +64,7 @@ module dockyard.services {
         }
 
         public removeHandlerForAllEvents(channel: string, handler: Function) {
+            channel = this.buildChannelName(channel);
             var channelInstance = this.pusher.channel(channel);
             if (channelInstance != undefined) {
                 channelInstance.unbind(null, handler);
@@ -67,6 +72,7 @@ module dockyard.services {
         }
 
         public removeAllEvents(channel: string): void {
+            channel = this.buildChannelName(channel);
             var channelInstance = this.pusher.channel(channel);
             if (channelInstance != undefined) {
                 channelInstance.unbind();
@@ -75,6 +81,14 @@ module dockyard.services {
 
         public disconnect(): void {
             this.pusher.disconnect();
+        }
+
+        private buildChannelName(email: string) {
+            // If you change the way how channel name is constructed, be sure to change it also
+            // in the server-side code (PusherNotifier.cs). 
+            // URI encoding is necessary to remove the characters that Pusher does not support for 
+            // Channel name. Since it also does not support %, we replace it either. 
+            return 'fr8pusher_' + encodeURI(email).replace('%', '=');
         }
     }
 

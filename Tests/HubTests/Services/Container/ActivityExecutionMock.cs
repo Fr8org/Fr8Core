@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using AutoMapper;
-using Data.Constants;
-using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
 using Hub.Interfaces;
 using Newtonsoft.Json;
 
@@ -24,19 +24,14 @@ namespace HubTests.Services.Container
             _activity = activity;
         }
 
-        public IEnumerable<TViewModel> GetAllActivities<TViewModel>()
-        {
-            return _activity.GetAllActivities<TViewModel>();
-        }
-
         public Task<ActivityDTO> SaveOrUpdateActivity(ActivityDO currentActivityDo)
         {
             return _activity.SaveOrUpdateActivity(currentActivityDo);
         }
 
-        public Task<ActivityDTO> Configure(IUnitOfWork uow, string userId, ActivityDO curActivityDO, bool saveResult = true)
+        public Task<ActivityDTO> Configure(IUnitOfWork uow, string userId, ActivityDO curActivityDO)
         {
-            return _activity.Configure(uow, userId, curActivityDO, saveResult);
+            return _activity.Configure(uow, userId, curActivityDO);
         }
 
         public ActivityDO GetById(IUnitOfWork uow, Guid id)
@@ -44,14 +39,11 @@ namespace HubTests.Services.Container
             return _activity.GetById(uow, id);
         }
 
-        public ActivityDO MapFromDTO(ActivityDTO curActivityDTO)
-        {
-            return _activity.MapFromDTO(curActivityDTO);
-        }
+       
 
-        public Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
+        public Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
         {
-            return _activity.CreateAndConfigure(uow, userId, actionTemplateId, label, order, parentNodeId, createPlan, authorizationTokenId);
+            return _activity.CreateAndConfigure(uow, userId, activityTemplateId, label, name, order, parentNodeId, createPlan, authorizationTokenId);
         }
 
         public Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActivityExecutionMode curActionExecutionMode, ContainerDO curContainerDO)
@@ -78,9 +70,9 @@ namespace HubTests.Services.Container
             return Task.FromResult(Mapper.Map<ActivityDTO>(curActivityDO));
         }
 
-        public Task<ActivityDTO> Deactivate(ActivityDO curActivityDO)
+        public Task Deactivate(ActivityDO curActivityDO)
         {
-            return Task.FromResult(Mapper.Map<ActivityDTO>(curActivityDO));
+            return Task.FromResult(0);
         }
 
         Task<T> IActivity.GetActivityDocumentation<T>(ActivityDTO curActivityDTO, bool isSolution)
@@ -93,9 +85,9 @@ namespace HubTests.Services.Container
             return _activity.GetSolutionNameList(terminalName);
         }
 
-        public void Delete(Guid id)
+        public Task Delete(Guid id)
         {
-            _activity.Delete(id);
+           return _activity.Delete(id);
         }
     }
 

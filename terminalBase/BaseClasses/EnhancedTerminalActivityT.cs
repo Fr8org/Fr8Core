@@ -2,19 +2,21 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Crates;
 using Data.Entities;
-using Data.Helpers;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.DataTransferObjects.Helpers;
 using Data.Interfaces.Manifests;
 using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.DataTransferObjects.Helpers;
+using Fr8Data.Helpers;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Managers;
 using TerminalBase.Infrastructure;
 using Newtonsoft.Json.Linq;
+using TerminalBase.Errors;
 
 namespace TerminalBase.BaseClasses
 {
@@ -23,6 +25,10 @@ namespace TerminalBase.BaseClasses
     {
         /**********************************************************************************/
         // Declarations
+        /**********************************************************************************/
+
+        private const string ConfigurationValuesCrateLabel = "Configuration Values";
+        
         /**********************************************************************************/
 
         private bool _isRunTime;
@@ -67,6 +73,7 @@ namespace TerminalBase.BaseClasses
         protected UpstreamQueryManager UpstreamQueryManager { get; private set; }
         protected UiBuilder UiBuilder { get; private set; }
         protected int LoopIndex => GetLoopIndex(OperationalState);
+        protected bool DisableValidationOnFollowup { get; set; }
 
         /**********************************************************************************/
         // Functions
@@ -118,7 +125,7 @@ namespace TerminalBase.BaseClasses
                     CurrentActivityStorage = storage;
 
                     var configurationType = GetConfigurationRequestType();
-                    var runtimeCrateManager = new RuntimeCrateManager(CurrentActivityStorage, CurrentActivity.Label);
+                    var runtimeCrateManager = new CrateSignaller(CurrentActivityStorage, CurrentActivity.Name);
 
                     switch (configurationType)
                     {
@@ -161,30 +168,55 @@ namespace TerminalBase.BaseClasses
         
         /**********************************************************************************/
 
-        private async Task InitialConfiguration(RuntimeCrateManager runtimeCrateManager)
+        private async Task InitialConfiguration(CrateSignaller crateSignaller)
         {
             ConfigurationControls = CrateConfigurationControls();
             CurrentActivityStorage.Clear();
 
             CurrentActivityStorage.Add(Crate.FromContent(ConfigurationControlsLabel, ConfigurationControls, AvailabilityType.Configuration));
 
-            await Initialize(runtimeCrateManager);
+            await Initialize(crateSignaller);
 
             SyncConfControlsBack();
         }
 
         /**********************************************************************************/
 
-        private async Task FollowupConfiguration(RuntimeCrateManager runtimeCrateManager)
+        private async Task FollowupConfiguration(CrateSignaller crateSignaller)
         {
             SyncConfControls();
 
-            if (await Validate())
+            CurrentActivityStorage.Remove<ValidationResultsCM>();
+
+            var validationManager = CreateValidationManager();
+
+            if (!DisableValidationOnFollowup)
             {
-                await Configure(runtimeCrateManager);
+                await Validate(validationManager);
+            }
+
+            if (!validationManager.HasErrors || DisableValidationOnFollowup)
+            {
+                CurrentActivityStorage.Remove<ValidationResultsCM>();
+                await Configure(crateSignaller, validationManager);
             }
 
             SyncConfControlsBack();
+        }
+
+        /**********************************************************************************/
+
+        protected ValidationManager CreateValidationManager()
+        {
+            var validationResults = CurrentActivityStorage.CrateContentsOfType<ValidationResultsCM>().FirstOrDefault();
+
+            if (validationResults == null)
+            {
+                validationResults = new ValidationResultsCM();
+                CurrentActivityStorage.Add(Crate.FromContent("Validation Errors", validationResults));
+            }
+
+            return new ValidationManager(validationResults, _currentPayloadStorage);
         }
 
         /**********************************************************************************/
@@ -207,10 +239,18 @@ namespace TerminalBase.BaseClasses
 
                 SyncConfControls();
 
-                if (await Validate())
+                CurrentActivityStorage.Remove<ValidationResultsCM>();
+
+                var validationManager = CreateValidationManager();
+
+                await Validate(validationManager);
+
+                if (!validationManager.HasErrors)
                 {
+                    CurrentActivityStorage.Remove<ValidationResultsCM>();
                     await Activate();
                 }
+               
             }
 
             return curActivityDO;
@@ -284,9 +324,14 @@ namespace TerminalBase.BaseClasses
 
                 try
                 {
-                    if (!await Validate())
+                    var validationCm = new ValidationResultsCM();
+                    var validationManager = new ValidationManager(validationCm, CurrentPayloadStorage);
+
+                    await Validate(validationManager);
+
+                    if (validationManager.HasErrors)
                     {
-                        Error("Activity was incorrectly configured");
+                        Error("Activity was incorrectly configured: " + validationCm);
                         return processPayload;
                     }
 
@@ -298,6 +343,10 @@ namespace TerminalBase.BaseClasses
                     {
                         Success();
                     }
+                }
+                catch (AuthorizationTokenExpiredOrInvalidException ex)
+                {
+                    ErrorInvalidToken(ex.Message);
                 }
                 catch (ActivityExecutionException ex)
                 {
@@ -376,8 +425,8 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        protected abstract Task Initialize(RuntimeCrateManager runtimeCrateManager);
-        protected abstract Task Configure(RuntimeCrateManager runtimeCrateManager);
+        protected abstract Task Initialize(CrateSignaller crateSignaller);
+        protected abstract Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager);
 
         /**********************************************************************************/
 
@@ -406,12 +455,11 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        protected virtual Task<bool> Validate()
+        protected virtual Task Validate(ValidationManager validationManager)
         {
             return Task.FromResult(true);
         }
 
-        private const string ConfigurationValuesCrateLabel = "Configuration Values";
         /// <summary>
         /// Get or sets value of configuration field with the given key stored in current activity storage
         /// </summary>
@@ -725,13 +773,25 @@ namespace TerminalBase.BaseClasses
         }
 
         /**********************************************************************************/
-        // we don't want uncontrollable extensibility
-        protected sealed override Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
+        /// <summary>
+        /// returns error to hub
+        /// </summary>
+        protected void ErrorInvalidToken(string instructionsToUser = null)
         {
-            return base.ValidateActivity(curActivityDO);
+            SetResponse(ActivityResponse.Error);
+            var errorCode = ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID;
+            OperationalState.CurrentActivityErrorCode = errorCode;
+            OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(instructionsToUser, ErrorType.Authentication, errorCode.ToString(), null, null, null));
         }
 
-        public sealed override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        /**********************************************************************************/
+        // we don't want uncontrollable extensibility
+        public sealed override Task ValidateActivity(ActivityDO activityDo, ICrateStorage currActivityCrateStorage, ValidationManager validationManager)
+        {
+            return base.ValidateActivity(activityDo, currActivityCrateStorage, validationManager);
+        }
+
+        public  override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
             return base.ConfigurationEvaluator(curActivityDO);
         }

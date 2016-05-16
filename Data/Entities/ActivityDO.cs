@@ -2,6 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
+using Data.States;
+using Fr8Data.Constants;
 
 namespace Data.Entities
 {
@@ -13,6 +15,7 @@ namespace Data.Entities
         public string CrateStorage { get; set; }
 
         public string Label { get; set; }
+        public string Name { get; set; }
 
         [ForeignKey("ActivityTemplate")]
         public Guid ActivityTemplateId { get; set; }
@@ -26,6 +29,8 @@ namespace Data.Entities
 
         public virtual AuthorizationTokenDO AuthorizationToken { get; set; }
 
+        public ActivationState ActivationState { get; set; }
+
         protected override PlanNodeDO CreateNewInstance()
         {
             return new ActivityDO();
@@ -38,6 +43,7 @@ namespace Data.Entities
             typeof(ActivityDO).GetProperty(nameof(Label)),
             typeof(ActivityDO).GetProperty(nameof(ActivityTemplateId)),
             typeof(ActivityDO).GetProperty(nameof(AuthorizationTokenId)),
+            typeof(ActivityDO).GetProperty(nameof(ActivationState)),
         };
 
         protected override IEnumerable<PropertyInfo> GetTrackingProperties()
@@ -59,10 +65,12 @@ namespace Data.Entities
 
             base.CopyProperties(source);
             Label = activity.Label;
+            Name = activity.Name;
             CrateStorage = activity.CrateStorage;
             AuthorizationTokenId = activity.AuthorizationTokenId;
             ActivityTemplateId = activity.ActivityTemplateId;
             currentView = activity.currentView;
+            ActivationState = activity.ActivationState;
         }
     }
 }

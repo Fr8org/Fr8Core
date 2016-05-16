@@ -5,6 +5,7 @@ using System.Security.Claims;
 using System.Threading;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Interfaces.DataTransferObjects;
 using Data.Repositories.Security;
 using Data.States;
 using StructureMap;
@@ -94,7 +95,7 @@ namespace Data.Infrastructure.StructureMap
             //Object Based permission set checks
 
             var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
-            var permissionSets = securityStorageProvider.GetObjectBasedPermissionSetForObject(curObjectId, curObjectType, roles);
+            var permissionSets = securityStorageProvider.GetObjectBasedPermissionSetForObject(curObjectId, curObjectType, Guid.Empty);
 
             var modifyAllData = permissionSets.FirstOrDefault(x => x == (int) PermissionType.ModifyAllObjects);
             var viewAllData = permissionSets.FirstOrDefault(x => x == (int) PermissionType.ViewAllObjects);
@@ -106,6 +107,11 @@ namespace Data.Infrastructure.StructureMap
             if (currentPermission != 0) return true;
 
             return false;
+        }
+
+        public bool UserHasPermission(PermissionType permissionType, string objectType)
+        {
+            return true;
         }
     }
 }

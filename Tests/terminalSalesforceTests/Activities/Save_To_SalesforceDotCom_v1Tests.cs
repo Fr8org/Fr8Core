@@ -2,11 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Hub.Managers;
 using Moq;
 using NUnit.Framework;
@@ -49,7 +50,7 @@ namespace terminalSalesforceTests.Actions
             Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
             FieldDTO testField = new FieldDTO("Account", "TestAccount");
             salesforceIntegrationMock.Setup(
-                s => s.GetProperties(SalesforceObjectType.Account, It.IsAny<AuthorizationTokenDO>(), false))
+                s => s.GetProperties(SalesforceObjectType.Account, It.IsAny<AuthorizationTokenDO>(), false, null))
                 .Returns(() => Task.FromResult(new List<FieldDTO> { testField }));
 
             salesforceIntegrationMock.Setup(
@@ -99,12 +100,27 @@ namespace terminalSalesforceTests.Actions
             //Act
             result = await _saveToSFDotCom_v1.Activate(result, authToken);
 
+            var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(result);
+
             //Asser
-            var listOfRequiredControls = ObjectFactory.GetInstance<ICrateManager>().GetStorage(result)
+            var listOfRequiredControls = crateStorage
                                             .CratesOfType<StandardConfigurationControlsCM>().Single().Content
                                             .Controls.Where(c => c.Name.Equals("LastName") || c.Name.Equals("Company"));
             Assert.IsTrue(listOfRequiredControls.Count() == 2, "There are no required controls in Save to SF Activate");
-            Assert.IsFalse(listOfRequiredControls.Any(c => string.IsNullOrEmpty(c.ErrorMessage)), "There are some required controls error message is not set");
+
+            var validationCm = crateStorage.CrateContentsOfType<ValidationResultsCM>().FirstOrDefault();
+
+            Assert.IsNotNull(validationCm, "Validation results crate was not found");
+
+            foreach (var control in listOfRequiredControls)
+            {
+                var ctrl = control;
+
+                if (!validationCm.ValidationErrors.Any(x => x.ControlNames.Any(y => y == ctrl.Name)))
+                {
+                    Assert.Fail($"Control {control.Name} has no associated errors.");
+                }
+            }
         }
 
         [Test, Category("terminalSalesforceTests.Save_To_SalesforceDotCom.Activate")]
@@ -121,7 +137,7 @@ namespace terminalSalesforceTests.Actions
             //make last name as Unit and Company Name as Test
             using (var storage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(result))
             {
-                var requiredControls = ObjectFactory.GetInstance<ICrateManager>().GetStorage(result)
+                var requiredControls = storage
                                             .CratesOfType<StandardConfigurationControlsCM>().Single().Content
                                             .Controls;
 
@@ -130,8 +146,8 @@ namespace terminalSalesforceTests.Actions
                 lastNameControl.TextValue = "Unit";
 
                 var companyControl = (TextSource)requiredControls.Single(c => c.Name.Equals("Company"));
-                lastNameControl.ValueSource = "specific";
-                lastNameControl.TextValue = "Text";
+                companyControl.ValueSource = "specific";
+                companyControl.TextValue = "Text";
             }
 
             //Act

@@ -25,6 +25,8 @@ If (Test-Path $outputArchiveFile){
 
 # Create archive folder.
 New-Item -ItemType Directory -Force -Path $archiveFolderName | Out-Null
+# Create SQL folder
+New-Item -ItemType Directory -Force -Path $archiveFolderName\SQL | Out-Null
 
 # Copy HealthMonitor DLLs to archive folder.
 $srcFiles = "$rootDir\..\Tests\HealthMonitor\bin\$($buildConfiguration)\*"
@@ -39,6 +41,16 @@ Copy-Item $srcSettingsFile -Destination $dstSettingsFile -Force
 # Copy run.cmd to archive folder
 $srcRunFile = "$rootDir\HM-job-run.cmd"
 $dstRunFile = "$archiveFolderName\run.cmd"
+Copy-Item $srcRunFile -Destination $dstRunFile -Force
+
+# Copy SQL folder
+$srcRunFile = "$rootDir\..\Tests\HealthMonitor\SQL\*"
+$dstRunFile = "$archiveFolderName\SQL\"
+Copy-Item $srcRunFile -Destination $dstRunFile -Force
+
+# Copy PowerShell script
+$srcRunFile = "$rootDir\CleanUpAfterTests.ps1"
+$dstRunFile = "$archiveFolderName\"
 Copy-Item $srcRunFile -Destination $dstRunFile -Force
 
 # Create zip archive.

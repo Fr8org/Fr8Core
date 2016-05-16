@@ -5,11 +5,11 @@ using StructureMap;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
 using Data.Interfaces;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.Manifests;
 using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.Manifests;
 using HubTests.Services.Container;
 using Hub.Exceptions;
 using UtilitiesTesting.Fixtures;
@@ -80,9 +80,13 @@ namespace HubTests.Services
                 plan.PlanState = PlanState.Active;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
 
+                var userAcct = FixtureData.TestUser1();
+                uow.UserRepository.Add(userAcct);
+                plan.Fr8Account = userAcct;
+
                 uow.SaveChanges();
 
-                await Plan.Run(uow, plan);
+                await Plan.Run(plan.Id, null);
 
                 AssertExecutionSequence(new[]
                 {
@@ -140,9 +144,13 @@ namespace HubTests.Services
                 plan.PlanState = PlanState.Active;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
 
+                var userAcct = FixtureData.TestUser1();
+                uow.UserRepository.Add(userAcct);
+                plan.Fr8Account = userAcct;
+
                 uow.SaveChanges();
 
-                await Plan.Run(uow, plan);
+                await Plan.Run(plan.Id, null);
 
                 AssertExecutionSequence(new[]
                 {
@@ -252,9 +260,13 @@ namespace HubTests.Services
                 plan.PlanState = PlanState.Active;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
 
+                var userAcct = FixtureData.TestUser1();
+                uow.UserRepository.Add(userAcct);
+                plan.Fr8Account = userAcct;
+
                 uow.SaveChanges();
 
-                await Plan.Run(uow, plan);
+                await Plan.Run(plan.Id, null);
 
                 AssertExecutionSequence(new[]
                 {
@@ -375,13 +387,17 @@ namespace HubTests.Services
                 });
 
                 plan.PlanState = PlanState.Active;
-                plan.StartingSubPlan = (SubPlanDO) plan.ChildNodes[0];
+                plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
 
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(4)] = new SuspenderActivityMock(CrateManager);
 
+                var userAcct = FixtureData.TestUser1();
+                uow.UserRepository.Add(userAcct);
+                plan.Fr8Account = userAcct;
+
                 uow.SaveChanges();
 
-                await Plan.Run(uow, plan);
+                await Plan.Run(plan.Id, null);
 
                 var container = uow.ContainerRepository.GetQuery().Single(x => x.PlanId == plan.Id);
 
@@ -471,9 +487,13 @@ namespace HubTests.Services
                 plan.PlanState = PlanState.Active;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
 
+                var userAcct = FixtureData.TestUser1();
+                uow.UserRepository.Add(userAcct);
+                plan.Fr8Account = userAcct;
+
                 uow.SaveChanges();
 
-                await Plan.Run(uow, plan);
+                await Plan.Run(plan.Id, null);
 
                 AssertExecutionSequence(new[]
                 {
@@ -549,9 +569,13 @@ namespace HubTests.Services
                 plan.PlanState = PlanState.Active;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
 
+                var userAcct = FixtureData.TestUser1();
+                uow.UserRepository.Add(userAcct);
+                plan.Fr8Account = userAcct;
+
                 uow.SaveChanges();
 
-                await Plan.Run(uow, plan);
+                await Plan.Run(plan.Id, null);
 
                 AssertExecutionSequence(new[]
                 {
@@ -602,9 +626,13 @@ namespace HubTests.Services
                 plan.PlanState = PlanState.Active;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
 
+                var userAcct = FixtureData.TestUser1();
+                uow.UserRepository.Add(userAcct);
+                plan.Fr8Account = userAcct;
+
                 uow.SaveChanges();
 
-                await Plan.Run(uow, plan);
+                await Plan.Run(plan.Id, null);
 
                 AssertExecutionSequence(new[]
                 {
@@ -673,11 +701,15 @@ namespace HubTests.Services
                 plan.PlanState = PlanState.Active;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
 
+                var userAcct = FixtureData.TestUser1();
+                uow.UserRepository.Add(userAcct);
+                plan.Fr8Account = userAcct;
+
                 uow.SaveChanges();
 
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(2)] = new SubplanJumperActivityMock(CrateManager, FixtureData.GetTestGuidById(4));
 
-                await Plan.Run(uow, plan);
+                await Plan.Run(plan.Id, null);
 
                 AssertExecutionSequence(new[]
                 {
@@ -746,12 +778,15 @@ namespace HubTests.Services
                 plan.PlanState = PlanState.Active;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
 
+                var userAcct = FixtureData.TestUser1();
+                uow.UserRepository.Add(userAcct);
+                plan.Fr8Account = userAcct;
                 uow.SaveChanges();
 
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(2)] = new CallerActivityMock(CrateManager, FixtureData.GetTestGuidById(4));
 
-                await Plan.Run(uow, plan);
-                
+                await Plan.Run(plan.Id, null);
+
                 AssertExecutionSequence(new[]
                 {
                     new ActivityExecutionCall(ActivityExecutionMode.InitialRun, FixtureData.GetTestGuidById(2)),
@@ -808,11 +843,15 @@ namespace HubTests.Services
                 plan.PlanState = PlanState.Active;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
 
+                var userAcct = FixtureData.TestUser1();
+                uow.UserRepository.Add(userAcct);
+                plan.Fr8Account = userAcct;
+
                 uow.SaveChanges();
 
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(3)] = new SuspenderActivityMock(CrateManager);
 
-                await Plan.Run(uow, plan);
+                await Plan.Run(plan.Id, null);
 
                 Assert.AreEqual(State.Suspended, uow.ContainerRepository.GetQuery().Single(x => x.PlanId == plan.Id).State, "Invalid container state");
                 AssertExecutionSequence(new[]
@@ -906,12 +945,16 @@ namespace HubTests.Services
                 plan.PlanState = PlanState.Active;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
 
+                var userAcct = FixtureData.TestUser1();
+                uow.UserRepository.Add(userAcct);
+                plan.Fr8Account = userAcct;
+
                 uow.SaveChanges();
 
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(3)] = new LooperActivityMock(CrateManager, 2);
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(4)] = new CallerActivityMock(CrateManager, FixtureData.GetTestGuidById(5));
 
-                await Plan.Run(uow, plan);
+                await Plan.Run(plan.Id, null);
 
                 AssertExecutionSequence(new[]
                 {

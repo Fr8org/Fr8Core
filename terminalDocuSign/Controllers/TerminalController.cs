@@ -1,12 +1,12 @@
 using System.Collections.Generic;
 using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
-
 using Utilities.Configuration.Azure;
 using System.Web.Http.Description;
-using Data.Interfaces.Manifests;
-using Data.Constants;
+using Fr8Data.Constants;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace terminalDocuSign.Controllers
 {
@@ -35,17 +35,17 @@ namespace terminalDocuSign.Controllers
             };
 
 
-            var process_personal_report = new ActivityTemplateDTO()
-            {
-                Version = "1",
-                Name = "Process_Personal_Report",
-                Label = "Process Personal Report",
-                Category = ActivityCategory.Forwarders,
-                Terminal = terminal,
-                NeedsAuthentication = true,
-                MinPaneWidth = 380,
-                WebService = webService,
-            };
+            //var process_personal_report = new ActivityTemplateDTO()
+            //{
+            //    Version = "1",
+            //    Name = "Process_Personal_Report",
+            //    Label = "Process Personal Report",
+            //    Category = ActivityCategory.Forwarders,
+            //    Terminal = terminal,
+            //    NeedsAuthentication = true,
+            //    MinPaneWidth = 380,
+            //    WebService = webService,
+            //};
 
             var waitForDocusignEventActionTemplate = new ActivityTemplateDTO()
             {
@@ -114,7 +114,7 @@ namespace terminalDocuSign.Controllers
                 Name = "Prepare_DocuSign_Events_For_Storage",
                 Label = "Prepare DocuSign Events For Storage",
                 Version = "1",
-                Category = ActivityCategory.Forwarders,
+                Category = ActivityCategory.Monitors,
                 Terminal = terminal,
                 NeedsAuthentication = true,
                 WebService = webService,
@@ -198,7 +198,7 @@ namespace terminalDocuSign.Controllers
                 queryDocusign,
                 searchDocusignHistory,
                 getDocuSignTemplateActionTemplate,
-                process_personal_report,
+                //process_personal_report,
             };
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()

@@ -1,24 +1,18 @@
 ﻿using System;
 using NUnit.Framework;
-using Data.Interfaces.DataTransferObjects;
 using HealthMonitor.Utility;
-using System.Net.Http;
 using System.Threading.Tasks;
-using System.Text;
-using System.Net;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using Data.Constants;
 using Hub.Managers;
-using Data.Interfaces.Manifests;
-using terminalDocuSignTests.Fixtures;
-using Newtonsoft.Json.Linq;
-using Data.Crates;
-using Data.Control;
 using Data.States;
-using Data.Entities;
 using DocuSign.eSign.Api;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using terminaBaselTests.Tools.Activities;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
@@ -98,7 +92,7 @@ namespace terminalDocuSignTests.Integration
             var apmAction = new ActivityDTO()
             {
                 ActivityTemplate = apmActivityTemplate,
-                Label = apmActivityTemplate.Label,
+                Name = apmActivityTemplate.Label,
                 ParentPlanNodeId = this.solution.Id,
                 RootPlanNodeId = plan.Plan.Id
             };
@@ -129,16 +123,17 @@ namespace terminalDocuSignTests.Integration
             apmAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", apmAction);
             Assert.AreEqual(1, apmAction.Ordering, "Failed to reoder the action Add Payload Manually");
 
-            var fr8CoreLoop = this.solution.ChildrenActivities.Single(a => a.Label.Equals("loop", StringComparison.InvariantCultureIgnoreCase));
+            var fr8CoreLoop = this.solution.ChildrenActivities.Single(a => a.Name.Equals("loop", StringComparison.InvariantCultureIgnoreCase));
 
             using (var updatableStorage = Crate.UpdateStorage(() => fr8CoreLoop.CrateStorage))
             {
-                var chooser = (CrateChooser)updatableStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls.FirstOrDefault(c => c.Name == "Available_Crates");
+                updatableStorage.Clear();
+                /*var chooser = (CrateChooser)updatableStorage.CrateContentsOfType<StandardConfigurationControlsCM>().First().Controls.FirstOrDefault(c => c.Name == "Available_Crates");
 
                 if (chooser?.CrateDescriptions != null)
                 {
                     chooser.CrateDescriptions = new List<CrateDescriptionDTO>();
-                }
+                }*/
             }
             
             fr8CoreLoop = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", fr8CoreLoop);
@@ -152,7 +147,7 @@ namespace terminalDocuSignTests.Integration
 
             var payloadDataCrate = crateChooser.CrateDescriptions.SingleOrDefault(c => c.ManifestId == (int)MT.StandardPayloadData);
 
-            Assert.NotNull(payloadDataCrate, "StandardPayloadData was not found in rateChooser.CrateDescriptions. Available crate descriptions are: " + string.Join("\n", crateChooser.CrateDescriptions.Select(x=> $"{x.Label} of type {x.ManifestType}")));
+            Assert.NotNull(payloadDataCrate, "StandardPayloadData was not found in crateChooser.CrateDescriptions. Available crate descriptions are: " + string.Join("\n", crateChooser.CrateDescriptions.Select(x=> $"{x.Label} of type {x.ManifestType}")));
 
             payloadDataCrate.Selected = true;
             using (var updatableStorage = Crate.GetUpdatableStorage(fr8CoreLoop))
@@ -168,7 +163,7 @@ namespace terminalDocuSignTests.Integration
             //
 
             // Initial Configuration
-            var sendEnvelopeAction = fr8CoreLoop.ChildrenActivities.Single(a => a.Label == "Send DocuSign Envelope");
+            var sendEnvelopeAction = fr8CoreLoop.ChildrenActivities.Single(a => a.Name == "Send DocuSign Envelope");
 
             crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
             controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
@@ -277,13 +272,13 @@ namespace terminalDocuSignTests.Integration
             //
             // configure Get_Google_Sheet_Data activity
             //
-            var googleSheetActivity = this.solution.ChildrenActivities.Single(a=>a.Label.Equals("get google sheet data", StringComparison.InvariantCultureIgnoreCase));
+            var googleSheetActivity = this.solution.ChildrenActivities.Single(a=>a.Name.Equals("get google sheet data", StringComparison.InvariantCultureIgnoreCase));
             await googleActivityTestTools.ConfigureGetFromGoogleSheetActivity(googleSheetActivity, spreadsheetName, false, worksheetName);
             
             //
             // configure Loop activity
             //
-            var loopActivity = this.solution.ChildrenActivities.Single(a => a.Label.Equals("loop", StringComparison.InvariantCultureIgnoreCase));
+            var loopActivity = this.solution.ChildrenActivities.Single(a => a.Name.Equals("loop", StringComparison.InvariantCultureIgnoreCase));
             var terminalFr8CoreTools = new IntegrationTestTools_terminalFr8(this);
             loopActivity = await terminalFr8CoreTools.ConfigureLoopActivity(loopActivity, "Standard Table Data", "Table Generated From Google Sheet Data");
 
@@ -294,7 +289,7 @@ namespace terminalDocuSignTests.Integration
             //
             // Initial Configuration
             //
-            var sendEnvelopeAction = loopActivity.ChildrenActivities.Single(a => a.Label == "Send DocuSign Envelope");
+            var sendEnvelopeAction = loopActivity.ChildrenActivities.Single(a => a.Name == "Send DocuSign Envelope");
 
             crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
             var controlsCrate = crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
@@ -447,7 +442,7 @@ namespace terminalDocuSignTests.Integration
             //
             //await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
         }
-
+        
         private async Task<Guid> ExtractGoogleDefaultToken()
         {
             var errorMessage = $"Authorization token for Google is not found for the integration testing user {TestUserEmail}. Please go to the target instance of fr8 and log in with the integration testing user credentials. Then add a Google action to any plan and be sure to set the \"Use for all Activities\" checkbox on the Authorize Accounts dialog while authenticating. Reason: ";

@@ -1,15 +1,10 @@
-﻿using Data.Interfaces;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
-using Newtonsoft.Json;
-using StructureMap;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System;
 using System.Linq;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.Manifests;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -35,7 +30,7 @@ namespace UtilitiesTesting.Fixtures
             fields.Add(new FieldDTO() { Key = "Doctor", Value = Guid.NewGuid().ToString() });
             fields.Add(new FieldDTO() { Key = "Condition", Value = Guid.NewGuid().ToString() });
 
-            return new List<Crate>() { Crate.FromContent("DocuSignTemplateUserDefinedFields", new FieldDescriptionsCM() { Fields = fields }) };
+            return new List<Crate>() { Crate.FromContent("DocuSignTemplateUserDefinedFields", new FieldDescriptionsCM() { Fields = fields }), Crate.FromContent("Crate label", new CrateDescriptionCM() { CrateDescriptions = new List<CrateDescriptionDTO>() { new CrateDescriptionDTO()  } }) };
 
         }
 

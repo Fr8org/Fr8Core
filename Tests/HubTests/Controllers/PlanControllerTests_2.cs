@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Web.Http.Results;
-using Data.Crates;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
 using HubWeb.Controllers;
 using HubWeb.ViewModels;
@@ -12,9 +10,10 @@ using NUnit.Framework;
 using StructureMap;
 using Utilities.Interfaces;
 using System.Threading.Tasks;
-using Data.Constants;
 using Data.States;
-using HubTests.Services;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
 using HubTests.Services.Container;
 using UtilitiesTesting.Fixtures;
 
@@ -69,7 +68,9 @@ namespace HubTests.Controllers
 
                 plan.PlanState = PlanState.Active;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
-
+                var userAcct = FixtureData.TestUser1();
+                uow.UserRepository.Add(userAcct);
+                plan.Fr8Account = userAcct;
                 uow.SaveChanges();
 
                 var controller = new PlansController();
@@ -116,7 +117,8 @@ namespace HubTests.Controllers
             uowMock.Setup(x => x.PlanRepository).Returns(rrMock.Object);
 
             Mock<IPlan> planMock = new Mock<IPlan>();
-            planMock.Setup(x => x.Run(It.IsAny<PlanDO>(), It.IsAny<Crate>())).ReturnsAsync(new ContainerDO());
+            planMock.Setup(x => x.Run(It.IsAny<Guid>(), It.IsAny<Crate[]>())).ReturnsAsync(new ContainerDO());
+            planMock.Setup(x => x.Activate(It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(new ActivateActivitiesDTO());
 
             Mock<IPusherNotifier> pusherMock = new Mock<IPusherNotifier>();
             pusherMock.Setup(x => x.Notify(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()));
@@ -150,7 +152,8 @@ namespace HubTests.Controllers
             uowMock.Setup(x => x.PlanRepository).Returns(rrMock.Object);
 
             Mock<IPlan> planMock = new Mock<IPlan>();
-            planMock.Setup(x => x.Run(It.IsAny<PlanDO>(), It.IsAny<Crate>())).ReturnsAsync(new ContainerDO());
+            planMock.Setup(x => x.Run(It.IsAny<Guid>(), It.IsAny<Crate[]>())).ReturnsAsync(new ContainerDO());
+            planMock.Setup(x => x.Activate(It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(new ActivateActivitiesDTO());
 
             Mock<IPusherNotifier> pusherMock = new Mock<IPusherNotifier>();
             pusherMock.Setup(x => x.Notify(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()));
@@ -184,7 +187,8 @@ namespace HubTests.Controllers
             uowMock.Setup(x => x.PlanRepository).Returns(rrMock.Object);
 
             Mock<IPlan> planMock = new Mock<IPlan>();
-            planMock.Setup(x => x.Run(It.IsAny<PlanDO>(), It.IsAny<Crate>())).ReturnsAsync(new ContainerDO());
+            planMock.Setup(x => x.Run(It.IsAny<Guid>(), It.IsAny<Crate[]>())).ReturnsAsync(new ContainerDO());
+            planMock.Setup(x => x.Activate(It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(new ActivateActivitiesDTO());
 
             Mock<IPusherNotifier> pusherMock = new Mock<IPusherNotifier>();
             pusherMock.Setup(x => x.Notify(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()));

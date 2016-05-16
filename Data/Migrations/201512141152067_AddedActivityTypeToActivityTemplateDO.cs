@@ -1,4 +1,4 @@
-using Data.States;
+using Fr8Data.States;
 
 namespace Data.Migrations
 {

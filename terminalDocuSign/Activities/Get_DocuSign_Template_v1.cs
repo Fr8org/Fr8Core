@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Hub.Managers;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -65,7 +65,7 @@ namespace terminalDocuSign.Actions
                 Status = template.Property("Name").SelectToken("status").Value<string>()
             };
 
-            return Data.Crates.Crate.FromContent("DocuSign Template", manifest);
+            return Fr8Data.Crates.Crate.FromContent("DocuSign Template", manifest);
         }
 
         public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
@@ -91,24 +91,19 @@ namespace terminalDocuSign.Actions
             return await Task.FromResult(curActivityDO);
         }
 
-        protected internal override ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
+        public override Task ValidateActivity(ActivityDO curActivityDO, ICrateStorage crateStorage, ValidationManager validationManager)
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            var configControls = GetConfigurationControls(crateStorage);
+            var templateList = configControls?.Controls?.OfType<DropDownList>().FirstOrDefault();
+
+            if (!validationManager.ValidateControlExistance(templateList))
             {
-                var configControls = GetConfigurationControls(crateStorage);
-                if (configControls == null)
-                {
-                    return new ValidationResult(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
-                }
-                var templateList = configControls.Controls.OfType<DropDownList>().First();
-                templateList.ErrorMessage =
-                    DocuSignValidationUtils.AtLeastOneItemExists(templateList)
-                        ? DocuSignValidationUtils.ItemIsSelected(templateList)
-                              ? string.Empty
-                              : DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage
-                        : DocuSignValidationUtils.NoTemplateExistsErrorMessage;
-                return string.IsNullOrEmpty(templateList.ErrorMessage) ? ValidationResult.Success : new ValidationResult(templateList.ErrorMessage);
+                return Task.FromResult(0);
             }
+
+            validationManager.ValidateTemplateList(templateList);
+
+            return Task.FromResult(0);
         }
 
         private Crate CreateControlsCrate()

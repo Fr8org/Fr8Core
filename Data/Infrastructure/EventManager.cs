@@ -2,10 +2,9 @@
 
 using System;
 using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using System.Data.Entity.Infrastructure;
-using Data.Constants;
+using Fr8Data.Constants;
+using Fr8Data.DataTransferObjects;
 
 namespace Data.Infrastructure
 {
@@ -191,6 +190,9 @@ namespace Data.Infrastructure
         public delegate void MultipleMonitorAllDocuSignEventsPlansPerAccountArePresentHandler(string external_email);
         public static event MultipleMonitorAllDocuSignEventsPlansPerAccountArePresentHandler EventMultipleMonitorAllDocuSignEventsPlansPerAccountArePresent;
 
+        public delegate void TokenValidationFailedHandler(string token, string errorMessage);
+        public static event TokenValidationFailedHandler EventTokenValidationFailed;
+
         #region Method
 
         public static void PlanActivated(Guid planId)
@@ -297,7 +299,7 @@ namespace Data.Infrastructure
             if (handler != null) handler(terminalUrl, activityDTO, e, objectId);
         }
 
-        public static void TerminalActionActivationFailed(string terminalUrl, string activityDTO, string objectId)
+        public static void TerminalActionActivationFailed(string terminalUrl, string activityDTO, string errorMessage, string objectId)
         {
             IncidentTerminalActionActivationPOSTFailureHandler handler = IncidentTerminalActionActivationFailed;
             if (handler != null) handler(terminalUrl, activityDTO, objectId);
@@ -646,6 +648,12 @@ namespace Data.Infrastructure
         {
             var handler = EventMultipleMonitorAllDocuSignEventsPlansPerAccountArePresent;
             if (handler != null) handler(external_account);
+        }
+
+        public static void TokenValidationFailed(string token, string errorMessage)
+        {
+            var handler = EventTokenValidationFailed;
+            if (handler != null) handler(token, errorMessage);
         }
 
         #endregion

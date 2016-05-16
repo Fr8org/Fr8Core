@@ -1,4 +1,4 @@
-var gulp = require('gulp');
+﻿var gulp = require('gulp');
 var bower = require('gulp-bower');
 var concat = require('gulp-concat');
 var path = require('path');
@@ -19,6 +19,7 @@ gulp.task('concattemplates', function () {
         '!Views/AngularTemplate/PlanList.cshtml',
         '!Views/AngularTemplate/MyAccountPage.cshtml',
         '!Views/AngularTemplate/Header.cshtml',
+        '!Views/AngularTemplate/MiniHeader.cshtml',
         '!Views/AngularTemplate/ChangePassword.cshtml',
         '!Views/AngularTemplate/AccountList.cshtml'])
         .pipe(templateCache('templateCache.js', {
@@ -48,6 +49,7 @@ gulp.task('compile_js', function () {
         'Scripts/app/model/Plan.js',
         'Scripts/app/model/PlanBuilderState.js',
         'Scripts/app/model/User.js',
+        'Scripts/app/model/Profile.js',
         'Scripts/app/model/ContainerDTO.js',
         'Scripts/app/model/ActionGroup.js',
         'Scripts/app/model/WebServiceDTO.js',
@@ -103,7 +105,6 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/TextArea.js',
         'Scripts/app/directives/Controls/TextArea.js',
         'Scripts/app/directives/Controls/FilterPane.js',
-        'Scripts/app/directives/QueryBuilderWidget.js',
         'Scripts/app/directives/Controls/MappingPane.js',
         'Scripts/app/directives/Controls/ManagePlan.js',
         'Scripts/app/directives/Controls/RunPlanButton.js',
@@ -131,6 +132,9 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Validators/ManifestDescriptionValidators.js',
         'Scripts/app/directives/ActionPicker.js',
         'Scripts/app/directives/ActivityResize.js',
+        'Scripts/app/directives/collapse/collapse.directive.js',
+        'Scripts/app/directives/collapse/collapse.module.js',
+        'Scripts/app/directives/ModalResizable.js',
         'Scripts/app/filters/ActionNameFormatter.js',
         'Scripts/app/filters/DateTimeFormatter.js',
         'Scripts/app/controllers/PlanBuilderController.js',

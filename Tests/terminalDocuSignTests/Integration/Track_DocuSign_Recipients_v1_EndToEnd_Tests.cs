@@ -1,20 +1,16 @@
 ﻿using System;
+using System.Linq;
 using NUnit.Framework;
-using Data.Interfaces.DataTransferObjects;
 using HealthMonitor.Utility;
 using System.Net.Http;
 using System.Threading.Tasks;
 using System.Text;
-using System.Net;
-using System.Collections.Generic;
-using System.Linq;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Hub.Managers;
-using Data.Interfaces.Manifests;
-using terminalDocuSignTests.Fixtures;
 using Newtonsoft.Json.Linq;
-using Data.Crates;
-using Data.Control;
-using Data.States;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -79,7 +75,7 @@ namespace terminalDocuSignTests.Integration
 
             string baseUrl = GetHubApiBaseUrl();
 
-            var solutionCreateUrl = baseUrl + "activities/create?solutionName=Track_DocuSign_Recipients";
+            var solutionCreateUrl = baseUrl + "plans/createSolution?solutionName=Track_DocuSign_Recipients";
 
 
             //
@@ -213,16 +209,16 @@ namespace terminalDocuSignTests.Integration
             //from now on our solution should have followup crate structure
             Assert.True(this._solution.ChildrenActivities.Length == 4, "Solution child actions failed to create.");
 
-            Assert.True(this._solution.ChildrenActivities.Any(a => a.Label == "Monitor Docusign Envelope Activity" && a.Ordering == 1));
-            Assert.True(this._solution.ChildrenActivities.Any(a => a.Label == "Set Delay" && a.Ordering == 2));
-            Assert.True(this._solution.ChildrenActivities.Any(a => a.Label == "Query Fr8 Warehouse" && a.Ordering == 3));
-            Assert.True(this._solution.ChildrenActivities.Any(a => a.Label == "Test Incoming Data" && a.Ordering == 4));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.Name == "Monitor Docusign Envelope Activity" && a.Ordering == 1));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.Name == "Set Delay" && a.Ordering == 2));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.Name == "Query Fr8 Warehouse" && a.Ordering == 3));
+            Assert.True(this._solution.ChildrenActivities.Any(a => a.Name == "Test Incoming Data" && a.Ordering == 4));
 
             plan = await HttpGetAsync<PlanDTO>(planReloadUrl);
             Assert.AreEqual(3, plan.Plan.SubPlans.First().Activities.Count);
-            Assert.True(plan.Plan.SubPlans.First().Activities.Any(a => a.Label == "Build a Message" && a.Ordering == 2));
+            Assert.True(plan.Plan.SubPlans.First().Activities.Any(a => a.Name == "Build a Message" && a.Ordering == 2));
             var emailActivity = plan.Plan.SubPlans.First().Activities.Last();
-            Assert.True(emailActivity.Label == notificationHandler.selectedKey);
+            Assert.True(emailActivity.Name == notificationHandler.selectedKey);
 
             //let's configure email settings
 
@@ -237,7 +233,7 @@ namespace terminalDocuSignTests.Integration
 
             var upstreamFieldDescription = await HttpGetAsync<IncomingCratesDTO>(baseUrl + "plannodes/available_data?id=" + emailActivity.Id);
 
-            Assert.True(upstreamFieldDescription.AvailableFields.Any(y => y.Key == "NotificationMessage"));
+            Assert.True(upstreamFieldDescription.AvailableCrates.SelectMany(x=>x.Fields).Any(y => y.Key == "NotificationMessage"));
             Assert.AreEqual("NotificationMessage", emailBody.Value);
 
             emailAddress.ValueSource = "specific";
@@ -268,7 +264,7 @@ namespace terminalDocuSignTests.Integration
             await HttpPostAsync<object, PlanFullDTO>(baseUrl + "plans?id=" + plan.Plan.Id, new { id = plan.Plan.Id, name = newName });
 
             //let's activate our plan
-            await HttpPostAsync<string, string>(baseUrl + "plans/activate?planId=" + plan.Plan.Id, null);
+            await HttpPostAsync<string, string>(baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
 
 
             //everything seems perfect -> let's fake a docusign event

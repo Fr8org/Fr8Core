@@ -75,24 +75,23 @@ namespace HubTests.Managers
                 //setup Action Service
                 _setupMock.Setup(
                     a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<Guid>(),
-                        It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
+                        It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
                         {
                         }).Returns(Task.FromResult(monitorFr8Action as PlanNodeDO));
 
 
                 _setupMock.Setup(
                    a => a.CreateAndConfigure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<Guid>(),
-                       It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
+                       It.IsAny<string>(), It.IsAny<string>(), It.IsAny<int?>(), It.IsAny<Guid>(), false, It.IsAny<Guid?>())).Callback(() =>
                        {
 
                        }).Returns(Task.FromResult(storeMtDataAction as PlanNodeDO));
 
                 _setupMock.Setup(
-                 a => a.Configure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<ActivityDO>(), It.IsAny<Boolean>())).Callback(() =>
+                 a => a.Configure(It.IsAny<IUnitOfWork>(), It.IsAny<string>(), It.IsAny<ActivityDO>())).Callback(() =>
                  {
-                 }).Returns(Task.FromResult(new Data.Interfaces.DataTransferObjects.ActivityDTO()));
+                 }).Returns(Task.FromResult(new Fr8Data.DataTransferObjects.ActivityDTO()));
 
-                _setupMock.Setup(a => a.MapFromDTO(new Data.Interfaces.DataTransferObjects.ActivityDTO()));
 
                 ObjectFactory.Container.Inject(typeof(IActivity), _setupMock.Object);
             }

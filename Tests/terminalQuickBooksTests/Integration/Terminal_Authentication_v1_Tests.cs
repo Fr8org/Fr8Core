@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 using HealthMonitor.Utility;
 using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
@@ -13,10 +11,7 @@ namespace terminalQuickBooksTests.Integration
     [Explicit]
     public class Terminal_Authentication_v1_Tests : BaseTerminalIntegrationTest
     {
-        public override string TerminalName
-        {
-            get { return "terminalQuickBooks"; }
-        }
+        public override string TerminalName => "terminalQuickBooks";
 
         /// <summary>
         /// Make sure http call fails with invalid authentication

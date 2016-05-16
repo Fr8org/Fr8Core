@@ -4,19 +4,17 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
-using HubWeb.Infrastructure;
-using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Infrastructure.StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
+using Data.States;
+using Hub.Infrastructure;
 using Hub.Interfaces;
 using Hub.Managers;
-using Data.Crates;
-using Data.Interfaces.Manifests;
-using Data.States;
-using Data.Constants;
+using HubWeb.Infrastructure;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.States;
 
 namespace HubWeb.Controllers
 {
@@ -46,38 +44,13 @@ namespace HubWeb.Controllers
 
             return Ok(curActivityTemplateDTO);
         }
+       
 
         [ActionName("upstream")]
-        [ResponseType(typeof(List<PlanNodeDO>))]
-        [Fr8ApiAuthorize]
-        public IHttpActionResult GetUpstreamActivities(Guid id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var activityDO = uow.PlanRepository.GetById<ActivityDO>(id);
-                var upstreamActivities = _activity.GetUpstreamActivities(uow, activityDO);
-                return Ok(upstreamActivities);
-            }
-        }
-
-        [ActionName("downstream")]
-        [ResponseType(typeof(List<PlanNodeDO>))]
-        [Fr8ApiAuthorize]
-        public IHttpActionResult GetDownstreamActivities(Guid id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                ActivityDO activityDO = uow.PlanRepository.GetById<ActivityDO>(id);
-                var downstreamActivities = _activity.GetDownstreamActivities(uow, activityDO);
-                return Ok(downstreamActivities);
-            }
-        }
-
-        // TODO: after DO-1214 is completed, this method must be removed.
-        [ActionName("upstream_actions")]
         [ResponseType(typeof(List<ActivityDTO>))]
         [Fr8HubWebHMACAuthenticate]
-        public IHttpActionResult GetUpstreamActions(Guid id)
+        [Fr8ApiAuthorize]
+        public IHttpActionResult GetUpstreamActivities(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -91,11 +64,10 @@ namespace HubWeb.Controllers
                 return Ok(upstreamActions);
             }
         }
-        // TODO: after DO-1214 is completed, this method must be removed.
-        [ActionName("downstream_actions")]
+        [ActionName("downstream")]
         [ResponseType(typeof(List<ActivityDTO>))]
         [Fr8HubWebHMACAuthenticate]
-        public IHttpActionResult GetDownstreamActions(Guid id)
+        public IHttpActionResult GetDownstreamActivities(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -109,15 +81,15 @@ namespace HubWeb.Controllers
                 return Ok(downstreamActions);
             }
         }
-        
+
         [HttpGet]
         [ActionName("available_data")]
         [Fr8HubWebHMACAuthenticate]
         public IHttpActionResult GetAvailableData(Guid id, CrateDirection direction = CrateDirection.Upstream, AvailabilityType availability = AvailabilityType.RunTime)
         {
-            return Ok(_activity.GetAvailableData(id, direction, availability));
+            return Ok(_activity.GetIncomingData(id, direction, availability));
         }
-        
+
         [ActionName("available")]
         [ResponseType(typeof(IEnumerable<ActivityTemplateCategoryDTO>))]
         [AllowAnonymous]
@@ -129,11 +101,11 @@ namespace HubWeb.Controllers
             return Ok(categoriesWithActivities);
         }
 
-        [ActionName("available")]
+        [ActionName("getAvailableActivitiesWithTag")]
         [ResponseType(typeof(IEnumerable<ActivityTemplateDTO>))]
         [AllowAnonymous]
         [HttpGet]
-        public IHttpActionResult GetAvailableActivities(string tag)
+        public IHttpActionResult getAvailableActivitiesWithTag(string tag)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

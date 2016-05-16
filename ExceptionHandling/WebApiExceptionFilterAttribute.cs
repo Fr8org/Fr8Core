@@ -6,16 +6,12 @@ using System.Web;
 using System.Web.Http.Filters;
 using Newtonsoft.Json;
 using StructureMap;
-using Data.Interfaces.DataTransferObjects;
 using Hub.Exceptions;
 using Hub.Managers;
-using TerminalBase;
 using Utilities;
-using System.Threading.Tasks;
 using Microsoft.ApplicationInsights;
 using System.Collections.Generic;
-using System.Linq;
-using Data.Infrastructure;
+using Fr8Data.DataTransferObjects;
 using Utilities.Configuration.Azure;
 
 namespace HubWeb.ExceptionHandling
@@ -84,22 +80,9 @@ namespace HubWeb.ExceptionHandling
             // if debugging enabled send back the details of exception as well
             if (HttpContext.Current.IsDebuggingEnabled || string.Equals(CloudConfigurationManager.GetSetting("ForceExtendedDebuggingInfo"), "true", StringComparison.InvariantCultureIgnoreCase))
             {
-                if (ex is TerminalCodedException) 
-                {
-                    var terminalEx = (TerminalCodedException)ex;
-                    
-                    errorDto.Details = new
-                    {
-                        errorCode = terminalEx.ErrorCode, 
-                        message = terminalEx.ErrorCode.GetEnumDescription()
-                    };
-                }
-                else 
-                {
-                    errorDto.Details = new {exception = context.Exception};
-                }
+                errorDto.Details = new {exception = context.Exception};
             }
-            
+
             context.Response.Content = new StringContent(JsonConvert.SerializeObject(errorDto), Encoding.UTF8, "application/json");
         }
     }

@@ -37,7 +37,7 @@ module dockyard.controllers {
 
             if (descriptionName !== undefined) {
                 
-                ManifestRegistryService.getDescriptionWithMaxVersion({ name: descriptionName.value }).$promise.then(data => {
+                ManifestRegistryService.getDescriptionWithLastVersion({ name: descriptionName.value }).$promise.then(data => {
                     this.$scope.manifestDescription = data;
                 });
             }

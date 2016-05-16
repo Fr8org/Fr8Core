@@ -1,6 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations.Schema;
-using Data.Interfaces.Manifests;
+using Fr8Data.Manifests;
 using Utilities;
 
 namespace Data.Entities

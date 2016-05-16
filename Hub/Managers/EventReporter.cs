@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
@@ -10,16 +9,12 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
 using Hub.Interfaces;
-using Hub.Managers.APIManagers.Packagers;
-using Hub.Services;
 using Utilities;
 using Utilities.Logging;
 using System.Data.Entity.Infrastructure;
-using System.Web.Mvc;
-using Data.Constants;
+using Fr8Data.Constants;
+using Fr8Data.DataTransferObjects;
 using Utilities.Interfaces;
 
 //NOTES: Do NOT put Incidents here. Put them in IncidentReporter
@@ -151,52 +146,7 @@ namespace Hub.Managers
                 uow.SaveChanges();
             }
         }
-        /*
-        private void JumpToPlanRequested(PlanDO targetPlanDO, ContainerDO containerDO)
-        {
-            try
-            {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    var factDO = new FactDO()
-                    {
-                        PrimaryCategory = "Container",
-                        SecondaryCategory = "Plan",
-                        Activity = "Plan Launch",
-                        Status = "Plan Launch Initiating",
-                        ObjectId = targetPlanDO.Id.ToString(),
-                        Fr8UserId = _security.GetCurrentUser(),
-                        CreatedByID = _security.GetCurrentUser(),
-                        Data = string.Join(
-                            Environment.NewLine,
-                            "Plan Name: " + targetPlanDO?.Name
-                        )
-                    };
 
-                    uow.FactRepository.Add(factDO);
-                    uow.SaveChanges();
-                }
-
-                
-                //create user notifications
-                var pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
-
-                string pusherChannel = string.Format("fr8pusher_{0}", targetPlanDO.Fr8Account.UserName);
-                pusherNotifier.Notify(pusherChannel, "fr8pusher_activity_execution_info",
-                    new
-                    {
-                        ActivityName = activityDo.Label,
-                        PlanName = containerDO.Name,
-                        ContainerId = containerDO.Id.ToString(),
-                    });
-                    
-            }
-            catch (Exception exception)
-            {
-                EventManager.UnexpectedError(exception);
-            }
-        }
-*/
         private void ActivityRunRequested(ActivityDO activityDo, ContainerDO containerDO)
         {
             try
@@ -236,16 +186,14 @@ namespace Hub.Managers
                 //create user notifications
                 var pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
 
-                string pusherChannel = string.Format("fr8pusher_{0}", activityDo.Fr8Account.UserName);
-                pusherNotifier.Notify(pusherChannel, "fr8pusher_activity_execution_info",
-                    new
+                pusherNotifier.NotifyUser(new
                     {
-                        ActivityName = activityDo.Label,
+                        ActivityName = activityDo.Name,
                         PlanName = containerDO.Name,
                         ContainerId = containerDO.Id.ToString(),
                         PlanId = planId,
                         PlanLastUpdated = planLastUpdated,
-                    });
+                    }, "fr8pusher_activity_execution_info", activityDo.Fr8Account.UserName);
             }
             catch (Exception exception)
             {

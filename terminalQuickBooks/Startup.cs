@@ -23,7 +23,7 @@ namespace terminalQuickBooks
 
         public void Configuration(IAppBuilder app, bool selfHost)
         {
-            ConfigureProject(selfHost, null);
+            ConfigureProject(selfHost, TerminalQuickbooksBootstrapper.ConfigureLive);
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
 
