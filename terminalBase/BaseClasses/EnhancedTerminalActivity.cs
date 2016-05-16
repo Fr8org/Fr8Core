@@ -18,17 +18,11 @@ namespace TerminalBase.BaseClasses
     public abstract class EnhancedTerminalActivity<T> : BaseTerminalActivity
        where T : StandardConfigurationControlsCM
     {
-        /**********************************************************************************/
-        // Declarations
-        /**********************************************************************************/
-
-        private bool _isRunTime;
 
         /**********************************************************************************/
 
         protected T ActivityUI { get; private set; }
         protected UiBuilder UiBuilder { get; private set; }
-        
 
         /**********************************************************************************/
         // Functions
@@ -38,16 +32,6 @@ namespace TerminalBase.BaseClasses
             UiBuilder = new UiBuilder();
         }
 
-        /**********************************************************************************/
-
-        private void CheckRunTime(string message = "Not available at the design time")
-        {
-            if (!_isRunTime)
-            {
-                throw new InvalidOperationException(message);
-            }
-        }
-        
         /**********************************************************************************/
 
         public override async Task Initialize()
@@ -64,31 +48,20 @@ namespace TerminalBase.BaseClasses
         public override async Task FollowUp()
         {
             SyncConfControls();
-            Storage.Remove<ValidationResultsCM>();
-            ValidationManager.Reset();
-            if (!DisableValidationOnFollowup)
-            {
-                await Validate();
-            }
-
-            if (!ValidationManager.HasErrors || DisableValidationOnFollowup)
-            {
-                Storage.Remove<ValidationResultsCM>();
-                await ConfigureETA();
-            }
+            await ConfigureETA();
             SyncConfControlsBack();
         }
 
         /**********************************************************************************/
 
         public sealed override async Task Activate()
+        {
+            SyncConfControls();
+            if (await Validate())
             {
-                SyncConfControls();
-                if (await Validate())
-                {
-                    await ActivateETA();
-                }
+                await ActivateETA();
             }
+        }
 
         /**********************************************************************************/
 
@@ -103,43 +76,8 @@ namespace TerminalBase.BaseClasses
 
         public sealed override async Task Run()
         {
-            if (IsAuthenticationRequired && NeedsAuthentication())
-            {
-                RaiseNeedsAuthenticationError();
-                return;
-            }
-            _isRunTime = true;
             SyncConfControls();
-            try
-            {
-                if (!await Validate())
-                {
-                    RaiseError("Activity was incorrectly configured");
-                    return;
-                }
-                OperationalState.CurrentActivityResponse = null;
-                await RunETA();
-                if (OperationalState.CurrentActivityResponse == null)
-                {
-                    Success();
-                }
-            }
-            catch (AuthorizationTokenExpiredOrInvalidException ex)
-            {
-                ErrorInvalidToken(ex.Message);
-            }
-            catch (ActivityExecutionException ex)
-            {
-                RaiseError(ex.Message, ex.ErrorCode);
-            }
-            catch (AggregateException ex)
-            {
-                RaiseError(ex.Flatten().Message);
-            }
-            catch (Exception ex)
-            {
-                RaiseError(ex.Message);
-            }
+            await RunETA();
         }
         
         /**********************************************************************************/
@@ -405,193 +343,5 @@ namespace TerminalBase.BaseClasses
                 }
             }
         }
-
-        /**********************************************************************************/
-        /// <summary>
-        /// Creates a suspend request for hub execution
-        /// </summary>
-        protected void RequestHubExecutionSuspension(string message = null)
-        {
-            SetResponse(ActivityResponse.RequestSuspend, message);
-        }
-
-        /**********************************************************************************/
-        /// <summary>
-        /// Creates a terminate request for hub execution
-        /// after that we could stop throwing exceptions on actions
-        /// </summary>
-        protected void RequestHubExecutionTermination(string message = null)
-        {
-            SetResponse(ActivityResponse.RequestTerminate, message);
-        }
-
-        /**********************************************************************************/
-        /// <summary>
-        /// returns success to hub
-        /// </summary>
-        protected void Success(string message = null)
-        {
-            SetResponse(ActivityResponse.Success, message);
-        }
-
-        /**********************************************************************************/
-
-        protected void RequestClientActivityExecution(string clientActionName)
-        {
-            SetResponse(ActivityResponse.ExecuteClientActivity);
-            OperationalState.CurrentClientActivityName = clientActionName;
-        }
-
-        /**********************************************************************************/
-        /// <summary>
-        /// skips children of this action
-        /// </summary>
-        protected void RequestSkipChildren()
-        {
-            SetResponse(ActivityResponse.SkipChildren);
-        }
-
-        /**********************************************************************************/
-        /// <summary>
-        /// Call an activity or subplan  and return to the current activity
-        /// </summary>
-        /// <returns></returns>
-        protected void RequestCall(Guid targetNodeId)
-        {
-            SetResponse(ActivityResponse.CallAndReturn);
-            OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetNodeId });
-        }
-
-        /**********************************************************************************/
-        /// <summary>
-        /// Jumps to an activity that resides in same subplan as current activity
-        /// </summary>
-        /// <returns></returns>
-        protected void RequestJumpToActivity(Guid targetActivityId)
-        {
-            SetResponse(ActivityResponse.JumpToActivity);
-            OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetActivityId });
-        }
-
-        /**********************************************************************************/
-        /// <summary>
-        /// Jumps to an activity that resides in same subplan as current activity
-        /// </summary>
-        /// <returns></returns>
-        protected void RequestJumpToSubplan(Guid targetSubplanId)
-        {
-            SetResponse(ActivityResponse.JumpToSubplan);
-            OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetSubplanId });
-        }
-
-        /**********************************************************************************/
-        /// <summary>
-        /// Jumps to another plan
-        /// </summary>
-        /// <returns></returns>
-        protected void RequestLaunchAdditionalPlan(Guid targetPlanId)
-        {
-            SetResponse(ActivityResponse.LaunchAdditionalPlan);
-            OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetPlanId });
-        }
-
-        /**********************************************************************************/
-
-        protected void SetResponse(ActivityResponse response, string message = null, object details = null)
-        {
-            OperationalState.CurrentActivityResponse = ActivityResponseDTO.Create(response);
-
-            if (!string.IsNullOrWhiteSpace(message) || details != null)
-            {
-                OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Message = message, Details = details });
-            }
-        }
-
-        /**********************************************************************************/
-        /// <summary>
-        /// returns error to hub
-        /// </summary>
-        protected void RaiseError(string errorMessage = null, ActivityErrorCode? errorCode = null)
-        {
-            SetResponse(ActivityResponse.Error);
-            OperationalState.CurrentActivityErrorCode = errorCode;
-            OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, ErrorType.Generic, errorCode.ToString(), null, null, null));
-        }
-
-        /**********************************************************************************/
-        /// <summary>
-        /// returns error to hub
-        /// </summary>
-        protected void ErrorInvalidToken(string instructionsToUser = null)
-        {
-            SetResponse(ActivityResponse.Error);
-            var errorCode = ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID;
-            OperationalState.CurrentActivityErrorCode = errorCode;
-            OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(instructionsToUser, ErrorType.Authentication, errorCode.ToString(), null, null, null));
-        }
-
-        /**********************************************************************************/
-        // we don't want uncontrollable extensibility
-        //protected sealed override Task<ICrateStorage> ValidateActivity(ActivityDTO curActivityDTO)
-        //{
-        //    return base.ValidateActivity(curActivityDTO);
-        //}
-
-        //public sealed override ConfigurationRequestType ConfigurationEvaluator(ActivityDTO curActivityDTO)
-        //{
-        //    return base.ConfigurationEvaluator(curActivityDTO);
-        //}
-
-        //protected sealed override Task<ActivityDTO> InitialConfigurationResponse(ActivityDTO curActivityDTO, AuthorizationTokenDTO authTokenDTO)
-        //{
-        //    return base.InitialConfigurationResponse(curActivityDTO, authTokenDTO);
-        //}
-
-        //protected sealed override Task<ActivityDTO> FollowupConfigurationResponse(ActivityDTO curActivityDTO, AuthorizationTokenDTO authTokenDTO)
-        //{
-        //    return base.FollowupConfigurationResponse(curActivityDTO, authTokenDTO);
-        //}
-
-        //public sealed override Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(ActivityDTO activityDO, CrateDirection direction)
-        //{
-        //    return base.GetCratesByDirection<TManifest>(activityDO, direction);
-        //}
-
-        //public sealed override Task<List<Crate>> GetCratesByDirection(ActivityDTO activityDO, CrateDirection direction)
-        //{
-        //    return base.GetCratesByDirection(activityDO, direction);
-        //}
-
-        //public sealed override Task<FieldDescriptionsCM> GetDesignTimeFields(ActivityDTO activityDO, CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet)
-        //{
-        //    return base.GetDesignTimeFields(activityDO, direction, availability);
-        //}
-
-        //public sealed override Task<List<CrateManifestType>> BuildUpstreamManifestList(ActivityDTO activityDO)
-        //{
-        //    return base.BuildUpstreamManifestList(activityDO);
-        //}
-
-        //public sealed override Task<List<string>> BuildUpstreamCrateLabelList(ActivityDTO activityDO)
-        //{
-        //    return base.BuildUpstreamCrateLabelList(activityDO);
-        //}
-
-        //public sealed override Task<Crate<FieldDescriptionsCM>> GetUpstreamManifestListCrate(ActivityDTO activityDO)
-        //{
-        //    return base.GetUpstreamManifestListCrate(activityDO);
-        //}
-
-        //public sealed override Task<Crate<FieldDescriptionsCM>> GetUpstreamCrateLabelListCrate(ActivityDTO activityDO)
-        //{
-        //    return base.GetUpstreamCrateLabelListCrate(activityDO);
-        //}
-
-        //protected sealed override Task<List<Crate<StandardFileDescriptionCM>>> GetUpstreamFileHandleCrates(ActivityDTO activityDO)
-        //{
-        //    return base.GetUpstreamFileHandleCrates(activityDO);
-        //}
-
-        /**********************************************************************************/
     }
 }

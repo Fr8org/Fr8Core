@@ -2,17 +2,16 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Fr8Data.Control;
+using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 using TerminalBase.BaseClasses;
-using Fr8Data.DataTransferObjects;
-using System;
-using TerminalBase.Services;
 using TerminalBase.Errors;
+using TerminalBase.Services;
 
-namespace terminalSlack.Actions
+namespace terminalSlack.Activities
 {
     public class Publish_To_Slack_v2 : EnhancedTerminalActivity<Publish_To_Slack_v2.ActivityUi>
     {

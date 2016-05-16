@@ -37,6 +37,7 @@ namespace TerminalBase.BaseClasses
         }
 
         #region FIELDS
+        private bool _isRunTime;
 
         private List<ActivityTemplateDTO> _activityTemplateCache = null;
         protected static readonly string ConfigurationControlsLabel = "Configuration_Controls";
@@ -210,6 +211,117 @@ namespace TerminalBase.BaseClasses
         }
 
         #endregion
+
+        /// <summary>
+        /// returns error to hub
+        /// </summary>
+        protected void ErrorInvalidToken(string instructionsToUser = null)
+        {
+            SetResponse(ActivityResponse.Error);
+            var errorCode = ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID;
+            OperationalState.CurrentActivityErrorCode = errorCode;
+            OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(instructionsToUser, ErrorType.Authentication, errorCode.ToString(), null, null, null));
+        }
+
+        protected void SetResponse(ActivityResponse response, string message = null, object details = null)
+        {
+            OperationalState.CurrentActivityResponse = ActivityResponseDTO.Create(response);
+
+            if (!string.IsNullOrWhiteSpace(message) || details != null)
+            {
+                OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Message = message, Details = details });
+            }
+        }
+
+        /**********************************************************************************/
+        /// <summary>
+        /// Creates a suspend request for hub execution
+        /// </summary>
+        protected void RequestHubExecutionSuspension(string message = null)
+        {
+            SetResponse(ActivityResponse.RequestSuspend, message);
+        }
+
+        /**********************************************************************************/
+        /// <summary>
+        /// Creates a terminate request for hub execution
+        /// after that we could stop throwing exceptions on actions
+        /// </summary>
+        protected void RequestHubExecutionTermination(string message = null)
+        {
+            SetResponse(ActivityResponse.RequestTerminate, message);
+        }
+
+        /**********************************************************************************/
+
+        /**********************************************************************************/
+
+        protected void RequestClientActivityExecution(string clientActionName)
+        {
+            SetResponse(ActivityResponse.ExecuteClientActivity);
+            OperationalState.CurrentClientActivityName = clientActionName;
+        }
+
+        /**********************************************************************************/
+        /// <summary>
+        /// skips children of this action
+        /// </summary>
+        protected void RequestSkipChildren()
+        {
+            SetResponse(ActivityResponse.SkipChildren);
+        }
+
+        /**********************************************************************************/
+        /// <summary>
+        /// Call an activity or subplan  and return to the current activity
+        /// </summary>
+        /// <returns></returns>
+        protected void RequestCall(Guid targetNodeId)
+        {
+            SetResponse(ActivityResponse.CallAndReturn);
+            OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetNodeId });
+        }
+
+        /**********************************************************************************/
+        /// <summary>
+        /// Jumps to an activity that resides in same subplan as current activity
+        /// </summary>
+        /// <returns></returns>
+        protected void RequestJumpToActivity(Guid targetActivityId)
+        {
+            SetResponse(ActivityResponse.JumpToActivity);
+            OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetActivityId });
+        }
+
+        /**********************************************************************************/
+        /// <summary>
+        /// Jumps to an activity that resides in same subplan as current activity
+        /// </summary>
+        /// <returns></returns>
+        protected void RequestJumpToSubplan(Guid targetSubplanId)
+        {
+            SetResponse(ActivityResponse.JumpToSubplan);
+            OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetSubplanId });
+        }
+
+        /**********************************************************************************/
+        /// <summary>
+        /// Jumps to another plan
+        /// </summary>
+        /// <returns></returns>
+        protected void RequestLaunchAdditionalPlan(Guid targetPlanId)
+        {
+            SetResponse(ActivityResponse.LaunchAdditionalPlan);
+            OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetPlanId });
+        }
+
+        private void CheckRunTime(string message = "Not available at the design time")
+        {
+            if (!_isRunTime)
+            {
+                throw new InvalidOperationException(message);
+            }
+        }
 
         protected bool CheckAuthentication()
         {
@@ -448,6 +560,8 @@ namespace TerminalBase.BaseClasses
             return foundActivity;
         }
 
+
+
         public SolutionPageDTO GetDefaultDocumentation(string solutionName, double solutionVersion, string terminalName, string body)
         {
             var curSolutionPage = new SolutionPageDTO
@@ -472,8 +586,44 @@ namespace TerminalBase.BaseClasses
 
         public async Task Run(ActivityContext activityContext, ContainerExecutionContext containerExecutionContext)
         {
+            _isRunTime = true;
             InitializeActivity(activityContext, containerExecutionContext);
-            await Run();
+            if (IsAuthenticationRequired && NeedsAuthentication())
+            {
+                RaiseNeedsAuthenticationError();
+                return;
+            }
+
+            try
+            {
+                if (!await Validate())
+                {
+                    RaiseError("Activity was incorrectly configured");
+                    return;
+                }
+                OperationalState.CurrentActivityResponse = null;
+                await Run();
+                if (OperationalState.CurrentActivityResponse == null)
+                {
+                    Success();
+                }
+            }
+            catch (AuthorizationTokenExpiredOrInvalidException ex)
+            {
+                ErrorInvalidToken(ex.Message);
+            }
+            catch (ActivityExecutionException ex)
+            {
+                RaiseError(ex.Message, ex.ErrorCode);
+            }
+            catch (AggregateException ex)
+            {
+                RaiseError(ex.Flatten().Message);
+            }
+            catch (Exception ex)
+            {
+                RaiseError(ex.Message);
+            }
         }
 
         public virtual Task RunChildActivities()
@@ -495,7 +645,7 @@ namespace TerminalBase.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected async Task ValidateAndConfigure()
+        protected async Task ValidateAndFollowUp()
         {
             Storage.Remove<ValidationResultsCM>();
             ValidationManager.Reset();
@@ -530,7 +680,7 @@ namespace TerminalBase.BaseClasses
                         break;
 
                     case ConfigurationRequestType.Followup:
-                        await ValidateAndConfigure();
+                        await ValidateAndFollowUp();
                         break;
 
                     default:
