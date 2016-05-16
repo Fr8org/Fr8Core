@@ -240,12 +240,6 @@
     margin-left: 14px;
 }
 
-.action-add-jumptarget {
-    position: absolute;
-    top: 81px;
-    right: -66px;
-}
-
 .jump-target-text {
     padding-top: 15px; 
     margin-left: 60px;
@@ -429,6 +423,12 @@ div.action-header {
     min-height: 375px;
 }
 
+.jumptarget-wrapper .action-add {
+    position: absolute;
+    top: 81px;
+    right: -66px;
+}
+
 .action-add-button, .action-category-icon {
     background: #fCfCfC;
     border-radius: 50%;
@@ -449,20 +449,14 @@ div.action-header {
     margin-left: -128px;
     transition: all 0.2s ease-out;
     pointer-events: none;
+    z-index: 200;
 }
 
 .action-categories {
     margin-top: 144px;
     transition: all 0.2s ease-out;
-}
-
-.action-categories:hover {
-    background-color: #EFF3F8;
-    padding-left: 5px;
-    margin-right: -31px;
-    padding-right: 20px;
-    margin-left: 23px;
     z-index: 100;
+    background-color: #EFF3F8;
 }
 
 .action-category {
