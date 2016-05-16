@@ -36,8 +36,8 @@ namespace Fr8Data.Helpers
                 }
                 return result;
             }
-            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance);
-            var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance);
+            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
             //We skip indexer properties as we won't be able to supply arguments
             foreach (var property in properties.Where(x => x.GetIndexParameters().Length == 0))
             {
