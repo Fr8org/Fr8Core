@@ -280,12 +280,13 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\DocuSignEventNames.cs" />
-    <Compile Include="Infrastructure\TerminalDataAutoMapperBootStrapper.cs" />
     <Compile Include="Infrastructure\TerminalDocuSignMapBootstrapper.cs" />
     <Compile Include="Interfaces\IDocuSignConnect.cs" />
+    <Compile Include="Interfaces\IDocuSignFolders.cs" />
     <Compile Include="Interfaces\IDocuSignPlan.cs" />
     <Compile Include="Services\DocuSignConnect.cs" />
     <Compile Include="Services\DocuSignFolders.cs" />
+    <Compile Include="Services\DocuSignFoldersWrapper.cs" />
     <Compile Include="Services\DocuSignPolling.cs" />
     <Compile Include="Services\DocuSignQuery.cs" />
     <Compile Include="Services\DocuSignPlan.cs" />

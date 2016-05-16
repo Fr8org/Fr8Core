@@ -11,6 +11,7 @@ using terminalDocuSign.Activities;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 using FolderItem = DocuSign.eSign.Model.FolderItem;
 using ListItem = Fr8Data.Control.ListItem;
 
@@ -73,16 +74,15 @@ namespace terminalDocuSign.Actions
                                                                           .Select(x => new ListItem { Key = x.Key, Value = x.Value })
                                                                           .ToList();
             ConfigurationControls.FolderFilter.ListItems.Insert(0, new ListItem { Key = "Any Folder", Value = string.Empty });
-            ConfigurationControls.StatusFilter.ListItems = DocusignQuery.Statuses
+            ConfigurationControls.StatusFilter.ListItems = DocuSignQuery.Statuses
                                                                         .Select(x => new ListItem { Key = x.Key, Value = x.Value })
                                                                         .ToList();
             crateSignaller.MarkAvailableAtRuntime<DocuSignEnvelopeCM_v3>(RunTimeCrateLabel)
                           .AddFields(GetEnvelopeProperties());
         }
 
-        protected override Task Configure(CrateSignaller crateSignaller)
+        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
-            //No extra configuration is required
             return Task.FromResult(0);
         }
 
@@ -97,9 +97,9 @@ namespace terminalDocuSign.Actions
                                                                            }));
         }
 
-        private DocusignQuery GetDocusignQuery()
+        private DocuSignQuery GetDocusignQuery()
         {
-            return new DocusignQuery
+            return new DocuSignQuery
             {
                 Folder = ConfigurationControls.FolderFilter.Value,
                 Status = ConfigurationControls.StatusFilter.Value,
