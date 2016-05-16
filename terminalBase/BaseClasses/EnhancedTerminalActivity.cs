@@ -28,7 +28,7 @@ namespace TerminalBase.BaseClasses
 
         protected T ActivityUI { get; private set; }
         protected UiBuilder UiBuilder { get; private set; }
-        protected bool DisableValidationOnFollowup { get; set; }
+        
 
         /**********************************************************************************/
         // Functions
@@ -54,7 +54,7 @@ namespace TerminalBase.BaseClasses
         {
             ActivityUI = CrateActivityUI();
             Storage.Clear();
-            Storage.Add(Crate.FromContent(ConfigurationControlsLabel, ConfigurationControls, AvailabilityType.Configuration));
+            Storage.Add(Crate.FromContent(ConfigurationControlsLabel, ActivityUI, AvailabilityType.Configuration));
             await InitializeETA();
             SyncConfControlsBack();
         }
@@ -364,7 +364,7 @@ namespace TerminalBase.BaseClasses
             // we create new StandardConfigurationControlsCM with controls from ActivityUi.
             // We do this because ActivityUi can has properties to access specific controls. We don't want those propeties exist in serialized crate.
 
-            var configurationControlsToAdd = new StandardConfigurationControlsCM(ConfigurationControls.Controls);
+            var configurationControlsToAdd = new StandardConfigurationControlsCM(ActivityUI.Controls);
             Storage.Add(Crate.FromContent(ConfigurationControlsLabel, configurationControlsToAdd, AvailabilityType.Configuration));
 
             int insertIndex = 0;

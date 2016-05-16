@@ -17,9 +17,8 @@ namespace terminalAzure
         {
             public LiveMode()
             {
-                For<ICrateManager>().Use<CrateManager>();
                 For<IDbProvider>().Use<SqlClientDbProvider>();
-                For<ActivityExecutor>().Use<ActivityExecutor>();
+                
             }
         }
 

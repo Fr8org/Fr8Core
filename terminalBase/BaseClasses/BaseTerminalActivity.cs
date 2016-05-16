@@ -47,6 +47,7 @@ namespace TerminalBase.BaseClasses
         protected ActivityContext ActivityContext { get; set; }
         protected abstract ActivityTemplateDTO MyTemplate { get; }
         protected bool IsAuthenticationRequired { get; }
+        protected bool DisableValidationOnFollowup { get; set; }
 
 
         #endregion
@@ -498,7 +499,11 @@ namespace TerminalBase.BaseClasses
         {
             Storage.Remove<ValidationResultsCM>();
             ValidationManager.Reset();
-            await Validate();
+            if (!DisableValidationOnFollowup)
+            {
+                await Validate();
+            }
+
             if (ValidationManager.HasErrors)
             {
                 Storage.Add(Crate.FromContent("Validation Results", ValidationManager.GetResults()));
