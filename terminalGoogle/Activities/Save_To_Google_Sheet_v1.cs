@@ -16,6 +16,7 @@ using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
 using TerminalBase.BaseClasses;
 using Google.GData.Client;
+using TerminalBase.Infrastructure;
 
 namespace terminalGoogle.Actions
 {
@@ -152,7 +153,7 @@ namespace terminalGoogle.Actions
             ConfigurationControls.ExistingSpreadsheetsList.ListItems = (await _googleSheet.GetSpreadsheets(GetGoogleAuthToken())).Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller)
+        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             //If different existing spreadsheet is selected then we have to load worksheet list for it
             if (ConfigurationControls.UseExistingSpreadsheetOption.Selected && !string.IsNullOrEmpty(ConfigurationControls.ExistingSpreadsheetsList.Value))

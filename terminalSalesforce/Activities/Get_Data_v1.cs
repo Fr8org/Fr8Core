@@ -12,6 +12,7 @@ using ServiceStack;
 using StructureMap;
 using TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
+using TerminalBase.Infrastructure;
 
 namespace terminalSalesforce.Actions
 {
@@ -73,7 +74,7 @@ namespace terminalSalesforce.Actions
             return Task.FromResult(true);
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller)
+        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             //If Salesforce object is empty then we should clear filters as they are no longer applicable
             var selectedObject = ConfigurationControls.SalesforceObjectSelector.selectedKey;

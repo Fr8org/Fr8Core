@@ -9,8 +9,8 @@ using Fr8Data.Manifests;
 using Fr8Data.States;
 using StructureMap;
 using terminalSlack.Interfaces;
-using terminalSlack.Services;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalSlack.Actions
 {
@@ -74,10 +74,13 @@ namespace terminalSlack.Actions
         public const string EventSubscriptionsCrateLabel = "Standard Event Subscriptions";
 
         private readonly ISlackIntegration _slackIntegration;
+        private readonly ISlackEventManager _slackEventManager;
 
         public Monitor_Channel_v2() : base(true)
         {
             _slackIntegration = ObjectFactory.GetInstance<ISlackIntegration>();
+            _slackEventManager = ObjectFactory.GetInstance<ISlackEventManager>();
+
             ActivityName = "Monitor Slack Messages";
         }
 
@@ -109,58 +112,71 @@ namespace terminalSlack.Actions
             return CrateManager.CreateStandardEventSubscriptionsCrate(EventSubscriptionsCrateLabel, "Slack", "Slack Outgoing Message");
         }
 
-        protected override Task Configure(CrateSignaller crateSignaller)
+        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             //No extra configuration is required
             return Task.FromResult(0);
         }
+        
+        protected override Task Validate(ValidationManager validationManager)
+        {
+            if (!IsMonitoringDirectMessages && (!IsMonitoringChannels || (!IsMonitoringAllChannels && !IsMonitoringSpecificChannels)))
+            {
+                validationManager.SetError("At least one of the monitoring options must be selected", ConfigurationControls.MonitorDirectMessagesOption, ConfigurationControls.MonitorChannelsOption);
+            }
 
-        protected override async Task RunCurrentActivity()
+            return Task.FromResult(0);
+        }
+
+        protected override Task RunCurrentActivity()
         {
             var incomingMessageContents = ExtractIncomingMessageContentFromPayload();
             var hasIncomingMessage = incomingMessageContents?.Fields?.Count > 0;
-            if (hasIncomingMessage)
+
+            if (!hasIncomingMessage)
             {
-                var incomingChannelId = incomingMessageContents["channel_id"];
-                var isSentByCurrentUser = incomingMessageContents["user_name"] == AuthorizationToken.ExternalAccountId;
-                if (string.IsNullOrEmpty(incomingChannelId))
-                {
-                    RequestHubExecutionTermination("Incoming message doesn't contain information about source channel");
-                }
-                else
-                {
-                    //Slack channel Id first letter: C - for channel, D - for direct messages to current user, G - for message in group conversation with current user
-                    var isSentToChannel = incomingChannelId.StartsWith("C", StringComparison.OrdinalIgnoreCase);
-                    var isDirect = incomingChannelId.StartsWith("D", StringComparison.OrdinalIgnoreCase);
-                    var isSentToGroup = incomingChannelId.StartsWith("G", StringComparison.OrdinalIgnoreCase);
-                    //Message is sent to tracked channel or is sent directly or to group but not by current user
-                    var isTrackedByChannel = IsMonitoringChannels && isSentToChannel && (IsMonitoringAllChannels || incomingChannelId == SelectedChannelId);
-                    var isTrackedByUser = IsMonitoringDirectMessages && (isDirect || isSentToGroup) && !isSentByCurrentUser;
-                    if (isTrackedByUser || isTrackedByChannel)
-                    {
-                        CurrentPayloadStorage.Add(Crate.FromContent(ResultPayloadCrateLabel, new StandardPayloadDataCM(incomingMessageContents.Fields), AvailabilityType.RunTime));
-                    }
-                    else
-                    {
-                        RequestHubExecutionTermination("Incoming message doesn't pass filter criteria. No downstream activities are executed");
-                    }
-                }
+                RequestHubExecutionTermination("Incoming message is missing.");
+                return Task.FromResult(0);
+            }
+
+            var incomingChannelId = incomingMessageContents["channel_id"];
+            var isSentByCurrentUser = incomingMessageContents["user_name"] == AuthorizationToken.ExternalAccountId;
+
+            if (string.IsNullOrEmpty(incomingChannelId))
+            {
+                RequestHubExecutionTermination("Incoming message doesn't contain information about source channel");
             }
             else
             {
-                if (!IsMonitoringDirectMessages && (!IsMonitoringChannels || (!IsMonitoringAllChannels && !IsMonitoringSpecificChannels)))
+                //Slack channel Id first letter: C - for channel, D - for direct messages to current user, G - for message in group conversation with current user
+                var isSentToChannel = incomingChannelId.StartsWith("C", StringComparison.OrdinalIgnoreCase);
+                var isDirect = incomingChannelId.StartsWith("D", StringComparison.OrdinalIgnoreCase);
+                var isSentToGroup = incomingChannelId.StartsWith("G", StringComparison.OrdinalIgnoreCase);
+                //Message is sent to tracked channel or is sent directly or to group but not by current user
+                var isTrackedByChannel = IsMonitoringChannels && isSentToChannel && (IsMonitoringAllChannels || incomingChannelId == SelectedChannelId);
+                var isTrackedByUser = IsMonitoringDirectMessages && (isDirect || isSentToGroup) && !isSentByCurrentUser;
+                if (isTrackedByUser || isTrackedByChannel)
                 {
-                    throw new ActivityExecutionException("At least one of the monitoring options must be selected");
+                    CurrentPayloadStorage.Add(Crate.FromContent(ResultPayloadCrateLabel, new StandardPayloadDataCM(incomingMessageContents.Fields), AvailabilityType.RunTime));
                 }
-                await ObjectFactory.GetInstance<ISlackEventManager>().Subscribe(AuthorizationToken, CurrentActivity.RootPlanNodeId.Value).ConfigureAwait(false);
-                RequestHubExecutionTermination("Plan successfully activated. It will wait and respond to specified Slack postings");
+                else
+                {
+                    RequestHubExecutionTermination("Incoming message doesn't pass filter criteria. No downstream activities are executed");
+                }
             }
+
+            return Task.FromResult(0);
+        }
+
+        protected override async Task Activate()
+        {
+            await _slackEventManager.Subscribe(AuthorizationToken, CurrentActivity.RootPlanNodeId.Value).ConfigureAwait(false);
         }
 
         protected override Task Deactivate()
         {
-            ObjectFactory.GetInstance<ISlackEventManager>().Unsubscribe(CurrentActivity.RootPlanNodeId.Value);
-            return base.Deactivate();
+            _slackEventManager.Unsubscribe(CurrentActivity.RootPlanNodeId.Value);
+            return Task.FromResult(0);
         }
 
         private FieldDescriptionsCM ExtractIncomingMessageContentFromPayload()

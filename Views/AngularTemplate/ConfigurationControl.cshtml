@@ -27,6 +27,10 @@
         <input type='text' ng-model='field.value' ng-model-options="{ updateOn: 'blur' }"
                ng-change="onChange(field)" ng-required='field.required' data-field-name='{{::field.name}}' id='pca__txt__{{::field.name | validId}}'
                class='form-control form-control-focus' name='pca__txt__{{::field.name | validId}}' stop-click-propagation>
+
+        <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
+            <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
+        </div>
     </div>
 
     <!--
