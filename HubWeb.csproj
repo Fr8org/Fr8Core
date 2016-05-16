@@ -496,7 +496,9 @@
     <Content Include="Api\EventResponse.aspx" />
     <Content Include="Api\GetEmailHTML.aspx" />
     <Content Include="Content\css\CDNRelatedStyles.css" />
+    <Content Include="Content\css\dockyard\activity-stream.css" />
     <Content Include="Content\css\dockyard\authentication-dialog.css" />
+    <Content Include="Content\css\dockyard\collapse.css" />
     <Content Include="Content\css\dockyard\container-transition.css" />
     <Content Include="Content\css\dockyard\query-builder.css" />
     <Content Include="Content\css\fonts\brankic.svg" />
@@ -508,6 +510,7 @@
     <Content Include="Content\css\homecss\main.css" />
     <Content Include="Content\css\shared\main.css" />
     <Content Include="Content\css\shared\navbar.css" />
+    <Content Include="Content\icons\web_services\Box-logo_64x64.png" />
     <Content Include="Content\img\background-7.png" />
     <Content Include="Content\img\background-cta-3.jpg" />
     <Content Include="Content\img\background-cta-3.png" />
@@ -949,6 +952,7 @@
     <Content Include="Config\log4net.tests.healthMonitor.Release.config" />
     <Content Include="Views\AngularTemplate\FilterPane.cshtml" />
     <Content Include="Views\AngularTemplate\MiniHeader.cshtml" />
+    <Content Include="Views\AngularTemplate\ActivityLabelModal.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />
@@ -986,6 +990,8 @@
     <TypeScriptCompile Include="Scripts\app\controllers\OrganizationController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\collapse\collapse.directive.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\collapse\collapse.module.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\BuildMessageAppender.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ControlList.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\ExternalObjectChooser.ts" />
@@ -1037,6 +1043,7 @@
     <TypeScriptCompile Include="Scripts\app\services\SubordinateSubplanService.ts" />
     <TypeScriptCompile Include="Scripts\app\services\UpstreamExtractor.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\ActionPicker.spec.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\directives\collapse.directive.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\QueryBuilder.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamFieldChooser.spec.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\filters\FilterByTagTests.ts" />

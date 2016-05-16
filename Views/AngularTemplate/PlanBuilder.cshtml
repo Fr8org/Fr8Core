@@ -56,6 +56,13 @@
                                                             Reconfigure
                                                         </md-button>
                                                     </md-menu-item>
+                                                    <md-menu-item>
+                                                        <md-button ng-click="openAddLabelModal(envelope.activity);">
+                                                            <md-icon style="padding-top:3px" md-font-icon="fa fa-pencil"></md-icon>
+                                                            <span ng-if="!envelope.activity.label">Add Label</span> 
+                                                            <span ng-if="envelope.activity.label">Change Label</span>
+                                                        </md-button>
+                                                    </md-menu-item>
                                                     <md-menu-divider></md-menu-divider>
                                                     <md-menu-item>
                                                         <md-button ng-click="deleteAction(envelope.activity);">

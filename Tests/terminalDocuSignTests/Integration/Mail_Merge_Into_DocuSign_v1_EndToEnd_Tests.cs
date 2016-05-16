@@ -239,7 +239,7 @@ namespace terminalDocuSignTests.Integration
             //await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
         }
 
-     /*   [Test]
+        [Test]
         public async Task Mail_Merge_Into_DocuSign_EndToEnd_Upstream_Values_From_Google_Check_Tabs()
         {
             //
@@ -442,7 +442,7 @@ namespace terminalDocuSignTests.Integration
             //
             //await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
         }
-        */
+        
         private async Task<Guid> ExtractGoogleDefaultToken()
         {
             var errorMessage = $"Authorization token for Google is not found for the integration testing user {TestUserEmail}. Please go to the target instance of fr8 and log in with the integration testing user credentials. Then add a Google action to any plan and be sure to set the \"Use for all Activities\" checkbox on the Authorize Accounts dialog while authenticating. Reason: ";

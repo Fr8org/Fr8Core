@@ -190,7 +190,7 @@ namespace Hub.Services
                         ExternalDomainId = terminalResponseAuthTokenDTO.ExternalDomainId,
                         ExternalDomainName = string.IsNullOrEmpty(terminalResponseAuthTokenDTO.ExternalDomainName) ? terminalResponseAuthTokenDTO.ExternalDomainId : terminalResponseAuthTokenDTO.ExternalDomainName,
                         TerminalID = curTerminal.Id,
-                        UserDO = curAccount,
+                        UserID = curAccount.Id,
                         AdditionalAttributes = terminalResponseAuthTokenDTO.AdditionalAttributes,
                         ExpiresAt = DateTime.Today.AddMonths(1)
                     };
@@ -347,7 +347,7 @@ namespace Hub.Services
 
                     authToken = new AuthorizationTokenDO()
                     {
-                        UserDO = curAccount,
+                        UserID = curAccount.Id,
                         TerminalID = curTerminal.Id,
                         ExpiresAt = DateTime.Today.AddMonths(1),
                         ExternalStateToken = externalAuthUrlDTO.ExternalStateToken
@@ -625,6 +625,21 @@ namespace Hub.Services
                 {
                     RemoveToken(uow, authToken);
                 }
+            }
+        }
+        
+        public void RenewToken(Guid authTokenId, string externalAccountId, string token)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var authToken = uow.AuthorizationTokenRepository
+                    .FindTokenById(authTokenId);
+
+                if (authToken == null)
+                    return;
+                authToken.ExternalAccountId = externalAccountId;
+                authToken.Token = token;
+                uow.SaveChanges();
             }
         }
 

@@ -9,6 +9,7 @@ using Fr8Data.States;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalSlack.Actions
 {
@@ -120,7 +121,7 @@ namespace terminalSlack.Actions
                                                                       new string[] { "Slack Outgoing Message" });
         }
 
-        protected override Task Configure(CrateSignaller crateSignaller)
+        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             //No extra configuration is required
             return Task.FromResult(0);
@@ -146,7 +147,7 @@ namespace terminalSlack.Actions
             }
             else
             {
-                RequestHubExecutionTermination("Plan successfully activated. It will wait and respond to specified Slack postings");
+                RequestHubExecutionTermination("External event data is missing.");
             }
             return Task.FromResult(0);
         }

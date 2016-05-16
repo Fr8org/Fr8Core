@@ -175,7 +175,7 @@ namespace TerminalBase.Infrastructure
             var mergedFields = new FieldDescriptionsCM();
             var availableData = await GetAvailableData(activityDO, direction, availability, userId);
 
-            mergedFields.Fields.AddRange(availableData.AvailableFields);
+            mergedFields.Fields.AddRange(availableData.AvailableCrates.SelectMany(x => x.Fields));
 
             return mergedFields;
         }
@@ -460,6 +460,23 @@ namespace TerminalBase.Infrastructure
                     + string.Format("/authentication/GetAuthToken?curFr8UserId={0}&externalAccountId={1}&terminalId={2}", curFr8UserId, externalAccountId, TerminalId);
             var uri = new Uri(url);
             return await _restfulServiceClient.GetAsync<AuthorizationTokenDTO>(uri, null, await GetHMACHeader(uri, curFr8UserId));
+        }
+
+        public async Task RenewToken(string id, string externalAccountId, string token, string userId)
+        {
+            var url = $"{CloudConfigurationManager.GetSetting("CoreWebServerUrl")}api/" +
+                      $"{CloudConfigurationManager.GetSetting("HubApiVersion")}/authentication/renewtoken?id="+id
+                      +"&externalAccountId="+externalAccountId+"&token="+token;
+            var uri = new Uri(url);
+            await _restfulServiceClient.PostAsync(uri, null, await GetHMACHeader(uri, userId));
+        }
+
+        public async Task RenewToken(AuthorizationTokenDTO token, string userId)
+        {
+            var url = $"{CloudConfigurationManager.GetSetting("CoreWebServerUrl")}api/" +
+                      $"{CloudConfigurationManager.GetSetting("HubApiVersion")}/authentication/renewtoken";
+            var uri = new Uri(url);
+            await _restfulServiceClient.PostAsync(uri, token, null, await GetHMACHeader(uri, userId, token));
         }
 
         public async Task ScheduleEvent(string externalAccountId, string curFr8UserId, string minutes)
