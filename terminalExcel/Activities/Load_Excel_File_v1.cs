@@ -148,7 +148,11 @@ namespace terminalExcel.Actions
                 if (rows != null && rows.Count > 0)
                 {
                     tableCrate = crateManager.CreateStandardTableDataCrate(RunTimeCrateLabel, isFirstRowAsColumnNames, rows.ToArray());
-                    crates.Add(TabularUtilities.PrepareFieldsForOneRowTable(isFirstRowAsColumnNames, isRunTime, rows, headersArray));
+                    var fieldsCrate = TabularUtilities.PrepareFieldsForOneRowTable(isFirstRowAsColumnNames, isRunTime, rows, headersArray);
+                    if (fieldsCrate != null)
+                    {
+                        crates.Add(fieldsCrate);
+                    }
                 }
             }
             crates.Add(tableCrate);
