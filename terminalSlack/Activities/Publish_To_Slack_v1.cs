@@ -116,7 +116,7 @@ namespace terminalSlack.Actions
                 Source = null
             };
 
-            var fieldSelect = CreateSpecificOrUpstreamValueChooser(
+            var fieldSelect = ControlHelper.CreateSpecificOrUpstreamValueChooser(
                 "Select Message Field",
                 "Select_Message_Field",
                 addRequestConfigEvent: true,

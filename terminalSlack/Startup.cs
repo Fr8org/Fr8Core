@@ -12,6 +12,7 @@ using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using TerminalBase.Services;
 using terminalSlack.Actions;
+using TerminalBase.Infrastructure;
 
 [assembly: OwinStartup(typeof(terminalSlack.Startup))]
 

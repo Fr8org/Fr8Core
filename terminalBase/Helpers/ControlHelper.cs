@@ -93,5 +93,34 @@ namespace TerminalBase.Helpers
 
             return ctrl;
         }
+
+        /// <summary>
+        /// Creates RadioButtonGroup to enter specific value or choose value from upstream crate.
+        /// </summary>
+        public TextSource CreateSpecificOrUpstreamValueChooser(
+            string label,
+            string controlName,
+            string upstreamSourceLabel = "",
+            string filterByTag = "",
+            bool addRequestConfigEvent = false,
+            bool requestUpstream = false)
+        {
+            var control = new TextSource(label, upstreamSourceLabel, controlName)
+            {
+                Source = new FieldSourceDTO
+                {
+                    Label = upstreamSourceLabel,
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields,
+                    FilterByTag = filterByTag,
+                    RequestUpstream = requestUpstream
+                }
+            };
+            if (addRequestConfigEvent)
+            {
+                control.Events.Add(new ControlEvent("onChange", "requestConfig"));
+            }
+
+            return control;
+        }
     }
 }
