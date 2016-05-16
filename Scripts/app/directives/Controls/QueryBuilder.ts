@@ -48,6 +48,7 @@ module dockyard.directives {
                 currentAction: '=',
                 field: '=',
                 rows: '=?',
+                requestUpstream: '=?',
                 isDisabled: '=',
                 addRowText: '@'
             },

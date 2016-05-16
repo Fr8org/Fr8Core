@@ -4,13 +4,17 @@
     export interface IQueryBuilderConditionScope extends ng.IScope {
         currentAction: model.ActivityDTO;
         fields: Array<model.FieldDTO>;
+        requestUpstream: boolean;
         operators: Array<IQueryOperator>;
         condition: IQueryCondition;
         isSingle: boolean;
         hasConfigurationControl: boolean;
+        toggle: boolean;
 
         fieldSelected: () => void;
         onRemoveCondition: () => void;
+        toggleDropDown: (select: any) => void;
+        focusOutSet: (focusElem: any) => void;
 
         rootElem: any;
     }
@@ -24,6 +28,7 @@
                 currentAction: '=',
                 condition: '=',
                 fields: '=',
+                requestUpstream: '=?',
                 operators: '=',
                 isSingle: '=',
                 onRemoveCondition: '&'
@@ -34,10 +39,11 @@
 
                 scope.rootElem = elem;
             },
-            controller: ['$rootScope', '$scope', '$compile',
+            controller: ['$rootScope', '$scope', '$compile', 'UpstreamExtractor',
                 ($rootScope: ng.IRootScopeService,
                     $scope: IQueryBuilderConditionScope,
-                    $compile: ng.ICompileService) => {
+                    $compile: ng.ICompileService,
+                    UpstreamExtractor: services.UpstreamExtractor) => {
 
                     var configurationControl = null;
 
@@ -118,6 +124,80 @@
                             configurationControl.scope.control.value = value;
                         }
                     });
+
+                    var loadUpstreamFields = () => {
+                        var availabilityType = 'NotSet';
+
+                        return UpstreamExtractor
+                            .getAvailableData($scope.currentAction.id, availabilityType)
+                            .then((data: model.IncomingCratesDTO) => {
+                                var fields: Array<model.FieldDTO> = [];
+
+                                angular.forEach(data.availableCrates, (ct) => {
+                                    angular.forEach(ct.fields, (f) => {
+                                        var i, j;
+                                        var found = false;
+                                        for (i = 0; i < fields.length; ++i) {
+                                            if (fields[i].key === f.key) {
+                                                found = true;
+                                                break;
+                                            }
+                                        }
+                                        if (!found) {
+                                            fields.push(f);
+                                        }
+                                    });
+                                });
+
+                                fields.sort((x, y) => {
+                                    if (x.key < y.key) {
+                                        return -1;
+                                    }
+                                    else if (x.key > y.key) {
+                                        return 1;
+                                    }
+                                    else {
+                                        return 0;
+                                    }
+                                });
+
+                                $scope.fields = fields;
+                            });
+                    };
+
+                    $scope.toggle = false;
+                    $scope.toggleDropDown = $select => {
+                        if (!$scope.focusOutSet) {
+                            var focusElem = angular.element($select.focusInput);
+                            $scope.focusOutSet = isFocusOutFunc;
+                            $scope.focusOutSet(focusElem);
+                        }
+
+                        if (!$scope.toggle
+                            && $scope.requestUpstream) {
+
+                            $select.open = false;
+
+                            loadUpstreamFields().then(() => { //parameter isSilent false, since we want to see error messages
+                                $select.open = !$scope.toggle;
+                                $scope.toggle = !$scope.toggle;
+                            });
+                        }
+                        else {
+                            $select.open = !$scope.toggle;
+                            $scope.toggle = !$scope.toggle;
+                        }
+                    };
+
+                    var isFocusOutFunc = focusElem => {
+                        focusElem.focusout(() => {
+                            $scope.toggle = false;
+                        });
+                    }
+
+                    if ($scope.requestUpstream) {
+                        $scope.fields = [];
+                    }
 
                     // attachControl();
                 }
