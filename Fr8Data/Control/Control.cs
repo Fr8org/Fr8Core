@@ -463,6 +463,11 @@ namespace Fr8Data.Control
                     return null;
             }
         }
+
+
+        public bool HasValue => !string.IsNullOrEmpty(ValueSource) && (HasUpstreamValue || HasSpecificValue);
+        public bool HasUpstreamValue => (ValueSource == "upstream" && !string.IsNullOrEmpty(this.Value));
+        public bool HasSpecificValue => (ValueSource == "specific" && !string.IsNullOrEmpty(this.TextValue));
     }
 
     public class Button : ControlDefinitionDTO

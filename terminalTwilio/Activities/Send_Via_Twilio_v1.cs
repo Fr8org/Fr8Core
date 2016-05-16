@@ -157,20 +157,23 @@ namespace terminalTwilio.Actions
 
                 if (numberControl != null)
                 {
-                    var smsNumber = numberControl.TextValue;
-
-                    ValidateSMSNumber(validationManager, smsNumber, numberControl);
+                    if (numberControl.HasValue)
+                    {
+                        if (numberControl.HasSpecificValue)
+                        {
+                            ValidateSMSNumber(validationManager, numberControl.TextValue, numberControl);
+                        }
+                    }
+                    else validationManager.SetError("No SMS Number Provided", numberControl);
                 }
-
                 if (bodyControl != null)
                 {
-                    if (bodyControl.TextValue == null && bodyControl.Value == null)
+                    if (!bodyControl.HasValue)
                     {
                         validationManager.SetError("SMS body can not be null.", bodyControl);
                     }
                 }
             }
-
             return Task.FromResult(0);
         }
 
@@ -245,12 +248,6 @@ namespace terminalTwilio.Actions
             try
             {
                 PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
-
-                if (String.IsNullOrEmpty(smsNumber))
-                {
-                    validationManager.SetError("No SMS Number Provided", control);
-                    return false;
-                }
 
                 smsNumber = GeneralisePhoneNumper(smsNumber);
 
