@@ -141,7 +141,7 @@ namespace terminalDocuSign.Actions
         {
             return Task.FromResult(curActivityDO);
         }
-
+        
         protected internal override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
         {
             var payload = await GetPayload(curActivityDO, containerId);
@@ -154,8 +154,7 @@ namespace terminalDocuSign.Actions
 
             if (envelopeStatus == null)
             {
-                await Activate(curActivityDO, authTokenDO);
-                return TerminateHubExecution(payload, "Plan successfully activated. It will wait and respond to specified DocuSign Event messages");
+                return TerminateHubExecution(payload, "Evelope was not found in the payload.");
             }
 
             //Create run-time fields

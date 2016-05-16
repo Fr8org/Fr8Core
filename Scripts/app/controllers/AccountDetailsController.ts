@@ -24,27 +24,27 @@ module dockyard.controllers {
         constructor(
             private $scope: IAccountDetailsScope,
             private $state: ng.ui.IStateService,
-            private UserService: services.IUserService){
-//            private $state: ng.ui.IStateService) {
+            private UserService: services.IUserService) {
+            //            private $state: ng.ui.IStateService) {
 
-            UserService.getProfiles().$promise.then(function(data) {
+            UserService.getProfiles().$promise.then(function (data) {
                 $scope.profiles = data;
             });
 
-            UserService.get({ id: $state.params['id']}).$promise.then(function (data) {
+            UserService.get({ id: $state.params['id'] }).$promise.then(function (data) {
                 $scope.user = data;
             });
 
             //Save button
             $scope.submit = function (isValid) {
                 if (isValid) {
-                    var result = UserService.updateUserProfile({ userId: $scope.user.id, profileId: $scope.user.profileId });
+                    var result = UserService.updateUserProfile({ userId: $scope.user.id, profileId: $scope.user.profileId, userClass: $scope.user.class });
                     result.$promise.then(() => { $state.go('accounts'); });
                 }
             };
 
             $scope.cancel = function () {
-                $state.go('accounts'); 
+                $state.go('accounts');
             };
         }
     }

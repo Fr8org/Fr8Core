@@ -4,6 +4,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Manifests;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalTest.Actions
 {
@@ -36,7 +37,7 @@ namespace terminalTest.Actions
             return Task.FromResult(0);
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller)
+        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             if (ConfigurationControls.AddChild.Clicked)
             {

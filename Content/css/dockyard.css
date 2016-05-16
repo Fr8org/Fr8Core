@@ -1215,6 +1215,10 @@ i.activity-stream-font {
     padding: 6px 0 0 0;
 }
 
+.fr8-config-pane-padding {
+    padding-left: 8px;
+}
+
 footer {
     padding-top: 20px;
     padding-bottom: 10px;

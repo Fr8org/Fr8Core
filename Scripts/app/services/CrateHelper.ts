@@ -210,6 +210,15 @@
         public setValidationErrors(fields: Array<model.ControlDefinitionDTO>, validationResults: model.ValidationResults) {
             for (var i = 0; i < fields.length; i++) {
                 this.setFieldValidationErrors(fields[i], validationResults);
+
+                let field: any = fields[i];
+                if (field.controls) {
+                    this.setValidationErrors((<model.ISupportsNestedFields>field).controls, validationResults);
+                }
+                // If we encountered radiobuttonGroup, we need to check every individual option if it has any nested fields
+                if (field.radios) {
+                    this.setValidationErrors((<model.RadioButtonGroup>field).radios, validationResults);
+                }
             }
         }
 

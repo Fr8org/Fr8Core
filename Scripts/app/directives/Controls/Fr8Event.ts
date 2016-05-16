@@ -1,5 +1,5 @@
 ﻿/// <reference path="../../_all.ts" />
-module dockyard.directives.button {
+module dockyard.directives {
     'use strict';
 
     export interface IFr8EventScope extends ng.IScope {
@@ -37,7 +37,6 @@ module dockyard.directives.button {
         }];
 
         return {
-            restrict: 'E',
             templateUrl: '/AngularTemplate/Fr8Event',
             controller: controller,
             scope: {
@@ -47,7 +46,7 @@ module dockyard.directives.button {
         };
     }
 
-    
+
 
     app.directive('fr8Event', Fr8Event);
 }

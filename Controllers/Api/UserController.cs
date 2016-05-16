@@ -31,7 +31,7 @@ namespace HubWeb.Controllers
         }
 
         #region API Endpoints 
-        
+
         public IHttpActionResult Get()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -139,7 +139,7 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        public IHttpActionResult UpdateUserProfile(string userId, Guid profileId)
+        public IHttpActionResult UpdateUserProfile(string userId, Guid profileId, string userClass)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -149,6 +149,7 @@ namespace HubWeb.Controllers
                 if (_securityServices.UserHasPermission(PermissionType.ManageFr8Users, nameof(Fr8AccountDO)))
                 {
                     user.ProfileId = profileId;
+                    user.Class = userClass;
                     uow.SaveChanges();
                     return Ok();
                 }
@@ -160,7 +161,7 @@ namespace HubWeb.Controllers
                     hasChanged = true;
                 }
 
-                if(hasChanged)
+                if (hasChanged)
                     uow.SaveChanges();
             }
 
