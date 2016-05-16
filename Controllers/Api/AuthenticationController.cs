@@ -59,16 +59,8 @@ namespace HubWeb.Controllers
 
             return Ok(new
             {
-                TerminalId =
-                    response.AuthorizationToken != null
-                        ? response.AuthorizationToken.TerminalID
-                        : (int?)null,
-
-                AuthTokenId =
-                    response.AuthorizationToken != null
-                        ? response.AuthorizationToken.Id.ToString()
-                        : null,
-
+                TerminalId = response.AuthorizationToken?.TerminalID,
+                AuthTokenId = response.AuthorizationToken?.Id.ToString(),
                 Error = response.Error
             });
         }
@@ -77,7 +69,7 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         [ActionName("initial_url")]
         public async Task<IHttpActionResult> GetOAuthInitiationURL(
-            [FromUri(Name = "id")] int terminalId)
+            [FromUri(Name = "id")]int terminalId)
         {
             Fr8AccountDO account;
             TerminalDO terminal;
@@ -134,7 +126,10 @@ namespace HubWeb.Controllers
         [HttpGet]
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> GetAuthToken([FromUri]string curFr8UserId, [FromUri]string externalAccountId, [FromUri] string terminalId)
+        public async Task<IHttpActionResult> GetAuthToken(
+            [FromUri]string curFr8UserId,
+            [FromUri]string externalAccountId,
+            [FromUri]string terminalId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -155,12 +150,33 @@ namespace HubWeb.Controllers
             var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
             var uri = new Uri(ConfigurationManager.AppSettings["PlanDirectoryUrl"] + "/api/authentication/token");
-            var headers = await hmacService.GenerateHMACHeader(uri, "PlanDirectory", CloudConfigurationManager.GetSetting("PlanDirectorySecret"), User.Identity.GetUserId());
+            var headers =
+                await
+                    hmacService.GenerateHMACHeader(uri, "PlanDirectory",
+                        CloudConfigurationManager.GetSetting("PlanDirectorySecret"), User.Identity.GetUserId());
 
             var json = await client.PostAsync<JObject>(uri, headers: headers);
             var token = json.Value<string>("token");
 
             return Ok(new { token });
+        }
+
+        [HttpPost]
+        [Fr8ApiAuthorize]
+        [Fr8HubWebHMACAuthenticate]
+        public IHttpActionResult RenewToken(string id, string externalAccountId, string token)
+        {
+            _authorization.RenewToken(Guid.Parse(id), externalAccountId, token);
+            return Ok();
+        }
+
+        [HttpPost]
+        [Fr8ApiAuthorize]
+        [Fr8HubWebHMACAuthenticate]
+        public IHttpActionResult RenewToken([FromBody]AuthorizationTokenDTO token)
+        {
+            _authorization.RenewToken(Guid.Parse(token.Id), token.ExternalAccountId, token.Token);
+            return Ok();
         }
     }
 }

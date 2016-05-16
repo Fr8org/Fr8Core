@@ -33,6 +33,7 @@ namespace terminalQuickBooks
             GlobalConfiguration.Configure(RoutesConfig.Register);
 			DataAutoMapperBootStrapper.ConfigureAutoMapper();   
             TerminalBootstrapper.ConfigureLive();
+            StructureMapBootStrapper.ConfigureDependencies(DependencyType.LIVE).ConfigureQuickbooksDependencies(DependencyType.LIVE);
         }
     }
 }

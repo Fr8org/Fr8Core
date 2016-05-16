@@ -35,5 +35,13 @@ namespace Hub.Interfaces
         void GrantToken(Guid actionId, Guid authTokenId);
 
         void RevokeToken(string accountId, Guid authTokenId);
+
+        /// <summary>
+        /// Updates token in database
+        /// </summary>
+        /// <param name="authTokenId">Token Id</param>
+        /// <param name="externalAccountId"></param>
+        /// <param name="token">Token content</param>
+        void RenewToken(Guid authTokenId, string externalAccountId, string token);
     }
 }
