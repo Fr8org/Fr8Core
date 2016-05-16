@@ -56,7 +56,7 @@ module dockyard.directives.textSource {
                 }
             });
 
-            $scope.onFocus = (field) => {
+            $scope.onFocus = (fieldname) => {
                 $scope.$emit(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureFocusElement],
                     new pca.ConfigureFocusElementArgs($scope.field));
             };
