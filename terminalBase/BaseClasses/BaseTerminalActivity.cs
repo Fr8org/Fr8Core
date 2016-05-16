@@ -63,6 +63,7 @@ namespace TerminalBase.BaseClasses
         protected UpstreamQueryManager UpstreamQueryManager => _upstreamQueryManager ?? (_upstreamQueryManager = new UpstreamQueryManager(ActivityContext, HubCommunicator));
         protected ControlHelper ControlHelper => _controlHelper ?? (_controlHelper = new ControlHelper(ActivityContext, HubCommunicator));
         protected Guid ActivityId => ActivityContext.ActivityPayload.Id;
+        protected ActivityPayload ActivityPayload => ActivityContext.ActivityPayload;
         protected string CurrentUserId => ActivityContext.UserId;
         protected Task<ActivityPayload> SaveToHub(ActivityPayload activity) => HubCommunicator.SaveActivity(activity, CurrentUserId);
         public Task<FieldDescriptionsCM> GetDesignTimeFields(CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet) => HubCommunicator.GetDesignTimeFieldsByDirection(ActivityId, direction, availability, CurrentUserId);
