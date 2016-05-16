@@ -13,7 +13,7 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using Infrastructure.Interfaces;
+using Fr8Infrastructure.Interfaces;
 using Newtonsoft.Json;
 using StructureMap;
 using TerminalBase.Infrastructure;

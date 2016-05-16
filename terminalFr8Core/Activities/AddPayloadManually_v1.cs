@@ -80,16 +80,15 @@ namespace terminalFr8Core.Activities
                 userDefinedPayload.ForEach(x =>
                 {
                     x.Value = x.Key;
-                    x.Availability = Fr8Data.States.AvailabilityType.RunTime;
+                    x.Availability = AvailabilityType.RunTime;
                 });
                 
                 Storage.RemoveByLabel(RunTimeCrateLabel);
-                var crate = Fr8Data.Crates.Crate.FromContent(RunTimeCrateLabel, new FieldDescriptionsCM() { Fields = userDefinedPayload });
-                crate.Availability = Fr8Data.States.AvailabilityType.RunTime;
+                var crate = Crate.FromContent(RunTimeCrateLabel, new FieldDescriptionsCM() { Fields = userDefinedPayload });
+                crate.Availability = AvailabilityType.RunTime;
                 Storage.Add(crate);
             }
 
-            Success();
             return Task.FromResult(0);
         }
 

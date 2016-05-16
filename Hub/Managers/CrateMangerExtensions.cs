@@ -1,37 +1,22 @@
 ﻿using System;
 using Data.Entities;
-using Data.Infrastructure.AutoMapper;
 using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
+
 
 namespace Hub.Managers
 {
     public static class CrateManagerExtensions
     {
-        public static IUpdatableCrateStorage GetUpdatableStorage(this ICrateManager crateManager, ActivityDTO activity)
+        public static IUpdatableCrateStorage GetUpdatableStorage(this ICrateManager crateManager, ActivityDO activity)
         {
-            if (activity == null) throw new ArgumentNullException("action");
+            if (activity == null) throw new ArgumentNullException(nameof(activity));
             return crateManager.UpdateStorage(() => activity.CrateStorage);
         }
 
         public static ICrateStorage GetStorage(this ICrateManager crateManager, ActivityDO activity)
         {
-           return GetStorage(crateManager, activity.CrateStorage);
-        }
-
-        public static ICrateStorage GetStorage(this ICrateManager crateManager, string crateStorageRaw)
-        {
-            if (string.IsNullOrWhiteSpace(crateStorageRaw))
-            {
-                return new CrateStorage();
-            }
-
-            return crateManager.FromDto(CrateStorageFromStringConverter.Convert(crateStorageRaw));
-        }
-
-        public static ICrateStorage GetStorage(this ICrateManager crateManager, ActivityDTO activity)
-        {
-            return crateManager.FromDto(activity.CrateStorage);
+            return crateManager.GetStorage(activity.CrateStorage);
         }
     }
 }

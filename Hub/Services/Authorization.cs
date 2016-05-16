@@ -9,15 +9,15 @@ using Data.Interfaces;
 using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using Fr8Infrastructure.Interfaces;
 using Hub.Interfaces;
 using Hub.Managers;
 using Newtonsoft.Json;
 using StructureMap;
 using Hub.Exceptions;
-using Infrastructure.Communication;
-using Infrastructure.Interfaces;
 
 namespace Hub.Services
 {

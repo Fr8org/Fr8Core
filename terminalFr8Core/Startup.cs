@@ -2,10 +2,13 @@
 using Owin;
 using System;
 using System.Collections.Generic;
+using System.Web.Http;
 using System.Web.Http.Dispatcher;
+using Data.Infrastructure.AutoMapper;
 using terminalFr8Core.Actions;
 using terminalFr8Core.Activities;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 using TerminalBase.Services;
 
 [assembly: OwinStartup(typeof(terminalFr8Core.Startup))]
@@ -21,6 +24,9 @@ namespace terminalFr8Core
 
         public void Configuration(IAppBuilder app, bool selfHost)
         {
+            Hub.StructureMap.StructureMapBootStrapper.ConfigureDependencies(Hub.StructureMap.StructureMapBootStrapper.DependencyType.LIVE);
+            DataAutoMapperBootStrapper.ConfigureAutoMapper();
+            TerminalBootstrapper.ConfigureLive();
             ConfigureProject(selfHost, null);
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();

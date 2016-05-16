@@ -1,11 +1,11 @@
-﻿using StructureMap;
-using System;
+﻿using System;
 using System.Net.Http;
 using System.Runtime.Caching;
 using System.Threading.Tasks;
-using Infrastructure.Interfaces;
+using Fr8Infrastructure.Interfaces;
+using StructureMap;
 
-namespace Infrastructure.Security
+namespace Fr8Infrastructure.Security
 {
     public class HMACAuthenticator : IHMACAuthenticator
     {

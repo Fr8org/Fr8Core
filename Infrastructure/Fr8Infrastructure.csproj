@@ -7,8 +7,8 @@
     <ProjectGuid>{9F4B5C92-3535-4D4C-B1E4-37BEB1AE5C42}</ProjectGuid>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Infrastructure</RootNamespace>
-    <AssemblyName>Infrastructure</AssemblyName>
+    <RootNamespace>Fr8Infrastructure</RootNamespace>
+    <AssemblyName>Fr8Infrastructure</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />

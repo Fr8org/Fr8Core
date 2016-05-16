@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Infrastructure.Communication
+namespace Fr8Infrastructure.Communication
 {
     public class RestfulServiceException : ApplicationException
     {

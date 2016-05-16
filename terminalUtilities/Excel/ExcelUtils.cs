@@ -9,6 +9,7 @@ using StructureMap;
 using Data.Entities;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Interfaces;

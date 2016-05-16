@@ -7,10 +7,10 @@ using System.Net.Http.Formatting;
 using System.Security.Cryptography;
 using System.Text;
 using System.Threading.Tasks;
-using Infrastructure.Interfaces;
+using Fr8Infrastructure.Interfaces;
 using StructureMap;
 
-namespace Infrastructure.Security
+namespace Fr8Infrastructure.Security
 {
     public class Fr8HMACService : IHMACService
     {

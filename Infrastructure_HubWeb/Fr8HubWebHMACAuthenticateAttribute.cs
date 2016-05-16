@@ -2,9 +2,9 @@
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http.Filters;
+using Fr8Infrastructure.Security;
 using Hub.Infrastructure;
 using Hub.Interfaces;
-using Infrastructure.Security;
 using StructureMap;
 
 namespace HubWeb.Infrastructure_HubWeb

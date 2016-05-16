@@ -13,6 +13,7 @@ using Hub.Infrastructure;
 using Hub.Interfaces;
 using Hub.Managers;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.States;
 using HubWeb.Infrastructure_HubWeb;
 

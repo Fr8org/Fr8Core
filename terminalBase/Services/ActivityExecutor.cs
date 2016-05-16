@@ -45,7 +45,13 @@ namespace TerminalBase.Services
                         await activity.Activate(activityContext);
                         return SerializeResponse(activityContext);
 
+                    case "deactivate":
+                        activity = factory.Create();
+                        await activity.Deactivate(activityContext);
+                        return SerializeResponse(activityContext);
+
                     case "run":
+                        await HubCommunicator.Configure(curTerminal);
                         var executionContext = await CreateContainerExecutionContext(curDataDTO);
                         activity = factory.Create();
                         await activity.Run(activityContext, executionContext);

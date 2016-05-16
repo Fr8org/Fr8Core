@@ -4,8 +4,8 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http.Filters;
+using Fr8Infrastructure.Security;
 using Hub.Infrastructure;
-using Infrastructure.Security;
 using Utilities.Configuration.Azure;
 
 namespace PlanDirectory.Infrastructure

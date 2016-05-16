@@ -32,6 +32,7 @@ namespace TerminalBase.BaseClasses
             ExecutionContext = containerExecutionContext;
             CrateManager = ObjectFactory.GetInstance<ICrateManager>();
             HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
+            HubCommunicator.Configure(MyTemplate.Terminal.Name);
             CrateSignaller = new CrateSignaller(Storage, MyTemplate.Name);
         }
 
