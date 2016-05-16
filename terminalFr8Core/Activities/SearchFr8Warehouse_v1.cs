@@ -301,7 +301,7 @@ namespace terminalFr8Core.Actions
                 var configurationcontrols = updatableStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
                 var fr8ObjectDropDown = GetControl(configurationcontrols, "Select Fr8 Warehouse Object");
                 var validationResult = updatableStorage.GetOrAdd(() => Crate.FromContent("Validation Result", new ValidationResultsCM()));
-                var validationManager = new ValidationManager(validationResult);
+                var validationManager = new ValidationManager(validationResult, null);
 
                 if (String.IsNullOrWhiteSpace(fr8Object))
                 {

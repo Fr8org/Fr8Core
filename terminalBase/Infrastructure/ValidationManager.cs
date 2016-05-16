@@ -1,8 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Data.Interfaces.DataTransferObjects;
 using Data.Interfaces.Manifests;
+using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 
 namespace TerminalBase.Infrastructure
@@ -13,9 +13,12 @@ namespace TerminalBase.Infrastructure
 
         public bool HasErrors => _validationResults?.ValidationErrors?.Count > 0;
 
-        public ValidationManager(ValidationResultsCM validationResults)
+        public ICrateStorage Payload { get; }
+
+        public ValidationManager(ValidationResultsCM validationResults, ICrateStorage payload)
         {
             _validationResults = validationResults;
+            Payload = payload;
         }
 
         /// <summary>

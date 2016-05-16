@@ -109,7 +109,7 @@ namespace terminalSalesforce.Actions
             //for each required field's control, check its value source
             requiredFieldControlsList.ToList().ForEach(c =>
             {
-                if (string.IsNullOrEmpty(c.ValueSource))
+                if (!c.HasValue || (c.CanGetValue(validationManager.Payload) && string.IsNullOrWhiteSpace(c.GetValue(validationManager.Payload))))
                 {
                     validationManager.SetError($"{c.Label} must be provided for creating {chosenObject}", c);
                 }
@@ -127,21 +127,29 @@ namespace terminalSalesforce.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
+            using (var paylodCrateStroage = CrateManager.GetUpdatableStorage(payloadCrates))
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            using (var validationScope = new RuntimeValidationScope(this, paylodCrateStroage))
             {
+                await ValidateActivity(curActivityDO, crateStorage, validationScope.ValidationManager);
+
+                if (validationScope.HasErrors)
+                {
+                    // errors will be written during validationScope disposal
+                    return payloadCrates;
+                }
+
                 var chosenObject = ExtractChosenSFObject(curActivityDO);
 
                 //get all fields
                 var fieldsList = crateStorage.CrateContentsOfType<FieldDescriptionsCM>(c => c.Label.Equals("Salesforce Object Fields - " + chosenObject))
-                                             .SelectMany(f => f.Fields);
+                    .SelectMany(f => f.Fields);
 
                 //get all text sources
                 var fieldControlsList = GetConfigurationControls(crateStorage).Controls.OfType<TextSource>();
 
-                var payloadStorage = CrateManager.FromDto(payloadCrates.CrateStorage);
-
                 //get <Field> <Value> key value pair for the non empty field
-                var jsonInputObject = ActivitiesHelper.GenerateSalesforceObjectDictionary(fieldsList, fieldControlsList, payloadStorage);
+                var jsonInputObject = ActivitiesHelper.GenerateSalesforceObjectDictionary(fieldsList, fieldControlsList, paylodCrateStroage);
 
                 string result;
 
@@ -156,18 +164,16 @@ namespace terminalSalesforce.Actions
 
                 if (!string.IsNullOrEmpty(result))
                 {
-                    using (var paylodCrateStroage = CrateManager.GetUpdatableStorage(payloadCrates))
-                    {
-                        var contactIdFields = new List<FieldDTO> { new FieldDTO(chosenObject + "ID", result) };
-                        paylodCrateStroage.Add(Crate.FromContent(chosenObject + " is saved in Salesforce.com", new StandardPayloadDataCM(contactIdFields)));
-                        return Success(payloadCrates);
-                    }
+                    var contactIdFields = new List<FieldDTO> { new FieldDTO(chosenObject + "ID", result) };
+                    paylodCrateStroage.Add(Crate.FromContent(chosenObject + " is saved in Salesforce.com", new StandardPayloadDataCM(contactIdFields)));
+                    return Success(payloadCrates);
+
                 }
 
                 return Error(payloadCrates, "Saving " + chosenObject + " to Salesforce.com is failed.");
             }
         }
-
+    
         /// <summary>
         /// Creates Initial config controls
         /// </summary>
