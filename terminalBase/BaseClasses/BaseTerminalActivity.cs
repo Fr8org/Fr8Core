@@ -67,6 +67,7 @@ namespace TerminalBase.BaseClasses
         protected ControlHelper ControlHelper => _controlHelper ?? (_controlHelper = new ControlHelper(ActivityContext, HubCommunicator));
         protected ValidationManager ValidationManager => _validationManager ?? (_validationManager = new ValidationManager());
         protected Guid ActivityId => ActivityContext.ActivityPayload.Id;
+        protected ActivityPayload ActivityPayload => ActivityContext.ActivityPayload;
         protected string CurrentUserId => ActivityContext.UserId;
         protected Task<ActivityPayload> SaveToHub(ActivityPayload activity) => HubCommunicator.SaveActivity(activity, CurrentUserId);
         public Task<FieldDescriptionsCM> GetDesignTimeFields(CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet) => HubCommunicator.GetDesignTimeFieldsByDirection(ActivityId, direction, availability, CurrentUserId);

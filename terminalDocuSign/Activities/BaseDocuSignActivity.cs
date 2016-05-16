@@ -25,7 +25,7 @@ namespace terminalDocuSign.Actions
 
         protected ICrateManager Crate;
 
-        public BaseDocuSignActivity()
+        public BaseDocuSignActivity() : base(true)
         {
             Crate = ObjectFactory.GetInstance<ICrateManager>();
             DocuSignManager = ObjectFactory.GetInstance<IDocuSignManager>();

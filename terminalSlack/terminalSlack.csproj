@@ -225,6 +225,7 @@
     <Compile Include="SlackRtmClient\Events\ReconnectUrl.cs" />
     <Compile Include="SlackRtmClient\SlackRtmClient.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="TerminalData.cs" />
     <Compile Include="TerminalSlackBootstrapper.cs" />
   </ItemGroup>
   <ItemGroup>
