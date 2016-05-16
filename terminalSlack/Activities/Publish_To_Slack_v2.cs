@@ -80,7 +80,7 @@ namespace terminalSlack.Actions
             {
                 throw new ActivityExecutionException("Channel or user is not specified");
             }
-            var message = ActivityUI.MessageSource.GetValue(Storage);
+            var message = ActivityUI.MessageSource.GetValue(Payload);
             if (string.IsNullOrWhiteSpace(message))
             {
                 throw new ActivityExecutionException("Can't post empty message to Slack");

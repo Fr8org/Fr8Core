@@ -3,7 +3,6 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Managers;
-using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using TerminalBase.Interfaces;
 using TerminalBase.Models;
@@ -61,6 +60,7 @@ namespace TerminalBase.Services
             catch (Exception e)
             {
                 int a = 12;
+                throw;
             }
 
             throw new Exception("Unsupported request");

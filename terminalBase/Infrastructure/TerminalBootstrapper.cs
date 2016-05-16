@@ -1,4 +1,5 @@
-﻿using StructureMap;
+﻿using Fr8Data.Managers;
+using StructureMap;
 using StructureMap.Configuration.DSL;
 using TerminalBase.Services;
 
@@ -24,6 +25,8 @@ namespace TerminalBase.Infrastructure
             public LiveMode()
             {                
                 For<IHubCommunicator>().Use<DefaultHubCommunicator>();
+                For<ICrateManager>().Use<CrateManager>();
+                For<ActivityExecutor>().Use<ActivityExecutor>();
             }            
         }
     }

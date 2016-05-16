@@ -12,7 +12,7 @@ namespace TerminalBase.Models
     public class ActivityContext
     {
         public ActivityPayload ActivityPayload { get; set; }
-        public AuthorizationToken AuthorizationToken { get; }
+        public AuthorizationToken AuthorizationToken { get; set; }
         public string UserId { get; }
     }
 }
