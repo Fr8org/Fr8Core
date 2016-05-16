@@ -20,5 +20,6 @@ namespace Fr8Data.DataTransferObjects
         public int? organizationId { get; set; }
 
         public Guid ProfileId { get; set; }
+        public string Class { get; set; }
     }
 }

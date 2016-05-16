@@ -4,6 +4,7 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalTest.Actions
 {
@@ -30,7 +31,7 @@ namespace terminalTest.Actions
             return Task.FromResult(0);
         }
 
-        protected override Task Configure(CrateSignaller crateSignaller)
+        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             return Task.FromResult(0);
         }

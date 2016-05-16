@@ -53,7 +53,8 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
                 {"Last Name", dockyardAccountDO.LastName},
                 {"Username", dockyardAccountDO.UserName},
                 {"Email", dockyardAccountDO.EmailAddress.Address},
-                {"Delegate Account", user.GetMode(dockyardAccountDO) == CommunicationMode.Delegate }
+                {"Delegate Account", user.GetMode(dockyardAccountDO) == CommunicationMode.Delegate },
+                {"Class", dockyardAccountDO.Class }
             };
         }
 
@@ -62,7 +63,7 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
             var props = new Traits();
             foreach (var prop in GetProperties(dockyardAccountDO))
                 props.Add(prop.Key, prop.Value);
-            
+
             Analytics.Client.Identify(dockyardAccountDO.Id, props);
         }
 

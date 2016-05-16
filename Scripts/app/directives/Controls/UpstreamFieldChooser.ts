@@ -117,7 +117,7 @@ module dockyard.directives.upstreamDataChooser {
         public link: (scope: IUpstreamFieldChooser, element: ng.IAugmentedJQuery, attrs: ng.IAttributes) => void;
         public controller: any;
 
-        public template = '<button class="btn btn-primary btn-xs" ng-click="openModal()">Select</button><span>{{field.value}}</span>';
+        public template = '<div style="padding:5px 0"><button class="btn btn-primary btn-xs" ng-click="openModal()">Select</button><span>{{field.value}}</span></div>';
         public restrict = 'E';
         public scope = {
             field: '=',

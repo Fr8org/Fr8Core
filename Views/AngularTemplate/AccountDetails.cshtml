@@ -33,14 +33,17 @@
                             </div>
                             <div class="form-group">
                                 <label class="control-label">Email</label>
-                                <input type="text" placeholder="" disabled="disabled"  maxlength="100" class="form-control" ng-model="user.emailAddress" />
+                                <input type="text" placeholder="" disabled="disabled" maxlength="100" class="form-control" ng-model="user.emailAddress" />
                             </div>
                             <div class="form-group">
                                 <label class="control-label">Profile</label>
-                                <select maxlength="100" class="form-control" 
-                                        ng-options="item.id as item.name for item in profiles" ng-model="user.profileId"> </select>
+                                <select maxlength="100" class="form-control"
+                                        ng-options="item.id as item.name for item in profiles" ng-model="user.profileId"></select>
                             </div>
-
+                            <div class="form-group">
+                                <label class="control-label">Internal Account (Doesn't generate marketing analytics)</label><br/>
+                                <input type="checkbox" ng-model="user.class" ng-true-value="'Internal'" ng-false-value="'External'" />
+                            </div>
                             <div class="margiv-top-10">
                                 <button type="submit" class="btn green-haze">
                                     Save Changes

@@ -13,6 +13,7 @@ using Fr8Data.States;
 using TerminalBase.BaseClasses;
 using terminalAtlassian.Interfaces;
 using terminalAtlassian.Services;
+using TerminalBase.Infrastructure;
 
 namespace terminalAtlassian.Actions
 {
@@ -201,7 +202,7 @@ namespace terminalAtlassian.Actions
             await Task.Yield();
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller)
+        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             ConfigurationControls.RestoreCustomFields(CurrentActivityStorage);
             var configProps = GetConfigurationProperties();

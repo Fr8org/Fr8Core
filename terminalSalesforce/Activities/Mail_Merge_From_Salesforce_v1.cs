@@ -108,7 +108,7 @@ namespace terminalSalesforce.Actions
             return Task.FromResult(true);
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller)
+        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             if (ConfigurationControls.RunMailMergeButton.Clicked)
             {

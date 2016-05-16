@@ -15,6 +15,7 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 using TerminalBase.Services;
 using TerminalBase.Services.MT;
 
@@ -83,7 +84,7 @@ namespace terminalFr8Core.Actions
             await Task.Yield();
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller)
+        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             var selectedObject = ConfigurationControls.AvailableObjects.Value;
             var hasSelectedObject = !string.IsNullOrEmpty(selectedObject);
