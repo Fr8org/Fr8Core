@@ -18,6 +18,18 @@ namespace terminalFr8Core.Activities
 {
     public class MapFields_v1 : BaseTerminalActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Write_To_Sql_Server",
+            Label = "Write to Azure Sql Server",
+            Category = ActivityCategory.Forwarders,
+            Version = "1",
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public MapFields_v1() : base(false)
         {
             
@@ -85,7 +97,6 @@ namespace terminalFr8Core.Activities
             }
         }
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
         public override async Task Run()
         {
             var curMappingControl = GetControl<MappingPane>("Selected_Mapping");

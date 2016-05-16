@@ -8,11 +8,9 @@ using System.Web.Http;
 using Fr8Data.DataTransferObjects;
 using HubWeb.Infrastructure_HubWeb;
 using log4net;
-using Utilities.Configuration;
 using Data.Interfaces;
 using System.Linq;
 using System.Net.Http;
-using System.Collections.Generic;
 
 namespace HubWeb.Controllers
 {

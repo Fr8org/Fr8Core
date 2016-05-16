@@ -4540,6 +4540,10 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
+    <ProjectReference Include="Infrastructure\Infrastructure.csproj">
+      <Project>{9F4B5C92-3535-4D4C-B1E4-37BEB1AE5C42}</Project>
+      <Name>Infrastructure</Name>
+    </ProjectReference>
     <ProjectReference Include="Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
       <Name>Utilities</Name>

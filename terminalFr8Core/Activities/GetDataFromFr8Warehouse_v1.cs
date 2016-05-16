@@ -22,6 +22,19 @@ namespace terminalFr8Core.Activities
 {
     public class GetDataFromFr8Warehouse_v1: EnhancedTerminalActivity<GetDataFromFr8Warehouse_v1.ActivityUi>
     {
+
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Write_To_Sql_Server",
+            Label = "Write to Azure Sql Server",
+            Category = ActivityCategory.Forwarders,
+            Version = "1",
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public DropDownList AvailableObjects { get; set; }
@@ -74,7 +87,6 @@ namespace terminalFr8Core.Activities
         {
         }
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
         protected override async Task RunETA()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

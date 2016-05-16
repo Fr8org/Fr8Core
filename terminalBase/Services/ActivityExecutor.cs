@@ -67,7 +67,7 @@ namespace TerminalBase.Services
                 throw new ArgumentNullException(nameof(curDataDTO.ContainerId), "NULL Container ID");
             }
 
-            var payload = await HubCommunicator.GetPayload(curDataDTO.ActivityDTO, curDataDTO.ContainerId.Value, curDataDTO.ActivityDTO.AuthToken.UserId);
+            var payload = await HubCommunicator.GetPayload(curDataDTO.ContainerId.Value, curDataDTO.ActivityDTO.AuthToken.UserId);
             return new ContainerExecutionContext
             {
                 PayloadStorage = CrateManager.GetUpdatableStorage(payload),

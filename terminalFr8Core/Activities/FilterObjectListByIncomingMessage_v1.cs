@@ -1,11 +1,8 @@
 ﻿using System;
-using TerminalBase.BaseClasses;
-using System.Threading.Tasks;
-using Hub.Services;
-using System.Linq;
 using System.Collections.Generic;
-using Utilities;
 using System.Globalization;
+using System.Linq;
+using System.Threading.Tasks;
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
@@ -13,13 +10,28 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Helpers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using Hub.Services;
+using TerminalBase.BaseClasses;
 using TerminalBase.Errors;
 using TerminalBase.Services;
+using Utilities;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class FilterObjectListByIncomingMessage_v1 : EnhancedTerminalActivity<FilterObjectListByIncomingMessage_v1.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Write_To_Sql_Server",
+            Label = "Write to Azure Sql Server",
+            Category = ActivityCategory.Forwarders,
+            Version = "1",
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public DropDownList IncomingTextSelector { get; set; }
@@ -322,6 +334,5 @@ namespace terminalFr8Core.Actions
 
         #endregion
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
     }
 }

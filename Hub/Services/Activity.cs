@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using Data.Infrastructure.Security;
 using Data.Repositories.Plan;
 using Data.Infrastructure.StructureMap;
-using Data.Interfaces.Manifests;
 using Data.States;
 using Fr8Data.Constants;
 using Fr8Data.Control;

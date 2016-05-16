@@ -7,6 +7,7 @@ using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Managers;
 using Infrastructure.Interfaces;
 using Newtonsoft.Json;
@@ -20,6 +21,18 @@ namespace terminalFr8Core.Activities
     // The generic interface inheritance.
     public class Select_Fr8_Object_v1 : BaseTerminalActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Write_To_Sql_Server",
+            Label = "Write to Azure Sql Server",
+            Category = ActivityCategory.Forwarders,
+            Version = "1",
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
@@ -81,7 +94,6 @@ namespace terminalFr8Core.Activities
         {
         }
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
         public override Task Run()
         {
             Success();

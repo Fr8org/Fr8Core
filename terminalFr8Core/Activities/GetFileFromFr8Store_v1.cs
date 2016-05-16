@@ -14,11 +14,24 @@ using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using Fr8Data.States;
 
 namespace terminalFr8Core.Actions
 {
     public class GetFileFromFr8Store_v1 : BaseTerminalActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Write_To_Sql_Server",
+            Label = "Write to Azure Sql Server",
+            Category = ActivityCategory.Forwarders,
+            Version = "1",
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         private MemoryStream GenerateStreamFromString(string s)
         {
             var stream = new MemoryStream();
@@ -64,7 +77,6 @@ namespace terminalFr8Core.Actions
         {
         }
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
         public override async Task Run()
         {
             var fileSelector = GetControl<DropDownList>("FileSelector");

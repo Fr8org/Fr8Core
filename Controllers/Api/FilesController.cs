@@ -13,8 +13,8 @@ using Data.Interfaces;
 using Data.States;
 using Hub.Infrastructure;
 using Hub.Interfaces;
-using HubWeb.Infrastructure;
 using Fr8Data.DataTransferObjects;
+using HubWeb.Infrastructure_HubWeb;
 
 namespace HubWeb.Controllers
 {

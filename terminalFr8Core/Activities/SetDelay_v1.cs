@@ -4,6 +4,7 @@ using AutoMapper;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.States;
 using TerminalBase;
 using TerminalBase.BaseClasses;
 
@@ -11,6 +12,18 @@ namespace terminalFr8Core.Activities
 {
     public class SetDelay_v1 : BaseTerminalActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Write_To_Sql_Server",
+            Label = "Write to Azure Sql Server",
+            Category = ActivityCategory.Forwarders,
+            Version = "1",
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         private const int MinDurationSeconds = 10;
         private AlarmDTO CreateAlarm(TimeSpan duration)
         {
@@ -52,7 +65,6 @@ namespace terminalFr8Core.Activities
         {
         }
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
         public override async Task Run()
         {
             //find our action state in operations crate

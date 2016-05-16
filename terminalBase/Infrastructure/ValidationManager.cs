@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 
 namespace TerminalBase.Infrastructure
 {
@@ -16,6 +15,16 @@ namespace TerminalBase.Infrastructure
         public ValidationManager(ValidationResultsCM validationResults)
         {
             _validationResults = validationResults;
+        }
+
+        public ValidationManager()
+        {
+            _validationResults = new ValidationResultsCM();
+        }
+
+        public ValidationResultsCM GetResults()
+        {
+            return _validationResults;
         }
 
         /// <summary>

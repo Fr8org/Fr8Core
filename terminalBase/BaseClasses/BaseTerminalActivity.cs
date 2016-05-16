@@ -51,6 +51,8 @@ namespace TerminalBase.BaseClasses
         #endregion
 
         #region SHORTCUTS
+
+        private ValidationManager _validationManager;
         private ControlHelper _controlHelper;
         private UpstreamQueryManager _upstreamQueryManager;
         private StandardConfigurationControlsCM _configurationControls;
@@ -62,6 +64,7 @@ namespace TerminalBase.BaseClasses
         protected int LoopIndex => GetLoopIndex();
         protected UpstreamQueryManager UpstreamQueryManager => _upstreamQueryManager ?? (_upstreamQueryManager = new UpstreamQueryManager(ActivityContext, HubCommunicator));
         protected ControlHelper ControlHelper => _controlHelper ?? (_controlHelper = new ControlHelper(ActivityContext, HubCommunicator));
+        protected ValidationManager ValidationManager => _validationManager ?? (_validationManager = new ValidationManager());
         protected Guid ActivityId => ActivityContext.ActivityPayload.Id;
         protected string CurrentUserId => ActivityContext.UserId;
         protected Task<ActivityPayload> SaveToHub(ActivityPayload activity) => HubCommunicator.SaveActivity(activity, CurrentUserId);
@@ -488,6 +491,20 @@ namespace TerminalBase.BaseClasses
         {
             return Task.FromResult(0);
         }
+
+        protected async Task ValidateAndConfigure()
+        {
+            Storage.Remove<ValidationResultsCM>();
+            ValidationManager.Reset();
+            await Validate();
+            if (ValidationManager.HasErrors)
+            {
+                Storage.Add(Crate.FromContent("Validation Results", ValidationManager.GetResults()));
+                return;
+            }
+            await FollowUp();
+        }
+
         public async Task Configure(ActivityContext activityContext)
         {
             InitializeActivity(activityContext);
@@ -506,7 +523,7 @@ namespace TerminalBase.BaseClasses
                         break;
 
                     case ConfigurationRequestType.Followup:
-                        await FollowUp();
+                        await ValidateAndConfigure();
                         break;
 
                     default:
@@ -549,6 +566,11 @@ namespace TerminalBase.BaseClasses
         protected Crate<StandardConfigurationControlsCM> PackControlsCrate(params ControlDefinitionDTO[] controlsList)
         {
             return Crate<StandardConfigurationControlsCM>.FromContent(ConfigurationControlsLabel, new StandardConfigurationControlsCM(controlsList), AvailabilityType.Configuration);
+        }
+
+        protected Crate PackControls(StandardConfigurationControlsCM page)
+        {
+            return PackControlsCrate(page.Controls.ToArray());
         }
 
         protected Crate<StandardConfigurationControlsCM> EnsureControlsCrate()

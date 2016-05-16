@@ -13,7 +13,6 @@ using InternalInterface = Hub.Interfaces;
 using Hub.Managers;
 using System.Threading.Tasks;
 using Data.Infrastructure;
-using Data.Interfaces.Manifests;
 using Data.Repositories.Plan;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;

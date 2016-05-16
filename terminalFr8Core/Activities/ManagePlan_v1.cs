@@ -1,20 +1,28 @@
-﻿using System;
-using System.Threading.Tasks;
-using Data.Entities;
+﻿using System.Threading.Tasks;
 using Fr8Data.Control;
-using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
-using Hub.Managers;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
+using Fr8Data.States;
 using terminalFr8Core.Infrastructure;
+using TerminalBase.BaseClasses;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
 
     public class ManagePlan_v1 : BaseTerminalActivity
-
     {
+
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Write_To_Sql_Server",
+            Label = "Write to Azure Sql Server",
+            Category = ActivityCategory.Forwarders,
+            Version = "1",
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         private readonly FindObjectHelper _findObjectHelper = new FindObjectHelper();
 
 
@@ -44,7 +52,6 @@ namespace terminalFr8Core.Actions
 
         }
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
         public override Task Run()
         {
             Success();

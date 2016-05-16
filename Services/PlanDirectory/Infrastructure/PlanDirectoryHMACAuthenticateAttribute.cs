@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http.Filters;
 using Hub.Infrastructure;
+using Infrastructure.Security;
 using Utilities.Configuration.Azure;
 
 namespace PlanDirectory.Infrastructure

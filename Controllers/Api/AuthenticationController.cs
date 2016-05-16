@@ -14,8 +14,8 @@ using Data.Infrastructure.StructureMap;
 using Fr8Data.DataTransferObjects;
 using Hub.Infrastructure;
 using Hub.Interfaces;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using HubWeb.Infrastructure;
+using HubWeb.Infrastructure_HubWeb;
+using Infrastructure.Interfaces;
 using Utilities.Configuration.Azure;
 
 namespace HubWeb.Controllers

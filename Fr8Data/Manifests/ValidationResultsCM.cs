@@ -1,13 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using Data.Interfaces.DataTransferObjects;
 using Fr8Data.Constants;
 using Fr8Data.DataTransferObjects;
-using Fr8Data.Manifests;
 using Newtonsoft.Json;
 
-namespace Data.Interfaces.Manifests
+namespace Fr8Data.Manifests
 {
     public class ValidationResultsCM : Manifest
     {

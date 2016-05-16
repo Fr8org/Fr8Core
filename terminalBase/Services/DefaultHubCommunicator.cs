@@ -322,11 +322,7 @@ namespace TerminalBase.Services
 
             await _restfulServiceClient.PostAsync<List<CrateDTO>>(uri, payload, null, await GetHMACHeader(uri, userId, payload));
         }
-<<<<<<< HEAD:terminalBase/Services/DefaultHubCommunicator.cs
 
-=======
-        
->>>>>>> refs/remotes/origin/dev:terminalBase/Infrastructure/DefaultHubCommunicator.cs
         public async Task<IEnumerable<PlanDTO>> GetPlansByName(string name, string userId, PlanVisibility visibility = PlanVisibility.Standard)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
