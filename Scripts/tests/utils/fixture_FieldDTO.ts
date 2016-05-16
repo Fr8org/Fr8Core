@@ -158,7 +158,7 @@ module dockyard.tests.utils.fixtures {
                 requestUpstream: false,
                 availabilityType: model.AvailabilityType.NotSet
             },
-            valueSource: 'test',
+            valueSource: '',
             listItems: [
                 {
                     key: 'test1',
