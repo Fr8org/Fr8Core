@@ -111,7 +111,7 @@ namespace terminalFr8Core.Activities
             Payload.Add(Crate.FromContent("Sql Query Result", queryMTResult));
             ExecuteClientActivity("ShowTableReport");
             return Task.FromResult(0);
-        }
+            }
 
         /// <summary>
         /// This method provides documentation in two forms:
@@ -141,34 +141,34 @@ namespace terminalFr8Core.Activities
             );
 
             var crateStorage = queryFr8WarehouseAction.CrateStorage;
-            // We insteady of using getConfiguration control used the same GetConfiguration control required actionDO
+                // We insteady of using getConfiguration control used the same GetConfiguration control required actionDO
             var queryFr8configurationControls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             var radioButtonGroup = queryFr8configurationControls.FindByName<RadioButtonGroup>("QueryPicker");
-            DropDownList fr8ObjectDropDown = null;
-            if (radioButtonGroup != null
-                && radioButtonGroup.Radios.Count > 0
-                && radioButtonGroup.Radios[0].Controls.Count > 0)
-            {
-                fr8ObjectDropDown = radioButtonGroup.Radios[1].Controls[0] as DropDownList;
-                radioButtonGroup.Radios[1].Selected = true;
-                radioButtonGroup.Radios[0].Selected = false;
-            }
+                DropDownList fr8ObjectDropDown = null;
+                if (radioButtonGroup != null
+                    && radioButtonGroup.Radios.Count > 0
+                    && radioButtonGroup.Radios[0].Controls.Count > 0)
+                {
+                    fr8ObjectDropDown = radioButtonGroup.Radios[1].Controls[0] as DropDownList;
+                    radioButtonGroup.Radios[1].Selected = true;
+                    radioButtonGroup.Radios[0].Selected = false;
+                }
 
-            if (fr8ObjectDropDown != null)
-            {
-                fr8ObjectDropDown.Selected = true;
-                fr8ObjectDropDown.Value = fr8ObjectID;
-                fr8ObjectDropDown.selectedKey = fr8ObjectID;
+                if (fr8ObjectDropDown != null)
+                {
+                    fr8ObjectDropDown.Selected = true;
+                    fr8ObjectDropDown.Value = fr8ObjectID;
+                    fr8ObjectDropDown.selectedKey = fr8ObjectID;
 
-                FilterPane upstreamCrateChooser1 = radioButtonGroup.Radios[1].Controls[1] as FilterPane;
+                    FilterPane upstreamCrateChooser1 = radioButtonGroup.Radios[1].Controls[1] as FilterPane;
                 var queryBuilderControl = GetControl<QueryBuilder>("QueryBuilder");
-                var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(queryBuilderControl.Value);
-                FilterDataDTO filterPaneDTO = new FilterDataDTO();
-                filterPaneDTO.Conditions = criteria;
-                filterPaneDTO.ExecutionType = FilterExecutionType.WithFilter;
-                upstreamCrateChooser1.Value = JsonConvert.SerializeObject(filterPaneDTO);
-                upstreamCrateChooser1.Selected = true;
-            }
+                    var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(queryBuilderControl.Value);
+                    FilterDataDTO filterPaneDTO = new FilterDataDTO();
+                    filterPaneDTO.Conditions = criteria;
+                    filterPaneDTO.ExecutionType = FilterExecutionType.WithFilter;
+                    upstreamCrateChooser1.Value = JsonConvert.SerializeObject(filterPaneDTO);
+                    upstreamCrateChooser1.Selected = true;
+                }
 
             queryFr8WarehouseAction = await ConfigureChildActivity(
                 ActivityContext.ActivityPayload,
@@ -177,11 +177,11 @@ namespace terminalFr8Core.Activities
         }
 
         private void LoadAvailableFr8ObjectNames(string fr8ObjectID)
-        {
-            var designTimeQueryFields = MTTypesHelper.GetFieldsByTypeId(Guid.Parse(fr8ObjectID));
-            var criteria = Storage.FirstOrDefault(d => d.Label == "Queryable Criteria");
-            if (criteria != null)
             {
+                var designTimeQueryFields = MTTypesHelper.GetFieldsByTypeId(Guid.Parse(fr8ObjectID));
+            var criteria = Storage.FirstOrDefault(d => d.Label == "Queryable Criteria");
+                if (criteria != null)
+                {
                 Storage.Remove(criteria);
             }
             Storage.Add(Crate.FromContent("Queryable Criteria",new FieldDescriptionsCM(designTimeQueryFields)));
@@ -200,26 +200,26 @@ namespace terminalFr8Core.Activities
         }
 
         private void UpdateQueryCrate(string fr8ObjectID)
-        {
+            {
             Storage.Remove<StandardQueryCM>();
             var queryCrate = ExtractQueryCrate(fr8ObjectID);
             Storage.Add(queryCrate);
         }
 
         private bool ValidateSolutionInputs(string fr8Object)
-        {
+            {
             var fr8ObjectDropDown = GetControl<DropDownList>("Select Fr8 Warehouse Object");
             var validationResult = Storage.GetOrAdd(() => Crate.FromContent("Validation Result", new ValidationResultsCM()));
             var validationManager = new ValidationManager(validationResult);
 
-            if (String.IsNullOrWhiteSpace(fr8Object))
-            {
-                validationManager.SetError("Please select the Fr8 Object", fr8ObjectDropDown);
-                return false;
-            }
+                if (String.IsNullOrWhiteSpace(fr8Object))
+                {
+                    validationManager.SetError("Please select the Fr8 Object", fr8ObjectDropDown);
+                    return false;
+                }
                 
-            return true;
-        }
+                return true;
+            }
 
         private static ControlDefinitionDTO CreateTextBoxQueryControl(
             string key)

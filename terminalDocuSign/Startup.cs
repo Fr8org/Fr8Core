@@ -6,7 +6,6 @@ using Microsoft.Owin;
 using Owin;
 using terminalDocuSign;
 using terminalDocuSign.Controllers;
-using terminalDocuSign.Infrastructure.AutoMapper;
 using TerminalBase.BaseClasses;
 using terminalDocuSign.Actions;
 using terminalDocuSign.Activities;
@@ -25,8 +24,6 @@ namespace terminalDocuSign
 
         public void Configuration(IAppBuilder app, bool selfHost)
         {
-            //ObjectFactory.GetInstance<DbContext>().Database.Initialize(true);
-
             ConfigureProject(selfHost, TerminalDocusignStructureMapBootstrapper.LiveConfiguration);
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();

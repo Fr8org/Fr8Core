@@ -158,6 +158,7 @@
     <Compile Include="Infrastructure\DefaultHubCommunicatorTests.cs" />
     <Compile Include="Infrastructure\TestBaseTerminalEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Utilities\TabularUtilitiesTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Data\Data.csproj">
@@ -183,6 +184,10 @@
     <ProjectReference Include="..\..\terminalGoogle\terminalGoogle.csproj">
       <Project>{cddccfab-28b8-446c-8585-72d2bb78f2dc}</Project>
       <Name>terminalGoogle</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalUtilities\terminalUtilities.csproj">
+      <Project>{e46b602a-287b-450f-b455-5eed20c93eb7}</Project>
+      <Name>terminalUtilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\HealthMonitorUtility\HealthMonitorUtility.csproj">
       <Project>{459FE39A-A5CC-41D8-B06E-8FAE3A1A623B}</Project>

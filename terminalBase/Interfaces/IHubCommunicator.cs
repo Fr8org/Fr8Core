@@ -49,5 +49,6 @@ namespace TerminalBase.Infrastructure
         Task<PlanDTO> GetPlansByActivity(string activityId, string userId);
         Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan, string userId);
         Task NotifyUser(TerminalNotificationDTO notificationMessage, string userId);
+        Task RenewToken(AuthorizationTokenDTO token, string userId);
     }
 }

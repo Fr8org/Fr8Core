@@ -456,6 +456,23 @@ namespace TerminalBase.Services
             return Mapper.Map<AuthorizationToken>(authTokenDTO);
         }
 
+        public async Task RenewToken(string id, string externalAccountId, string token, string userId)
+        {
+            var url = $"{CloudConfigurationManager.GetSetting("CoreWebServerUrl")}api/" +
+                      $"{CloudConfigurationManager.GetSetting("HubApiVersion")}/authentication/renewtoken?id="+id
+                      +"&externalAccountId="+externalAccountId+"&token="+token;
+            var uri = new Uri(url);
+            await _restfulServiceClient.PostAsync(uri, null, await GetHMACHeader(uri, userId));
+        }
+
+        public async Task RenewToken(AuthorizationTokenDTO token, string userId)
+        {
+            var url = $"{CloudConfigurationManager.GetSetting("CoreWebServerUrl")}api/" +
+                      $"{CloudConfigurationManager.GetSetting("HubApiVersion")}/authentication/renewtoken";
+            var uri = new Uri(url);
+            await _restfulServiceClient.PostAsync(uri, token, null, await GetHMACHeader(uri, userId, token));
+        }
+
         public async Task ScheduleEvent(string externalAccountId, string curFr8UserId, string minutes)
         {
             var hubAlarmsUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")

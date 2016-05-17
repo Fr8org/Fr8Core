@@ -232,7 +232,7 @@ namespace TerminalBase.Services
         {
             throw new NotImplementedException();
         }
-
+        
         public Task<IEnumerable<PlanDTO>> GetPlansByName(string name, string userId, PlanVisibility visibility = PlanVisibility.Standard)
         {
             throw new NotImplementedException();
@@ -251,6 +251,11 @@ namespace TerminalBase.Services
         public Task NotifyUser(TerminalNotificationDTO notificationMessage, string userId)
         {
             return Task.FromResult(0);
+        }
+
+        public Task RenewToken(string id, string externalAccountId, string token, string userId)
+        {
+            throw new NotImplementedException();
         }
 
         public Task DeletePlan(Guid planId, string userId)
@@ -285,7 +290,7 @@ namespace TerminalBase.Services
 
         public Task<AuthorizationToken> GetAuthToken(string authTokenId, string curFr8UserId)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(0);
         }
 
         public Task ScheduleEvent(string externalAccountId, string curFr8UserId, string minutes)

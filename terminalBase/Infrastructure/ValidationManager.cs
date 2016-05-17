@@ -12,9 +12,12 @@ namespace TerminalBase.Infrastructure
 
         public bool HasErrors => _validationResults?.ValidationErrors?.Count > 0;
 
-        public ValidationManager(ValidationResultsCM validationResults)
+        public ICrateStorage Payload { get; }
+
+        public ValidationManager(ValidationResultsCM validationResults, ICrateStorage payload)
         {
             _validationResults = validationResults;
+            Payload = payload;
         }
 
         public ValidationManager()
