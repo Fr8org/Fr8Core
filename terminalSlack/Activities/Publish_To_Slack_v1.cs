@@ -52,7 +52,7 @@ namespace terminalSlack.Actions
             var messageField = GetControl<TextSource>("Select_Message_Field", ControlTypes.TextSource);
             try
             {
-                message = messageField.GetValue(Storage);
+                message = messageField.GetValue(Payload);
             }
             catch (ApplicationException ex)
             {
@@ -62,7 +62,7 @@ namespace terminalSlack.Actions
             try
             {
                 await _slackIntegration.PostMessageToChat(AuthorizationToken.Token,
-                    actionChannelId, StripHTML(messageField.GetValue(Storage)));
+                    actionChannelId, StripHTML(messageField.GetValue(Payload)));
             }
             catch (TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException)
             {
@@ -190,7 +190,7 @@ namespace terminalSlack.Actions
 
         public override Task FollowUp()
         {
-            throw new NotImplementedException();
+            return Task.FromResult(0);
         }
 
        
