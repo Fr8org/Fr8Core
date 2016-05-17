@@ -134,17 +134,8 @@ namespace Data.Infrastructure
         public delegate void TerminalEventHandler(LoggingDataCm eventDataCm);
         public static event TerminalEventHandler TerminalEventReported;
 
-        public delegate void ExternalEventReceivedHandler(string curEventPayload);
-        public static event ExternalEventReceivedHandler ExternalEventReceived;
-
         public delegate void IncidentDocuSignFieldMissingHandler(string envelopeId, string fieldName);
         public static event IncidentDocuSignFieldMissingHandler IncidentDocuSignFieldMissing;
-
-        public delegate void IncidentMissingFieldInPayloadHandler(string fieldKey, ActivityDO activity, string curUserId);
-        public static event IncidentMissingFieldInPayloadHandler IncidentMissingFieldInPayload;
-
-        public delegate void UnparseableNotificationReceivedHandler(string curNotificationUrl, string curNotificationPayload);
-        public static event UnparseableNotificationReceivedHandler UnparseableNotificationReceived;
 
         public delegate void EventTwilioSMSSentHandler(string number, string message);
         public static event EventTwilioSMSSentHandler EventTwilioSMSSent;
@@ -281,16 +272,16 @@ namespace Data.Infrastructure
             }
         }
 
-        public static void TerminalConfigureFailed(string terminalUrl, string activityDTO, string errorMessage, string objectId)
+        public static void TerminalConfigureFailed(string terminalUrl, string activityID, string errorMessage, string objectId)
         {
             IncidentTerminalConfigurePOSTFailureHandler handler = IncidentTerminalConfigureFailed;
-            if (handler != null) handler(terminalUrl, activityDTO, errorMessage, objectId);
+            if (handler != null) handler(terminalUrl, activityID, errorMessage, objectId);
         }
 
-        public static void TerminalRunFailed(string terminalUrl, string activityDTO, string errorMessage, string objectId)
+        public static void TerminalRunFailed(string terminalUrl, string activityId, string errorMessage, string objectId)
         {
             IncidentTerminalRunPOSTFailureHandler handler = IncidentTerminalRunFailed;
-            if (handler != null) handler(terminalUrl, activityDTO, errorMessage, objectId);
+            if (handler != null) handler(terminalUrl, activityId, errorMessage, objectId);
         }
 
         public static void TerminalInternalFailureOccurred(string terminalUrl, string activityDTO, Exception e, string objectId)
@@ -299,10 +290,10 @@ namespace Data.Infrastructure
             if (handler != null) handler(terminalUrl, activityDTO, e, objectId);
         }
 
-        public static void TerminalActionActivationFailed(string terminalUrl, string activityDTO, string errorMessage, string objectId)
+        public static void TerminalActionActivationFailed(string terminalUrl, string activityId, string errorMessage, string objectId)
         {
             IncidentTerminalActionActivationPOSTFailureHandler handler = IncidentTerminalActionActivationFailed;
-            if (handler != null) handler(terminalUrl, activityDTO, objectId);
+            if (handler != null) handler(terminalUrl, activityId, objectId);
         }
 
         public static void PlanActivationFailed(PlanDO plan, string reason)
@@ -562,27 +553,10 @@ namespace Data.Infrastructure
             if (handler != null) handler(eventDataCm);
         }
 
-        public static void ReportExternalEventReceived(string curEventPayload)
-        {
-            ExternalEventReceivedHandler handler = ExternalEventReceived;
-            if (handler != null) handler(curEventPayload);
-        }
-
-        public static void ReportUnparseableNotification(string curNotificationUrl, string curNotificationPayload)
-        {
-            UnparseableNotificationReceivedHandler handler = UnparseableNotificationReceived;
-            if (handler != null) handler(curNotificationUrl, curNotificationPayload);
-        }
-
         public static void DocuSignFieldMissing(string envelopeId, string fieldName)
         {
             var handler = IncidentDocuSignFieldMissing;
             if (handler != null) handler(envelopeId, fieldName);
-        }
-        public static void MissingFieldInPayload(string fieldKey, ActivityDO activity, string userId)
-        {
-            var handler = IncidentMissingFieldInPayload;
-            if (handler != null) handler(fieldKey, activity, userId);
         }
 
         public static void OAuthAuthenticationFailed(string requestQueryString, string errorMessage)

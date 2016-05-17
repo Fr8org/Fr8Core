@@ -39,11 +39,8 @@ namespace Hub.Managers
             EventManager.AlertResponseReceived += AlertManagerOnAlertResponseReceived;
             EventManager.AlertUserRegistrationError += ReportUserRegistrationError;
             EventManager.TerminalIncidentReported += LogTerminalIncident;
-            EventManager.UnparseableNotificationReceived += LogUnparseableNotificationIncident;
             EventManager.IncidentDocuSignFieldMissing += IncidentDocuSignFieldMissing;
             EventManager.IncidentOAuthAuthenticationFailed += OAuthAuthenticationFailed;
-            EventManager.IncidentMissingFieldInPayload += IncidentMissingFieldInPayload;
-            EventManager.ExternalEventReceived += LogExternalEventReceivedIncident;
             EventManager.KeyVaultFailure += KeyVaultFailure;
             EventManager.EventAuthTokenSilentRevoke += AuthTokenSilentRevoke;
             EventManager.EventContainerFailed += ContainerFailed;
@@ -177,12 +174,12 @@ namespace Hub.Managers
             SaveAndLogIncident(incident);
         }
 
-        private void ProcessIncidentTerminalActivityActivationFailed(string terminalUrl, string curActionDTO, string objectId)
+        private void ProcessIncidentTerminalActivityActivationFailed(string terminalUrl, string curActionId, string objectId)
         {
             var incident = new IncidentDO
             {
                 Fr8UserId = _sercurity.GetCurrentUser(),
-                Data = terminalUrl + "      " + curActionDTO,
+                Data = terminalUrl + " ActionId = [" + curActionId+"]",
                 ObjectId = objectId,
                 PrimaryCategory = "Action",
                 SecondaryCategory = "Activation",
@@ -216,12 +213,12 @@ namespace Hub.Managers
             //_eventReporter.LogFactInformation(curIncident, curIncident.SecondaryCategory + " " + curIncident.Activity, EventReporter.EventType.Error);
         }
 
-        private void ProcessIncidentTerminalConfigureFailed(string curTerminalUrl, string curAction, string errorMessage, string objectId)
+        private void ProcessIncidentTerminalConfigureFailed(string curTerminalUrl, string curActionId, string errorMessage, string objectId)
         {
             var incident = new IncidentDO
             {
                 Fr8UserId = _sercurity.GetCurrentUser(),
-                Data = curTerminalUrl + "      " + curAction + " " + errorMessage,
+                Data = curTerminalUrl + " ActionId = [" + curActionId + "] " + errorMessage,
                 ObjectId = objectId,
                 PrimaryCategory = "Terminal",
                 SecondaryCategory = "Configure",
@@ -231,12 +228,12 @@ namespace Hub.Managers
             SaveAndLogIncident(incident);
         }
 
-        private void ProcessIncidentTerminalInternalFailureOccurred(string curTerminalUrl, string curAction, Exception e, string objectId)
+        private void ProcessIncidentTerminalInternalFailureOccurred(string curTerminalUrl, string curActionDTO, Exception e, string objectId)
         {
             var incident = new IncidentDO
             {
                 Fr8UserId = _sercurity.GetCurrentUser(),
-                Data = curTerminalUrl + "      " + curAction + " " + e.Message + " \r\nStack trace: \r\n" + e.StackTrace,
+                Data = curTerminalUrl + " Message =  [ " + e.Message + " ] \r\nStack trace: \r\n" + e.StackTrace,
                 ObjectId = objectId,
                 PrimaryCategory = "Terminal",
                 SecondaryCategory = "Internal",
@@ -249,12 +246,12 @@ namespace Hub.Managers
             LogIncident(incident);
         }
 
-        private void ProcessIncidentTerminalRunFailed(string curTerminalUrl, string curAction, string errorMessage, string objectId)
+        private void ProcessIncidentTerminalRunFailed(string curTerminalUrl, string curActionId, string errorMessage, string objectId)
         {
             var incident = new IncidentDO
             {
                 Fr8UserId = _sercurity.GetCurrentUser(),
-                Data = curTerminalUrl + "      " + curAction + " " + errorMessage,
+                Data = curTerminalUrl + "  ActionId = [" + curActionId + "] " + errorMessage,
                 ObjectId = objectId,
                 PrimaryCategory = "Terminal",
                 SecondaryCategory = "Run",
@@ -494,24 +491,6 @@ namespace Hub.Managers
                 Logger.LogWarning(incidentDO.Data);
                 _uow.SaveChanges();
             }
-        }
-
-        public void IncidentMissingFieldInPayload(string fieldKey, ActivityDO activity, string curUserId)
-        {
-            var template = _activityTemplate.GetByKey(activity.ActivityTemplateId);
-
-            IncidentDO incidentDO = new IncidentDO
-            {
-                PrimaryCategory = "Process Execution",
-                SecondaryCategory = "Action",
-                ObjectId = activity.Id.ToString(),
-                Activity = "Occured",
-                Fr8UserId = curUserId,
-                Data =
-                    String.Format("MissingFieldInPayload: ActionName: {0}, Field name: {1}, ActionId {2}",
-                        template?.Name, fieldKey, activity.Id)
-            };
-            LogIncident(incidentDO);
         }
 
         private void TokenValidationFailed(string token, string errorMessage)
