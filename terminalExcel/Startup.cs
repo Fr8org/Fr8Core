@@ -1,20 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Http;
 using System.Web.Http.Dispatcher;
 using Microsoft.Owin;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Owin;
-using StructureMap;
-using Data.Infrastructure.AutoMapper;
-using Hub.StructureMap;
-using TerminalBase;
 using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
+using TerminalBase.Services;
+using terminalExcel.Actions;
 
 [assembly: OwinStartup("TerminalExcelConfiguration", typeof(terminalExcel.Startup))]
 
@@ -47,6 +38,12 @@ namespace terminalExcel
                     typeof(Controllers.EventController),
                     typeof(Controllers.TerminalController)
                 };
+        }
+        protected override void RegisterActivities()
+        {
+            ActivityStore.RegisterActivity<Load_Excel_File_v1>(Load_Excel_File_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Save_To_Excel_v1>(Save_To_Excel_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<SetExcelTemplate_v1>(SetExcelTemplate_v1.ActivityTemplateDTO);
         }
     }
 }

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using StructureMap;
-using Data.Infrastructure;
 using terminalUtilities.Excel;
 
 namespace terminalExcel.Fixtures

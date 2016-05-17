@@ -3,16 +3,12 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using Hub.Exceptions;
-using Hub.Interfaces;
-using Hub.Managers;
 using Newtonsoft.Json;
 using StructureMap;
 using terminalUtilities.Excel;
@@ -24,8 +20,21 @@ namespace terminalExcel.Actions
 {
     public class SetExcelTemplate_v1 : BaseTerminalActivity
     {
-
         private const string DataTableLabel = "Standard Data Table";
+
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "SetExcelTemplate",
+            Label = "Set Excel Template",
+            Version = "1",
+            MinPaneWidth = 330,
+            Category = ActivityCategory.Processors,
+            Terminal = TerminalData.TerminalDTO,
+            Tags = "Table Data Generator,Skip At Run-Time",
+            WebService = TerminalData.WebServiceDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         private class ActivityUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
@@ -75,17 +84,16 @@ namespace terminalExcel.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public async Task Run()
         {
-            var curPayloadDTO = await GetPayload(curActivityDO, containerId);
-            return Success(curPayloadDTO);
+            Success();
         }
 
         private StandardTableDataCM CreateStandardTableDataCM(ICrateStorage storage)
         {
             var uploadFilePath = GetUploadFilePath(storage);
             string extension = Path.GetExtension(uploadFilePath);
-            FileDO curFileDO = new FileDO()
+            FileDTO curFileDO = new FileDTO()
             {
                 CloudStorageUrl = uploadFilePath,
             };
