@@ -6,6 +6,7 @@ using Owin;
 using TerminalBase.BaseClasses;
 using TerminalBase.Services;
 using terminalExcel.Actions;
+using terminalExcel.Activities;
 
 [assembly: OwinStartup("TerminalExcelConfiguration", typeof(terminalExcel.Startup))]
 
