@@ -6,6 +6,7 @@ using System.Web.Http.Dispatcher;
 using System.Collections.Generic;
 using TerminalBase.Services;
 using terminalGoogle.Actions;
+using terminalGoogle.Activities;
 
 [assembly: OwinStartup(typeof(terminalGoogle.Startup))]
 

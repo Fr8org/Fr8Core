@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Threading.Tasks;
+using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Newtonsoft.Json;
 using StructureMap;
@@ -56,18 +57,18 @@ namespace terminalGoogle.Actions
                     var newToken = _googleIntegration.RefreshToken(token);
                     var tokenDTO = new AuthorizationTokenDTO()
                     {
-                        Id = authTokenDO.Id.ToString(),
-                        ExternalAccountId = authTokenDO.ExternalAccountId,
+                        Id = AuthorizationToken.Id.ToString(),
+                        ExternalAccountId = AuthorizationToken.ExternalAccountId,
                         Token = JsonConvert.SerializeObject(newToken)
                     };
-                    authTokenDO.Token = tokenDTO.Token;
-                    HubCommunicator.RenewToken(tokenDTO, CurrentFr8UserId);
+                    AuthorizationToken.Token = tokenDTO.Token;
+                    HubCommunicator.RenewToken(tokenDTO, CurrentUserId);
                     return false;
                 }
                 catch (Exception exception)
                 {
                     var message = "Token is invalid and refresh failed with exception: " + exception.Message;
-                    EventManager.TokenValidationFailed(authTokenDO.Token, message);
+                    //EventManager.TokenValidationFailed(authTokenDO.Token, message);
                     Logger.LogError(message);
                     return true;
                 }

@@ -7,16 +7,29 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using Newtonsoft.Json;
 using StructureMap;
-using terminalGoogle.DataTransferObjects;
+using terminalGoogle.Actions;
 using terminalGoogle.Interfaces;
-using System;
+using terminalUtilities;
 
-namespace terminalGoogle.Actions
+namespace terminalGoogle.Activities
 {
     public class Get_Google_Sheet_Data_v1 : BaseGoogleTerminalActivity<Get_Google_Sheet_Data_v1.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Get_Google_Sheet_Data",
+            Label = "Get Google Sheet Data",
+            Version = "1",
+            Category = ActivityCategory.Receivers,
+            Terminal = TerminalData.TerminalDTO,
+            NeedsAuthentication = true,
+            MinPaneWidth = 300,
+            WebService = TerminalData.WebServiceDTO,
+            Tags = "Table Data Generator"
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public DropDownList SpreadsheetList { get; set; }
@@ -103,19 +116,7 @@ namespace terminalGoogle.Actions
             }
         }
 
-        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
-        {
-            Name = "Get_Google_Sheet_Data",
-            Label = "Get Google Sheet Data",
-            Version = "1",
-            Category = ActivityCategory.Receivers,
-            Terminal = TerminalData.TerminalDTO,
-            NeedsAuthentication = true,
-            MinPaneWidth = 300,
-            WebService = TerminalData.WebServiceDTO,
-            Tags = "Table Data Generator"
-        };
-        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+        
 
         protected override async Task InitializeETA()
         {
@@ -186,7 +187,7 @@ namespace terminalGoogle.Actions
 
                 var table = await GetSelectedSpreadSheet();
                 var hasHeaderRow = TryAddHeaderRow(table);
-                CurrentActivityStorage.ReplaceByLabel(Crate.FromContent(RunTimeCrateLabel,new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
+                Storage.ReplaceByLabel(Crate.FromContent(RunTimeCrateLabel,new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
 
                 if (table?.Count() > 0)
                 {
@@ -195,14 +196,14 @@ namespace terminalGoogle.Actions
 
                 if (fieldsCrate != null)
                 {
-                    CurrentActivityStorage.ReplaceByLabel(fieldsCrate);
-            }
+                    Storage.ReplaceByLabel(fieldsCrate);
+                }
                 else
                 {
-                    CurrentActivityStorage.RemoveByLabel(TabularUtilities.ExtractedFieldsCrateLabel);
+                    Storage.RemoveByLabel(TabularUtilities.ExtractedFieldsCrateLabel);
                 }
             }
-            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
         private async Task<List<TableRowDTO>> GetSelectedSpreadSheet()
@@ -246,12 +247,12 @@ namespace terminalGoogle.Actions
            
             var table = await GetSelectedSpreadSheet();
             var hasHeaderRow = TryAddHeaderRow(table);
-            CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
+            Payload.Add(Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
 
             var fieldsCrate = TabularUtilities.PrepareFieldsForOneRowTable(hasHeaderRow, true, table, null); // assumes that hasHeaderRow is always true
             if (fieldsCrate != null)
             {
-                CurrentPayloadStorage.ReplaceByLabel(fieldsCrate);
+                Payload.ReplaceByLabel(fieldsCrate);
             }
         }
     }

@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Net;
 using System.Threading.Tasks;
-using Data.Infrastructure;
 using Google.GData.Client;
 using Newtonsoft.Json.Linq;
 using StructureMap;
@@ -12,6 +11,7 @@ using Utilities.Configuration.Azure;
 using Utilities.Logging;
 using Fr8Infrastructure.Interfaces;
 using Fr8Infrastructure.Communication;
+using Newtonsoft.Json;
 
 namespace terminalGoogle.Services.Authorization
 {
@@ -121,12 +121,12 @@ namespace terminalGoogle.Services.Authorization
             catch (Exception exception)
             {
                 if (exception is RestfulServiceException || exception is WebException)
-            {
+                {
                     var message = "Google token validation fails with error: " + exception.Message;
                     EventManager.TokenValidationFailed(JsonConvert.SerializeObject(googleAuthDTO), message);
                     Logger.LogError(message);
-                return false;
-            }
+                    return false;
+                }
                 throw;
             }
         }
