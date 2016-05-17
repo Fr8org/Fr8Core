@@ -20,7 +20,7 @@ namespace TerminalBase.BaseClasses
         /**********************************************************************************/
         // Declarations
         /**********************************************************************************/
-
+        
         private OperationalStateCM _operationalState;
         private ActivityContext _activityContext;
         private ContainerExecutionContext _containerExecutionContext;
@@ -49,18 +49,9 @@ namespace TerminalBase.BaseClasses
         protected ActivityPayload CurrentActivity => _activityContext.ActivityPayload;
         protected AuthorizationToken AuthorizationToken => _activityContext.AuthorizationToken;
         protected UpstreamQueryManager UpstreamQueryManager { get; private set; }
-        protected ContainerExecutionContext ExecutionContext
-        {
-            get
-            {
-                CheckRunTime("Operations state is not available at the design time");
-                return _containerExecutionContext;
-            }
-        }
-
+        protected ContainerExecutionContext ExecutionContext => _containerExecutionContext;
         protected IHubCommunicator HubCommunicator { get; }
         protected ActivityContext ConfigurationContext => _activityContext;
-        protected bool IsRuntime => _containerExecutionContext != null;
 
         /**********************************************************************************/
         // Functions
@@ -171,7 +162,7 @@ namespace TerminalBase.BaseClasses
 
         private void CheckRunTime(string message = "Not available at the design time")
         {
-            if (!IsRuntime)
+            if (_containerExecutionContext == null)
             {
                 throw new InvalidOperationException(message);
             }
