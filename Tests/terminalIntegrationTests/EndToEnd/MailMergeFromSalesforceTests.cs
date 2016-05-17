@@ -105,7 +105,7 @@ namespace terminalIntegrationTests.EndToEnd
         {
             var configuration = new DocuSignManager().SetUp(_docuSignTestTools.GetDocuSignAuthToken(docuSignTokenId));
             //find the envelope on the Docusign Account
-            var folderItems = DocuSignFolders.GetFolderItems(configuration, new DocusignQuery()
+            var folderItems = DocuSignFolders.GetFolderItems(configuration, new DocuSignQuery()
             {
                 Status = "sent",
                 SearchText = expectedName
