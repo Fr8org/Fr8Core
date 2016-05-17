@@ -13,21 +13,18 @@ namespace terminalDocuSign.Services
     {
         public static IEnumerable<FieldDTO> GetFolders(DocuSignApiConfiguration conf)
         {
-            FoldersApi api = new FoldersApi(conf.Configuration);
+            var api = new FoldersApi(conf.Configuration);
             var folders = api.List(conf.AccountId);
-            if (folders.Folders != null)
-                return folders.Folders.Select(a => new FieldDTO(a.Name, a.Name));
-            else
-                return new List<FieldDTO>();
+            return folders.Folders?.Select(a => new FieldDTO(a.Name, a.FolderId)) ?? new List<FieldDTO>();
         }
 
-        public static IEnumerable<FolderItem> GetFolderItems(DocuSignApiConfiguration config, DocusignQuery docusignQuery)
+        public static IEnumerable<FolderItem> GetFolderItems(DocuSignApiConfiguration config, DocuSignQuery docuSignQuery)
         {
-            var resultItems = new List<DocuSign.eSign.Model.FolderItem>();
+            var resultItems = new List<FolderItem>();
 
             FoldersApi api = new FoldersApi(config.Configuration);
 
-            if (string.IsNullOrEmpty(docusignQuery.Folder))
+            if (string.IsNullOrEmpty(docuSignQuery.Folder))
             {
                 //return all envelopes from all folders
                 var folders = api.List(config.AccountId);
@@ -38,8 +35,8 @@ namespace terminalDocuSign.Services
                         var envelopesResponse = api.ListItems(config.AccountId, item.FolderId,
                             new FoldersApi.SearchOptions()
                             {
-                                status = docusignQuery.Status,
-                                searchText = docusignQuery.SearchText
+                                status = docuSignQuery.Status,
+                                searchText = docuSignQuery.SearchText
                             });
                         resultItems.AddRange(envelopesResponse.FolderItems);
                     }
@@ -47,11 +44,11 @@ namespace terminalDocuSign.Services
             }
             else
             {
-                var envelopesResponse = api.ListItems(config.AccountId, docusignQuery.Folder,
+                var envelopesResponse = api.ListItems(config.AccountId, docuSignQuery.Folder,
                     new FoldersApi.SearchOptions()
                     {
-                        status = docusignQuery.Status,
-                        searchText = docusignQuery.SearchText
+                        status = docuSignQuery.Status,
+                        searchText = docuSignQuery.SearchText
                     });
                 resultItems.AddRange(envelopesResponse.FolderItems);
             }
@@ -61,7 +58,7 @@ namespace terminalDocuSign.Services
 
         #region GenerateDocuSignReport methods
 
-        public static int CountEnvelopes(DocuSignApiConfiguration config, DocusignQuery docusignQuery)
+        public static int CountEnvelopes(DocuSignApiConfiguration config, DocuSignQuery docuSignQuery)
         {
             throw new NotImplementedException();
         }
