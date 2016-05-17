@@ -179,6 +179,7 @@
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Activities" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -297,6 +298,7 @@
     <Compile Include="Interfaces\IDocuSignManager.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="StructureMapConfigurationcs.cs" />
+    <Compile Include="TerminalData.cs" />
     <Compile Include="Tests\Activities\Generate_DocuSign_Report_Tests.cs" />
     <Compile Include="Tests\Activities\Monitor_DocuSignTests.cs">
       <SubType>Code</SubType>

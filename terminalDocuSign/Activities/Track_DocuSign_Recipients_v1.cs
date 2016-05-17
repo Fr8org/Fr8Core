@@ -16,6 +16,7 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using terminalDocuSign.Activities;
 
 namespace terminalDocuSign.Actions
 {

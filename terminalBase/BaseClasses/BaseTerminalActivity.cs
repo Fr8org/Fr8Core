@@ -39,8 +39,8 @@ namespace TerminalBase.BaseClasses
         #region FIELDS
         private bool _isRunTime;
 
-        private List<ActivityTemplateDTO> _activityTemplateCache = null;
-        protected static readonly string ConfigurationControlsLabel = "Configuration_Controls";
+        protected List<ActivityTemplateDTO> _activityTemplateCache = null;
+        public static readonly string ConfigurationControlsLabel = "Configuration_Controls";
         protected ICrateManager CrateManager { get; private set; }
         public IHubCommunicator HubCommunicator { get; set; }
         public CrateSignaller CrateSignaller { get; set; }
@@ -209,6 +209,7 @@ namespace TerminalBase.BaseClasses
         {
             RaiseError(instructionsToUser, ErrorType.Authentication, ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID);
         }
+
 
         #endregion
 
@@ -442,20 +443,22 @@ namespace TerminalBase.BaseClasses
 
         protected StandardConfigurationControlsCM GetConfigurationControls()
         {
-            return Storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => c.Label == ConfigurationControlsLabel).FirstOrDefault();
+            return ControlHelper.GetConfigurationControls(Storage);
         }
 
         protected T GetControl<T>(string name, string controlType = null) where T : ControlDefinitionDTO
         {
-            Func<ControlDefinitionDTO, bool> predicate = x => x.Name == name;
-            if (controlType != null)
-            {
-                predicate = x => x.Type == controlType && x.Name == name;
-            }
-
-            return (T) ConfigurationControls.Controls.FirstOrDefault(predicate);
+            return ControlHelper.GetControl<T>(ConfigurationControls, name, controlType);
         }
 
+        public ActivityResponseDTO GenerateDocumentationResponse(string documentation)
+        {
+            return new ActivityResponseDTO
+            {
+                Body = documentation,
+                Type = ActivityResponse.ShowDocumentation.ToString()
+            };
+        }
 
         private bool AuthorizeIfNecessary()
         {

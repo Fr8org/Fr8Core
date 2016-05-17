@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using TerminalBase.BaseClasses;
@@ -20,6 +22,22 @@ namespace TerminalBase.Helpers
         {
             _hubCommunicator = hubCommunicator;
             _activityContext = activityContext;
+        }
+
+        public StandardConfigurationControlsCM GetConfigurationControls(ICrateStorage storage)
+        {
+            return storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => c.Label == BaseTerminalActivity.ConfigurationControlsLabel).FirstOrDefault();
+        }
+
+        public T GetControl<T>(StandardConfigurationControlsCM configurationControls,string name, string controlType = null) where T : ControlDefinitionDTO
+        {
+            Func<ControlDefinitionDTO, bool> predicate = x => x.Name == name;
+            if (controlType != null)
+            {
+                predicate = x => x.Type == controlType && x.Name == name;
+            }
+
+            return (T)configurationControls.Controls.FirstOrDefault(predicate);
         }
 
         /// <summary>
