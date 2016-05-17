@@ -24,7 +24,7 @@ namespace TerminalBase.BaseClasses
     public delegate ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO);
 
 
-    public class BaseTerminalActivity
+    public partial class BaseTerminalActivity
     {
         #region Fields
 
@@ -371,7 +371,7 @@ namespace TerminalBase.BaseClasses
                     crateStorage.Remove<ValidationResultsCM>();
 
                     var currentValidationResults = new ValidationResultsCM();
-                    var validationManager = new ValidationManager(currentValidationResults);
+                    var validationManager = new ValidationManager(currentValidationResults, null);
 
                     await ValidateActivity(curActivityDO, crateStorage, validationManager);
 
@@ -424,7 +424,7 @@ namespace TerminalBase.BaseClasses
                 crateStorage.Remove<ValidationResultsCM>();
 
                 var currentValidationResults = new ValidationResultsCM();
-                var validationManager = new ValidationManager(currentValidationResults);
+                var validationManager = new ValidationManager(currentValidationResults, null);
                 
                 await ValidateActivity(curActivityDO, crateStorage, validationManager);
 
@@ -695,14 +695,13 @@ namespace TerminalBase.BaseClasses
 
         public virtual IEnumerable<FieldDTO> GetRequiredFields(ActivityDO curActivityDO, string crateLabel)
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                var requiredFields = crateStorage
-                                        .CrateContentsOfType<FieldDescriptionsCM>(c => c.Label.Equals(crateLabel))
-                                        .SelectMany(f => f.Fields.Where(s => s.IsRequired));
+            var crateStorage = CrateManager.GetStorage(curActivityDO);
 
-                return requiredFields;
-            }
+            var requiredFields = crateStorage
+                .CrateContentsOfType<FieldDescriptionsCM>(c => c.Label.Equals(crateLabel))
+                .SelectMany(f => f.Fields.Where(s => s.IsRequired));
+
+            return requiredFields;
         }
 
         public virtual async Task<List<CrateManifestType>> BuildUpstreamManifestList(ActivityDO activityDO)

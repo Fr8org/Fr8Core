@@ -4,7 +4,6 @@ using NUnit.Framework;
 using TerminalBase.Infrastructure;
 using terminalDocuSign.Actions;
 using terminalDocuSign.Infrastructure.StructureMap;
-using terminalDocuSign.Infrastructure.AutoMapper;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
@@ -22,7 +21,6 @@ namespace terminalDocuSign.Tests.Actions
             TerminalBootstrapper.ConfigureTest();
 
             TerminalDocuSignMapBootstrapper.ConfigureDependencies(Hub.StructureMap.StructureMapBootStrapper.DependencyType.TEST);
-            TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
 
             _monitor_DocuSign = new Monitor_DocuSign_Envelope_Activity_v1();
         }

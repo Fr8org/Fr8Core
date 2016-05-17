@@ -9,53 +9,63 @@ namespace Fr8Data.Helpers
 {
     public class Fr8ReflectionHelper
     {
-        public static IEnumerable<FieldDTO> FindFieldsRecursive(Object obj)
+        public static IEnumerable<FieldDTO> FindFieldsRecursive(object obj)
         {
-            var fields = new List<FieldDTO>();
+            var result = new List<FieldDTO>();
             if (obj == null)
             {
-                return fields;
+                return result;
             }
-            if (obj is IEnumerable && !(obj is string))
+            var fieldDTO = obj as FieldDTO;
+            if (fieldDTO != null)
             {
-
-                var objList = obj as IEnumerable;
-                foreach (var element in objList)
-                {
-                    fields.AddRange(FindFieldsRecursive(element));
-                }
-                return fields;
+                result.Add(fieldDTO);
+                return result;
             }
-
-            var objType = obj.GetType();
-            bool isPrimitiveType = objType.IsPrimitive || objType.IsValueType || (objType == typeof(string));
-
-            if (!isPrimitiveType)
+            var type = obj.GetType();
+            if (IsPrimitiveType(type))
             {
-                var field = obj as FieldDTO;
-                if (field != null)
+                return result;
+            }
+            var list = obj as IEnumerable;
+            if (list != null)
+            {
+                foreach (var element in list)
                 {
-                    return new List<FieldDTO> { field };
+                    result.AddRange(FindFieldsRecursive(element));
                 }
-
-                var objProperties = objType.GetProperties(BindingFlags.NonPublic | BindingFlags.Public| BindingFlags.Instance | BindingFlags.Static);
-                var objFields = objType.GetFields(BindingFlags.NonPublic | BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
-                //We skip indexer properties as we won't be able to supply arguments
-                foreach (var prop in objProperties.Where(x => x.GetIndexParameters().Length == 0))
+                return result;
+            }
+            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
+            //We skip indexer properties as we won't be able to supply arguments
+            foreach (var property in properties.Where(x => x.GetIndexParameters().Length == 0))
+            {
+                if (IsPrimitiveType(property.PropertyType))
                 {
-                    fields.AddRange(FindFieldsRecursive(prop.GetValue(obj)));
+                    result.Add(new FieldDTO(property.Name, property.GetValue(obj)?.ToString()));
                 }
-                foreach (var prop in objFields)
+                else
                 {
-                    fields.AddRange(FindFieldsRecursive(prop.GetValue(obj)));
+                    result.AddRange(FindFieldsRecursive(property.GetValue(obj)));
                 }
             }
-
-            return fields;
+            foreach (var field in fields)
+            {
+                if (IsPrimitiveType(field.FieldType))
+                {
+                    result.Add(new FieldDTO(field.Name, field.GetValue(obj)?.ToString()));
+                }
+                else
+                {
+                    result.AddRange(FindFieldsRecursive(field.GetValue(obj)));
+                }
+            }
+            return result;
         }
 
         public static bool CheckAttributeOrTrue<T>(IMemberAccessor memberAccessor, Predicate<T> predicate)
-            where T:Attribute
+            where T : Attribute
         {
             var attribute = memberAccessor.GetCustomAttribute<T>();
 
@@ -83,7 +93,7 @@ namespace Fr8Data.Helpers
             {
                 return ((IEnumerable)obj).OfType<Object>().ToArray();
             }
-            
+
             var objType = obj.GetType();
             bool isPrimitiveType = objType.IsPrimitive || objType.IsValueType || (objType == typeof(string));
 
@@ -113,10 +123,11 @@ namespace Fr8Data.Helpers
         public static bool IsPrimitiveType(Type type)
         {
             return type.IsPrimitive
-                   || type == typeof (string)
-                   || type == typeof (Guid)
-                   || type == typeof (DateTime)
-                   || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof (Nullable<>) && IsPrimitiveType(type.GetGenericArguments()[0]));
+                   || type.IsValueType
+                   || type == typeof(string)
+                   || type == typeof(Guid)
+                   || type == typeof(DateTime)
+                   || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>) && IsPrimitiveType(type.GetGenericArguments()[0]));
         }
     }
 }

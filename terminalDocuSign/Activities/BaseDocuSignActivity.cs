@@ -155,7 +155,8 @@ namespace terminalDocuSign.Actions
 
             var crateStorage = CrateManager.GetStorage(activityDO);
             var validationCrate = new ValidationResultsCM();
-            var validationManager = new ValidationManager(validationCrate);
+            var payloadStorage = CrateManager.GetStorage(payloadCrates);
+            var validationManager = new ValidationManager(validationCrate, payloadStorage);
 
             await ValidateActivity(activityDO, crateStorage, validationManager);
 
