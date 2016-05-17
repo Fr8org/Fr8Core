@@ -1,6 +1,5 @@
 ﻿.auth-dialog .field-group {
     margin-left: 10px;
-    margin-bottom: 10px;
 }
 
 .auth-dialog button {
@@ -9,6 +8,8 @@
 
 .auth-dialog .auth-link-account {
     display: block;
+    margin-left: 10px;
+    margin-bottom: 10px;
     color: black;
 }
 
