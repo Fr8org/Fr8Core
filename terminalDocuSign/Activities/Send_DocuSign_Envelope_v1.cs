@@ -263,8 +263,7 @@ namespace terminalDocuSign.Actions
               "DocuSignTemplateRolesFields",
               AvailabilityType.Configuration,
               roles.ToArray()
-
-          );
+            );
 
             crateStorage.RemoveByLabel("DocuSignTemplateRolesFields");
             crateStorage.Add(crateRolesDTO);
@@ -273,6 +272,9 @@ namespace terminalDocuSign.Actions
             var envelopeDataDTO = tabsandfields.Item2;
 
             var userDefinedFields = tabsandfields.Item1.Where(a => a.Tags.Contains("DocuSignTab"));
+
+            //check for DocuSign default template names and add advisory json
+            var hasDefaultNames = DocuSignManager.DocuSignTemplateDefaultNames(userDefinedFields);
 
             var crateUserDefinedDTO = CrateManager.CreateDesignTimeFieldsCrate(
                 "DocuSignTemplateUserDefinedFields",
