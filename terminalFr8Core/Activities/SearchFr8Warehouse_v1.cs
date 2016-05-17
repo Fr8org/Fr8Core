@@ -207,19 +207,19 @@ namespace terminalFr8Core.Activities
         }
 
         private bool ValidateSolutionInputs(string fr8Object)
-            {
+        {
             var fr8ObjectDropDown = GetControl<DropDownList>("Select Fr8 Warehouse Object");
             var validationResult = Storage.GetOrAdd(() => Crate.FromContent("Validation Result", new ValidationResultsCM()));
-            var validationManager = new ValidationManager(validationResult);
+            var validationManager = new ValidationManager(validationResult, Payload);
 
-                if (String.IsNullOrWhiteSpace(fr8Object))
-                {
-                    validationManager.SetError("Please select the Fr8 Object", fr8ObjectDropDown);
-                    return false;
-                }
-                
-                return true;
+            if (string.IsNullOrWhiteSpace(fr8Object))
+            {
+                validationManager.SetError("Please select the Fr8 Object", fr8ObjectDropDown);
+                return false;
             }
+                
+            return true;
+        }
 
         private static ControlDefinitionDTO CreateTextBoxQueryControl(
             string key)

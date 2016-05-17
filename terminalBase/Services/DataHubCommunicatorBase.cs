@@ -253,6 +253,11 @@ namespace TerminalBase.Services
             return Task.FromResult(0);
         }
 
+        public Task RenewToken(AuthorizationTokenDTO token, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task RenewToken(string id, string externalAccountId, string token, string userId)
         {
             throw new NotImplementedException();
@@ -290,7 +295,7 @@ namespace TerminalBase.Services
 
         public Task<AuthorizationToken> GetAuthToken(string authTokenId, string curFr8UserId)
         {
-            return Task.FromResult(0);
+            throw new NotImplementedException();
         }
 
         public Task ScheduleEvent(string externalAccountId, string curFr8UserId, string minutes)

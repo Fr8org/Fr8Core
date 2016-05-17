@@ -2,23 +2,34 @@
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
+using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using terminalDocuSign.Activities;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 using FolderItem = DocuSign.eSign.Model.FolderItem;
 using ListItem = Fr8Data.Control.ListItem;
 
-namespace terminalDocuSign.Actions
+namespace terminalDocuSign.Activities
 {
     public class Query_DocuSign_v2 : EnhancedDocuSignActivity<Query_DocuSign_v2.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Query_DocuSign",
+            Label = "Query DocuSign",
+            Version = "2",
+            Category = ActivityCategory.Receivers,
+            NeedsAuthentication = true,
+            MinPaneWidth = 380,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public TextArea IntroductionText { get; set; }
@@ -67,31 +78,31 @@ namespace terminalDocuSign.Actions
 
         private const string RunTimeCrateLabel = "DocuSign Envelope Data";
 
-        protected override async Task Initialize(CrateSignaller crateSignaller)
+        protected override async Task InitializeETA()
         {
             var configuration = DocuSignManager.SetUp(AuthorizationToken);
-            ConfigurationControls.FolderFilter.ListItems = DocuSignFolders.GetFolders(configuration)
+            ActivityUI.FolderFilter.ListItems = DocuSignFolders.GetFolders(configuration)
                                                                           .Select(x => new ListItem { Key = x.Key, Value = x.Value })
                                                                           .ToList();
-            ConfigurationControls.FolderFilter.ListItems.Insert(0, new ListItem { Key = "Any Folder", Value = string.Empty });
-            ConfigurationControls.StatusFilter.ListItems = DocuSignQuery.Statuses
+            ActivityUI.FolderFilter.ListItems.Insert(0, new ListItem { Key = "Any Folder", Value = string.Empty });
+            ActivityUI.StatusFilter.ListItems = DocuSignQuery.Statuses
                                                                         .Select(x => new ListItem { Key = x.Key, Value = x.Value })
                                                                         .ToList();
-            crateSignaller.MarkAvailableAtRuntime<DocuSignEnvelopeCM_v3>(RunTimeCrateLabel)
+            CrateSignaller.MarkAvailableAtRuntime<DocuSignEnvelopeCM_v3>(RunTimeCrateLabel)
                           .AddFields(GetEnvelopeProperties());
         }
 
-        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
+        protected override Task ConfigureETA()
         {
             return Task.FromResult(0);
         }
 
-        protected override async Task RunCurrentActivity()
+        protected override async Task RunETA()
         {
             var configuration = DocuSignManager.SetUp(AuthorizationToken);
             var settings = GetDocusignQuery();
             var folderItems = DocuSignFolders.GetFolderItems(configuration, settings);
-            CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, new DocuSignEnvelopeCM_v3
+            Payload.Add(Crate.FromContent(RunTimeCrateLabel, new DocuSignEnvelopeCM_v3
                                                                            {
                                                                                Envelopes = folderItems.Select(ConvertFolderItemToDocuSignEnvelope).ToList()
                                                                            }));
@@ -101,9 +112,9 @@ namespace terminalDocuSign.Actions
         {
             return new DocuSignQuery
             {
-                Folder = ConfigurationControls.FolderFilter.Value,
-                Status = ConfigurationControls.StatusFilter.Value,
-                SearchText = ConfigurationControls.SearchTextFilter.Value
+                Folder = ActivityUI.FolderFilter.Value,
+                Status = ActivityUI.StatusFilter.Value,
+                SearchText = ActivityUI.SearchTextFilter.Value
             };
         }
 

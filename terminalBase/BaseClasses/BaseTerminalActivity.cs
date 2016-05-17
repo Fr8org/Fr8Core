@@ -20,7 +20,7 @@ using TerminalBase.Services;
 
 namespace TerminalBase.BaseClasses
 {
-    public abstract class BaseTerminalActivity : IActivity
+    public abstract partial class BaseTerminalActivity : IActivity
     {
         protected BaseTerminalActivity(bool isAuthenticationRequired)
         {
@@ -508,14 +508,11 @@ namespace TerminalBase.BaseClasses
             parentActivity.ChildrenActivities.Add(child);
             return child;
         }
-        public virtual IEnumerable<FieldDTO> GetRequiredFields(ActivityDO curActivityDO, string crateLabel)
+        public virtual IEnumerable<FieldDTO> GetRequiredFields(string crateLabel)
         {
-            var crateStorage = CrateManager.GetStorage(curActivityDO);
-
-            var requiredFields = crateStorage
+            var requiredFields = Storage
                 .CrateContentsOfType<FieldDescriptionsCM>(c => c.Label.Equals(crateLabel))
                 .SelectMany(f => f.Fields.Where(s => s.IsRequired));
-
             return requiredFields;
         }
 

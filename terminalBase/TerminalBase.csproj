@@ -127,12 +127,7 @@
     <Compile Include="BaseClasses\BaseConfiguration.cs" />
     <Compile Include="BaseClasses\BaseTerminalController.cs" />
     <Compile Include="BaseClasses\BaseTerminalWebApiConfig.cs" />
-    <Compile Include="BaseClasses\DynamicControlsAttribute.cs" />
-    <Compile Include="BaseClasses\EnhancedTerminalActivityT.cs" />
-    <Compile Include="BaseClasses\CrateSignaller.cs" />
     <Compile Include="BaseClasses\RuntimeValidationScope.cs" />
-    <Compile Include="BaseClasses\UiBuilder.cs" />
-    <Compile Include="BaseClasses\UpstreamQueryManager.cs" />
     <Compile Include="Infrastructure\DynamicControlsAttribute.cs" />
     <Compile Include="Services\CrateSignaller.cs" />
     <Compile Include="Services\UiBuilder.cs" />

@@ -34,7 +34,7 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        public override async Task Initialize()
+        public sealed override async Task Initialize()
         {
             ActivityUI = CrateActivityUI();
             Storage.Clear();
@@ -45,7 +45,7 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        public override async Task FollowUp()
+        public sealed override async Task FollowUp()
         {
             SyncConfControls();
             await ConfigureETA();
