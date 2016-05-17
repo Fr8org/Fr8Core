@@ -11,6 +11,7 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.Entities;
 using Fr8Data.DataTransferObjects;
+using Hub.Managers;
 using Hub.StructureMap;
 using Web.ViewModels;
 
@@ -19,6 +20,8 @@ namespace UtilitiesTesting
     [TestFixture]
     public class BaseTest
     {
+        protected ICrateManager CrateManager; 
+
         [SetUp]
         public virtual void SetUp()
         {
@@ -26,6 +29,7 @@ namespace UtilitiesTesting
             MockedDBContext.WipeMockedDatabase();
             ConfigureAutoMapper();
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
+            CrateManager = ObjectFactory.Container.GetInstance<ICrateManager>();
 
             
             

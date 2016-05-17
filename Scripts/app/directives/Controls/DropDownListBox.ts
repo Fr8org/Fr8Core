@@ -71,18 +71,20 @@ module dockyard.directives.dropDownListBox {
                         .then((data: model.IncomingCratesDTO) => {
                             var listItems: Array<model.DropDownListItem> = [];
 
-                            angular.forEach(data.availableFields, (it) => {
+                            angular.forEach(data.availableCrates, (ct) => {
+                                angular.forEach(ct.fields, (f) => {
                                     var i, j;
                                     var found = false;
                                     for (i = 0; i < listItems.length; ++i) {
-                                        if (listItems[i].key === it.key) {
+                                        if (listItems[i].key === f.key) {
                                             found = true;
                                             break;
                                         }
                                     }
                                     if (!found) {
-                                        listItems.push(<model.DropDownListItem>it);
+                                        listItems.push(<model.DropDownListItem>f);
                                     }
+                                });
                             });
 
                             listItems.sort((x, y) => {

@@ -34,6 +34,7 @@ module dockyard.directives {
         defaultOperator: string;
         conditions: Array<IQueryCondition>;
         rows: Array<interfaces.ICondition>;
+        requestUpstream: boolean;
 
         addCondition: () => void;
         removeCondition: (index: number) => void;
@@ -48,6 +49,7 @@ module dockyard.directives {
                 currentAction: '=',
                 field: '=',
                 rows: '=?',
+                requestUpstream: '=?',
                 isDisabled: '=',
                 addRowText: '@'
             },
@@ -186,6 +188,12 @@ module dockyard.directives {
                     $scope.removeCondition = (index: number) => {
                         $scope.conditions.splice(index, 1);
                     };
+
+                    if (angular.isUndefined($scope.requestUpstream)
+                        && !angular.isUndefined($scope.field)
+                        && $scope.field.source) {
+                        $scope.requestUpstream = $scope.field.source.requestUpstream;
+                    }
                 }
             ]
         };
