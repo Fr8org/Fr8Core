@@ -151,7 +151,12 @@ namespace terminalFr8Core.Actions
             var transition = new ContainerTransition
             {
                 Label = "Please enter transition",
-                Name = "transition"
+                Name = "transition",
+                Source = new FieldSourceDTO()
+                {
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields,
+                    RequestUpstream = true
+                }
             };
 
 

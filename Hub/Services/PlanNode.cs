@@ -113,12 +113,28 @@ namespace Hub.Services
                 {
                     activities = activities.Where(x => x.Id != activityId);
                 }
+                // else
+                // {
+                //     if (!activities.Any(x => x.Id == activityId))
+                //     {
+                //         var activitiesToAdd = activities.ToList();
+                //         activitiesToAdd.Insert(0, activityDO);
+                //         activities = activitiesToAdd;
+                //     }
+                // }
+
                 List<FieldDescriptionsCM> fields = new List<FieldDescriptionsCM>();
                 var result = activities
                     .SelectMany(x =>
                     {
-                     fields = _crate.GetStorage(x).CratesOfType<FieldDescriptionsCM>().Where(f => f.Label != ValidationErrorsLabel && f.Availability != AvailabilityType.Configuration).Select(y=>y.Content).ToList();
-                     return _crate.GetStorage(x).CratesOfType<CrateDescriptionCM>().Where(cratePredicate);                   
+                        fields.AddRange(
+                            _crate.GetStorage(x)
+                                .CratesOfType<FieldDescriptionsCM>()
+                                .Where(f => f.Label != ValidationErrorsLabel && f.Availability != AvailabilityType.Configuration)
+                                .Select(y=>y.Content)
+                                .ToList()
+                        );
+                        return _crate.GetStorage(x).CratesOfType<CrateDescriptionCM>().Where(cratePredicate);
                     })
                     .Select(x =>
                     {
