@@ -1,8 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Helpers;
@@ -12,6 +10,15 @@ using Newtonsoft.Json;
 
 namespace Fr8Data.Control
 {
+    public class UpstreamData
+    {
+        public static readonly UpstreamData Value = new UpstreamData();
+
+        private UpstreamData()
+        {
+        }
+    }
+
     /// <summary>
     /// This interface is applied to controls and control data items (e.g. radio buttons)
     /// that support nested controls.
@@ -449,7 +456,7 @@ namespace Fr8Data.Control
             };
         }
 
-        public string GetValue(ICrateStorage payloadCrateStorage, bool ignoreCase = false, MT? manifestType = null, string label = null)
+        public string GetValue(ICrateStorage payloadCrateStorage)
         {
             switch (ValueSource)
             {
@@ -457,12 +464,36 @@ namespace Fr8Data.Control
                     return TextValue;
 
                 case "upstream":
-                    return payloadCrateStorage.FindField(this.selectedKey, ignoreCase, manifestType, label);
+                    if (payloadCrateStorage == null)
+                    {
+                        throw new Exception("Can't resolve upstream value without payload crate storage provided");
+                    }
+
+                    return payloadCrateStorage.FindField(this.selectedKey);
 
                 default:
                     return null;
             }
         }
+
+        public bool CanGetValue(ICrateStorage payloadCrateStorage)
+        {
+            if (HasSpecificValue)
+            {
+                return true;
+            }
+
+            if (ValueSource == "upstream" && payloadCrateStorage == null)
+            {
+                return false;
+            }
+
+            return true;
+        }
+
+        public bool HasValue => !string.IsNullOrEmpty(ValueSource) && (HasUpstreamValue || HasSpecificValue);
+        public bool HasUpstreamValue => (ValueSource == "upstream" && !string.IsNullOrEmpty(this.Value));
+        public bool HasSpecificValue => (ValueSource == "specific" && !string.IsNullOrEmpty(this.TextValue));
     }
 
     public class Button : ControlDefinitionDTO
