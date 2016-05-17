@@ -89,6 +89,8 @@ module dockyard.tests.unit.directives.controls {
             expect(element.find("upstream-field-chooser").length).toBe(1);
         });
 
+
+        
         it('Should call onchange of input field on blur', () => {
             var curScope = element.isolateScope();
 
@@ -96,6 +98,10 @@ module dockyard.tests.unit.directives.controls {
             curScope.onChange = jasmine.createSpy("onChange");
             triggerBlurHandler(curScope, element, ".form-control-focus");
             expect(curScope.onChange).toHaveBeenCalled();
+        });
+
+        it('Should set "specific" value source initially', () => {
+            expect(scope.field.valueSource).toBe('specific');
         });
     });
 
@@ -151,7 +157,7 @@ module dockyard.tests.unit.directives.controls {
             expect(element1.find("upstream-field-chooser").length).toBe(1);
             expect(element2.find("upstream-field-chooser").length).toBe(1);
         });
-
+        
         it('Should call onChange of input field on blur in it\'s own scope', () => {
 
             var curScope1 = element1.isolateScope();

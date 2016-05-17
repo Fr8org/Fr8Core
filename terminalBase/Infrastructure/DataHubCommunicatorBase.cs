@@ -181,6 +181,11 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(new List<FieldValidationResult>());
         }
 
+        public Task<AuthorizationTokenDTO> GetAuthToken(string authTokenId, string curFr8UserId)
+        {
+            throw new NotImplementedException();
+        }
+
         public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
         {
             //This code only supports integration testing scenarios
@@ -195,7 +200,7 @@ namespace TerminalBase.Infrastructure
 
         public async Task<IncomingCratesDTO> GetAvailableData(ActivityDO activityDO, CrateDirection direction, AvailabilityType availability, string userId)
         {
-            var fields = await GetCratesByDirection<FieldDescriptionsCM>(activityDO, direction, userId);
+            var fields = await GetCratesByDirection<FieldDescriptionsCM>(activityDO, direction,  userId);
             var crates = await GetCratesByDirection<CrateDescriptionCM>(activityDO, direction, userId);
             var availableData = new IncomingCratesDTO();
 
@@ -261,6 +266,11 @@ namespace TerminalBase.Infrastructure
             return Task.FromResult(0);
         }
 
+        public Task RenewToken(string id, string externalAccountId, string token, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task DeletePlan(Guid planId, string userId)
         {
             throw new NotImplementedException();
@@ -291,9 +301,9 @@ namespace TerminalBase.Infrastructure
             throw new NotImplementedException();
         }
 
-        public Task<AuthorizationTokenDTO> GetAuthToken(string authTokenId, string curFr8UserId)
+        public Task RenewToken(AuthorizationTokenDTO authTokenDTO, string userId)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(0);
         }
 
         public Task ScheduleEvent(string externalAccountId, string curFr8UserId, string minutes)
