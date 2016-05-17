@@ -13,6 +13,6 @@ namespace TerminalBase.Models
     {
         public ActivityPayload ActivityPayload { get; set; }
         public AuthorizationToken AuthorizationToken { get; set; }
-        public string UserId { get; }
+        public string UserId { get; set; }
     }
 }

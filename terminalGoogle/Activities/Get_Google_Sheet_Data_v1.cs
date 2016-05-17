@@ -127,6 +127,8 @@ namespace terminalGoogle.Actions
 
         protected override async Task ConfigureETA()
         {
+            List<Crate> crates = new List<Crate>();
+            Crate fieldsCrate = null;
             var googleAuth = GetGoogleAuthToken();
             var spreadsheets = await _googleApi.GetSpreadsheets(googleAuth);
             ActivityUI.SpreadsheetList.ListItems = spreadsheets
@@ -184,9 +186,23 @@ namespace terminalGoogle.Actions
 
                 var table = await GetSelectedSpreadSheet();
                 var hasHeaderRow = TryAddHeaderRow(table);
-                Storage.ReplaceByLabel(Crate.FromContent(RunTimeCrateLabel,new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
+                CurrentActivityStorage.ReplaceByLabel(Crate.FromContent(RunTimeCrateLabel,new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
+
+                if (table?.Count() > 0)
+                {
+                    fieldsCrate = TabularUtilities.PrepareFieldsForOneRowTable(hasHeaderRow, false, table, columnHeaders.Select(ch => ch.Key).ToList());
+                }
+
+                if (fieldsCrate != null)
+                {
+                    CurrentActivityStorage.ReplaceByLabel(fieldsCrate);
             }
-            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+                else
+                {
+                    CurrentActivityStorage.RemoveByLabel(TabularUtilities.ExtractedFieldsCrateLabel);
+                }
+            }
+            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
         private async Task<List<TableRowDTO>> GetSelectedSpreadSheet()
@@ -230,7 +246,13 @@ namespace terminalGoogle.Actions
            
             var table = await GetSelectedSpreadSheet();
             var hasHeaderRow = TryAddHeaderRow(table);
-            Payload.Add(Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
+            CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
+
+            var fieldsCrate = TabularUtilities.PrepareFieldsForOneRowTable(hasHeaderRow, true, table, null); // assumes that hasHeaderRow is always true
+            if (fieldsCrate != null)
+            {
+                CurrentPayloadStorage.ReplaceByLabel(fieldsCrate);
+            }
         }
     }
 }

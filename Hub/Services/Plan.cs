@@ -555,8 +555,12 @@ namespace Hub.Services
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
-        public void Enqueue(List<PlanDO> curPlans, params Crate[] curEventReport)
+        public void Enqueue(IEnumerable<PlanDO> curPlans, params Crate[] curEventReport)
         {
+            if (curPlans == null)
+            {
+                return;
+            }
             foreach (var curPlan in curPlans)
             {
                 Enqueue(curPlan.Id, curEventReport);

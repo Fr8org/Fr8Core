@@ -147,10 +147,10 @@ namespace terminalDocuSign.Activities
                 var templates = DocuSignManager.GetTemplatesList(conf);
                 control.ListItems = templates.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
             }
-        }
-        
+            }
+
         public override async Task Run()
-        {
+            {
             try
             {
                 await RunDS();

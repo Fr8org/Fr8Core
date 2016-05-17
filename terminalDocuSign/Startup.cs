@@ -6,7 +6,6 @@ using Microsoft.Owin;
 using Owin;
 using terminalDocuSign;
 using terminalDocuSign.Controllers;
-using terminalDocuSign.Infrastructure.AutoMapper;
 using TerminalBase.BaseClasses;
 using terminalDocuSign.Actions;
 using terminalDocuSign.Activities;
@@ -25,11 +24,9 @@ namespace terminalDocuSign
 
         public void Configuration(IAppBuilder app, bool selfHost)
         {
-            //ObjectFactory.GetInstance<DbContext>().Database.Initialize(true);
-
             ConfigureProject(selfHost, TerminalDocusignStructureMapBootstrapper.LiveConfiguration);
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
-            TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
+            //TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
 
@@ -53,9 +50,9 @@ namespace terminalDocuSign
             ActivityStore.RegisterActivity<Extract_Data_From_Envelopes_v1>(Extract_Data_From_Envelopes_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Track_DocuSign_Recipients_v1>(Track_DocuSign_Recipients_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Query_DocuSign_v1>(Query_DocuSign_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Query_DocuSign_v2>(Query_DocuSign_v2.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Search_DocuSign_History_v1>(Search_DocuSign_History_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Get_DocuSign_Template_v1>(Get_DocuSign_Template_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<Process_Personal_Report_v1>(Process_Personal_Report_v1.ActivityTemplateDTO);
         }
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)

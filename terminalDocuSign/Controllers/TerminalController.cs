@@ -19,7 +19,7 @@ namespace terminalDocuSign.Controllers
         [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult Get()
         {
-            StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
+            var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = TerminalData.TerminalDTO,
                 Activities = ActivityStore.GetAllActivities()

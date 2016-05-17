@@ -20,7 +20,7 @@ using TerminalBase.Services;
 
 namespace TerminalBase.BaseClasses
 {
-    public abstract class BaseTerminalActivity : IActivity
+    public abstract partial class BaseTerminalActivity : IActivity
     {
         protected BaseTerminalActivity(bool isAuthenticationRequired)
         {
@@ -28,7 +28,7 @@ namespace TerminalBase.BaseClasses
         }
 
         private void InitializeActivity(ActivityContext activityContext, ContainerExecutionContext containerExecutionContext = null)
-        {
+    {
             ActivityContext = activityContext;
             ExecutionContext = containerExecutionContext;
             CrateManager = ObjectFactory.GetInstance<ICrateManager>();
@@ -88,7 +88,7 @@ namespace TerminalBase.BaseClasses
         protected void SuspendHubExecution()
         {
             OperationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestSuspend);
-        }
+            }
 
         /// <summary>
         /// Creates a terminate request for hub execution
@@ -101,19 +101,19 @@ namespace TerminalBase.BaseClasses
         {
             OperationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestTerminate);
             OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Message = message });
-        }
+            }
 
         protected void LaunchPlan(Guid targetPlanId)
         {
             OperationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.LaunchAdditionalPlan);
             OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Details = targetPlanId });
-        }
+            }
 
         protected void JumpToSubplan(Guid targetSubplanId)
         {
             OperationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.JumpToSubplan);
             OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Details = targetSubplanId });
-        }
+            }
 
         /// <summary>
         /// Jumps to an activity that resides in same subplan as current activity
@@ -124,7 +124,7 @@ namespace TerminalBase.BaseClasses
         {
             OperationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.JumpToActivity);
             OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Details = targetActivityId });
-        }
+            }
 
         /// <summary>
         /// Jumps to an activity that resides in same subplan as current activity
@@ -135,7 +135,7 @@ namespace TerminalBase.BaseClasses
         {
             OperationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.LaunchAdditionalPlan);
             OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Details = targetPlanId });
-        }
+            }
 
         /// <summary>
         /// returns success to hub
@@ -146,7 +146,7 @@ namespace TerminalBase.BaseClasses
         {
             OperationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Success);
             OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Message = message });
-        }
+            }
 
         protected void ExecuteClientActivity(string clientActivityName)
         {
@@ -225,17 +225,17 @@ namespace TerminalBase.BaseClasses
             var errorCode = ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID;
             OperationalState.CurrentActivityErrorCode = errorCode;
             OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(instructionsToUser, ErrorType.Authentication, errorCode.ToString(), null, null, null));
-        }
+            }
 
         protected void SetResponse(ActivityResponse response, string message = null, object details = null)
         {
             OperationalState.CurrentActivityResponse = ActivityResponseDTO.Create(response);
 
             if (!string.IsNullOrWhiteSpace(message) || details != null)
-            {
+                {
                 OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Message = message, Details = details });
+                }
             }
-        }
 
         /**********************************************************************************/
         /// <summary>
@@ -259,7 +259,7 @@ namespace TerminalBase.BaseClasses
         /**********************************************************************************/
 
         /**********************************************************************************/
-
+       
         protected void RequestClientActivityExecution(string clientActionName)
         {
             SetResponse(ActivityResponse.ExecuteClientActivity);
@@ -273,7 +273,7 @@ namespace TerminalBase.BaseClasses
         protected void RequestSkipChildren()
         {
             SetResponse(ActivityResponse.SkipChildren);
-        }
+            }
 
         /**********************************************************************************/
         /// <summary>
@@ -281,10 +281,10 @@ namespace TerminalBase.BaseClasses
         /// </summary>
         /// <returns></returns>
         protected void RequestCall(Guid targetNodeId)
-        {
+            {
             SetResponse(ActivityResponse.CallAndReturn);
             OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetNodeId });
-        }
+                    }
 
         /**********************************************************************************/
         /// <summary>
@@ -324,8 +324,8 @@ namespace TerminalBase.BaseClasses
             if (!_isRunTime)
             {
                 throw new InvalidOperationException(message);
+                }
             }
-        }
 
         protected bool CheckAuthentication()
         {
@@ -333,7 +333,7 @@ namespace TerminalBase.BaseClasses
             {
                 AddAuthenticationCrate(false);
                 return true;
-            }
+        }
 
             return false;
         }
@@ -351,10 +351,10 @@ namespace TerminalBase.BaseClasses
                 TerminalVersion = MyTemplate.Terminal.Version
             };
             await HubCommunicator.NotifyUser(notificationMsg, CurrentUserId);
-        }
+            }
 
         protected string ExtractPayloadFieldValue(string fieldKey)
-        {
+            {
             var fieldValues = Payload.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(fieldKey))
                 .Where(s => !string.IsNullOrEmpty(s))
                 .ToArray();
@@ -365,7 +365,7 @@ namespace TerminalBase.BaseClasses
             //This is required for proper logging of the Incidents
             baseEvent.SendTerminalErrorIncident(MyTemplate.Terminal.Name, exceptionMessage, MyTemplate.Name, CurrentUserId);
             throw new ApplicationException(exceptionMessage);
-        }
+            }
 
         protected void AddAuthenticationCrate(bool revocation)
         {
@@ -401,12 +401,12 @@ namespace TerminalBase.BaseClasses
         }
 
         protected OperationalStateCM GetOperationalStateCrate(ICrateStorage storage)
-        {
+            {
             var operationalState = storage.CrateContentsOfType<OperationalStateCM>().SingleOrDefault();
             if (operationalState == null)
                 throw new Exception("No Operational State Crate found.");
             return operationalState;
-        }
+            }
 
         /// <summary>
         /// Method to be used with Loop Action
@@ -437,7 +437,7 @@ namespace TerminalBase.BaseClasses
             var curUpstreamFields = (await GetDesignTimeFields(CrateDirection.Upstream)).Fields.ToArray();
             var upstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
             return upstreamFieldsCrate;
-        }
+            }
 
         protected virtual ConfigurationRequestType GetConfigurationRequestType()
         {
@@ -447,12 +447,12 @@ namespace TerminalBase.BaseClasses
         protected StandardConfigurationControlsCM GetConfigurationControls()
         {
             return ControlHelper.GetConfigurationControls(Storage);
-        }
+                }
 
         protected T GetControl<T>(string name, string controlType = null) where T : ControlDefinitionDTO
-        {
+            {
             return ControlHelper.GetControl<T>(ConfigurationControls, name, controlType);
-        }
+            }
 
         public ActivityResponseDTO GenerateDocumentationResponse(string documentation)
         {
@@ -468,7 +468,7 @@ namespace TerminalBase.BaseClasses
             if (IsAuthenticationRequired)
             {
                 return CheckAuthentication();
-            }
+        }
 
             return false;
         }
@@ -502,20 +502,34 @@ namespace TerminalBase.BaseClasses
             return await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, CurrentUserId, name, order, parentActivityId);
         }
 
+        protected async Task<ActivityPayload> AddAndConfigureChildActivity(ActivityPayload parentActivity, ActivityTemplateDTO activityTemplate, string name = null, string label = null, int? order = null)
+        {
+            var child = await AddAndConfigureChildActivity(parentActivity.Id, activityTemplate, name, label, order);
+            parentActivity.ChildrenActivities.Add(child);
+            return child;
+        }
+        public virtual IEnumerable<FieldDTO> GetRequiredFields(string crateLabel)
+        {
+            var requiredFields = Storage
+                .CrateContentsOfType<FieldDescriptionsCM>(c => c.Label.Equals(crateLabel))
+                .SelectMany(f => f.Fields.Where(s => s.IsRequired));
+            return requiredFields;
+        }
+
         protected void UpdateDesignTimeCrateValue(string label, params FieldDTO[] fields)
         {
             var crate = Storage.CratesOfType<FieldDescriptionsCM>().FirstOrDefault(x => x.Label == label);
 
             if (crate == null)
-            {
+        {
                 crate = CrateManager.CreateDesignTimeFieldsCrate(label, fields);
                 Storage.Add(crate);
-            }
+        }
             else
-            {
+        {
                 crate.Content.Fields.Clear();
                 crate.Content.Fields.AddRange(fields);
-            }
+        }
         }
 
         //wrapper for support test method
@@ -555,7 +569,7 @@ namespace TerminalBase.BaseClasses
 
 
             if (foundActivity == null)
-            {
+                    {
                 throw new Exception($"ActivityTemplate was not found. TerminalName: {terminalName}\nTerminalVersion: {terminalVersion}\nActivitiyTemplateName: {activityTemplateName}\nActivityTemplateVersion: {activityTemplateVersion}");
             }
 
@@ -575,7 +589,7 @@ namespace TerminalBase.BaseClasses
             };
 
             return curSolutionPage;
-        }
+            }
 
         public ActivityResponseDTO GenerateErrorResponse(string errorMessage)
         {
@@ -591,10 +605,10 @@ namespace TerminalBase.BaseClasses
             _isRunTime = true;
             InitializeActivity(activityContext, containerExecutionContext);
             if (IsAuthenticationRequired && NeedsAuthentication())
-            {
+        {
                 RaiseNeedsAuthenticationError();
                 return;
-            }
+        }
 
             try
             {
@@ -606,20 +620,20 @@ namespace TerminalBase.BaseClasses
                 OperationalState.CurrentActivityResponse = null;
                 await RunChildActivities();
                 if (OperationalState.CurrentActivityResponse == null)
-                {
+            {
                     Success();
-                }
             }
+        }
             catch (AuthorizationTokenExpiredOrInvalidException ex)
             {
                 ErrorInvalidToken(ex.Message);
-            }
+        }
             catch (ActivityExecutionException ex)
             {
                 RaiseError(ex.Message, ex.ErrorCode);
-            }
+        }
             catch (AggregateException ex)
-            {
+        {
                 RaiseError(ex.Flatten().Message);
             }
             catch (Exception ex)
@@ -644,28 +658,28 @@ namespace TerminalBase.BaseClasses
                 {
                     RaiseError("Activity was incorrectly configured");
                     return;
-                }
+        }
                 OperationalState.CurrentActivityResponse = null;
                 await Run();
                 if (OperationalState.CurrentActivityResponse == null)
-                {
+        {
                     Success();
                 }
-            }
+        }
             catch (AuthorizationTokenExpiredOrInvalidException ex)
-            {
+        {
                 ErrorInvalidToken(ex.Message);
-            }
+        }
             catch (ActivityExecutionException ex)
-            {
+        {
                 RaiseError(ex.Message, ex.ErrorCode);
-            }
+        }
             catch (AggregateException ex)
-            {
+        {
                 RaiseError(ex.Flatten().Message);
-            }
+        }
             catch (Exception ex)
-            {
+        {
                 RaiseError(ex.Message);
             }
         }
@@ -690,16 +704,16 @@ namespace TerminalBase.BaseClasses
         }
 
         protected async Task ValidateAndFollowUp()
-        {
+                    {
             Storage.Remove<ValidationResultsCM>();
             ValidationManager.Reset();
             if (!DisableValidationOnFollowup)
-            {
+                    {
                 await Validate();
-            }
+        }
 
             if (ValidationManager.HasErrors)
-            {
+        {
                 Storage.Add(Crate.FromContent("Validation Results", ValidationManager.GetResults()));
                 return;
             }
@@ -718,23 +732,23 @@ namespace TerminalBase.BaseClasses
 
                 var configurationType = GetConfigurationRequestType();
                 switch (configurationType)
-                {
+                        {
                     case ConfigurationRequestType.Initial:
                         await Initialize();
-                        break;
+                                break;
 
                     case ConfigurationRequestType.Followup:
                         await ValidateAndFollowUp();
-                        break;
+                                break;
 
-                    default:
+                            default:
                         throw new ArgumentOutOfRangeException($"Unsupported configuration type: {configurationType}");
-                }
-            }
+        }
+                    }
             catch (Exception ex)
-            {
+                        {
                 if (IsTokenInvalidation(ex))
-                {
+                            {
                     AddAuthenticationCrate(true);
                 }
                 throw;
@@ -742,7 +756,7 @@ namespace TerminalBase.BaseClasses
         }
 
         protected virtual Task<bool> Validate()
-        {
+            {
             return Task.FromResult(true);
         }
 
@@ -758,7 +772,7 @@ namespace TerminalBase.BaseClasses
         }
 
         public async Task Deactivate(ActivityContext activityContext)
-        {
+                {
             InitializeActivity(activityContext);
             await Deactivate();
         }

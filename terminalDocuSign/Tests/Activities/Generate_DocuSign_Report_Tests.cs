@@ -17,7 +17,6 @@ using StructureMap;
 using terminalDocuSign.Actions;
 using terminalDocuSign.Activities;
 using terminalDocuSign.Infrastructure;
-using terminalDocuSign.Infrastructure.AutoMapper;
 using terminalDocuSign.Infrastructure.StructureMap;
 using terminalDocuSign.Tests.Fixtures;
 using TerminalBase.Infrastructure;
@@ -37,7 +36,6 @@ namespace terminalDocuSign.Tests.Actions
             
             TerminalBootstrapper.ConfigureTest();
             TerminalDocuSignMapBootstrapper.ConfigureDependencies(Hub.StructureMap.StructureMapBootStrapper.DependencyType.TEST);
-            TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
             
             PayloadDTO payloadDto = new PayloadDTO(Guid.Empty);
             payloadDto.CrateStorage = new CrateStorageDTO();

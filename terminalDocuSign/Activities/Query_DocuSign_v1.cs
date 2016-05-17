@@ -143,19 +143,19 @@ namespace terminalDocuSign.Activities
             var control = ConfigurationControls.FindByNameNested<DropDownList>(controlName);
             if (control != null)
             {
-                control.ListItems = DocusignQuery.Statuses
+                control.ListItems = DocuSignQuery.Statuses
                     .Select(x => new ListItem() { Key = x.Key, Value = x.Value })
                     .ToList();
             }
         }
 
-        private static DocusignQuery GetDocusignQuery(StandardConfigurationControlsCM configurationControls)
+        private static DocuSignQuery GetDocusignQuery(StandardConfigurationControlsCM configurationControls)
         {
             var actionUi = new ActivityUi();
 
             actionUi.ClonePropertiesFrom(configurationControls);
 
-            var settings = new DocusignQuery();
+            var settings = new DocuSignQuery();
 
             settings.Folder = actionUi.Folder.Value;
             settings.Status = actionUi.Status.Value;
