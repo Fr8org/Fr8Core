@@ -128,7 +128,12 @@ namespace terminaBaselTests.Tools.Activities
 
             var activityCategoryParam = new ActivityCategory[] { ActivityCategory.Receivers };
             var activityTemplates = await _baseHubITest.HttpPostAsync<ActivityCategory[], List<WebServiceActivitySetDTO>>(_baseHubITest.GetHubApiBaseUrl() + "webservices/activities", activityCategoryParam);
-            var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == "Query_DocuSign");
+            var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).FirstOrDefault(a => a.Name == "Query_DocuSign" && a.Version == "1");
+
+            if (apmActivityTemplate == null)
+            {
+                throw new Exception("Unable to find template for Query_DocuSign v1");
+            }
 
             queryDocuSignActivity.ActivityTemplate = apmActivityTemplate;
 
