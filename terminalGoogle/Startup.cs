@@ -1,14 +1,11 @@
-﻿using Data.Infrastructure.AutoMapper;
-using Hub.StructureMap;
-using Microsoft.Owin;
+﻿using Microsoft.Owin;
 using Owin;
 using TerminalBase.BaseClasses;
-using terminalGoogle;
-using TerminalBase.Infrastructure;
-using DependencyType = Hub.StructureMap.StructureMapBootStrapper.DependencyType;
 using System;
 using System.Web.Http.Dispatcher;
 using System.Collections.Generic;
+using TerminalBase.Services;
+using terminalGoogle.Actions;
 
 [assembly: OwinStartup(typeof(terminalGoogle.Startup))]
 
@@ -42,6 +39,13 @@ namespace terminalGoogle
                     typeof(Controllers.AuthenticationController),
                     typeof(Controllers.TerminalController)
                 };
+        }
+
+        protected override void RegisterActivities()
+        {
+            ActivityStore.RegisterActivity<Get_Google_Sheet_Data_v1>(Get_Google_Sheet_Data_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Monitor_Form_Responses_v1>(Monitor_Form_Responses_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Save_To_Google_Sheet_v1>(Save_To_Google_Sheet_v1.ActivityTemplateDTO);
         }
     }
 }

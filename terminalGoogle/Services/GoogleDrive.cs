@@ -12,14 +12,10 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using System.Web;
 using Google.Apis.Requests;
 using Google.Apis.Script.v1;
-using Google.Apis.Script.v1.Data;
-using Hub.Managers;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services.Authorization;
-using TerminalBase;
 using Utilities.Configuration.Azure;
 
 namespace terminalGoogle.Services

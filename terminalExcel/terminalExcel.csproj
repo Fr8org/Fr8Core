@@ -219,6 +219,7 @@
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="TerminalData.cs" />
     <Compile Include="Tests\Controllers\ActivityControllerTest.cs" />
     <Compile Include="Tests\ExtractDataTests.cs" />
     <Compile Include="Tests\Fixtures\TerminalFixtureData - ExcelData.cs" />
@@ -283,6 +284,10 @@
     <ProjectReference Include="..\Fr8Data\Fr8Data.csproj">
       <Project>{a3178d71-a2c3-45b9-8334-adcc7c313541}</Project>
       <Name>Fr8Data</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Infrastructure\Fr8Infrastructure.csproj">
+      <Project>{9F4B5C92-3535-4D4C-B1E4-37BEB1AE5C42}</Project>
+      <Name>Fr8Infrastructure</Name>
     </ProjectReference>
     <ProjectReference Include="..\terminalBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>

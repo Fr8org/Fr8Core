@@ -2,13 +2,14 @@
 using System.Net;
 using System.Threading.Tasks;
 using Google.GData.Client;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using Newtonsoft.Json.Linq;
 using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
 using Utilities.Configuration.Azure;
 using Utilities.Logging;
+using Fr8Infrastructure.Interfaces;
+using Fr8Infrastructure.Communication;
 
 namespace terminalGoogle.Services.Authorization
 {

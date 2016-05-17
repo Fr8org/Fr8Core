@@ -1,9 +1,7 @@
-﻿using System;
+﻿using Fr8Infrastructure.StructureMap;
+using System;
 using System.Web.Http;
-using Data.Infrastructure.AutoMapper;
-using Hub.StructureMap;
 using TerminalBase.Infrastructure;
-using DependencyType = Hub.StructureMap.StructureMapBootStrapper.DependencyType;
 namespace terminalGoogle
 {
     public class Global : System.Web.HttpApplication
