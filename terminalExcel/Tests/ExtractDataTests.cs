@@ -1,15 +1,13 @@
 ﻿using AutoMapper;
 using NUnit.Framework;
 using StructureMap;
-using Data.Entities;
-using Data.Interfaces;
 using Fr8Data.DataTransferObjects;
-using Hub.Interfaces;
-using Hub.Managers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using terminalExcel.Actions;
 using TerminalBase.Infrastructure;
+using TerminalBase.Interfaces;
+using Fr8Data.Managers;
 
 namespace terminalExcel.PluginExcelTests
 {

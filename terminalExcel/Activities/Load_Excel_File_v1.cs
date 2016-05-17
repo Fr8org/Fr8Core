@@ -11,7 +11,6 @@ using Fr8Data.Manifests;
 using Fr8Data.States;
 using terminalUtilities.Excel;
 using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalExcel.Actions
 {
@@ -76,81 +75,80 @@ namespace terminalExcel.Actions
 
         public Load_Excel_File_v1() : base(false)
         {
-            ActivityName = "Load Excel File";
         }
 
-        protected override async Task Initialize(CrateSignaller crateSignaller)
+        protected override async Task InitializeETA()
         {
-            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
+        protected override async Task ConfigureETA()
         {
-            CurrentActivityStorage.RemoveByLabel(ColumnHeadersCrateLabel);
+            Storage.RemoveByLabel(ColumnHeadersCrateLabel);
             //If file is not uploaded we hide file description
-            if (string.IsNullOrEmpty(ConfigurationControls.FilePicker.Value))
+            if (string.IsNullOrEmpty(ActivityUI.FilePicker.Value))
             {
-                ConfigurationControls.ClearFileDescription();
+                ActivityUI.ClearFileDescription();
                 SelectedFileDescription = null;
             }
             else
             {
                 var previousValues = SelectedFileDescription;
                 //Update column header only if new file was uploaded
-                if (previousValues == null || previousValues.Key != ConfigurationControls.FilePicker.Value)
+                if (previousValues == null || previousValues.Key != ActivityUI.FilePicker.Value)
                 {
-                    var selectedFileDescription = new FieldDTO(ConfigurationControls.FilePicker.Value, ExtractFileName(ConfigurationControls.FilePicker.Value));
+                    var selectedFileDescription = new FieldDTO(ActivityUI.FilePicker.Value, ExtractFileName(ActivityUI.FilePicker.Value));
                     var columnHeadersCrate = Crate.FromContent(
                         ColumnHeadersCrateLabel,
-                        await Task.Run(() => ExcelUtils.GetColumnHeadersData(selectedFileDescription.Key,ColumnHeadersCrateLabel)),
+                        await Task.Run(() => ExcelUtils.GetColumnHeadersData(selectedFileDescription.Key)),
                         AvailabilityType.Always
                     );
 
-                    ConfigurationControls.MarkFileAsUploaded(selectedFileDescription.Value, selectedFileDescription.Key);
-                    CurrentActivityStorage.ReplaceByLabel(columnHeadersCrate);
+                    ActivityUI.MarkFileAsUploaded(selectedFileDescription.Value, selectedFileDescription.Key);
+                    Storage.ReplaceByLabel(columnHeadersCrate);
                     SelectedFileDescription = selectedFileDescription;
 
                     //lets publish table manifest
-                    var byteArray = ExcelUtils.GetExcelFileAsByteArray(ConfigurationControls.FilePicker.Value);
-                    var tableData = ExcelUtils.GetExcelFile(byteArray, ConfigurationControls.FilePicker.Value);
-                    CurrentActivityStorage.ReplaceByLabel(Crate.FromContent(RunTimeCrateLabel, tableData, AvailabilityType.Always));
+                    var byteArray = ExcelUtils.GetExcelFileAsByteArray(ActivityUI.FilePicker.Value);
+                    var tableData = ExcelUtils.GetExcelFile(byteArray, ActivityUI.FilePicker.Value);
+                    Storage.ReplaceByLabel(Crate.FromContent(RunTimeCrateLabel, tableData, AvailabilityType.Always));
 
-                    CurrentActivityStorage.ReplaceByLabel(CreateExternalObjectHandlesCrate());
+                    Storage.ReplaceByLabel(CreateExternalObjectHandlesCrate());
                 }
             }
 
-            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
-            CurrentActivityStorage.Add(Crate.FromContent(FileCrateLabel, new StandardFileDescriptionCM() { Filename = FileCrateLabel }));
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            Storage.Add(Crate.FromContent(FileCrateLabel, new StandardFileDescriptionCM() { Filename = FileCrateLabel }));
         }
 
-        protected override async Task RunCurrentActivity()
+        protected override async Task RunETA()
         {
-            if (string.IsNullOrEmpty(ConfigurationControls.FilePicker.Value))
+            if (string.IsNullOrEmpty(ActivityUI.FilePicker.Value))
             {
-                throw new ActivityExecutionException("Excel file is not selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                RaiseError("Excel file is not selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
 
-            var byteArray = ExcelUtils.GetExcelFileAsByteArray(ConfigurationControls.FilePicker.Value);
-            var payload = ExcelUtils.GetExcelFile(byteArray, ConfigurationControls.FilePicker.Value);
+            var byteArray = ExcelUtils.GetExcelFileAsByteArray(ActivityUI.FilePicker.Value);
+            var payload = ExcelUtils.GetExcelFile(byteArray, ActivityUI.FilePicker.Value);
             var fileDescription = new StandardFileDescriptionCM
             {
                 TextRepresentation = Convert.ToBase64String(byteArray),
-                Filetype = Path.GetExtension(ConfigurationControls.FilePicker.Value),
-                Filename = Path.GetFileName(ConfigurationControls.FilePicker.Value)
+                Filetype = Path.GetExtension(ActivityUI.FilePicker.Value),
+                Filename = Path.GetFileName(ActivityUI.FilePicker.Value)
             };
-            CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, payload, AvailabilityType.RunTime));
-            CurrentPayloadStorage.Add(Crate.FromContent(FileCrateLabel, fileDescription, AvailabilityType.Always));
+            Payload.Add(Crate.FromContent(RunTimeCrateLabel, payload, AvailabilityType.RunTime));
+            Payload.Add(Crate.FromContent(FileCrateLabel, fileDescription, AvailabilityType.Always));
         }
 
         private Crate CreateExternalObjectHandlesCrate()
         {
-            var fileName = ExtractFileName(ConfigurationControls.FilePicker.Value);
+            var fileName = ExtractFileName(ActivityUI.FilePicker.Value);
 
             var externalObjectHandle = new ExternalObjectHandleDTO()
             {
                 Name = fileName,
                 Description = $"Table Data from Excel File '{fileName}'",
-                DirectUrl = ConfigurationControls.FilePicker.Value,
+                DirectUrl = ActivityUI.FilePicker.Value,
                 ManifestType = ManifestDiscovery.Default.GetManifestType<StandardTableDataCM>().Type
             };
 
@@ -167,21 +165,33 @@ namespace terminalExcel.Actions
         {
             get
             {
-                var storedValues = CurrentActivityStorage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == ConfigurationCrateLabel)?.Content;
+                var storedValues = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == ConfigurationCrateLabel)?.Content;
                 return storedValues?.Fields.First();
             }
             set
             {
                 if (value == null)
                 {
-                    CurrentActivityStorage.RemoveByLabel(ConfigurationCrateLabel);
+                    Storage.RemoveByLabel(ConfigurationCrateLabel);
                     return;
                 }
                 value.Availability = AvailabilityType.Configuration;
-                CurrentActivityStorage.ReplaceByLabel(Crate.FromContent(ConfigurationCrateLabel, new FieldDescriptionsCM(value), AvailabilityType.Configuration));
+                Storage.ReplaceByLabel(Crate.FromContent(ConfigurationCrateLabel, new FieldDescriptionsCM(value), AvailabilityType.Configuration));
             }
         }
-
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Load_Excel_File",
+            Label = "Load Excel File",
+            Version = "1",
+            Category = ActivityCategory.Receivers,
+            Terminal = TerminalData.TerminalDTO,
+            Tags = "Table Data Generator,Getter",
+            MinPaneWidth = 300,
+            WebService = TerminalData.WebServiceDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+        
         private string ExtractFileName(string uploadFilePath)
         {
             if (uploadFilePath == null)

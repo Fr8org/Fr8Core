@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Data.Entities;
 using Fr8Data.Manifests;
 using Newtonsoft.Json;
 using StructureMap;
@@ -13,7 +12,7 @@ namespace terminalGoogle.Actions
 {
     public abstract class BaseGoogleTerminalActivity<T> : EnhancedTerminalActivity<T>
         where T : StandardConfigurationControlsCM
-    {
+        {
         private readonly IGoogleIntegration _googleIntegration;
 
         protected BaseGoogleTerminalActivity() : base(true)
@@ -26,9 +25,9 @@ namespace terminalGoogle.Actions
             return GoogleAuthHelper.IsTokenInvalidation(ex);
         }
 
-        public GoogleAuthDTO GetGoogleAuthToken(AuthorizationTokenDO authTokenDO = null)
+        public GoogleAuthDTO GetGoogleAuthToken()
         {
-            return JsonConvert.DeserializeObject<GoogleAuthDTO>((authTokenDO ?? AuthorizationToken).Token);
+            return JsonConvert.DeserializeObject<GoogleAuthDTO>(AuthorizationToken.Token);
         }
 
         /// <summary>
@@ -36,14 +35,13 @@ namespace terminalGoogle.Actions
         /// </summary>
         /// <param name="authTokenDO"></param>
         /// <returns></returns>
-        public override bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
+        public override bool NeedsAuthentication()
         {
-            if (base.NeedsAuthentication(authTokenDO))
+            if (base.NeedsAuthentication())
             {
                 return true;
             }
-            var token = GetGoogleAuthToken(authTokenDO);
-
+            var token = GetGoogleAuthToken();
             // Post token to google api to check its validity
             // Variable needs for more readability.
             var result = Task.Run(async () => await _googleIntegration.IsTokenInfoValid(token)).Result;

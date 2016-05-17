@@ -11,6 +11,11 @@ namespace Fr8Infrastructure.StructureMap
 {
     public class StructureMapBootStrapper
     {
+        public enum DependencyType
+        {
+            TEST = 0,
+            LIVE = 1
+        }
         public static void LiveConfiguration(ConfigurationExpression configuration)
         {
             configuration.AddRegistry<LiveMode>();
