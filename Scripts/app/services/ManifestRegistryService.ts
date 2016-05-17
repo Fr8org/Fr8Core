@@ -8,21 +8,25 @@ module dockyard.services {
     app.factory("ManifestRegistryService", ["$resource", ($resource: ng.resource.IResourceService): IManifestRegistryService =>
         <IManifestRegistryService>$resource("/api/manifestregistry?id=:id", { id: "@id" }, {
             checkVersionAndName: {
-                method: 'GET',
+                method: 'POST',
                 params: {
                     version: "@version",
                     name: "@name"
                 },
                 isArray: false,
-                url: "/api/manifestregistry/checkVersionAndName"
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                url: "/api/manifest_registries/query"
+                //url: "/api/manifestregistry/checkVersionAndName"
             },
             getDescriptionWithLastVersion: {
-                method: 'GET',
+                method: 'POST',
                 params: {
                     name: "@name"
                 },
                 isArray: false,
-                url: "/api/manifestregistry/getDescriptionWithLastVersion"
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                url: "/api/manifest_registries/query"
+                //url: "/api/manifestregistry/getDescriptionWithLastVersion"
             }
          })
      ]);

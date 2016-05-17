@@ -44,44 +44,92 @@ namespace HubWeb.Controllers.Api
             return Ok(model);
         }
 
-        [HttpGet]
-        [ActionName("checkVersionAndName")]
-        public IHttpActionResult CheckVersionAndName(string version, string name)
+        public class NameVersion
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(systemUserAccountId);
-                var isInDB = manifestDescriptions.Any(md => md.Name == name && md.Version == version);
-                BoolValue result = new BoolValue  { Value = !isInDB };
-
-                return Ok(result);
-            }
+            public string name { get; set; }
+            public string version { get; set; }
         }
 
-        [HttpGet]
-        [ActionName("getDescriptionWithLastVersion")]
-        public IHttpActionResult GetDescriptionWithLastVersion(string name)
+        [HttpPost]
+        [ActionName("query")]
+        public IHttpActionResult Query([FromBody]  NameVersion data)
         {
+            object result = null;
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(systemUserAccountId);
-                var descriptions = manifestDescriptions.Where(md => md.Name == name).ToArray();
-
-                var result = descriptions.First();
-                string maxVersion = result.Version;
-
-                foreach (var description in descriptions)
+                if (data.version.IsNullOrEmpty())
+                // getDescriptionWithLastVersion
                 {
-                    if (description.Version.CompareTo(maxVersion) > 0)
+                    var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(systemUserAccountId);
+                    var descriptions = manifestDescriptions.Where(md => md.Name == data.name).ToArray();
+
+                    result = descriptions.First();
+                    string maxVersion = ((ManifestDescriptionCM)result).Version;
+
+                    foreach (var description in descriptions)
                     {
-                        result = description;
-                        maxVersion = description.Version;
+                        if (description.Version.CompareTo(maxVersion) > 0)
+                        {
+                            result = description;
+                            maxVersion = description.Version;
+                        }
                     }
+
+                    return Ok(result);
                 }
 
-                return Ok(result);
+                else
+                // checkVersionAndName
+                {
+                    var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(systemUserAccountId);
+                    var isInDB = manifestDescriptions.Any(md => md.Name == data.name && md.Version == data.version);
+                    result = new BoolValue { Value = !isInDB };
+
+                    return Ok(result);
+                }
+                
             }
         }
+
+        //[HttpGet]
+        //[ActionName("checkVersionAndName")]
+        //public IHttpActionResult CheckVersionAndName(string version, string name)
+        //{
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(systemUserAccountId);
+        //        var isInDB = manifestDescriptions.Any(md => md.Name == name && md.Version == version);
+        //        BoolValue result = new BoolValue  { Value = !isInDB };
+
+        //        return Ok(result);
+        //    }
+        //}
+
+        //[HttpGet]
+        //[ActionName("getDescriptionWithLastVersion")]
+        //public IHttpActionResult GetDescriptionWithLastVersion(string name)
+        //{
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(systemUserAccountId);
+        //        var descriptions = manifestDescriptions.Where(md => md.Name == name).ToArray();
+
+        //        var result = descriptions.First();
+        //        string maxVersion = result.Version;
+
+        //        foreach (var description in descriptions)
+        //        {
+        //            if (description.Version.CompareTo(maxVersion) > 0)
+        //            {
+        //                result = description;
+        //                maxVersion = description.Version;
+        //            }
+        //        }
+
+        //        return Ok(result);
+        //    }
+        //}
 
         private string NextId()
         {

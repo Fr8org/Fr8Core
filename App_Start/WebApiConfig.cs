@@ -3,6 +3,7 @@ using System.Web.Http.ExceptionHandling;
 using HubWeb.ExceptionHandling;
 using System.Web.Http.Routing;
 using System.Net.Http;
+using System.Web.Mvc;
 
 namespace HubWeb
 {
@@ -10,9 +11,9 @@ namespace HubWeb
 	{
 		public static void Register( HttpConfiguration config )
 		{
-			// Web API configuration and services
+            // Web API configuration and services
 
-			// Web API routes
+            // Web API routes            
 
             // NOTE :: API plan is changed for ProcessEvents.  
             config.Routes.MapHttpRoute(
@@ -21,6 +22,12 @@ namespace HubWeb
                 defaults: new { action = "ProcessEvents", controller = "Event" },
                 constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Post) }
                 );
+
+            config.Routes.MapHttpRoute(
+               name: "manifest_registries route",
+               routeTemplate: "api/v1/manifest_registries/{action}",
+               defaults: new { controller = "ManifestRegistry", action = RouteParameter.Optional }
+               );
 
             config.Routes.MapHttpRoute(
 				name : "DefaultApiWithAction",
@@ -50,7 +57,8 @@ namespace HubWeb
                 routeTemplate: "api/v1/{controller}/{id}",
                 defaults: new { id = RouteParameter.Optional, action = "Delete" },
                 constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Delete) }
-                );            
+                );          
+            
 
             //config.Routes.MapHttpRoute(
             //    name: "DefaultApi",
