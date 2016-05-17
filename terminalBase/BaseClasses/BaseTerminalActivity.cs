@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper;
 using StructureMap;
 using TerminalBase.Infrastructure;
 using Fr8Data.Constants;
@@ -55,6 +56,7 @@ namespace TerminalBase.BaseClasses
 
         #region SHORTCUTS
 
+        private PlanHelper _planHelper;
         private ValidationManager _validationManager;
         private ControlHelper _controlHelper;
         private UpstreamQueryManager _upstreamQueryManager;
@@ -68,6 +70,7 @@ namespace TerminalBase.BaseClasses
         protected UpstreamQueryManager UpstreamQueryManager => _upstreamQueryManager ?? (_upstreamQueryManager = new UpstreamQueryManager(ActivityContext, HubCommunicator));
         protected ControlHelper ControlHelper => _controlHelper ?? (_controlHelper = new ControlHelper(ActivityContext, HubCommunicator));
         protected ValidationManager ValidationManager => _validationManager ?? (_validationManager = new ValidationManager());
+        protected PlanHelper PlanHelper => _planHelper ?? (_planHelper = new PlanHelper(HubCommunicator, CurrentUserId));
         protected Guid ActivityId => ActivityContext.ActivityPayload.Id;
         protected ActivityPayload ActivityPayload => ActivityContext.ActivityPayload;
         protected string CurrentUserId => ActivityContext.UserId;
@@ -472,11 +475,7 @@ namespace TerminalBase.BaseClasses
 
         protected void RemoveControl<T>(string name) where T : ControlDefinitionDTO
         {
-            var control = GetControl<T>(name);
-            if (control != null)
-            {
-                ConfigurationControls.Controls.Remove(control);
-            }
+            ControlHelper.RemoveControl<T>(ConfigurationControls, name);
         }
 
         protected void AddLabelControl(string name, string label, string text)
@@ -585,6 +584,48 @@ namespace TerminalBase.BaseClasses
                 Body = errorMessage,
                 Type = ActivityResponse.ShowDocumentation.ToString()
             };
+        }
+
+        public async Task RunChildActivities(ActivityContext activityContext, ContainerExecutionContext containerExecutionContext)
+        {
+            _isRunTime = true;
+            InitializeActivity(activityContext, containerExecutionContext);
+            if (IsAuthenticationRequired && NeedsAuthentication())
+            {
+                RaiseNeedsAuthenticationError();
+                return;
+            }
+
+            try
+            {
+                if (!await Validate())
+                {
+                    RaiseError("Activity was incorrectly configured");
+                    return;
+                }
+                OperationalState.CurrentActivityResponse = null;
+                await RunChildActivities();
+                if (OperationalState.CurrentActivityResponse == null)
+                {
+                    Success();
+                }
+            }
+            catch (AuthorizationTokenExpiredOrInvalidException ex)
+            {
+                ErrorInvalidToken(ex.Message);
+            }
+            catch (ActivityExecutionException ex)
+            {
+                RaiseError(ex.Message, ex.ErrorCode);
+            }
+            catch (AggregateException ex)
+            {
+                RaiseError(ex.Flatten().Message);
+            }
+            catch (Exception ex)
+            {
+                RaiseError(ex.Message);
+            }
         }
 
         public async Task Run(ActivityContext activityContext, ContainerExecutionContext containerExecutionContext)
@@ -744,6 +785,8 @@ namespace TerminalBase.BaseClasses
 
             return controlsCrate;
         }
+
+
 
     }
 }

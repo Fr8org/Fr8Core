@@ -5,10 +5,12 @@ using System.Threading.Tasks;
 using Data.Entities;
 using DocuSign.eSign.Api;
 using DocuSign.eSign.Model;
+using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using Fr8Data.States;
 using Newtonsoft.Json;
 using terminalDocuSign.Services.New_Api;
 
@@ -16,6 +18,20 @@ namespace terminalDocuSign.Actions
 {
     public class Process_Personal_Report_v1 : Send_DocuSign_Envelope_v1
     {
+
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Version = "1",
+            Name = "Process_Personal_Report",
+            Label = "Process Personal Report",
+            Category = ActivityCategory.Forwarders,
+            NeedsAuthentication = true,
+            MinPaneWidth = 380,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         string Tab1 = "{      \"height\": 11,      \"validationPattern\": \"\",      \"validationMessage\": \"\",      \"shared\": \"false\",      \"requireInitialOnSharedChange\": \"false\",      \"requireAll\": \"false\",      \"name\": \"Text\",      \"value\": \"\",      \"originalValue\": \"\",      \"width\": 120,      \"required\": \"false\",      \"locked\": \"false\",      \"concealValueOnDocument\": \"false\",      \"disableAutoSize\": \"true\",      \"tabLabel\": \"Data Field 3\",      \"documentId\": \"1\",      \"recipientId\": \"1\",      \"pageNumber\": \"1\",      \"xPosition\": \"75\",      \"yPosition\": \"223\",      \"tabId\": \"051c659c-f109-4ed9-9bcc-8573323f3cd4\",      \"templateLocked\": \"false\",      \"templateRequired\": \"false\"    }";
         string checkBox1 = "{      \"name\": \"Checkbox\",      \"tabLabel\": \"Check Box 5\",      \"selected\": \"false\",      \"shared\": \"false\",      \"requireInitialOnSharedChange\": \"false\",      \"required\": \"false\",      \"locked\": \"false\",      \"documentId\": \"1\",      \"recipientId\": \"1\",      \"pageNumber\": \"1\",      \"xPosition\": \"286\",      \"yPosition\": \"223\",      \"tabId\": \"c928c7d4-9ec9-4414-a0a0-9c1ad01eb2be\",      \"templateLocked\": \"false\",      \"templateRequired\": \"false\"    }";
         string Tab2 = " {      \"height\": 11,      \"validationPattern\": \"\",      \"validationMessage\": \"\",      \"shared\": \"false\",      \"requireInitialOnSharedChange\": \"false\",      \"requireAll\": \"false\",      \"name\": \"Text\",      \"value\": \"\",      \"width\": 42,      \"required\": \"false\",      \"locked\": \"false\",      \"concealValueOnDocument\": \"false\",      \"disableAutoSize\": \"false\",      \"tabLabel\": \"Data Field 6\",      \"documentId\": \"1\",      \"recipientId\": \"1\",      \"pageNumber\": \"1\",      \"xPosition\": \"416\",      \"yPosition\": \"223\",      \"tabId\": \"ffcf95e1-dd25-46b8-95b4-567eb7d19ba9\",      \"templateLocked\": \"false\",      \"templateRequired\": \"false\"    }";
@@ -23,25 +39,24 @@ namespace terminalDocuSign.Actions
 
         protected override string ActivityUserFriendlyName => "Process Personal Report";
 
-        protected override PayloadDTO SendAnEnvelope(ICrateStorage curStorage, DocuSignApiConfiguration loginInfo, PayloadDTO payloadCrates,
-            List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId)
+        protected override void SendAnEnvelope(DocuSignApiConfiguration loginInfo, List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId)
         {
             try
             {
-                var mttb = FindControl(curStorage, "mltb");
+                var mttb = GetControl<TextBoxBig>("mltb");
                 string[] names = mttb.Value.Split(new string[] { "\n", ",", "\r" }, StringSplitOptions.RemoveEmptyEntries);
-                SendPersonalEnvelope(curStorage, loginInfo, payloadCrates, rolesList, fieldList, curTemplateId, names);
+                SendPersonalEnvelope(loginInfo, rolesList, fieldList, curTemplateId, names);
             }
             catch (Exception ex)
             {
-                return Error(payloadCrates, $"Couldn't send an envelope. {ex}");
+                RaiseError($"Couldn't send an envelope. {ex}");
+                return;
             }
-            return Success(payloadCrates);
+            Success();
         }
 
-        protected async override Task<Crate> CreateDocusignTemplateConfigurationControls(ActivityDO curActivity)
+        protected async override Task<Crate> CreateDocusignTemplateConfigurationControls()
         {
-
             var multiLineTB = new TextBoxBig()
             {
                 Label = "Volunteer Names",
@@ -74,7 +89,7 @@ namespace terminalDocuSign.Actions
         }
 
 
-        private void SendPersonalEnvelope(ICrateStorage curStorage, DocuSignApiConfiguration loginInfo, PayloadDTO payloadCrates,
+        private void SendPersonalEnvelope(DocuSignApiConfiguration loginInfo,
             List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId, string[] names)
         {
 

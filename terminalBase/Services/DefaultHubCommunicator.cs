@@ -445,14 +445,15 @@ namespace TerminalBase.Services
             return await _restfulServiceClient.PostAsync<List<CrateDTO>, List<CrateDTO>>(uri, cratesForMTRequest, null, await GetHMACHeader(uri, currentFr8UserId, cratesForMTRequest));
         }
 
-        public async Task<AuthorizationTokenDTO> GetAuthToken(string externalAccountId, string curFr8UserId)
+        public async Task<AuthorizationToken> GetAuthToken(string externalAccountId, string curFr8UserId)
         {
 
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                     + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion")
                     + string.Format("/authentication/GetAuthToken?curFr8UserId={0}&externalAccountId={1}&terminalId={2}", curFr8UserId, externalAccountId, TerminalId);
             var uri = new Uri(url);
-            return await _restfulServiceClient.GetAsync<AuthorizationTokenDTO>(uri, null, await GetHMACHeader(uri, curFr8UserId));
+            var authTokenDTO = await _restfulServiceClient.GetAsync<AuthorizationTokenDTO>(uri, null, await GetHMACHeader(uri, curFr8UserId));
+            return Mapper.Map<AuthorizationToken>(authTokenDTO);
         }
 
         public async Task ScheduleEvent(string externalAccountId, string curFr8UserId, string minutes)
