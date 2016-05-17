@@ -11,6 +11,7 @@ using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Managers;
 using Newtonsoft.Json;
+using terminalDocuSign.Activities;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
 using TerminalBase.Infrastructure;

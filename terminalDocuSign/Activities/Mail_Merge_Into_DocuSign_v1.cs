@@ -11,6 +11,7 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Hub.Managers;
+using terminalDocuSign.Activities;
 using TerminalBase.Infrastructure;
 using TerminalBase.Infrastructure.Behaviors;
 

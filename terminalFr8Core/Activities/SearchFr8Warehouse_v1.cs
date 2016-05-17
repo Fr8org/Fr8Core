@@ -118,10 +118,10 @@ namespace terminalFr8Core.Activities
         /// SolutionPageDTO for general information and 
         /// ActivityResponseDTO for specific Help on minicon
         /// </summary>
-        /// <param name="activityDO"></param>
+        /// <param name="activityPayload"></param>
         /// <param name="curDocumentation"></param>
         /// <returns></returns>
-        public dynamic Documentation(ActivityDO activityDO, string curDocumentation)
+        public dynamic Documentation(ActivityPayload activityPayload, string curDocumentation)
         {
             if (curDocumentation.Contains("MainPage"))
             {

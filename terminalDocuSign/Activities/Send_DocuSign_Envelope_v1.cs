@@ -12,6 +12,7 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Managers;
+using terminalDocuSign.Activities;
 using terminalDocuSign.DataTransferObjects;
 using TerminalBase.Infrastructure;
 using TerminalBase.Infrastructure.Behaviors;

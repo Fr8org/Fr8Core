@@ -10,6 +10,7 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Hub.Managers;
 using Newtonsoft.Json;
+using terminalDocuSign.Activities;
 using terminalDocuSign.DataTransferObjects;
 using TerminalBase.Infrastructure;
 

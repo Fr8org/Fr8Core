@@ -8,14 +8,27 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using Hub.Managers;
 using Newtonsoft.Json;
-using TerminalBase.Infrastructure;
 
-namespace terminalDocuSign.Actions
+namespace terminalDocuSign.Activities
 {
     public class Extract_Data_From_Envelopes_v1 : BaseDocuSignActivity
     {
+
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Extract_Data_From_Envelopes",
+            Label = "Extract Data From Envelopes",
+            Version = "1",
+            Category = ActivityCategory.Solution,
+            MinPaneWidth = 380,
+            NeedsAuthentication = true,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
+
         private const string SolutionName = "Extract Data From Envelopes";
         private const double SolutionVersion = 1.0;
         private const string TerminalName = "DocuSign";
@@ -52,46 +65,37 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
-        }
-
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
-        {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            return ConfigurationRequestType.Followup;
-        }
-
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivtyDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task InitializeDS()
         {
             var configurationCrate = PackControls(new ActivityUi());
             await FillFinalActionsListSource(configurationCrate, "FinalActionsList");
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivtyDO))
-            {
-                crateStorage.Clear();
-                crateStorage.Add(configurationCrate);              
-            }
-            return curActivtyDO;
-        }      
+            Storage.Clear();
+            Storage.Add(configurationCrate);              
+        }
 
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected async Task<ActivityTemplateDTO> GetActivityTemplateByName(string activityTemplateName)
+        {
+            var allActivityTemplates = _activityTemplateCache ?? (_activityTemplateCache = await HubCommunicator.GetActivityTemplates(CurrentUserId));
+            var foundActivity = allActivityTemplates.FirstOrDefault(a => a.Name == activityTemplateName);
+
+            if (foundActivity == null)
+            {
+                throw new Exception($"ActivityTemplate was not found. ActivitiyTemplateName: {activityTemplateName}");
+            }
+
+            return foundActivity;
+        }
+
+        protected override async Task FollowUpDS()
         {
             var actionUi = new ActivityUi();
-
-            actionUi.ClonePropertiesFrom(CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().First());
+            actionUi.ClonePropertiesFrom(ConfigurationControls);
 
             //don't add child actions until a selection is made
             if (string.IsNullOrEmpty(actionUi.FinalActionsList.Value))
             {
-                return curActivityDO;
+                return;
             }
-
-            curActivityDO.ChildNodes = new List<PlanNodeDO>();
 
             // Always use default template for solution
             const string firstTemplateName = "Monitor_DocuSign_Envelope_Activity";
@@ -107,17 +111,18 @@ namespace terminalDocuSign.Actions
                 secondActivityTemplate = await GetActivityTemplateByName(actionUi.FinalActionsList.Value);
             }
 
-            var firstActivity = await AddAndConfigureChildActivity(curActivityDO, monitorDocusignTemplate);
-            var secondActivity = await AddAndConfigureChildActivity(curActivityDO, secondActivityTemplate, "Final activity");
+            var firstActivity = await AddAndConfigureChildActivity(ActivityId, monitorDocusignTemplate);
+            var secondActivity = await AddAndConfigureChildActivity(ActivityId, secondActivityTemplate, "Final activity");
 
-            return curActivityDO;
+            return;
         }
 
         protected override string ActivityUserFriendlyName => SolutionName;
 
-        protected internal override async Task<PayloadDTO> RunInternal(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        protected override async Task RunDS()
         {
-            return Success(await GetPayload(activityDO, containerId));
+            Success();
+            await Task.Yield();
         }
     
         /// <summary>
@@ -165,9 +170,11 @@ namespace terminalDocuSign.Actions
 
         private async Task<List<ListItem>> GetFinalActionListItems()
         {
-            var templates = await HubCommunicator.GetActivityTemplates(ActivityCategory.Forwarders, CurrentFr8UserId);
+            var templates = await HubCommunicator.GetActivityTemplates(ActivityCategory.Forwarders, CurrentUserId);
             return templates.Select(x => new ListItem() { Key = x.Label, Value = x.Id.ToString() }).ToList();
         }
         #endregion
+
+        
     }
 }
