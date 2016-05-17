@@ -235,6 +235,7 @@ namespace terminalUtilities.Excel
             }
         }
 
+
         public static StandardTableDataCM GetExcelFile(byte[] fileAsByteArray, string selectedFilePath, bool isFirstRowAsColumnNames = true, string sheetName = null)
         {
             var ext = Path.GetExtension(selectedFilePath);
@@ -300,7 +301,7 @@ namespace terminalUtilities.Excel
             return listOfRows;
         }
 
-        public static FieldDescriptionsCM GetColumnHeadersData(string uploadFilePath,string label = null)
+        public static FieldDescriptionsCM GetColumnHeadersData(string uploadFilePath, string label = null)
         {
             var columnHeaders = GetColumnHeaders(uploadFilePath);
             return new FieldDescriptionsCM(columnHeaders.Select(col => new FieldDTO { Key = col, Value = col, Availability = AvailabilityType.RunTime, SourceCrateLabel = label }));

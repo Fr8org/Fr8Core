@@ -53,7 +53,7 @@ namespace terminalDocuSignTests.Activities
                     crateStorage.Add(Crate.FromContent("Validation Results", currentValidationResults));
                 }
 
-                var validationManager = new ValidationManager(currentValidationResults);
+                var validationManager = new ValidationManager(currentValidationResults, null);
 
                 await activity.ValidateActivity(activityDo, crateStorage, validationManager);
 
