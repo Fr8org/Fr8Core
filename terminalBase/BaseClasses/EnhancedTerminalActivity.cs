@@ -8,26 +8,29 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.DataTransferObjects.Helpers;
 using Fr8Data.Helpers;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using TerminalBase.Errors;
+using TerminalBase.Infrastructure;
 using TerminalBase.Services;
 
 namespace TerminalBase.BaseClasses
 {
-    public abstract class EnhancedTerminalActivity<T> : BaseTerminalActivity
+    public abstract class EnhancedTerminalActivity<T> : StatefullTerminalActivity
        where T : StandardConfigurationControlsCM
     {
 
         /**********************************************************************************/
 
         protected T ActivityUI { get; private set; }
-        protected UiBuilder UiBuilder { get; private set; }
+        protected UiBuilder UiBuilder { get; }
 
         /**********************************************************************************/
         // Functions
         /**********************************************************************************/
-        protected EnhancedTerminalActivity(bool isAuthenticationRequired) : base(isAuthenticationRequired)
+        protected EnhancedTerminalActivity(bool isAuthenticationRequired, IHubCommunicator hubCommunicator)
+            : base(hubCommunicator)
         {
             UiBuilder = new UiBuilder();
         }
