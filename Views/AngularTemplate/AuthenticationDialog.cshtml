@@ -22,16 +22,17 @@
                             <span>{{authToken.externalAccountName}}</span>
                         </label>
                     </div>
-                    <a class="auth-link-account" ng-click="linkAccount(terminal)"><i class="fa fa-plus" aria-hidden="true"></i> Add Account</a>
-                </div>
-                <div class="frm-group">
-                    <label>
-                        <input type="checkbox" ng-model="terminal.isMain" />
-                        <span>Use for all Activities</span>
-                    </label>
                 </div>
             </div>
-
+            
+            <a class="auth-link-account" ng-click="linkAccount(terminal)"><i class="fa fa-plus" aria-hidden="true"></i> Add Account</a>
+            
+            <div ng-if="terminal.authTokens.length" class="frm-group">
+                <label>
+                    <input type="checkbox" ng-model="terminal.isMain" />
+                    <span>Use for all Activities</span>
+                </label>
+            </div>
         </div>
     </div>
 </div>
