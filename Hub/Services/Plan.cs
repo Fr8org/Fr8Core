@@ -279,14 +279,17 @@ namespace Hub.Services
                             ReportAuthError(plan.Fr8Account, (InvalidTokenRuntimeException)e);
                         }
                     }
+
+                    EventManager.PlanActivationFailed(plan, "Unable to activate plan");
                     throw;
                 }
                 catch (InvalidTokenRuntimeException ex)
                 {
                     ReportAuthError(plan.Fr8Account, (InvalidTokenRuntimeException)ex);
+                    EventManager.PlanActivationFailed(plan, "Unable to activate plan");
                     throw;
                 }
-
+                
                 foreach (var resultActivate in activitiesTask.Select(x => x.Result))
                 {
                     var errors = new ValidationErrorsDTO(ExtractValidationErrors(resultActivate));
@@ -529,7 +532,7 @@ namespace Hub.Services
         private void ReportAuthError(Fr8AccountDO user, InvalidTokenRuntimeException ex)
         {
             string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with " +
-                    $"{ex?.FailedActivityDTO.ActivityTemplate.WebService.Name}. Plan execution has stopped. ";
+                    $"{ex?.FailedActivityDTO.ActivityTemplate.WebService.Name}. ";
 
             errorMessage += $"Please re-authorize Fr8 to connect to {ex?.FailedActivityDTO.ActivityTemplate.WebService.Name} " +
                     $"by clicking on the Settings dots in the upper " +
