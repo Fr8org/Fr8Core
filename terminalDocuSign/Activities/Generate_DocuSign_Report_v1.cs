@@ -290,48 +290,10 @@ namespace terminalDocuSign.Actions
 
             return result;
         }
-
-        private void SearchDocusignInRealTime(DocuSignAuthTokenDTO docuSignAuthToken, List<FilterConditionDTO> criteria, StandardPayloadDataCM searchResult, HashSet<string> existingEnvelopes)
-        {
-            //var docusignQuery = BuildDocusignQuery(docuSignAuthToken, criteria);
-           // var envelopes = _docuSignManager.SearchDocusign(docuSignAuthToken, docusignQuery);
-
-            //foreach (var envelope in envelopes)
-            //{
-            //    if (string.IsNullOrWhiteSpace(envelope.EnvelopeId))
-            //    {
-            //        continue;
-            //    }
-
-            //    searchResult.PayloadObjects.Add(CreatePayloadObjectFromDocusignFolderItem(envelope));
-
-            //    existingEnvelopes.Add(envelope.EnvelopeId);
-            //}
-        }
-
-        // FolderItem is something that was put into the Docusing filder and it is not strictly envelope in terms of Docusign API. 
-        // In current case we use it as envelope
-        private static PayloadObjectDTO CreatePayloadObjectFromDocusignFolderItem(FolderItem envelope)
-        {
-            var row = new PayloadObjectDTO();
-
-            row.PayloadObject.Add(new FieldDTO("EnvelopeId", envelope.EnvelopeId));
-            row.PayloadObject.Add(new FieldDTO("Name", envelope.Name));
-            row.PayloadObject.Add(new FieldDTO("Subject", envelope.Subject));
-            row.PayloadObject.Add(new FieldDTO("Status", envelope.Status));
-            row.PayloadObject.Add(new FieldDTO("OwnerName", envelope.OwnerName));
-            row.PayloadObject.Add(new FieldDTO("SenderName", envelope.SenderName));
-            row.PayloadObject.Add(new FieldDTO("SenderEmail", envelope.SenderEmail));
-            row.PayloadObject.Add(new FieldDTO("Shared", envelope.Shared));
-            row.PayloadObject.Add(new FieldDTO("CompletedDate", envelope.CompletedDateTime.ToString(CultureInfo.InvariantCulture)));
-            row.PayloadObject.Add(new FieldDTO("CreatedDate", envelope.CreatedDateTime.ToString(CultureInfo.InvariantCulture)));
-
-            return row;
-        }
         
-        public DocusignQuery BuildDocusignQuery(DocuSignAuthTokenDTO authToken, List<FilterConditionDTO> conditions)
+        public DocuSignQuery BuildDocusignQuery(DocuSignAuthTokenDTO authToken, List<FilterConditionDTO> conditions)
         {
-            var query = new DocusignQuery();
+            var query = new DocuSignQuery();
             List<DocusignFolderInfo> folders = null;
 
             //Currently we can support only equality operation
