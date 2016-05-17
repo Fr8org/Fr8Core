@@ -122,6 +122,7 @@ namespace terminalGoogle.Actions
         protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             List<Crate> crates = new List<Crate>();
+            Crate fieldsCrate = null;
             var googleAuth = GetGoogleAuthToken();
             var spreadsheets = await _googleApi.GetSpreadsheets(googleAuth);
             ConfigurationControls.SpreadsheetList.ListItems = spreadsheets
@@ -181,7 +182,11 @@ namespace terminalGoogle.Actions
                 var hasHeaderRow = TryAddHeaderRow(table);
                 CurrentActivityStorage.ReplaceByLabel(Crate.FromContent(RunTimeCrateLabel,new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
 
-                var fieldsCrate = TabularUtilities.PrepareFieldsForOneRowTable(hasHeaderRow, false, table, columnHeaders.Select(ch => ch.Key).ToList());
+                if (table?.Count() > 0)
+                {
+                    fieldsCrate = TabularUtilities.PrepareFieldsForOneRowTable(hasHeaderRow, false, table, columnHeaders.Select(ch => ch.Key).ToList());
+                }
+
                 if (fieldsCrate != null)
                 {
                     CurrentActivityStorage.ReplaceByLabel(fieldsCrate);
