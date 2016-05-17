@@ -133,8 +133,9 @@ namespace terminalFr8Core.Actions
             if(configControls.Controls[0].Value != null)
             {
                 curActivityDO.Label = configControls.Controls[0].Value;
-                return curActivityDO;
+                // return curActivityDO;
             }
+
             var controlContainer = configControls.FindByName<MetaControlContainer>("control_container");
             if (!controlContainer.MetaDescriptions.Any())
             {
