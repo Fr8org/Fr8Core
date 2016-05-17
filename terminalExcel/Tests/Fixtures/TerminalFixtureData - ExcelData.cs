@@ -8,7 +8,7 @@ namespace terminalExcel.Fixtures
 {
     public partial class TerminalFixtureData
     {
-        public static byte[] TestExcelData()
+       /* public static byte[] TestExcelData()
         {
             var cloudFileManager = ObjectFactory.GetInstance<CloudFileManager>();
             var blobUrl = "https://yardstore1.blob.core.windows.net/default-container-dev/SampleFile1.xlsx";
@@ -20,7 +20,7 @@ namespace terminalExcel.Fixtures
             finally
             {
             }
-        }
+        }*/
 
         public static string[] TestColumnHeaders()
         {

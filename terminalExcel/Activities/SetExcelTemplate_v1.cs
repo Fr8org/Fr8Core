@@ -10,10 +10,8 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Newtonsoft.Json;
-using StructureMap;
 using terminalUtilities.Excel;
 using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 using Utilities;
 
 namespace terminalExcel.Actions
@@ -84,30 +82,35 @@ namespace terminalExcel.Actions
         /// <summary>
         /// Action processing infrastructure.
         /// </summary>
-        public async Task Run()
+        public override async Task Run()
         {
             Success();
         }
 
-        private StandardTableDataCM CreateStandardTableDataCM(ICrateStorage storage)
+        private StandardTableDataCM CreateStandardTableDataCM()
         {
-            var uploadFilePath = GetUploadFilePath(storage);
+            var uploadFilePath = GetUploadFilePath();
             string extension = Path.GetExtension(uploadFilePath);
+            /*
             FileDTO curFileDO = new FileDTO()
             {
                 CloudStorageUrl = uploadFilePath,
             };
-
             IFile file = ObjectFactory.GetInstance<IFile>();
             // Read file from repository
-            var fileAsByteArray = file.Retrieve(curFileDO);
+            var fileAsByteArray = file.Retrieve(curFileDO);*/
 
-            return CreateStandardTableCMFromExcelFile(fileAsByteArray, extension);
+            return CreateStandardTableCMFromExcelFile(new byte[] {}/*fileAsByteArray*/, extension);
         }
 
-        private async Task<StandardTableDataCM> GetUpstreamTableData(ActivityDO activityDO)
+        protected async Task<List<Crate<StandardFileDescriptionCM>>> GetUpstreamFileHandleCrates()
         {
-            var upstreamFileHandleCrates = await GetUpstreamFileHandleCrates(activityDO);
+            return await HubCommunicator.GetCratesByDirection<StandardFileDescriptionCM>(ActivityId, CrateDirection.Upstream, CurrentUserId);
+        }
+
+        private async Task<StandardTableDataCM> GetUpstreamTableData()
+        {
+            var upstreamFileHandleCrates = await GetUpstreamFileHandleCrates();
 
             //if no "Standard File Handle" crate found then return
             if (!upstreamFileHandleCrates.Any())
@@ -130,69 +133,46 @@ namespace terminalExcel.Actions
         /// <summary>
         /// Looks for upstream and downstream Creates.
         /// </summary>
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override async Task Initialize()
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.Clear();
-                crateStorage.Add(PackControls(new ActivityUi()));
-                crateStorage.Add(GetAvailableRunTimeTableCrate(DataTableLabel));
-            }
-
-            return curActivityDO;
+            Storage.Clear();
+            Storage.Add(PackControls(new ActivityUi()));
+            Storage.Add(GetAvailableRunTimeTableCrate(DataTableLabel));
         }
 
-        /// <summary>
-        /// If there's a value in select_file field of the crate, then it is a followup call.
-        /// </summary>
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
-        {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            return ConfigurationRequestType.Followup;
-        }
+        
 
         //if the user provides a file name, this action attempts to load the excel file and extracts the column headers from the first sheet in the file.
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override async Task FollowUp()
         {
-            var storage = CrateManager.GetStorage(curActivityDO);
-            var uploadFilePath = GetUploadFilePath(storage);
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            var uploadFilePath = GetUploadFilePath();
+            string fileName = null;
+            if (!string.IsNullOrEmpty(uploadFilePath))
             {
-                string fileName = null;
-                if (!string.IsNullOrEmpty(uploadFilePath))
-                {
-                    fileName = ExtractFileName(uploadFilePath);
-                }
-                else
-                {
-                    var labelControl = storage.CrateContentsOfType<StandardConfigurationControlsCM>()
-                        .First()
-                        .Controls
-                        .FirstOrDefault(x => x.Value != null && x.Value.StartsWith("Uploaded file: "));
+                fileName = ExtractFileName(uploadFilePath);
+            }
+            else
+            {
+                var labelControl = Storage.CrateContentsOfType<StandardConfigurationControlsCM>()
+                    .First()
+                    .Controls
+                    .FirstOrDefault(x => x.Value != null && x.Value.StartsWith("Uploaded file: "));
 
-                    if (labelControl != null)
-                    {
-                        fileName = labelControl.Value.Substring("Uploaded file: ".Length);
-                    }
-                }
-
-                crateStorage.Remove<StandardConfigurationControlsCM>();
-                crateStorage.Add(PackControls(new ActivityUi(fileName, uploadFilePath)));
-
-                if (!string.IsNullOrEmpty(uploadFilePath))
+                if (labelControl != null)
                 {
-                    var generatedTable = CreateStandardTableDataCM(storage);
-                    var tableCrate = Crate.FromContent(DataTableLabel, generatedTable, AvailabilityType.Always);
-                    crateStorage.Add(tableCrate);
+                    fileName = labelControl.Value.Substring("Uploaded file: ".Length);
                 }
             }
 
-            return curActivityDO;
+            Storage.Remove<StandardConfigurationControlsCM>();
+            Storage.Add(PackControls(new ActivityUi(fileName, uploadFilePath)));
+
+            if (!string.IsNullOrEmpty(uploadFilePath))
+            {
+                var generatedTable = CreateStandardTableDataCM();
+                var tableCrate = Crate.FromContent(DataTableLabel, generatedTable, AvailabilityType.Always);
+                Storage.Add(tableCrate);
+            }
         }
 
         private Crate GetAvailableRunTimeTableCrate(string descriptionLabel)
@@ -244,10 +224,10 @@ namespace terminalExcel.Actions
             return null;
         }
 
-        private string GetUploadFilePath(ICrateStorage storage)
+        private string GetUploadFilePath()
         {
 
-            var filePathsFromUserSelection = storage.CrateContentsOfType<StandardConfigurationControlsCM>()
+            var filePathsFromUserSelection = Storage.CrateContentsOfType<StandardConfigurationControlsCM>()
                 .Select(x =>
                 {
                     var actionUi = new ActivityUi();
@@ -258,7 +238,7 @@ namespace terminalExcel.Actions
 
             if (filePathsFromUserSelection.Length > 1)
             {
-                throw new AmbiguityException();
+                throw new Exception("AmbiguityException");
             }
 
             string uploadFilePath = null;
@@ -268,6 +248,10 @@ namespace terminalExcel.Actions
             }
 
             return uploadFilePath;
+        }
+
+        public SetExcelTemplate_v1() : base(false)
+        {
         }
     }
 }
