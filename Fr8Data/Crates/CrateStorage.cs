@@ -69,7 +69,15 @@ namespace Fr8Data.Crates
         {
             _crates.Add(crate.Id, crate);
         }
-        
+
+        public void Add(params Crate[] crates)
+        {
+            foreach (var crate in crates)
+            {
+                _crates.Add(crate.Id, crate);
+            }
+        }
+
         /**********************************************************************************/
         /// <summary>
         /// Removes all crates from storage

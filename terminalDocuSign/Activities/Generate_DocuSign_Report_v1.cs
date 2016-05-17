@@ -21,12 +21,27 @@ using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using TerminalBase.Models;
 using Utilities;
 
-namespace terminalDocuSign.Actions
+namespace terminalDocuSign.Activities
 {
     public class Generate_DocuSign_Report_v1 : BaseTerminalActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Version = "1",
+            Name = "Generate_DocuSign_Report",
+            Label = "Generate DocuSign Report",
+            Category = ActivityCategory.Receivers,
+            NeedsAuthentication = true,
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
+
         private const string QueryCrateLabel = "DocuSign Query";
         private const string SolutionName = "Generate DocuSign Report";
         private const double SolutionVersion = 1.0;
@@ -50,13 +65,13 @@ namespace terminalDocuSign.Actions
             public readonly string FieldType;
             public readonly string DocusignQueryName;
             public readonly string MtDbPropertyName;
-            public readonly Func<string, AuthorizationTokenDO, ControlDefinitionDTO> ControlFactory;
+            public readonly Func<string, AuthorizationToken, ControlDefinitionDTO> ControlFactory;
 
             public FieldBackedRoutingInfo(
                 string fieldType,
                 string docusignQueryName,
                 string mtDbPropertyName,
-                Func<string, AuthorizationTokenDO, ControlDefinitionDTO> controlFactory)
+                Func<string, AuthorizationToken, ControlDefinitionDTO> controlFactory)
             {
                 FieldType = fieldType;
                 DocusignQueryName = docusignQueryName;
@@ -136,7 +151,7 @@ namespace terminalDocuSign.Actions
         };
         
         private readonly IPlan _plan;
-        public Generate_DocuSign_Report_v1()
+        public Generate_DocuSign_Report_v1() : base(true)
         {
             _plan = ObjectFactory.GetInstance<IPlan>();
             _docuSignManager = ObjectFactory.GetInstance<IDocuSignManager>();
@@ -178,31 +193,21 @@ namespace terminalDocuSign.Actions
             };
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public override async Task Run()
         {
-            var payload = await GetPayload(curActivityDO, containerId);
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(payload);
-            }
-
-            return Success(payload);
+            Success();
         }
 
-        public override async Task<PayloadDTO> ExecuteChildActivities(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public override async Task RunChildActivities()
         {
-            var payload = await GetPayload(curActivityDO, containerId);
-
-            var configurationControls = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
-
-            if (configurationControls == null)
+            if (ConfigurationControls == null)
             {
-                return Error(payload, "Action was not configured correctly");
+                RaiseError("Action was not configured correctly");
             }
 
             var actionUi = new ActivityUi();
 
-            actionUi.ClonePropertiesFrom(configurationControls);
+            actionUi.ClonePropertiesFrom(ConfigurationControls);
 
             // Real-time search.
             var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(actionUi.QueryBuilder.Value);
@@ -214,20 +219,16 @@ namespace terminalDocuSign.Actions
             // SearchDocusignInRealTime(docuSignAuthToken, criteria, searchResult, existingEnvelopes);
 
             // Merge data from QueryMT action.
-            var payloadCrateStorage = CrateManager.FromDto(payload.CrateStorage);
-            var queryMTResult = payloadCrateStorage
-                .CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "Found MT Objects")
+            var queryMTResult = Payload.CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "Found MT Objects")
                 .FirstOrDefault();
 
             MergeMtQuery(queryMTResult, existingEnvelopes, searchResult);
 
             // Update report crate.
-            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
-            {
-                crateStorage.Add(Fr8Data.Crates.Crate.FromContent("Sql Query Result", searchResult));
-            }
+            Payload.Add(Crate.FromContent("Sql Query Result", searchResult));
 
-            return ExecuteClientActivity(payload, "ShowTableReport");
+            ExecuteClientActivity("ShowTableReport");
+
         }
 
         private static void MergeMtQuery(
@@ -411,23 +412,11 @@ namespace terminalDocuSign.Actions
             return query;
         }
 
-        protected override async Task<ActivityDO> InitialConfigurationResponse(
-            ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override async Task Initialize()
         {
-            if (CheckAuthentication(curActivityDO, authTokenDO))
-            {
-                return curActivityDO;
-            }
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.Add(PackControls(new ActivityUi()));
-                crateStorage.AddRange(PackDesignTimeData(authTokenDO));
-            }
-
-            PlanFullDTO plan = await UpdatePlanCategory(curActivityDO.Id, "report");
-
-            return await Task.FromResult(curActivityDO);
+            Storage.Add(PackControls(new ActivityUi()));
+            Storage.AddRange(PackDesignTimeData());
+            PlanFullDTO plan = await PlanHelper.UpdatePlanCategory(ActivityId, "report");
         }
 
         //private int ExtractDocuSignResultSize(
@@ -440,149 +429,125 @@ namespace terminalDocuSign.Actions
         //    return count;
         //}
 
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
+        public override async Task FollowUp()
         {
-            var activityTemplates = (await HubCommunicator.GetActivityTemplates(null))
-                .Select(x => Mapper.Map<ActivityTemplateDO>(x))
-                .ToList();
+            var activityTemplates = (await HubCommunicator.GetActivityTemplates(null)).ToList();
 
             try
             {
-
                 var continueClicked = false;
+                Storage.Remove<StandardQueryCM>();
+                await UpdatePlanName();
+                var queryCrate = ExtractQueryCrate(Storage);
+                Storage.Add(queryCrate);
 
-                using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
+                var continueButton = GetControl<Button>("Continue");
+                if (continueButton != null)
                 {
-                    crateStorage.Remove<StandardQueryCM>();
-                    RemoveControl(crateStorage, "CannotProceedMessage");
+                    continueClicked = continueButton.Clicked;
 
-                    await UpdatePlanName(activityDO);
+                    if (continueButton.Clicked)
+                    {
+                        continueButton.Clicked = false;
+                    }
+                }
 
-                    var queryCrate = ExtractQueryCrate(crateStorage);
-                    crateStorage.Add(queryCrate);
+                // Commented out by yakov.gnusin in scope of FR-2462.
+                // if (continueClicked)
+                // {
+                //     var docuSignAuthToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+                //     var criteria = queryCrate.Content.Queries.First().Criteria;
+                //     var resultSize = ExtractDocuSignResultSize(docuSignAuthToken, criteria);
+                // 
+                //     if (resultSize > MaxResultSize)
+                //     {
+                //         continueClicked = false;
+                //         InsertControlAfter(
+                //             crateStorage,
+                //             new TextBlock()
+                //             {
+                //                 Name = "CannotProceedMessage",
+                //                 Value = "Fr8 can not currently generate this report because the set size is too big.",
+                //                 CssClass = "well well-lg"
+                //             },
+                //             "QueryBuilder"
+                //         );
+                //     }
+                // }
+
+                if (continueClicked)
+                {
+                    ActivityPayload.ChildrenActivities.Clear();
+
+                    var queryFr8WarehouseActivityTemplate = activityTemplates
+                        .FirstOrDefault(x => x.Name == "QueryFr8Warehouse");
+                    if (queryFr8WarehouseActivityTemplate == null) { return; }
+
+                    var queryFr8WarehouseTemplate = await GetActivityTemplate("terminalFr8Core", "QueryFr8Warehouse");
+
+                    var queryFr8WarehouseAction = await AddAndConfigureChildActivity(
+                        ActivityId,queryFr8WarehouseTemplate
+                    );
+
+                    var crateStorage = queryFr8WarehouseAction.CrateStorage;
+                    crateStorage.RemoveByLabel("Upstream Crate Label List");
+
+                    var fields = new[]
+                    {
+                        new FieldDTO() { Key = QueryCrateLabel, Value = QueryCrateLabel }
+                    };
+                    var upstreamLabelsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
+                    crateStorage.Add(upstreamLabelsCrate);
+
+                    var upstreamManifestTypes = crateStorage
+                        .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Upstream Crate ManifestType List")
+                        .FirstOrDefault();
 
                     var controls = crateStorage
                         .CrateContentsOfType<StandardConfigurationControlsCM>()
                         .FirstOrDefault();
 
-                    var continueButton = controls.FindByName<Button>("Continue");
-                    if (continueButton != null)
-                    {
-                        continueClicked = continueButton.Clicked;
+                    var radioButtonGroup = controls
+                        .FindByName<RadioButtonGroup>("QueryPicker");
 
-                        if (continueButton.Clicked)
-                        {
-                            continueButton.Clicked = false;
-                        }
+                    UpstreamCrateChooser upstreamCrateChooser = null;
+                    if (radioButtonGroup != null
+                        && radioButtonGroup.Radios.Count > 0
+                        && radioButtonGroup.Radios[0].Controls.Count > 0)
+                    {
+                        upstreamCrateChooser = radioButtonGroup.Radios[0].Controls[0] as UpstreamCrateChooser;
                     }
 
-                    // Commented out by yakov.gnusin in scope of FR-2462.
-                    // if (continueClicked)
-                    // {
-                    //     var docuSignAuthToken = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
-                    //     var criteria = queryCrate.Content.Queries.First().Criteria;
-                    //     var resultSize = ExtractDocuSignResultSize(docuSignAuthToken, criteria);
-                    // 
-                    //     if (resultSize > MaxResultSize)
-                    //     {
-                    //         continueClicked = false;
-                    //         InsertControlAfter(
-                    //             crateStorage,
-                    //             new TextBlock()
-                    //             {
-                    //                 Name = "CannotProceedMessage",
-                    //                 Value = "Fr8 can not currently generate this report because the set size is too big.",
-                    //                 CssClass = "well well-lg"
-                    //             },
-                    //             "QueryBuilder"
-                    //         );
-                    //     }
-                    // }
-                }
-
-                if (continueClicked)
-                {
-                    activityDO.ChildNodes.Clear();
-
-                    var queryFr8WarehouseActivityTemplate = activityTemplates
-                        .FirstOrDefault(x => x.Name == "QueryFr8Warehouse");
-                    if (queryFr8WarehouseActivityTemplate == null) { return activityDO; }
-
-                    var queryFr8WarehouseTemplate = await GetActivityTemplate("terminalFr8Core", "QueryFr8Warehouse");
-
-                    var queryFr8WarehouseAction = await AddAndConfigureChildActivity(
-                        activityDO,queryFr8WarehouseTemplate
-                    );
-
-                    using (var crateStorage = CrateManager.GetUpdatableStorage(queryFr8WarehouseAction))
+                    if (upstreamCrateChooser != null)
                     {
-                        crateStorage.RemoveByLabel("Upstream Crate Label List");
-
-                        var fields = new[]
+                        if (upstreamManifestTypes != null)
                         {
-                            new FieldDTO() { Key = QueryCrateLabel, Value = QueryCrateLabel }
-                        };
-                        var upstreamLabelsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Crate Label List", fields);
-                        crateStorage.Add(upstreamLabelsCrate);
-
-                        var upstreamManifestTypes = crateStorage
-                            .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Upstream Crate ManifestType List")
-                            .FirstOrDefault();
-
-                        var controls = crateStorage
-                            .CrateContentsOfType<StandardConfigurationControlsCM>()
-                            .FirstOrDefault();
-
-                        var radioButtonGroup = controls
-                            .FindByName<RadioButtonGroup>("QueryPicker");
-
-                        UpstreamCrateChooser upstreamCrateChooser = null;
-                        if (radioButtonGroup != null
-                            && radioButtonGroup.Radios.Count > 0
-                            && radioButtonGroup.Radios[0].Controls.Count > 0)
-                        {
-                            upstreamCrateChooser = radioButtonGroup.Radios[0].Controls[0] as UpstreamCrateChooser;
+                            upstreamCrateChooser.SelectedCrates[0].ManifestType.selectedKey = upstreamManifestTypes.Fields[0].Key;
+                            upstreamCrateChooser.SelectedCrates[0].ManifestType.Value = upstreamManifestTypes.Fields[0].Value;
                         }
 
-                        if (upstreamCrateChooser != null)
-                        {
-                            if (upstreamManifestTypes != null)
-                            {
-                                upstreamCrateChooser.SelectedCrates[0].ManifestType.selectedKey = upstreamManifestTypes.Fields[0].Key;
-                                upstreamCrateChooser.SelectedCrates[0].ManifestType.Value = upstreamManifestTypes.Fields[0].Value;
-                            }
-
-                            upstreamCrateChooser.SelectedCrates[0].Label.selectedKey = QueryCrateLabel;
-                            upstreamCrateChooser.SelectedCrates[0].Label.Value = QueryCrateLabel;
-                        }
+                        upstreamCrateChooser.SelectedCrates[0].Label.selectedKey = QueryCrateLabel;
+                        upstreamCrateChooser.SelectedCrates[0].Label.Value = QueryCrateLabel;
                     }
 
                     queryFr8WarehouseAction = await ConfigureChildActivity(
-                        activityDO,
+                        ActivityPayload,
                         queryFr8WarehouseAction
                     );
 
-                    using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
-                    {
-                        crateStorage.RemoveByManifestId((int)MT.OperationalStatus);
-
-                        var operationalStatus = new OperationalStateCM();
-                        operationalStatus.CurrentActivityResponse =
-                            ActivityResponseDTO.Create(ActivityResponse.ExecuteClientActivity);
-                        operationalStatus.CurrentClientActivityName = "RunImmediately";
-
-                        var operationsCrate = Fr8Data.Crates.Crate.FromContent("Operational Status", operationalStatus);
-                        crateStorage.Add(operationsCrate);
-                    }
+                    Storage.RemoveByManifestId((int)MT.OperationalStatus);
+                    var operationalStatus = new OperationalStateCM();
+                    operationalStatus.CurrentActivityResponse =
+                        ActivityResponseDTO.Create(ActivityResponse.ExecuteClientActivity);
+                    operationalStatus.CurrentClientActivityName = "RunImmediately";
+                    var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
+                    Storage.Add(operationsCrate);
+                    
                 }
             }
             catch (Exception)
             {
-                return null;
             }
-
-
-            return activityDO;
         }
 
         private Crate<StandardQueryCM> ExtractQueryCrate(ICrateStorage storage)
@@ -616,33 +581,25 @@ namespace terminalDocuSign.Actions
             return Crate<StandardQueryCM>.FromContent(QueryCrateLabel, queryCM);
         }
 
-        private async Task<PlanFullDTO> UpdatePlanName(ActivityDO activityDO)
+        private async Task<PlanFullDTO> UpdatePlanName()
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
+            if (ConfigurationControls != null)
             {
-                var configurationControls = crateStorage
-                .CrateContentsOfType<StandardConfigurationControlsCM>()
-                .SingleOrDefault();
+                var actionUi = new ActivityUi();
+                actionUi.ClonePropertiesFrom(ConfigurationControls);
+                var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(
+                    actionUi.QueryBuilder.Value
+                );
 
-                if (configurationControls != null)
+                if (criteria.Count > 0)
                 {
-                    var actionUi = new ActivityUi();
-                    actionUi.ClonePropertiesFrom(configurationControls);
-
-                    var criteria = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(
-                        actionUi.QueryBuilder.Value
-                    );
-
-                    if (criteria.Count > 0)
-                    {
-                        return await UpdatePlanName(activityDO.Id, "Generate a DocuSign Report", ParseConditionToText(criteria));
-                    }
+                    return await PlanHelper.UpdatePlanName(ActivityId, "Generate a DocuSign Report", ControlHelper.ParseConditionToText(criteria));
                 }
             }
             return null;
         }
 
-        public FieldDTO[] GetFieldListForQueryBuilder(AuthorizationTokenDO authToken)
+        public FieldDTO[] GetFieldListForQueryBuilder()
         {
             return _queryBuilderFields
                 .Select(x =>
@@ -657,7 +614,7 @@ namespace terminalDocuSign.Actions
         }
 
         private static ControlDefinitionDTO CreateTextBoxQueryControl(
-            string key, AuthorizationTokenDO authToken)
+            string key, AuthorizationToken authToken)
         {
             return new TextBox()
             {
@@ -665,10 +622,9 @@ namespace terminalDocuSign.Actions
             };
         }
 
-        public ControlDefinitionDTO CreateFolderDropDownListControl(
-        string key, AuthorizationTokenDO authToken)
+        public ControlDefinitionDTO CreateFolderDropDownListControl(string key, AuthorizationToken authToken)
         {
-            var conf = _docuSignManager.SetUp(authToken);
+            var conf = _docuSignManager.SetUp(AuthorizationToken);
             return new DropDownList()
             {
                 Name = "QueryField_" + key,
@@ -679,7 +635,7 @@ namespace terminalDocuSign.Actions
         }
 
         private ControlDefinitionDTO CreateStatusDropDownListControl(
-            string key, AuthorizationTokenDO authToken)
+            string key, AuthorizationToken authToken)
         {
             return new DropDownList()
             {
@@ -691,7 +647,7 @@ namespace terminalDocuSign.Actions
         }
 
         private ControlDefinitionDTO CreateDatePickerQueryControl(
-            string key, AuthorizationTokenDO authToken)
+            string key, AuthorizationToken authToken)
         {
             return new DatePicker()
             {
@@ -699,11 +655,11 @@ namespace terminalDocuSign.Actions
             };
         }
 
-        private IEnumerable<Crate> PackDesignTimeData(AuthorizationTokenDO authToken)
+        private IEnumerable<Crate> PackDesignTimeData()
         {
-            yield return Fr8Data.Crates.Crate.FromContent(
+            yield return Crate.FromContent(
                 "Queryable Criteria",
-                new FieldDescriptionsCM(GetFieldListForQueryBuilder(authToken))
+                new FieldDescriptionsCM(GetFieldListForQueryBuilder())
             );
 
             yield return Fr8Data.Crates.Crate.FromContent(
@@ -719,14 +675,6 @@ namespace terminalDocuSign.Actions
             );
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
-        {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-            return ConfigurationRequestType.Followup;
-        }
 
         /// <summary>
         /// This method provides documentation in two forms:

@@ -72,6 +72,14 @@ namespace Fr8Data.Managers
                 _crateStorage.Add(crate);
             }
 
+            public void Add(params Crate[] crates)
+            {
+                foreach (var crate in crates)
+                {
+                    _crateStorage.Add(crate);
+                }
+            }
+
             public void Clear()
             {
                 _crateStorage.Clear();

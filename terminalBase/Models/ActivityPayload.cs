@@ -9,6 +9,7 @@ namespace TerminalBase.Models
     {
         public Guid Id { get; set; }
         public string Label { get; set; }
+        public string Name { get; set; }
         public List<ActivityPayload> ChildrenActivities { get; set; }
         public ActivityTemplateDTO ActivityTemplate { get; set; }
         public ICrateStorage CrateStorage { get; set; }

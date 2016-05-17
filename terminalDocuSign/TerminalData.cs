@@ -20,6 +20,6 @@ namespace terminalDocuSign
             Endpoint = CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint"),
             Version = "1",
             AuthenticationType = AuthenticationType.Internal
-        }
+        };
     }
 }

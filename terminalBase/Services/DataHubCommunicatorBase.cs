@@ -283,7 +283,7 @@ namespace TerminalBase.Services
             throw new NotImplementedException();
         }
 
-        public Task<AuthorizationTokenDTO> GetAuthToken(string authTokenId, string curFr8UserId)
+        public Task<AuthorizationToken> GetAuthToken(string authTokenId, string curFr8UserId)
         {
             throw new NotImplementedException();
         }
