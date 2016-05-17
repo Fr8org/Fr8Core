@@ -216,7 +216,7 @@ namespace TerminalBase.BaseClasses
                 CurrentActivityStorage.Add(Crate.FromContent("Validation Errors", validationResults));
             }
 
-            return new ValidationManager(validationResults);
+            return new ValidationManager(validationResults, _currentPayloadStorage);
         }
 
         /**********************************************************************************/
@@ -325,7 +325,7 @@ namespace TerminalBase.BaseClasses
                 try
                 {
                     var validationCm = new ValidationResultsCM();
-                    var validationManager = new ValidationManager(validationCm);
+                    var validationManager = new ValidationManager(validationCm, CurrentPayloadStorage);
 
                     await Validate(validationManager);
 

@@ -9,7 +9,7 @@ namespace terminalDocuSignTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
-        private const int ActivityCount = 11;
+        private const int ActivityCount = 12;
         private const string Extract_Data_From_Envelopes_Name = "Extract_Data_From_Envelopes";
         private const string Use_DocuSign_Template_With_New_Document = "Use_DocuSign_Template_With_New_Document";
         private const string Mail_Merge_Into_DocuSign_Name = "Mail_Merge_Into_DocuSign";
