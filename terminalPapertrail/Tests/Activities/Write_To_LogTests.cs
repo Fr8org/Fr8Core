@@ -47,7 +47,7 @@ namespace terminalPapertrail.Tests.Actions
         public async Task Configure_InitialConfigurationResponse_ShourldReturn_OneConfigControlsCrate()
         {
             //Act
-            var result = await _activity_under_test.Configure(new ActivityDO());
+            await _activity_under_test.Configure(new TerminalBase.Models.ActivityContext());
             ActivityDTO resultActionDTO = Mapper.Map<ActivityDTO>(result);
 
             //Assert
