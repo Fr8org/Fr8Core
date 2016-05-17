@@ -21,12 +21,7 @@ namespace HubWeb.Infrastructure_HubWeb
         protected override async Task<string> GetTerminalSecret(string terminalId)
         {
             var terminal = await _terminalService.GetTerminalByPublicIdentifier(terminalId);
-            if (terminal == null)
-            {
-                return null;
-            }
-
-            return terminal.Secret;
+            return terminal?.Secret;
         }
 
         protected override async Task<bool> CheckPermission(string terminalId, string userId)

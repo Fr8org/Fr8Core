@@ -502,6 +502,13 @@ namespace TerminalBase.BaseClasses
             return await HubCommunicator.CreateAndConfigureActivity(activityTemplate.Id, CurrentUserId, name, order, parentActivityId);
         }
 
+        protected async Task<ActivityPayload> AddAndConfigureChildActivity(ActivityPayload parentActivity, ActivityTemplateDTO activityTemplate, string name = null, string label = null, int? order = null)
+        {
+            var child = await AddAndConfigureChildActivity(parentActivity.Id, activityTemplate, name, label, order);
+            parentActivity.ChildrenActivities.Add(child);
+            return child;
+        }
+
         protected void UpdateDesignTimeCrateValue(string label, params FieldDTO[] fields)
         {
             var crate = Storage.CratesOfType<FieldDescriptionsCM>().FirstOrDefault(x => x.Label == label);

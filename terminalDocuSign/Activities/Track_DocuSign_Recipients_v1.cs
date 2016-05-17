@@ -167,10 +167,10 @@ namespace terminalDocuSign.Actions
             var buildMessageAT = await GetActivityTemplate("terminalFr8Core", "Build_Message");
 
             //DocuSign
-            var monitorDocuSignActionTask = AddAndConfigureChildActivity(ActivityId, monitorDocusignAT, "Monitor Docusign Envelope Activity", "Monitor Docusign Envelope Activity", 1);
-            var setDelayActionTask = AddAndConfigureChildActivity(ActivityId, setDelayAT, "Set Delay", "Set Delay", 2);
-            var queryFr8WarehouseActionTask = AddAndConfigureChildActivity(ActivityId, queryFr8WareHouseAT, "Query Fr8 Warehouse", "Query Fr8 Warehouse", 3);
-            var filterActionTask = AddAndConfigureChildActivity(ActivityId, testIncomingDataAT, "Test Incoming Data", "Test Incoming Data", 4);
+            var monitorDocuSignActionTask = AddAndConfigureChildActivity(ActivityPayload, monitorDocusignAT, "Monitor Docusign Envelope Activity", "Monitor Docusign Envelope Activity", 1);
+            var setDelayActionTask = AddAndConfigureChildActivity(ActivityPayload, setDelayAT, "Set Delay", "Set Delay", 2);
+            var queryFr8WarehouseActionTask = AddAndConfigureChildActivity(ActivityPayload, queryFr8WareHouseAT, "Query Fr8 Warehouse", "Query Fr8 Warehouse", 3);
+            var filterActionTask = AddAndConfigureChildActivity(ActivityPayload, testIncomingDataAT, "Test Incoming Data", "Test Incoming Data", 4);
             var buildMessageActivityTask = AddAndConfigureChildActivity((Guid)ActivityPayload.ParentPlanNodeId, buildMessageAT, "Build a Message", "Build a Message", 2);
             await Task.WhenAll(monitorDocuSignActionTask, setDelayActionTask, queryFr8WarehouseActionTask, filterActionTask, buildMessageActivityTask);
             var monitorDocuSignAction = monitorDocuSignActionTask.Result;
