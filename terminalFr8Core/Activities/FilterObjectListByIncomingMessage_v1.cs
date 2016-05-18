@@ -14,6 +14,7 @@ using Fr8Data.Crates;
 using Fr8Data.Helpers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Actions
 {
@@ -91,7 +92,7 @@ namespace terminalFr8Core.Actions
                                                                  .ToList();
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller)
+        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             //Remove child activity if its not specified or add it if is not yet added
             if (string.IsNullOrEmpty(ConfigurationControls.DataSourceSelector.Value))

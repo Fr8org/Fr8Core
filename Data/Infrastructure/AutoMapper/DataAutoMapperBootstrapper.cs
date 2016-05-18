@@ -13,6 +13,8 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using StructureMap;
 using Utilities.AutoMapper;
+using Fr8Data.DataTransferObjects.PlanTemplates;
+using Data.Interfaces.DataTransferObjects.PlanTemplates;
 
 namespace Data.Infrastructure.AutoMapper
 {
@@ -186,6 +188,20 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.AuthenticationTypeTemplate, opts => opts.Ignore());
 
 
+            Mapper.CreateMap<PlanTemplateDO, PlanTemplateDTO>();
+            Mapper.CreateMap<PlanTemplateDTO, PlanTemplateDO>();
+
+            Mapper.CreateMap<PlanNodeDescriptionDO, PlanNodeDescriptionDTO>();
+            Mapper.CreateMap<PlanNodeDescriptionDTO, PlanNodeDescriptionDO>();
+
+            Mapper.CreateMap<ActivityDescriptionDO, ActivityDescriptionDTO>();
+            Mapper.CreateMap<ActivityDescriptionDTO, ActivityDescriptionDO>();
+
+            Mapper.CreateMap<NodeTransitionDO, NodeTransitionDTO>();
+            Mapper.CreateMap<NodeTransitionDTO, NodeTransitionDO>();
+
+            Mapper.CreateMap<PlanNodeTransitionType, String>().ConvertUsing(e => e.ToString().ToLower());
+            Mapper.CreateMap<string, PlanNodeTransitionType>().ConvertUsing(e => (PlanNodeTransitionType)Enum.Parse(typeof(PlanNodeTransitionType), e, true));
 
 
         }

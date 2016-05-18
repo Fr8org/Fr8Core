@@ -40,7 +40,7 @@ namespace terminalSlack.Services
                 Manufacturer = "Slack",
             };
             var curEventReport = Crate.FromContent("Standard Event Report", eventReportContent);
-            return Task.FromResult(curEventReport);
+            return Task.FromResult((Crate)curEventReport);
         }
 
         private List<Guid> ParsePlansAffected(string plansAffectedString)

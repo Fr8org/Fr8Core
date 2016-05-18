@@ -4,14 +4,15 @@ using System.Linq;
 using System.Web.Http;
 using System.Web.Http.Description;
 using AutoMapper;
-using HubWeb.Infrastructure;
 using StructureMap;
 using Data.Infrastructure.StructureMap;
 using Data.Entities;
 using Data.Interfaces;
+using Data.States;
+using Hub.Infrastructure;
 using Hub.Interfaces;
 using Hub.Managers;
-using Data.States;
+using HubWeb.Infrastructure;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.States;
 
@@ -86,7 +87,7 @@ namespace HubWeb.Controllers
         [Fr8HubWebHMACAuthenticate]
         public IHttpActionResult GetAvailableData(Guid id, CrateDirection direction = CrateDirection.Upstream, AvailabilityType availability = AvailabilityType.RunTime)
         {
-            return Ok(_activity.GetAvailableData(id, direction, availability));
+            return Ok(_activity.GetIncomingData(id, direction, availability));
         }
 
         [ActionName("available")]
@@ -100,11 +101,11 @@ namespace HubWeb.Controllers
             return Ok(categoriesWithActivities);
         }
 
-        [ActionName("available")]
+        [ActionName("getAvailableActivitiesWithTag")]
         [ResponseType(typeof(IEnumerable<ActivityTemplateDTO>))]
         [AllowAnonymous]
         [HttpGet]
-        public IHttpActionResult GetAvailableActivities(string tag)
+        public IHttpActionResult getAvailableActivitiesWithTag(string tag)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

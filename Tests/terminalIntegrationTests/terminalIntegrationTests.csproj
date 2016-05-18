@@ -229,12 +229,10 @@
   <ItemGroup>
     <Compile Include="EndToEnd\GoogleIntoGoogleTests.cs" />
     <Compile Include="EndToEnd\MailMergeFromSalesforceTests.cs" />
+    <Compile Include="EndToEnd\PlanTemplates_Tests.cs" />
     <Compile Include="EndToEnd\Query_DocuSign_Into_Google_Sheet_Tests.cs" />
     <Compile Include="Fixtures\FixtureData - CoreSelfHostFactory.cs" />
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
-    <Compile Include="TerminalIntegrationTests_SendDocuSignEnvelopeV1.cs" />
-    <Compile Include="TerminalIntegrationTests.cs" />
-    <Compile Include="TerminalIntegrationTests_TerminalExcel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>

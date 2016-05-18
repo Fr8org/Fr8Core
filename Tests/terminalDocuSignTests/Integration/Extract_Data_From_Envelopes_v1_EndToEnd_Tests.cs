@@ -33,7 +33,7 @@ namespace terminalDocuSignTests.Integration
 
             string baseUrl = GetHubApiBaseUrl();
 
-            var solutionCreateUrl = baseUrl + "activities/create?solutionName=Extract_Data_From_Envelopes";
+            var solutionCreateUrl = baseUrl + "plans/createSolution?solutionName=Extract_Data_From_Envelopes";
 
             //
             // Create solution
@@ -181,41 +181,38 @@ namespace terminalDocuSignTests.Integration
                 _baseUrl + "activities/configure?id=" + sendEnvelopeAction.Id,
                 sendEnvelopeAction
             );
-
-            _crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
-            controlsCrate = _crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
-
-            docuSignTemplate = controlsCrate.Content.Controls.OfType<DropDownList>().First();
-            docuSignTemplate.Value = "9a4d2154-5b18-4316-9824-09432e62f458";
-            docuSignTemplate.selectedKey = "Medical_Form_v1";
-            docuSignTemplate.ListItems.Add(new ListItem() { Value = "9a4d2154-5b18-4316-9824-09432e62f458", Key = "Medical_Form_v1" });
+           
 
             using (var updatableStorage = Crate.GetUpdatableStorage(sendEnvelopeAction))
             {
-                updatableStorage.Remove<StandardConfigurationControlsCM>();
-                updatableStorage.Add(controlsCrate);
+                controlsCrate = updatableStorage.CratesOfType<StandardConfigurationControlsCM>().First();
+
+                docuSignTemplate = controlsCrate.Content.Controls.OfType<DropDownList>().First();
+                docuSignTemplate.Value = "9a4d2154-5b18-4316-9824-09432e62f458";
+                docuSignTemplate.selectedKey = "Medical_Form_v1";
+                docuSignTemplate.ListItems.Add(new ListItem() { Value = "9a4d2154-5b18-4316-9824-09432e62f458", Key = "Medical_Form_v1" });
             }
 
             sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", sendEnvelopeAction);
             sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/configure", sendEnvelopeAction);
 
             // Follow-up Configuration
-            _crateStorage = Crate.FromDto(sendEnvelopeAction.CrateStorage);
-            controlsCrate = _crateStorage.CratesOfType<StandardConfigurationControlsCM>().First();
-            var emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role email");
-            emailField.ValueSource = "specific";
-            emailField.Value = TestEmail;
-            emailField.TextValue = TestEmail;
 
-            var emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role name");
-            emailNameField.ValueSource = "specific";
-            emailNameField.Value = TestEmailName;
-            emailNameField.TextValue = TestEmailName;
+            TextSource emailField;
+            TextSource emailNameField;
 
             using (var updatableStorage = Crate.GetUpdatableStorage(sendEnvelopeAction))
             {
-                updatableStorage.Remove<StandardConfigurationControlsCM>();
-                updatableStorage.Add(controlsCrate);
+                controlsCrate = updatableStorage.CratesOfType<StandardConfigurationControlsCM>().First();
+                emailField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role email");
+                emailField.ValueSource = "specific";
+                emailField.Value = TestEmail;
+                emailField.TextValue = TestEmail;
+
+                emailNameField = controlsCrate.Content.Controls.OfType<TextSource>().First(f => f.Name == "RolesMappingfreight testing role name");
+                emailNameField.ValueSource = "specific";
+                emailNameField.Value = TestEmailName;
+                emailNameField.TextValue = TestEmailName;
             }
 
             sendEnvelopeAction = await HttpPostAsync<ActivityDTO, ActivityDTO>(_baseUrl + "activities/save", sendEnvelopeAction);

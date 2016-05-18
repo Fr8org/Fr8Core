@@ -377,6 +377,7 @@ namespace Data.Migrations
             CreateAdmin("alexavrutin@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("bahadir.bb@gmail.com", "123456ab", unitOfWork);
             CreateAdmin("omer@fr8.co", "123456ab", unitOfWork);
+            CreateAdmin("alp@fr8.co", "123qwe", unitOfWork);
             CreateAdmin("mvcdeveloper@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("maki.gjuroski@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("fr8system_monitor@fr8.company", "123qwe", unitOfWork);
@@ -724,69 +725,120 @@ namespace Data.Migrations
 
         public static void AddDefaultProfiles(IUnitOfWork uow)
         {
+            //create 'Fr8 Admin' Profile 
+            var fr8AdminProfile = uow.ProfileRepository.GetQuery().FirstOrDefault(x => x.Name == DefaultProfiles.Fr8Administrator);
+            if (fr8AdminProfile == null)
+            {
+                fr8AdminProfile = new ProfileDO()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = DefaultProfiles.Fr8Administrator,
+                    Protected = true,
+                    PermissionSets = new List<PermissionSetDO>()
+                };
+                uow.ProfileRepository.Add(fr8AdminProfile);
+            }
+            else
+            {
+                fr8AdminProfile.Protected = true;
+            }
+            
             //create 'System Administrator' Profile 
-            var profile = uow.ProfileRepository.GetQuery().FirstOrDefault(x => x.Name == "System Administrator");
+            var profile = uow.ProfileRepository.GetQuery().FirstOrDefault(x => x.Name == DefaultProfiles.SystemAdministrator);
             if (profile == null)
             {
                 profile = new ProfileDO()
                 {
                     Id = Guid.NewGuid(),
-                    Name = "System Administrator",
+                    Name = DefaultProfiles.SystemAdministrator,
+                    Protected = true,
                     PermissionSets = new List<PermissionSetDO>()
                 };
                 uow.ProfileRepository.Add(profile);
             }
+            else
+            {
+                profile.Protected = true;
+            }
 
             //create 'Standard User' profile
-            var standardProfile = uow.ProfileRepository.GetQuery().FirstOrDefault(x => x.Name == "Standard User");
+            var standardProfile = uow.ProfileRepository.GetQuery().FirstOrDefault(x => x.Name == DefaultProfiles.StandardUser);
             if (standardProfile == null)
             {
                 standardProfile = new ProfileDO()
                 {
                     Id = Guid.NewGuid(),
-                    Name = "Standard User",
+                    Name = DefaultProfiles.StandardUser,
+                    Protected = true
                 };
                 uow.ProfileRepository.Add(standardProfile);
+            }
+            else
+            {
+                standardProfile.Protected = true;
             }
 
             //presave needed here for permissionSetPermissions table inserts
             uow.SaveChanges();
 
-            profile.PermissionSets.Clear();
+            fr8AdminProfile.PermissionSets.Clear();
             //default permissions for Plans and PlanNodes
-            profile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), true, profile.Id,"System Administrator Permission Set", uow));
+            fr8AdminProfile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), true, false, false, fr8AdminProfile.Id, "Fr8 Administrator Permission Set", uow));
 
             //default permissions for ContainerDO
-            profile.PermissionSets.Add(AddPermissionSet(nameof(ContainerDO), true, profile.Id, "System Administrator Permission Set", uow));
+            fr8AdminProfile.PermissionSets.Add(AddPermissionSet(nameof(ContainerDO), true, false, false, fr8AdminProfile.Id, "Fr8 Administrator Permission Set", uow));
 
             //default permissions for Terminals
-            profile.PermissionSets.Add(AddPermissionSet(nameof(TerminalDO), true, profile.Id, "System Administrator Permission Set", uow));
+            fr8AdminProfile.PermissionSets.Add(AddPermissionSet(nameof(TerminalDO), true, false, false, fr8AdminProfile.Id, "Fr8 Administrator Permission Set", uow));
 
             //default permissions for Users
-            profile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), true, profile.Id, "System Administrator Permission Set", uow));
+            fr8AdminProfile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), true, false, true, fr8AdminProfile.Id, "Fr8 Administrator Permission Set", uow));
+            
+            profile.PermissionSets.Clear();
+            //default permissions for Plans and PlanNodes
+            profile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), true, false, false, profile.Id,"System Administrator Permission Set", uow));
 
-            //update existing roles to have sys admin profile //todo: check this when Standard User profile start using in system
-            var roles = uow.AspNetRolesRepository.GetQuery().Where(x => x.ProfileId == null).ToList();
-            foreach (var role in roles)
+            //default permissions for ContainerDO
+            profile.PermissionSets.Add(AddPermissionSet(nameof(ContainerDO), true, false, false, profile.Id, "System Administrator Permission Set", uow));
+
+            //default permissions for Terminals
+            profile.PermissionSets.Add(AddPermissionSet(nameof(TerminalDO), true, false, false, profile.Id, "System Administrator Permission Set", uow));
+
+            //default permissions for Users
+            profile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), true, true, false, profile.Id, "System Administrator Permission Set", uow));
+
+            //add standard user to all users without profile 
+            var roles = uow.UserRepository.GetQuery().Where(x => x.ProfileId == null).ToList();
+            foreach (var item in roles)
             {
-                role.ProfileId = profile.Id;
+                item.ProfileId = profile.Id;
+            }
+
+            var adminRole = uow.AspNetRolesRepository.GetQuery().FirstOrDefault(x => x.Name == Roles.Admin);
+
+            var userRoles = uow.AspNetUserRolesRepository.GetQuery().Where(x => x.RoleId == adminRole.Id).Select(l=>l.UserId).ToList();
+            var fr8Admins = uow.UserRepository.GetQuery().Where(x=> userRoles.Contains(x.Id)).ToList();
+            foreach (var user in fr8Admins)
+            {
+                user.ProfileId = fr8AdminProfile.Id;
             }
             
             standardProfile.PermissionSets.Clear();
             //default permissions for Plans and PlanNodes
-            standardProfile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), false, standardProfile.Id, "Standard User Permission Set", uow));
+            standardProfile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), false, false, false, standardProfile.Id, "Standard User Permission Set", uow));
 
             //default permissions for ContainerDO
-            standardProfile.PermissionSets.Add(AddPermissionSet(nameof(ContainerDO), false, standardProfile.Id, "Standard User Permission Set", uow));
+            standardProfile.PermissionSets.Add(AddPermissionSet(nameof(ContainerDO), false, false, false, standardProfile.Id, "Standard User Permission Set", uow));
 
             //default permissions for Terminals
-            standardProfile.PermissionSets.Add(AddPermissionSet(nameof(TerminalDO), false, standardProfile.Id, "Standard User Permission Set", uow));
+            standardProfile.PermissionSets.Add(AddPermissionSet(nameof(TerminalDO), false, false, false, standardProfile.Id, "Standard User Permission Set", uow));
 
             //default permissions for Users
-            standardProfile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), false, standardProfile.Id, "Standard User Permission Set", uow));
+            standardProfile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), false, false, false, standardProfile.Id, "Standard User Permission Set", uow));
         }
 
-        private static PermissionSetDO AddPermissionSet(string objectType, bool isFullSet, Guid profileId, string name, IUnitOfWork uow)
+        private static PermissionSetDO AddPermissionSet(string objectType, bool isFullSet, bool hasManageInternalUsers, bool hasManageFr8Users,
+            Guid profileId, string name, IUnitOfWork uow)
         {
             var permissionSet = uow.PermissionSetRepository.GetQuery().FirstOrDefault(x => x.Name == name && x.ObjectType == objectType);
 
@@ -815,6 +867,16 @@ namespace Data.Migrations
             {
                 permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.ViewAllObjects));
                 permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.ModifyAllObjects));
+            }
+
+            if (hasManageFr8Users)
+            {
+                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int)PermissionType.ManageFr8Users));
+            }
+
+            if (hasManageInternalUsers)
+            {
+                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int)PermissionType.ManageInternalUsers));
             }
 
             if (permissionSet.Id == Guid.Empty)

@@ -83,7 +83,7 @@ namespace terminalSalesforce.Actions
                 //clear any existing TextSources. This is required when user changes the object in DDLB
                 GetConfigurationControls(crateStorage).Controls.RemoveAll(ctl => ctl is TextSource);
                 chosenObjectFieldsList.ToList().ForEach(selectedObjectField =>
-                    AddTextSourceControl(crateStorage, selectedObjectField.Value, selectedObjectField.Key, string.Empty, requestUpstream: true));
+                    AddTextSourceControl(crateStorage, selectedObjectField.Value, selectedObjectField.Key, string.Empty, addRequestConfigEvent:true, requestUpstream: true));
 
                 //create design time fields for the downstream activities.
                 crateStorage.RemoveByLabelPrefix("Salesforce Object Fields - ");
@@ -94,32 +94,41 @@ namespace terminalSalesforce.Actions
             return await Task.FromResult(curActivityDO);
         }
 
-        public override async Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override Task ValidateActivity(ActivityDO curActivityDO, ICrateStorage crateStorage, ValidationManager validationManager)
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            var chosenObject = ExtractChosenSFObject(curActivityDO);
+
+            //get Fields which are reqired
+            var requiredFieldsList = GetRequiredFields(curActivityDO, "Salesforce Object Fields - " + chosenObject);
+
+            //get TextSources that represent the above required fields
+            var requiredFieldControlsList = GetConfigurationControls(crateStorage)
+                                                .Controls.OfType<TextSource>()
+                                                .Where(c => requiredFieldsList.Any(f => f.Key.Equals(c.Name)));
+
+            //for each required field's control, check its value source
+            requiredFieldControlsList.ToList().ForEach(c =>
             {
-                //In Activate, we validate whether the user specified values for the Required controls
-
-                var chosenObject = ExtractChosenSFObject(curActivityDO);
-
-                //get Fields which are reqired
-                var requiredFieldsList = GetRequiredFields(curActivityDO, "Salesforce Object Fields - " + chosenObject);
-
-                //get TextSources that represent the above required fields
-                var requiredFieldControlsList = GetConfigurationControls(crateStorage)
-                                                    .Controls.OfType<TextSource>()
-                                                    .Where(c => requiredFieldsList.Any(f => f.Key.Equals(c.Name)));
-
-                //for each required field's control, check its value source
-                requiredFieldControlsList.ToList().ForEach(c =>
+                if (!c.HasValue || (c.CanGetValue(validationManager.Payload) && string.IsNullOrWhiteSpace(c.GetValue(validationManager.Payload))))
                 {
-                    if (string.IsNullOrEmpty(c.ValueSource))
-                    {
-                        c.ErrorMessage = string.Format("{0} must be provided for creating {1}", c.Label, chosenObject);
+                    validationManager.SetError($"{c.Label} must be provided for creating {chosenObject}", c);
+                }
+            });
+
+            var controls = GetConfigurationControls(curActivityDO).Controls.Where(c => c.Name.Contains("Phone") || c.Name == "Fax");
+            foreach (var control in controls)
+            {
+                var ctrl = (TextSource)control;
+                if (ctrl != null)
+                {
+                    if (ctrl.TextValue != null)
+                    {                        
+                        validationManager.ValidatePhoneNumber(ctrl.TextValue, ctrl);
                     }
-                });
+                }
             }
-            return await Task.FromResult(curActivityDO);
+
+            return Task.FromResult(0);
         }
 
         public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
@@ -131,21 +140,29 @@ namespace terminalSalesforce.Actions
                 return NeedsAuthenticationError(payloadCrates);
             }
 
+            using (var paylodCrateStroage = CrateManager.GetUpdatableStorage(payloadCrates))
             using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            using (var validationScope = new RuntimeValidationScope(this, paylodCrateStroage))
             {
+                await ValidateActivity(curActivityDO, crateStorage, validationScope.ValidationManager);
+
+                if (validationScope.HasErrors)
+                {
+                    // errors will be written during validationScope disposal
+                    return payloadCrates;
+                }
+
                 var chosenObject = ExtractChosenSFObject(curActivityDO);
 
                 //get all fields
                 var fieldsList = crateStorage.CrateContentsOfType<FieldDescriptionsCM>(c => c.Label.Equals("Salesforce Object Fields - " + chosenObject))
-                                             .SelectMany(f => f.Fields);
+                    .SelectMany(f => f.Fields);
 
                 //get all text sources
                 var fieldControlsList = GetConfigurationControls(crateStorage).Controls.OfType<TextSource>();
 
-                var payloadStorage = CrateManager.FromDto(payloadCrates.CrateStorage);
-
                 //get <Field> <Value> key value pair for the non empty field
-                var jsonInputObject = ActivitiesHelper.GenerateSalesforceObjectDictionary(fieldsList, fieldControlsList, payloadStorage);
+                var jsonInputObject = ActivitiesHelper.GenerateSalesforceObjectDictionary(fieldsList, fieldControlsList, paylodCrateStroage);
 
                 string result;
 
@@ -160,18 +177,16 @@ namespace terminalSalesforce.Actions
 
                 if (!string.IsNullOrEmpty(result))
                 {
-                    using (var paylodCrateStroage = CrateManager.GetUpdatableStorage(payloadCrates))
-                    {
-                        var contactIdFields = new List<FieldDTO> { new FieldDTO(chosenObject + "ID", result) };
-                        paylodCrateStroage.Add(Crate.FromContent(chosenObject + " is saved in Salesforce.com", new StandardPayloadDataCM(contactIdFields)));
-                        return Success(payloadCrates);
-                    }
+                    var contactIdFields = new List<FieldDTO> { new FieldDTO(chosenObject + "ID", result) };
+                    paylodCrateStroage.Add(Crate.FromContent(chosenObject + " is saved in Salesforce.com", new StandardPayloadDataCM(contactIdFields)));
+                    return Success(payloadCrates);
+
                 }
 
                 return Error(payloadCrates, "Saving " + chosenObject + " to Salesforce.com is failed.");
             }
         }
-
+    
         /// <summary>
         /// Creates Initial config controls
         /// </summary>

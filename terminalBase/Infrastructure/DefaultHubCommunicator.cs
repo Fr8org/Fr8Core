@@ -162,7 +162,7 @@ namespace TerminalBase.Infrastructure
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                       + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/available_data"
                       + "?id=" + activityDO.Id
-                      + "&direction=" + (int) direction
+                      + "&direction=" + (int)direction
                       + "&availability=" + (int)availability;
             var uri = new Uri(url, UriKind.Absolute);
 
@@ -175,7 +175,7 @@ namespace TerminalBase.Infrastructure
             var mergedFields = new FieldDescriptionsCM();
             var availableData = await GetAvailableData(activityDO, direction, availability, userId);
 
-            mergedFields.Fields.AddRange(availableData.AvailableFields);
+            mergedFields.Fields.AddRange(availableData.AvailableCrates.SelectMany(x => x.Fields));
 
             return mergedFields;
         }
@@ -211,7 +211,7 @@ namespace TerminalBase.Infrastructure
         public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, string userId)
         {
             var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/available?tag=";
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plannodes/getAvailableActivitiesWithTag?tag=";
 
             if (string.IsNullOrEmpty(tag))
             {
@@ -329,16 +329,7 @@ namespace TerminalBase.Infrastructure
 
             await _restfulServiceClient.PostAsync<List<CrateDTO>>(uri, payload, null, await GetHMACHeader(uri, userId, payload));
         }
-
-        public async Task<PlanDO> ActivatePlan(PlanDO planDO, string userId)
-        {
-            var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                      + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/plans/activate?planId=" + planDO.Id;
-            var uri = new Uri(url);
-
-            return await _restfulServiceClient.PostAsync<PlanDO>(uri, null, await GetHMACHeader(uri, userId));
-        }
-
+        
         public async Task<IEnumerable<PlanDTO>> GetPlansByName(string name, string userId, PlanVisibility visibility = PlanVisibility.Standard)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
@@ -428,7 +419,7 @@ namespace TerminalBase.Infrastructure
         public async Task<FileDO> SaveFile(string name, Stream stream, string userId)
         {
             var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/files/files";
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/files";
             var multiPartData = new MultipartFormDataContent();
             var byteData = ReadFully(stream);
             multiPartData.Add(new ByteArrayContent(byteData), name, name);
@@ -447,7 +438,7 @@ namespace TerminalBase.Infrastructure
         public async Task<Stream> DownloadFile(int fileId, string userId)
         {
             var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/files/download?id=" + fileId;
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/files/" + fileId;
             var uri = new Uri(hubUrl);
             return await _restfulServiceClient.DownloadAsync(uri, null, await GetHMACHeader(uri, userId));
         }
@@ -469,6 +460,33 @@ namespace TerminalBase.Infrastructure
                     + string.Format("/authentication/GetAuthToken?curFr8UserId={0}&externalAccountId={1}&terminalId={2}", curFr8UserId, externalAccountId, TerminalId);
             var uri = new Uri(url);
             return await _restfulServiceClient.GetAsync<AuthorizationTokenDTO>(uri, null, await GetHMACHeader(uri, curFr8UserId));
+        }
+
+        public async Task RenewToken(string id, string externalAccountId, string token, string userId)
+        {
+            var url = $"{CloudConfigurationManager.GetSetting("CoreWebServerUrl")}api/" +
+                      $"{CloudConfigurationManager.GetSetting("HubApiVersion")}/authentication/renewtoken?id="+id
+                      +"&externalAccountId="+externalAccountId+"&token="+token;
+            var uri = new Uri(url);
+            await _restfulServiceClient.PostAsync(uri, null, await GetHMACHeader(uri, userId));
+        }
+
+        public async Task RenewToken(AuthorizationTokenDTO token, string userId)
+        {
+            var url = $"{CloudConfigurationManager.GetSetting("CoreWebServerUrl")}api/" +
+                      $"{CloudConfigurationManager.GetSetting("HubApiVersion")}/authentication/renewtoken";
+            var uri = new Uri(url);
+            await _restfulServiceClient.PostAsync(uri, token, null, await GetHMACHeader(uri, userId, token));
+        }
+
+        public async Task ScheduleEvent(string externalAccountId, string curFr8UserId, string minutes)
+        {
+            var hubAlarmsUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
+               + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion")
+               + string.Format("/alarms/schedule?external_account_id={0}&fr8AccountId={1}&minutes={2}&terminalId={3}",
+               externalAccountId, curFr8UserId, minutes, TerminalId);
+            var uri = new Uri(hubAlarmsUrl);
+            await _restfulServiceClient.PostAsync(uri, null, await GetHMACHeader(uri, curFr8UserId));
         }
     }
 }

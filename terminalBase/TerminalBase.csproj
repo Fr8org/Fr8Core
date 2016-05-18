@@ -75,6 +75,10 @@
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="PhoneNumbers, Version=7.0.9.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\libphonenumber-csharp.7.2.5\lib\PhoneNumbers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="StructureMap, Version=3.1.6.186, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\structuremap.3.1.6.186\lib\net40\StructureMap.dll</HintPath>
@@ -115,6 +119,7 @@
     <Compile Include="BaseClasses\DynamicControlsAttribute.cs" />
     <Compile Include="BaseClasses\EnhancedTerminalActivityT.cs" />
     <Compile Include="BaseClasses\CrateSignaller.cs" />
+    <Compile Include="BaseClasses\RuntimeValidationScope.cs" />
     <Compile Include="BaseClasses\UiBuilder.cs" />
     <Compile Include="BaseClasses\UpstreamQueryManager.cs" />
     <Compile Include="Errors\AuthorizationTokenExpiredOrInvalidException.cs" />
@@ -136,7 +141,8 @@
     <Compile Include="Infrastructure\JsonParser.cs" />
     <Compile Include="Infrastructure\TerminalBootstrapper.cs" />
     <Compile Include="Infrastructure\TestMonitoringHubCommunicator.cs" />
-    <Compile Include="Infrastructure\Validations.cs" />
+    <Compile Include="Infrastructure\ValidationExtensions.cs" />
+    <Compile Include="Infrastructure\ValidationManager.cs" />
     <Compile Include="Errors\TerminalCodedException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\MT\MTSearchHelper.cs" />

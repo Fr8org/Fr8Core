@@ -44,10 +44,8 @@ namespace terminalGoogleTests.Integration
 
         private Crate PackCrate_GoogleForms()
         {
-            Crate crate;
-
             var curFields = new List<FieldDTO>() { new FieldDTO() { Key = "Survey Form", Value = "1z7mIQdHeFIpxBm92sIFB52B7SwyEO3IT5LiUcmojzn8" } }.ToArray();
-            crate = CrateManager.CreateDesignTimeFieldsCrate("Available Forms", curFields);
+            Crate crate = CrateManager.CreateDesignTimeFieldsCrate("Available Forms", curFields);
 
             return crate;
         }
@@ -261,7 +259,11 @@ namespace terminalGoogleTests.Integration
             {
                 Id = Guid.NewGuid(),
                 Name = "Get_Google_Sheet_Data_TEST",
-                Version = "1"
+                Version = "1",
+                Terminal = new TerminalDTO()
+                {
+                    AuthenticationType = 1
+                }
             };
         }
         public static Fr8DataDTO Get_Google_Sheet_Data_v1_InitialConfiguration_Fr8DataDTO()
@@ -320,6 +322,11 @@ namespace terminalGoogleTests.Integration
                 {
                     Key="Empty_First_Row",
                     Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1Nzf_s2OyZTxG8ppxzvypH6s1ePvUT_ALPffZchuM14o"
+                },
+                new FieldDTO
+                {
+                    Key="OneRow_WithHeader",
+                    Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1XES9LEK6WmSp5adZ8F-_cfoE7EeLMgPr6NhRPyGaSfM"
                 }
             }.ToArray();
             crate = CrateManager.CreateDesignTimeFieldsCrate("Select a Google Spreadsheet", curFields);
@@ -358,6 +365,8 @@ namespace terminalGoogleTests.Integration
                     return new Tuple<string, string>("Column_Only", "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1K4SbUWSd5TYrF2Uk5P9n1bxuBse1dquFqrPiUsWOvqI");
                 case "Empty_First_Row":
                     return new Tuple<string, string>("Empty_First_Row", "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1Nzf_s2OyZTxG8ppxzvypH6s1ePvUT_ALPffZchuM14o");
+                case "OneRow_WithHeader":
+                    return new Tuple<string, string>("OneRow_WithHeader", "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1XES9LEK6WmSp5adZ8F-_cfoE7EeLMgPr6NhRPyGaSfM");
                 default:
                     return null;
             }

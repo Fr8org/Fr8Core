@@ -75,33 +75,28 @@ namespace Hub.Services
             }
         }
 
-        public IncomingCratesDTO GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability)
+        public IncomingCratesDTO GetIncomingData(Guid activityId, CrateDirection direction, AvailabilityType availability)
         {
-            var fields = GetCrateManifestsByDirection<FieldDescriptionsCM>(activityId, direction, AvailabilityType.NotSet);
-
-            var crates = GetCrateManifestsByDirection<CrateDescriptionCM>(activityId, direction, AvailabilityType.NotSet);
+            var crates = GetCrateManifestsByDirection(activityId, direction, AvailabilityType.NotSet);
             var availableData = new IncomingCratesDTO();
-
-            availableData.AvailableFields.AddRange(fields.SelectMany(x => x.Fields).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
-            availableData.AvailableFields.AddRange(crates.SelectMany(x => x.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0).SelectMany(x => x.Fields));
             availableData.AvailableCrates.AddRange(crates.SelectMany(x => x.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
 
             return availableData;
         }
         
-        public List<T> GetCrateManifestsByDirection<T>(
+        public List<CrateDescriptionCM> GetCrateManifestsByDirection(
             Guid activityId,
             CrateDirection direction,
             AvailabilityType availability,
             bool includeCratesFromActivity = true
-                ) where T : Fr8Data.Manifests.Manifest
+                ) 
         {
-            Func<Crate<T>, bool> cratePredicate;
+            Func<Crate<CrateDescriptionCM>, bool> cratePredicate;
 
             if (availability == AvailabilityType.NotSet)
             {
                 //validation errors don't need to be present as available data, so remove Validation Errors
-                cratePredicate = f => f.Label != ValidationErrorsLabel;
+                cratePredicate = f => f.Label != ValidationErrorsLabel && f.Availability != AvailabilityType.Configuration;
             }
             else
             {
@@ -118,12 +113,53 @@ namespace Hub.Services
                 {
                     activities = activities.Where(x => x.Id != activityId);
                 }
+                // else
+                // {
+                //     if (!activities.Any(x => x.Id == activityId))
+                //     {
+                //         var activitiesToAdd = activities.ToList();
+                //         activitiesToAdd.Insert(0, activityDO);
+                //         activities = activitiesToAdd;
+                //     }
+                // }
 
+                List<FieldDescriptionsCM> fields = new List<FieldDescriptionsCM>();
                 var result = activities
-                    .SelectMany(x => _crate.GetStorage(x).CratesOfType<T>().Where(cratePredicate))
-                    .Select(x => x.Content)
+                    .SelectMany(x =>
+                    {
+                        fields.AddRange(
+                            _crate.GetStorage(x)
+                                .CratesOfType<FieldDescriptionsCM>()
+                                .Where(f => f.Label != ValidationErrorsLabel && f.Availability != AvailabilityType.Configuration)
+                                .Select(y=>y.Content)
+                                .ToList()
+                        );
+                        return _crate.GetStorage(x).CratesOfType<CrateDescriptionCM>().Where(cratePredicate);
+                    })
+                    .Select(x =>
+                    {
+                        if (x.Content.CrateDescriptions.Count > 0)
+                        {
+                            x.Content.CrateDescriptions[0].Fields.AddRange(fields.SelectMany(f => f.Fields).Where(f => availability == AvailabilityType.NotSet || (f.Availability & availability) != 0));
+                            foreach (var field in x.Content.CrateDescriptions[0].Fields)
+                            {
+                                if (field.SourceCrateLabel == null)
+                                {
+                                    if (x.Content.CrateDescriptions[0].Label == null)
+                                    {
+                                        field.SourceCrateLabel = x.Content.CrateDescriptions[0].ProducedBy;
+                                    }
+                                    else
+                                    {
+                                        field.SourceCrateLabel = x.Content.CrateDescriptions[0].Label;
+                                    }
+                                }
+                            }
+                        }
+                        return x.Content;
+                    })
                     .ToList();
-
+                            
                 return result;
             }
         }

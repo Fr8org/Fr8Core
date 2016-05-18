@@ -59,14 +59,6 @@
       <HintPath>..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
       <Private>True</Private>
     </Reference>
-    <Reference Include="Hangfire.Core, Version=1.5.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Hangfire.Core.1.5.3\lib\net45\Hangfire.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="Hangfire.SqlServer, Version=1.5.3.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Hangfire.SqlServer.1.5.3\lib\net45\Hangfire.SqlServer.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
     <Reference Include="log4net, Version=1.2.13.0, Culture=neutral, PublicKeyToken=669e0ddf0bb1aa2a, processorArchitecture=MSIL">
       <HintPath>..\packages\log4net.2.0.3\lib\net40-full\log4net.dll</HintPath>
       <Private>True</Private>
@@ -251,6 +243,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activities\BaseDocuSignActivity.cs" />
+    <Compile Include="Activities\EnhancedDocuSignActivity.cs" />
     <Compile Include="Activities\Extract_Data_From_Envelopes_v1.cs" />
     <Compile Include="Activities\Generate_DocuSign_Report_v1.cs">
       <SubType>Code</SubType>
@@ -258,7 +251,7 @@
     <Compile Include="Activities\Get_DocuSign_Template_v1.cs" />
     <Compile Include="Activities\Mail_Merge_Into_DocuSign_v1.cs" />
     <Compile Include="Activities\Archive_DocuSign_Template_v1.cs" />
-    <Compile Include="Activities\Process_Personal_Report_v1.cs" />
+    <Compile Include="Activities\Query_DocuSign_v2.cs" />
     <Compile Include="Activities\Search_DocuSign_History_v1.cs" />
     <Compile Include="Activities\Query_DocuSign_v1.cs" />
     <Compile Include="Activities\Get_DocuSign_Envelope_v1.cs" />
@@ -287,12 +280,13 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\DocuSignEventNames.cs" />
-    <Compile Include="Infrastructure\TerminalDataAutoMapperBootStrapper.cs" />
     <Compile Include="Infrastructure\TerminalDocuSignMapBootstrapper.cs" />
     <Compile Include="Interfaces\IDocuSignConnect.cs" />
+    <Compile Include="Interfaces\IDocuSignFolders.cs" />
     <Compile Include="Interfaces\IDocuSignPlan.cs" />
     <Compile Include="Services\DocuSignConnect.cs" />
     <Compile Include="Services\DocuSignFolders.cs" />
+    <Compile Include="Services\DocuSignFoldersWrapper.cs" />
     <Compile Include="Services\DocuSignPolling.cs" />
     <Compile Include="Services\DocuSignQuery.cs" />
     <Compile Include="Services\DocuSignPlan.cs" />

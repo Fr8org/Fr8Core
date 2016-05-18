@@ -51,9 +51,6 @@ namespace terminalTwilioTests.Activities
 
             var activityDO = FixtureData.ConfigureTwilioActivity();
             var actionService = new Mock<IActivity>();
-            actionService
-                .Setup(c => c.MapFromDTO(It.IsAny<ActivityDTO>()))
-                .Returns(activityDO);
             ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(actionService.Object));
             var activity = FixtureData.ConfigureTwilioActivity();
             var baseTerminalAction = new Mock<BaseTerminalActivity>();
@@ -125,7 +122,7 @@ namespace terminalTwilioTests.Activities
             var smsINfo = _twilioActivity.ParseSMSNumberAndMsg(crateDTO, new PayloadDTO(Guid.Empty));
 
             Assert.AreEqual("+15005550006", smsINfo.Key);
-            Assert.AreEqual("Fr8 Alert: Unit Test Message For more info, visit http://fr8.co/sms", smsINfo.Value);
+            Assert.AreEqual("Unit Test Message", smsINfo.Value);
         }
     }
 }

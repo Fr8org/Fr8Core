@@ -16,24 +16,22 @@ namespace Hub.Interfaces
         IList<PlanDO> GetByName(IUnitOfWork uow, Fr8AccountDO account, string name, PlanVisibility visibility);
         void CreateOrUpdate(IUnitOfWork uow, PlanDO submittedPlan);
         PlanDO Create(IUnitOfWork uow, string name, string category = "");
-        void Delete(IUnitOfWork uow, Guid id);
+        Task Delete(Guid id);
 
         IList<PlanDO> GetMatchingPlans(string userId, EventReportCM curEventReport);
         Task<ActivateActivitiesDTO> Activate(Guid planId, bool planBuilderActivate);
-        Task<string> Deactivate(Guid curPlanId);
+        Task Deactivate(Guid curPlanId);
 
         PlanDO GetPlanByActivityId(IUnitOfWork uow, Guid planActivityId);
-        //  ActionListDO GetActionList(IUnitOfWork uow, int id);
         List<PlanDO> MatchEvents(List<PlanDO> curPlans, EventReportCM curEventReport);
+        bool IsMonitoringPlan(IUnitOfWork uow, PlanDO planDo);
 
         PlanDO Copy(IUnitOfWork uow, PlanDO curPlanDO, string name);
 
         void Enqueue(Guid curPlanId, params Crate[] curEventReport);
-        void Enqueue(List<PlanDO> curPlans, params Crate[] curEventReport);
+        void Enqueue(IEnumerable<PlanDO> curPlans, params Crate[] curEventReport);
         ContainerDO Create(IUnitOfWork uow, Guid planId, params Crate[] curPayload);
-        Task<ContainerDO> Run(PlanDO curPlan, params Crate[] curPayload);
-        Task<ContainerDO> Run(Guid planId, params Crate[] curPayload);
-        Task<ContainerDO> Run(IUnitOfWork uow, PlanDO curPlan, params Crate[] curPayload);
+        Task<ContainerDO> Run(Guid planId, Crate[] curPayload);
         Task<ContainerDO> Continue(Guid containerId);
         Task<PlanDO> Clone(Guid planId);
     }

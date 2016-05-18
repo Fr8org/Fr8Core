@@ -12,6 +12,7 @@ using ServiceStack;
 using StructureMap;
 using TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
+using TerminalBase.Infrastructure;
 
 namespace terminalSalesforce.Actions
 {
@@ -73,7 +74,7 @@ namespace terminalSalesforce.Actions
             return Task.FromResult(true);
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller)
+        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             //If Salesforce object is empty then we should clear filters as they are no longer applicable
             var selectedObject = ConfigurationControls.SalesforceObjectSelector.selectedKey;
@@ -97,6 +98,13 @@ namespace terminalSalesforce.Actions
                 new FieldDescriptionsCM(selectedObjectProperties),
                 AvailabilityType.Configuration);
             CurrentActivityStorage.ReplaceByLabel(queryFilterCrate);
+
+
+            var objectPropertiesCrate = Crate<FieldDescriptionsCM>.FromContent(
+            SalesforceObjectFieldsCrateLabel,
+            new FieldDescriptionsCM(selectedObjectProperties.Select(c => new FieldDTO(c.Key, c.Key) { SourceCrateLabel = RuntimeDataCrateLabel })),
+            AvailabilityType.RunTime);
+            CurrentActivityStorage.ReplaceByLabel(objectPropertiesCrate);
 
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
             //Publish information for downstream activities

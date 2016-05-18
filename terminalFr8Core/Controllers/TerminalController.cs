@@ -54,17 +54,6 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
-                Name = "Process_Personnel_Report",
-                Label = "Process Personnel Report",
-                Category = ActivityCategory.Processors,
-                Terminal = terminal,
-                WebService = webService,
-                Version = "1",
-                MinPaneWidth = 330
-            });
-
-            result.Add(new ActivityTemplateDTO
-            {
                 Name = "TestIncomingData",
                 Label = "Test Incoming Data",
                 Category = ActivityCategory.Processors,
@@ -316,8 +305,8 @@ namespace terminalFr8Core.Controllers
                 NeedsAuthentication = false,
                 Terminal = terminal,
                 WebService = webService,
-                MinPaneWidth = 550,
-                Tags = Tags.AggressiveReload
+                MinPaneWidth = 550
+                // Tags = Tags.AggressiveReload
             });
 
             result.Add(new ActivityTemplateDTO
@@ -334,8 +323,8 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
-                Name = "CollectData",
-                Label = "Collect Data",
+                Name = "AppBuilder",
+                Label = "App Builder",
                 Version = "1",
                 Category = ActivityCategory.Processors,
                 NeedsAuthentication = false,

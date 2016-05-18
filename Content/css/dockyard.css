@@ -108,6 +108,10 @@
     padding: 5px 0px 0 15px
 }
 
+.sub-panel-header .designer-header-title.page-title {
+    padding: 5px 0px 0px 0px
+}
+
 .design-header-title-editField {
     display: none;
     font-size: 22px;
@@ -143,9 +147,15 @@
     cursor: pointer;
 }
 
+.sub-plan-container {
+    padding-top:50px;
+}
+
 .route-name {
     display: inline-block;
     vertical-align: top;
+    color: #697882;
+    font-weight: 400;
 }
 
 .designer-header-status {
@@ -886,9 +896,18 @@ div[dnd-list].dndDragover {
 
 /*END OF DRAG DROP RELATED CSS */
 
-.upstreamFieldChooser {
-    table-layout: fixed;
+.upstream-field-chooser {
+    
     word-wrap: break-word;
+    max-height:500px;
+}
+
+.upstream-field-chooser span{
+    margin-left:10px;
+}
+
+.upstream-field-chooser-modal  th[title]{
+    padding:0;
 }
 
 [ng-table-pagination] {
@@ -948,6 +967,12 @@ div[dnd-list].dndDragover {
     border-color: red;
     outline-color: red;
 }
+
+.invalid-field {
+    border-color: red !important;
+    outline-color: red !important;
+}
+
 
 .ng-valid {
     border-color: green;
@@ -1204,6 +1229,10 @@ i.activity-stream-font {
 
 .fr8-text-source-panel {
     padding: 6px 0 0 0;
+}
+
+.fr8-config-pane-padding {
+    padding-left: 8px;
 }
 
 footer {

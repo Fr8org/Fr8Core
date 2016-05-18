@@ -13,6 +13,7 @@ using TerminalBase.BaseClasses;
 using terminalGoogle.Services;
 using StructureMap;
 using terminalGoogle.Interfaces;
+using TerminalBase.Infrastructure;
 
 namespace terminalGoogle.Actions
 {
@@ -79,7 +80,7 @@ namespace terminalGoogle.Actions
             crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller)
+        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             var googleAuth = GetGoogleAuthToken();
             var forms = await _googleDrive.GetGoogleForms(googleAuth);

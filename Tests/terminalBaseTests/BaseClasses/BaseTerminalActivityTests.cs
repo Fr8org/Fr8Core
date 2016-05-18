@@ -124,7 +124,7 @@ namespace terminalBaseTests.BaseClasses
 
                 var result = await _baseTerminalActivity.GetDesignTimeFields(curAction, CrateDirection.Upstream);
                 Assert.NotNull(result);
-                Assert.AreEqual(48, result.Fields.Count);
+                Assert.AreEqual(216, result.Fields.Count);
             }
         }
 
@@ -145,7 +145,7 @@ namespace terminalBaseTests.BaseClasses
 
                 var result = await _baseTerminalActivity.GetDesignTimeFields(curAction, CrateDirection.Downstream);
                 Assert.NotNull(result);
-                Assert.AreEqual(54, result.Fields.Count);
+                Assert.AreEqual(270, result.Fields.Count);
             }
         }
 
@@ -173,7 +173,7 @@ namespace terminalBaseTests.BaseClasses
 
                 Assert.NotNull(manifestList);
                 Assert.AreEqual(manifestList.Count(), manifestList.Distinct().Count());
-                Assert.AreEqual(3, manifestList.Count());
+                Assert.AreEqual(4, manifestList.Count());
 
                 foreach (var manifest in manifestList)
                 {

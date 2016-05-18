@@ -277,7 +277,7 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Activities\App_Data\" />
+    <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj">

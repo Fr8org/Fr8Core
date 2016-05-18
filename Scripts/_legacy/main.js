@@ -75,7 +75,8 @@ function someResize(){
 			} else {
 				$(this).css("top", headerHeight + 20);
 				$(this).parents("section").find(".inner-bg.full-size-bg").css("min-height", ($(this).height() + parseInt($(this).css('top'))));
-				$(this).parents("section").css("padding-bottom", "20px");
+				$(this).parents("section").css("min-height", ($(this).height() + parseInt($(this).css('top'))));
+				$(this).parents("section").css("margin-bottom", "60px");
 			}
 		}
 	});

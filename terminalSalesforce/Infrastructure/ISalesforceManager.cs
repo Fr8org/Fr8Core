@@ -13,7 +13,7 @@ namespace terminalSalesforce.Infrastructure
 
         Task<StandardTableDataCM> Query(SalesforceObjectType type, IEnumerable<string> propertiesToRetrieve, string filter, AuthorizationTokenDO authTokenDO);
         
-        Task<List<FieldDTO>> GetProperties(SalesforceObjectType type, AuthorizationTokenDO authTokenDO, bool updatableOnly = false);
+        Task<List<FieldDTO>> GetProperties(SalesforceObjectType type, AuthorizationTokenDO authTokenDO, bool updatableOnly = false, string label = null);
 
         T CreateSalesforceDTO<T>(ActivityDO activity, PayloadDTO payload) where T : new();
 

@@ -105,7 +105,7 @@ namespace terminalIntegrationTests.EndToEnd
         {
             var configuration = new DocuSignManager().SetUp(_docuSignTestTools.GetDocuSignAuthToken(docuSignTokenId));
             //find the envelope on the Docusign Account
-            var folderItems = DocuSignFolders.GetFolderItems(configuration, new DocusignQuery()
+            var folderItems = DocuSignFolders.GetFolderItems(configuration, new DocuSignQuery()
             {
                 Status = "sent",
                 SearchText = expectedName
@@ -190,7 +190,7 @@ namespace terminalIntegrationTests.EndToEnd
 
         private async Task<PlanDTO> CreatePlan()
         {
-            var solutionCreateUrl = GetHubApiBaseUrl() + "activities/create?solutionName=Mail_Merge_From_Salesforce";
+            var solutionCreateUrl = GetHubApiBaseUrl() + "plans/createSolution?solutionName=Mail_Merge_From_Salesforce";
             return await HttpPostAsync<string, PlanDTO>(solutionCreateUrl, null);
         }
 

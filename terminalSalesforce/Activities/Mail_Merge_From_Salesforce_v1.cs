@@ -15,6 +15,7 @@ using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Managers;
 using ServiceStack;
+using TerminalBase.Infrastructure;
 
 namespace terminalSalesforce.Actions
 {
@@ -87,28 +88,27 @@ namespace terminalSalesforce.Actions
             _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
         }
 
-        protected override Task<bool> Validate()
+        protected override Task Validate(ValidationManager validationManager)
         {
             if (ConfigurationControls.RunMailMergeButton.Clicked)
             {
-                ConfigurationControls.SalesforceObjectSelector.ErrorMessage = string.IsNullOrEmpty(ConfigurationControls.SalesforceObjectSelector.selectedKey)
-                                                                          ? "Object is not selected"
-                                                                          : string.Empty;
-                ConfigurationControls.MailSenderActivitySelector.ErrorMessage = string.IsNullOrEmpty(ConfigurationControls.MailSenderActivitySelector.selectedKey)
-                                                                                ? "Mail sender is not selected"
-                                                                                : string.Empty;
-                var isValid = string.IsNullOrEmpty(ConfigurationControls.SalesforceObjectSelector.ErrorMessage)
-                           && string.IsNullOrEmpty(ConfigurationControls.MailSenderActivitySelector.ErrorMessage);
-                if (!isValid)
+                if (string.IsNullOrEmpty(ConfigurationControls.SalesforceObjectSelector.selectedKey))
                 {
+                    validationManager.SetError("Object is not selected", ConfigurationControls.SalesforceObjectSelector);
                     ConfigurationControls.RunMailMergeButton.Clicked = false;
                 }
-                return Task.FromResult(isValid);
+
+                if (string.IsNullOrEmpty(ConfigurationControls.MailSenderActivitySelector.selectedKey))
+                {
+                    validationManager.SetError("Mail sender is not selected", ConfigurationControls.MailSenderActivitySelector);
+                    ConfigurationControls.RunMailMergeButton.Clicked = false;
+                }
             }
+
             return Task.FromResult(true);
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller)
+        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
             if (ConfigurationControls.RunMailMergeButton.Clicked)
             {
