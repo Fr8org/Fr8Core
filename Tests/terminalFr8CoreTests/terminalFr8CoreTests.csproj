@@ -158,6 +158,7 @@
     <Compile Include="Integration\MapFields_v1_Tests.cs" />
     <Compile Include="Integration\Select_Fr8_Object_v1Tests.cs" />
     <Compile Include="Unit\Loop_v1Tests.cs" />
+    <Compile Include="Unit\Send_Email_Via_SendGrid_v1Tests.cs" />
     <Compile Include="Unit\TestIncomingData_v1Tests.cs" />
     <Compile Include="Unit\SelectFr8Object_v1Tests.cs" />
     <Compile Include="Fixtures\FixtureData - CoreSelfHostFactory.cs" />
@@ -183,6 +184,10 @@
     <ProjectReference Include="..\..\terminalFr8Core\terminalFr8Core.csproj">
       <Project>{ad226a7f-0641-4589-93eb-06e5ee7e767b}</Project>
       <Name>terminalFr8Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\terminalUtilities\terminalUtilities.csproj">
+      <Project>{e46b602a-287b-450f-b455-5eed20c93eb7}</Project>
+      <Name>terminalUtilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\HealthMonitorUtility\HealthMonitorUtility.csproj">
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>

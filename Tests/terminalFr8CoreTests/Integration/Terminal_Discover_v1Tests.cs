@@ -9,7 +9,7 @@ namespace terminalFr8CoreTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
-        private const int Fr8CoreActivityCount = 26;
+        private const int Fr8CoreActivityCount = 28;
         private const string TestIncomingDataName = "TestIncomingData";
         private const string MapFieldsName = "MapFields";
         private const string AddPayloadManuallyName = "AddPayloadManually";
@@ -35,6 +35,8 @@ namespace terminalFr8CoreTests.Integration
         private const string ExtractTableField = "ExtractTableField";
         private const string AppBuilder = "AppBuilder";
         private const string GetDataFromFr8Warehouse = "GetDataFromFr8Warehouse";
+        private const string SendEmailViaSendGrid = "Send_Email_Via_SendGrid";
+        private const string SendSMSViaTwilio = "Send_SMS_Via_Twilio";
 
 
         public override string TerminalName
@@ -76,6 +78,8 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ExtractTableField));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == AppBuilder));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == GetDataFromFr8Warehouse));
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SendEmailViaSendGrid));
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SendSMSViaTwilio));
         }
     }
 }
