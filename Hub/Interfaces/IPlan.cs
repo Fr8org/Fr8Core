@@ -29,7 +29,7 @@ namespace Hub.Interfaces
         PlanDO Copy(IUnitOfWork uow, PlanDO curPlanDO, string name);
 
         void Enqueue(Guid curPlanId, params Crate[] curEventReport);
-        void Enqueue(List<PlanDO> curPlans, params Crate[] curEventReport);
+        void Enqueue(IEnumerable<PlanDO> curPlans, params Crate[] curEventReport);
         ContainerDO Create(IUnitOfWork uow, Guid planId, params Crate[] curPayload);
         Task<ContainerDO> Run(Guid planId, Crate[] curPayload);
         Task<ContainerDO> Continue(Guid containerId);

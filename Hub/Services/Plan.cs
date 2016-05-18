@@ -279,14 +279,17 @@ namespace Hub.Services
                             ReportAuthError(plan.Fr8Account, (InvalidTokenRuntimeException)e);
                         }
                     }
+
+                    EventManager.PlanActivationFailed(plan, "Unable to activate plan");
                     throw;
                 }
                 catch (InvalidTokenRuntimeException ex)
                 {
                     ReportAuthError(plan.Fr8Account, (InvalidTokenRuntimeException)ex);
+                    EventManager.PlanActivationFailed(plan, "Unable to activate plan");
                     throw;
                 }
-
+                
                 foreach (var resultActivate in activitiesTask.Select(x => x.Result))
                 {
                     var errors = new ValidationErrorsDTO(ExtractValidationErrors(resultActivate));
@@ -529,7 +532,7 @@ namespace Hub.Services
         private void ReportAuthError(Fr8AccountDO user, InvalidTokenRuntimeException ex)
         {
             string errorMessage = $"Activity {ex?.FailedActivityDTO.Label} was unable to authenticate with " +
-                    $"{ex?.FailedActivityDTO.ActivityTemplate.WebService.Name}. Plan execution has stopped. ";
+                    $"{ex?.FailedActivityDTO.ActivityTemplate.WebService.Name}. ";
 
             errorMessage += $"Please re-authorize Fr8 to connect to {ex?.FailedActivityDTO.ActivityTemplate.WebService.Name} " +
                     $"by clicking on the Settings dots in the upper " +
@@ -555,8 +558,12 @@ namespace Hub.Services
 #pragma warning restore CS4014 // Because this call is not awaited, execution of the current method continues before the call is completed
         }
 
-        public void Enqueue(List<PlanDO> curPlans, params Crate[] curEventReport)
+        public void Enqueue(IEnumerable<PlanDO> curPlans, params Crate[] curEventReport)
         {
+            if (curPlans == null)
+            {
+                return;
+            }
             foreach (var curPlan in curPlans)
             {
                 Enqueue(curPlan.Id, curEventReport);

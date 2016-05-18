@@ -588,7 +588,7 @@ namespace Hub.Services
         private void ReportActivityInvocationError(ActivityDO activity, string error, Action<string, string, string, string> reportingAction)
         {
             var endpoint = _activityTemplate.GetTerminalUrl(activity.ActivityTemplateId) ?? "<no terminal url>";
-            EventManager.TerminalConfigureFailed(endpoint, null, error, activity.Id.ToString());
+            reportingAction(endpoint, null, error, activity.Id.ToString());
         }
 
 
