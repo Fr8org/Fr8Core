@@ -98,12 +98,12 @@ namespace TerminalBase.Services
             return payloadDTOTask;
         }
 
-        public async Task<UserDTO> GetCurrentUser(Guid containerId, string userId)
+        public async Task<UserDTO> GetCurrentUser(string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/user/getUserData?id=" + userId;
             var uri = new Uri(url, UriKind.Absolute);
-            var curUser = await _restfulServiceClient.GetAsync<UserDTO>(new Uri(url, UriKind.Absolute), containerId.ToString(), await GetHMACHeader(uri, userId));
+            var curUser = await _restfulServiceClient.GetAsync<UserDTO>(new Uri(url, UriKind.Absolute), null, await GetHMACHeader(uri, userId));
 
             return curUser;
         }

@@ -3,15 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Data.Entities;
-using Data.Infrastructure.AutoMapper;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using Hub.StructureMap;
 using Moq;
 using NUnit.Framework;
 using SendGrid;
@@ -22,6 +17,8 @@ using terminalSendGrid.Services;
 using terminalSendGrid.Tests.Fixtures;
 using TerminalBase.Infrastructure;
 using Utilities;
+using TerminalBase.Models;
+using Fr8Data.Managers;
 
 namespace terminalSendGrid.Tests.Actions
 {
@@ -112,7 +109,7 @@ namespace terminalSendGrid.Tests.Actions
             _gridActivity = new SendEmailViaSendGrid_v1();
             var curActivityDO = FixtureData.ConfigureSendEmailViaSendGridActivity();
             ActivityDTO curActionDTO = Mapper.Map<ActivityDTO>(curActivityDO);
-            var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
+            var curAuthTokenDO = Mapper.Map<AuthorizationToken>(curActionDTO.AuthToken);
             var actionResult = _gridActivity.Configure(curActivityDO, curAuthTokenDO).Result;
             return Mapper.Map<ActivityDTO>(actionResult);
         }
@@ -127,8 +124,8 @@ namespace terminalSendGrid.Tests.Actions
 
             ActivityDTO curActionDTO = Mapper.Map<ActivityDTO>(curActivityDO);
             curActionDTO.CrateStorage = activityDto.CrateStorage;
-            var curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
-            var activityDO = Mapper.Map<ActivityDO>(curActionDTO);
+            var curAuthTokenDO = Mapper.Map<AuthorizationToken>(curActionDTO.AuthToken);
+            var activityDO = Mapper.Map<ActivityDTO>(curActionDTO);
 
             //updating controls
             var standardControls = _crate.FromDto(activityDto.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
