@@ -54,6 +54,7 @@
     <Compile Include="Constants\ManifestIdEnum.cs" />
     <Compile Include="Constants\Tags.cs" />
     <Compile Include="Control\Control.cs" />
+    <Compile Include="Control\ControlExtensions.cs" />
     <Compile Include="Crates\Crate.cs" />
     <Compile Include="Crates\CrateManifestAttribute.cs" />
     <Compile Include="Crates\CrateManifestType.cs" />
