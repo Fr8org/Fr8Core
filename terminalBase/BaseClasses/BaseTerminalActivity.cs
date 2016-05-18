@@ -703,7 +703,7 @@ namespace TerminalBase.BaseClasses
             }
         }
 
-        public virtual Task RunChildActivities()
+        protected virtual Task RunChildActivities()
         {
             return Task.FromResult(0);
         }

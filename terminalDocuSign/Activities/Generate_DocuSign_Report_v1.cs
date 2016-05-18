@@ -198,7 +198,7 @@ namespace terminalDocuSign.Activities
             Success();
         }
 
-        public override async Task RunChildActivities()
+        protected override async Task RunChildActivities()
         {
             if (ConfigurationControls == null)
             {

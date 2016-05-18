@@ -36,6 +36,29 @@ namespace terminaBaselTests.BaseClasses
         Validate = 0x40,
     }
 
+    class BaseTerminalActivityMock : BaseTerminalActivity
+    {
+        public BaseTerminalActivityMock(bool isAuthenticationRequired) : base(isAuthenticationRequired)
+        {
+        }
+
+        protected override ActivityTemplateDTO MyTemplate { get; }
+        public override Task Run()
+        {
+            return Task.FromResult(0);
+        }
+
+        public override Task Initialize()
+        {
+            return Task.FromResult(0);
+        }
+
+        public override Task FollowUp()
+        {
+            return Task.FromResult(0);
+        }
+    }
+
     class ActivityOverrideCheckMock : EnhancedTerminalActivity<StandardConfigurationControlsCM>
     {
         public CalledMethod CalledMethods = 0;
@@ -87,7 +110,7 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        public override Task RunChildActivities()
+        protected override Task RunChildActivities()
         {
             CalledMethods |= CalledMethod.ChildActivitiesExecuted;
             CheckBasicPropeties();

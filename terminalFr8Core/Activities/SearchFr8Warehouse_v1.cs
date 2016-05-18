@@ -103,7 +103,7 @@ namespace terminalFr8Core.Activities
         {
         }
 
-        public override Task RunChildActivities()
+        protected override Task RunChildActivities()
         {
             var queryMTResult = Payload
                 .CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "Found MT Objects")

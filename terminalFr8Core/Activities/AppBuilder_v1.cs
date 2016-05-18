@@ -210,8 +210,7 @@ namespace terminalFr8Core.Activities
 
         protected Crate CreateCollectionControlsCrate()
         {
-            var configControls = GetConfigurationControls();
-            var controlContainer = configControls.FindByName<MetaControlContainer>("control_container");
+            var controlContainer = GetControl<MetaControlContainer>("control_container");
             var generatedConfigControls = controlContainer.CreateControls();
             //let's add a submit button here
             var submitButton = new Button

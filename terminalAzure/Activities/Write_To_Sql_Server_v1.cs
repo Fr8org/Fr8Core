@@ -105,8 +105,7 @@ namespace terminalAzure.Activities
 
         public List<string> GetFieldMappings()
         {
-            var confControls = GetConfigurationControls();
-            var connStringField = confControls.Controls.First();
+            var connStringField = ConfigurationControls.Controls.First();
             var curProvider = ObjectFactory.GetInstance<IDbProvider>();
 
             return (List<string>)curProvider.ConnectToSql(connStringField.Value, (command) =>

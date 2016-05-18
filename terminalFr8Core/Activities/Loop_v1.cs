@@ -35,7 +35,7 @@ namespace terminalFr8Core.Activities
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        public override Task RunChildActivities()
+        protected override Task RunChildActivities()
         {
             JumpToActivity(ActivityId);
             return Task.FromResult(0);
