@@ -13,8 +13,8 @@
     <designer-header class="designer-header-fixed" ng-show="current.plan" plan="current.plan"></designer-header>
     <div ng-if="editingMode=='advanced'" class="col-md-12" style="border-bottom: 1px solid; margin-bottom: 10px;"></div>
     <div class="plan-loading-message" block-if="current.plan"></div>
-    <div ng-repeat="pSubPlan in processedSubPlans" style="padding-top:50px;">
-        <subplan-header ng-if="editingMode=='advanced'" subplan="pSubPlan.subPlan"></subplan-header>
+    <div ng-repeat="pSubPlan in processedSubPlans">
+        <subplan-header ng-if="editingMode=='advanced'" subplan="pSubPlan.subPlan" ng-class="{'initial-sub-plan-header':$first}"></subplan-header>
         <div class="route-builder-container" layout-container>
             <div ng-repeat="group in pSubPlan.actionGroups" layout-action-group class="action-group" ng-style="{left: group.offsetLeft, top: group.offsetTop}">
                 <div ng-if="mode !== 'solution' || $index === 0">
