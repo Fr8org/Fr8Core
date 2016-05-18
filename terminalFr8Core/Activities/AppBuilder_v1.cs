@@ -160,7 +160,7 @@ namespace terminalFr8Core.Actions
                         AvailabilityType.RunTime);
                     var payload = new List<CrateDTO>() {CrateManager.ToDto(flagCrate)};
                     //we need to start the process - run current plan - that we belong to
-                    await HubCommunicator.RunPlan(curActivityDO.RootPlanNodeId.Value, payload, CurrentFr8UserId);
+                    HubCommunicator.RunPlan(curActivityDO.RootPlanNodeId.Value, payload, CurrentFr8UserId);
                     //after running the plan - let's reset button state
                     //so next configure calls will be made with a fresh state
                     UnClickSubmitButton(curActivityDO);

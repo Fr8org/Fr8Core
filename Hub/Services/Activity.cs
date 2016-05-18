@@ -173,8 +173,7 @@ namespace Hub.Services
         [AuthorizeActivity(Permission = PermissionType.EditObject, ParamType = typeof(ActivityDO), TargetType = typeof(PlanNodeDO))]
         public async Task<ActivityDTO> Activate(ActivityDO submittedActivity)
         {
-            // TODO: FR-3220, temporarily commenting following line, until better solution is suggested.
-            // using (await _configureLock.Lock(submittedActivity.Id))
+            using (await _configureLock.Lock(submittedActivity.Id))
             {
                 try
                 {
