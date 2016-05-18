@@ -32,7 +32,8 @@ namespace HubTests.Managers
             var activityDTO = "test_action"; 
             var errorMessage = "error_message";
 
-            var data = terminalUrl + "      " + activityDTO + " " + errorMessage;
+            //var data = terminalUrl + "      " + activityDTO + " " + errorMessage;
+            var data = terminalUrl + "  ActionId = [" + activityDTO + "] " + errorMessage;
 
             EventManager.TerminalRunFailed(terminalUrl, activityDTO, errorMessage, System.Guid.NewGuid().ToString());
 
