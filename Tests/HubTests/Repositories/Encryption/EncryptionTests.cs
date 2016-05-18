@@ -12,6 +12,7 @@ using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using Fr8Data.States;
 
 namespace HubTests.Repositories.Encryption
 {

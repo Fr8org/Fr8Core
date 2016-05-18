@@ -8,7 +8,6 @@ using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.Manifests;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
@@ -53,7 +52,7 @@ namespace terminaBaselTests.BaseClasses
             return base.GetConfigurationRequestType();
         }
 
-        protected override Task Initialize(CrateSignaller crateSignaller)
+        protected override Task InitializeETA()
         {
             CalledMethods |= CalledMethod.Initialize;
             CheckBasicPropeties();
@@ -61,7 +60,7 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
+        protected override Task ConfigureETA()
         {
             CalledMethods |= CalledMethod.Configure;
             CheckBasicPropeties();

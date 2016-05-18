@@ -12,6 +12,7 @@ using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting.Fixtures;
 using UtilitiesTesting;
+using Fr8Data.Managers;
 
 namespace HubTests.Managers
 {
@@ -58,7 +59,7 @@ namespace HubTests.Managers
             var curCrateDTOContents = "{\"Item\":[{\"Name\":\"LogItemDTO1\",\"PrimaryCategory\":\"Container\",\"SecondaryCategory\":\"LogItemDTO Generator\",\"Activity\":\"Add Log Message\",\"Data\":\"\"}],\"ManifestType\":13,\"ManifestId\":13,\"ManifestName\":\"Standard Logging Crate\"}";
 
             //Act
-            _crateManager.AddLogMessage(curLabel, curLogItemList, curContainerDO);
+            //_crateManager.AddLogMessage(curLabel, curLogItemList, curContainerDO.);
             var updatedCrate = _crateManager.GetStorage(curContainerDO.CrateStorage).FirstCrateOrDefault<StandardLoggingCM>(x => x.Label == curLabel);
 
             //Assert

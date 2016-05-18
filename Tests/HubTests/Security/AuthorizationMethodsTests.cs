@@ -8,14 +8,14 @@ using Data.States;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using System.Collections.Generic;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using Moq;
-using Hub.Managers;
+using Fr8Data.Managers;
 using AutoMapper;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Interfaces;
+using Fr8Infrastructure.Interfaces;
 
 namespace HubTests.Security
 {

@@ -43,6 +43,23 @@ namespace Fr8Data.Managers
         {
             return new UpdatableCrateStorageStorage(storageAccessExpression);
         }
+        //public void AddLogMessage(string label, List<LogItemDTO> logItemList, ICrateStorage payload)
+	       // {
+	       // if (String.IsNullOrEmpty(label))
+	       //     throw new ArgumentException("Parameter Label is empty");
+
+	       // if (logItemList == null)
+	       //     throw new ArgumentNullException("Parameter LogItemDTO list is null.");
+
+	       // if (payload == null)
+	       //     throw new ArgumentNullException("Parameter ICrateStorage is null.");
+
+        //    var curManifestSchema = new StandardLoggingCM()
+	       // {
+	       //     Item = logItemList
+	       // };
+	       // payload.Add(Crate.FromContent(label, curManifestSchema));
+        //}
 
         /// <summary>
         /// Use this method to edit CrateStorage represented by string property of some class instance. This method will return IDisposable updater.

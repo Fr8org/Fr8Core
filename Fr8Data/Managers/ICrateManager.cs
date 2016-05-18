@@ -41,6 +41,7 @@ namespace Fr8Data.Managers
         Crate CreateOperationalStatusCrate(string label, OperationalStateCM eventReport);
         StandardPayloadDataCM TransformStandardTableDataToStandardPayloadData(string curObjectType, StandardTableDataCM tableDataMS);
         string GetFieldByKey<T>(CrateStorageDTO curCrateStorage, string findKey) where T : Manifest;
+        //void AddLogMessage(string label, List<LogItemDTO> logItemList, ICrateStorage payload);
         T GetByManifest<T>(PayloadDTO payloadDTO) where T : Manifest;
         OperationalStateCM GetOperationalState(PayloadDTO payloadDTO);
         IEnumerable<FieldDTO> GetFields(IEnumerable<Crate> crates);
