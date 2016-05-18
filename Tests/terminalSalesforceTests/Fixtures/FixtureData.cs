@@ -2,6 +2,8 @@
 using System.Threading.Tasks;
 using Data.Entities;
 using Salesforce.Common;
+using TerminalBase.Models;
+using Fr8Data.DataTransferObjects;
 
 namespace terminalSalesforceTests.Fixtures
 {
@@ -23,9 +25,9 @@ namespace terminalSalesforceTests.Fixtures
             };
         }
 
-        public static ActivityTemplateDO GetDataActivityTemplateDO()
+        public static ActivityTemplateDTO GetDataActivityTemplateDTO()
         {
-            return new ActivityTemplateDO
+            return new ActivityTemplateDTO
             {
                 Version = "1",
                 Name = "Get_Data",
@@ -34,9 +36,9 @@ namespace terminalSalesforceTests.Fixtures
             };
         }
 
-        public static ActivityTemplateDO SaveToSalesforceActivityTemplateDO()
+        public static ActivityTemplateDTO SaveToSalesforceActivityTemplateDTO()
         {
-            return new ActivityTemplateDO
+            return new ActivityTemplateDTO
             {
                 Version = "1",
                 Name = "Save_To_SalesforceDotCom",
@@ -56,35 +58,40 @@ namespace terminalSalesforceTests.Fixtures
             };
         }
 
-        public static ActivityDO GetFileListTestActivityDO1()
+        public static ActivityContext GetFileListTestActivityContext1()
         {
-            var actionTemplate = GetDataActivityTemplateDO();
+            var actionTemplate = GetDataActivityTemplateDTO();
 
-            var activityDO = new ActivityDO()
+            var activityPayload = new ActivityPayload()
             {
                 Id = new Guid("8339DC87-F011-4FB1-B47C-FEC406E4100A"),
-                ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
-                CrateStorage = "",
+                CrateStorage = null,
 
             };
-            return activityDO;
+            var activityContext = new ActivityContext()
+            {
+                ActivityPayload = activityPayload
+            };
+            return activityContext;
         }
 
-        public static ActivityDO SaveToSalesforceTestActivityDO1()
+        public static ActivityContext SaveToSalesforceTestActivityContext1()
         {
-            var actionTemplate = SaveToSalesforceActivityTemplateDO();
+            var actionTemplate = SaveToSalesforceActivityTemplateDTO();
 
-            var activityDO = new ActivityDO()
+            var activityPayload = new ActivityPayload()
             {
                 Id = new Guid("8339DC87-F011-4FB1-B47C-FEC406E4100A"),
-                ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
-                CrateStorage = "",
-
+                CrateStorage = null,
+            };
+            var activityContext = new ActivityContext()
+            {
+                ActivityPayload = activityPayload
             };
 
-            return activityDO;
+            return activityContext;
         }
 
         public static ActivityDO PostToChatterTestActivityDO1()

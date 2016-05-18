@@ -2,7 +2,6 @@
 using System.Threading.Tasks;
 using HealthMonitor.Utility;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
 using terminalSalesforceTests.Fixtures;
 using terminalSalesforce.Actions;
@@ -12,6 +11,9 @@ using Data.Entities;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using Fr8Infrastructure.Communication;
+using Fr8Data.Managers;
+using TerminalBase.Models;
 
 namespace terminalSalesforceTests.Intergration
 {
@@ -90,7 +92,7 @@ namespace terminalSalesforceTests.Intergration
                                          .SingleOrDefault();
             Assert.IsNotNull(newFeedIdCrate, "Feed is not created");
             Assert.IsTrue(await new SalesforceManager().Delete(SalesforceObjectType.FeedItem, 
-                newFeedIdCrate.Content.PayloadObjects[0].PayloadObject[0].Value, new AuthorizationTokenDO { Token = authToken.Token, AdditionalAttributes = authToken.AdditionalAttributes }), "Test feed created is not deleted");
+                newFeedIdCrate.Content.PayloadObjects[0].PayloadObject[0].Value, new AuthorizationToken { Token = authToken.Token, AdditionalAttributes = authToken.AdditionalAttributes }), "Test feed created is not deleted");
         }
 
         private async Task<ActivityDTO> PerformInitialConfiguration()

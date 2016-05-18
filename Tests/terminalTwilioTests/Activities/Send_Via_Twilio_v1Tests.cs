@@ -3,11 +3,8 @@ using System.Linq;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Infrastructure.AutoMapper;
-using Data.States;
 using Hub.Interfaces;
-using Hub.Managers;
-using Hub.StructureMap;
-using terminalTwilio.Actions;
+using Fr8Data.Managers;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
@@ -17,11 +14,12 @@ using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using System;
 using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using UtilitiesTesting;
 using terminalTwilio;
+using terminalTwilio.Activities;
+using Fr8Infrastructure.StructureMap;
 
 namespace terminalTwilioTests.Activities
 {
@@ -55,13 +53,13 @@ namespace terminalTwilioTests.Activities
             var activity = FixtureData.ConfigureTwilioActivity();
             var baseTerminalAction = new Mock<BaseTerminalActivity>();
             baseTerminalAction
-                .Setup(c => c.GetDesignTimeFields(It.IsAny<ActivityDO>(), CrateDirection.Upstream, AvailabilityType.NotSet))
+                .Setup(c => c.GetDesignTimeFields(CrateDirection.Upstream, AvailabilityType.NotSet))
                 .Returns(Task.FromResult(FixtureData.TestFields()));
             ObjectFactory.Configure(cfg => cfg.For<BaseTerminalActivity>().Use(baseTerminalAction.Object));
 
             var hubCommunicator = new Mock<IHubCommunicator>();
             hubCommunicator.Setup(hc => hc.GetDesignTimeFieldsByDirection(
-                                                It.IsAny<ActivityDO>(), 
+                                                It.IsAny<Guid>(), 
                                                 CrateDirection.Upstream, 
                                                 It.IsAny<AvailabilityType>(), 
                                                 It.IsAny<string>())).Returns(Task.FromResult(new FieldDescriptionsCM()));
@@ -69,13 +67,12 @@ namespace terminalTwilioTests.Activities
         }
 
         [Test]
-        public void Configure_ReturnsCrateDTO()
+        public async void Configure_ReturnsCrateDTO()
         {
             _twilioActivity = new Send_Via_Twilio_v1();
-            var curActivityDO = FixtureData.ConfigureTwilioActivity(); ;
-            AuthorizationTokenDO curAuthTokenDO = FixtureData.AuthTokenDOTest1();
-            var actionResult = _twilioActivity.Configure(curActivityDO, curAuthTokenDO).Result;
-            var controlsCrate = _crate.GetStorage(actionResult.CrateStorage).FirstOrDefault();
+            var curActivityContext = FixtureData.ConfigureTwilioActivity(); ;
+            await _twilioActivity.Configure(curActivityContext);
+            var controlsCrate = _crate.GetStorage(curActivityContext.ActivityPayload.CrateStorage).FirstOrDefault();
             Assert.IsNotNull(controlsCrate);
 
         }
@@ -119,7 +116,7 @@ namespace terminalTwilioTests.Activities
             _twilioActivity = new Send_Via_Twilio_v1();
             var crateDTO = FixtureData.CrateDTOForTwilioConfiguration();
 
-            var smsINfo = _twilioActivity.ParseSMSNumberAndMsg(crateDTO, new PayloadDTO(Guid.Empty));
+            var smsINfo = _twilioActivity.ParseSMSNumberAndMsg();
 
             Assert.AreEqual("+15005550006", smsINfo.Key);
             Assert.AreEqual("Unit Test Message", smsINfo.Value);

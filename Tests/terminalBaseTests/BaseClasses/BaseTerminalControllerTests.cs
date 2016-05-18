@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using UtilitiesTesting;
 using NUnit.Framework;
 using TerminalBase.BaseClasses;
@@ -6,12 +6,14 @@ using System.Threading.Tasks;
 using terminalTests.Fixtures;
 using Hub.Managers;
 using System.Linq;
-﻿using Fr8Data.Crates;
-﻿using Fr8Data.DataTransferObjects;
-﻿using Fr8Data.Manifests;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Hub.StructureMap;
 using StructureMap;
 using TerminalBase.Infrastructure;
+using Fr8Data.Managers;
+using TerminalBase.Services;
 
 namespace terminalBaseTests.BaseClasses
 {

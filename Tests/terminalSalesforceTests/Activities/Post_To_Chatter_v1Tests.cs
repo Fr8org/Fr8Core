@@ -17,6 +17,8 @@ using terminalSalesforce.Infrastructure;
 using terminalSalesforceTests.Fixtures;
 using TerminalBase.Infrastructure;
 using UtilitiesTesting;
+using TerminalBase.Models;
+using Fr8Data.Managers;
 
 namespace terminalSalesforceTests.Actions
 {
@@ -42,20 +44,20 @@ namespace terminalSalesforceTests.Actions
 
             Mock<IHubCommunicator> hubCommunicatorMock = new Mock<IHubCommunicator>(MockBehavior.Default);
 
-            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
+            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<Guid>(), It.IsAny<string>()))
                 .Returns(() => Task.FromResult(testPayloadDTO));
 
 
-            hubCommunicatorMock.Setup(h => h.GetDesignTimeFieldsByDirection(It.IsAny<ActivityDO>(), It.IsAny<CrateDirection>(), 
+            hubCommunicatorMock.Setup(h => h.GetDesignTimeFieldsByDirection(It.IsAny<CrateDirection>(), 
                 It.IsAny<AvailabilityType>(), It.IsAny<string>())).Returns(() => Task.FromResult(new FieldDescriptionsCM()));
 
             ObjectFactory.Container.Inject(typeof(IHubCommunicator), hubCommunicatorMock.Object);
 
             Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
-            salesforceIntegrationMock.Setup(si => si.GetUsersAndGroups(It.IsAny<AuthorizationTokenDO>())).Returns(
+            salesforceIntegrationMock.Setup(si => si.GetUsersAndGroups(It.IsAny<AuthorizationToken>())).Returns(
                 () => Task.FromResult<IList<FieldDTO>>(new List<FieldDTO> { new FieldDTO("One", "1")}));
             salesforceIntegrationMock.Setup(si => si.PostToChatter(It.IsAny<string>(), It.IsAny<string>(), 
-                It.IsAny<AuthorizationTokenDO>())).Returns(() => Task.FromResult("SomeValue"));
+                It.IsAny<AuthorizationToken>())).Returns(() => Task.FromResult("SomeValue"));
 
             postToChatter_v1 = new Post_To_Chatter_v1();
         }

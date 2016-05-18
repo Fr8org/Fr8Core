@@ -6,10 +6,12 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using NUnit.Framework;
 using HealthMonitor.Utility;
-using Hub.Managers;
+using Fr8Data.Managers;
 using terminalSlackTests.Fixtures;
 using terminalSlack.Actions;
 using TerminalBase.BaseClasses;
+using TerminalBase.Services;
+using Fr8Data.Managers;
 
 namespace terminalSlackTests.Integration
 {

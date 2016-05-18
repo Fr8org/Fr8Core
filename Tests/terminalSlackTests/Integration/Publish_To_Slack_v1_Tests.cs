@@ -7,6 +7,7 @@ using HealthMonitor.Utility;
 using Hub.Managers;
 using NUnit.Framework;
 using terminalSlackTests.Fixtures;
+using Fr8Data.Managers;
 
 namespace terminalSlackTests.Integration
 {

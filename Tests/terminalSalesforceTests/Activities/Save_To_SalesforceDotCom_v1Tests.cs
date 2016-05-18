@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Entities;
-using Data.Interfaces.Manifests;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
@@ -19,6 +18,8 @@ using terminalSalesforce.Services;
 using terminalSalesforceTests.Fixtures;
 using TerminalBase.Infrastructure;
 using UtilitiesTesting;
+using Fr8Data.Managers;
+using TerminalBase.Models;
 
 namespace terminalSalesforceTests.Actions
 {
@@ -43,18 +44,18 @@ namespace terminalSalesforceTests.Actions
             }
 
             Mock<IHubCommunicator> hubCommunicatorMock = new Mock<IHubCommunicator>(MockBehavior.Default);
-            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
+            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<Guid>(), It.IsAny<string>()))
                 .Returns(() => Task.FromResult(testPayloadDTO));
             ObjectFactory.Container.Inject(typeof(IHubCommunicator), hubCommunicatorMock.Object);
 
             Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
             FieldDTO testField = new FieldDTO("Account", "TestAccount");
             salesforceIntegrationMock.Setup(
-                s => s.GetProperties(SalesforceObjectType.Account, It.IsAny<AuthorizationTokenDO>(), false, null))
+                s => s.GetProperties(SalesforceObjectType.Account, It.IsAny<AuthorizationToken>(), false, null))
                 .Returns(() => Task.FromResult(new List<FieldDTO> { testField }));
 
             salesforceIntegrationMock.Setup(
-                s => s.Query(SalesforceObjectType.Account, It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationTokenDO>()))
+                s => s.Query(SalesforceObjectType.Account, It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationToken>()))
                 .Returns(() => Task.FromResult(new StandardTableDataCM()));
 
             _saveToSFDotCom_v1 = new Save_To_SalesforceDotCom_v1();
@@ -166,7 +167,7 @@ namespace terminalSalesforceTests.Actions
             Assert.IsTrue(isDeleted, "The newly created lead is not deleted upon completion");
         }
 
-        private async Task<ActivityDO> PerformInitialConfig()
+        private async Task<ActivityContext> PerformInitialConfig()
         {
             var activityDO = FixtureData.SaveToSalesforceTestActivityDO1();
 

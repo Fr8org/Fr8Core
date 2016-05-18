@@ -62,6 +62,7 @@
   <ItemGroup>
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
     <Compile Include="Integration\Post_To_Yammer_v1Tests.cs" />
+    <Compile Include="Integration\RestfulServiceException.cs" />
     <Compile Include="Integration\Terminal_Authentication_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Discover_v1_Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -78,6 +79,10 @@
     <ProjectReference Include="..\..\Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Infrastructure\Fr8Infrastructure.csproj">
+      <Project>{9f4b5c92-3535-4d4c-b1e4-37beb1ae5c42}</Project>
+      <Name>Fr8Infrastructure</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\terminalBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>

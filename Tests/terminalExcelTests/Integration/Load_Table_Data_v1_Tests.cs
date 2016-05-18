@@ -12,6 +12,8 @@ using NUnit.Framework;
 using StructureMap;
 using terminalExcel.Actions;
 using terminalExcelTests.Fixtures;
+using Fr8Data.Managers;
+using terminalExcel.Activities;
 
 namespace terminalExcelTests.Integration
 {

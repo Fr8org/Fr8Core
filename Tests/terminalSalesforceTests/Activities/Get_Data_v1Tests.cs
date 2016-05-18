@@ -18,6 +18,8 @@ using terminalSalesforce.Infrastructure;
 using terminalSalesforceTests.Fixtures;
 using TerminalBase.Infrastructure;
 using UtilitiesTesting;
+using Fr8Data.Managers;
+using TerminalBase.Models;
 
 namespace terminalSalesforceTests.Actions
 {
@@ -41,18 +43,18 @@ namespace terminalSalesforceTests.Actions
             }
 
             Mock<IHubCommunicator> hubCommunicatorMock = new Mock<IHubCommunicator>(MockBehavior.Default);
-            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
+            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<Guid>(), It.IsAny<string>()))
                 .Returns(() => Task.FromResult(testPayloadDTO));
             ObjectFactory.Container.Inject(typeof(IHubCommunicator), hubCommunicatorMock.Object);
 
             Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
             FieldDTO testField = new FieldDTO("Account", "TestAccount");
             salesforceIntegrationMock.Setup(
-                s => s.GetProperties(SalesforceObjectType.Account, It.IsAny<AuthorizationTokenDO>(), false,null))
+                s => s.GetProperties(SalesforceObjectType.Account, It.IsAny<AuthorizationToken>(), false,null))
                 .Returns(() => Task.FromResult(new List<FieldDTO> { testField }));
 
             salesforceIntegrationMock.Setup(
-                s => s.Query(SalesforceObjectType.Account, It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationTokenDO>()))
+                s => s.Query(SalesforceObjectType.Account, It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationToken>()))
                 .Returns(() => Task.FromResult(new StandardTableDataCM()));
 
             _getData_v1 = new Get_Data_v1();
@@ -62,10 +64,10 @@ namespace terminalSalesforceTests.Actions
         public async Task Configure_InitialConfig_CheckControlsCrate()
         {
             //Arrange
-            var activityDO = FixtureData.GetFileListTestActivityDO1();
+            var activityContext = FixtureData.GetFileListTestActivityContext1();
 
             //Act
-            var result = await _getData_v1.Configure(activityDO, await FixtureData.Salesforce_AuthToken());
+            await _getData_v1.Configure(activityContext);
 
             //Assert
             var storage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(result);
@@ -79,14 +81,14 @@ namespace terminalSalesforceTests.Actions
         {
             // Arrange
             var authToken = await FixtureData.Salesforce_AuthToken();
-            var activityDO = FixtureData.GetFileListTestActivityDO1();
-            activityDO = await _getData_v1.Configure(activityDO, authToken);
+            var activityContext = FixtureData.GetFileListTestActivityContext1();
+            await _getData_v1.Configure(activityContext);
             activityDO = SelectSalesforceAccount(activityDO);
 
             Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
 
             // Act
-            activityDO = await _getData_v1.Configure(activityDO, authToken);
+            activityDO = await _getData_v1.Configure(activityContext);
 
             // Assert
             var storage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(activityDO);
@@ -99,7 +101,7 @@ namespace terminalSalesforceTests.Actions
             Assert.IsNotNull(storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == "Queryable Criteria"),
                              "There is no crate with field descriptions of selected Salesforce object in activity storage");
 
-            salesforceIntegrationMock.Verify(s => s.GetProperties(SalesforceObjectType.Account, It.IsAny<AuthorizationTokenDO>(), false,null), Times.Exactly(1));
+            salesforceIntegrationMock.Verify(s => s.GetProperties(SalesforceObjectType.Account, It.IsAny<AuthorizationToken>(), false,null), Times.Exactly(1));
         }
 
         [Test, Category("terminalSalesforceTests.Get_Data.Run")]
@@ -107,7 +109,7 @@ namespace terminalSalesforceTests.Actions
         {
             //Arrange
             var authToken = await FixtureData.Salesforce_AuthToken();
-            var activityDO = FixtureData.GetFileListTestActivityDO1();
+            var activityDO = FixtureData.GetFileListTestActivityContext1();
 
             //perform initial configuration
             activityDO = await _getData_v1.Configure(activityDO, authToken);
@@ -125,7 +127,7 @@ namespace terminalSalesforceTests.Actions
             }
 
             //Act
-            var resultPayload = await _getData_v1.Run(activityDO, new Guid(), authToken);
+            var resultPayload = await _getData_v1.Run();
 
             //Assert
             var stroage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(resultPayload);

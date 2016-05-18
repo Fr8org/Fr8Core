@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Linq;
 using AutoMapper;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Managers;
 using StructureMap;
-using TerminalBase.BaseClasses;
 using TerminalBase.Models;
 
 namespace TerminalBase.Infrastructure

@@ -12,6 +12,7 @@ using Fr8Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
 using Newtonsoft.Json.Linq;
+using Fr8Data.Managers;
 
 namespace UtilitiesTesting.Fixtures
 {

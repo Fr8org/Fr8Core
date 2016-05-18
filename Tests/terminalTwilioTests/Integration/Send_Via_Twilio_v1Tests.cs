@@ -10,6 +10,7 @@ using HealthMonitor.Utility;
 using terminalTwilioTests.Fixture;
 using Hub.Managers;
 using NUnit.Framework;
+using Fr8Data.Managers;
 
 namespace terminalTwilioTests.Integration
 {

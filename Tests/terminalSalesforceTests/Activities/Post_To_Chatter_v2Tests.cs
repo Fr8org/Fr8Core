@@ -15,6 +15,8 @@ using terminalSalesforce.Infrastructure;
 using terminalSalesforceTests.Fixtures;
 using TerminalBase.Infrastructure;
 using UtilitiesTesting;
+using TerminalBase.Models;
+using Fr8Data.Managers;
 
 namespace terminalSalesforceTests.Activities
 {
@@ -29,7 +31,7 @@ namespace terminalSalesforceTests.Activities
             base.SetUp();
             TerminalBootstrapper.ConfigureTest();
             var salesforceManagerMock = new Mock<ISalesforceManager>();
-            salesforceManagerMock.Setup(x => x.Query(SalesforceObjectType.Account, It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationTokenDO>()))
+            salesforceManagerMock.Setup(x => x.Query(SalesforceObjectType.Account, It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationToken>()))
                                  .Returns(Task.FromResult(new StandardTableDataCM
                                                           {
                                                               Table = new List<TableRowDTO>
@@ -37,7 +39,7 @@ namespace terminalSalesforceTests.Activities
                                                                           new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new FieldDTO("Id", "1") } } }
                                                                       }
                                                           }));
-            salesforceManagerMock.Setup(x => x.PostToChatter(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<AuthorizationTokenDO>()))
+            salesforceManagerMock.Setup(x => x.PostToChatter(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<AuthorizationToken>()))
                                  .Returns(Task.FromResult("feedid"));
             ObjectFactory.Container.Inject(salesforceManagerMock);
             ObjectFactory.Container.Inject(salesforceManagerMock.Object);

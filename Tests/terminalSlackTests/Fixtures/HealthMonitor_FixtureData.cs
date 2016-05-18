@@ -10,6 +10,7 @@ using Hub.Managers;
 using Moq;
 using StructureMap;
 using TerminalBase.Infrastructure;
+using Fr8Data.Managers;
 
 namespace terminalSlackTests.Fixtures
 {
@@ -125,7 +126,7 @@ namespace terminalSlackTests.Fixtures
             {
                 storage.Add(Crate.FromContent(string.Empty, new OperationalStateCM()));
             }
-            ObjectFactory.Container.GetInstance<Mock<IHubCommunicator>>().Setup(x => x.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
+            ObjectFactory.Container.GetInstance<Mock<IHubCommunicator>>().Setup(x => x.GetPayload(It.IsAny<Guid>(), It.IsAny<string>()))
                                .Returns(Task.FromResult(result));
         }
 
@@ -139,7 +140,7 @@ namespace terminalSlackTests.Fixtures
                 eventReport.EventPayload.Add(Crate.FromContent(string.Empty, new StandardPayloadDataCM(new FieldDTO("channel_id", "D001"), new FieldDTO("user_name", "notuser"))));
                 storage.Add(Crate.FromContent(string.Empty, eventReport));
             }
-            ObjectFactory.Container.GetInstance<Mock<IHubCommunicator>>().Setup(x => x.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
+            ObjectFactory.Container.GetInstance<Mock<IHubCommunicator>>().Setup(x => x.GetPayload(It.IsAny<Guid>(), It.IsAny<string>()))
                                .Returns(Task.FromResult(result));
         }
 
@@ -153,7 +154,7 @@ namespace terminalSlackTests.Fixtures
                 eventReport.EventPayload.Add(Crate.FromContent(string.Empty, new StandardPayloadDataCM(new FieldDTO("channel_id", "C001"), new FieldDTO("user_name", "notuser"))));
                 storage.Add(Crate.FromContent(string.Empty, eventReport));
             }
-            ObjectFactory.Container.GetInstance<Mock<IHubCommunicator>>().Setup(x => x.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
+            ObjectFactory.Container.GetInstance<Mock<IHubCommunicator>>().Setup(x => x.GetPayload(It.IsAny<Guid>(), It.IsAny<string>()))
                                .Returns(Task.FromResult(result));
         }
     }

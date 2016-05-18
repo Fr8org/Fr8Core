@@ -13,10 +13,13 @@ using TerminalBase.BaseClasses;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using System.Collections.Generic;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using Fr8Data.Managers;
+using Fr8Infrastructure.Interfaces;
+using Fr8Infrastructure.Communication;
+using Fr8Data.States;
 
 namespace terminalBaseTests.BaseClasses
 {

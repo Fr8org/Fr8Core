@@ -14,6 +14,7 @@ using Fr8Data.DataTransferObjects;
 using Hub.Managers;
 using Hub.StructureMap;
 using Web.ViewModels;
+using Fr8Data.Managers;
 
 namespace UtilitiesTesting
 {

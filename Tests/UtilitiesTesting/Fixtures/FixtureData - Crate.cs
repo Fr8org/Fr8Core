@@ -7,6 +7,7 @@ using Fr8Data.Manifests;
 using Newtonsoft.Json;
 using Hub.Managers;
 using Utilities;
+using Fr8Data.Managers;
 
 namespace UtilitiesTesting.Fixtures
 {
