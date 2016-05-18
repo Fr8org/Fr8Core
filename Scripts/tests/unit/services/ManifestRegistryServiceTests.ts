@@ -3,36 +3,34 @@
 // <reference path="../../utils/endpoints.ts" />
 
 module dockyard.tests.controller {
-
-    import CrateHelper = dockyard.services.CrateHelper;
-    import fx = utils.fixtures;
-    import filterByTagFactory = dockyard.filters.filterByTag.factory;
-
-
     describe('ManifestRegistryService', () => {
 
         let mrSvc: dockyard.services.IManifestRegistryService;
         let httpBackend: ng.IHttpBackendService;
-        let http: ng.IHttpService;
         //let endpoints: Endpoints = new Endpoints();
 
         beforeEach(module('app'));
 
-
         beforeEach(() => {
-            inject((_ManifestRegistryService_, _$httpBackend_, _$http_) => {
+            inject((_ManifestRegistryService_, _$httpBackend_) => {
                 mrSvc = _ManifestRegistryService_;
                 httpBackend = _$httpBackend_;
-                http = _$http_;
+                
             });
         });
 
         it('should call query endpoint',() => {
-            debugger;
+            httpBackend.resetExpectations();
+
+            httpBackend.whenPOST('/api/v1/manifest_registries/query').respond(200, { id: "" });
+            httpBackend.whenGET('/AngularTemplate/MyAccountPage').respond(200, '<div></div>');
+
             let testVandName = mrSvc.checkVersionAndName({ version: 'v2.0', name: 'activity' });
             let testVersion = mrSvc.getDescriptionWithLastVersion( {name:'activity' });
 
             httpBackend.flush();
+            httpBackend.verifyNoOutstandingRequest();
+            httpBackend.verifyNoOutstandingExpectation();
 
         });
 
