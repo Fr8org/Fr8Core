@@ -38,10 +38,10 @@ namespace terminalSalesforce.Actions
 
         public override async Task Initialize()
         {
-            //In initial config, just create a DDLB 
-            //to let the user select which object they want to save.
+                //In initial config, just create a DDLB 
+                //to let the user select which object they want to save.
             CreateInitialControls(Storage);
-        }
+            }
 
         public override async Task FollowUp()
         {
@@ -65,7 +65,8 @@ namespace terminalSalesforce.Actions
             //clear any existing TextSources. This is required when user changes the object in DDLB
             ConfigurationControls.Controls.RemoveAll(ctl => ctl is TextSource);
             chosenObjectFieldsList.ToList().ForEach(selectedObjectField =>
-            ControlHelper.AddTextSourceControl(Storage, selectedObjectField.Value, selectedObjectField.Key, string.Empty, requestUpstream: true));
+            ControlHelper.AddTextSourceControl(Storage, selectedObjectField.Value, selectedObjectField.Key, string.Empty, addRequestConfigEvent:true, requestUpstream: true));
+
             //create design time fields for the downstream activities.
             Storage.RemoveByLabelPrefix("Salesforce Object Fields - ");
             Storage.Add(CrateManager.CreateDesignTimeFieldsCrate("Salesforce Object Fields - " + chosenObject,
@@ -93,11 +94,23 @@ namespace terminalSalesforce.Actions
                 }
             });
 
+            var controls = ConfigurationControls.Controls.Where(c => c.Name.Contains("Phone") || c.Name == "Fax");
+            foreach (var control in controls)
+            {
+                var ctrl = (TextSource)control;
+                if (ctrl != null)
+                {
+                    if (ctrl.TextValue != null)
+                    {                        
+                        ValidationManager.ValidatePhoneNumber(ctrl.TextValue, ctrl);
+                    }
+                }
+            }
             return Task.FromResult(true);
         }
 
         public override async Task Run()
-        {
+            {
             using (var validationScope = new RuntimeValidationScope(this, Payload))
             {
                 await Validate();

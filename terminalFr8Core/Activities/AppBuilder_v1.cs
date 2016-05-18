@@ -44,14 +44,14 @@ namespace terminalFr8Core.Activities
         private void UnClickSubmitButton()
         {
             var collectionControls = Storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => c.Label == CollectionControlsLabel).First();
-            var submitButton = collectionControls.FindByName<Button>("submit_button");
-            submitButton.Clicked = false;
-        }
+                var submitButton = collectionControls.FindByName<Button>("submit_button");
+                submitButton.Clicked = false;
+            }
 
         private async Task PushLaunchURLNotification()
         {
             var msg = "This Plan can be launched with the following URL: " +
-                                CloudConfigurationManager.GetSetting("CoreWebServerUrl") +
+                                    CloudConfigurationManager.GetSetting("CoreWebServerUrl") +
                                 "redirect/cloneplan?id=" + ActivityId;
 
             await PushUserNotification("success", "Plan URL", msg);
@@ -86,18 +86,18 @@ namespace terminalFr8Core.Activities
             var controlContainer = GetControl<MetaControlContainer>("control_container");
             var collectionControls = controlContainer.CreateControls();
 
-            var fieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(RuntimeFieldCrateLabelPrefix, AvailabilityType.RunTime, new FieldDTO[] { });
+                var fieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(RuntimeFieldCrateLabelPrefix, AvailabilityType.RunTime, new FieldDTO[] { });
             Storage.RemoveByLabel(RuntimeFieldCrateLabelPrefix);
             Storage.Add(fieldsCrate);
 
-            foreach (var controlDefinitionDTO in collectionControls)
-            {
+                foreach (var controlDefinitionDTO in collectionControls)
+                {
                 PublishCollectionControl(controlDefinitionDTO);
-            }
+                }
 
-            //TODO this part should be modified with 2975
-            //PublishFilePickers(pStorage, collectionControls.Controls.Where(a => a.Type == ControlTypes.FilePicker));
-        }
+                //TODO this part should be modified with 2975
+                //PublishFilePickers(pStorage, collectionControls.Controls.Where(a => a.Type == ControlTypes.FilePicker));
+            }
 
         private void PublishCollectionControl(ControlDefinitionDTO controlDefinitionDTO)
         {
@@ -107,6 +107,45 @@ namespace terminalFr8Core.Activities
             }
         }
 
+        /*
+        public override async Task FollowUp()
+        {
+            if(ConfigurationControls.Controls[0].Value != null)
+            {
+                ActivityPayload.Label = ConfigurationControls.Controls[0].Value;
+            }
+
+            var controlContainer = ConfigurationControls.FindByName<MetaControlContainer>("control_container");
+            if (!controlContainer.MetaDescriptions.Any())
+            {
+                //TODO add error label
+                return;
+            }
+
+            //user might have pressed submit button on Collection UI
+            var collectionControls = GetMetaControls();
+            if (collectionControls != null)
+            {
+                var submitButton = collectionControls.FindByName<Button>("submit_button");
+                if (submitButton.Clicked)
+                {
+                    if (ActivityPayload.RootPlanNodeId == null)
+                    {
+                        throw new Exception($"Activity with id \"{ActivityId}\" has no owner plan");
+                    }
+                    
+                    var flagCrate = CrateManager.CreateDesignTimeFieldsCrate(RunFromSubmitButtonLabel,
+                        AvailabilityType.RunTime);
+                    var payload = new List<CrateDTO>() {CrateManager.ToDto(flagCrate)};
+                    //we need to start the process - run current plan - that we belong to
+                    await HubCommunicator.RunPlan(ActivityPayload.RootPlanNodeId.Value, payload, CurrentUserId);
+                    //after running the plan - let's reset button state
+                    //so next configure calls will be made with a fresh state
+                    UnClickSubmitButton();
+                }
+            }
+        }
+        */
         private bool WasActivityRunFromSubmitButton()
         {
             return Payload.CratesOfType<FieldDescriptionsCM>(c => c.Label == RunFromSubmitButtonLabel).Any();
@@ -115,7 +154,7 @@ namespace terminalFr8Core.Activities
         private void RemoveFlagCrate()
         {
             Payload.RemoveByLabel(RunFromSubmitButtonLabel);
-        }
+            }
 
         private static string GetUriFileExtension(string uri)
         {
@@ -257,7 +296,6 @@ namespace terminalFr8Core.Activities
         
         public override async Task Run()
         {
-
             //let's put the file to payload
             //user might have pressed submit button on Collection UI
             var collectionControls = Storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => c.Label == CollectionControlsLabel).FirstOrDefault();
@@ -291,7 +329,6 @@ namespace terminalFr8Core.Activities
             if (ConfigurationControls.Controls[0].Value != null)
             {
                 ActivityContext.ActivityPayload.Label = ConfigurationControls.Controls[0].Value;
-                return;
             }
             var controlContainer = GetControl<MetaControlContainer>("control_container");
             if (!controlContainer.MetaDescriptions.Any())
@@ -324,7 +361,6 @@ namespace terminalFr8Core.Activities
                     return;
                 }
             }
-
             PublishCollectionControls();
         }
     }

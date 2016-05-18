@@ -61,7 +61,7 @@ namespace terminalTwilio.Activities
                 );
 
             return availableFieldsCrate;
-        }
+            }
 
         private Crate PackCrate_ConfigurationControls()
         {
@@ -83,7 +83,7 @@ namespace terminalTwilio.Activities
         {
             Storage.RemoveByLabel("Upstream Terminal-Provided Fields");
             Storage.Add(await CreateAvailableFieldsCrate());
-        }
+            }
 
         public override async Task Run()
         {
@@ -151,7 +151,7 @@ namespace terminalTwilio.Activities
                     {
                         if (numberControl.HasSpecificValue)
                         {
-                            ValidateSMSNumber(ValidationManager, numberControl.TextValue, numberControl);
+                            ValidationManager.ValidatePhoneNumber(GeneralisePhoneNumber(numberControl.TextValue), numberControl);
                         }
                     }
                     else ValidationManager.SetError("No SMS Number Provided", numberControl);
@@ -177,7 +177,7 @@ namespace terminalTwilio.Activities
             }
             smsNumber = control.GetValue(payloadCrates).Trim();
 
-            smsNumber = GeneralisePhoneNumper(smsNumber);
+            smsNumber = GeneralisePhoneNumber(smsNumber);
 
             return smsNumber;
         }
@@ -215,45 +215,19 @@ namespace terminalTwilio.Activities
         }
 
         private void PackCrate_WarningMessage(string warningMessage, string warningLabel)
-        {
+            {
             var textBlock = ControlHelper.GenerateTextBlock(warningLabel, warningMessage, "alert alert-warning");
             Storage.Clear();
             Storage.Add(PackControlsCrate(textBlock));
         }
 
-        private string GeneralisePhoneNumper(string smsNumber)
+        private string GeneralisePhoneNumber(string smsNumber)
         {
             PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
             smsNumber = new string(smsNumber.Where(s => char.IsDigit(s) || s == '+' || (phoneUtil.IsAlphaNumber(smsNumber) && char.IsLetter(s))).ToArray());
             if (smsNumber.Length == 10 && !smsNumber.Contains("+"))
                 smsNumber = "+1" + smsNumber; //we assume that default region is USA
             return smsNumber;
-        }
-
-        private bool ValidateSMSNumber(ValidationManager validationManager, string smsNumber, ControlDefinitionDTO control)
-        {
-            try
-            {
-                PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
-
-                smsNumber = GeneralisePhoneNumper(smsNumber);
-
-                bool isAlphaNumber = phoneUtil.IsAlphaNumber(smsNumber);
-                PhoneNumber phoneNumber = phoneUtil.Parse(smsNumber, "");
-                if (isAlphaNumber || !phoneUtil.IsValidNumber(phoneNumber))
-                {
-                    validationManager.SetError("SMS Number Is Invalid", control);
-                    return false;
-                }
-
-            }
-            catch (NumberParseException npe)
-            {
-                validationManager.SetError("Failed to parse SMS number: " + npe.Message, control);
-                return false;
-            }
-
-            return true;
         }
     }
 }

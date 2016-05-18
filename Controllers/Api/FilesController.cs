@@ -34,8 +34,6 @@ namespace HubWeb.Controllers
             _tagService = ObjectFactory.GetInstance<ITag>();
         }
 
-        [HttpPost]
-        [ActionName("files")]
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Post()
@@ -102,8 +100,7 @@ namespace HubWeb.Controllers
         /// <returns>Filestream</returns>
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
-        [HttpGet]
-        public IHttpActionResult Download(int id)
+        public IHttpActionResult Get(int id)
         {
             FileDO fileDO = null;
             if (_security.IsCurrentUserHasRole(Roles.Admin))
@@ -131,9 +128,10 @@ namespace HubWeb.Controllers
         /// Gets all files current user stored on Fr8
         /// </summary>
         /// <returns>List of FileDTO</returns>
+        [HttpGet]
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
-        public IHttpActionResult Get()
+        public IHttpActionResult List()
         {
             IList<FileDTO> fileList;
 

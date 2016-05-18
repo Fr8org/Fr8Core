@@ -412,7 +412,7 @@ namespace TerminalBase.Services
         public async Task<FileDTO> SaveFile(string name, Stream stream, string userId)
         {
             var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/files/files";
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/files";
             var multiPartData = new MultipartFormDataContent();
             var byteData = ReadFully(stream);
             multiPartData.Add(new ByteArrayContent(byteData), name, name);
@@ -431,7 +431,7 @@ namespace TerminalBase.Services
         public async Task<Stream> DownloadFile(int fileId, string userId)
         {
             var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/files/download?id=" + fileId;
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/files/" + fileId;
             var uri = new Uri(hubUrl);
             return await _restfulServiceClient.DownloadAsync(uri, null, await GetHMACHeader(uri, userId));
         }

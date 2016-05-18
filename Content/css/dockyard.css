@@ -108,6 +108,10 @@
     padding: 5px 0px 0 15px
 }
 
+.sub-panel-header .designer-header-title.page-title {
+    padding: 5px 0px 0px 0px
+}
+
 .design-header-title-editField {
     display: none;
     font-size: 22px;
@@ -143,9 +147,15 @@
     cursor: pointer;
 }
 
+.initial-sub-plan-header {
+    padding-top:50px;
+}
+
 .route-name {
     display: inline-block;
     vertical-align: top;
+    color: #697882;
+    font-weight: 400;
 }
 
 .designer-header-status {
@@ -957,6 +967,12 @@ div[dnd-list].dndDragover {
     border-color: red;
     outline-color: red;
 }
+
+.invalid-field {
+    border-color: red !important;
+    outline-color: red !important;
+}
+
 
 .ng-valid {
     border-color: green;
