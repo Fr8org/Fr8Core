@@ -17,8 +17,6 @@ using NUnit.Framework;
 using SendGrid;
 using StructureMap;
 using terminalSendGrid.Actions;
-//using terminalSendGrid.Infrastructure;
-//using terminalSendGrid.Services;
 using terminalSendGrid.Tests.Fixtures;
 using TerminalBase.Infrastructure;
 using Utilities;
