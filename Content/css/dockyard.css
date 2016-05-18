@@ -958,6 +958,12 @@ div[dnd-list].dndDragover {
     outline-color: red;
 }
 
+.invalid-field {
+    border-color: red !important;
+    outline-color: red !important;
+}
+
+
 .ng-valid {
     border-color: green;
     outline-color: green;

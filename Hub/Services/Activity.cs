@@ -452,8 +452,13 @@ namespace Hub.Services
 
         private async Task CallActivityDeactivate(IUnitOfWork uow, Guid activityId)
         {
-            var exisiting = uow.PlanRepository.GetById<ActivityDO>(activityId);
+            var existingNode = uow.PlanRepository.GetById<PlanNodeDO>(activityId);
+            if (!(existingNode is ActivityDO))
+            {
+                return;
+            }
 
+            var exisiting = (ActivityDO)existingNode;
             if (exisiting == null || exisiting.ActivationState == ActivationState.Deactivated)
             {
                 return;
@@ -583,7 +588,8 @@ namespace Hub.Services
         private void ReportActivityInvocationError(ActivityDO activity, string error, string containerId, Action<string, string, string, string> reportingAction)
         {
             var endpoint = _activityTemplate.GetTerminalUrl(activity.ActivityTemplateId) ?? "<no terminal url>";
-            EventManager.TerminalConfigureFailed(endpoint, activity.Id.ToString(), error, containerId);
+
+            reportingAction(endpoint, activity.Id.ToString(), error, containerId);
         }
 
 
