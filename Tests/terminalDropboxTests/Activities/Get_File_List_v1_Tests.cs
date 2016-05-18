@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Entities;
 using Fr8Data.DataTransferObjects;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
@@ -11,6 +10,8 @@ using terminalDropbox.Actions;
 using terminalDropboxTests.Fixtures;
 using TerminalBase.Infrastructure;
 using UtilitiesTesting;
+using Fr8Infrastructure.Interfaces;
+using TerminalBase.Models;
 
 namespace terminalDropboxTests.Activities
 {
@@ -38,14 +39,14 @@ namespace terminalDropboxTests.Activities
         public void Initialize_ReturnsActivityDto()
         {
             //Arrange
-            var curActivityDO = FixtureData.GetFileListActivityDO();
-            AuthorizationTokenDO tokenDO = FixtureData.DropboxAuthorizationToken();
+            var curActivityContext = FixtureData.GetFileListActivityDO();
+            AuthorizationToken tokenDTO = FixtureData.DropboxAuthorizationToken();
 
             //Act
-            var activityDto = _getFileList_v1.Configure(curActivityDO, tokenDO).Result;
+            var activityContext = _getFileList_v1.Configure(curActivityContext);
 
             // Assert
-            Assert.NotNull(activityDto);
+            Assert.NotNull(activityContext);
         }
     }
 }
