@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using Data.Interfaces;
+using Fr8Data.DataTransferObjects;
 
 namespace terminalSendGrid.Infrastructure
 {
-    public class TerminalMailerDO : IMailerDO
+    public class TerminalMailerDO
     {
         public int Id { get; set; }
 
@@ -19,7 +20,7 @@ namespace terminalSendGrid.Infrastructure
         {
             get { return null; }
         }
-        public IEmailDO Email { get; set; }
+        public EmailDTO Email { get; set; }
         public string Footer { get; set; }
     }
 }

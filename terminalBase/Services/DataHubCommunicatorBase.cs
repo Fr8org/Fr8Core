@@ -72,7 +72,7 @@ namespace TerminalBase.Services
             return Task.FromResult(payload);
         }
 
-        public Task<UserDTO> GetCurrentUser(Guid containerId, string userId)
+        public Task<UserDTO> GetCurrentUser(string userId)
         {
             return Task.FromResult<UserDTO>(
                 new UserDTO()

@@ -14,7 +14,7 @@ namespace TerminalBase.Infrastructure
     public interface IHubCommunicator
     {
         Task<PayloadDTO> GetPayload(Guid containerId, string userId);
-        Task<UserDTO> GetCurrentUser(Guid containerId, string userId);
+        Task<UserDTO> GetCurrentUser(string userId);
         Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability, string userId);
         Task<IncomingCratesDTO> GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability, string userId);
         Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(Guid activityId, CrateDirection direction, string userId);

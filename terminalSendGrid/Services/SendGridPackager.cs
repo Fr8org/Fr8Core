@@ -1,15 +1,11 @@
 ﻿using System;
-using System.CodeDom;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Mail;
 using System.Threading.Tasks;
-using System.Web.UI;
 using Newtonsoft.Json.Linq;
 using SendGrid;
 using StructureMap;
-using Data.Entities;
-using Data.Interfaces;
 using terminalSendGrid.Infrastructure;
 using Utilities;
 
@@ -55,7 +51,7 @@ namespace terminalSendGrid.Services
             if (handler != null) handler(errorCode, name, message, emailID);
         }
 
-        public async Task Send(IMailerDO mailer)
+        public async Task Send(TerminalMailerDO mailer)
         {
             if (mailer == null)
                 throw new ArgumentNullException("mailer");

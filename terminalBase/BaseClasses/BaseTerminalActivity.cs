@@ -76,6 +76,7 @@ namespace TerminalBase.BaseClasses
         protected string CurrentUserId => ActivityContext.UserId;
         protected Task<ActivityPayload> SaveToHub(ActivityPayload activity) => HubCommunicator.SaveActivity(activity, CurrentUserId);
         public Task<FieldDescriptionsCM> GetDesignTimeFields(CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet) => HubCommunicator.GetDesignTimeFieldsByDirection(ActivityId, direction, availability, CurrentUserId);
+        protected Task<UserDTO> GetCurrentUserData() => HubCommunicator.GetCurrentUser(CurrentUserId);
 
         #endregion
 

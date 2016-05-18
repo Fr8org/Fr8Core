@@ -1,10 +1,7 @@
 ﻿using System;
-using Data.Entities;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using Hub.Managers;
-using Newtonsoft.Json;
 
 namespace terminalSendGrid.Tests.Fixtures
 {
@@ -15,11 +12,11 @@ namespace terminalSendGrid.Tests.Fixtures
             return new Guid("A0287C2A-28D3-48C5-8CAC-26FE27E8EA9B");
         }
 
-        public static ActivityDO ConfigureSendEmailViaSendGridActivity()
+        public static ActivityDTO ConfigureSendEmailViaSendGridActivity()
         {
             var actionTemplate = SendEmailViaSendGridActivityTemplateDTO();
 
-            var activityDO = new ActivityDO()
+            var activityDTO = new ActivityDTO()
             {
                 Id = TestGuid_Id_333(),
                 ActivityTemplateId = actionTemplate.Id,
