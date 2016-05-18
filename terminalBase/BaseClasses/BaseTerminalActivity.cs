@@ -56,6 +56,7 @@ namespace TerminalBase.BaseClasses
 
         #region SHORTCUTS
 
+        private BaseTerminalEvent _eventLogger;
         private PlanHelper _planHelper;
         private ValidationManager _validationManager;
         private ControlHelper _controlHelper;
@@ -76,7 +77,8 @@ namespace TerminalBase.BaseClasses
         protected string CurrentUserId => ActivityContext.UserId;
         protected Task<ActivityPayload> SaveToHub(ActivityPayload activity) => HubCommunicator.SaveActivity(activity, CurrentUserId);
         public Task<FieldDescriptionsCM> GetDesignTimeFields(CrateDirection direction, AvailabilityType availability = AvailabilityType.NotSet) => HubCommunicator.GetDesignTimeFieldsByDirection(ActivityId, direction, availability, CurrentUserId);
-
+        protected BaseTerminalEvent EventLogger => _eventLogger ?? (_eventLogger = new BaseTerminalEvent());
+        protected void SendEventReport(string message) => EventLogger.SendEventReport(MyTemplate.Terminal.Name, message);
         #endregion
 
         #region RETURN_CODES

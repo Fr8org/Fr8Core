@@ -7,12 +7,12 @@ using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using Fr8Data.States;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 using TerminalBase.BaseClasses;
-using Fr8Data.States;
 
-namespace terminalSlack.Actions
+namespace terminalSlack.Activities
 {
 
     public class Publish_To_Slack_v1 : BaseTerminalActivity
@@ -130,21 +130,6 @@ namespace terminalSlack.Actions
             };
 
             return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
-        }
-
-        private async Task<Crate> CreateAvailableFieldsCrate()
-        {
-            var curUpstreamFields = (await GetCratesByDirection<FieldDescriptionsCM>(CrateDirection.Upstream))
-                .Where(x => x.Label != "Available Channels")
-                .SelectMany(x => x.Content.Fields)
-                .ToArray();
-
-            var availableFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(
-                    "Available Fields",
-                    curUpstreamFields
-                );
-
-            return availableFieldsCrate;
         }
 
         // TODO: finish that later.

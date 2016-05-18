@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Fr8Data.DataTransferObjects;
+using Fr8Infrastructure.Interfaces;
 using Newtonsoft.Json.Linq;
 using StructureMap;
 using terminalYammer.Interfaces;
 using Utilities.Configuration.Azure;
 using terminalYammer.Model;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 
 namespace terminalYammer.Services
 {
