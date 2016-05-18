@@ -7,7 +7,7 @@ using Utilities.Configuration.Azure;
 
 namespace terminalUtilities.SendGrid
 {
-    class TransportFactory
+    public class TransportFactory
     {
         public static ITransport CreateWeb(IConfigRepository configRepository)
         {
