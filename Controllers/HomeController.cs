@@ -6,6 +6,7 @@ using FluentValidation;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Validations;
 using Hub.Services;
@@ -160,6 +161,7 @@ namespace HubWeb.Controllers
         public async Task<ActionResult> ProcessSubmittedEmail(string name, string emailId, string message)
         {
             string result = "";
+
             try
             {
                 EmailAddressDO emailAddressDO = new EmailAddressDO(emailId);
@@ -171,22 +173,20 @@ namespace HubWeb.Controllers
                     string toRecipient = _configRepository.Get("CustomerSupportEmail");
                     string fromAddress = emailId;
 
-                    // EmailDO emailDO = email.GenerateBasicMessage(emailAddressDO, message);
                     string subject = "Customer query";
                     await _email.SendAsync(uow, subject, message, fromAddress, toRecipient);
-                    //uow.EnvelopeRepository.ConfigurePlainEmail(emailDO);
                     uow.SaveChanges();
                 }
                 result = "success";
             }
-            catch (ValidationException)
+            catch (ValidationException ex)
             {
                 result = "You need to provide a valid Email Address.";
+                Logger.LogWarning("Invalid email provided: " + emailId);
             }
-            catch (System.Exception ex)
+            catch (Exception ex)
             {
-                result = "Something went wrong with our effort to send this message. Sorry! Please try emailing your message directly to info@kwasant.com";
-                //Logger.GetLogger().Error("Error processing a home page email form submission.", ex);
+                result = "Something went wrong with our effort to send this message. Sorry! Please try emailing your message directly to support@fr8.co";
                 Logger.LogError($"Error processing a home page email form submission. Name = {name}; EmailId = {emailId}; Exception = {ex}");
             }
             return Content(result);
