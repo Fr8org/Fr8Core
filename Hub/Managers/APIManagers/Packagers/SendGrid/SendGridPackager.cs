@@ -9,9 +9,11 @@ using Newtonsoft.Json.Linq;
 using SendGrid;
 using StructureMap;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Hub.Managers.APIManagers.Packagers;
 using Utilities;
+using Utilities.Logging;
 
 namespace Hub.Managers.APIManagers.Packagers.SendGrid
 {
@@ -19,7 +21,7 @@ namespace Hub.Managers.APIManagers.Packagers.SendGrid
     {
         private readonly ITransport _transport;
 
-        public SendGridPackager() 
+        public SendGridPackager()
         {
             _transport = TransportFactory.CreateWeb(ObjectFactory.GetInstance<IConfigRepository>());
         }
@@ -147,6 +149,11 @@ namespace Hub.Managers.APIManagers.Packagers.SendGrid
                 catch (Exception ex)
                 {
                     OnEmailRejected(ex.Message, email.Id);
+                    Logger.LogError("Error occured while trying to send email. " +
+                                    $"From = {email.From.Address}; " +
+                                    $"Subject = {email.Subject}; " +
+                                    $"Exception = {ex.Message}");
+                    EventManager.Error_EmailSendFailure(email.Id, ex.Message);
                 }
             }
             catch (Exception ex)
