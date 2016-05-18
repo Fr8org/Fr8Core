@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using TerminalBase.BaseClasses;
@@ -18,10 +19,12 @@ namespace TerminalBase.Helpers
     {
         private readonly IHubCommunicator _hubCommunicator;
         private readonly ActivityContext _activityContext;
-        public ControlHelper(ActivityContext activityContext, IHubCommunicator hubCommunicator)
+        private readonly ICrateManager _crateManager;
+        public ControlHelper(ActivityContext activityContext, IHubCommunicator hubCommunicator, ICrateManager crateManager)
         {
             _hubCommunicator = hubCommunicator;
             _activityContext = activityContext;
+            _crateManager = crateManager;
         }
 
         public StandardConfigurationControlsCM GetConfigurationControls(ICrateStorage storage)
@@ -279,6 +282,60 @@ namespace TerminalBase.Helpers
             var finalCondition = string.Join(" AND ", parsedConditions);
 
             return finalCondition;
+        }
+
+        /// <summary>
+        /// Creates StandardConfigurationControlsCM with TextSource control
+        /// </summary>
+        /// <param name="storage">Crate Storage</param>
+        /// <param name="label">Initial Label for the text source control</param>
+        /// <param name="controlName">Name of the text source control</param>
+        /// <param name="upstreamSourceLabel">Label for the upstream source</param>
+        /// <param name="filterByTag">Filter for upstream source, Empty by default</param>
+        /// <param name="addRequestConfigEvent">True if onChange event needs to be configured, False otherwise. True by default</param>
+        /// <param name="required">True if the control is required, False otherwise. False by default</param>
+        public void AddTextSourceControl(
+            ICrateStorage storage,
+            string label,
+            string controlName,
+            string upstreamSourceLabel,
+            string filterByTag = "",
+            bool addRequestConfigEvent = false,
+            bool required = false,
+            bool requestUpstream = false)
+        {
+            var textSourceControl = CreateSpecificOrUpstreamValueChooser(
+                label,
+                controlName,
+                upstreamSourceLabel,
+                filterByTag,
+                addRequestConfigEvent,
+                requestUpstream
+            );
+            textSourceControl.Required = required;
+
+            AddControl(storage, textSourceControl);
+        }
+
+        protected void AddControl(ICrateStorage storage, ControlDefinitionDTO control)
+        {
+            var controlsCrate = EnsureControlsCrate(storage);
+
+            if (controlsCrate.Content == null) { return; }
+
+            controlsCrate.Content.Controls.Add(control);
+        }
+
+        public Crate<StandardConfigurationControlsCM> EnsureControlsCrate(ICrateStorage storage)
+        {
+            var controlsCrate = storage.CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            if (controlsCrate == null)
+            {
+                controlsCrate = _crateManager.CreateStandardConfigurationControlsCrate(BaseTerminalActivity.ConfigurationControlsLabel);
+                storage.Add(controlsCrate);
+            }
+
+            return controlsCrate;
         }
     }
 }

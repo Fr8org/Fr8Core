@@ -14,12 +14,27 @@ using Fr8Data.Manifests;
 using Fr8Data.States;
 using Newtonsoft.Json;
 using ServiceStack;
+using TerminalBase.Errors;
 using TerminalBase.Infrastructure;
+using TerminalBase.Services;
 
 namespace terminalSalesforce.Actions
 {
     public class Post_To_Chatter_v2 : BaseSalesforceTerminalActivity<Post_To_Chatter_v2.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Version = "2",
+            Name = "Post_To_Chatter",
+            Label = "Post To Salesforce Chatter",
+            NeedsAuthentication = true,
+            Category = ActivityCategory.Forwarders,
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public TextSource FeedTextSource { get; set; }
@@ -108,26 +123,25 @@ namespace terminalSalesforce.Actions
         public Post_To_Chatter_v2()
         {
             _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
-            ActivityName = "Post to Chatter";
         }
 
-        protected override async Task Initialize(CrateSignaller crateSignaller)
+        protected override async Task InitializeETA()
         {
             IsPostingToQueryiedChatter = true;
             AvailableChatters = _salesforceManager.GetSalesforceObjectTypes(filterByProperties: SalesforceObjectProperties.HasChatter).Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
-            crateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PostedFeedCrateLabel);
-            CurrentActivityStorage.Add(Crate<FieldDescriptionsCM>.FromContent(PostedFeedPropertiesCrateLabel,
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PostedFeedCrateLabel);
+            Storage.Add(Crate<FieldDescriptionsCM>.FromContent(PostedFeedPropertiesCrateLabel,
                                                                               new FieldDescriptionsCM(new FieldDTO(FeedIdKeyName, FeedIdKeyName, AvailabilityType.RunTime) { SourceCrateLabel = FeedIdKeyName }),
                                                                               AvailabilityType.RunTime));
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
+        protected override async Task ConfigureETA()
         {
             //If Salesforce object is empty then we should clear filters as they are no longer applicable
             if (string.IsNullOrEmpty(SelectedChatter))
             {
-                CurrentActivityStorage.RemoveByLabel(QueryFilterCrateLabel);
-                CurrentActivityStorage.RemoveByLabel(SalesforceObjectFieldsCrateLabel);
+                Storage.RemoveByLabel(QueryFilterCrateLabel);
+                Storage.RemoveByLabel(SalesforceObjectFieldsCrateLabel);
                 this[nameof(SelectedChatter)] = SelectedChatter;
                 return;
             }
@@ -142,19 +156,19 @@ namespace terminalSalesforce.Actions
                 QueryFilterCrateLabel,
                 new FieldDescriptionsCM(selectedObjectProperties),
                 AvailabilityType.Configuration);
-            CurrentActivityStorage.ReplaceByLabel(queryFilterCrate);
+            Storage.ReplaceByLabel(queryFilterCrate);
 
             var objectPropertiesCrate = Crate<FieldDescriptionsCM>.FromContent(
                 SalesforceObjectFieldsCrateLabel,
                 new FieldDescriptionsCM(selectedObjectProperties),
                 AvailabilityType.RunTime);
-            CurrentActivityStorage.ReplaceByLabel(objectPropertiesCrate);
+            Storage.ReplaceByLabel(objectPropertiesCrate);
             this[nameof(SelectedChatter)] = SelectedChatter;
             //Publish information for downstream activities
-            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(PostedFeedCrateLabel);
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(PostedFeedCrateLabel);
         }
 
-        protected override async Task RunCurrentActivity()
+        protected override async Task RunETA()
         {
             var feedText = FeedText;
             if (string.IsNullOrEmpty(feedText))
@@ -169,7 +183,7 @@ namespace terminalSalesforce.Actions
             {
                 var chatters = await _salesforceManager.Query(SelectedChatter.ToEnum<SalesforceObjectType>(),
                                                               new[] { "Id" },
-                                                              ParseConditionToText(JsonConvert.DeserializeObject<List<FilterConditionDTO>>(ChatterFilter)),
+                                                              ControlHelper.ParseConditionToText(JsonConvert.DeserializeObject<List<FilterConditionDTO>>(ChatterFilter)),
                                                               AuthorizationToken);
                 var tasks = new List<Task<string>>(chatters.Table.Count);
                 foreach (var chatterId in chatters.DataRows.Select(x => x.Row[0].Cell.Value))
@@ -186,7 +200,7 @@ namespace terminalSalesforce.Actions
                 {
                     var resultPayload = new StandardPayloadDataCM();
                     resultPayload.PayloadObjects.AddRange(tasks.Select(x => new PayloadObjectDTO(new FieldDTO(FeedIdKeyName, x.Result))));
-                    CurrentPayloadStorage.Add(Crate<StandardPayloadDataCM>.FromContent(PostedFeedCrateLabel, resultPayload));
+                    Payload.Add(Crate<StandardPayloadDataCM>.FromContent(PostedFeedCrateLabel, resultPayload));
                 }
             }
             else
@@ -197,7 +211,7 @@ namespace terminalSalesforce.Actions
                     throw new ActivityExecutionException("Upstream crates doesn't contain value for feed parent Id");
                 }
                 var feedId = await _salesforceManager.PostToChatter(StripHTML(feedText), incomingChatterId, AuthorizationToken);
-                CurrentPayloadStorage.Add(Crate.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM(new FieldDTO(FeedIdKeyName, feedId))));
+                Payload.Add(Crate.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM(new FieldDTO(FeedIdKeyName, feedId))));
             }
         }
 
@@ -208,31 +222,31 @@ namespace terminalSalesforce.Actions
 
         #region Controls properties wrappers
 
-        private string SelectedChatter { get { return ConfigurationControls.ChatterSelector.selectedKey; } }
+        private string SelectedChatter { get { return ActivityUI.ChatterSelector.selectedKey; } }
 
         private bool IsPostingToQueryiedChatter
         {
-            get { return ConfigurationControls.QueryForChatterOption.Selected; }
-            set { ConfigurationControls.QueryForChatterOption.Selected = value; }
+            get { return ActivityUI.QueryForChatterOption.Selected; }
+            set { ActivityUI.QueryForChatterOption.Selected = value; }
         }
 
         private bool IsUsingIncomingChatterId
         {
-            get { return ConfigurationControls.UseIncomingChatterIdOption.Selected; }
-            set { ConfigurationControls.UseIncomingChatterIdOption.Selected = value; }
+            get { return ActivityUI.UseIncomingChatterIdOption.Selected; }
+            set { ActivityUI.UseIncomingChatterIdOption.Selected = value; }
         }
 
         private List<ListItem> AvailableChatters
         {
-            get { return ConfigurationControls.ChatterSelector.ListItems; }
-            set { ConfigurationControls.ChatterSelector.ListItems = value; }
+            get { return ActivityUI.ChatterSelector.ListItems; }
+            set { ActivityUI.ChatterSelector.ListItems = value; }
         }
 
-        private string FeedText { get { return ConfigurationControls.FeedTextSource.GetValue(CurrentPayloadStorage); } }
+        private string FeedText { get { return ActivityUI.FeedTextSource.GetValue(Payload); } }
 
-        private string ChatterFilter { get { return ConfigurationControls.ChatterFilter.Value; } }
+        private string ChatterFilter { get { return ActivityUI.ChatterFilter.Value; } }
 
-        private string IncomingChatterId { get { return CurrentPayloadStorage.FindField(ConfigurationControls.IncomingChatterIdSelector.selectedKey); } }
+        private string IncomingChatterId { get { return Payload.FindField(ActivityUI.IncomingChatterIdSelector.selectedKey); } }
 
         #endregion
     }

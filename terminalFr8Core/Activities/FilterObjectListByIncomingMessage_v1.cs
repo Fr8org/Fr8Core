@@ -98,7 +98,7 @@ namespace terminalFr8Core.Activities
 
         protected override async Task InitializeETA()
         {
-            var activityTemplates = await HubCommunicator.GetActivityTemplates(ActivityTemplate.TableDataGeneratorTag, CurrentUserId);
+            var activityTemplates = await HubCommunicator.GetActivityTemplates(Tags.TableDataGenerator, CurrentUserId);
             activityTemplates.Sort((x, y) => x.Name.CompareTo(y.Name));
             ActivityUI.DataSourceSelector.ListItems = activityTemplates
                                                                  .Select(x => new ListItem { Key = x.Label, Value = x.Id.ToString() })
