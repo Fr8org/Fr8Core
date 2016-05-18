@@ -1,9 +1,10 @@
 ﻿using System;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 
-namespace terminalSendGrid.Tests.Fixtures
+namespace terminalSendGridTests.Fixtures
 {
     public class FixtureData
     {

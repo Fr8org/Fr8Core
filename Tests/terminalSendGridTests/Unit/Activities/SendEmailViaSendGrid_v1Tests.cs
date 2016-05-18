@@ -14,13 +14,12 @@ using StructureMap;
 using terminalSendGrid.Actions;
 using terminalSendGrid.Infrastructure;
 using terminalSendGrid.Services;
-using terminalSendGrid.Tests.Fixtures;
 using TerminalBase.Infrastructure;
-using Utilities;
 using TerminalBase.Models;
 using Fr8Data.Managers;
 using Fr8Infrastructure.Interfaces;
-using Fr8Infrastructure.StructureMap;
+using terminalSendGridTests.Fixtures;
+using Utilities;
 
 namespace terminalSendGrid.Tests.Actions
 {
@@ -35,7 +34,7 @@ namespace terminalSendGrid.Tests.Actions
         public override void SetUp()
         {
             base.SetUp();
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
+            //StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
             TerminalSendGridStructureMapBootstrapper.ConfigureDependencies(TerminalSendGridStructureMapBootstrapper.DependencyType.LIVE);
             ObjectFactory.Configure(cfg => cfg.For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>())));
             ObjectFactory.Configure(cfg => cfg.For<IEmailPackager>().Use(new SendGridPackager()));
