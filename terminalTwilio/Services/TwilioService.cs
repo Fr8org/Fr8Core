@@ -19,7 +19,7 @@ namespace terminalTwilio.Services
 
         private readonly String _twilioFromNumber;
         private readonly TwilioRestClient _internalClient;
-        private readonly ServiceManager<TwilioService> _serviceManager;
+        //private readonly ServiceManager<TwilioService> _serviceManager;
 
         /**********************************************************************************/
         // Functions
