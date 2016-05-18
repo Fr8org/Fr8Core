@@ -12,6 +12,7 @@ using Newtonsoft.Json;
 using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
+using terminalUtilities;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 

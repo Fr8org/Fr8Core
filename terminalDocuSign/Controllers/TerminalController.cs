@@ -33,21 +33,9 @@ namespace terminalDocuSign.Controllers
                 Name = "DocuSign",
                 IconPath = "/Content/icons/web_services/docusign-icon-64x64.png"
             };
-
-
-            //var process_personal_report = new ActivityTemplateDTO()
-            //{
-            //    Version = "1",
-            //    Name = "Process_Personal_Report",
-            //    Label = "Process Personal Report",
-            //    Category = ActivityCategory.Forwarders,
-            //    Terminal = terminal,
-            //    NeedsAuthentication = true,
-            //    MinPaneWidth = 380,
-            //    WebService = webService,
-            //};
-
-            var waitForDocusignEventActionTemplate = new ActivityTemplateDTO()
+            var actionList = new List<ActivityTemplateDTO>
+            {
+                new ActivityTemplateDTO
                 {
                     Version = "1",
                     Name = "Monitor_DocuSign_Envelope_Activity",
@@ -187,22 +175,6 @@ namespace terminalDocuSign.Controllers
             };
 
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM
-            {
-                waitForDocusignEventActionTemplate,
-                extractDataFromEnvelopeActionTemplate,
-                sendDocuSignEnvelopeActionTemplate,
-                useDocuSignTemplateWithNewDocument,
-                recordDocuSignEvents,
-                mailMergeActionTemplate,
-                collectFormDataSolution,
-                trackDocuSignRecipientsSolution,
-                queryDocusign,
-                searchDocusignHistory,
-                getDocuSignTemplateActionTemplate,
-                //process_personal_report,
-            };
-
-            var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,
                 Activities = actionList
