@@ -9,6 +9,7 @@ using HealthMonitor.Utility;
 using Hub.Managers;
 using NUnit.Framework;
 using terminalBoxTests.Fixtures;
+using Fr8Data.Managers;
 
 namespace terminalBoxTests.Integration
 {
