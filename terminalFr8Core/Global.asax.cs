@@ -18,6 +18,9 @@ namespace terminalFr8Core
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
             GlobalConfiguration.Configure(RoutesConfig.Register);
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
+
+            Fr8CoreStructureMapConfiguration.ConfigureDependencies(Fr8CoreStructureMapConfiguration.DependencyType.LIVE);
+
             TerminalBootstrapper.ConfigureLive();
         }
     }
