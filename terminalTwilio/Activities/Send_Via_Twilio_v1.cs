@@ -161,7 +161,7 @@ namespace terminalTwilio.Actions
                     {
                         if (numberControl.HasSpecificValue)
                         {
-                            ValidateSMSNumber(validationManager, numberControl.TextValue, numberControl);
+                            validationManager.ValidatePhoneNumber(GeneralisePhoneNumber(numberControl.TextValue), numberControl);
                         }
                     }
                     else validationManager.SetError("No SMS Number Provided", numberControl);
@@ -187,7 +187,7 @@ namespace terminalTwilio.Actions
             }
             smsNumber = control.GetValue(payloadCrates).Trim();
 
-            smsNumber = GeneralisePhoneNumper(smsNumber);
+            smsNumber = GeneralisePhoneNumber(smsNumber);
 
             return smsNumber;
         }
@@ -234,39 +234,13 @@ namespace terminalTwilio.Actions
             }
         }
 
-        private string GeneralisePhoneNumper(string smsNumber)
+        private string GeneralisePhoneNumber(string smsNumber)
         {
             PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
             smsNumber = new string(smsNumber.Where(s => char.IsDigit(s) || s == '+' || (phoneUtil.IsAlphaNumber(smsNumber) && char.IsLetter(s))).ToArray());
             if (smsNumber.Length == 10 && !smsNumber.Contains("+"))
                 smsNumber = "+1" + smsNumber; //we assume that default region is USA
             return smsNumber;
-        }
-
-        private bool ValidateSMSNumber(ValidationManager validationManager, string smsNumber, ControlDefinitionDTO control)
-        {
-            try
-            {
-                PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
-
-                smsNumber = GeneralisePhoneNumper(smsNumber);
-
-                bool isAlphaNumber = phoneUtil.IsAlphaNumber(smsNumber);
-                PhoneNumber phoneNumber = phoneUtil.Parse(smsNumber, "");
-                if (isAlphaNumber || !phoneUtil.IsValidNumber(phoneNumber))
-                {
-                    validationManager.SetError("SMS Number Is Invalid", control);
-                    return false;
-                }
-
-            }
-            catch (NumberParseException npe)
-            {
-                validationManager.SetError("Failed to parse SMS number: " + npe.Message, control);
-                return false;
-            }
-
-            return true;
         }
     }
 }

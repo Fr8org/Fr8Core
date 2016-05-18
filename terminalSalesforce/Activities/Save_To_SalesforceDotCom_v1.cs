@@ -83,7 +83,7 @@ namespace terminalSalesforce.Actions
                 //clear any existing TextSources. This is required when user changes the object in DDLB
                 GetConfigurationControls(crateStorage).Controls.RemoveAll(ctl => ctl is TextSource);
                 chosenObjectFieldsList.ToList().ForEach(selectedObjectField =>
-                    AddTextSourceControl(crateStorage, selectedObjectField.Value, selectedObjectField.Key, string.Empty, requestUpstream: true));
+                    AddTextSourceControl(crateStorage, selectedObjectField.Value, selectedObjectField.Key, string.Empty, addRequestConfigEvent:true, requestUpstream: true));
 
                 //create design time fields for the downstream activities.
                 crateStorage.RemoveByLabelPrefix("Salesforce Object Fields - ");
@@ -114,6 +114,19 @@ namespace terminalSalesforce.Actions
                     validationManager.SetError($"{c.Label} must be provided for creating {chosenObject}", c);
                 }
             });
+
+            var controls = GetConfigurationControls(curActivityDO).Controls.Where(c => c.Name.Contains("Phone") || c.Name == "Fax");
+            foreach (var control in controls)
+            {
+                var ctrl = (TextSource)control;
+                if (ctrl != null)
+                {
+                    if (ctrl.TextValue != null)
+                    {                        
+                        validationManager.ValidatePhoneNumber(ctrl.TextValue, ctrl);
+                    }
+                }
+            }
 
             return Task.FromResult(0);
         }
