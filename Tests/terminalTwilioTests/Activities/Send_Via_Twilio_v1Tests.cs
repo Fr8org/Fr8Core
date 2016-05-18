@@ -74,7 +74,6 @@ namespace terminalTwilioTests.Activities
             await _twilioActivity.Configure(curActivityContext);
             var controlsCrate = _crate.GetStorage(curActivityContext.ActivityPayload.CrateStorage).FirstOrDefault();
             Assert.IsNotNull(controlsCrate);
-
         }
 
         [Test]
@@ -85,9 +84,7 @@ namespace terminalTwilioTests.Activities
             // ActionDTO curActionDTO = Mapper.Map<ActionDTO>(action);
             var curAuthTokenD0 = FixtureData.AuthTokenDOTest1();
             var actionResult = _twilioActivity.Configure(curActivityDO, curAuthTokenD0).Result;
-
             var controlsCrate = _crate.GetStorage(actionResult.CrateStorage).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-
             Assert.IsNotNull(controlsCrate);
         }
 

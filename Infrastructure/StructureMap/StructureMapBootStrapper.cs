@@ -6,6 +6,7 @@ using Fr8Infrastructure.Security;
 using Moq;
 using StructureMap;
 using StructureMap.Configuration.DSL;
+using ExtternalStructureMap = StructureMap;
 
 namespace Fr8Infrastructure.StructureMap
 {
@@ -16,6 +17,22 @@ namespace Fr8Infrastructure.StructureMap
             TEST = 0,
             LIVE = 1
         }
+
+        public static ExtternalStructureMap.IContainer ConfigureDependencies(DependencyType type)
+        {
+
+            switch (type)
+            {
+                case DependencyType.TEST:
+                    ObjectFactory.Initialize(x => x.AddRegistry<TestMode>());
+                    break;
+                case DependencyType.LIVE:
+                    ObjectFactory.Initialize(x => x.AddRegistry<LiveMode>());
+                    break;
+            }
+            return ObjectFactory.Container;
+        }
+
         public static void LiveConfiguration(ConfigurationExpression configuration)
         {
             configuration.AddRegistry<LiveMode>();
