@@ -10,6 +10,7 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using terminalDocuSignTests.Fixtures;
+using Fr8Data.Managers;
 
 namespace terminalDocuSignTests.Integration
 {

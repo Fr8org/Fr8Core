@@ -13,6 +13,7 @@ using Hub.Interfaces;
 using Hub.Managers;
 using Newtonsoft.Json.Linq;
 using Fr8Data.Managers;
+using TerminalBase.Models;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -258,6 +259,38 @@ namespace UtilitiesTesting.Fixtures
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
             };
+        }
+
+        public static ActivityContext TestActivityContext1()
+        {
+            var activityTemplateDTO = new ActivityTemplateDTO
+            {
+                Id = GetTestGuidById(1),
+                Name = "Type1",
+                Version = "1"
+            };
+            var activityPayload = new ActivityPayload
+            {
+                Id = GetTestGuidById(2),
+                Name = "Type2",
+                ActivityTemplate = activityTemplateDTO,
+                CrateStorage = new CrateStorage()
+            };
+            var activityContext = new ActivityContext
+            {
+                ActivityPayload = activityPayload
+            };
+            return activityContext;
+        }
+        public static ContainerExecutionContext ContainerExecutionContext1()
+        {
+            var containerExecutionContext = new ContainerExecutionContext
+            {
+                PayloadStorage = PayloadDTO2(),
+                ContainerId = TestContainer_Id_1()
+            };
+            
+            return containerExecutionContext;
         }
 
         public static ActivityDO IntegrationTestActivity()

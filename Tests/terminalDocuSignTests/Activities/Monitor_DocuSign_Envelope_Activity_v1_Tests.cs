@@ -1,11 +1,9 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.Manifests;
-using Hub.Managers;
 using NUnit.Framework;
 using StructureMap;
 using terminalDocuSign;
@@ -13,6 +11,7 @@ using terminalDocuSign.Actions;
 using terminalDocuSign.Services.New_Api;
 using terminalDocuSignTests.Fixtures;
 using UtilitiesTesting.Fixtures;
+using TerminalBase.Models;
 
 namespace terminalDocuSignTests.Activities
 {
@@ -37,9 +36,10 @@ namespace terminalDocuSignTests.Activities
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
             var target = new Monitor_DocuSign_Envelope_Activity_v1();
             var activityDO = FixtureData.TestActivity1();
-            activityDO = await target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration());
-            SetRecipientConditionSelected(activityDO);
-            SetRecipientText(activityDO);
+            var activityContext = FixtureData.TestActivityContext1();
+            await target.Configure(activityContext);
+            SetRecipientConditionSelected(activityContext.ActivityPayload);
+            SetRecipientText(activityContext.ActivityPayload);
             var result = await Validate(target, activityDO);
 
             AssertErrorMessage(result, "At least one notification option must be selected");
@@ -51,8 +51,9 @@ namespace terminalDocuSignTests.Activities
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
             var target = new Monitor_DocuSign_Envelope_Activity_v1();
             var activityDO = FixtureData.TestActivity1();
-            activityDO = await target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration());
-            SetNotificationSelected(activityDO);
+            var activityContext = FixtureData.TestActivityContext1();
+            await target.Configure(activityContext);
+            SetNotificationSelected(activityContext.ActivityPayload);
             var result = await Validate(target, activityDO);
 
             AssertErrorMessage(result, "At least one envelope option must be selected");
@@ -64,9 +65,10 @@ namespace terminalDocuSignTests.Activities
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
             var target = new Monitor_DocuSign_Envelope_Activity_v1();
             var activityDO = FixtureData.TestActivity1();
-            activityDO = await target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration());
-            SetNotificationSelected(activityDO);
-            SetTemplateConditionSelected(activityDO);
+            var activityContext = FixtureData.TestActivityContext1();
+            await target.Configure(activityContext);
+            SetNotificationSelected(activityContext.ActivityPayload);
+            SetTemplateConditionSelected(activityContext.ActivityPayload);
             var result = await Validate(target, activityDO);
 
             AssertErrorMessage(result, DocuSignValidationUtils.NoTemplateExistsErrorMessage);
@@ -78,9 +80,10 @@ namespace terminalDocuSignTests.Activities
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithTemplates()));
             var target = new Monitor_DocuSign_Envelope_Activity_v1();
             var activityDO = FixtureData.TestActivity1();
-            activityDO = await target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration());
-            SetNotificationSelected(activityDO);
-            SetTemplateConditionSelected(activityDO);
+            var activityContext = FixtureData.TestActivityContext1();
+            await target.Configure(activityContext);
+            SetNotificationSelected(activityContext.ActivityPayload);
+            SetTemplateConditionSelected(activityContext.ActivityPayload);
             var result = await Validate(target, activityDO);
 
             AssertErrorMessage(result, DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage);
@@ -91,85 +94,71 @@ namespace terminalDocuSignTests.Activities
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithTemplates()));
             var target = new Monitor_DocuSign_Envelope_Activity_v1();
             var activityDO = FixtureData.TestActivity1();
-            activityDO = await target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration());
-            SetNotificationSelected(activityDO);
-            SetTemplateConditionSelected(activityDO);
-            SetTemplate(activityDO);
+            var activityContext = FixtureData.TestActivityContext1();
+            await target.Configure(activityContext);
+            SetNotificationSelected(activityContext.ActivityPayload);
+            SetTemplateConditionSelected(activityContext.ActivityPayload);
+            SetTemplate(activityContext.ActivityPayload);
             var result = await Validate(target, activityDO);
             Assert.AreEqual(false, result.HasErrors);
         }
 
-        private void SetNotificationSelected(ActivityDO activity)
+        private void SetNotificationSelected(ActivityPayload activity)
         {
-            using (var crateStorage = new CrateManager().GetUpdatableStorage(activity))
-            {
-                var configControls = crateStorage.FirstCrate<StandardConfigurationControlsCM>(c => true).Content;
-                configControls.Controls
-                    .Where(c => c.Type == ControlTypes.CheckBox)
-                    .First(x => x.Name == "RecipientSigned")
-                    .Selected = true;
-            }
+            var configControls = activity.CrateStorage.FirstCrate<StandardConfigurationControlsCM>(c => true).Content;
+            configControls.Controls
+                .Where(c => c.Type == ControlTypes.CheckBox)
+                .First(x => x.Name == "RecipientSigned")
+                .Selected = true;
         }
 
-        private void SetRecipientConditionSelected(ActivityDO activity)
+        private void SetRecipientConditionSelected(ActivityPayload activity)
         {
-            using (var crateStorage = new CrateManager().GetUpdatableStorage(activity))
-            {
-                var configControls = crateStorage.FirstCrate<StandardConfigurationControlsCM>(c => true).Content;
-                configControls.Controls
-                              .OfType<RadioButtonGroup>()
-                              .First()
-                              .Radios
-                              .First(x => x.Name == "recipient")
-                              .Selected = true;
-            }
+            var configControls = activity.CrateStorage.FirstCrate<StandardConfigurationControlsCM>(c => true).Content;
+            configControls.Controls
+                            .OfType<RadioButtonGroup>()
+                            .First()
+                            .Radios
+                            .First(x => x.Name == "recipient")
+                            .Selected = true;
         }
 
-        private void SetRecipientText(ActivityDO activity)
+        private void SetRecipientText(ActivityPayload activity)
         {
-            using (var crateStorage = new CrateManager().GetUpdatableStorage(activity))
-            {
-                var configControls = crateStorage.FirstCrate<StandardConfigurationControlsCM>(c => true).Content;
-                configControls.Controls
-                              .OfType<RadioButtonGroup>()
-                              .First()
-                              .Radios
-                              .First(x => x.Name == "recipient")
-                              .Controls
-                              .First()
-                              .Value = "foo@bar.com";
-            }
+            var configControls = activity.CrateStorage.FirstCrate<StandardConfigurationControlsCM>(c => true).Content;
+            configControls.Controls
+                            .OfType<RadioButtonGroup>()
+                            .First()
+                            .Radios
+                            .First(x => x.Name == "recipient")
+                            .Controls
+                            .First()
+                            .Value = "foo@bar.com";
         }
 
-        private void SetTemplateConditionSelected(ActivityDO activity)
+        private void SetTemplateConditionSelected(ActivityPayload activity)
         {
-            using (var crateStorage = new CrateManager().GetUpdatableStorage(activity))
-            {
-                var configControls = crateStorage.FirstCrate<StandardConfigurationControlsCM>(c => true).Content;
-                configControls.Controls
-                              .OfType<RadioButtonGroup>()
-                              .First()
-                              .Radios
-                              .First(x => x.Name == "template")
-                              .Selected = true;
-            }
+            var configControls = activity.CrateStorage.FirstCrate<StandardConfigurationControlsCM>(c => true).Content;
+            configControls.Controls
+                            .OfType<RadioButtonGroup>()
+                            .First()
+                            .Radios
+                            .First(x => x.Name == "template")
+                            .Selected = true;
         }
 
-        private void SetTemplate(ActivityDO activity)
+        private void SetTemplate(ActivityPayload activity)
         {
-            using (var crateStorage = new CrateManager().GetUpdatableStorage(activity))
-            {
-                var configControls = crateStorage.FirstCrate<StandardConfigurationControlsCM>(c => true).Content;
-                configControls.Controls
-                              .OfType<RadioButtonGroup>()
-                              .First()
-                              .Radios
-                              .First(x => x.Name == "template")
-                              .Controls
-                              .OfType<DropDownList>()
-                              .First()
-                              .selectedKey = "First";
-            }
+            var configControls = activity.CrateStorage.FirstCrate<StandardConfigurationControlsCM>(c => true).Content;
+            configControls.Controls
+                            .OfType<RadioButtonGroup>()
+                            .First()
+                            .Radios
+                            .First(x => x.Name == "template")
+                            .Controls
+                            .OfType<DropDownList>()
+                            .First()
+                            .selectedKey = "First";
         }
     }
 }

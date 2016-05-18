@@ -14,6 +14,7 @@ using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
 using UtilitiesTesting.Fixtures;
+using terminalDocuSign.Activities;
 
 namespace terminalDocuSignTests.Activities
 {

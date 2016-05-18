@@ -43,7 +43,7 @@ namespace UtilitiesTesting.Fixtures
             return payload;
         }
 
-        public static PayloadDTO PayloadDTO2()
+        public static ICrateStorage PayloadDTO2()
         {
             var standardPayload = new StandardPayloadDataCM(
                 new List<FieldDTO>()
@@ -53,15 +53,16 @@ namespace UtilitiesTesting.Fixtures
             );
 
             var payload = new PayloadDTO(TestContainer_Id_49());
+            var crateManager = ObjectFactory.GetInstance<ICrateManager>();
 
-            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(payload))
+            using (var crateStorage = crateManager.GetUpdatableStorage(payload))
             {
                 crateStorage.Add(Crate.FromContent("Standard Payload Data", standardPayload));
             }
 
             AddOperationalStateCrate(payload);
 
-            return payload;
+            return crateManager.GetStorage(payload);
         }
 
     }

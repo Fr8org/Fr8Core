@@ -775,7 +775,7 @@ namespace TerminalBase.BaseClasses
         }
 
         protected virtual Task<bool> Validate()
-            {
+        {
             return Task.FromResult(true);
         }
 

@@ -2,10 +2,10 @@
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using HealthMonitor.Utility;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
 using terminalDocuSign.Actions;
 using terminalDocuSignTests.Fixtures;
+using terminalDocuSign.Activities;
 
 namespace terminalDocuSignTests.Integration
 {

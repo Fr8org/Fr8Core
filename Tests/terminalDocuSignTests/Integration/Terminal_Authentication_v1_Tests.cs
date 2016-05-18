@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fr8Data.DataTransferObjects;
 using HealthMonitor.Utility;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
 using terminalDocuSignTests.Fixtures;
 

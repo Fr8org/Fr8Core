@@ -17,6 +17,7 @@ using terminaBaselTests.Tools.Activities;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
 using UtilitiesTesting.Fixtures;
+using Fr8Data.Managers;
 
 namespace terminalDocuSignTests.Integration
 {

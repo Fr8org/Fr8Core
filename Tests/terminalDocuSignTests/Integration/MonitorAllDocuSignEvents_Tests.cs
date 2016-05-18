@@ -15,6 +15,7 @@ using System.Diagnostics;
 using AutoMapper;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using TerminalBase.Models;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -87,10 +88,11 @@ namespace terminalDocuSignTests.Integration
                     .Count();
 
                 //Set up DS
-                var authToken = await Authenticate();
-                var authTokenDO = new AuthorizationTokenDO() { Token = authToken.Token };
+                var token = await Authenticate();
+                var authToken = new AuthorizationToken() { Token = token.Token };
+                var authTokenDO = new AuthorizationTokenDO() { Token = token.Token };
                 var docuSignManager = new DocuSignManager();
-                var loginInfo = docuSignManager.SetUp(authTokenDO);
+                var loginInfo = docuSignManager.SetUp(authToken);
 
                 //let's wait 10 seconds to ensure that MADSE plan was created/activated by re-authentication
                 await Task.Delay(SingleAwaitPeriod);

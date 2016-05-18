@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Interfaces.Manifests;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
@@ -11,6 +10,7 @@ using HealthMonitor.Utility;
 using Hub.Managers;
 using terminalDocuSignTests.Fixtures;
 using terminalDocuSign.Infrastructure;
+using Fr8Data.Managers;
 
 namespace terminalDocuSignTests.Integration
 {
