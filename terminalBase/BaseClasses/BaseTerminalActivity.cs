@@ -406,7 +406,23 @@ namespace TerminalBase.BaseClasses
             if (operationalState == null)
                 throw new Exception("No Operational State Crate found.");
             return operationalState;
-            }
+        }
+        // do not use after EnhancedTerminalActivity is introduced
+        /// <summary>
+        /// Trivial method to return element at specified index of the IEnumerable object.
+        /// To be used with Loop Action.
+        /// IMPORTANT: 
+        /// 1) Index update is performed by Loop Action
+        /// 2) Loop brake is preformed by Loop Action
+        /// </summary>
+        /// <param name="enumerableObject">Object of type IEnumerable</param>
+        /// <param name="objectIndex">Integer that points to the element</param>
+        /// <returns>Object of any type</returns>
+        protected object GetCurrentElement(IEnumerable<object> enumerableObject, int objectIndex)
+        {
+            var curElement = enumerableObject.ElementAt(objectIndex);
+            return curElement;
+        }
 
         /// <summary>
         /// Method to be used with Loop Action
