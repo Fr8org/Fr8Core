@@ -44,15 +44,10 @@ namespace HubWeb.Controllers.Api
             return Ok(model);
         }
 
-        public class NameVersion
-        {
-            public string name { get; set; }
-            public string version { get; set; }
-        }
 
         [HttpPost]
         [ActionName("query")]
-        public IHttpActionResult Query([FromBody]  NameVersion data)
+        public IHttpActionResult Query([FromBody]  NameVersionDTO data)
         {
             object result = null;
 
@@ -84,7 +79,7 @@ namespace HubWeb.Controllers.Api
                 {
                     var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(systemUserAccountId);
                     var isInDB = manifestDescriptions.Any(md => md.Name == data.name && md.Version == data.version);
-                    result = new BoolValue { Value = !isInDB };
+                    result = new { Value = !isInDB };
 
                     return Ok(result);
                 }
@@ -92,44 +87,6 @@ namespace HubWeb.Controllers.Api
             }
         }
 
-        //[HttpGet]
-        //[ActionName("checkVersionAndName")]
-        //public IHttpActionResult CheckVersionAndName(string version, string name)
-        //{
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(systemUserAccountId);
-        //        var isInDB = manifestDescriptions.Any(md => md.Name == name && md.Version == version);
-        //        BoolValue result = new BoolValue  { Value = !isInDB };
-
-        //        return Ok(result);
-        //    }
-        //}
-
-        //[HttpGet]
-        //[ActionName("getDescriptionWithLastVersion")]
-        //public IHttpActionResult GetDescriptionWithLastVersion(string name)
-        //{
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        var manifestDescriptions = uow.MultiTenantObjectRepository.AsQueryable<ManifestDescriptionCM>(systemUserAccountId);
-        //        var descriptions = manifestDescriptions.Where(md => md.Name == name).ToArray();
-
-        //        var result = descriptions.First();
-        //        string maxVersion = result.Version;
-
-        //        foreach (var description in descriptions)
-        //        {
-        //            if (description.Version.CompareTo(maxVersion) > 0)
-        //            {
-        //                result = description;
-        //                maxVersion = description.Version;
-        //            }
-        //        }
-
-        //        return Ok(result);
-        //    }
-        //}
 
         private string NextId()
         {
@@ -145,11 +102,6 @@ namespace HubWeb.Controllers.Api
             }
 
             return result.ToString();
-        }
-
-        class BoolValue
-        {
-            public bool Value { get; set; }
-        }
+        }        
     }
 }
