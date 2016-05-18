@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
+using Data.Infrastructure.AutoMapper;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
@@ -19,6 +20,8 @@ using TerminalBase.Infrastructure;
 using Utilities;
 using TerminalBase.Models;
 using Fr8Data.Managers;
+using Fr8Infrastructure.Interfaces;
+using Fr8Infrastructure.StructureMap;
 
 namespace terminalSendGrid.Tests.Actions
 {
@@ -33,8 +36,6 @@ namespace terminalSendGrid.Tests.Actions
         public override void SetUp()
         {
             base.SetUp();
-
-            DataAutoMapperBootStrapper.ConfigureAutoMapper();
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
             TerminalSendGridStructureMapBootstrapper.ConfigureDependencies(TerminalSendGridStructureMapBootstrapper.DependencyType.LIVE);
             ObjectFactory.Configure(cfg => cfg.For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>())));

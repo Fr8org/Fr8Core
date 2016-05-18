@@ -19,12 +19,12 @@ namespace terminalSendGrid.Tests.Fixtures
             var activityDTO = new ActivityDTO()
             {
                 Id = TestGuid_Id_333(),
-                ActivityTemplateId = actionTemplate.Id,
+                //ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
-                CrateStorage = ""
+                CrateStorage = new CrateStorageDTO()
             };
 
-            return activityDO;
+            return activityDTO;
         }
 
         public static Guid TestContainerGuid()
@@ -32,17 +32,17 @@ namespace terminalSendGrid.Tests.Fixtures
             return new Guid("70790811-3394-4B5B-9841-F26A7BE35163");
         }
 
-        public static ContainerDO TestContainer()
+        public static ContainerDTO TestContainer()
         {
-            var containerDO = new ContainerDO();
+            var containerDO = new ContainerDTO();
             containerDO.Id = TestContainerGuid();
             containerDO.State = 1;
             return containerDO;
         }
 
-        public static ActivityTemplateDO SendEmailViaSendGridActivityTemplateDTO()
+        public static ActivityTemplateDTO SendEmailViaSendGridActivityTemplateDTO()
         {
-            return new ActivityTemplateDO
+            return new ActivityTemplateDTO
             {
                 Id = Guid.NewGuid(),
                 Name = "Send Email Via SendGrid",

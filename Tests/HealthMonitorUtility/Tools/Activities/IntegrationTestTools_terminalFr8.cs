@@ -4,12 +4,14 @@ using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using HealthMonitor.Utility;
 using Hub.Managers;
 using NUnit.Framework;
 using terminalFr8Core.Actions;
+using terminalFr8Core.Activities;
 using UtilitiesTesting.Fixtures;
 
 namespace terminaBaselTests.Tools.Activities
