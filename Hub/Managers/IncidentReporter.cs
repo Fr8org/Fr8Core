@@ -233,7 +233,7 @@ namespace Hub.Managers
             var incident = new IncidentDO
             {
                 Fr8UserId = _sercurity.GetCurrentUser(),
-                Data = curTerminalUrl + " Message =  [ " + e.Message + " ] \r\nStack trace: \r\n" + e.StackTrace,
+                Data = curTerminalUrl + " Message =  [ " + e.ToString() + " ]",
                 ObjectId = objectId,
                 PrimaryCategory = "Terminal",
                 SecondaryCategory = "Internal",

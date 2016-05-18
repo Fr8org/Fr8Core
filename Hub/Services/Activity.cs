@@ -216,7 +216,7 @@ namespace Hub.Services
                 }
                 catch (Exception e)
                 {
-                    ReportActivityInvocationError(submittedActivity, e.Message, EventManager.TerminalActionActivationFailed);
+                    ReportActivityInvocationError(submittedActivity, e.Message, null, EventManager.TerminalActionActivationFailed);
                     throw;
                 }
             }
@@ -292,7 +292,7 @@ namespace Hub.Services
             }
             catch (Exception e)
             {
-                ReportActivityInvocationError(curActivityDO, e.Message, EventManager.TerminalRunFailed);
+                ReportActivityInvocationError(curActivityDO, e.Message, curContainerDO.Id.ToString(), EventManager.TerminalRunFailed);
                 throw;
             }
         }
@@ -526,13 +526,13 @@ namespace Hub.Services
                     }
                     else
                     {
-                        ReportActivityInvocationError(submittedActivity, e.Message, EventManager.TerminalConfigureFailed);
+                        ReportActivityInvocationError(submittedActivity, e.Message, null, EventManager.TerminalConfigureFailed);
                         throw;
                     }
                 }
                 catch (Exception e)
                 {
-                    ReportActivityInvocationError(submittedActivity, e.Message, EventManager.TerminalConfigureFailed);
+                    ReportActivityInvocationError(submittedActivity, e.Message, null , EventManager.TerminalConfigureFailed);
                     throw;
                 }
             }
@@ -580,10 +580,10 @@ namespace Hub.Services
             return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<TResult>(activityName, fr8DataDTO, containerId.ToString());
         }
 
-        private void ReportActivityInvocationError(ActivityDO activity, string error, Action<string, string, string, string> reportingAction)
+        private void ReportActivityInvocationError(ActivityDO activity, string error, string containerId, Action<string, string, string, string> reportingAction)
         {
             var endpoint = _activityTemplate.GetTerminalUrl(activity.ActivityTemplateId) ?? "<no terminal url>";
-            EventManager.TerminalConfigureFailed(endpoint, null, error, activity.Id.ToString());
+            EventManager.TerminalConfigureFailed(endpoint, activity.Id.ToString(), error, containerId);
         }
 
 

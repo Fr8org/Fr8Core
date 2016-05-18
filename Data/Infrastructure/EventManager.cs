@@ -272,10 +272,10 @@ namespace Data.Infrastructure
             }
         }
 
-        public static void TerminalConfigureFailed(string terminalUrl, string activityID, string errorMessage, string objectId)
+        public static void TerminalConfigureFailed(string terminalUrl, string activityId, string errorMessage, string objectId)
         {
             IncidentTerminalConfigurePOSTFailureHandler handler = IncidentTerminalConfigureFailed;
-            if (handler != null) handler(terminalUrl, activityID, errorMessage, objectId);
+            if (handler != null) handler(terminalUrl, activityId, errorMessage, objectId);
         }
 
         public static void TerminalRunFailed(string terminalUrl, string activityId, string errorMessage, string objectId)
@@ -284,10 +284,10 @@ namespace Data.Infrastructure
             if (handler != null) handler(terminalUrl, activityId, errorMessage, objectId);
         }
 
-        public static void TerminalInternalFailureOccurred(string terminalUrl, string activityDTO, Exception e, string objectId)
+        public static void TerminalInternalFailureOccurred(string terminalUrl, string activityId, Exception e, string objectId)
         {
             IncidentTerminalInternalFailureHandler handler = IncidentTerminalInternalFailureOccurred;
-            if (handler != null) handler(terminalUrl, activityDTO, e, objectId);
+            if (handler != null) handler(terminalUrl, activityId, e, objectId);
         }
 
         public static void TerminalActionActivationFailed(string terminalUrl, string activityId, string errorMessage, string objectId)

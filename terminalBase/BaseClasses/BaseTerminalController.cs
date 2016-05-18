@@ -334,7 +334,10 @@ namespace TerminalBase.BaseClasses
                 Logger.LogError($"Exception caught while processing {curActionPath} for {this.GetType()} with exception {e.Data} and stack trace {e.StackTrace} and message {e.GetFullExceptionMessage()}", curTerminal);
                 var endpoint = (curActivityDO.ActivityTemplate != null && curActivityDO.ActivityTemplate.Terminal != null && curActivityDO.ActivityTemplate.Terminal.Endpoint != null) ? curActivityDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
                 //EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActivityDO, settings), e, curActivityDO.Id.ToString());
-                EventManager.TerminalInternalFailureOccurred(endpoint, "", e, curActivityDO.Id.ToString());
+                // null checking
+                curDataDTO = curDataDTO ?? new Fr8DataDTO() {};
+
+                EventManager.TerminalInternalFailureOccurred(endpoint, curActivityDO.Id.ToString(), e, curDataDTO.ContainerId.ToString());
                 throw;              
             }
         }
