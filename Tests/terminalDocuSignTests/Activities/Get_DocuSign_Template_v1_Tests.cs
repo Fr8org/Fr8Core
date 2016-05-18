@@ -14,6 +14,8 @@ using terminalDocuSign.Actions;
 using terminalDocuSign.Services.New_Api;
 using terminalDocuSignTests.Fixtures;
 using UtilitiesTesting.Fixtures;
+using terminalDocuSign.Activities;
+using Fr8Data.Managers;
 
 namespace terminalDocuSignTests.Activities
 {
@@ -39,7 +41,8 @@ namespace terminalDocuSignTests.Activities
             var target = new Get_DocuSign_Template_v1();
             var activityDO = FixtureData.TestActivity1();
 
-            activityDO = await target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration());
+            var activityContext = FixtureData.TestActivityContext1();
+            await target.Configure(activityContext);
 
             var result = await Validate(target, activityDO);
 
@@ -53,7 +56,8 @@ namespace terminalDocuSignTests.Activities
             var target = new Get_DocuSign_Template_v1();
             var activityDO = FixtureData.TestActivity1();
 
-            activityDO = await target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration());
+            var activityContext = FixtureData.TestActivityContext1();
+            await target.Configure(activityContext);
 
             var result = await Validate(target, activityDO);
 
@@ -67,7 +71,8 @@ namespace terminalDocuSignTests.Activities
             var target = new Get_DocuSign_Template_v1();
             var activityDO = FixtureData.TestActivity1();
 
-            activityDO = await target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration());
+            var activityContext = FixtureData.TestActivityContext1();
+            await target.Configure(activityContext);
 
             SelectTemplate(activityDO);
 

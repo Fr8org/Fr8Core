@@ -7,6 +7,7 @@ using Moq;
 using terminalDocuSign.Actions;
 using terminalDocuSign.Services.New_Api;
 using TerminalBase.Infrastructure;
+using terminalDocuSign.Activities;
 
 namespace terminalDocuSignTests.Fixtures
 {
@@ -16,10 +17,10 @@ namespace terminalDocuSignTests.Fixtures
         {
             var result = new Mock<BaseDocuSignActivity>();
 
-            result.Setup(x => x.NeedsAuthentication(It.IsNotNull<AuthorizationTokenDO>()))
+            result.Setup(x => x.NeedsAuthentication())
                 .Returns(false);
 
-            result.Setup(x => x.NeedsAuthentication(null))
+            result.Setup(x => x.NeedsAuthentication())
                 .Returns(true);
 
             return result.Object;
@@ -28,7 +29,7 @@ namespace terminalDocuSignTests.Fixtures
         public static BaseDocuSignActivity FailedBaseDocuSignActivity()
         {
             var result = new Mock<BaseDocuSignActivity>();
-            result.Setup(x => x.ValidateActivity(It.IsAny<ActivityDO>(), It.IsAny<ICrateStorage>(), It.IsAny<ValidationManager>()))
+            result.Setup(x => x.Validate(It.IsAny<ActivityDO>(), It.IsAny<ICrateStorage>(), It.IsAny<ValidationManager>()))
                 .Returns((ActivityDO x, ICrateStorage y, ValidationManager validationManager) =>
                 {
                     validationManager.SetError("Error");

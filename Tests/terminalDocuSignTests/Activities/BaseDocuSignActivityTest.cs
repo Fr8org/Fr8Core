@@ -11,6 +11,7 @@ using terminalDocuSignTests.Fixtures;
 using TerminalBase.Infrastructure;
 using UtilitiesTesting.Asserts;
 using UtilitiesTesting.Fixtures;
+using terminalDocuSign.Activities;
 
 namespace terminalDocuSignTests.Activities
 {
@@ -26,19 +27,23 @@ namespace terminalDocuSignTests.Activities
         }
 
         [Test]
-        public void Run_WhenNoAuthorization_Fails()
+        public async void Run_WhenNoAuthorization_Fails()
         {
             var activity = DocuSignActivityFixtureData.BaseDocuSignAcitvity();
-            var result = activity.Run(FixtureData.TestActivity2(), Guid.Empty, null).Result;
-            AssertEx.AssertPayloadHasAuthenticationError(result);
+            var activityContext = FixtureData.TestActivityContext1();
+            var executionContext = FixtureData.ContainerExecutionContext1();
+            await activity.Run(activityContext, executionContext);
+            AssertEx.AssertPayloadHasAuthenticationError(executionContext.PayloadStorage);
         }
 
         [Test]
-        public void Run_WhenActivityIsNotValid_Fails()
+        public async void Run_WhenActivityIsNotValid_Fails()
         {
             var activity = DocuSignActivityFixtureData.FailedBaseDocuSignActivity();
-            var result = activity.Run(FixtureData.TestActivity2(), Guid.Empty, null).Result;
-            AssertEx.AssertPayloadHasError(result);
+            var activityContext = FixtureData.TestActivityContext1();
+            var executionContext = FixtureData.ContainerExecutionContext1();
+            await activity.Run(activityContext, executionContext);
+            AssertEx.AssertPayloadHasError(executionContext.PayloadStorage);
         }
 
         [Test]
@@ -50,7 +55,9 @@ namespace terminalDocuSignTests.Activities
             activityMock.Setup(x => x.RunInternal(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsNotNull<AuthorizationTokenDO>()))
                         .Returns(Task.FromResult(FixtureData.PayloadDTO2()))
                         .Verifiable("RunInternal was not invoked when activity has auth token and is valid");
-            activityMock.Object.Run(FixtureData.TestActivity2(), Guid.Empty, FixtureData.TestActivityAuthenticate2()).Wait();
+            var activityContext = FixtureData.TestActivityContext1();
+            var executionContext = FixtureData.ContainerExecutionContext1();
+            activityMock.Object.Run(activityContext, executionContext).Wait();
             Assert.DoesNotThrow(() => activityMock.Verify());
         }
     }
