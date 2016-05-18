@@ -1,7 +1,6 @@
 ﻿using System;
 using StructureMap;
 using System.Threading.Tasks;
-using TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,12 +10,27 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using TerminalBase.Errors;
 using TerminalBase.Infrastructure;
+using TerminalBase.Services;
 
 namespace terminalSalesforce.Actions
 {
     public class Post_To_Chatter_v1 : BaseSalesforceTerminalActivity<Post_To_Chatter_v1.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Version = "1",
+            Name = "Post_To_Chatter",
+            Label = "Post To Salesforce Chatter",
+            NeedsAuthentication = true,
+            Category = ActivityCategory.Forwarders,
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public RadioButtonGroup FeedParentSelectionGroup { get; set; }
@@ -72,45 +86,44 @@ namespace terminalSalesforce.Actions
         public Post_To_Chatter_v1()
         {
             _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
-            ActivityName = "Post to Chatter";
         }
 
-        protected override async Task Initialize(CrateSignaller crateSignaller)
+        protected override async Task InitializeETA()
         {
-            ConfigurationControls.UseUserOrGroupOption.Selected = true;
-            ConfigurationControls.UserOrGroupSelector.ListItems = (await _salesforceManager.GetUsersAndGroups(AuthorizationToken)).Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
-            crateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PostedFeedCrateLabel);            
+            ActivityUI.UseUserOrGroupOption.Selected = true;
+            ActivityUI.UserOrGroupSelector.ListItems = (await _salesforceManager.GetUsersAndGroups(AuthorizationToken)).Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PostedFeedCrateLabel);            
         }
 
-        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
+        protected override Task ConfigureETA()
         {
             //No configuration is required
             return Task.FromResult(0);
         }
 
-        protected override async Task RunCurrentActivity()
+        protected override async Task RunETA()
         {
-            var feedText = ConfigurationControls.FeedTextSource.GetValue(CurrentPayloadStorage);
+            var feedText = ActivityUI.FeedTextSource.GetValue(Payload);
             if (string.IsNullOrEmpty(feedText))
             {
                 throw new ActivityExecutionException("Can't post empty message to chatter");
             }
-            if (!ConfigurationControls.UseUpstreamFeedParentIdOption.Selected && !ConfigurationControls.UseUserOrGroupOption.Selected)
+            if (!ActivityUI.UseUpstreamFeedParentIdOption.Selected && !ActivityUI.UseUserOrGroupOption.Selected)
             {
                 throw new ActivityExecutionException("Feed parent Id value source is not specified");
             }
             var feedParentId = string.Empty;
-            if (ConfigurationControls.UseUserOrGroupOption.Selected)
+            if (ActivityUI.UseUserOrGroupOption.Selected)
             {
-                feedParentId = ConfigurationControls.UserOrGroupSelector.Value;
+                feedParentId = ActivityUI.UserOrGroupSelector.Value;
                 if (string.IsNullOrEmpty(feedParentId))
                 {
                     throw new ActivityExecutionException("User or group is not specified");
                 }
             }
-            if (ConfigurationControls.UseUpstreamFeedParentIdOption.Selected)
+            if (ActivityUI.UseUpstreamFeedParentIdOption.Selected)
             {
-                feedParentId = ConfigurationControls.FeedParentIdSource.GetValue(CurrentPayloadStorage);
+                feedParentId = ActivityUI.FeedParentIdSource.GetValue(Payload);
                 if (string.IsNullOrEmpty(feedParentId))
                 {
                     throw new ActivityExecutionException("Upstream crates doesn't contain value for feed parent Id");
@@ -121,12 +134,14 @@ namespace terminalSalesforce.Actions
             {
                 throw new ActivityExecutionException("Failed to post to chatter due to Salesforce API error");
             }
-            CurrentPayloadStorage.Add(Crate.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM(new FieldDTO("FeedID", result))));
+            Payload.Add(Crate.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM(new FieldDTO("FeedID", result))));
         }
 
         public static string StripHTML(string input)
         {
             return Regex.Replace(input, "<.*?>", String.Empty);
         }
+
+        
     }
 }

@@ -68,7 +68,7 @@ namespace TerminalBase.BaseClasses
         protected StandardConfigurationControlsCM ConfigurationControls => _configurationControls ?? (_configurationControls = GetConfigurationControls());
         protected int LoopIndex => GetLoopIndex();
         protected UpstreamQueryManager UpstreamQueryManager => _upstreamQueryManager ?? (_upstreamQueryManager = new UpstreamQueryManager(ActivityContext, HubCommunicator));
-        protected ControlHelper ControlHelper => _controlHelper ?? (_controlHelper = new ControlHelper(ActivityContext, HubCommunicator));
+        protected ControlHelper ControlHelper => _controlHelper ?? (_controlHelper = new ControlHelper(ActivityContext, HubCommunicator, CrateManager));
         protected ValidationManager ValidationManager => _validationManager ?? (_validationManager = new ValidationManager());
         protected PlanHelper PlanHelper => _planHelper ?? (_planHelper = new PlanHelper(HubCommunicator, CurrentUserId));
         protected Guid ActivityId => ActivityContext.ActivityPayload.Id;
@@ -89,7 +89,7 @@ namespace TerminalBase.BaseClasses
         protected void SuspendHubExecution()
         {
             OperationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestSuspend);
-            }
+        }
 
         /// <summary>
         /// Creates a terminate request for hub execution
@@ -502,7 +502,6 @@ namespace TerminalBase.BaseClasses
 
         protected void AddControl(ControlDefinitionDTO control)
         {
-
             ConfigurationControls.Controls.Add(control);
         }
 
@@ -789,7 +788,7 @@ namespace TerminalBase.BaseClasses
         }
 
         public async Task Deactivate(ActivityContext activityContext)
-                {
+        {
             InitializeActivity(activityContext);
             await Deactivate();
         }
@@ -806,15 +805,7 @@ namespace TerminalBase.BaseClasses
 
         protected Crate<StandardConfigurationControlsCM> EnsureControlsCrate()
         {
-            var controlsCrate = Storage.CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-
-            if (controlsCrate == null)
-            {
-                controlsCrate = CrateManager.CreateStandardConfigurationControlsCrate(ConfigurationControlsLabel);
-                Storage.Add(controlsCrate);
-            }
-
-            return controlsCrate;
+            return ControlHelper.EnsureControlsCrate(Storage);
         }
 
 

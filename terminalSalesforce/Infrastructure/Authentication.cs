@@ -5,8 +5,8 @@ using System;
 using System.Threading.Tasks;
 using System.Web;
 using Utilities.Configuration.Azure;
-using Data.Entities;
 using Fr8Data.DataTransferObjects;
+using TerminalBase.Models;
 
 namespace terminalSalesforce.Infrastructure
 {
@@ -95,10 +95,10 @@ namespace terminalSalesforce.Infrastructure
             return url;
         }
 
-        public async Task<AuthorizationTokenDO> RefreshAccessToken(AuthorizationTokenDO curAuthTokenDO)
+        public async Task<AuthorizationToken> RefreshAccessToken(AuthorizationToken curAuthToken)
         {
             var authClient = new AuthenticationClient();
-            string authAttributes = curAuthTokenDO.AdditionalAttributes;
+            string authAttributes = curAuthToken.AdditionalAttributes;
             string refreshToken = authAttributes.Substring(authAttributes.IndexOf("refresh_token"), authAttributes.IndexOf("instance_url") - 1);
             refreshToken = refreshToken.Replace("refresh_token=", "");
 
@@ -106,15 +106,15 @@ namespace terminalSalesforce.Infrastructure
             //In that case, there will no refresh token be available. Return the input auth token.
             if(string.IsNullOrEmpty(refreshToken))
             {
-                return curAuthTokenDO;
+                return curAuthToken;
             }
 
             await authClient.TokenRefreshAsync(salesforceConsumerKey, refreshToken);
-            curAuthTokenDO.Token = authClient.AccessToken;
-            curAuthTokenDO.AdditionalAttributes = $"refresh_token={authClient.RefreshToken};" +
+            curAuthToken.Token = authClient.AccessToken;
+            curAuthToken.AdditionalAttributes = $"refresh_token={authClient.RefreshToken};" +
                                                   $"instance_url={authClient.InstanceUrl};" +
                                                   $"api_version={authClient.ApiVersion}";
-            return curAuthTokenDO;
+            return curAuthToken;
         }
 
         /// <summary>

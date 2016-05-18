@@ -4,17 +4,8 @@ using Microsoft.Owin.Hosting;
 using Moq;
 using Owin;
 using StructureMap;
-using StructureMap.Configuration.DSL;
-using Data.Infrastructure;
-using Data.Interfaces;
-using Hub.Interfaces;
-using Hub.Services;
-using Hub.StructureMap;
-using Utilities;
+using Fr8Infrastructure.StructureMap;
 using terminalSalesforce.Infrastructure;
-using terminalSalesforce.Services;
-
-
 
 namespace terminalSalesforce
 {
