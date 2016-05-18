@@ -464,10 +464,10 @@ namespace TerminalBase.BaseClasses
             return Storage.Count == 0 ? ConfigurationRequestType.Initial : ConfigurationRequestType.Followup;
         }
 
-        protected StandardConfigurationControlsCM GetConfigurationControls()
+        private StandardConfigurationControlsCM GetConfigurationControls()
         {
             return ControlHelper.GetConfigurationControls(Storage);
-                }
+        }
 
         protected T GetControl<T>(string name, string controlType = null) where T : ControlDefinitionDTO
             {

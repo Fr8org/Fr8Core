@@ -7,7 +7,7 @@ using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using Hub.Managers;
+using Fr8Data.Managers;
 using TerminalBase.Infrastructure;
 using TerminalBase.BaseClasses;
 using UtilitiesTesting;
@@ -16,7 +16,6 @@ using System.Collections.Generic;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using Fr8Data.Managers;
 using Fr8Infrastructure.Interfaces;
 using Fr8Infrastructure.Communication;
 using Fr8Data.States;
@@ -125,7 +124,7 @@ namespace terminalBaseTests.BaseClasses
 
                 ActivityDO curAction = FixtureData.TestAction257();
 
-                var result = await _baseTerminalActivity.GetDesignTimeFields(curAction, CrateDirection.Upstream);
+                var result = await _baseTerminalActivity.GetDesignTimeFields(CrateDirection.Upstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(216, result.Fields.Count);
             }
@@ -146,7 +145,7 @@ namespace terminalBaseTests.BaseClasses
 
                 ActivityDO curAction = FixtureData.TestAction257();
 
-                var result = await _baseTerminalActivity.GetDesignTimeFields(curAction, CrateDirection.Downstream);
+                var result = await _baseTerminalActivity.GetDesignTimeFields(CrateDirection.Downstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(270, result.Fields.Count);
             }

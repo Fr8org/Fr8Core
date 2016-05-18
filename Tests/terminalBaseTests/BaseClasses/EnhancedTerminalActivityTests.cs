@@ -6,13 +6,18 @@ using Data.Entities;
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
+using Fr8Infrastructure.Communication;
+using Fr8Infrastructure.Interfaces;
 using Hub.Managers;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using TerminalBase.Services;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
@@ -41,10 +46,13 @@ namespace terminaBaselTests.BaseClasses
         {
         }
 
+        /*
         protected override StandardConfigurationControlsCM CrateConfigurationControls()
         {
             return new StandardConfigurationControlsCM();
-        }
+        }*/
+
+        protected override ActivityTemplateDTO MyTemplate => new ActivityTemplateDTO();
 
         protected override ConfigurationRequestType GetConfigurationRequestType()
         {
@@ -68,30 +76,30 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected override Task RunCurrentActivity()
+        protected override Task RunETA()
         {
             CalledMethods |= CalledMethod.Run;
             CheckBasicPropeties();
             Assert.NotNull(AuthorizationToken);
-            Assert.NotNull(CurrentPayloadStorage);
+            Assert.NotNull(Payload);
             Assert.NotNull(OperationalState);
 
             return Task.FromResult(0);
         }
 
-        protected override Task RunChildActivities()
+        public override Task RunChildActivities()
         {
             CalledMethods |= CalledMethod.ChildActivitiesExecuted;
             CheckBasicPropeties();
 
             Assert.NotNull(AuthorizationToken);
-            Assert.NotNull(CurrentPayloadStorage);
+            Assert.NotNull(Payload);
             Assert.NotNull(OperationalState);
 
             return Task.FromResult(0);
         }
 
-        protected override Task Activate()
+        protected override Task ActivateETA()
         {
             CalledMethods |= CalledMethod.Activate;
             CheckBasicPropeties();
@@ -99,7 +107,7 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected override Task Validate(ValidationManager validationManager)
+        protected override Task<bool> Validate()
         {
             CalledMethods |= CalledMethod.Validate;
 
@@ -108,13 +116,13 @@ namespace terminaBaselTests.BaseClasses
 
             if (!ValidationState)
             {
-                validationManager.SetError("Error");
+                ValidationManager.SetError("Error");
             }
 
             return Task.FromResult(ValidationState);
         }
 
-        protected override Task Deactivate()
+        protected override Task DeactivateETA()
         {
             CalledMethods |= CalledMethod.Deactivate;
             CheckBasicPropeties();
@@ -125,8 +133,8 @@ namespace terminaBaselTests.BaseClasses
         {
             Assert.NotNull(UiBuilder);
             Assert.NotNull(UpstreamQueryManager);
-            Assert.NotNull(CurrentActivity);
-            Assert.NotNull(CurrentActivityStorage);
+            Assert.NotNull(ActivityPayload);
+            Assert.NotNull(Storage);
         }
     }
 
@@ -164,37 +172,39 @@ namespace terminaBaselTests.BaseClasses
         {
         }
 
-        protected override Task Initialize(CrateSignaller crateSignaller)
+        protected override Task InitializeETA()
         {
-            OnInitialize?.Invoke(ConfigurationControls);
+            OnInitialize?.Invoke(ActivityUI);
 
-            ConfigurationControls.DynamicTextSources.Add(new TextSource("", "", "ts1"));
-            ConfigurationControls.DynamicTextSources.Add(new TextSource("", "", "ts2"));
-            ConfigurationControls.DynamicTextSources.Add(new TextSource("", "", "ts3"));
+            ActivityUI.DynamicTextSources.Add(new TextSource("", "", "ts1"));
+            ActivityUI.DynamicTextSources.Add(new TextSource("", "", "ts2"));
+            ActivityUI.DynamicTextSources.Add(new TextSource("", "", "ts3"));
 
             return Task.FromResult(0);
         }
 
-        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
+        protected override Task ConfigureETA()
         {
-            OnConfigure?.Invoke(ConfigurationControls);
+            OnConfigure?.Invoke(ActivityUI);
 
-            Assert.AreEqual(3, ConfigurationControls.DynamicTextSources.Count, "Failed to sync dynamic controls list: invalid count");
-            Assert.IsTrue(ConfigurationControls.DynamicTextSources.Any(x => x.Name == "ts1"), "Failed to sync dynamic controls list: ts1 not found");
-            Assert.IsTrue(ConfigurationControls.DynamicTextSources.Any(x => x.Name == "ts2"), "Failed to sync dynamic controls list: ts2 not found");
-            Assert.IsTrue(ConfigurationControls.DynamicTextSources.Any(x => x.Name == "ts3"), "Failed to sync dynamic controls list: ts3 not found");
+            Assert.AreEqual(3, ActivityUI.DynamicTextSources.Count, "Failed to sync dynamic controls list: invalid count");
+            Assert.IsTrue(ActivityUI.DynamicTextSources.Any(x => x.Name == "ts1"), "Failed to sync dynamic controls list: ts1 not found");
+            Assert.IsTrue(ActivityUI.DynamicTextSources.Any(x => x.Name == "ts2"), "Failed to sync dynamic controls list: ts2 not found");
+            Assert.IsTrue(ActivityUI.DynamicTextSources.Any(x => x.Name == "ts3"), "Failed to sync dynamic controls list: ts3 not found");
 
-            Assert.AreEqual("DynamicTextSources_ts1_value", ConfigurationControls.DynamicTextSources.First(x => x.Name == "ts1").Value, "Failed to sync dynamic controls list: invalid value");
-            Assert.AreEqual("DynamicTextSources_ts2_value", ConfigurationControls.DynamicTextSources.First(x => x.Name == "ts2").Value, "Failed to sync dynamic controls list: invalid value");
-            Assert.AreEqual("DynamicTextSources_ts3_value", ConfigurationControls.DynamicTextSources.First(x => x.Name == "ts3").Value, "Failed to sync dynamic controls list: invalid value");
+            Assert.AreEqual("DynamicTextSources_ts1_value", ActivityUI.DynamicTextSources.First(x => x.Name == "ts1").Value, "Failed to sync dynamic controls list: invalid value");
+            Assert.AreEqual("DynamicTextSources_ts2_value", ActivityUI.DynamicTextSources.First(x => x.Name == "ts2").Value, "Failed to sync dynamic controls list: invalid value");
+            Assert.AreEqual("DynamicTextSources_ts3_value", ActivityUI.DynamicTextSources.First(x => x.Name == "ts3").Value, "Failed to sync dynamic controls list: invalid value");
 
             return Task.FromResult(0);
         }
 
-        protected override Task RunCurrentActivity()
+        protected override Task RunETA()
         {
             return Task.FromResult(0);
         }
+
+        protected override ActivityTemplateDTO MyTemplate { get; }
     }
 
 
@@ -238,22 +248,23 @@ namespace terminaBaselTests.BaseClasses
         {
         }
 
-        protected override Task Initialize(CrateSignaller crateSignaller)
+        protected override Task InitializeETA()
         {
-            OnInitialize?.Invoke(ConfigurationControls);
+            OnInitialize?.Invoke(ActivityUI);
             return Task.FromResult(0);
         }
 
-        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
+        protected override Task ConfigureETA()
         {
-            OnConfigure?.Invoke(ConfigurationControls);
+            OnConfigure?.Invoke(ActivityUI);
             return Task.FromResult(0);
         }
 
-        protected override Task RunCurrentActivity()
+        protected override Task RunETA()
         {
             return Task.FromResult(0);
         }
+        protected override ActivityTemplateDTO MyTemplate { get; }
     }
 
     class ActivityWithUiBuilder : EnhancedTerminalActivity<ActivityWithUiBuilder.ActivityUi>
@@ -271,20 +282,22 @@ namespace terminaBaselTests.BaseClasses
         {
         }
 
-        protected override Task Initialize(CrateSignaller crateSignaller)
+        protected override Task InitializeETA()
         {
             return Task.FromResult(0);
         }
 
-        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
+        protected override Task ConfigureETA()
         {
             return Task.FromResult(0);
         }
 
-        protected override Task RunCurrentActivity()
+        protected override Task RunETA()
         {
             return Task.FromResult(0);
         }
+
+        protected override ActivityTemplateDTO MyTemplate { get; }
     }
 
     [TestFixture]
@@ -383,7 +396,7 @@ namespace terminaBaselTests.BaseClasses
         {
             var activity = new ActivityOverrideCheckMock(false);
             await ObjectFactory.GetInstance<IHubCommunicator>().Configure("testTerminal");
-            await activity.ExecuteChildActivities(CreateActivity(Crate.FromContent("crate", new StandardConfigurationControlsCM())), Guid.Empty, new AuthorizationTokenDO());
+            await activity.RunChildActivities(CreateActivity(Crate.FromContent("crate", new StandardConfigurationControlsCM())), Guid.Empty, new AuthorizationTokenDO());
             Assert.IsTrue(activity.CalledMethods == (CalledMethod.ChildActivitiesExecuted | CalledMethod.Validate));
         }
 
@@ -519,7 +532,6 @@ namespace terminaBaselTests.BaseClasses
             var activity = new UiSyncDynamicActivityMock();
             var dto = await activity.Configure(CreateActivity(), new AuthorizationTokenDO());
             var cc = _crateManager.GetStorage(dto).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
-
             Assert.AreEqual(5, cc.Controls.Count,  "Failed to sync dynamic controls list: invalid count");
             Assert.AreEqual("DynamicTextSources_ts1", cc.Controls[1].Name, "Failed to sync dynamic controls list: ts1 not found at [1]");
             Assert.AreEqual("DynamicTextSources_ts2", cc.Controls[2].Name, "Failed to sync dynamic controls list: ts2 not found at [2]");
@@ -533,17 +545,12 @@ namespace terminaBaselTests.BaseClasses
             var activity = new UiSyncDynamicActivityMock();
             var dto = await activity.Configure(CreateActivity(), new AuthorizationTokenDO());
             var cc = _crateManager.GetStorage(dto).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
-
             foreach (var controlDefinitionDto in cc.Controls)
             {
                 controlDefinitionDto.Value = controlDefinitionDto.Name + "_value";
             }
-
             await activity.Configure(CreateActivity(Crate.FromContent("cc", cc)), new AuthorizationTokenDO());
             //cc = _crateManager.GetStorage(dto).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
-
-            
-
         }
     }
 }
