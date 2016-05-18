@@ -13,10 +13,10 @@ namespace Fr8Data.DataTransferObjects
         public String PlainText { get; set; }
         public DateTimeOffset DateReceived { get; set; }
         public int? EmailStatus { get; set; }
-        public virtual EmailAddressDTO From { get; set; }
+        public EmailAddressDTO From { get; set; }
         public String FromName { get; set; }
         public String ReplyToName { get; set; }
         public String ReplyToAddress { get; set; }
-        public virtual List<RecipientDTO> Recipients { get; set; }
+        public List<RecipientDTO> Recipients { get; set; }
     }
 }

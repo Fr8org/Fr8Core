@@ -8,7 +8,8 @@ using NUnit.Framework;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using terminalFr8Core.Actions;
-using TerminalBase.Infrastructure;
+﻿using terminalFr8Core.Activities;
+﻿using TerminalBase.Infrastructure;
 
 namespace HubTests.Unit
 {

@@ -10,9 +10,11 @@ using UtilitiesTesting.Fixtures;
 using TerminalBase.Infrastructure;
 using terminalFr8Core.Actions;
 using Moq;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using System.Threading.Tasks;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
+using Fr8Infrastructure.Interfaces;
+using terminalFr8Core.Activities;
 
 namespace terminalFr8CoreTests.Unit
 {

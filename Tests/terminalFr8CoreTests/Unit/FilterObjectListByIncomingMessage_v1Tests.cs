@@ -10,9 +10,11 @@ using System.Threading.Tasks;
 using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using TerminalBase.Infrastructure;
 using terminalFr8Core.Actions;
+using terminalFr8Core.Activities;
 using terminalTests.Fixtures;
 using UtilitiesTesting;
 
@@ -46,7 +48,7 @@ namespace terminalTests.Integration
                    .Returns(Task.FromResult(ActivityTemplates));
             hubMock.Setup(x => x.GetActivityTemplates(It.IsAny<string>(), It.IsAny<string>()))
                    .Returns<string, string>((tags, user) => Task.FromResult(ActivityTemplates.Where(x => x.Tags.Contains(tags)).ToList()));
-            hubMock.Setup(x => x.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
+            hubMock.Setup(x => x.GetPayload(It.IsAny<Guid>(), It.IsAny<string>()))
                    .Returns<ActivityDO, Guid, string>((act, contId, user) => Task.FromResult(HealthMonitor_FixtureData.PayloadWithOnlyOperationalState()));
             ObjectFactory.Container.Inject(hubMock);
             ObjectFactory.Container.Inject(hubMock.Object);
@@ -105,7 +107,7 @@ namespace terminalTests.Integration
             {
                 storage.Add(Crate<FieldDescriptionsCM>.FromContent("Message is here", new FieldDescriptionsCM(new FieldDTO("Message", "This message should be checked for keywords"))));
             }
-            hubMock.Setup(x => x.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
+            hubMock.Setup(x => x.GetPayload(It.IsAny<Guid>(), It.IsAny<string>()))
                     .Returns<ActivityDO, Guid, string>((act, contId, user) => Task.FromResult(payload));
 
             var authToken = new AuthorizationTokenDO { Token = "1" };

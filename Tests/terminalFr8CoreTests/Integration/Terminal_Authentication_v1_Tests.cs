@@ -2,8 +2,8 @@
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fr8Data.DataTransferObjects;
+using Fr8Infrastructure.Communication;
 using HealthMonitor.Utility;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
 
 namespace terminalDocuSignTests.Integration

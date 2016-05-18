@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using SendGrid;
 using StructureMap;
+using terminalSendGrid.Helpers;
 using terminalSendGrid.Infrastructure;
 using Utilities;
 
@@ -57,7 +58,7 @@ namespace terminalSendGrid.Services
                 throw new ArgumentNullException("mailer");
             if (mailer.Email == null)
                 throw new ArgumentException(@"This envelope has no Email.", "mailer");
-            if (mailer.Email.To.Count() == 0)
+            if (!mailer.Email.GetToRecipients().Any())
                 throw new ArgumentException(@"This envelope has no recipients.", "mailer");
 
             var email = mailer.Email;
@@ -72,9 +73,7 @@ namespace terminalSendGrid.Services
                 {
                     mailMessage.ReplyTo = new[] { new MailAddress(email.From.Address, fromName) };
                 }
-
-                mailMessage.To =
-                    email.To.Select(toEmail => new MailAddress(toEmail.Address, toEmail.NameOrAddress())).ToArray();
+                mailMessage.To = email.GetToRecipients().Select(toEmail => new MailAddress(toEmail.Address, toEmail.Name ?? toEmail.Address)).ToArray();
 
                 mailMessage.Subject = email.Subject;
 
@@ -125,7 +124,7 @@ namespace terminalSendGrid.Services
                             else
                             {
                                 listVal = new List<string>();
-                                for (var i = 0; i < email.To.Count(); i++) //Pad out the substitution
+                                for (var i = 0; i < email.GetToRecipients().Count(); i++) //Pad out the substitution
                                     listVal.Add(pair.Value == null ? String.Empty : pair.Value.ToString());
                             }
                             subs.Add(pair.Key, listVal);

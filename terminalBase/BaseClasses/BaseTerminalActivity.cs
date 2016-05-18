@@ -624,10 +624,10 @@ namespace TerminalBase.BaseClasses
             _isRunTime = true;
             InitializeActivity(activityContext, containerExecutionContext);
             if (IsAuthenticationRequired && NeedsAuthentication())
-        {
+            {
                 RaiseNeedsAuthenticationError();
                 return;
-        }
+            }
 
             try
             {
@@ -639,20 +639,20 @@ namespace TerminalBase.BaseClasses
                 OperationalState.CurrentActivityResponse = null;
                 await RunChildActivities();
                 if (OperationalState.CurrentActivityResponse == null)
-            {
+                {
                     Success();
+                }
             }
-        }
             catch (AuthorizationTokenExpiredOrInvalidException ex)
             {
                 ErrorInvalidToken(ex.Message);
-        }
+            }
             catch (ActivityExecutionException ex)
             {
                 RaiseError(ex.Message, ex.ErrorCode);
-        }
+            }
             catch (AggregateException ex)
-        {
+            {
                 RaiseError(ex.Flatten().Message);
             }
             catch (Exception ex)
@@ -677,28 +677,28 @@ namespace TerminalBase.BaseClasses
                 {
                     RaiseError("Activity was incorrectly configured");
                     return;
-        }
+                }
                 OperationalState.CurrentActivityResponse = null;
                 await Run();
                 if (OperationalState.CurrentActivityResponse == null)
-        {
+                {
                     Success();
                 }
-        }
+            }
             catch (AuthorizationTokenExpiredOrInvalidException ex)
-        {
+            {
                 ErrorInvalidToken(ex.Message);
-        }
+            }
             catch (ActivityExecutionException ex)
-        {
+            {
                 RaiseError(ex.Message, ex.ErrorCode);
-        }
+            }
             catch (AggregateException ex)
-        {
+            {
                 RaiseError(ex.Flatten().Message);
-        }
+            }
             catch (Exception ex)
-        {
+            {
                 RaiseError(ex.Message);
             }
         }
@@ -723,16 +723,16 @@ namespace TerminalBase.BaseClasses
         }
 
         protected async Task ValidateAndFollowUp()
-                    {
+        {
             Storage.Remove<ValidationResultsCM>();
             ValidationManager.Reset();
             if (!DisableValidationOnFollowup)
-                    {
+            {
                 await Validate();
-        }
+            }
 
             if (ValidationManager.HasErrors)
-        {
+            {
                 Storage.Add(Crate.FromContent("Validation Results", ValidationManager.GetResults()));
                 return;
             }
@@ -751,7 +751,7 @@ namespace TerminalBase.BaseClasses
 
                 var configurationType = GetConfigurationRequestType();
                 switch (configurationType)
-                        {
+                {
                     case ConfigurationRequestType.Initial:
                         await Initialize();
                                 break;
@@ -762,12 +762,12 @@ namespace TerminalBase.BaseClasses
 
                             default:
                         throw new ArgumentOutOfRangeException($"Unsupported configuration type: {configurationType}");
-        }
-                    }
+                }
+            }
             catch (Exception ex)
-                        {
+            {
                 if (IsTokenInvalidation(ex))
-                            {
+                {
                     AddAuthenticationCrate(true);
                 }
                 throw;

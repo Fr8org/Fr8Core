@@ -7,7 +7,7 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using terminalFr8CoreTests.Fixtures;
-using Hub.Managers;
+using Fr8Data.Managers;
 
 namespace terminalFr8CoreTests.Integration
 {

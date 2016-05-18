@@ -215,6 +215,7 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
+    <Compile Include="Helpers\EmailHelper.cs" />
     <Compile Include="Infrastructure\EmailParticipantType.cs" />
     <Compile Include="Infrastructure\IEmailPackager.cs" />
     <Compile Include="Infrastructure\TerminalMailerDO.cs" />
