@@ -265,7 +265,6 @@
     <Compile Include="Entities\ActivityDO.cs" />
     <Compile Include="Entities\AuthorizationTokenDO.cs" />
     <Compile Include="Entities\BaseDO.cs" />
-    <Compile Include="Entities\CriteriaDO.cs" />
     <Compile Include="Interfaces\IAspNetUserClaimDO.cs" />
     <Compile Include="Interfaces\IFileRepository.cs" />
     <Compile Include="Interfaces\ITrackingChangesRepository.cs" />
@@ -634,6 +633,10 @@
     <Compile Include="Migrations\201605131245044_AddedClassPropertyToFr8AccountDO.Designer.cs">
       <DependentUpon>201605131245044_AddedClassPropertyToFr8AccountDO.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201605191119279_RemovedCriteriaDO.cs" />
+    <Compile Include="Migrations\201605191119279_RemovedCriteriaDO.Designer.cs">
+      <DependentUpon>201605191119279_RemovedCriteriaDO.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -774,7 +777,6 @@
     <Compile Include="Infrastructure\StructureMap\MigrationConsoleSeedRegistry.cs" />
     <Compile Include="Repositories\ActivityTemplateRepository.cs" />
     <Compile Include="Repositories\Plan\Internal\ActivityRepository.cs" />
-    <Compile Include="Repositories\CriteriaRepository.cs" />
     <Compile Include="Repositories\EmailStatusRepository.cs" />
     <Compile Include="Repositories\EnvelopeRepository.cs" />
     <Compile Include="Repositories\Plan\Internal\SubPlanRepository.cs" />
@@ -1214,6 +1216,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201605131245044_AddedClassPropertyToFr8AccountDO.resx">
       <DependentUpon>201605131245044_AddedClassPropertyToFr8AccountDO.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605191119279_RemovedCriteriaDO.resx">
+      <DependentUpon>201605191119279_RemovedCriteriaDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

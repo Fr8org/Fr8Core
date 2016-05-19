@@ -434,16 +434,6 @@ namespace Data.Infrastructure
         }
 
 
-        private CriteriaRepository _criteriaRepository;
-
-        public ICriteriaRepository CriteriaRepository
-        {
-            get
-            {
-                return _criteriaRepository ?? (_criteriaRepository = new CriteriaRepository(this));
-            }
-        }
-
         private FileRepository _fileRepository;
 
         public IFileRepository FileRepository
