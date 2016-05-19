@@ -127,6 +127,7 @@ namespace terminalFr8Core.Actions
                 var manifestType = mtType.ClrType;
                 var queryBuilder = MTSearchHelper.CreateQueryProvider(manifestType);
                 var converter = CrateManifestToRowConverter(manifestType);
+
                 var foundObjects = queryBuilder
                     .Query(
                         uow,
@@ -134,7 +135,6 @@ namespace terminalFr8Core.Actions
                         conditions
                     )
                     .ToArray();
-                
 
                 var searchResult = new StandardTableDataCM();
 
