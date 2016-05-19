@@ -2,12 +2,12 @@ namespace Data.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
-    
+
     public partial class Add_Fr8AccountId_To_ObjectRolePermissions : DbMigration
     {
         public override void Up()
         {
-            AddColumn("dbo.ObjectRolePermissions", "Fr8AccountId", c=> c.String(nullable: false, maxLength: 128));
+            AddColumn("dbo.ObjectRolePermissions", "Fr8AccountId", c => c.String(nullable: false, maxLength: 128));
             CreateIndex("dbo.ObjectRolePermissions", "Fr8AccountId");
             AddForeignKey("dbo.ObjectRolePermissions", "Fr8AccountId", "dbo.Users", "Id");
 
@@ -32,7 +32,7 @@ namespace Data.Migrations
 
             Sql(sqlMigration);
         }
-        
+
         public override void Down()
         {
             DropForeignKey("dbo.ObjectRolePermissions", "Fr8AccountId", "dbo.Users");
