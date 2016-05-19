@@ -1,8 +1,8 @@
-﻿using System;
-using Fr8Data.Crates;
+﻿using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Infrastructure;
 using Fr8Data.Manifests;
+using System;
 
 namespace Fr8Data.Managers
 {
@@ -55,31 +55,28 @@ namespace Fr8Data.Managers
             return crateManager.IsEmptyStorage(activity.CrateStorage);
         }
  
-        private static ActivityDTO UpdateControls<TActivityUi>(this ActivityDTO activityDTO, Action<TActivityUi> action) where TActivityUi  : StandardConfigurationControlsCM, new()
+        public static ICrateStorage UpdateControls<TActivityUi>(this ICrateStorage crateStorage, Action<TActivityUi> action) where TActivityUi  : StandardConfigurationControlsCM, new()
         {
-            if (activityDTO == null)
+            if (crateStorage == null)
             {
-                throw new ArgumentNullException(nameof(activityDTO));
+                throw new ArgumentNullException(nameof(crateStorage));
             }
             if (action == null)
             {
                 throw new ArgumentNullException(nameof(action));
             }
             var crateManager = new CrateManager();
-            using (var storage = crateManager.GetUpdatableStorage(activityDTO))
-            {
-                var controlsCrate = storage.FirstCrate<StandardConfigurationControlsCM>();
-                var activityUi = new TActivityUi().ClonePropertiesFrom(controlsCrate.Content) as TActivityUi;
-                action(activityUi);
-                storage.ReplaceByLabel(Crate.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
-            }
-            return activityDTO;
+            var controlsCrate = crateStorage.FirstCrate<StandardConfigurationControlsCM>();
+            var activityUi = new TActivityUi().ClonePropertiesFrom(controlsCrate.Content) as TActivityUi;
+            action(activityUi);
+            crateStorage.ReplaceByLabel(Crate.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
+            return crateStorage;
         }
  
         /// <summary>
         /// Returns a copy of AcvitityUI for the given activity
         /// </summary>
-        private static TActivityUi GetReadonlyActivityUi<TActivityUi>(this ICrateStorage crateStorage) where TActivityUi : StandardConfigurationControlsCM, new()
+        public static TActivityUi GetReadonlyActivityUi<TActivityUi>(this ICrateStorage crateStorage) where TActivityUi : StandardConfigurationControlsCM, new()
         {
             if (crateStorage == null)
             {

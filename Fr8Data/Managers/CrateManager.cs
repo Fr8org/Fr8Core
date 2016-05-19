@@ -232,10 +232,9 @@ namespace Fr8Data.Managers
             return key;
         }
 
-        public OperationalStateCM GetOperationalState(PayloadDTO payloadDTO)
+        public OperationalStateCM GetOperationalState(ICrateStorage crateStorage)
         {
-            ICrateStorage curCrateStorage = FromDto(payloadDTO.CrateStorage);
-            OperationalStateCM curOperationalState = curCrateStorage.CrateContentsOfType<OperationalStateCM>().Single();
+            OperationalStateCM curOperationalState = crateStorage.CrateContentsOfType<OperationalStateCM>().Single();
             return curOperationalState;
         }
         //This method returns one crate of the specified Manifest Type from the payload

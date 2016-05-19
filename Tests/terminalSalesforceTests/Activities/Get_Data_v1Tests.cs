@@ -70,7 +70,7 @@ namespace terminalSalesforceTests.Actions
             await _getData_v1.Configure(activityContext);
 
             //Assert
-            var storage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(result);
+            var storage = activityContext.ActivityPayload.CrateStorage;
             Assert.AreEqual(2, storage.Count, "Number of configuration crates not populated correctly");
             Assert.IsNotNull(storage.FirstCrateOrDefault<StandardConfigurationControlsCM>(), "Configuration controls is not present");
             Assert.IsNotNull(storage.FirstCrateOrDefault<CrateDescriptionCM>(), "There is no crate with runtime crates descriptions in activity storage");

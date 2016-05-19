@@ -3,6 +3,7 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Managers;
 using Fr8Data.Manifests;
+using TerminalBase.Models;
 
 namespace terminalSendGridTests.Fixtures
 {
@@ -33,6 +34,7 @@ namespace terminalSendGridTests.Fixtures
             return new Guid("70790811-3394-4B5B-9841-F26A7BE35163");
         }
 
+        
         public static ContainerDTO TestContainer()
         {
             var containerDO = new ContainerDTO();
@@ -84,6 +86,27 @@ namespace terminalSendGridTests.Fixtures
                 }
                 return payloadDTO;
             }
+        }
+        public static ActivityContext TestActivityContext1()
+        {
+            var activityTemplateDTO = new ActivityTemplateDTO
+            {
+                Id = Guid.NewGuid(),
+                Name = "Type1",
+                Version = "1"
+            };
+            var activityPayload = new ActivityPayload
+            {
+                Id = Guid.NewGuid(),
+                Name = "Type2",
+                ActivityTemplate = activityTemplateDTO,
+                CrateStorage = new CrateStorage()
+            };
+            var activityContext = new ActivityContext
+            {
+                ActivityPayload = activityPayload
+            };
+            return activityContext;
         }
     }
 }

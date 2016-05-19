@@ -107,10 +107,11 @@ namespace terminalSendGrid.Tests.Actions
         {
             _gridActivity = new SendEmailViaSendGrid_v1();
             var curActivityDO = FixtureData.ConfigureSendEmailViaSendGridActivity();
+            var activityContext = FixtureData.TestActivityContext1();
             ActivityDTO curActionDTO = Mapper.Map<ActivityDTO>(curActivityDO);
             var curAuthTokenDO = Mapper.Map<AuthorizationToken>(curActionDTO.AuthToken);
-            var actionResult = _gridActivity.Configure(curActivityDO, curAuthTokenDO).Result;
-            return Mapper.Map<ActivityDTO>(actionResult);
+            _gridActivity.Configure(activityContext);
+            return Mapper.Map<ActivityDTO>(activityContext);
         }
 
         [Test]
@@ -120,6 +121,8 @@ namespace terminalSendGrid.Tests.Actions
             ICrateManager Crate = ObjectFactory.GetInstance<ICrateManager>();
             _gridActivity = new SendEmailViaSendGrid_v1();
             var curActivityDO = FixtureData.ConfigureSendEmailViaSendGridActivity();
+            var activityContext = FixtureData.TestActivityContext1();
+            var executionContext = new ContainerExecutionContext();
 
             ActivityDTO curActionDTO = Mapper.Map<ActivityDTO>(curActivityDO);
             curActionDTO.CrateStorage = activityDto.CrateStorage;
@@ -143,7 +146,7 @@ namespace terminalSendGrid.Tests.Actions
 
             var container = FixtureData.TestContainer();
             // Act
-            var payloadDTOResult = _gridActivity.Run(activityDO, container.Id, curAuthTokenDO).Result;
+            var payloadDTOResult = _gridActivity.Run(activityContext, executionContext);
 
             // Assert
             Assert.NotNull(payloadDTOResult);

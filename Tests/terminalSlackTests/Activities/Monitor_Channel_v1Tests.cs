@@ -119,8 +119,9 @@ namespace terminalSlackTests.Integration
                     }
                  }
             );
+            var storage = Crate.GetStorage(activityDTO);
             selectedChannel = selectedChannel.StartsWith("#") ? selectedChannel : $"#{selectedChannel}";
-            activityDTO.UpdateControls<Monitor_Channel_v1.ActivityUi>(x =>
+            storage.UpdateControls<Monitor_Channel_v1.ActivityUi>(x =>
             {
                 if (string.IsNullOrEmpty(selectedChannel))
                 {

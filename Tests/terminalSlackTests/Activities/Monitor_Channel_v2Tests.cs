@@ -15,6 +15,8 @@ using terminalSlack.Interfaces;
 using terminalSlackTests.Fixtures;
 using TerminalBase.Infrastructure;
 using UtilitiesTesting;
+using TerminalBase.Models;
+using Fr8Data.Crates;
 
 namespace terminalSlackTests.Activities
 {
@@ -46,7 +48,7 @@ namespace terminalSlackTests.Activities
         public async Task Initialize_Always_LoadsChannelList()
         {
             var activity = new Monitor_Channel_v2();
-            await activity.Configure(new ActivityDO(), AuthorizationToken);
+            await activity.Configure(new ActivityContext());
             ObjectFactory.GetInstance<Mock<ISlackIntegration>>().Verify(x => x.GetChannelList(It.IsAny<string>(), false), "Channel list was not loaded from Slack");
         }
 
@@ -54,16 +56,30 @@ namespace terminalSlackTests.Activities
         public async Task Initialize_Always_HasEventSubscriptonCrate()
         {
             var activity = new Monitor_Channel_v2();
-            var currentActivity = await activity.Configure(new ActivityDO(), AuthorizationToken);
-            Assert.IsNotNull(CrateManager.GetStorage(currentActivity).FirstCrateOrDefault<EventSubscriptionCM>(), "Event subscription was not created");
+            var activityContext = new ActivityContext
+            {
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
+                }
+            };
+            await activity.Configure(activityContext);
+            Assert.IsNotNull(activityContext.ActivityPayload.CrateStorage.FirstCrateOrDefault<EventSubscriptionCM>(), "Event subscription was not created");
         }
 
         [Test]
         public async Task Initialize_Always_ReportsRuntimeAvailableFields()
         {
             var activity = new Monitor_Channel_v2();
-            var currentActivity = await activity.Configure(new ActivityDO(), AuthorizationToken);
-            var currentActivityStorage = CrateManager.GetStorage(currentActivity);
+            var activityContext = new ActivityContext
+            {
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
+                }
+            };
+            await activity.Configure(activityContext);
+            var currentActivityStorage = activityContext.ActivityPayload.CrateStorage;
             var runtimeCratesDescriptionCrate = currentActivityStorage.FirstCrateOrDefault<CrateDescriptionCM>();
             Assert.IsNotNull(runtimeCratesDescriptionCrate, "Runtime crates description crate was not created");
             Assert.IsTrue(runtimeCratesDescriptionCrate.Content.CrateDescriptions[0].Fields.Count > 0, "Runtime available fields were not reported");
@@ -73,18 +89,23 @@ namespace terminalSlackTests.Activities
         public async Task Run_WhenNoMonitorOptionIsSelected_ReturnsValidationError()
         {
             var activity = new Monitor_Channel_v2();
-            var currentActivity = await activity.Configure(new ActivityDO(), AuthorizationToken);
-
-            using (var updatableStorage = CrateManager.UpdateStorage(() => currentActivity.CrateStorage))
+            var activityContext = new ActivityContext
             {
-                var configurationControls = updatableStorage.FirstCrate<StandardConfigurationControlsCM>().Content;
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
+                }
+            };
+            var executionContext = new ContainerExecutionContext();
+            await activity.Configure(activityContext);
 
-                configurationControls.FindByNameNested<CheckBox>("MonitorChannelsOption").Selected = false;
-                configurationControls.FindByNameNested<RadioButtonOption>("AllChannelsOption").Selected = false;
-            }
+            var configurationControls = activityContext.ActivityPayload.CrateStorage.FirstCrate<StandardConfigurationControlsCM>().Content;
+
+            configurationControls.FindByNameNested<CheckBox>("MonitorChannelsOption").Selected = false;
+            configurationControls.FindByNameNested<RadioButtonOption>("AllChannelsOption").Selected = false;
             
-            var payload = await activity.Run(currentActivity, Guid.Empty, AuthorizationToken);
-            var operationalState = CrateManager.GetOperationalState(payload);
+            await activity.Run(activityContext, executionContext);
+            var operationalState = CrateManager.GetOperationalState(activityContext.ActivityPayload.CrateStorage);
 
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalState.CurrentActivityResponse.Type, "Error response was not produced when no monitor option was selected");
         }
@@ -93,26 +114,41 @@ namespace terminalSlackTests.Activities
         public async Task Activate_WhenConfiguredProperly_SubscribesToSlackRtmEvents()
         {
             var activity = new Monitor_Channel_v2();
-            var currentActivity = await activity.Configure(new ActivityDO(), AuthorizationToken);
-            currentActivity.UpdateControls<Monitor_Channel_v2.ActivityUi>(x => x.MonitorDirectMessagesOption.Selected = true);
-            var planId = currentActivity.RootPlanNodeId = Guid.NewGuid();
-            await activity.Activate(currentActivity, AuthorizationToken);
-            ObjectFactory.GetInstance<Mock<ISlackEventManager>>().Verify(x => x.Subscribe(It.IsAny<AuthorizationTokenDO>(), planId.Value), "Subscription to Slack RTM was not created");
+            var activityContext = new ActivityContext {
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
+                 }
+            };
+            await activity.Configure(activityContext);
+            activityContext.ActivityPayload.CrateStorage.UpdateControls<Monitor_Channel_v2.ActivityUi>(x => x.MonitorDirectMessagesOption.Selected = true);
+            var planId = activityContext.ActivityPayload.RootPlanNodeId = Guid.NewGuid();
+            await activity.Activate(activityContext);
+            ObjectFactory.GetInstance<Mock<ISlackEventManager>>().Verify(x => x.Subscribe(It.IsAny<AuthorizationToken>(), planId.Value), "Subscription to Slack RTM was not created");
         }
 
         [Test]
         public async Task Run_WhenPayloadHasEventAndItDoesntPassFilters_ReturnsTerminationRequest()
         {
             var activity = new Monitor_Channel_v2();
-            var currentActivity = await activity.Configure(new ActivityDO(), AuthorizationToken);
-            currentActivity = currentActivity.UpdateControls<Monitor_Channel_v2.ActivityUi>(x =>
+            var activityContext = new ActivityContext
+            {
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
+                }
+            };
+            var executionContext = new ContainerExecutionContext();
+            
+            await activity.Configure(activityContext);
+            activityContext.ActivityPayload.CrateStorage.UpdateControls<Monitor_Channel_v2.ActivityUi>(x =>
                                                                           {
                                                                               x.MonitorDirectMessagesOption.Selected = true;
                                                                               x.MonitorChannelsOption.Selected = false;
                                                                           });
             HealthMonitor_FixtureData.ConfigureHubToReturnPayloadWithChannelMessageEvent();
-            var payload = await activity.Run(currentActivity, Guid.Empty, AuthorizationToken);
-            var operationalState = CrateManager.GetOperationalState(payload);
+            await activity.Run(activityContext, executionContext);
+            var operationalState = CrateManager.GetOperationalState(activityContext.ActivityPayload.CrateStorage);
             Assert.AreEqual(ActivityResponse.RequestTerminate.ToString(), operationalState.CurrentActivityResponse.Type, "RequestTerminate response was not produced when event didn't match monitoring options");
         }
 
@@ -120,17 +156,25 @@ namespace terminalSlackTests.Activities
         public async Task Run_WhenPayloadHasEventAndItPassFilters_ReturnsSuccess()
         {
             var activity = new Monitor_Channel_v2();
-            var currentActivity = await activity.Configure(new ActivityDO(), AuthorizationToken);
-            currentActivity = currentActivity.UpdateControls<Monitor_Channel_v2.ActivityUi>(x =>
-        {
+            var activityContext = new ActivityContext
+            {
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
+                }
+            };
+            var executionContext = new ContainerExecutionContext();
+            await activity.Configure(activityContext);
+            activityContext.ActivityPayload.CrateStorage.UpdateControls<Monitor_Channel_v2.ActivityUi>(x =>
+            {
                 x.MonitorDirectMessagesOption.Selected = true;
                 x.MonitorChannelsOption.Selected = false;
             });
             HealthMonitor_FixtureData.ConfigureHubToReturnPayloadWithDirectMessageEvent();
-            var payload = await activity.Run(currentActivity, Guid.Empty, AuthorizationToken);
-            var operationalState = CrateManager.GetOperationalState(payload);
+            await activity.Run(activityContext, executionContext);
+            var operationalState = CrateManager.GetOperationalState(activityContext.ActivityPayload.CrateStorage);
             Assert.AreEqual(ActivityResponse.Success.ToString(), operationalState.CurrentActivityResponse.Type, "RequestTerminate response was not produced when event didn't match monitoring options");
-            Assert.IsNotNull(CrateManager.GetStorage(payload).FirstCrateOrDefault<StandardPayloadDataCM>(), "Activity didn't produce crate with payload data");
+            Assert.IsNotNull(activityContext.ActivityPayload.CrateStorage.FirstCrateOrDefault<StandardPayloadDataCM>(), "Activity didn't produce crate with payload data");
         }
     }
 }

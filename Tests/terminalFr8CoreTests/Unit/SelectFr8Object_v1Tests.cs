@@ -15,6 +15,7 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Managers;
 using Fr8Infrastructure.Interfaces;
 using terminalFr8Core.Activities;
+using TerminalBase.Models;
 
 namespace terminalFr8CoreTests.Unit
 {
@@ -54,10 +55,11 @@ namespace terminalFr8CoreTests.Unit
         {
             ActivityDTO curActionDTO = FixtureData.TestActivityDTOSelectFr8ObjectInitial();
             ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
+            ActivityContext activityContext = FixtureData.TestActivityContext1();
             AuthorizationTokenDO curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
-            var activity = await select_Fr8_Object_v1.Configure(curActivityDO,curAuthTokenDO);
+            await select_Fr8_Object_v1.Configure(activityContext);
          
-            Assert.NotNull(activity);
+            Assert.NotNull(activityContext);
             Assert.AreEqual(2, ObjectFactory.GetInstance<ICrateManager>().GetStorage(curActivityDO.CrateStorage).Count);
         }
 
@@ -66,10 +68,11 @@ namespace terminalFr8CoreTests.Unit
         {
             ActivityDTO curActionDTO = FixtureData.TestActivityDTOSelectFr8ObjectFollowup("19");
             ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
+            ActivityContext activityContext = FixtureData.TestActivityContext1();
             AuthorizationTokenDO curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
-            var activity = await select_Fr8_Object_v1.Configure(curActivityDO, curAuthTokenDO);
+            await select_Fr8_Object_v1.Configure(activityContext);
 
-            Assert.NotNull(activity);
+            Assert.NotNull(activityContext);
            // Assert.AreEqual(2, actionDTO.CrateStorage.CrateDTO.Count);
         }
 
@@ -78,11 +81,10 @@ namespace terminalFr8CoreTests.Unit
         {
             ActivityDTO curActionDTO = FixtureData.TestActivityDTOSelectFr8ObjectFollowup("21");
             ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
+            ActivityContext activityContext = FixtureData.TestActivityContext1();
             AuthorizationTokenDO curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
-            var activity = await select_Fr8_Object_v1.Configure(curActivityDO, curAuthTokenDO);
-
-
-            Assert.NotNull(activity);
+            await select_Fr8_Object_v1.Configure(activityContext);
+            Assert.NotNull(activityContext);
             //Assert.AreEqual(2, actionDTO.CrateStorage.CrateDTO.Count);
         }
     }

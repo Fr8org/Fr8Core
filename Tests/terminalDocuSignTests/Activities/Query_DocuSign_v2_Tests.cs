@@ -28,7 +28,13 @@ namespace terminalDocuSignTests.Activities
             ObjectFactory.GetInstance<Mock<IDocuSignFolders>>().Setup(x => x.GetFolders(It.IsAny<DocuSignApiConfiguration>()))
                 .Returns(new[] { new FieldDTO("Name", "Id") });
             var activity = ObjectFactory.Container.GetInstance<Query_DocuSign_v2>();
-            var activityContext = new ActivityContext();
+            var activityContext = new ActivityContext
+            {
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
+                }
+            };
             await activity.Configure(activityContext);
             var activityUi = activityContext.ActivityPayload.CrateStorage.GetReadonlyActivityUi<Query_DocuSign_v2.ActivityUi>();
             Assert.IsTrue(activityUi.FolderFilter.ListItems.Count > 0, "Folder filter was not filled with items");
@@ -39,7 +45,13 @@ namespace terminalDocuSignTests.Activities
         public async Task Initialize_Always_ReportsRuntimeCratesAndFields()
         {
             var activity = ObjectFactory.Container.GetInstance<Query_DocuSign_v2>();
-            var activityContext = new ActivityContext();
+            var activityContext = new ActivityContext
+            {
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
+                }
+            };
             await activity.Configure(activityContext);
             var crateStorage = activityContext.ActivityPayload.CrateStorage;
             var crateDescriptionsManifest = crateStorage.FirstCrateOrDefault<CrateDescriptionCM>()?.Content;
@@ -55,7 +67,13 @@ namespace terminalDocuSignTests.Activities
             ObjectFactory.Container.GetInstance<Mock<IDocuSignFolders>>().Setup(x => x.GetFolderItems(It.IsAny<DocuSignApiConfiguration>(), It.IsAny<DocuSignQuery>()))
                          .Returns(new[] { new FolderItem() });
             var activity = ObjectFactory.Container.GetInstance<Query_DocuSign_v2>();
-            var activityContext = new ActivityContext();
+            var activityContext = new ActivityContext
+            {
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
+                }
+            };
             await activity.Configure(activityContext);
             var executionContext = FixtureData.ContainerExecutionContext1();
             await activity.Run(activityContext, executionContext);
