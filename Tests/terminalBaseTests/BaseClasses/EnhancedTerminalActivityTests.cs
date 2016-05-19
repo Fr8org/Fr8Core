@@ -131,7 +131,7 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected override Task<bool> Validate()
+        protected override Task<bool> ValidateETA()
         {
             CalledMethods |= CalledMethod.Validate;
 
