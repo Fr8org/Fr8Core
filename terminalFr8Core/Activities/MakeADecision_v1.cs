@@ -11,7 +11,7 @@ using Fr8Data.States;
 
 namespace terminalFr8Core.Activities
 {
-    public class TestAndBranch_v1 : TestIncomingData_v1
+    public class MakeADecision_v1 : TestIncomingData_v1
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -42,25 +42,25 @@ namespace terminalFr8Core.Activities
             //let's check current branch status
             var currentBranch = OperationalState.CallStack.GetLocalData<OperationalStateCM.BranchStatus>("Branch") ??
                                 CreateBranch();
-            currentBranch.Count += 1;
-            if (currentBranch.Count >= SlowRunLimit)
-            {
+                currentBranch.Count += 1;
+                if (currentBranch.Count >= SlowRunLimit)
+                {
                 RaiseError("This container hit a maximum loop count and was stopped because we're afraid it might be an infinite loop");
                 return;
-            }
-            if (currentBranch.Count >= SmoothRunLimit)
-            {
-                //it seems we need to slow down things
-                var diff = DateTime.UtcNow - currentBranch.LastBranchTime;
-                if (diff.TotalSeconds < MinAllowedElapsedTimeInSeconds)
-                {
-                    await Task.Delay(10000);
                 }
-            }
+                if (currentBranch.Count >= SmoothRunLimit)
+                {
+                    //it seems we need to slow down things
+                    var diff = DateTime.UtcNow - currentBranch.LastBranchTime;
+                    if (diff.TotalSeconds < MinAllowedElapsedTimeInSeconds)
+                    {
+                        await Task.Delay(10000);
+                    }
+                }
 
-            currentBranch.LastBranchTime = DateTime.UtcNow;
+                currentBranch.LastBranchTime = DateTime.UtcNow;
             OperationalState.CallStack.StoreLocalData("Branch", currentBranch);
-
+                
             var payloadFields = GetAllPayloadFields().Where(f => !string.IsNullOrEmpty(f.Key) && !string.IsNullOrEmpty(f.Value)).AsQueryable();
             var containerTransition = (ContainerTransition)ConfigurationControls.Controls.Single();
             foreach (var containerTransitionField in containerTransition.Transitions)
@@ -73,7 +73,7 @@ namespace terminalFr8Core.Activities
                         case ContainerTransitions.JumpToActivity:
                             if (!containerTransitionField.TargetNodeId.HasValue)
                             {
-                                RaiseError("Target Activity for transition is not specified. Please choose it in the Test And Branch activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                                RaiseError("Target Activity for transition is not specified. Please choose it in the Make a Decision activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
                                 return;
                             }
                             JumpToActivity(containerTransitionField.TargetNodeId.Value);
@@ -81,7 +81,7 @@ namespace terminalFr8Core.Activities
                         case ContainerTransitions.LaunchAdditionalPlan:
                             if (!containerTransitionField.TargetNodeId.HasValue)
                             {
-                                RaiseError("Target Additional Plan for transition is not specified. Please choose it in the Test And Branch activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                                RaiseError("Target Additional Plan for transition is not specified. Please choose it in the Make a Decision activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
                                 return;
                             }
                             LaunchAdditionalPlan(containerTransitionField.TargetNodeId.Value);
@@ -89,7 +89,7 @@ namespace terminalFr8Core.Activities
                         case ContainerTransitions.JumpToSubplan:
                             if (!containerTransitionField.TargetNodeId.HasValue)
                             {
-                                RaiseError("Target SubPlan for transition is not specified. Please choose it in the Test And Branch activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                                RaiseError("Target SubPlan for transition is not specified. Please choose it in the Make a Decision activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
                                 return;
                             }
                             JumpToSubplan(containerTransitionField.TargetNodeId.Value);
@@ -104,7 +104,7 @@ namespace terminalFr8Core.Activities
                             throw new NotImplementedException();
 
                         default:
-                            RaiseError("Invalid data was selected on TestAndBranch_v1#Run", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                            RaiseError("Invalid data was selected on MakeADecision_v1#Run", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
                             return;
                     }
                 }

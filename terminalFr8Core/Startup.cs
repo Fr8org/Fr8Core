@@ -66,7 +66,7 @@ namespace terminalFr8Core
             ActivityStore.RegisterActivity<SetDelay_v1>(SetDelay_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Show_Report_Onscreen_v1>(Show_Report_Onscreen_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<StoreFile_v1>(StoreFile_v1.ActivityTemplateDTO);
-            ActivityStore.RegisterActivity<TestAndBranch_v1>(TestAndBranch_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<MakeADecision_v1>(MakeADecision_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<TestIncomingData_v1>(TestIncomingData_v1.ActivityTemplateDTO);
         }
 

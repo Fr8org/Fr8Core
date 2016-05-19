@@ -322,7 +322,7 @@ namespace Hub.Services
                         }
 
 
-                        // @alexavrutin here: commented this block since this check broke Test and Branch in Kiosk mode 
+                        // @alexavrutin here: commented this block since this check broke Make a Decision in Kiosk mode 
                         // when a new plan is being created. 
                         // currentNode = _uow.PlanRepository.GetById<PlanNodeDO>(topFrame.NodeId);
                         //if (currentNode.RootPlanNodeId != targetNode.RootPlanNodeId)
