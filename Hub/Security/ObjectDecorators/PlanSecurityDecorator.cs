@@ -122,7 +122,7 @@ namespace Hub.Security.ObjectDecorators
             }
         }
 
-        public void Enqueue(List<PlanDO> curPlans, params Crate[] curEventReport)
+        public void Enqueue(IEnumerable<PlanDO> curPlans, params Crate[] curEventReport)
         {
             _target.Enqueue(curPlans, curEventReport);
         }

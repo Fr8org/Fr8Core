@@ -109,6 +109,10 @@
       <HintPath>..\..\packages\WindowsAzure.Storage.5.0.2\lib\net40\Microsoft.WindowsAzure.Storage.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Moq, Version=4.2.1507.118, Culture=neutral, PublicKeyToken=69f491c39445e920, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Moq.4.2.1507.0118\lib\net40\Moq.dll</HintPath>
+    </Reference>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
@@ -166,6 +170,7 @@
     <Compile Include="Asserts\AssertEx - Payload.cs" />
     <Compile Include="BaseTest.cs" />
     <Compile Include="ClassMethod.cs" />
+    <Compile Include="Fixtures\DependecyConfigurationUtils.cs" />
     <Compile Include="Fixtures\FixtureData - ActivityDTO.cs" />
     <Compile Include="Fixtures\FixtureData - AuthorizationToken.cs" />
     <Compile Include="Fixtures\FixtureData - Activity2.cs" />
@@ -179,7 +184,6 @@
     <Compile Include="Fixtures\FixtureData - ConfigurationSettingsDTO.cs" />
     <Compile Include="Fixtures\FixtureData - Crate.cs" />
     <Compile Include="Fixtures\FixtureData - CrateDTO.cs" />
-    <Compile Include="Fixtures\FixtureData - Criteria.cs" />
     <Compile Include="Fixtures\FixtureData - DockyardAccount.cs" />
     <Compile Include="Fixtures\FixtureData - DocusignEvent.cs" />
     <Compile Include="Fixtures\FixtureData - Email.cs" />

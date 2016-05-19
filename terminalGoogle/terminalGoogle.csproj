@@ -318,6 +318,10 @@
       <Project>{D6A0A493-E926-439A-9CE2-E093E75132CD}</Project>
       <Name>TerminalBase</Name>
     </ProjectReference>
+    <ProjectReference Include="..\terminalUtilities\terminalUtilities.csproj">
+      <Project>{e46b602a-287b-450f-b455-5eed20c93eb7}</Project>
+      <Name>terminalUtilities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
       <Name>Utilities</Name>

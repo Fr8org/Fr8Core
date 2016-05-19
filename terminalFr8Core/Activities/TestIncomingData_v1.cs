@@ -313,7 +313,8 @@ namespace terminalFr8Core.Actions
                 Source = new FieldSourceDTO
                 {
                     Label = "Queryable Criteria",
-                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields,
+                    RequestUpstream = true
                 },
                 // Events = new List<ControlEvent>() { ControlEvent.RequestConfig }
             };
