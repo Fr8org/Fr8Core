@@ -68,6 +68,11 @@ namespace Data.Repositories.Authorization
                     entry = objectContext.ObjectStateManager.GetObjectStateEntry(entryStub);
                     foreach (var changedProperty in changedObject.ChangedProperties)
                     {
+                        if (changedProperty.Name == nameof(AuthorizationTokenDO.Token))
+                        {
+                            continue;
+                        }
+
                         entry.SetModifiedProperty(changedProperty.Name);
                     }
                 }
@@ -75,6 +80,11 @@ namespace Data.Repositories.Authorization
                 {
                     foreach (var changedProperty in changedObject.ChangedProperties)
                     {
+                        if (changedProperty.Name == nameof(AuthorizationTokenDO.Token))
+                        {
+                            continue;
+                        }
+
                         changedProperty.SetValue(entry.Entity, changedProperty.GetValue(entryStub));
                     }
                 }

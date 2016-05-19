@@ -113,12 +113,28 @@ namespace Hub.Services
                 {
                     activities = activities.Where(x => x.Id != activityId);
                 }
+                // else
+                // {
+                //     if (!activities.Any(x => x.Id == activityId))
+                //     {
+                //         var activitiesToAdd = activities.ToList();
+                //         activitiesToAdd.Insert(0, activityDO);
+                //         activities = activitiesToAdd;
+                //     }
+                // }
+
                 List<FieldDescriptionsCM> fields = new List<FieldDescriptionsCM>();
                 var result = activities
                     .SelectMany(x =>
                     {
-                     fields = _crate.GetStorage(x).CratesOfType<FieldDescriptionsCM>().Where(f => f.Label != ValidationErrorsLabel && f.Availability != AvailabilityType.Configuration).Select(y=>y.Content).ToList();
-                     return _crate.GetStorage(x).CratesOfType<CrateDescriptionCM>().Where(cratePredicate);                   
+                        fields.AddRange(
+                            _crate.GetStorage(x)
+                                .CratesOfType<FieldDescriptionsCM>()
+                                .Where(f => f.Label != ValidationErrorsLabel && f.Availability != AvailabilityType.Configuration)
+                                .Select(y=>y.Content)
+                                .ToList()
+                        );
+                        return _crate.GetStorage(x).CratesOfType<CrateDescriptionCM>().Where(cratePredicate);
                     })
                     .Select(x =>
                     {
@@ -279,21 +295,6 @@ namespace Hub.Services
             TraverseActivity(activity, activities.Add);
 
             activities.Reverse();
-
-            activities.ForEach(x =>
-            {
-                // TODO: it is not very smart solution. Activity service should not knon about anything except Activities
-                // But we have to support correct deletion of any activity types and any level of hierarchy
-                // May be other services should register some kind of callback to get notifed when activity is being deleted.
-                if (x is SubPlanDO)
-                {
-                    foreach (var criteria in uow.CriteriaRepository.GetQuery().Where(y => y.SubPlanId == x.Id).ToArray())
-                    {
-                        uow.CriteriaRepository.Remove(criteria);
-                    }
-                }
-            });
-
             activity.RemoveFromParent();
         }
 

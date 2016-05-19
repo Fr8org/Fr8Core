@@ -12,8 +12,10 @@ using Newtonsoft.Json;
 using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
+using terminalUtilities;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using terminalUtilities;
 
 namespace terminalGoogle.Actions
 {
@@ -120,6 +122,8 @@ namespace terminalGoogle.Actions
 
         protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
+            List<Crate> crates = new List<Crate>();
+            Crate fieldsCrate = null;
             var googleAuth = GetGoogleAuthToken();
             var spreadsheets = await _googleApi.GetSpreadsheets(googleAuth);
             ConfigurationControls.SpreadsheetList.ListItems = spreadsheets
@@ -178,6 +182,20 @@ namespace terminalGoogle.Actions
                 var table = await GetSelectedSpreadSheet();
                 var hasHeaderRow = TryAddHeaderRow(table);
                 CurrentActivityStorage.ReplaceByLabel(Crate.FromContent(RunTimeCrateLabel,new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
+
+                if (table?.Count() > 0)
+                {
+                    fieldsCrate = TabularUtilities.PrepareFieldsForOneRowTable(hasHeaderRow, false, table, columnHeaders.Select(ch => ch.Key).ToList());
+                }
+
+                if (fieldsCrate != null)
+                {
+                    CurrentActivityStorage.ReplaceByLabel(fieldsCrate);
+                }
+                else
+                {
+                    CurrentActivityStorage.RemoveByLabel(TabularUtilities.ExtractedFieldsCrateLabel);
+                }
             }
             crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
@@ -224,6 +242,12 @@ namespace terminalGoogle.Actions
             var table = await GetSelectedSpreadSheet();
             var hasHeaderRow = TryAddHeaderRow(table);
             CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
+
+            var fieldsCrate = TabularUtilities.PrepareFieldsForOneRowTable(hasHeaderRow, true, table, null); // assumes that hasHeaderRow is always true
+            if (fieldsCrate != null)
+            {
+                CurrentPayloadStorage.ReplaceByLabel(fieldsCrate);
+            }
         }
     }
 }
