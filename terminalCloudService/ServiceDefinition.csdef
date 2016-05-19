@@ -179,7 +179,7 @@
       <Setting name="terminalTwilio.TerminalEndpoint"/>
       <Setting name="terminalYammer.TerminalEndpoint"/>
       <Setting name="OutboundUserName"/>
-      <Setting name="OutboundPassword"/>
+      <Setting name="OutboundUserPassword"/>
     </ConfigurationSettings>
     <Endpoints>
       <!-- Endpoint name must strongly match terminal name. This rule is expected 
