@@ -66,7 +66,7 @@
                 size: 'lg',
                 resolve: {
                     historyItem: () => historyItem
-                }
+            }
             });
         }
 
