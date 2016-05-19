@@ -121,7 +121,10 @@ namespace Fr8Data.Constants
         PlanTemplate = 38,
         
         [Display(Name = "Validation Results")]
-        ValidationResults = 39
+        ValidationResults = 39,
+
+        [Display(Name = "Docusign Envelope v3")]
+        DocuSignEnvelope_v3 = 40
     }
 }
 

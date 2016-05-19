@@ -54,8 +54,6 @@ namespace Data.Interfaces
         IPlanTemplateRepository PlanTemplateRepository { get; }
         IPlanNodeDescriptionsRepository PlanNodeDescriptionsRepository { get; }
 
-        ICriteriaRepository CriteriaRepository { get; }
-
         IFileRepository FileRepository { get; }
         IProfileRepository ProfileRepository { get; }
         IPermissionSetRepository PermissionSetRepository { get; }

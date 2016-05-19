@@ -203,7 +203,6 @@
     <Compile Include="Activities\FilterObjectListByIncomingMessage_v1.cs" />
     <Compile Include="Activities\GetDataFromFr8Warehouse_v1.cs" />
     <Compile Include="Activities\Monitor_Fr8_Events_v1.cs" />
-    <Compile Include="Activities\Process_Personnel_Report_v1.cs" />
     <Compile Include="Activities\QueryFr8Warehouse_v1.cs" />
     <Compile Include="Activities\AddPayloadManually_v1.cs" />
     <Compile Include="Activities\BuildQuery_v1.cs" />
@@ -212,7 +211,7 @@
     <Compile Include="Activities\GetFileFromFr8Store_v1.cs" />
     <Compile Include="Activities\SearchFr8Warehouse_v1.cs" />
     <Compile Include="Activities\ExtractTableField_v1.cs" />
-    <Compile Include="Activities\TestAndBranch_v1.cs" />
+    <Compile Include="Activities\MakeADecision_v1.cs" />
     <Compile Include="Activities\StoreFile_v1.cs" />
     <Compile Include="Activities\ConvertCrates_v1.cs" />
     <Compile Include="Activities\SetDelay_v1.cs" />

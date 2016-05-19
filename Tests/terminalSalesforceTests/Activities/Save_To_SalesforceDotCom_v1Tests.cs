@@ -137,7 +137,7 @@ namespace terminalSalesforceTests.Actions
             //make last name as Unit and Company Name as Test
             using (var storage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(result))
             {
-                var requiredControls = ObjectFactory.GetInstance<ICrateManager>().GetStorage(result)
+                var requiredControls = storage
                                             .CratesOfType<StandardConfigurationControlsCM>().Single().Content
                                             .Controls;
 
@@ -146,8 +146,8 @@ namespace terminalSalesforceTests.Actions
                 lastNameControl.TextValue = "Unit";
 
                 var companyControl = (TextSource)requiredControls.Single(c => c.Name.Equals("Company"));
-                lastNameControl.ValueSource = "specific";
-                lastNameControl.TextValue = "Text";
+                companyControl.ValueSource = "specific";
+                companyControl.TextValue = "Text";
             }
 
             //Act
