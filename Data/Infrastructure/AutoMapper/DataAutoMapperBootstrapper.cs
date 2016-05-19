@@ -129,10 +129,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.PlanId, opts => opts.ResolveUsing(x => x.RootPlanNodeId))
                 .ForMember(x => x.SubPlanId, opts => opts.ResolveUsing(x => x.Id));
 
-            Mapper.CreateMap<CriteriaDO, CriteriaDTO>()
-                .ForMember(x => x.Conditions, opts => opts.ResolveUsing(y => y.ConditionsJSON));
-            Mapper.CreateMap<CriteriaDTO, CriteriaDO>()
-                .ForMember(x => x.ConditionsJSON, opts => opts.ResolveUsing(y => y.Conditions));
+     
 
             Mapper.CreateMap<PlanDO, PlanFullDTO>().ConvertUsing<PlanDOFullConverter>();
 
