@@ -80,18 +80,17 @@ namespace terminalSalesforceTests.Actions
         public async Task Configure_FollowUpConfig_CheckObjectFields()
         {
             // Arrange
-            var authToken = await FixtureData.Salesforce_AuthToken();
-            var activityContext = FixtureData.GetFileListTestActivityContext1();
+            var activityContext = FixtureData.GetFileListTestActivityContext2();
             await _getData_v1.Configure(activityContext);
-            activityDO = SelectSalesforceAccount(activityDO);
+            SelectSalesforceAccount(activityContext);
 
             Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
 
             // Act
-            activityDO = await _getData_v1.Configure(activityContext);
+            await _getData_v1.Configure(activityContext);
 
             // Assert
-            var storage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(activityDO);
+            var storage = activityContext.ActivityPayload.CrateStorage;
             Assert.AreEqual(5, storage.Count, "Number of configuration crates not populated correctly");
 
             // Assert.IsNotNull(storage.FirstCrateOrDefault<TypedFieldsCM>(x => x.Label == Get_Data_v1.QueryFilterCrateLabel), 
@@ -109,43 +108,37 @@ namespace terminalSalesforceTests.Actions
         {
             //Arrange
             var authToken = await FixtureData.Salesforce_AuthToken();
-            var activityDO = FixtureData.GetFileListTestActivityContext1();
+            var activityContext = FixtureData.GetFileListTestActivityContext1();
+            var executionContext = new ContainerExecutionContext();
 
             //perform initial configuration
-            activityDO = await _getData_v1.Configure(activityDO, authToken);
-            activityDO = SelectSalesforceAccount(activityDO);
+            await _getData_v1.Configure(activityContext);
+            activityContext = SelectSalesforceAccount(activityContext);
             //perform follow up configuration
-            activityDO = await _getData_v1.Configure(activityDO, authToken);
+            await _getData_v1.Configure(activityContext);
 
-            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(activityDO))
-            {
-                crateStorage.CratesOfType<StandardConfigurationControlsCM>()
-                    .Single()
-                    .Content.Controls.Single(control => control.Type == ControlTypes.QueryBuilder)
-                    //.Value = JsonConvert.SerializeObject(new FilterDataDTO() {Conditions = new List<FilterConditionDTO>()});
-                    .Value = JsonConvert.SerializeObject(new List<FilterConditionDTO>());
-            }
+            activityContext.ActivityPayload.CrateStorage.CratesOfType<StandardConfigurationControlsCM>()
+                .Single()
+                .Content.Controls.Single(control => control.Type == ControlTypes.QueryBuilder)
+                //.Value = JsonConvert.SerializeObject(new FilterDataDTO() {Conditions = new List<FilterConditionDTO>()});
+                .Value = JsonConvert.SerializeObject(new List<FilterConditionDTO>());
 
             //Act
-            var resultPayload = await _getData_v1.Run();
-
+            await _getData_v1.Run(activityContext, executionContext);
             //Assert
-            var stroage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(resultPayload);
+            var stroage = activityContext.ActivityPayload.CrateStorage;
             Assert.AreEqual(3, stroage.Count, "Number of Payload crates not populated correctly");
 
             Assert.IsNotNull(stroage.CratesOfType<StandardTableDataCM>().Single(), "Not able to get the required salesforce object");
         }
 
-        private ActivityDO SelectSalesforceAccount(ActivityDO curActivityDO)
+        private ActivityContext SelectSalesforceAccount(ActivityContext activityContext)
         {
-            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(curActivityDO))
-            {
-                var controlsCrate = crateStorage.FirstCrate<StandardConfigurationControlsCM>();
-                var activityUi = new Get_Data_v1.ActivityUi().ClonePropertiesFrom(controlsCrate.Content) as Get_Data_v1.ActivityUi;
-                activityUi.SalesforceObjectSelector.selectedKey = "Account";
-                controlsCrate.Content.ClonePropertiesFrom(activityUi);
-            }
-            return curActivityDO;
+            var controlsCrate = activityContext.ActivityPayload.CrateStorage.FirstCrate<StandardConfigurationControlsCM>();
+            var activityUi = new Get_Data_v1.ActivityUi().ClonePropertiesFrom(controlsCrate.Content) as Get_Data_v1.ActivityUi;
+            activityUi.SalesforceObjectSelector.selectedKey = "Account";
+            controlsCrate.Content.ClonePropertiesFrom(activityUi);
+            return activityContext;
         }
     }
 }

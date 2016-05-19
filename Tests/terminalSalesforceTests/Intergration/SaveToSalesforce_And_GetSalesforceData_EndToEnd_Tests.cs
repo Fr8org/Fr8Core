@@ -15,6 +15,8 @@ using Fr8Data.Manifests;
 using terminalSalesforce.Actions;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
+using Fr8Data.Managers;
+using TerminalBase.Models;
 
 namespace terminalSalesforceTests.Intergration
 {
@@ -31,12 +33,16 @@ namespace terminalSalesforceTests.Intergration
         public async Task SaveToSalesforce_And_GetSalesforceData_EndToEnd()
         {
             AuthorizationTokenDO authTokenDO = null;
+            AuthorizationToken authorizationToken = null;
             Guid initialPlanId = Guid.Empty;
             string newLeadId = string.Empty;
             try
             {
                 authTokenDO = await Fixtures.HealthMonitor_FixtureData.CreateSalesforceAuthToken();
-
+                authorizationToken = new AuthorizationToken
+                {
+                    Token = authTokenDO.Token
+                };
                 //Create the required plan with all initial activities initial config
                 initialPlanId = await CreatePlan_SaveAndGetDataFromSalesforce(authTokenDO);
 
@@ -72,17 +78,17 @@ namespace terminalSalesforceTests.Intergration
                 Debug.WriteLine("Newly created Lead ID is " + newLeadId);
 
                 Debug.WriteLine("Deleting newly created lead with " + newLeadId);
-                var isDeleted = await new SalesforceManager().Delete(SalesforceObjectType.Lead, newLeadId, authTokenDO);
+                var isDeleted = await new SalesforceManager().Delete(SalesforceObjectType.Lead, newLeadId, authorizationToken);
                 Assert.IsTrue(isDeleted, "The newly created Lead for integration test purpose is not deleted.");
                 newLeadId = string.Empty;
 
                 Debug.WriteLine("Cleaning up.");
-                await CleanUp(authTokenDO, initialPlanId, newLeadId);
+                await CleanUp(authorizationToken, initialPlanId, newLeadId);
                 Debug.WriteLine("Cleaning up Successful.");
             }
             finally
             {
-                await CleanUp(authTokenDO, initialPlanId, newLeadId);
+                await CleanUp(authorizationToken, initialPlanId, newLeadId);
             }
         }
 
@@ -128,11 +134,11 @@ namespace terminalSalesforceTests.Intergration
             return initialPlan.Plan.Id;
         }
 
-        private async Task CleanUp(AuthorizationTokenDO authTokenDO, Guid initialPlanId, string newLeadId)
+        private async Task CleanUp(AuthorizationToken authToken, Guid initialPlanId, string newLeadId)
         {
             if(!string.IsNullOrEmpty(newLeadId))
             {
-                var isDeleted = await new SalesforceManager().Delete(SalesforceObjectType.Lead, newLeadId, authTokenDO);
+                var isDeleted = await new SalesforceManager().Delete(SalesforceObjectType.Lead, newLeadId, authToken);
                 Assert.IsTrue(isDeleted, "The newly created Lead for integration test purpose is not deleted.");
             }
 
@@ -141,9 +147,9 @@ namespace terminalSalesforceTests.Intergration
                 await HttpDeleteAsync(_baseUrl + "Plans/Delete?id=" + initialPlanId.ToString());
             }
 
-            if (authTokenDO != null)
+            if (authToken != null)
             {
-                await HttpPostAsync<string>(_baseUrl + "manageauthtoken/revoke?id=" + authTokenDO.Id.ToString(), null);
+                await HttpPostAsync<string>(_baseUrl + "manageauthtoken/revoke?id=" + authToken.Id.ToString(), null);
             }
         }
 
@@ -183,14 +189,15 @@ namespace terminalSalesforceTests.Intergration
         {
             var getDataActivity = plan.Plan.SubPlans.First().Activities.Last();
             //set lead and do the follow up config
-            getDataActivity.UpdateControls<Get_Data_v1.ActivityUi>(x =>
+            var crateStorage = Crate.GetStorage(getDataActivity);
+            crateStorage.UpdateControls<Get_Data_v1.ActivityUi>(x =>
             {
                 x.SalesforceObjectSelector.selectedKey = SalesforceObjectType.Lead.ToString();
             });
             getDataActivity = await ConfigureActivity(getDataActivity);
             Debug.WriteLine("Get Data Follow up config is successfull with Lead selected");
             //set the lead required fields.
-            getDataActivity.UpdateControls<Get_Data_v1.ActivityUi>(x =>
+            crateStorage.UpdateControls<Get_Data_v1.ActivityUi>(x =>
             {
                 x.SalesforceObjectFilter.Value = JsonConvert.SerializeObject(new List <FilterConditionDTO> { new FilterConditionDTO { Field = "LastName", Operator = "eq", Value = "Unit" } });
             });

@@ -16,6 +16,7 @@ using terminalDocuSign.Services.New_Api;
 using UtilitiesTesting.Fixtures;
 using terminalDocuSign.Activities;
 using TerminalBase.Models;
+using Fr8Data.Managers;
 
 namespace terminalDocuSignTests.Activities
 {

@@ -53,9 +53,21 @@ namespace terminalSalesforceTests.Activities
         public async Task Run_WhenMessageIsEmpty_ReturnsError()
         {
             var activity = new Post_To_Chatter_v2();
-            var activityDO = await activity.Configure(new ActivityDO(), Token);
-            var result = await activity.Run(activityDO, Guid.Empty, Token);
-            var operationalState = new CrateManager().GetOperationalState(result);
+            var executionContext = new ContainerExecutionContext();
+            var activityContext = new ActivityContext
+            {
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
+
+                },
+                AuthorizationToken = {
+                    Token = Token.Token
+                }
+            };
+            await activity.Configure(activityContext);
+            await activity.Run(activityContext, executionContext);
+            var operationalState = new CrateManager().GetOperationalState(activityContext.ActivityPayload.CrateStorage);
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalState.CurrentActivityResponse.Type, "Run must fail if message is empty");
         }
 
@@ -63,14 +75,26 @@ namespace terminalSalesforceTests.Activities
         public async Task Run_WhenNoChatterSourceIsSelected_ReturnsError()
         {
             var activity = new Post_To_Chatter_v2();
-            var activityDO = await activity.Configure(new ActivityDO(), Token);
-            activityDO.UpdateControls<Post_To_Chatter_v2.ActivityUi>(x =>
+            var executionContext = new ContainerExecutionContext();
+            var activityContext = new ActivityContext
+            {
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
+
+                },
+                AuthorizationToken = {
+                    Token = Token.Token
+                }
+            };
+            await activity.Configure(activityContext);
+            activityContext.ActivityPayload.CrateStorage.UpdateControls<Post_To_Chatter_v2.ActivityUi>(x =>
                                                                      {
                                                                          x.FeedTextSource.TextValue = "message";
                                                                          x.FeedTextSource.ValueSource = "specific";
                                                                      });
-            var result = await activity.Run(activityDO, Guid.Empty, Token);
-            var operationalState = new CrateManager().GetOperationalState(result);
+            await activity.Run(activityContext, executionContext);
+            var operationalState = new CrateManager().GetOperationalState(activityContext.ActivityPayload.CrateStorage);
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalState.CurrentActivityResponse.Type, "Run must fail if chatter is not specified is empty");
         }
 
@@ -78,8 +102,20 @@ namespace terminalSalesforceTests.Activities
         public async Task Run_WhenQueriesSalesforceAndObjectsAreReturned_PostsToTheirChatters()
         {
             var activity = new Post_To_Chatter_v2();
-            var activityDO = await activity.Configure(new ActivityDO(), Token);
-            activityDO.UpdateControls<Post_To_Chatter_v2.ActivityUi>(x =>
+            var executionContext = new ContainerExecutionContext();
+            var activityContext = new ActivityContext
+            {
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
+
+                },
+                AuthorizationToken = {
+                    Token = Token.Token
+                }
+            };
+            await activity.Configure(activityContext);
+            activityContext.ActivityPayload.CrateStorage.UpdateControls<Post_To_Chatter_v2.ActivityUi>(x =>
                                                                      {
                                                                          x.FeedTextSource.TextValue = "message";
                                                                          x.FeedTextSource.ValueSource = "specific";
@@ -87,8 +123,8 @@ namespace terminalSalesforceTests.Activities
                                                                          x.ChatterFilter.Value = string.Empty;
                                                                          x.ChatterSelector.selectedKey = SalesforceObjectType.Account.ToString();
                                                                      });
-            var result = await activity.Run(activityDO, Guid.Empty, Token);
-            var payloadStorage = new CrateManager().GetStorage(result);
+            await activity.Run(activityContext, executionContext);
+            var payloadStorage = activityContext.ActivityPayload.CrateStorage;
             var operationalState = payloadStorage.FirstCrate<OperationalStateCM>().Content;
             Assert.AreEqual(ActivityResponse.Success.ToString(), operationalState.CurrentActivityResponse.Type, "Run must return success if all values are specified");
             var resultPayload = payloadStorage.FirstCrateOrDefault<StandardPayloadDataCM>();
@@ -100,8 +136,20 @@ namespace terminalSalesforceTests.Activities
         public async Task Run_WhenQueriesSalesforceAndNothingIsReturned_ReturnsSuccessButNoPayload()
         {
             var activity = new Post_To_Chatter_v2();
-            var activityDO = await activity.Configure(new ActivityDO(), Token);
-            activityDO.UpdateControls<Post_To_Chatter_v2.ActivityUi>(x =>
+            var executionContext = new ContainerExecutionContext();
+            var activityContext = new ActivityContext
+            {
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
+
+                },
+                AuthorizationToken = {
+                    Token = Token.Token
+                }
+            };
+            await activity.Configure(activityContext);
+            activityContext.ActivityPayload.CrateStorage.UpdateControls<Post_To_Chatter_v2.ActivityUi>(x =>
             {
                 x.FeedTextSource.TextValue = "message";
                 x.FeedTextSource.ValueSource = "specific";
@@ -109,10 +157,10 @@ namespace terminalSalesforceTests.Activities
                 x.ChatterFilter.Value = string.Empty;
                 x.ChatterSelector.selectedKey = SalesforceObjectType.Account.ToString();
             });
-            ObjectFactory.GetInstance<Mock<ISalesforceManager>>().Setup(x => x.Query(It.IsAny<SalesforceObjectType>(), It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationTokenDO>()))
+            ObjectFactory.GetInstance<Mock<ISalesforceManager>>().Setup(x => x.Query(It.IsAny<SalesforceObjectType>(), It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationToken>()))
                          .Returns(Task.FromResult(new StandardTableDataCM { Table = new List<TableRowDTO>() }));
-            var result = await activity.Run(activityDO, Guid.Empty, Token);
-            var payloadStorage = new CrateManager().GetStorage(result);
+            await activity.Run(activityContext, executionContext);
+            var payloadStorage = activityContext.ActivityPayload.CrateStorage;
             var operationalState = payloadStorage.FirstCrate<OperationalStateCM>().Content;
             Assert.AreEqual(ActivityResponse.Success.ToString(), operationalState.CurrentActivityResponse.Type, "Run must return success if all values are specified");
             var resultPayload = payloadStorage.FirstCrateOrDefault<StandardPayloadDataCM>();

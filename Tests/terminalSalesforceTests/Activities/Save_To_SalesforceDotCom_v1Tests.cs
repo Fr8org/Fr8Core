@@ -68,7 +68,7 @@ namespace terminalSalesforceTests.Actions
             var result = await PerformInitialConfig();
 
             //Assert
-            AssertConfigControls(ObjectFactory.GetInstance<ICrateManager>().GetStorage(result));
+            AssertConfigControls(result.ActivityPayload.CrateStorage);
         }
 
         [Test, Category("terminalSalesforceTests.Save_To_SalesforceDotCom.Configure")]
@@ -78,10 +78,10 @@ namespace terminalSalesforceTests.Actions
             var result = await PerformInitialConfig();
 
             //Act
-            result = await _saveToSFDotCom_v1.Configure(result, await FixtureData.Salesforce_AuthToken());
+            await _saveToSFDotCom_v1.Configure(result);
 
             //Assert
-            var storage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(result);
+            var storage = result.ActivityPayload.CrateStorage;
             Assert.IsNotNull(storage, "Follow up config storage is null in Save to SF.com activity");
 
             var listOfControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls;
@@ -96,12 +96,12 @@ namespace terminalSalesforceTests.Actions
             //perform initial and follow up config
             var result = await PerformInitialConfig();
             var authToken = await FixtureData.Salesforce_AuthToken();
-            result = await _saveToSFDotCom_v1.Configure(result, authToken);
+            await _saveToSFDotCom_v1.Configure(result);
 
             //Act
-            result = await _saveToSFDotCom_v1.Activate(result, authToken);
+            await _saveToSFDotCom_v1.Activate(result);
 
-            var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(result);
+            var crateStorage = result.ActivityPayload.CrateStorage;
 
             //Asser
             var listOfRequiredControls = crateStorage
@@ -130,59 +130,63 @@ namespace terminalSalesforceTests.Actions
             //Arrange
             //perform initial and follow up config, activate
             var result = await PerformInitialConfig();
+            var executionContext = new ContainerExecutionContext();
 
             var authToken = await FixtureData.Salesforce_AuthToken();
-            result = await _saveToSFDotCom_v1.Configure(result, authToken);
-            result = await _saveToSFDotCom_v1.Activate(result, authToken);
+            var authorizationToken = new AuthorizationToken
+            {
+                Token = authToken.Token
+            };
+            await _saveToSFDotCom_v1.Configure(result);
+            await _saveToSFDotCom_v1.Activate(result);
 
             //make last name as Unit and Company Name as Test
-            using (var storage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(result))
-            {
-                var requiredControls = storage
-                                            .CratesOfType<StandardConfigurationControlsCM>().Single().Content
-                                            .Controls;
+            var requiredControls = result.ActivityPayload.CrateStorage
+                                        .CratesOfType<StandardConfigurationControlsCM>().Single().Content
+                                        .Controls;
 
-                var lastNameControl = (TextSource)requiredControls.Single(c => c.Name.Equals("LastName"));
-                lastNameControl.ValueSource = "specific";
-                lastNameControl.TextValue = "Unit";
+            var lastNameControl = (TextSource)requiredControls.Single(c => c.Name.Equals("LastName"));
+            lastNameControl.ValueSource = "specific";
+            lastNameControl.TextValue = "Unit";
 
-                var companyControl = (TextSource)requiredControls.Single(c => c.Name.Equals("Company"));
-                companyControl.ValueSource = "specific";
-                companyControl.TextValue = "Text";
-            }
+            var companyControl = (TextSource)requiredControls.Single(c => c.Name.Equals("Company"));
+            companyControl.ValueSource = "specific";
+            companyControl.TextValue = "Text";
 
             //Act
-            var payload = await _saveToSFDotCom_v1.Run(result, new Guid(), authToken);
-
+            await _saveToSFDotCom_v1.Run(result, executionContext);
+            var payload = result.ActivityPayload.CrateStorage;
             //Assert
-            var newlyCreatedLead = ObjectFactory.GetInstance<ICrateManager>()
-                                    .GetStorage(payload).CratesOfType<StandardPayloadDataCM>()
+            var newlyCreatedLead = payload.CratesOfType<StandardPayloadDataCM>()
                                     .Single().Content.PayloadObjects[0].PayloadObject;
 
             Assert.IsNotNull(newlyCreatedLead, "Lead is not saved successfully in Save to SF.com");
             Assert.IsTrue(newlyCreatedLead.Count == 1, "Lead is not saved successfully in Save to SF.com");
             Assert.IsTrue(!string.IsNullOrEmpty(newlyCreatedLead[0].Value), "Lead is not saved successfully in Save to SF.com");
 
-            var isDeleted = await new SalesforceManager().Delete(SalesforceObjectType.Lead, newlyCreatedLead[0].Value, authToken);
+            var isDeleted = await new SalesforceManager().Delete(SalesforceObjectType.Lead, newlyCreatedLead[0].Value, authorizationToken);
             Assert.IsTrue(isDeleted, "The newly created lead is not deleted upon completion");
         }
 
         private async Task<ActivityContext> PerformInitialConfig()
         {
-            var activityDO = FixtureData.SaveToSalesforceTestActivityDO1();
-
-            //Act
-            var result = await _saveToSFDotCom_v1.Configure(activityDO, await FixtureData.Salesforce_AuthToken());
-
-            AssertConfigControls(ObjectFactory.GetInstance<ICrateManager>().GetStorage(result));
-
-            using (var storage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(result))
+            var activityContext = new ActivityContext
             {
-                var ddlb = (DropDownList)storage.CratesOfType<StandardConfigurationControlsCM>().Single().Content.Controls[0];
-                ddlb.selectedKey = "Lead";
-            }
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
 
-            return result;
+                },
+            };
+            //Act
+            await _saveToSFDotCom_v1.Configure(activityContext);
+
+            AssertConfigControls(activityContext.ActivityPayload.CrateStorage);
+
+            var ddlb = (DropDownList)activityContext.ActivityPayload.CrateStorage.CratesOfType<StandardConfigurationControlsCM>().Single().Content.Controls[0];
+            ddlb.selectedKey = "Lead";
+
+            return activityContext;
         }
 
         private void AssertConfigControls(ICrateStorage storage)

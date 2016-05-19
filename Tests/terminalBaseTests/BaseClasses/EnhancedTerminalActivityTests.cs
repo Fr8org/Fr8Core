@@ -20,6 +20,7 @@ using TerminalBase.Infrastructure;
 using TerminalBase.Services;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using TerminalBase.Models;
 
 namespace terminaBaselTests.BaseClasses
 {
@@ -371,12 +372,22 @@ namespace terminaBaselTests.BaseClasses
                 CrateStorage = _crateManager.CrateStorageAsStr(new CrateStorage(crates))
             };
         }
+        private ActivityContext CreateActivityContext(params Crate[] crates)
+        {
+            return new ActivityContext
+            {
+                ActivityPayload =
+                {
+                    CrateStorage = new CrateStorage(crates)
+                }
+            };
+        }
 
         [Test]
         public async Task CanInitialize()
         {
             var activity = new ActivityOverrideCheckMock(false);
-            await activity.Configure(CreateActivity(), new AuthorizationTokenDO());
+            await activity.Configure(CreateActivityContext());
 
             Assert.IsTrue(activity.CalledMethods == CalledMethod.Initialize);
         }
@@ -385,7 +396,7 @@ namespace terminaBaselTests.BaseClasses
         public async Task CanConfigure()
         {
             var activity = new ActivityOverrideCheckMock(false);
-            await activity.Configure(CreateActivity(Crate.FromContent("crate", new StandardConfigurationControlsCM())), new AuthorizationTokenDO());
+            await activity.Configure(CreateActivityContext(Crate.FromContent("crate", new StandardConfigurationControlsCM())));
             Assert.IsTrue(activity.CalledMethods == (CalledMethod.Configure | CalledMethod.Validate));
         }
 
@@ -393,7 +404,7 @@ namespace terminaBaselTests.BaseClasses
         public async Task CanActivate()
         {
             var activity = new ActivityOverrideCheckMock(false);
-            await activity.Activate(CreateActivity(Crate.FromContent("crate", new StandardConfigurationControlsCM())), new AuthorizationTokenDO());
+            await activity.Activate(CreateActivityContext(Crate.FromContent("crate", new StandardConfigurationControlsCM())));
             Assert.IsTrue(activity.CalledMethods == (CalledMethod.Activate | CalledMethod.Validate));
         }
 
@@ -401,7 +412,7 @@ namespace terminaBaselTests.BaseClasses
         public async Task CanDeactivate()
         {
             var activity = new ActivityOverrideCheckMock(false);
-            await activity.Deactivate(CreateActivity(Crate.FromContent("crate", new StandardConfigurationControlsCM())));
+            await activity.Deactivate(CreateActivityContext(Crate.FromContent("crate", new StandardConfigurationControlsCM())));
             Assert.IsTrue(activity.CalledMethods == (CalledMethod.Deactivate));
         }
         
@@ -409,8 +420,9 @@ namespace terminaBaselTests.BaseClasses
         public async Task CanRun()
         {
             var activity = new ActivityOverrideCheckMock(false);
+            var executionContext = new ContainerExecutionContext();
             await ObjectFactory.GetInstance<IHubCommunicator>().Configure("testTerminal");
-            await activity.Run(CreateActivity(Crate.FromContent("crate", new StandardConfigurationControlsCM())), Guid.Empty, new AuthorizationTokenDO());
+            await activity.Run(CreateActivityContext(Crate.FromContent("crate", new StandardConfigurationControlsCM())), executionContext);
             Assert.IsTrue(activity.CalledMethods == (CalledMethod.Run | CalledMethod.Validate));
         }
 
@@ -418,8 +430,9 @@ namespace terminaBaselTests.BaseClasses
         public async Task CanChildActivitiesExecuted()
         {
             var activity = new ActivityOverrideCheckMock(false);
+            var executionContext = new ContainerExecutionContext();
             await ObjectFactory.GetInstance<IHubCommunicator>().Configure("testTerminal");
-            await activity.RunChildActivities(CreateActivity(Crate.FromContent("crate", new StandardConfigurationControlsCM())), Guid.Empty, new AuthorizationTokenDO());
+            await activity.RunChildActivities(CreateActivityContext(Crate.FromContent("crate", new StandardConfigurationControlsCM())), executionContext);
             Assert.IsTrue(activity.CalledMethods == (CalledMethod.ChildActivitiesExecuted | CalledMethod.Validate));
         }
 
@@ -430,14 +443,17 @@ namespace terminaBaselTests.BaseClasses
             {
                 ValidationState = false
             };
-            
+            var executionContext = new ContainerExecutionContext();
+
             await ObjectFactory.GetInstance<IHubCommunicator>().Configure("testTerminal");
 
-            var payload = await activity.Run(CreateActivity(Crate.FromContent("crate", new StandardConfigurationControlsCM())), Guid.Empty, new AuthorizationTokenDO());
+            var activityContext = CreateActivityContext(Crate.FromContent("crate", new StandardConfigurationControlsCM()));
+
+            await activity.Run(activityContext, executionContext);
 
             Assert.IsTrue(activity.CalledMethods == (CalledMethod.Validate));
 
-            var storage = _crateManager.GetStorage(payload);
+            var storage = activityContext.ActivityPayload.CrateStorage;
             var opState = storage.CrateContentsOfType<OperationalStateCM>().Single();
 
             Assert.AreEqual(ActivityResponse.Error.ToString(), opState.CurrentActivityResponse.Type); 
@@ -447,8 +463,9 @@ namespace terminaBaselTests.BaseClasses
         public async Task CanReturnConfigurationControlsAfterInitialize()
         {
             var activity = new UiSyncActivityMock();
-            var dto = await activity.Configure(CreateActivity(), new AuthorizationTokenDO());
-            var cc = _crateManager.GetStorage(dto).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+            var activityContext = CreateActivityContext();
+            await activity.Configure(CreateActivityContext());
+            var cc = activityContext.ActivityPayload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             var refCC = new UiSyncActivityMock.ActivityUi();
 
             AssertEquals(refCC, cc);
@@ -480,9 +497,9 @@ namespace terminaBaselTests.BaseClasses
                                  new ListItem() {Key = "sk2", Selected = false, Value = "sk2"} }
                 }
             });
-
-            var dto = await activity.Configure(CreateActivity(Crate.FromContent("", refCC)), new AuthorizationTokenDO());
-            var cc = _crateManager.GetStorage(dto).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+            var activityContext = CreateActivityContext(Crate.FromContent("", refCC));
+            await activity.Configure(activityContext);
+            var cc = activityContext.ActivityPayload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             
             AssertEquals(refCC, cc);
         }
@@ -517,8 +534,9 @@ namespace terminaBaselTests.BaseClasses
 
             var refCC = new UiSyncActivityMock.ActivityUi();
 
-            var dto = await activity.Configure(CreateActivity(Crate.FromContent("", refCC)), new AuthorizationTokenDO());
-            var cc = _crateManager.GetStorage(dto).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+            var activityContext = CreateActivityContext(Crate.FromContent("", refCC));
+            await activity.Configure(activityContext);
+            var cc = activityContext.ActivityPayload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
             refCC.TextBox.Value = "123123123";
             refCC.UpstreamUpstreamCrateChooser.SelectedCrates.Add(new CrateDetails()
@@ -546,15 +564,16 @@ namespace terminaBaselTests.BaseClasses
         public async Task CanUseUiBuilder()
         {
             var activity = new ActivityWithUiBuilder();
-            await activity.Configure(CreateActivity(Crate.FromContent("crate", new StandardConfigurationControlsCM())), new AuthorizationTokenDO());
+            await activity.Configure(CreateActivityContext(Crate.FromContent("crate", new StandardConfigurationControlsCM())));
         }
 
         [Test]
         public async Task CanStoreDynamicControls()
         {
             var activity = new UiSyncDynamicActivityMock();
-            var dto = await activity.Configure(CreateActivity(), new AuthorizationTokenDO());
-            var cc = _crateManager.GetStorage(dto).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+            var activityContext = CreateActivityContext();
+            await activity.Configure(activityContext);
+            var cc = activityContext.ActivityPayload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             Assert.AreEqual(5, cc.Controls.Count,  "Failed to sync dynamic controls list: invalid count");
             Assert.AreEqual("DynamicTextSources_ts1", cc.Controls[1].Name, "Failed to sync dynamic controls list: ts1 not found at [1]");
             Assert.AreEqual("DynamicTextSources_ts2", cc.Controls[2].Name, "Failed to sync dynamic controls list: ts2 not found at [2]");
@@ -566,13 +585,14 @@ namespace terminaBaselTests.BaseClasses
         public async Task CanRestoreDynamicControls()
         {
             var activity = new UiSyncDynamicActivityMock();
-            var dto = await activity.Configure(CreateActivity(), new AuthorizationTokenDO());
-            var cc = _crateManager.GetStorage(dto).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+            var activityContext = CreateActivityContext();
+            await activity.Configure(activityContext);
+            var cc = activityContext.ActivityPayload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             foreach (var controlDefinitionDto in cc.Controls)
             {
                 controlDefinitionDto.Value = controlDefinitionDto.Name + "_value";
             }
-            await activity.Configure(CreateActivity(Crate.FromContent("cc", cc)), new AuthorizationTokenDO());
+            await activity.Configure(CreateActivityContext(Crate.FromContent("cc", cc)));
             //cc = _crateManager.GetStorage(dto).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
         }
     }

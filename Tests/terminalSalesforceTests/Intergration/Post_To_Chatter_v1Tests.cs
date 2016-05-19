@@ -105,7 +105,8 @@ namespace terminalSalesforceTests.Intergration
 
             //perform post request to terminal and return the result
             var resultActionDto = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(terminalConfigureUrl, requestActionDTO);
-            resultActionDto.UpdateControls<Post_To_Chatter_v1.ActivityUi>(x =>
+            var crateStorage = Crate.GetStorage(resultActionDto);
+            crateStorage.UpdateControls<Post_To_Chatter_v1.ActivityUi>(x =>
             {
                 x.UseUserOrGroupOption.Selected = true;
                 var selectedUser = x.UserOrGroupSelector.ListItems.First(y => y.Key == "Fr8 Admin");

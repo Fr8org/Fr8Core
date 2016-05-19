@@ -75,6 +75,26 @@ namespace terminalSalesforceTests.Fixtures
             };
             return activityContext;
         }
+        public static ActivityContext GetFileListTestActivityContext2()
+        {
+            var actionTemplate = GetDataActivityTemplateDTO();
+
+            var activityPayload = new ActivityPayload()
+            {
+                Id = new Guid("8339DC87-F011-4FB1-B47C-FEC406E4100A"),
+                ActivityTemplate = actionTemplate,
+                CrateStorage = null,
+            };
+            var activityContext = new ActivityContext()
+            {
+                ActivityPayload = activityPayload,
+                AuthorizationToken = new AuthorizationToken
+                {
+                    Token = Salesforce_AuthToken().Result.Token
+                }
+            };
+            return activityContext;
+        }
 
         public static ActivityContext SaveToSalesforceTestActivityContext1()
         {

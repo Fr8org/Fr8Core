@@ -17,6 +17,9 @@ using UtilitiesTesting;
 using terminalTwilio;
 using terminalTwilio.Activities;
 using Fr8Infrastructure.StructureMap;
+using TerminalBase.Models;
+using Fr8Data.Crates;
+using System.Linq;
 
 namespace terminalTwilioTests.Activities
 {
@@ -69,30 +72,49 @@ namespace terminalTwilioTests.Activities
             _twilioActivity = new Send_Via_Twilio_v1();
             var curActivityContext = FixtureData.ConfigureTwilioActivity();
             await _twilioActivity.Configure(curActivityContext);
-            var controlsCrate = _crate.GetStorage(curActivityContext.ActivityPayload.CrateStorage).FirstOrDefault();
+            var controlsCrate = curActivityContext.ActivityPayload.CrateStorage.FirstOrDefault();
             Assert.IsNotNull(controlsCrate);
         }
 
         [Test]
-        public void Configure_ReturnsCrateDTOStandardConfigurationControlsMS()
+        public async void Configure_ReturnsCrateDTOStandardConfigurationControlsMS()
         {
             _twilioActivity = new Send_Via_Twilio_v1();
             var curActivityDO = FixtureData.ConfigureTwilioActivity();
             // ActionDTO curActionDTO = Mapper.Map<ActionDTO>(action);
             var curAuthTokenD0 = FixtureData.AuthTokenDOTest1();
-            var actionResult = _twilioActivity.Configure(curActivityDO, curAuthTokenD0).Result;
-            var controlsCrate = _crate.GetStorage(actionResult.CrateStorage).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var activityContext = new ActivityContext
+            {
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
+
+                },
+                AuthorizationToken = {
+                    Token = curAuthTokenD0.Token
+                }
+            };
+            await _twilioActivity.Configure(activityContext);
+            var controlsCrate = activityContext.ActivityPayload.CrateStorage.CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             Assert.IsNotNull(controlsCrate);
         }
 
         [Test]
-        public void Configure_ReturnsSMSAndSMSBodyFields()
+        public async void Configure_ReturnsSMSAndSMSBodyFields()
         {
             _twilioActivity = new Send_Via_Twilio_v1();
             var curActivityDO = FixtureData.ConfigureTwilioActivity();
+            var activityContext = new ActivityContext
+            {
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
+
+                },
+            };
             //ActionDTO curActionDTO = Mapper.Map<ActionDTO>(action);
-            var actionResult = _twilioActivity.Configure(curActivityDO, null).Result;
-            var standardControls = _crate.GetStorage(actionResult.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            await _twilioActivity.Configure(activityContext);
+            var standardControls = activityContext.ActivityPayload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             var smsNumberTextField = standardControls.Controls[0].Name;
             var smsNumberUpstreamField = standardControls.Controls[1].Name;
             var smsBodyFields = standardControls.FindByName("SMS_Body");
