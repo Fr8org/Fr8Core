@@ -13,7 +13,7 @@ namespace terminalQuickBooksTests.Fixtures
         {
             return new AuthorizationTokenDTO()
             {
-                Token = "qyprdQ4RzuW0XF87UTs6VQZ5601sX5Tzym2UaUDRLZa4yEMD;;;;;;;ZvQpcaO4gnqxpwWfdZgGEFX4OLEW9e2G6a7xFNlZ;;;;;;;1429888620;;;;;;;11/04/2016 00:00:00"
+                Token = "qyprdCEtrUuHBA7TbmvyGJyHNTTSXF1mG028g3Ld3oRvb7lu;;;;;;;f1pHxtkM325nRAufGL7KCZWxW3Rlfp8t2ow5DrFx;;;;;;;1429888620;;;;;;;12/12/2016 00:00:00"
             };
         }
 
@@ -21,7 +21,7 @@ namespace terminalQuickBooksTests.Fixtures
         {
             return new AuthorizationTokenDO()
             {
-                Token = "lvprdLxfSv3vtByicAac86nlzDiuYnoTA5KxB5roJzCcSpbw;;;;;;;f2TY1CkAtXm1kwXGwcUTCQyiwOAKwJeAvbhLDeFw;;;;;;;1429888620"
+                Token = "qyprdCEtrUuHBA7TbmvyGJyHNTTSXF1mG028g3Ld3oRvb7lu;;;;;;;f1pHxtkM325nRAufGL7KCZWxW3Rlfp8t2ow5DrFx;;;;;;;1429888620"
             };
         }
 
