@@ -269,7 +269,7 @@ namespace HubTests.Controllers
         [Test]
         [ExpectedException(ExpectedException = typeof(ArgumentException), ExpectedMessage = "Current activity was not found.")]
         public async Task ActivityController_GetConfigurationSettings_IdIsMissing()
-        {
+        { 
             var controller = new ActivitiesController();
             ActivityDTO actionDesignDTO = CreateActivityWithId(FixtureData.GetTestGuidById(2));
             actionDesignDTO.Id = Guid.Empty;
