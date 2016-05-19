@@ -14,6 +14,16 @@ namespace Data.Migrations
             var sqlMigration = @"
                 declare @permissionSetId uniqueidentifier;
                 set @permissionSetId = newid();
+                
+                declare @counter int;
+                set @counter = (select count (*) from dbo._PermissionTypeTemplate)
+                if(@counter = 0) 
+                begin 
+	                insert into dbo._PermissionTypeTemplate(id) values(1)
+	                insert into dbo._PermissionTypeTemplate(id) values(2)
+	                insert into dbo._PermissionTypeTemplate(id) values(3)
+	                insert into dbo._PermissionTypeTemplate(id) values(4)
+                end
 
                 insert into dbo.PermissionSets(id, Name, ObjectType, CreateDate, LastUpdated, HasFullAccess) values(@permissionSetId, 'PermissionForOwners', 'PlanNodeDO', '2016-05-12 09:16:34.7926131 +00:00','2016-05-12 09:16:34.7926131 +00:00', 0)
                 insert into dbo.PermissionSetPermissions(permissionSetId, PermissionTypeTemplateId) values(@permissionSetId, 1)
