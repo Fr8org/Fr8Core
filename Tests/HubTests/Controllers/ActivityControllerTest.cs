@@ -267,7 +267,7 @@ namespace HubTests.Controllers
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(ApplicationException), ExpectedMessage = "Could not find Action.")]
+        [ExpectedException(ExpectedException = typeof(ArgumentException), ExpectedMessage = "Current activity was not found.")]
         public async Task ActivityController_GetConfigurationSettings_IdIsMissing()
         {
             var controller = new ActivitiesController();
@@ -285,7 +285,7 @@ namespace HubTests.Controllers
         }
 
         [Test]
-        [ExpectedException(ExpectedException = typeof(NullReferenceException))]
+        [ExpectedException(ExpectedException = typeof(ArgumentException))]
         public async Task ActivityController_GetConfigurationSettings_ActionTemplateNameAndVersionIsMissing()
         {
             var controller = new ActivitiesController();

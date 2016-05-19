@@ -476,13 +476,13 @@ namespace Hub.Services
 
             if (activityTemplate == null)
             {
-                throw new NullReferenceException("ActivityTemplate was not found.");
+                throw new ArgumentException("ActivityTemplate was not found.");
             }
 
             var activityDO = uow.PlanRepository.GetById<ActivityDO>(activityDTO.Id);
             if (activityDO == null)
             {
-                throw new NullReferenceException("Current activity was not found.");
+                throw new ArgumentException("Current activity was not found.");
             }
 
             if (activityTemplate.Terminal.AuthenticationType != AuthenticationType.None
