@@ -43,7 +43,6 @@ namespace Fr8Data.Managers
         string GetFieldByKey<T>(CrateStorageDTO curCrateStorage, string findKey) where T : Manifest;
         //void AddLogMessage(string label, List<LogItemDTO> logItemList, ICrateStorage payload);
         T GetByManifest<T>(PayloadDTO payloadDTO) where T : Manifest;
-        OperationalStateCM GetOperationalState(PayloadDTO payloadDTO);
         IEnumerable<FieldDTO> GetFields(IEnumerable<Crate> crates);
         IEnumerable<string> GetLabelsByManifestType(IEnumerable<Crate> crates, string manifestType);
         FieldDescriptionsCM MergeContentFields(List<Crate<FieldDescriptionsCM>> curCrates);

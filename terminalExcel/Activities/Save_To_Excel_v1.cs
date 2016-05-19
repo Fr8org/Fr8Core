@@ -131,7 +131,7 @@ namespace terminalExcel.Actions
         private const string SelectedSpreadsheetCrateLabel = "Selected Spreadsheet";
 
 
-        public Save_To_Excel_v1() : base(true)
+        public Save_To_Excel_v1() : base(false)
         {
         }
 

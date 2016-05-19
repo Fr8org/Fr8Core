@@ -52,6 +52,12 @@ namespace TerminalBase.BaseClasses
             SyncConfControlsBack();
         }
 
+        protected sealed override async Task<bool> Validate()
+        {
+            SyncConfControls();
+            return await ValidateETA();
+        }
+
         /**********************************************************************************/
 
         public sealed override async Task Activate()
@@ -123,11 +129,17 @@ namespace TerminalBase.BaseClasses
         protected abstract Task ConfigureETA();
         protected abstract Task RunETA();
 
-        /**********************************************************************************/
-
-
 
         /**********************************************************************************/
+
+
+
+        /**********************************************************************************/
+
+        protected virtual Task<bool> ValidateETA()
+        {
+            return Task.FromResult(true);
+        }
 
         /**********************************************************************************/
 

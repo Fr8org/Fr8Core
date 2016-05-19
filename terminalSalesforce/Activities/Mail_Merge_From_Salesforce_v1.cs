@@ -100,7 +100,7 @@ namespace terminalSalesforce.Actions
             _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
         }
 
-        protected override Task<bool> Validate()
+        protected override Task<bool> ValidateETA()
         {
             if (ActivityUI.RunMailMergeButton.Clicked)
             {

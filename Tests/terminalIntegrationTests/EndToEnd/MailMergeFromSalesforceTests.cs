@@ -33,13 +33,7 @@ namespace terminalIntegrationTests.EndToEnd
             _docuSignTestTools = new IntegrationTestTools_terminalDocuSign(this);
         }
 
-        public override string TerminalName
-        {
-            get
-            {
-                return "terminalSalesforce";
-            }
-        }
+        public override string TerminalName => "terminalSalesforce";
 
         [Test, Category("Integration.terminalSalesforce")]
         public async Task MailMergeFromSalesforceEndToEnd()
