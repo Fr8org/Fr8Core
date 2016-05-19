@@ -776,12 +776,13 @@ namespace Hub.Managers
                 historyItem.Fr8UserId = (historyItem as FactDO).CreatedByID;
             }
 
-            var message = $"{itemType}: {historyItem.PrimaryCategory} " +
-                              $"{historyItem.SecondaryCategory}" +
-                              $"{historyItem.Activity}, " +
-                              $"Data = {substring}, " +
-                              $"Fr8User = {historyItem.Fr8UserId}, " +
-                              $"ObjectId = {historyItem.ObjectId}";
+            var message =     $"HistoryItemId = [{historyItem.Id}]; "+
+                              $"[{itemType}]: [{historyItem.PrimaryCategory}] " +
+                              $"[{historyItem.SecondaryCategory}]" +
+                              $"[{historyItem.Activity}], " +
+                              $"Data = [{substring}], " +
+                              $"Fr8User = [{historyItem.Fr8UserId}], " +
+                              $"ObjectId = [{historyItem.ObjectId}]";
 
             return message;
         }
