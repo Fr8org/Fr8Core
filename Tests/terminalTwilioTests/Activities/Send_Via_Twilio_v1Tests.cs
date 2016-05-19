@@ -1,7 +1,5 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
 using Data.Infrastructure.AutoMapper;
 using Hub.Interfaces;
 using Fr8Data.Managers;
@@ -13,7 +11,6 @@ using terminalTwilio.Tests.Fixtures;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using System;
-using Fr8Data.Crates;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using UtilitiesTesting;
@@ -70,7 +67,7 @@ namespace terminalTwilioTests.Activities
         public async void Configure_ReturnsCrateDTO()
         {
             _twilioActivity = new Send_Via_Twilio_v1();
-            var curActivityContext = FixtureData.ConfigureTwilioActivity(); ;
+            var curActivityContext = FixtureData.ConfigureTwilioActivity();
             await _twilioActivity.Configure(curActivityContext);
             var controlsCrate = _crate.GetStorage(curActivityContext.ActivityPayload.CrateStorage).FirstOrDefault();
             Assert.IsNotNull(controlsCrate);
@@ -94,9 +91,7 @@ namespace terminalTwilioTests.Activities
             _twilioActivity = new Send_Via_Twilio_v1();
             var curActivityDO = FixtureData.ConfigureTwilioActivity();
             //ActionDTO curActionDTO = Mapper.Map<ActionDTO>(action);
-
             var actionResult = _twilioActivity.Configure(curActivityDO, null).Result;
-
             var standardControls = _crate.GetStorage(actionResult.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             var smsNumberTextField = standardControls.Controls[0].Name;
             var smsNumberUpstreamField = standardControls.Controls[1].Name;
@@ -112,9 +107,7 @@ namespace terminalTwilioTests.Activities
         {
             _twilioActivity = new Send_Via_Twilio_v1();
             var crateDTO = FixtureData.CrateDTOForTwilioConfiguration();
-
             var smsINfo = _twilioActivity.ParseSMSNumberAndMsg();
-
             Assert.AreEqual("+15005550006", smsINfo.Key);
             Assert.AreEqual("Unit Test Message", smsINfo.Value);
         }

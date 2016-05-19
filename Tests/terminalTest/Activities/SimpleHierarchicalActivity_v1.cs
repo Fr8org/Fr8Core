@@ -7,6 +7,7 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using TerminalBase.Models;
 
 namespace terminalTest.Actions
 {
@@ -16,81 +17,83 @@ namespace terminalTest.Actions
         {
         }
         
-        protected override async Task Initialize(CrateSignaller crateSignaller)
+        protected override async Task InitializeETA()
         {
-            var templates = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId);
+            var templates = await HubCommunicator.GetActivityTemplates(CurrentUserId);
             var activityTemplate = templates.First(x => x.Name == "SimpleActivity");
 
-            var atdo = AutoMapper.Mapper.Map<ActivityTemplateDTO, ActivityTemplateDO>(activityTemplate);
+            //var atdo = AutoMapper.Mapper.Map<ActivityTemplateDTO, ActivityTemplateDO>(activityTemplate);
 
             string emptyCrateStorage = CrateManager.CrateStorageAsStr(new CrateStorage(Crate.FromContent("Configuration Controls", new SimpleActivity_v1.ActivityUi())));
 
-            CurrentActivity.ChildNodes.Add(new ActivityDO
+            ActivityPayload.ChildrenActivities.Add(new ActivityPayload
             {
                 Id = Guid.NewGuid(),
-                CrateStorage = emptyCrateStorage,
-                ActivityTemplate = atdo,
-                ActivityTemplateId = activityTemplate.Id,
+                CrateStorage = new CrateStorage(),
+                ActivityTemplate = activityTemplate,
+                //ActivityTemplateId = activityTemplate.Id,
                 Label = "main 1.1",
                 Ordering = 1
             });
 
-            CurrentActivity.ChildNodes.Add(new ActivityDO
+            ActivityPayload.ChildrenActivities.Add(new ActivityPayload
             {
                 Id = Guid.NewGuid(),
-                CrateStorage = emptyCrateStorage,
-                ActivityTemplateId = activityTemplate.Id,
-                ActivityTemplate = atdo,
+                CrateStorage = new CrateStorage(),
+                //ActivityTemplateId = activityTemplate.Id,
+                ActivityTemplate = activityTemplate,
                 Label = "main 1.2",
                 Ordering = 2,
-                ChildNodes =
+                ChildrenActivities = 
                 {
-                    new ActivityDO
+                    new ActivityPayload
                     {
                         Id = Guid.NewGuid(),
-                        CrateStorage = emptyCrateStorage,
-                        ActivityTemplateId = activityTemplate.Id,
-                        ActivityTemplate = atdo,
+                        CrateStorage = new CrateStorage(),
+                        //ActivityTemplateId = activityTemplate.Id,
+                        ActivityTemplate = activityTemplate,
                         Label = "main 1.2.1",
                         Ordering = 1
                     },
-                    new ActivityDO
+                    new ActivityPayload
                     {
                         Id = Guid.NewGuid(),
-                        CrateStorage = emptyCrateStorage,
-                        ActivityTemplateId = activityTemplate.Id,
-                        ActivityTemplate = atdo,
+                        CrateStorage = new CrateStorage(),
+                        //ActivityTemplateId = activityTemplate.Id,
+                        ActivityTemplate = activityTemplate,
                         Label = "main 1.2.2",
                         Ordering = 2
                     }
                 }
             });
 
-            CurrentActivity.ChildNodes.Add(new ActivityDO
+            ActivityPayload.ChildrenActivities.Add(new ActivityPayload
             {
                 Id = Guid.NewGuid(),
-                CrateStorage = emptyCrateStorage,
-                ActivityTemplateId = activityTemplate.Id,
-                ActivityTemplate = atdo,
+                CrateStorage = new CrateStorage(),
+                //ActivityTemplateId = activityTemplate.Id,
+                ActivityTemplate = activityTemplate,
                 Label = "main 1.3",
                 Ordering = 3,
             });
         }
 
-        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
+        protected override Task ConfigureETA()
         {
             return Task.FromResult(0);
         }
 
-        protected override Task RunCurrentActivity()
+        protected override Task RunETA()
         {
-            Log($"{CurrentActivity.Label} started");
+            Log($"{ActivityPayload.Label} started");
             return Task.FromResult(0);
         }
+
+        protected override ActivityTemplateDTO MyTemplate => new ActivityTemplateDTO();
 
         protected override Task RunChildActivities()
         {
-            Log($"{CurrentActivity.Label} ended");
+            Log($"{ActivityPayload.Label} ended");
 
             return Task.FromResult(0);
         }

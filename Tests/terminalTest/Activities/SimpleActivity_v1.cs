@@ -24,32 +24,31 @@ namespace terminalTest.Actions
         }
         
 
-        protected override Task Initialize(CrateSignaller crateSignaller)
+        protected override Task InitializeETA()
         {
-            ConfigurationControls.TextBlock.Value = CurrentActivity.Id.ToString();
+            ActivityUI.TextBlock.Value = ActivityId.ToString();
             return Task.FromResult(0);
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
+        protected override async Task ConfigureETA()
         {
-            if (ConfigurationControls.AddChild.Clicked)
+            if (ActivityUI.AddChild.Clicked)
             {
-                ConfigurationControls.AddChild.Clicked = false;
-                var activityTemplate = await GetActivityTemplateByName(ConfigurationControls.ActivityToAdd.Value);
-                await AddAndConfigureChildActivity(CurrentActivity, activityTemplate, CurrentActivity.Label + "." + (CurrentActivity.ChildNodes.Count + 1), CurrentActivity.Label + "." + (CurrentActivity.ChildNodes.Count + 1));
+                ActivityUI.AddChild.Clicked = false;
+                var activityTemplate = await GetActivityTemplateByName(ActivityUI.ActivityToAdd.Value);
+                await AddAndConfigureChildActivity(ActivityId, activityTemplate, ActivityPayload.Label + "." + (ActivityPayload.ChildrenActivities.Count + 1), ActivityPayload.Label + "." + (ActivityPayload.ChildrenActivities.Count + 1));
             }
         }
 
-        protected override Task RunCurrentActivity()
+        protected override Task RunETA()
         {
-            Log($"{CurrentActivity.Label} [{CurrentActivity.Id}] started");
+            Log($"{ActivityPayload.Label} [{ActivityId}] started");
             return Task.FromResult(0);
         }
 
         protected override Task RunChildActivities()
         {
-            Log($"{CurrentActivity.Label} [{CurrentActivity.Id}] ended");
-
+            Log($"{ActivityPayload.Label} [{ActivityId}] ended");
             return Task.FromResult(0);
         }
     }
