@@ -93,7 +93,7 @@ if(Test-Path $ConfigFile)
 	Write-Host "Setting SMTP Credentials"
 	$usernameNode = $roleNode.ConfigurationSettings.Setting | where {$_.name -eq 'OutboundUserName'}
 	$userNameNode.value = $smtpUsername
-	$passwordNode = $roleNode.ConfigurationSettings.Setting | where {$_.name -eq 'OutboundPassword'}
+	$passwordNode = $roleNode.ConfigurationSettings.Setting | where {$_.name -eq 'OutboundUserPassword'}
 	$passwordNode.value = $smtpPassword
 
 	# Update TerminalEndpoint

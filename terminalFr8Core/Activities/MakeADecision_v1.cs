@@ -13,7 +13,7 @@ using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Actions
 {
-    public class TestAndBranch_v1 : TestIncomingData_v1
+    public class MakeADecision_v1 : TestIncomingData_v1
     {
 #if DEBUG
         private const int SmoothRunLimit = 5;
@@ -83,19 +83,19 @@ namespace terminalFr8Core.Actions
                         case ContainerTransitions.JumpToActivity:
                             if (!containerTransitionField.TargetNodeId.HasValue)
                             {
-                                return Error(curPayloadDTO, "Target Activity for transition is not specified. Please choose it in the Test And Branch activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                                return Error(curPayloadDTO, "Target Activity for transition is not specified. Please choose it in the Make a Decision activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
                             }
                             return JumpToActivity(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
                         case ContainerTransitions.LaunchAdditionalPlan:
                             if (!containerTransitionField.TargetNodeId.HasValue)
                             {
-                                return Error(curPayloadDTO, "Target Additional Plan for transition is not specified. Please choose it in the Test And Branch activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                                return Error(curPayloadDTO, "Target Additional Plan for transition is not specified. Please choose it in the Make a Decision activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
                             }
                             return LaunchAdditionalPlan(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
                         case ContainerTransitions.JumpToSubplan:
                             if (!containerTransitionField.TargetNodeId.HasValue)
                             {
-                                return Error(curPayloadDTO, "Target SubPlan for transition is not specified. Please choose it in the Test And Branch activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                                return Error(curPayloadDTO, "Target SubPlan for transition is not specified. Please choose it in the Make a Decision activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
                             }
                             return JumpToSubplan(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
                         case ContainerTransitions.ProceedToNextActivity:
@@ -106,7 +106,7 @@ namespace terminalFr8Core.Actions
                             throw new NotImplementedException();
 
                         default:
-                            return Error(curPayloadDTO, "Invalid data was selected on TestAndBranch_v1#Run", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                            return Error(curPayloadDTO, "Invalid data was selected on MakeADecision_v1#Run", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
                     }
                 }
             }
