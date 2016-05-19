@@ -633,9 +633,9 @@
     <Compile Include="Migrations\201605131245044_AddedClassPropertyToFr8AccountDO.Designer.cs">
       <DependentUpon>201605131245044_AddedClassPropertyToFr8AccountDO.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201605191119279_RemovedCriteriaDO.cs" />
-    <Compile Include="Migrations\201605191119279_RemovedCriteriaDO.Designer.cs">
-      <DependentUpon>201605191119279_RemovedCriteriaDO.cs</DependentUpon>
+    <Compile Include="Migrations\201605191153007_Removed_CriteriaDO.cs" />
+    <Compile Include="Migrations\201605191153007_Removed_CriteriaDO.Designer.cs">
+      <DependentUpon>201605191153007_Removed_CriteriaDO.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
@@ -811,7 +811,6 @@
     <Compile Include="States\Templates\_AuthenticationTypeTemplate.cs" />
     <Compile Include="States\Templates\_ActivityTemplateStateTemplate.cs" />
     <Compile Include="States\Templates\_AuthorizationTokenStateTemplate.cs" />
-    <Compile Include="States\Templates\_CriteriaExecutionTypeTemplate.cs" />
     <Compile Include="States\Templates\_TerminalStatusTemplate.cs" />
     <Compile Include="Entities\SubPlanDO.cs" />
     <Compile Include="States\Templates\_ContainerStateTemplate.cs" />
@@ -1217,8 +1216,8 @@
     <EmbeddedResource Include="Migrations\201605131245044_AddedClassPropertyToFr8AccountDO.resx">
       <DependentUpon>201605131245044_AddedClassPropertyToFr8AccountDO.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201605191119279_RemovedCriteriaDO.resx">
-      <DependentUpon>201605191119279_RemovedCriteriaDO.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201605191153007_Removed_CriteriaDO.resx">
+      <DependentUpon>201605191153007_Removed_CriteriaDO.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

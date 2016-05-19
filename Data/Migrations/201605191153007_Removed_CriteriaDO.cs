@@ -3,7 +3,7 @@ namespace Data.Migrations
     using System;
     using System.Data.Entity.Migrations;
     
-    public partial class RemovedCriteriaDO : DbMigration
+    public partial class Removed_CriteriaDO : DbMigration
     {
         public override void Up()
         {

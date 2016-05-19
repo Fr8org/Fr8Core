@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class RemovedCriteriaDO : IMigrationMetadata
+    public sealed partial class Removed_CriteriaDO : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(RemovedCriteriaDO));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(Removed_CriteriaDO));
         
         string IMigrationMetadata.Id
         {
-            get { return "201605191119279_RemovedCriteriaDO"; }
+            get { return "201605191153007_Removed_CriteriaDO"; }
         }
         
         string IMigrationMetadata.Source
