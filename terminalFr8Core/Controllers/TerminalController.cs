@@ -298,15 +298,15 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
-                Name = "TestAndBranch",
-                Label = "Test and Branch",
+                Name = "MakeADecision",
+                Label = "Make a Decision",
                 Version = "1",
                 Category = ActivityCategory.Processors,
                 NeedsAuthentication = false,
                 Terminal = terminal,
                 WebService = webService,
-                MinPaneWidth = 550,
-                Tags = Tags.AggressiveReload
+                MinPaneWidth = 550
+                // Tags = Tags.AggressiveReload
             });
 
             result.Add(new ActivityTemplateDTO
