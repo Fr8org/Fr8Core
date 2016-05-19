@@ -284,6 +284,8 @@
     .action .pane-configure-action {
         min-height: 250px;
         padding: 2%;
+        outline: none;
+        cursor: default;
     }
 
     .action .ap-resize {
