@@ -47,7 +47,7 @@ namespace HubWeb.Controllers.Api
 
         [HttpPost]
         [ActionName("query")]
-        public IHttpActionResult Query([FromBody]  NameVersionDTO data)
+        public IHttpActionResult Query([FromBody]  ManifestRegistryParams data)
         {
             object result = null;
 

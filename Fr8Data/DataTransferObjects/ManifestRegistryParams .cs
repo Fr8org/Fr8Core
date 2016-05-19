@@ -9,7 +9,7 @@ namespace Fr8Data.DataTransferObjects
     /// <summary>
     /// Used in ManifestRegistryController
     /// </summary>
-    public class NameVersionDTO
+    public class ManifestRegistryParams
     {
         public string name { get; set; }
         public string version { get; set; }
