@@ -350,7 +350,7 @@ namespace Data.Infrastructure
                     ts.ForeignTableName
                 });
 
-            modelBuilder.Entity<CriteriaDO>().ToTable("Criteria");
+          
             modelBuilder.Entity<FileDO>().ToTable("Files");
 
 

@@ -26,7 +26,7 @@
       <Setting name="terminalTwilio.TerminalEndpoint" value="" />
       <Setting name="terminalYammer.TerminalEndpoint" value="" />
       <Setting name="OutboundUserName" value="" />
-      <Setting name="OutboundPassword" value="" />
+      <Setting name="OutboundUserPassword" value="" />
     </ConfigurationSettings>
     <Certificates>
       <Certificate name="Microsoft.WindowsAzure.Plugins.RemoteAccess.PasswordEncryption" thumbprint="CF67E4C8E984409FB9E7FBF8F61A615D64D4CEC6" thumbprintAlgorithm="sha1" />
