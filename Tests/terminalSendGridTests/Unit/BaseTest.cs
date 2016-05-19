@@ -1,4 +1,7 @@
-﻿using Fr8Infrastructure.StructureMap;
+﻿using Data.Infrastructure.AutoMapper;
+using Data.Infrastructure.StructureMap;
+using Data.Interfaces;
+using Fr8Infrastructure.StructureMap;
 using NUnit.Framework;
 using StructureMap;
 
