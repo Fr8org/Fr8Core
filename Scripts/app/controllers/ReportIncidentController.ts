@@ -58,7 +58,7 @@
         }
 
         private expandItem(historyItem: model.HistoryItemDTO) {
-            if ((<any>historyItem).$isExpanded) {
+            if ((<any>historyItem).$isExpanded && window.getSelection().toString() === "") {
                 (<any>historyItem).$isExpanded = false;
             } else {
                 (<any>historyItem).$isExpanded = true;
