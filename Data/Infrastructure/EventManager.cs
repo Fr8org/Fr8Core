@@ -284,10 +284,10 @@ namespace Data.Infrastructure
             if (handler != null) handler(terminalUrl, activityId, errorMessage, objectId);
         }
 
-        public static void TerminalInternalFailureOccurred(string terminalUrl, string activityId, Exception e, string objectId)
+        public static void TerminalInternalFailureOccurred(string terminalUrl, string containerId, Exception e, string objectId)
         {
             IncidentTerminalInternalFailureHandler handler = IncidentTerminalInternalFailureOccurred;
-            if (handler != null) handler(terminalUrl, activityId, e, objectId);
+            if (handler != null) handler(terminalUrl, containerId, e, objectId);
         }
 
         public static void TerminalActionActivationFailed(string terminalUrl, string activityId, string errorMessage, string objectId)

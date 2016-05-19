@@ -335,9 +335,9 @@ namespace TerminalBase.BaseClasses
                 var endpoint = (curActivityDO.ActivityTemplate != null && curActivityDO.ActivityTemplate.Terminal != null && curActivityDO.ActivityTemplate.Terminal.Endpoint != null) ? curActivityDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
                 //EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActivityDO, settings), e, curActivityDO.Id.ToString());
                 // null checking
-                curDataDTO = curDataDTO ?? new Fr8DataDTO() {};
+                var containerId = curDataDTO?.ContainerId?.ToString() ?? "";
 
-                EventManager.TerminalInternalFailureOccurred(endpoint, curActivityDO.Id.ToString(), e, curDataDTO.ContainerId.ToString());
+                EventManager.TerminalInternalFailureOccurred(endpoint, containerId, e, curActivityDO.Id.ToString());
                 throw;              
             }
         }

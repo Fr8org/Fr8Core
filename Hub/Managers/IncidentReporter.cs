@@ -228,12 +228,12 @@ namespace Hub.Managers
             SaveAndLogIncident(incident);
         }
 
-        private void ProcessIncidentTerminalInternalFailureOccurred(string curTerminalUrl, string curActionDTO, Exception e, string objectId)
+        private void ProcessIncidentTerminalInternalFailureOccurred(string curTerminalUrl, string containerId, Exception e, string objectId)
         {
             var incident = new IncidentDO
             {
                 Fr8UserId = _sercurity.GetCurrentUser(),
-                Data = curTerminalUrl + " Message =  [ " + e.ToString() + " ]",
+                Data = curTerminalUrl + $"ContainerId = [{containerId}]  Message =  [ " + e.ToString() + " ]",
                 ObjectId = objectId,
                 PrimaryCategory = "Terminal",
                 SecondaryCategory = "Internal",

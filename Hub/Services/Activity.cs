@@ -585,11 +585,11 @@ namespace Hub.Services
             return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<TResult>(activityName, fr8DataDTO, containerId.ToString());
         }
 
-        private void ReportActivityInvocationError(ActivityDO activity, string error, string containerId, Action<string, string, string, string> reportingAction)
+        private void ReportActivityInvocationError(ActivityDO activity, string error, string objectId, Action<string, string, string, string> reportingAction)
         {
             var endpoint = _activityTemplate.GetTerminalUrl(activity.ActivityTemplateId) ?? "<no terminal url>";
 
-            reportingAction(endpoint, activity.Id.ToString(), error, containerId);
+            reportingAction(endpoint, activity.Id.ToString(), error, objectId);
         }
 
 
