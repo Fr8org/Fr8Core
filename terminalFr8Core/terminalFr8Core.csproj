@@ -235,7 +235,7 @@
     <Compile Include="Activities\ExtractTableField_v1.cs" />
     <Compile Include="Activities\Send_Email_Via_SendGrid_v1.cs" />
     <Compile Include="Activities\Send_SMS_Via_Twilio_v1.cs" />
-    <Compile Include="Activities\TestAndBranch_v1.cs" />
+    <Compile Include="Activities\MakeADecision_v1.cs" />
     <Compile Include="Activities\StoreFile_v1.cs" />
     <Compile Include="Activities\ConvertCrates_v1.cs" />
     <Compile Include="Activities\SetDelay_v1.cs" />

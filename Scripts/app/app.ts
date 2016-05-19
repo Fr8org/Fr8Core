@@ -79,10 +79,10 @@ app.config(['$mdThemingProvider', ($mdThemingProvider) => {
         'A200': '26a69a',
         'A400': '26a69a',
         'A700': '26a69a',
-        'contrastDefaultColor': 'light',   
-        'contrastDarkColors': ['50', '100', 
+        'contrastDefaultColor': 'light',
+        'contrastDarkColors': ['50', '100',
             '200', '300', '400', 'A100'],
-        'contrastLightColors': undefined    
+        'contrastLightColors': undefined
     });
     $mdThemingProvider.theme('default')
         .primaryPalette('fr8Theme');
@@ -143,8 +143,8 @@ app.config(['applicationInsightsServiceProvider', function (applicationInsightsS
 }]);
 
 
-/* Setup Routing For All Pages */ 
-app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationProvider', ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider, $httpProvider: ng.IHttpProvider, $locationProvider:ng.ILocationProvider) => {
+/* Setup Routing For All Pages */
+app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationProvider', ($stateProvider: ng.ui.IStateProvider, $urlRouterProvider, $httpProvider: ng.IHttpProvider, $locationProvider: ng.ILocationProvider) => {
 
 
     $locationProvider.html5Mode(true);
@@ -152,7 +152,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
     $httpProvider.interceptors.push('fr8VersionInterceptor');
 
     // Install a HTTP request interceptor that causes 'Processing...' message to display
-    $httpProvider.interceptors.push(['$q','$window',($q: ng.IQService, $window: ng.IWindowService) => {
+    $httpProvider.interceptors.push(['$q', '$window', ($q: ng.IQService, $window: ng.IWindowService) => {
         return {
             request: (config: ng.IRequestConfig) => {
                 // Show page spinner If there is no request parameter suppressSpinner.
@@ -172,13 +172,71 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             responseError: (config) => {
                 if (config.status === 403) {
                     $window.location.href = $window.location.origin + '/DockyardAccount'
-                    + '?returnUrl=/dashboard' + encodeURIComponent($window.location.hash);
+                        + '?returnUrl=/dashboard' + encodeURIComponent($window.location.hash);
                 }
                 Metronic.stopPageLoading();
                 return $q.reject(config);
             }
         }
     }]);
+
+    // Install a HTTP request interceptor that syncronizes Save and Config requests for a single activity.
+    // If a Configure request is currently executing, Save and other Configure requests will be dropped. 
+    // See FR-3475 for rationale. 
+    $httpProvider.interceptors.push(['$q', ($q: ng.IQService) => {
+        let currentConfigurationRequests: string[] = [];
+
+        return {
+            request: (config) => {
+                // bypass any requests which are not of interest for us
+                if (config.method != 'POST' || !config.url || config.url.indexOf('activities') == -1) return config;
+                if (!config.params || !config.params.id) return config;
+
+                if (config.url.indexOf('activities/configure') > -1) {
+                    // check if such activity is currently being configured. if so, reject the request.
+                    if (currentConfigurationRequests.indexOf(config.params.id) > -1) {
+                        return $q.reject(config);
+                    }
+                    else {
+                        // if not, add it in the list of configured activities
+                        currentConfigurationRequests.push(config.params.id);
+                    }
+                }
+
+                else if (config.url.indexOf('activities/save') > -1) {
+                    if (currentConfigurationRequests.indexOf(config.params.id) > -1) {
+                        return $q.reject(config);
+                    }
+                }
+                return config;
+            },
+
+            response: (response) => {
+                let config = response.config;
+                if (!config.url || config.url.indexOf('activities/configure') == -1) return response;
+
+                // check if such activity is currently being configured. if so, remove it from the array
+                let idx: number = currentConfigurationRequests.indexOf(response.data.id);
+                if (idx > -1) {
+                    currentConfigurationRequests.splice(idx, 1);
+                }
+                return response;
+            },
+
+            responseError: (response) => {
+                let config = response.config;
+                if (!config.url || config.url.indexOf('activities/configure') == -1) return response;
+
+                // check if such activity is currently being configured. if so, remove it from the array
+                let idx: number = currentConfigurationRequests.indexOf(config.data.id);
+                if (idx > -1) {
+                    currentConfigurationRequests.splice(idx, 1);
+                }
+                return $q.reject(response);
+            }
+        }
+    }]);
+
 
     // Redirect any unmatched url
     $urlRouterProvider.otherwise("/myaccount");
@@ -189,21 +247,21 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             templateUrl: "/AngularTemplate/MyAccountPage",
             data: { pageTitle: 'My Account', pageSubTitle: '' }
         })
-    // Plan list
+        // Plan list
         .state('planList', {
             url: "/plans",
             templateUrl: "/AngularTemplate/PlanList",
             data: { pageTitle: 'Plans', pageSubTitle: 'This page displays all Plans' }
         })
 
-    // Plan form
+        // Plan form
         .state('planForm', {
             url: "/plans/add",
             templateUrl: "/AngularTemplate/PlanForm",
             data: { pageTitle: 'Plan', pageSubTitle: 'Add a new Plan' }
         })
 
-    // Plan Builder framework
+        // Plan Builder framework
         .state('planBuilder', {
             url: "/plans/{id}/builder?viewMode&view",
             views: {
@@ -232,7 +290,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
                     }
                 }
             },
-            
+
             data: { pageTitle: '' }
         })
 
@@ -254,7 +312,7 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
             data: { pageTitle: 'Plan Details', pageSubTitle: '' }
         })
 
-    // Manage files
+        // Manage files
         .state('managefiles', {
             url: "/managefiles",
             templateUrl: "/AngularTemplate/ManageFileList",
