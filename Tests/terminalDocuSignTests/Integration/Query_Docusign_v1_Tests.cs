@@ -6,6 +6,7 @@ using NUnit.Framework;
 using terminalDocuSign.Actions;
 using terminalDocuSignTests.Fixtures;
 using terminalDocuSign.Activities;
+using Fr8Infrastructure.Communication;
 
 namespace terminalDocuSignTests.Integration
 {

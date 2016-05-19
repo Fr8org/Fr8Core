@@ -27,7 +27,7 @@ namespace terminalDocuSignTests.Activities
             base.SetUp();
             var hubCommunicatorMock = new Mock<IHubCommunicator>();
             hubCommunicatorMock.Setup(x => x.GetPayload(It.IsAny<Guid>(), It.IsAny<string>()))
-                               .Returns(Task.FromResult(FixtureData.PayloadDTO2()));
+                               .Returns(Task.FromResult(FixtureData.PayloadDTO1()));
             ObjectFactory.Configure(x => x.For<Mock<IHubCommunicator>>().Use(hubCommunicatorMock));
             ObjectFactory.Configure(x => x.For<IHubCommunicator>().Use(hubCommunicatorMock.Object));
             var docuSignPlanMock = new Mock<IDocuSignPlan>();
@@ -55,7 +55,7 @@ namespace terminalDocuSignTests.Activities
 
             var validationManager = new ValidationManager(currentValidationResults, null);
 
-            await activity.ValidateActivity(activityDo, activityPayload.CrateStorage, validationManager);
+            await activity.Validate(activityDo, activityPayload.CrateStorage, validationManager);
 
             return currentValidationResults;
         }

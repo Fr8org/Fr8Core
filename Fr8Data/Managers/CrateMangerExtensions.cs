@@ -79,16 +79,14 @@ namespace Fr8Data.Managers
         /// <summary>
         /// Returns a copy of AcvitityUI for the given activity
         /// </summary>
-        private static TActivityUi GetReadonlyActivityUi<TActivityUi>(this ActivityDTO activityDTO) where TActivityUi : StandardConfigurationControlsCM, new()
+        private static TActivityUi GetReadonlyActivityUi<TActivityUi>(this ICrateStorage crateStorage) where TActivityUi : StandardConfigurationControlsCM, new()
         {
-            if (activityDTO == null)
+            if (crateStorage == null)
             {
-                throw new ArgumentNullException(nameof(activityDTO));
+                throw new ArgumentNullException(nameof(crateStorage));
             }
-            var crateManager = new CrateManager();
 
-            var storage = crateManager.GetStorage(activityDTO);
-            return new TActivityUi().ClonePropertiesFrom(storage.FirstCrateOrDefault<StandardConfigurationControlsCM>()?.Content) as TActivityUi;
+            return new TActivityUi().ClonePropertiesFrom(crateStorage.FirstCrateOrDefault<StandardConfigurationControlsCM>()?.Content) as TActivityUi;
         }
     }
 }

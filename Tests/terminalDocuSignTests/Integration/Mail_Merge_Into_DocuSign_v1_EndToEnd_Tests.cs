@@ -18,6 +18,7 @@ using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
 using UtilitiesTesting.Fixtures;
 using Fr8Data.Managers;
+using TerminalBase.Models;
 
 namespace terminalDocuSignTests.Integration
 {
@@ -375,12 +376,16 @@ namespace terminalDocuSignTests.Integration
             //
             var container = await HttpPostAsync<string, ContainerDTO>(_baseUrl + "plans/run?planId=" + plan.Plan.Id, null);
             Assert.AreEqual(container.State, State.Completed, "Container state is not equal to completed on Mail_Merge e2e test");
-            
+
             //
             // Assert 
             //
-
-            var configuration =  new DocuSignManager().SetUp(_terminalDocuSignTestTools.GetDocuSignAuthToken(tokenGuid));
+            var authorizationTokenDO = _terminalDocuSignTestTools.GetDocuSignAuthToken(tokenGuid);
+            var authorizationToken = new AuthorizationToken()
+            {
+                Token = authorizationTokenDO.Token,
+            };
+            var configuration =  new DocuSignManager().SetUp(authorizationToken);
             //find the envelope on the Docusign Account
             var folderItems = DocuSignFolders.GetFolderItems(configuration, new DocuSignQuery()
             {       

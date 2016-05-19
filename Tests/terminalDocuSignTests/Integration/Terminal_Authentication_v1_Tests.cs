@@ -5,6 +5,7 @@ using Fr8Data.DataTransferObjects;
 using HealthMonitor.Utility;
 using NUnit.Framework;
 using terminalDocuSignTests.Fixtures;
+using Fr8Infrastructure.Communication;
 
 namespace terminalDocuSignTests.Integration
 {
