@@ -30,7 +30,7 @@ namespace Data.Repositories.Security.StorageImpl
             editRolePrivilegeID = Guid.Parse("7cb466dc-8fed-4791-a1ba-09f9135416db");
         }
 
-        public int InsertObjectRolePermission(string dataObjectId, Guid rolePrivilegeId, string dataObjectType,
+        public int InsertObjectRolePermission(string currentUserId, string dataObjectId, Guid rolePrivilegeId, string dataObjectType,
             string propertyName = null)
         {
             lock (ObjectRolePermissions)
@@ -68,7 +68,7 @@ namespace Data.Repositories.Security.StorageImpl
             throw new NotImplementedException();
         }
 
-        public void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType)
+        public void SetDefaultObjectSecurity(string currentUserId, string dataObjectId, string dataObjectType, Guid rolePermissionId)
         {
             lock (ObjectRolePermissions)
             {
@@ -120,6 +120,16 @@ namespace Data.Repositories.Security.StorageImpl
         public List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, Guid profileId)
         {
             return new List<int>();
+        }
+
+        public void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType, Guid rolePermissionId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public RolePermission GetRolePermission(string roleName, Guid permissionSetId)
+        {
+            throw new NotImplementedException();
         }
 
         public ObjectRolePermissionsWrapper GetRecordBasedPermissionSetForObject(string dataObjectId)

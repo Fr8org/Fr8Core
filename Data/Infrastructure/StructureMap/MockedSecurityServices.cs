@@ -78,7 +78,7 @@ namespace Data.Infrastructure.StructureMap
         public void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType)
         {
             var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
-            securityStorageProvider.SetDefaultObjectSecurity(dataObjectId.ToString(), dataObjectType);
+            securityStorageProvider.SetDefaultObjectSecurity(GetCurrentUser(), dataObjectId.ToString(), dataObjectType, Guid.Empty);
         }
 
         public bool AuthorizeActivity(PermissionType permissionName, string curObjectId, string curObjectType, string propertyName = null)
