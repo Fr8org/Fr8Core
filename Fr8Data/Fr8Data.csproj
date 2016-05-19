@@ -94,7 +94,6 @@
     <Compile Include="DataTransferObjects\CrateDTO.cs" />
     <Compile Include="DataTransferObjects\CrateStorageDTO.cs" />
     <Compile Include="DataTransferObjects\CredentialsDTO.cs" />
-    <Compile Include="DataTransferObjects\CriteriaDTO.cs" />
     <Compile Include="DataTransferObjects\EmailAddressDTO.cs" />
     <Compile Include="DataTransferObjects\RecipientDTO.cs" />
     <Compile Include="DataTransferObjects\EmailDTO.cs" />
