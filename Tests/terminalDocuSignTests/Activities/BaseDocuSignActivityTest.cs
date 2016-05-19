@@ -12,6 +12,7 @@ using TerminalBase.Infrastructure;
 using UtilitiesTesting.Asserts;
 using UtilitiesTesting.Fixtures;
 using terminalDocuSign.Activities;
+using TerminalBase.Models;
 
 namespace terminalDocuSignTests.Activities
 {
@@ -50,10 +51,10 @@ namespace terminalDocuSignTests.Activities
         public void Run_WhenActivityIsValid_RunsSuccessfully()
         {
             var activityMock = new Mock<BaseDocuSignActivity>();
-            activityMock.Setup(x => x.ValidateActivity(It.IsAny<ActivityDO>(), It.IsAny<ICrateStorage>(), It.IsAny<ValidationManager>())).Returns(Task.FromResult(0));
+            //activityMock.Setup(x => x.ValidateActivity(It.IsAny<ActivityDO>(), It.IsAny<ICrateStorage>(), It.IsAny<ValidationManager>())).Returns(Task.FromResult(0));
                         
-            activityMock.Setup(x => x.RunInternal(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsNotNull<AuthorizationTokenDO>()))
-                        .Returns(Task.FromResult(FixtureData.PayloadDTO2()))
+            activityMock.Setup(x => x.Run(It.IsAny<ActivityContext>(), It.IsAny<ContainerExecutionContext>()))
+                        //.Returns(Task.FromResult(FixtureData.PayloadDTO2()))
                         .Verifiable("RunInternal was not invoked when activity has auth token and is valid");
             var activityContext = FixtureData.TestActivityContext1();
             var executionContext = FixtureData.ContainerExecutionContext1();

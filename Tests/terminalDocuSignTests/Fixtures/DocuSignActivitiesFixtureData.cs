@@ -29,13 +29,13 @@ namespace terminalDocuSignTests.Fixtures
         public static BaseDocuSignActivity FailedBaseDocuSignActivity()
         {
             var result = new Mock<BaseDocuSignActivity>();
-            result.Setup(x => x.Validate(It.IsAny<ActivityDO>(), It.IsAny<ICrateStorage>(), It.IsAny<ValidationManager>()))
+            /*result.Setup(x => x.Validate(It.IsAny<ActivityDO>(), It.IsAny<ICrateStorage>(), It.IsAny<ValidationManager>()))
                 .Returns((ActivityDO x, ICrateStorage y, ValidationManager validationManager) =>
                 {
                     validationManager.SetError("Error");
                     return Task.FromResult(0);
                 });
-
+                */
             return result.Object;
         }
 

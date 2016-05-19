@@ -55,7 +55,7 @@ namespace terminalDocuSignTests.Activities
 
             var validationManager = new ValidationManager(currentValidationResults, null);
 
-            await activity.Validate(activityDo, activityPayload.CrateStorage, validationManager);
+            //await activity.Validate(activityDo, activityPayload.CrateStorage, validationManager);
 
             return currentValidationResults;
         }
