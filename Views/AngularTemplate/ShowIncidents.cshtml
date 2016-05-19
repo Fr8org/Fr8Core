@@ -42,12 +42,10 @@
                      <th md-column style="width: 10%;"><span>Primary Category</span></th>
                      <th md-column style="width: 10%;"><span>Secondary Category</span></th>
                      <th md-column style="width: 5%;">Activity</th>
-                     <th md-column style="width: 5%;">Component</th>
-                     <th md-column md-numeric style="width: 25%; max-width: 30%;">Data</th>
+                     <th md-column md-numeric style="width: 35%; max-width: 30%;">Data</th>
                      <th md-column md-numeric style="width: 10%;">Fr8UserId</th>
                      <th md-column md-numeric style="width: 10%;">Object Id</th>
                      <th md-column md-numeric style="width: 10%;">Status</th>
-                     <th md-column md-numeric style="width: 5%;">Priority</th>
                  </tr>
                  </thead>
                  <tbody md-body>
@@ -56,7 +54,6 @@
                          <td md-cell class="column-spacer">{{ historyItem.primaryCategory }}</td>
                          <td md-cell class="column-spacer">{{ historyItem.secondaryCategory }}</td>
                          <td md-cell class="column-spacer">{{ historyItem.activity }}</td>
-                         <td md-cell class="column-spacer">{{ historyItem.component }}</td>
                          <td md-cell class="column-spacer" style="text-align: right;">
                              <div ng-if="historyItem.$isExpanded">
                                 {{ historyItem.data }}    
@@ -82,7 +79,6 @@
                              </div>
                          </td>
                          <td md-cell class="column-spacer">{{ historyItem.status }}</td>
-                         <td md-cell class="column-spacer">{{ historyItem.priority }}</td>
                      </tr>
                  </tbody>
              </table>
