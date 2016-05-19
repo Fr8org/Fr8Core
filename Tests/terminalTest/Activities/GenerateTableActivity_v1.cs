@@ -3,6 +3,7 @@ using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using Fr8Data.States;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
@@ -10,6 +11,17 @@ namespace terminalTest.Actions
 {
     public class GenerateTableActivity_v1 : TestActivityBase<GenerateTableActivity_v1.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "GenerateTableActivity",
+            Label = "GenerateTableActivity",
+            Category = ActivityCategory.Processors,
+            Version = "1",
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public TextBox NumberOfRows;
@@ -60,8 +72,6 @@ namespace terminalTest.Actions
 
             return Task.FromResult(0);
         }
-
-        protected override ActivityTemplateDTO MyTemplate => new ActivityTemplateDTO {};
 
         protected override Task RunChildActivities()
         {

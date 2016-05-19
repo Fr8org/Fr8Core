@@ -1,18 +1,27 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
+using Fr8Data.States;
 using TerminalBase.Models;
 
 namespace terminalTest.Actions
 {
     public class SimpleHierarchicalActivity_v1 : TestActivityBase<SimpleActivity_v1.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "SimpleHierarchicalActivity",
+            Label = "SimpleHierarchicalActivity",
+            Category = ActivityCategory.Processors,
+            Version = "1",
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
         }
@@ -89,7 +98,6 @@ namespace terminalTest.Actions
             return Task.FromResult(0);
         }
 
-        protected override ActivityTemplateDTO MyTemplate => new ActivityTemplateDTO();
 
         protected override Task RunChildActivities()
         {

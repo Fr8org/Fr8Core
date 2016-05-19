@@ -9,6 +9,7 @@ using HealthMonitor.Utility;
 using Fr8Data.Managers;
 using NUnit.Framework;
 using terminalGoogle.Actions;
+using terminalGoogle.Activities;
 using UtilitiesTesting.Fixtures;
 
 namespace terminaBaselTests.Tools.Activities

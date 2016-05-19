@@ -1,6 +1,10 @@
-﻿using System.Threading.Tasks;
+﻿using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Fr8Data.Control;
+using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using Fr8Data.States;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
@@ -8,6 +12,17 @@ namespace terminalTest.Actions
 {
     public class SimpleActivity_v1 : TestActivityBase<SimpleActivity_v1.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "SimpleActivity",
+            Label = "SimpleActivity",
+            Category = ActivityCategory.Processors,
+            Version = "1",
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public TextBlock TextBlock;
@@ -39,6 +54,8 @@ namespace terminalTest.Actions
                 await AddAndConfigureChildActivity(ActivityId, activityTemplate, ActivityPayload.Label + "." + (ActivityPayload.ChildrenActivities.Count + 1), ActivityPayload.Label + "." + (ActivityPayload.ChildrenActivities.Count + 1));
             }
         }
+
+        
 
         protected override Task RunETA()
         {
