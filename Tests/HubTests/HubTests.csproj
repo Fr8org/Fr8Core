@@ -256,7 +256,6 @@
     <Compile Include="Entities\UserTests.cs" />
     <Compile Include="ExcelUtilsTests.cs" />
     <Compile Include="Fixtures\ActivityResponseFixtureData.cs" />
-    <Compile Include="Fixtures\ContainerResponseFixtureData.cs" />
     <Compile Include="Infrastructure\DatabaseTests.cs" />
     <Compile Include="Infrastructure\Fr8HubWebHMACAuthenticateAttributeTests.cs" />
     <Compile Include="Infrastructure\MultiTenantTests.cs" />
@@ -314,6 +313,8 @@
     <Compile Include="Services\TerminalTransmitterMock.cs" />
     <Compile Include="Services\UserServiceTests.cs" />
     <Compile Include="Utilities\DateUtilityTests.cs" />
+    <Compile Include="ConfigurationOverride.cs" />
+    <Compile Include="Utilization\UtilizationMonitoringTests.cs" />
     <Compile Include="Wrapper\DcousingAccountTest.cs" />
   </ItemGroup>
   <ItemGroup>

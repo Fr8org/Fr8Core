@@ -1,29 +1,40 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using Data.Entities;
 using Utilities.Configuration.Azure;
 
 namespace Hub.Utilization
 {
-    public class UtilizationMonitoringService : IDisposable
+    public class ActivityExecutionRate
     {
-        private class UtilizationReport
+        public string UserId
         {
-            public int ActivitiesExecuted
-            {
-                get;
-                set;
-            }
+            get;
+            set;
         }
 
-        private const int DefaultReportAggregationUnit = 120; // in seconds
+        public int ActivitiesExecuted
+        {
+            get;
+            set;
+        }
+    }
 
-        private readonly Dictionary<string, UtilizationReport> _utilizationReports = new Dictionary<string, UtilizationReport>();
+    public class UtilizationMonitoringService : IDisposable, IUtilizationMonitoringService
+    {
+        private const int DefaultReportAggregationUnit = 120; // in seconds
+        private const int MinimalReportAggregationUnitDuration = 1;
+
+        private readonly IUtilizationDataProvider _utilizationDataProvider;
+        private readonly Dictionary<string, ActivityExecutionRate> _activityExecutionReports = new Dictionary<string, ActivityExecutionRate>();
         private readonly Timer _reportTimer;
         private readonly int _reportAggregationUnit;
 
-        public UtilizationMonitoringService()
+        public int AggregationUnitDuration => _reportAggregationUnit;
+
+        public UtilizationMonitoringService(IUtilizationDataProvider utilizationDataProvider)
         {
             var aggregationUnitStr = CloudConfigurationManager.GetSetting("UtilizationReportAggregationUnit");
             
@@ -32,6 +43,9 @@ namespace Hub.Utilization
                 _reportAggregationUnit = DefaultReportAggregationUnit;
             }
 
+            _reportAggregationUnit = Math.Max(MinimalReportAggregationUnitDuration, _reportAggregationUnit);
+
+            _utilizationDataProvider = utilizationDataProvider;
             _reportTimer = new Timer(OnReportTimerTick, this, _reportAggregationUnit * 1000, _reportAggregationUnit * 1000);
         }
 
@@ -39,17 +53,15 @@ namespace Hub.Utilization
         private static void OnReportTimerTick(object state)
         {
             var that = (UtilizationMonitoringService) state;
-            that.AggregateUtilizationReport();
+            that.UpdateActivityExecutionRates();
         }
 
-        private void AggregateUtilizationReport()
+        private void UpdateActivityExecutionRates()
         {
-            lock (_utilizationReports)
+            lock (_activityExecutionReports)
             {
-                foreach (var utilizationReport in _utilizationReports)
-                {
-                    
-                }
+                _utilizationDataProvider.UpdateActivityExecutionRates(_activityExecutionReports.Values.ToArray());
+                _activityExecutionReports.Clear();
             }
         }
 
@@ -60,16 +72,20 @@ namespace Hub.Utilization
 
         public void TrackActivityExecution(ActivityDO activity, ContainerDO container)
         {
-            lock (_utilizationReports)
+            lock (_activityExecutionReports)
             {
-                UtilizationReport report;
+                ActivityExecutionRate report;
 
                 var user = ExtractUser(activity, container);
 
-                if (!_utilizationReports.TryGetValue(user, out report))
+                if (!_activityExecutionReports.TryGetValue(user, out report))
                 {
-                    report = new UtilizationReport();
-                    _utilizationReports.Add(user, report);
+                    report = new ActivityExecutionRate
+                    {
+                        UserId = user
+                    };
+                    
+                    _activityExecutionReports.Add(user, report);
                 }
 
                 report.ActivitiesExecuted ++;

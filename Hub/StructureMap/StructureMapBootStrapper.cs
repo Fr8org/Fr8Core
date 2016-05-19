@@ -34,6 +34,8 @@ using System.Linq.Expressions;
 using Castle.DynamicProxy;
 using Fr8Data.DataTransferObjects;
 using Hub.Security.ObjectDecorators;
+using Hub.Utilization;
+using Hub.Utilization.Impl;
 
 namespace Hub.StructureMap
 {
@@ -71,17 +73,7 @@ namespace Hub.StructureMap
         {
             configuration.AddRegistry<LiveMode>();
         }
-
-        public class CoreRegistry : Registry
-        {
-            public CoreRegistry()
-            {
-
-            }
-
-
-        }
-
+        
         public class LiveMode : DatabaseStructureMapBootStrapper.LiveMode
         {
             public LiveMode()
@@ -136,6 +128,8 @@ namespace Hub.StructureMap
                 For<IJobDispatcher>().Use<HangfireJobDispatcher>();
                 // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
                 For<IPlanTemplates>().Use<PlanTemplates>();
+                For<IUtilizationMonitoringService>().Use<UtilizationMonitoringService>().Singleton();
+                For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
             }
         }
 
@@ -216,6 +210,9 @@ namespace Hub.StructureMap
                 For<IJobDispatcher>().Use<MockJobDispatcher>();
                 // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
                 For<IPlanTemplates>().Use<PlanTemplates>();
+                For<IUtilizationMonitoringService>().Use<UtilizationMonitoringService>().Singleton();
+                For<IUtilizationDataProvider>().Use<MockedUtilizationDataProvider>().Singleton();
+                For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
             }
         }
 
