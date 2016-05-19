@@ -84,6 +84,18 @@ namespace Data.Migrations
 
                 UpdateTerminalClientVisibility(uow);
 
+                RenameActivity(uow);
+            }
+        }
+
+        private void RenameActivity(UnitOfWork uow)
+        {
+            var activities = uow.ActivityTemplateRepository.GetAll();
+            var activityToRename = activities.FirstOrDefault(x => x.Name == "TestAndBranch");
+            if (activityToRename != null)
+            {
+                activityToRename.Name = "MakeADecision";
+                activityToRename.Label = "Make a Decision";
             }
         }
 
