@@ -92,7 +92,6 @@
     <Compile Include="DataTransferObjects\CrateDTO.cs" />
     <Compile Include="DataTransferObjects\CrateStorageDTO.cs" />
     <Compile Include="DataTransferObjects\CredentialsDTO.cs" />
-    <Compile Include="DataTransferObjects\CriteriaDTO.cs" />
     <Compile Include="DataTransferObjects\DocuSignEnvelopeDTO.cs" />
     <Compile Include="DataTransferObjects\PermissionDTO.cs" />
     <Compile Include="DataTransferObjects\PlanTemplates\ActivityDescriptionDTO.cs" />
