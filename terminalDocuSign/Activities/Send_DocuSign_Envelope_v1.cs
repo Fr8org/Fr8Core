@@ -275,6 +275,10 @@ namespace terminalDocuSign.Actions
 
             //check for DocuSign default template names and add advisory json
             var hasDefaultNames = DocuSignManager.DocuSignTemplateDefaultNames(userDefinedFields);
+            //if (hasDefaultNames)
+            //{
+                AddAdvisoryCrate(crateStorage, "DocuSign Template Warning", "In your selected template you have fields with default values. Those can be changes inside advanced DocuSign UI to frendlier label.");
+          // }
 
             var crateUserDefinedDTO = CrateManager.CreateDesignTimeFieldsCrate(
                 "DocuSignTemplateUserDefinedFields",

@@ -325,6 +325,25 @@ namespace TerminalBase.BaseClasses
             }
         }
 
+        protected void AddAdvisoryCrate(IUpdatableCrateStorage crateStorage, string name, string content)
+        {
+            var advisoryCrate = crateStorage.CratesOfType<AdvisoryMessagesCM>().FirstOrDefault();
+            var currentAdvisoryResults = advisoryCrate == null ? new AdvisoryMessagesCM() : advisoryCrate.Content;
+
+            var advisory = currentAdvisoryResults.Advisories.FirstOrDefault(x => x.Name == name);
+
+            if (advisory == null)
+            {
+                currentAdvisoryResults.Advisories.Add(new AdvisoryMessageDTO { Name = name, Content = content });
+            }
+            else
+            {
+                advisory.Content = content;
+            }
+
+            crateStorage.Add(Crate.FromContent("Advisories", currentAdvisoryResults));
+        }
+
         public virtual bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
         {
             return string.IsNullOrEmpty(authTokenDO?.Token);
