@@ -19,12 +19,12 @@ using Utilities;
 namespace HubWeb.Controllers
 {
     [DockyardAuthorize]
-    public class UserController : ApiController
+    public class UsersController : ApiController
     {
         private readonly IMappingEngine _mappingEngine;
         private readonly ISecurityServices _securityServices;
 
-        public UserController()
+        public UsersController()
         {
             _securityServices = ObjectFactory.GetInstance<ISecurityServices>();
             _mappingEngine = ObjectFactory.GetInstance<IMappingEngine>();

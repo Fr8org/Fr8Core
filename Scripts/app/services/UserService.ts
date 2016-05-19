@@ -16,27 +16,27 @@ module dockyard.services {
 
     app.factory('UserService', [
         '$resource', ($resource: ng.resource.IResourceService): IUserService =>
-            <IUserService>$resource('/api/user?id=:id', { id: '@id' }, {
+            <IUserService>$resource('/api/users?id=:id', { id: '@id' }, {
                 getAll: {
                     method: 'GET',
                     isArray: true,
-                    url: '/api/user'
+                    url: '/api/users'
                 },
                 getCurrentUser: {
                     method: 'GET',
                     isArray: false,
-                    url: '/api/user/getCurrent'
+                    url: '/api/users/getCurrent'
                 },
                 getProfiles: {
                     method: 'GET',
                     isArray: true,
-                    url: '/api/user/getProfiles',
+                    url: '/api/users/getProfiles',
                     cache: true
                 },
                 updatePassword: {
                     method: 'POST',
                     isArray: false,
-                    url: '/api/user/updatePassword/',
+                    url: '/api/users/updatePassword/',
                     params: {
                         oldPassword: '@oldPassword',
                         newPassword: '@newPassword',
@@ -46,7 +46,7 @@ module dockyard.services {
                 updateUserProfile: {
                     method: 'POST',
                     isArray: false,
-                    url: '/api/user/updateUserProfile/',
+                    url: '/api/users/updateUserProfile/',
                     params: {
                         userId: '@userId',
                         profileId: '@profileId',
