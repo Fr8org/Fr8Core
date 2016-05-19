@@ -101,7 +101,7 @@ namespace TerminalBase.Infrastructure
         public async Task<UserDTO> GetCurrentUser(ActivityDO activityDO, Guid containerId, string userId)
         {
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/users/getUserData?id=" + userId;
+                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/users?id=" + userId;
             var uri = new Uri(url, UriKind.Absolute);
             var curUser = await _restfulServiceClient.GetAsync<UserDTO>(new Uri(url, UriKind.Absolute), containerId.ToString(), await GetHMACHeader(uri, userId));
 

@@ -76,42 +76,28 @@ namespace HubWeb.Controllers
             }
         }
 
-        [DockyardAuthorize(Roles = Roles.Admin)]
         public IHttpActionResult Get(string id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var user = uow.UserRepository.FindOne(u => u.Id == id);
-                var userDTO = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
+                Fr8AccountDO user;
+                UserDTO userDTO;
+
+                if (string.IsNullOrEmpty(id))
+                {
+                    user = uow.UserRepository.FindOne(u => u.EmailAddress.Address == User.Identity.Name);
+                    userDTO = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
+                    userDTO.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(userDTO.Id).Select(r => r.Name).ToArray());
+                    return Ok(userDTO);
+                }
+
+                user = uow.UserRepository.FindOne(u => u.Id == id);
+                userDTO = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
                 userDTO.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository
                     .GetRoles(userDTO.Id).Select(r => r.Name).ToArray());
                 return Ok(userDTO);
             }
         }
-
-        //[Route("api/user/getCurrent")]
-        [HttpGet]
-        public IHttpActionResult GetCurrent()
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var user = uow.UserRepository.FindOne(u => u.EmailAddress.Address == User.Identity.Name);
-                var userDTO = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
-                userDTO.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(userDTO.Id).Select(r => r.Name).ToArray());
-                return Ok(userDTO);
-            }
-        }
-        //[Route("api/user/getUserData?id=")]
-        [HttpGet]
-        public IHttpActionResult GetUserData(string id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var user = uow.UserRepository.FindOne(u => u.Id == id);
-                return Ok(new UserDTO { FirstName = user.FirstName, LastName = user.LastName });
-            }
-        }
-
 
         [HttpPost]
         public IHttpActionResult Update(string oldPassword, string newPassword, string confirmPassword)

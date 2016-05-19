@@ -25,7 +25,7 @@ module dockyard.services {
                 getCurrentUser: {
                     method: 'GET',
                     isArray: false,
-                    url: '/api/users/getCurrent'
+                    url: '/api/users'
                 },
                 getProfiles: {
                     method: 'GET',
