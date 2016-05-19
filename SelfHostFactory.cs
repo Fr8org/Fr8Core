@@ -83,7 +83,7 @@ namespace HubWeb
                     typeof(PlanNodesController),
                     typeof(PlansController),
                     typeof(TerminalsController),
-                    typeof(UserController),
+                    typeof(UsersController),
                     typeof(WarehouseController),
                     typeof(WebServicesController)
                 };

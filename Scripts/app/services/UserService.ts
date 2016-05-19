@@ -11,7 +11,7 @@ module dockyard.services {
         getCurrentUser: () => interfaces.IUserDTO,
         getProfiles: () => Array<interfaces.IProfileDTO>,
         updateUserProfile: (data: { userId: string, profileId: string, userClass: string }) => any,
-        updatePassword: (data: { oldPassword: string, newPassword: string, confirmPassword: string }) => any;
+        update: (data: { oldPassword: string, newPassword: string, confirmPassword: string }) => any;
     }
 
     app.factory('UserService', [
@@ -33,10 +33,10 @@ module dockyard.services {
                     url: '/api/users/getProfiles',
                     cache: true
                 },
-                updatePassword: {
+                update: {
                     method: 'POST',
                     isArray: false,
-                    url: '/api/users/updatePassword/',
+                    url: '/api/users/update/',
                     params: {
                         oldPassword: '@oldPassword',
                         newPassword: '@newPassword',

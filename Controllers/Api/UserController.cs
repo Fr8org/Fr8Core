@@ -114,7 +114,7 @@ namespace HubWeb.Controllers
 
 
         [HttpPost]
-        public IHttpActionResult UpdatePassword(string oldPassword, string newPassword, string confirmPassword)
+        public IHttpActionResult Update(string oldPassword, string newPassword, string confirmPassword)
         {
             if (string.IsNullOrEmpty(oldPassword))
                 throw new Exception("Old password is required.");
