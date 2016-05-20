@@ -335,7 +335,6 @@
   </PropertyGroup>
   <Target Name="CollectGulpOutput">
     <ItemGroup>
-      <_CustomGulpFiles Include="Scripts\app\_compiled.js" />
       <FilesForPackagingFromProject Include="%(_CustomGulpFiles.Identity)">
         <DestinationRelativePath>Scripts\app\%(Filename)%(Extension)</DestinationRelativePath>
       </FilesForPackagingFromProject>
