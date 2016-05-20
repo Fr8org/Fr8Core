@@ -13,13 +13,11 @@ A well designed Fr8 Action encapsulates a useful piece of computational function
 
 Each Action needs to have integration tests that test calls to /configure (both initial and followup configuration response), /activate, and /execute.
 
-### Solutions
+### Additional Topics
 
-Solutions are specialized Actions that encapsulate a series of child actions in a unified look and feel.
+[Solutions](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Solutions) are specialized Actions that encapsulate a series of child actions in a unified look and feel.
 
-Tutorials: Solution Development Guide
-
-[Building Documentation for an Activity](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ActivityDevelopmentBuildingDocumentation.md)
+[Building Documentation](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ActivityDevelopmentBuildingDocumentation.md)
 
 [Activities – Communication](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ActivitiesCommunication.md)
 
