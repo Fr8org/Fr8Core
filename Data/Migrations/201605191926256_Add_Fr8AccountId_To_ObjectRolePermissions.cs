@@ -23,6 +23,7 @@ namespace Data.Migrations
 	                insert into dbo._PermissionTypeTemplate(id) values(2)
 	                insert into dbo._PermissionTypeTemplate(id) values(3)
 	                insert into dbo._PermissionTypeTemplate(id) values(4)
+	                insert into dbo._PermissionTypeTemplate(id) values(5)
                 end
 
                 insert into dbo.PermissionSets(id, Name, ObjectType, CreateDate, LastUpdated, HasFullAccess) values(@permissionSetId, 'PermissionForOwners', 'PlanNodeDO', '2016-05-12 09:16:34.7926131 +00:00','2016-05-12 09:16:34.7926131 +00:00', 0)
@@ -30,6 +31,7 @@ namespace Data.Migrations
                 insert into dbo.PermissionSetPermissions(permissionSetId, PermissionTypeTemplateId) values(@permissionSetId, 2)
                 insert into dbo.PermissionSetPermissions(permissionSetId, PermissionTypeTemplateId) values(@permissionSetId, 3)
                 insert into dbo.PermissionSetPermissions(permissionSetId, PermissionTypeTemplateId) values(@permissionSetId, 4)
+                insert into dbo.PermissionSetPermissions(permissionSetId, PermissionTypeTemplateId) values(@permissionSetId, 5)
 
                 declare @rolePermissionSetId uniqueidentifier;
                 set @rolePermissionSetId = newid();
