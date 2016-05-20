@@ -6,7 +6,7 @@
 
   Mode | Description   
   --- | ----   
- Design Mode | Design  Mode allows Fr8 users to create and modify Fr8 Plans and Activities. This is the domain of the Power User, with full access to the Plan Builder.   
+   Design Mode | Design  Mode allows Fr8 users to create and modify Fr8 Plans and Activities. This is the domain of the Power User, with full access to the Plan Builder.   
 
  [Activation Mode](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/PlansActivationAndRunning.md) | When a Plan is first constructed and then Run, the Hub will seek to Activate it. Activation is generally used to validate plan inputs before running a plan. 
  [Run Mode](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/PlansActivationAndRunning.md) | Run Mode is non-interactive.   
