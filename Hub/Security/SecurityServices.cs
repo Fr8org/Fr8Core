@@ -209,8 +209,8 @@ namespace Hub.Security
                     return plan.ChildNodes.OfType<SubPlanDO>().Any(subPlan => subPlan.ChildNodes.OfType<ActivityDO>().Select(activity => activityTemplate.GetByKey(activity.ActivityTemplateId)).Any(template => template.Name == "AppBuilder"));
                 }
                 else {
-                    var activity = uow.PlanRepository.GetById<ActivityDO>(id);
-                    return activityTemplate.GetByKey(activity.ActivityTemplateId).Name == "AppBuilder";
+                    var mainPlan = uow.PlanRepository.GetById<ActivityDO>(plan.RootPlanNodeId);
+                    return mainPlan.ChildNodes.OfType<SubPlanDO>().Any(subPlan => subPlan.ChildNodes.OfType<ActivityDO>().Select(activity => activityTemplate.GetByKey(activity.ActivityTemplateId)).Any(template => template.Name == "AppBuilder"));
                 }
             }
         }
