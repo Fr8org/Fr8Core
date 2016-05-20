@@ -124,7 +124,6 @@
     <Compile Include="Integration\Generate_DocuSign_Report_v1_EndToEnd_Tests.cs" />
     <Compile Include="Integration\MonitorAllDocuSignEventsLocal_Tests.cs" />
     <Compile Include="Integration\MonitorAllDocuSignEvents_Tests.cs" />
-    <Compile Include="Integration\RestfulServiceException.cs" />
     <Compile Include="Integration\Track_DocuSign_Recipients_v1_EndToEnd_Tests.cs" />
     <Compile Include="Integration\Mail_Merge_Into_DocuSign_v1_EndToEnd_Tests.cs" />
     <Compile Include="Integration\Mail_Merge_Into_DocuSign_v1_Tests.cs" />
