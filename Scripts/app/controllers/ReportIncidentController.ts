@@ -8,7 +8,7 @@
         result: model.HistoryResultDTO<model.IncidentDTO>;
         getHistory: () => void;
         removeFilter: () => void;
-        expandItem: (historyItem: model.HistoryItemDTO) => void;
+        openModal: (historyItem: model.HistoryItemDTO) => void;
         orderBy: string;
         selected: any;
     }
@@ -17,10 +17,11 @@
 
         public static $inject = [
             '$scope',
+            '$modal',
             'ReportService'
         ];
 
-        constructor(private $scope: IReportIncidentListScope, private ReportService: services.IReportService) {
+        constructor(private $scope: IReportIncidentListScope, private $modal: any, private ReportService: services.IReportService) {
 
             $scope.selected = [];
 
@@ -39,7 +40,7 @@
 
             $scope.getHistory = <() => void>angular.bind(this, this.getHistory);
             $scope.removeFilter = <() => void>angular.bind(this, this.removeFilter);
-            $scope.expandItem = <(historyItem: model.HistoryItemDTO) => void>angular.bind(this, this.expandItem);
+            $scope.openModal = <(historyItem: model.HistoryItemDTO) => void>angular.bind(this, this.openModal);
 
             $scope.$watch('query.filter', (newValue, oldValue) => {
                 var bookmark: number = 1;
@@ -57,12 +58,16 @@
             });
         }
 
-        private expandItem(historyItem: model.HistoryItemDTO) {
-            if ((<any>historyItem).$isExpanded && window.getSelection().toString() === "") {
-                (<any>historyItem).$isExpanded = false;
-            } else {
-                (<any>historyItem).$isExpanded = true;
+        private openModal(historyItem: model.HistoryItemDTO) {
+            var modalInstance = this.$modal.open({
+                animation: true,
+                templateUrl: '/AngularTemplate/ReportIncidentModal',
+                controller: 'ReportIncidentModalController',
+                size: 'lg',
+                resolve: {
+                    historyItem: () => historyItem
             }
+            });
         }
 
         private removeFilter() {
@@ -85,4 +90,13 @@
     }
 
     app.controller('ReportIncidentController', ReportIncidentController);
+
+    app.controller('ReportIncidentModalController', ['$scope', '$modalInstance', 'historyItem', ($scope: any, $modalInstance: any, historyItem: interfaces.IHistoryItemDTO): void => {
+
+        $scope.historyItem = historyItem;
+
+        $scope.cancel = () => {
+            $modalInstance.dismiss();
+        };
+    }]);
 }
