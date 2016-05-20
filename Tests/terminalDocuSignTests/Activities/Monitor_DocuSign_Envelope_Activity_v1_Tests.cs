@@ -36,7 +36,6 @@ namespace terminalDocuSignTests.Activities
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
             var target = new Monitor_DocuSign_Envelope_Activity_v1();
-            var activityDO = FixtureData.TestActivity1();
             var activityContext = FixtureData.TestActivityContext1();
             await target.Configure(activityContext);
             SetRecipientConditionSelected(activityContext.ActivityPayload);
@@ -51,7 +50,6 @@ namespace terminalDocuSignTests.Activities
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
             var target = new Monitor_DocuSign_Envelope_Activity_v1();
-            var activityDO = FixtureData.TestActivity1();
             var activityContext = FixtureData.TestActivityContext1();
             await target.Configure(activityContext);
             SetNotificationSelected(activityContext.ActivityPayload);
@@ -65,7 +63,6 @@ namespace terminalDocuSignTests.Activities
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
             var target = new Monitor_DocuSign_Envelope_Activity_v1();
-            var activityDO = FixtureData.TestActivity1();
             var activityContext = FixtureData.TestActivityContext1();
             await target.Configure(activityContext);
             SetNotificationSelected(activityContext.ActivityPayload);

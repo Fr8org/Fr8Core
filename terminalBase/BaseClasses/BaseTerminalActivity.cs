@@ -470,9 +470,9 @@ namespace TerminalBase.BaseClasses
         }
 
         protected T GetControl<T>(string name, string controlType = null) where T : ControlDefinitionDTO
-            {
+        {
             return ControlHelper.GetControl<T>(ConfigurationControls, name, controlType);
-            }
+        }
 
         public ActivityResponseDTO GenerateDocumentationResponse(string documentation)
         {

@@ -40,7 +40,7 @@ namespace TerminalBase.Helpers
                 predicate = x => x.Type == controlType && x.Name == name;
             }
 
-            return (T)configurationControls.Controls.FirstOrDefault(predicate);
+            return (T)configurationControls?.Controls?.FirstOrDefault(predicate);
         }
 
         /// <summary>

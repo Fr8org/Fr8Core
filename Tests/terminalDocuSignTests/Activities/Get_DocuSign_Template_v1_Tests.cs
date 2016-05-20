@@ -16,6 +16,7 @@ using terminalDocuSignTests.Fixtures;
 using UtilitiesTesting.Fixtures;
 using terminalDocuSign.Activities;
 using Fr8Data.Managers;
+using TerminalBase.Models;
 
 namespace terminalDocuSignTests.Activities
 {
@@ -28,10 +29,8 @@ namespace terminalDocuSignTests.Activities
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
             var target = new Get_DocuSign_Template_v1();
-
             var activityContext = FixtureData.TestActivityContext1();
             var result = await Validate(target, activityContext);
-
             AssertErrorMessage(result, DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
         }
 
@@ -72,12 +71,10 @@ namespace terminalDocuSignTests.Activities
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithTemplates()));
             var target = new Get_DocuSign_Template_v1();
-            var activityDO = FixtureData.TestActivity1();
-
             var activityContext = FixtureData.TestActivityContext1();
             await target.Configure(activityContext);
 
-            SelectTemplate(activityDO);
+            SelectTemplate(activityContext.ActivityPayload);
 
             //var activityPayload = FixtureData.TestActivityContext1().ActivityPayload;
             var result = await Validate(target, activityContext);
@@ -85,14 +82,11 @@ namespace terminalDocuSignTests.Activities
             Assert.AreEqual(false, result.HasErrors);
         }
 
-        private void SelectTemplate(ActivityDO activity)
+        private void SelectTemplate(ActivityPayload activity)
         {
-            using (var crateStorage = new CrateManager().GetUpdatableStorage(activity))
-            {
-                var configControls = crateStorage.FirstCrate<StandardConfigurationControlsCM>(c => true).Content;
-                var templateList = configControls.Controls.OfType<DropDownList>().FirstOrDefault();
-                templateList.selectedKey = "First";
-            }
+            var configControls = activity.CrateStorage.FirstCrate<StandardConfigurationControlsCM>(c => true).Content;
+            var templateList = configControls.Controls.OfType<DropDownList>().FirstOrDefault();
+            templateList.selectedKey = "First";
         }
     }
 }
