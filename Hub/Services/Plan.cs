@@ -612,6 +612,7 @@ namespace Hub.Services
                 catch (Exception ex)
                 {
                     EventManager.ContainerFailed(curPlan, ex, containerId);
+                    this.Deactivate(curPlan.Id);
                     throw;
                 }
             }
