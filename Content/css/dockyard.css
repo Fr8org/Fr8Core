@@ -1328,6 +1328,19 @@ footer p {
     color:white;
 }
 
+.incident-description-holder p {
+    padding-left:10px;
+    margin-bottom: 15px;
+}
+
+.incident-data-holder {
+    max-height: 300px;
+    overflow: auto;
+    border-style: ridge;
+    padding-left: 10px;
+    margin-left: 15px;
+}
+
 .menu-logo {
     height:50px;
     padding:7px 15px 0 0;
