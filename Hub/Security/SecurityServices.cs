@@ -18,6 +18,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Repositories.Security;
 using Data.Repositories.Security.Entities;
 using Data.States;
+using Fr8Data.States;
 using Hub.Exceptions;
 using Hub.Infrastructure;
 using Hub.Interfaces;
@@ -203,15 +204,10 @@ namespace Hub.Security
                 Guid id;
                 if (!Guid.TryParse(curObjectId, out id)) return false;
 
-                var plan = uow.PlanRepository.GetById<PlanNodeDO>(id);
-                if (plan.Id == plan.RootPlanNodeId)
-                {
-                    return plan.ChildNodes.OfType<SubPlanDO>().Any(subPlan => subPlan.ChildNodes.OfType<ActivityDO>().Select(activity => activityTemplate.GetByKey(activity.ActivityTemplateId)).Any(template => template.Name == "AppBuilder"));
-                }
-                else {
-                    var mainPlan = uow.PlanRepository.GetById<ActivityDO>(plan.RootPlanNodeId);
-                    return mainPlan.ChildNodes.OfType<SubPlanDO>().Any(subPlan => subPlan.ChildNodes.OfType<ActivityDO>().Select(activity => activityTemplate.GetByKey(activity.ActivityTemplateId)).Any(template => template.Name == "AppBuilder"));
-                }
+                var planNode = uow.PlanRepository.GetById<PlanNodeDO>(id);
+                var mainPlan = uow.PlanRepository.GetById<PlanDO>(planNode.RootPlanNodeId);
+                if (mainPlan.Visibility == PlanVisibility.Internal) return true;
+                return mainPlan.ChildNodes.OfType<SubPlanDO>().Any(subPlan => subPlan.ChildNodes.OfType<ActivityDO>().Select(activity => activityTemplate.GetByKey(activity.ActivityTemplateId)).Any(template => template.Name == "AppBuilder"));
             }
         }
 
