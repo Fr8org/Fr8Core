@@ -21,7 +21,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
         private readonly string _connectionString;
         private readonly ISqlConnectionProvider _sqlConnectionProvider;
         private const string InsertRolePermissionCommand = "insert into dbo.RolePermissions(id, permissionSetId, roleId, createDate, lastUpdated) values (@id, @permissionSetId, (select top 1 Id from dbo.AspNetRoles where Name = @roleName), @createDate, @lastUpdated)";
-        private const string InsertObjectRolePermissionCommand = "insert into dbo.ObjectRolePermissions(objectId, rolePermissionId, type, propertyName, fr8AccountId, createDate, lastUpdated) values (@objectId, @rolePermissionId, @type, @propertyName, @fr8AccountId, @createDate, @lastUpdated)";
+        private const string InsertObjectRolePermissionCommand = "insert into dbo.ObjectRolePermissions(objectId, rolePermissionId, type, propertyName, fr8AccountId, organizationId, createDate, lastUpdated) values (@objectId, @rolePermissionId, @type, @propertyName, @fr8AccountId, @organizationId, @createDate, @lastUpdated)";
         
         public SqlSecurityObjectsStorageProvider(ISqlConnectionProvider sqlConnectionProvider)
         {
@@ -134,7 +134,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
 
                     const string cmd =
                         @"select rp.Id, orp.PropertyName, orp.ObjectId as ObjectId, orp.Type, anr.Id as roleId, anr.Name as roleName, rp.lastUpdated, rp.createDate,
-                            p.Id as PermissionSetId, p.ObjectType, orp.Fr8AccountId
+                            p.Id as PermissionSetId, p.ObjectType, orp.Fr8AccountId, orp.OrganizationId
                           from dbo.RolePermissions rp          
                           inner join dbo.PermissionSets p on rp.PermissionSetId = p.Id                                                                  
                           inner join dbo.ObjectRolePermissions orp on rp.Id = orp.RolePermissionId                               
@@ -185,7 +185,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             throw new NotImplementedException();
         }
 
-        public void SetDefaultObjectSecurity(string currentUserId, string dataObjectId, string dataObjectType, Guid rolePermissionId)
+        public void SetDefaultObjectSecurity(string currentUserId, string dataObjectId, string dataObjectType, Guid rolePermissionId, int? organizationId = null)
         {
             using (var connection = OpenConnection(_sqlConnectionProvider))
             {
@@ -197,6 +197,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                     insertCommand.Parameters.AddWithValue("@objectId", dataObjectId);
                     insertCommand.Parameters.AddWithValue("@rolePermissionId", rolePermissionId);
                     insertCommand.Parameters.AddWithValue("@fr8AccountId", currentUserId);
+                    insertCommand.Parameters.AddWithValue("@organizationId", (organizationId.HasValue) ? (object) organizationId.Value : DBNull.Value);
                     insertCommand.Parameters.AddWithValue("@type", dataObjectType);
                     insertCommand.Parameters.AddWithValue("@propertyName", DBNull.Value);
                     insertCommand.Parameters.AddWithValue("@createDate", DateTimeOffset.UtcNow);
@@ -288,6 +289,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
             objectRolePermissionsWrapper.ObjectId = reader["ObjectId"] != DBNull.Value ? (string) reader["ObjectId"] : string.Empty;
             objectRolePermissionsWrapper.Type = reader["Type"] != DBNull.Value ? (string)reader["Type"] : string.Empty;
             objectRolePermissionsWrapper.Fr8AccountId = reader["Fr8AccountId"] != DBNull.Value ? (string)reader["Fr8AccountId"] : string.Empty;
+            objectRolePermissionsWrapper.OrganizationId = reader["OrganizationId"] != DBNull.Value ? (int?)reader["OrganizationId"] : null;
 
 
             //read property name and check for values

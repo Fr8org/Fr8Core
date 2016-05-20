@@ -107,12 +107,17 @@ namespace Hub.Security
                 var role = uow.AspNetRolesRepository.GetByKey(roleId);
                 identity.AddClaim(new Claim(ClaimTypes.Role, role.Name));
             }
+            if (fr8AccountDO.OrganizationId.HasValue)
+            {
+                identity.AddClaim(new Claim("Organization", fr8AccountDO.OrganizationId.Value.ToString()));
+            }
 
             //save profileId from current logged user for future usage inside authorization activities logic
             identity.AddClaim(new Claim(ProfileClaim, fr8AccountDO.ProfileId.ToString()));
 
             return identity;
         }
+
 
         /// <summary>
         /// For every new created object setup default security with permissions for Read Object, Edit Object, Delete Object 
@@ -130,7 +135,18 @@ namespace Hub.Security
                 return;
             }
 
-            _securityObjectStorageProvider.SetDefaultObjectSecurity(currentUserId, dataObjectId.ToString(), dataObjectType, Guid.Empty);
+            //get organization id
+            int? organizationId = null;
+            var claimIdentity = Thread.CurrentPrincipal.Identity as ClaimsIdentity;
+            var claim = claimIdentity?.FindFirst("Organization");
+            if (claim != null)
+            {
+                int orgId;
+                int.TryParse(claim.Value, out orgId);
+                if (orgId != 0) organizationId = orgId;
+            }
+
+            _securityObjectStorageProvider.SetDefaultObjectSecurity(currentUserId, dataObjectId.ToString(), dataObjectType, Guid.Empty, organizationId);
         }
 
         /// <summary>
@@ -260,7 +276,7 @@ namespace Hub.Security
             return permissions.Any(x => x.Permission == (int)permissionType && x.ObjectType == objectType);
         }
 
-        private bool? EvaluateObjectPermissionSet(PermissionType permissionType, string fr8AccountId, List<RolePermission> rolePermissions, List<string> roles)
+        private bool? EvaluateObjectPermissionSet(PermissionType permissionType, string fr8AccountId, List<RolePermission> rolePermissions, List<string> roles, int? organizationId = null)
         {
             //first check if current user is the owner here
             if (fr8AccountId == GetCurrentUser())
@@ -274,6 +290,25 @@ namespace Hub.Security
             }
             else
             {
+                //check also organization
+                var claimIdentity = Thread.CurrentPrincipal.Identity as ClaimsIdentity;
+                var claim = claimIdentity?.FindFirst("Organization");
+                if (claim != null)
+                {
+                    int orgId;
+                    if (int.TryParse(claim.Value, out orgId) && organizationId.HasValue)
+                    {
+                        var permissionSetOrg = (from x in rolePermissions.Where(x => x.Role.RoleName != Roles.OwnerOfCurrentObject) where roles.Contains(x.Role.RoleName) from i in x.PermissionSet.Permissions.Select(m => m.Id) select i).ToList();
+
+                        var modifyAllData = permissionSetOrg.FirstOrDefault(x => x == (int)PermissionType.ModifyAllObjects);
+                        var viewAllData = permissionSetOrg.FirstOrDefault(x => x == (int)PermissionType.ViewAllObjects);
+                        if (viewAllData != 0 && permissionType == PermissionType.ReadObject) return true;
+                        if (modifyAllData != 0) return true;
+
+                        return false;
+                    }
+                }
+
                 var permissionSet = (from x in rolePermissions.Where(x => x.Role.RoleName != Roles.OwnerOfCurrentObject) where roles.Contains(x.Role.RoleName) from i in x.PermissionSet.Permissions.Select(m => m.Id) select i).ToList();
                 if (permissionSet.Any())
                 {

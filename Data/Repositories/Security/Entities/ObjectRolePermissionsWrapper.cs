@@ -31,6 +31,8 @@ namespace Data.Repositories.Security.Entities
         /// </summary>
         public string Fr8AccountId { get; set; }
 
+        public int? OrganizationId { get; set; }
+
         /// <summary>
         /// All role permissions of current secured object.
         /// </summary>

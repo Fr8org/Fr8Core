@@ -123,7 +123,7 @@ namespace Data.Repositories.Security.StorageImpl.Cache
             }
         }
 
-        public void SetDefaultObjectSecurity(string currentUserId, string dataObjectId, string dataObjectType, Guid rolePermissionId)
+        public void SetDefaultObjectSecurity(string currentUserId, string dataObjectId, string dataObjectType, Guid rolePermissionId, int? organizationId = null)
         {
             if (rolePermissionId == Guid.Empty)
             {
@@ -144,7 +144,7 @@ namespace Data.Repositories.Security.StorageImpl.Cache
             }
             
             //dedicate one permission set for a dataType and OwnerOfCurrent   
-            _securityObjectStorageProvider.SetDefaultObjectSecurity(currentUserId, dataObjectId, dataObjectType, rolePermissionId);
+            _securityObjectStorageProvider.SetDefaultObjectSecurity(currentUserId, dataObjectId, dataObjectType, rolePermissionId, organizationId);
 
             InvokeCacheUpdate(dataObjectId);
         }
