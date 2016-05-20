@@ -68,7 +68,7 @@ namespace Data.Repositories.Security.StorageImpl
             throw new NotImplementedException();
         }
 
-        public void SetDefaultObjectSecurity(string currentUserId, string dataObjectId, string dataObjectType, Guid rolePermissionId)
+        public void SetDefaultObjectSecurity(string currentUserId, string dataObjectId, string dataObjectType, Guid rolePermissionId, int? organizationId)
         {
             lock (ObjectRolePermissions)
             {
