@@ -24,5 +24,6 @@ namespace Hub.Interfaces
         Task<T> GetActivityDocumentation<T>(ActivityDTO curActivityDTO, bool isSolution = false) where T : class;
         List<string> GetSolutionNameList(string terminalName);
         Task Delete(Guid id);
+        Task DeleteChildNodes(Guid id);
     }
 }

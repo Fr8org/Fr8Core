@@ -1151,6 +1151,7 @@
     <Content Include="Views\AngularTemplate\Organization.cshtml" />
     <Content Include="Views\AngularTemplate\QueryBuilder.cshtml" />
     <Content Include="Views\AngularTemplate\QueryBuilderCondition.cshtml" />
+    <Content Include="Views\AngularTemplate\ReportIncidentModal.cshtml" />
     <None Include="Web.Demo.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -4636,13 +4637,13 @@
   </Target>
   <PropertyGroup>
     <CopyAllFilesToSingleFolderForPackageDependsOn>
-    CustomCollectFiles;
-    $(CopyAllFilesToSingleFolderForPackageDependsOn);
-  </CopyAllFilesToSingleFolderForPackageDependsOn>
+      CustomCollectFiles;
+      $(CopyAllFilesToSingleFolderForPackageDependsOn);
+    </CopyAllFilesToSingleFolderForPackageDependsOn>
     <CopyAllFilesToSingleFolderForMsdeployDependsOn>
-    CustomCollectFiles;
-    $(CopyAllFilesToSingleFolderForPackageDependsOn);
-  </CopyAllFilesToSingleFolderForMsdeployDependsOn>
+      CustomCollectFiles;
+      $(CopyAllFilesToSingleFolderForPackageDependsOn);
+    </CopyAllFilesToSingleFolderForMsdeployDependsOn>
   </PropertyGroup>
   <Target Name="CustomCollectFiles">
     <ItemGroup>
@@ -4700,8 +4701,8 @@
       CleanBowerComponents;
     </CleanDependsOn>
     <CleanDependsOn>
-	  $(CleanDependsOn);
-	  RemoveCompiledJsFiles;
+      $(CleanDependsOn);
+      RemoveCompiledJsFiles;
     </CleanDependsOn>
   </PropertyGroup>
   <Target Name="CleanBowerComponents">

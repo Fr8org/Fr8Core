@@ -565,6 +565,12 @@ namespace TerminalBase.BaseClasses
             return result;
         }
 
+        protected async Task DeleteChildActivities(ActivityDO parent)
+        {
+            await HubCommunicator.DeleteExistingChildNodesFromActivity(parent.Id, CurrentFr8UserId);
+            parent.ChildNodes = new List<PlanNodeDO>();
+        }
+
 
         /// <summary>
         /// Update Plan name if the current Plan name is the same as the passed parameter OriginalPlanName to avoid overwriting the changes made by the user
