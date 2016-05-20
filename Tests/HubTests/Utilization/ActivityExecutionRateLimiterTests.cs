@@ -2,12 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Entities;
+using Data.Interfaces;
 using Hub.Interfaces;
 using Hub.Services;
+using Moq;
 using NUnit.Framework;
 using StructureMap;
 using Utilities.Configuration.Azure;
+using Utilities.Interfaces;
 using UtilitiesTesting;
+using UtilitiesTesting.Fixtures;
 
 namespace HubTests.Utilization
 {
@@ -47,10 +52,28 @@ namespace HubTests.Utilization
             {
                 if (_readyResults != null)
                 {
-                    return _readyResults;
+                    var result = _readyResults;
+                    _readyResults = null;
+
+                    return result;
                 }
 
                 return base.UpdateOverheatingUsers(threshold);
+            }
+        }
+
+        public class PusherMock : IPusherNotifier
+        {
+            public readonly List<string> Notifications = new List<string>();
+
+            public void Notify(string channelName, string eventName, object message)
+            {
+                Notifications.Add(message.ToString());
+            }
+
+            public void NotifyUser(object message, string eventName, string userName)
+            {
+                Notifications.Add(message.ToString());
             }
         }
 
@@ -92,7 +115,7 @@ namespace HubTests.Utilization
 
             var rateLimiter = ObjectFactory.GetInstance<IActivityExecutionRateLimitingService>();
 
-            _provider.SetOverheatingResults(new OverheatingUsersUpdateResults(new string[] {"4", "5"}, new string[] { "1", "2" }));
+            _provider.SetOverheatingResults(new OverheatingUsersUpdateResults(new [] {"4", "5"}, new [] { "1", "2" }));
 
             await Task.Delay(2000);
 
@@ -103,6 +126,43 @@ namespace HubTests.Utilization
             Assert.IsFalse(rateLimiter.CheckActivityExecutionRate("3"), "User \"3\" should be banned");
 
             Assert.AreEqual(1, _provider.GetOverheatingUsersCount, "Should load overheating users from the provider only once");
+        }
+
+        [Test]
+        public async Task CanNotifyUser()
+        {
+            Fr8AccountDO user1;
+            Fr8AccountDO user2;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                user1 = FixtureData.TestUser1();
+                user1.UserName = "user1";
+
+                uow.UserRepository.Add(user1);
+
+                user2 = FixtureData.TestUser2();
+                user2.UserName = "user2";
+
+                uow.UserRepository.Add(user2);
+
+                uow.SaveChanges();
+            }
+
+            _provider.SetOverheatingUsers(user1.Id);
+
+            var pusherMock = new PusherMock();
+
+            ObjectFactory.Container.Inject(typeof(IPusherNotifier), pusherMock);
+
+            var rateLimiter = ObjectFactory.GetInstance<IActivityExecutionRateLimitingService>(); // to trigger service initialization
+
+            _provider.SetOverheatingResults(new OverheatingUsersUpdateResults(new [] { user2.Id }, new [] { user1.Id }));
+
+            await Task.Delay(2000);
+
+            Assert.AreEqual(1, pusherMock.Notifications.Count, "Invalid number of push notifications");
+            Assert.IsTrue(pusherMock.Notifications[0].Contains("You are running more Activities than your capacity right now."), "Unexpected notification message");
         }
     }
 }
