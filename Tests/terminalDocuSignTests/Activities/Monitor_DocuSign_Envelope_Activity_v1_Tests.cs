@@ -24,8 +24,8 @@ namespace terminalDocuSignTests.Activities
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
             var target = new Monitor_DocuSign_Envelope_Activity_v1();
-            var activityPayload = FixtureData.TestActivityContext1().ActivityPayload;
-            var result = await Validate(target, activityPayload); 
+            var activityContext = FixtureData.TestActivityContext1();
+            var result = await Validate(target, activityContext); 
             Assert.AreNotEqual(ValidationResult.Success, result);
 
             AssertErrorMessage(result, DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
@@ -41,7 +41,7 @@ namespace terminalDocuSignTests.Activities
             await target.Configure(activityContext);
             SetRecipientConditionSelected(activityContext.ActivityPayload);
             SetRecipientText(activityContext.ActivityPayload);
-            var result = await Validate(target, activityContext.ActivityPayload);
+            var result = await Validate(target, activityContext);
 
             AssertErrorMessage(result, "At least one notification option must be selected");
         }
@@ -55,7 +55,7 @@ namespace terminalDocuSignTests.Activities
             var activityContext = FixtureData.TestActivityContext1();
             await target.Configure(activityContext);
             SetNotificationSelected(activityContext.ActivityPayload);
-            var result = await Validate(target, activityContext.ActivityPayload);
+            var result = await Validate(target, activityContext);
 
             AssertErrorMessage(result, "At least one envelope option must be selected");
         }
@@ -70,7 +70,7 @@ namespace terminalDocuSignTests.Activities
             await target.Configure(activityContext);
             SetNotificationSelected(activityContext.ActivityPayload);
             SetTemplateConditionSelected(activityContext.ActivityPayload);
-            var result = await Validate(target, activityContext.ActivityPayload);
+            var result = await Validate(target, activityContext);
 
             AssertErrorMessage(result, DocuSignValidationUtils.NoTemplateExistsErrorMessage);
         }
@@ -85,7 +85,7 @@ namespace terminalDocuSignTests.Activities
             await target.Configure(activityContext);
             SetNotificationSelected(activityContext.ActivityPayload);
             SetTemplateConditionSelected(activityContext.ActivityPayload);
-            var result = await Validate(target, activityContext.ActivityPayload);
+            var result = await Validate(target, activityContext);
 
             AssertErrorMessage(result, DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage);
         }
@@ -100,7 +100,7 @@ namespace terminalDocuSignTests.Activities
             SetNotificationSelected(activityContext.ActivityPayload);
             SetTemplateConditionSelected(activityContext.ActivityPayload);
             SetTemplate(activityContext.ActivityPayload);
-            var result = await Validate(target, activityContext.ActivityPayload);
+            var result = await Validate(target, activityContext);
             Assert.AreEqual(false, result.HasErrors);
         }
 

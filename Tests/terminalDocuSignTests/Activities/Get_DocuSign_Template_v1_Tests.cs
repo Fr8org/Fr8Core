@@ -29,8 +29,8 @@ namespace terminalDocuSignTests.Activities
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
             var target = new Get_DocuSign_Template_v1();
 
-            var activityPayload = FixtureData.TestActivityContext1().ActivityPayload;
-            var result = await Validate(target, activityPayload);
+            var activityContext = FixtureData.TestActivityContext1();
+            var result = await Validate(target, activityContext);
 
             AssertErrorMessage(result, DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
         }
@@ -45,8 +45,8 @@ namespace terminalDocuSignTests.Activities
             var activityContext = FixtureData.TestActivityContext1();
             await target.Configure(activityContext);
 
-            var activityPayload = FixtureData.TestActivityContext1().ActivityPayload;
-            var result = await Validate(target, activityPayload);
+            //var activityContext = FixtureData.TestActivityContext1();
+            var result = await Validate(target, activityContext);
 
             AssertErrorMessage(result, DocuSignValidationUtils.NoTemplateExistsErrorMessage);
         }
@@ -61,8 +61,8 @@ namespace terminalDocuSignTests.Activities
             var activityContext = FixtureData.TestActivityContext1();
             await target.Configure(activityContext);
 
-            var activityPayload = FixtureData.TestActivityContext1().ActivityPayload;
-            var result = await Validate(target, activityPayload);
+            //var activityPayload = FixtureData.TestActivityContext1().ActivityPayload;
+            var result = await Validate(target, activityContext);
 
             AssertErrorMessage(result, DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage);
         }
@@ -79,8 +79,8 @@ namespace terminalDocuSignTests.Activities
 
             SelectTemplate(activityDO);
 
-            var activityPayload = FixtureData.TestActivityContext1().ActivityPayload;
-            var result = await Validate(target, activityPayload);
+            //var activityPayload = FixtureData.TestActivityContext1().ActivityPayload;
+            var result = await Validate(target, activityContext);
 
             Assert.AreEqual(false, result.HasErrors);
         }

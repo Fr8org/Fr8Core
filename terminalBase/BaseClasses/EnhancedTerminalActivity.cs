@@ -60,7 +60,7 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        public sealed override async Task Activate()
+        protected sealed override async Task Activate()
         {
             SyncConfControls();
             await ActivateETA();
@@ -68,7 +68,7 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        public sealed override async Task Deactivate()
+        protected sealed override async Task Deactivate()
         {
             SyncConfControls();
             await DeactivateETA();

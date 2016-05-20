@@ -24,13 +24,13 @@ namespace terminalBaseTests.Actions
             //return base.FollowupConfigurationResponse(curActivityDO, authTokenDO);
         }
 
-        public override Task Activate()
+        protected override Task Activate()
         {
             AddCrateMethodInvoked("Activate");
             return base.Activate();
         }
 
-        public override Task Deactivate()
+        protected override Task Deactivate()
         {
             AddCrateMethodInvoked("Deactivate");
             return base.Deactivate();

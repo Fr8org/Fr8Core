@@ -41,8 +41,9 @@ namespace terminalDocuSignTests.Activities
             ObjectFactory.Configure(x => x.For<IDocuSignFolders>().Use(docuSignFoldersMock.Object));
         }
 
-        protected async Task<ValidationResultsCM> Validate(BaseTerminalActivity activity, ActivityPayload activityPayload)
+        protected async Task<ValidationResultsCM> Validate(BaseTerminalActivity activity, ActivityContext activityContext)
         {
+            var activityPayload = activityContext.ActivityPayload;
             activityPayload.CrateStorage.Remove<ValidationResultsCM>();
 
             var currentValidationResults = activityPayload.CrateStorage.CrateContentsOfType<ValidationResultsCM>().FirstOrDefault();
@@ -53,11 +54,11 @@ namespace terminalDocuSignTests.Activities
                 activityPayload.CrateStorage.Add(Crate.FromContent("Validation Results", currentValidationResults));
             }
 
-            var validationManager = new ValidationManager(currentValidationResults, null);
+            //var validationManager = new ValidationManager(currentValidationResults, null);
+            //let's trigger validation by calling activate
+            await activity.Activate(activityContext);
 
-            //await activity.Validate(activityDo, activityPayload.CrateStorage, validationManager);
-
-            return currentValidationResults;
+            return activityPayload.CrateStorage.CrateContentsOfType<ValidationResultsCM>().FirstOrDefault();
         }
 
         protected void AssertControlErrorMessage(ValidationResultsCM validationResults, string controlName, string errorMessage)

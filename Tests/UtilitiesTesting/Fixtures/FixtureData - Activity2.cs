@@ -278,7 +278,8 @@ namespace UtilitiesTesting.Fixtures
             };
             var activityContext = new ActivityContext
             {
-                ActivityPayload = activityPayload
+                ActivityPayload = activityPayload,
+                AuthorizationToken = AuthToken_TerminalIntegration()
             };
             return activityContext;
         }

@@ -712,12 +712,12 @@ namespace TerminalBase.BaseClasses
         public abstract Task Initialize();
         public abstract Task FollowUp();
 
-        public virtual Task Activate()
+        protected virtual Task Activate()
         {
             return Task.FromResult(0);
         }
 
-        public virtual Task Deactivate()
+        protected virtual Task Deactivate()
         {
             return Task.FromResult(0);
         }
