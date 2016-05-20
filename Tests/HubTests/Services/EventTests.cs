@@ -147,6 +147,11 @@ namespace HubTests.Services
         {
             return _activity.Delete(id);
         }
+
+        public Task DeleteChildNodes(Guid id)
+        {
+            return _activity.DeleteChildNodes(id);
+        }
     }
 
     public class PlanNodeMock : IPlanNode

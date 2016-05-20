@@ -231,28 +231,58 @@ namespace Hub.Services
             }
         }
 
+        private async Task Delete(IUnitOfWork uow, Guid id)
+        {
+            //we are using Kludge solution for now
+            //https://maginot.atlassian.net/wiki/display/SH/Action+Deletion+and+Reordering
+
+            var curAction = uow.PlanRepository.GetById<ActivityDO>(id);
+            if (curAction == null)
+            {
+                throw new InvalidOperationException("Unknown PlanNode with id: " + id);
+            }
+
+            curAction.RemoveFromParent();
+
+            await CallActivityDeactivate(uow, curAction.Id);
+        }
+
         [AuthorizeActivity(Permission = PermissionType.DeleteObject, ParamType = typeof(Guid), TargetType = typeof(PlanNodeDO))]
         public async Task Delete(Guid id)
         {
             //we are using Kludge solution for now
             //https://maginot.atlassian.net/wiki/display/SH/Action+Deletion+and+Reordering
-
             using (await _configureLock.Lock(id))
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var curAction = uow.PlanRepository.GetById<ActivityDO>(id);
-                    if (curAction == null)
-                    {
-                        throw new InvalidOperationException("Unknown PlanNode with id: " + id);
-                    }
-                    
-                    curAction.RemoveFromParent();
-
-                    await CallActivityDeactivate(uow, curAction.Id);
-
+                    await Delete(uow, id);
                     uow.SaveChanges();
                 }
+            }
+        }
+
+        [AuthorizeActivity(Permission = PermissionType.DeleteObject, ParamType = typeof(Guid), TargetType = typeof(PlanNodeDO))]
+        public async Task DeleteChildNodes(Guid id)
+        {
+            //we are using Kludge solution for now
+            //https://maginot.atlassian.net/wiki/display/SH/Action+Deletion+and+Reordering
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curAction = uow.PlanRepository.GetById<ActivityDO>(id);
+                if (curAction.ChildNodes != null)
+                {
+                    var childNodes = curAction.ChildNodes.OfType<ActivityDO>().ToList();
+                    foreach (var childNode in childNodes)
+                    {
+                        using (await _configureLock.Lock(childNode.Id))
+                        {
+                            await Delete(uow, childNode.Id);
+                        }
+                    }
+                }
+
+                uow.SaveChanges();
             }
         }
 
