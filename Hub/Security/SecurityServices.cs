@@ -304,9 +304,9 @@ namespace Hub.Security
                         var viewAllData = permissionSetOrg.FirstOrDefault(x => x == (int)PermissionType.ViewAllObjects);
                         if (viewAllData != 0 && permissionType == PermissionType.ReadObject) return true;
                         if (modifyAllData != 0) return true;
-
-                        return false;
                     }
+
+                    return false;
                 }
 
                 var permissionSet = (from x in rolePermissions.Where(x => x.Role.RoleName != Roles.OwnerOfCurrentObject) where roles.Contains(x.Role.RoleName) from i in x.PermissionSet.Permissions.Select(m => m.Id) select i).ToList();
