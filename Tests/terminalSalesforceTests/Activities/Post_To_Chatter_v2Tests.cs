@@ -98,18 +98,22 @@ namespace terminalSalesforceTests.Activities
         public async Task Run_WhenQueriesSalesforceAndObjectsAreReturned_PostsToTheirChatters()
         {
             var activity = new Post_To_Chatter_v2();
-            var executionContext = new ContainerExecutionContext();
+            var executionContext = new ContainerExecutionContext
+            {
+                PayloadStorage = new CrateStorage(Crate.FromContent(string.Empty, new OperationalStateCM()))
+            };
             var activityContext = new ActivityContext
             {
                 ActivityPayload = new ActivityPayload
                 {
-                    CrateStorage = new CrateStorage(Crate.FromContent(string.Empty, new OperationalStateCM()))
+                    CrateStorage = new CrateStorage()
                 },
                 AuthorizationToken = new AuthorizationToken {
                     Token = Token.Token
                 }
             };
             await activity.Configure(activityContext);
+            activity.ResetState();
             activityContext.ActivityPayload.CrateStorage.UpdateControls<Post_To_Chatter_v2.ActivityUi>(x =>
                                                                      {
                                                                          x.FeedTextSource.TextValue = "message";
@@ -119,7 +123,7 @@ namespace terminalSalesforceTests.Activities
                                                                          x.ChatterSelector.selectedKey = SalesforceObjectType.Account.ToString();
                                                                      });
             await activity.Run(activityContext, executionContext);
-            var payloadStorage = activityContext.ActivityPayload.CrateStorage;
+            var payloadStorage = executionContext.PayloadStorage;
             var operationalState = payloadStorage.FirstCrate<OperationalStateCM>().Content;
             Assert.AreEqual(ActivityResponse.Success.ToString(), operationalState.CurrentActivityResponse.Type, "Run must return success if all values are specified");
             var resultPayload = payloadStorage.FirstCrateOrDefault<StandardPayloadDataCM>();

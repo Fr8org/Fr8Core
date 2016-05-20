@@ -399,6 +399,15 @@ namespace TerminalBase.BaseClasses
             );
         }
 
+        /// <summary>
+        /// THIS FUNCTION SHOULD BE CALLED ONLY FROM TESTS
+        /// </summary>
+        public void ResetState()
+        {
+            _configurationControls = null;
+
+        }
+
         public virtual bool NeedsAuthentication()
         {
             return string.IsNullOrEmpty(AuthorizationToken?.Token);
@@ -457,7 +466,7 @@ namespace TerminalBase.BaseClasses
             var curUpstreamFields = (await GetDesignTimeFields(CrateDirection.Upstream)).Fields.ToArray();
             var upstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(label, curUpstreamFields);
             return upstreamFieldsCrate;
-            }
+        }
 
         protected virtual ConfigurationRequestType GetConfigurationRequestType()
         {
