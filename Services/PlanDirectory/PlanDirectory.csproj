@@ -333,6 +333,15 @@
       RemoveCompiledJsFiles;
     </CleanDependsOn>
   </PropertyGroup>
+  <Target Name="CollectGulpOutput">
+    <ItemGroup>
+      <_CustomGulpFiles Include="Scripts\app\_compiled.js" />
+      <FilesForPackagingFromProject Include="%(_CustomGulpFiles.Identity)">
+        <DestinationRelativePath>Scripts\app\%(Filename)%(Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+    </ItemGroup>
+    <Message Text="CollectGulpOutput list: %(_CustomGulpFiles.Identity)" />
+  </Target>
   <Target Name="CleanBowerComponents">
     <RemoveDir Directories="bower_components" />
   </Target>
