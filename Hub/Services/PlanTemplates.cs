@@ -217,18 +217,22 @@ namespace Hub.Services
             return name;
         }
 
-        private void BuildJumpTransitions(Dictionary<Guid, PlanNodeDescriptionDO> all_nodes_dictionary, List<ActivityDO> all_activities, List<ActivityTemplateDO> related_templates,
-            PlanTemplateDO planDescription, PlanDO plan)
+        private void BuildJumpTransitions(
+            Dictionary<Guid, PlanNodeDescriptionDO> allNodesDictionary, 
+            List<ActivityDO> allActivities, 
+            List<ActivityTemplateDO> relatedTemplates,
+            PlanTemplateDO planDescription, 
+            PlanDO plan)
         {
-            var testAndBranchTemplate = FindTestAndBranchTemplate(related_templates.ToList());
-            if (testAndBranchTemplate == null) return;
+            var makeADecisionTemplate = FindMakeADecisionTemplate(relatedTemplates.ToList());
+            if (makeADecisionTemplate == null) return;
 
-            var testAndBranch_activities = all_activities.Where(a => a.ActivityTemplateId == testAndBranchTemplate.Id).ToList();
+            var makeADecisionActivities = allActivities.Where(a => a.ActivityTemplateId == makeADecisionTemplate.Id).ToList();
 
-            foreach (var tab_Activity in testAndBranch_activities)
+            foreach (var tabActivity in makeADecisionActivities)
             {
-                var testAndBranch_node = all_nodes_dictionary[tab_Activity.Id];
-                using (var crateStorage = _crateManager.GetUpdatableStorage(tab_Activity))
+                var makeADecisionNode = allNodesDictionary[tabActivity.Id];
+                using (var crateStorage = _crateManager.GetUpdatableStorage(tabActivity))
                 {
                     var controlsCrate = crateStorage.Where(a => a.ManifestType.Id == (int)MT.StandardConfigurationControls).FirstOrDefault().Get<StandardConfigurationControlsCM>();
                     var transitionsPanel = (ContainerTransition)controlsCrate.Controls.Where(a => a.Type == ControlTypes.ContainerTransition).FirstOrDefault();
@@ -238,8 +242,8 @@ namespace Hub.Services
                         switch (transition.Transition)
                         {
                             case ContainerTransitions.JumpToActivity:
-                                var target_node = all_nodes_dictionary[transition.TargetNodeId.Value];
-                                testAndBranch_node.Transitions.Add(new NodeTransitionDO() { ActivityDescription = target_node.ActivityDescription, Transition = PlanNodeTransitionType.Jump });
+                                var target_node = allNodesDictionary[transition.TargetNodeId.Value];
+                                makeADecisionNode.Transitions.Add(new NodeTransitionDO() { ActivityDescription = target_node.ActivityDescription, Transition = PlanNodeTransitionType.Jump });
                                 break;
 
                             case ContainerTransitions.JumpToSubplan:
@@ -248,15 +252,15 @@ namespace Hub.Services
 
                                 if (target_starting_nodeDO != null) //false if a jump is targeting an emty subplan, so we won't create transitions
                                 {
-                                    var target_starting_node = all_nodes_dictionary[target_starting_nodeDO.Id];
-                                    testAndBranch_node.Transitions.Add(new NodeTransitionDO() { ActivityDescription = target_starting_node.ActivityDescription, Transition = PlanNodeTransitionType.Jump });
+                                    var target_starting_node = allNodesDictionary[target_starting_nodeDO.Id];
+                                    makeADecisionNode.Transitions.Add(new NodeTransitionDO() { ActivityDescription = target_starting_node.ActivityDescription, Transition = PlanNodeTransitionType.Jump });
                                 }
                                 break;
 
                             case ContainerTransitions.LaunchAdditionalPlan:
                                 // for now let's jump to an existing a plan, but that will lead to "unsharable" plan description,
                                 // so in future we might want to evaluate if a user wants a target plan to be saved as description as well
-                                testAndBranch_node.Transitions.Add(new NodeTransitionDO() { PlanId = transition.TargetNodeId, Transition = PlanNodeTransitionType.Jump });
+                                makeADecisionNode.Transitions.Add(new NodeTransitionDO() { PlanId = transition.TargetNodeId, Transition = PlanNodeTransitionType.Jump });
                                 break;
                         }
                     }
@@ -288,24 +292,23 @@ namespace Hub.Services
         private void UpdateJumpTransitions(PlanDO planDO, PlanTemplateDO planDescription, Dictionary<ActivityDO, PlanNodeDescriptionDO> allNodesDictionary)
         {
             //get TAB activities
-            var testAndBranchActivities = new List<ActivityDO>();
+            var makeADecisionActivities = new List<ActivityDO>();
             var all_activitiesTemplatesIds = string.Join(",", allNodesDictionary.Select(a => a.Value).Select(b => b.ActivityDescription).Select(c => c.ActivityTemplateId).ToArray());
             var used_templates = new List<ActivityTemplateDO>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 used_templates = uow.ActivityTemplateRepository.GetQuery().Where(a => all_activitiesTemplatesIds.Contains(a.Id.ToString())).ToList();
-                var testAndBranchTemplate = FindTestAndBranchTemplate(used_templates);
-                if (testAndBranchTemplate == null) return;
+                var makeADecisionTemplate = FindMakeADecisionTemplate(used_templates);
+                if (makeADecisionTemplate == null) return;
                 var all_used_activities = GetAllPlanActivities(planDO);
-                testAndBranchActivities = all_used_activities.Where(a => a.ActivityTemplateId == testAndBranchTemplate.Id).ToList();
-                if (testAndBranchActivities.Count == 0) return;
+                makeADecisionActivities = all_used_activities.Where(a => a.ActivityTemplateId == makeADecisionTemplate.Id).ToList();
+                if (makeADecisionActivities.Count == 0) return;
             }
 
             //process
-            foreach (var testAndBranchActivity in testAndBranchActivities)
+            foreach (var makeADecisionActivity in makeADecisionActivities)
             {
-                var testAndBranch_node = allNodesDictionary[testAndBranchActivity];
-                using (var crateStorage = _crateManager.GetUpdatableStorage(testAndBranchActivity))
+                using (var crateStorage = _crateManager.GetUpdatableStorage(makeADecisionActivity))
                 {
                     var controlsCrate = crateStorage.Where(a => a.ManifestType.Id == (int)MT.StandardConfigurationControls).FirstOrDefault().Get<StandardConfigurationControlsCM>();
                     var transitionsPanel = (ContainerTransition)controlsCrate.Controls.Where(a => a.Type == ControlTypes.ContainerTransition).FirstOrDefault();
@@ -384,9 +387,9 @@ namespace Hub.Services
         }
         #endregion
 
-        private ActivityTemplateDO FindTestAndBranchTemplate(List<ActivityTemplateDO> templates)
+        private ActivityTemplateDO FindMakeADecisionTemplate(List<ActivityTemplateDO> templates)
         {
-            return templates.Where(a => a.Name == "TestAndBranch").FirstOrDefault();
+            return templates.Where(a => a.Name == "MakeADecision").FirstOrDefault();
         }
 
     }

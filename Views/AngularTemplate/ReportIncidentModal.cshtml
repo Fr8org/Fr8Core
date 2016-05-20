@@ -1,0 +1,30 @@
+﻿<div class="modal-header">
+    <h3 class="modal-title">
+        Incident Report
+        <button type="button" class="close" aria-label="Close" ng-click="cancel()"><span aria-hidden="true">&times;</span></button>
+    </h3>
+</div>
+<div class="modal-body">
+    <div class="row incident-description-holder">
+        <div class="col-md-6">
+            <h4>Created Date</h4><p>{{ historyItem.createDate | date:"MM/dd/yyyy h:mm:ss a"}}</p>
+            <h4>Primary Category</h4><p>{{ historyItem.primaryCategory ? historyItem.primaryCategory: '---' }}</p>
+            <h4>Secondary Category</h4><p>{{ historyItem.secondaryCategory ? historyItem.secondaryCategory : '---' }}</p>
+            <h4>Activity</h4><p>{{ historyItem.activity ? historyItem.activity : '---' }}</p>
+        </div>
+        <div class="col-md-6">
+            <h4>Fr8 User Id</h4><p>{{ historyItem.fr8UserId ? historyItem.fr8UserId : '---' }}</p>
+            <h4>Object Id</h4><p>{{ historyItem.objectId ? historyItem.objectId : '---' }}</p>
+            <h4>Status</h4><p>{{ historyItem.status ? historyItem.status : '---' }}</p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-12">
+            <h4>Data:</h4>
+            <div class="incident-data-holder" >{{ historyItem.data ? historyItem.data : '---' }}</div>
+        </div>
+    </div>
+</div>
+<div class="modal-footer">
+    <button type="button" class="btn btn-default" ng-click="cancel()">Close</button>
+</div>

@@ -253,6 +253,24 @@
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Demo|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
   <Import Project="$(VSToolsPath)\WebApplications\Microsoft.WebApplication.targets" Condition="'$(VSToolsPath)' != ''" />
   <Import Project="$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v10.0\WebApplications\Microsoft.WebApplication.targets" Condition="false" />
@@ -276,6 +294,61 @@
   </ProjectExtensions>
   <Target Name="EnsureNmpPackageBuildAndGulpBuild" BeforeTargets="BeforeBuild">
     <Exec Command="PreBuild.bat" WorkingDirectory="$(ProjectDir)" />
+  </Target>
+  <PropertyGroup>
+    <CopyAllFilesToSingleFolderForPackageDependsOn>
+      CustomCollectFiles;
+      $(CopyAllFilesToSingleFolderForPackageDependsOn);
+    </CopyAllFilesToSingleFolderForPackageDependsOn>
+    <CopyAllFilesToSingleFolderForMsdeployDependsOn>
+      CustomCollectFiles;
+      $(CopyAllFilesToSingleFolderForPackageDependsOn);
+    </CopyAllFilesToSingleFolderForMsdeployDependsOn>
+  </PropertyGroup>
+  <Target Name="CustomCollectFiles">
+    <ItemGroup>
+      <_CustomFiles Include=".\bower_components\**\*" />
+      <FilesForPackagingFromProject Include="%(_CustomFiles.Identity)">
+        <DestinationRelativePath>bower_components\%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+    </ItemGroup>
+  </Target>
+  <PropertyGroup>
+    <CopyAllFilesToSingleFolderForPackageDependsOn>
+      $(CopyAllFilesToSingleFolderForPackageDependsOn);
+      CollectGulpOutput;
+    </CopyAllFilesToSingleFolderForPackageDependsOn>
+    <CopyAllFilesToSingleFolderForMsdeployDependsOn>
+      $(CopyAllFilesToSingleFolderForMsdeployDependsOn);
+      CollectGulpOutput;
+    </CopyAllFilesToSingleFolderForMsdeployDependsOn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <CleanDependsOn>
+      $(CleanDependsOn);
+      CleanBowerComponents;
+    </CleanDependsOn>
+    <CleanDependsOn>
+      $(CleanDependsOn);
+      RemoveCompiledJsFiles;
+    </CleanDependsOn>
+  </PropertyGroup>
+  <Target Name="CollectGulpOutput">
+    <ItemGroup>
+      <FilesForPackagingFromProject Include="%(_CustomGulpFiles.Identity)">
+        <DestinationRelativePath>Scripts\app\%(Filename)%(Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+    </ItemGroup>
+    <Message Text="CollectGulpOutput list: %(_CustomGulpFiles.Identity)" />
+  </Target>
+  <Target Name="CleanBowerComponents">
+    <RemoveDir Directories="bower_components" />
+  </Target>
+  <Target Name="RemoveCompiledJsFiles">
+    <ItemGroup>
+      <_CompiledJsFiles Include="Scripts\app\**\*.js" />
+    </ItemGroup>
+    <Delete Files="@(_CompiledJsFiles)" />
   </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>
