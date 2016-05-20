@@ -289,6 +289,8 @@
     .action .pane-configure-action {
         min-height: 250px;
         padding: 2%;
+        outline: none;
+        cursor: default;
     }
 
     .action .ap-resize {
@@ -1324,6 +1326,19 @@ footer p {
     border-radius:6px !important; 
     padding:6px 6px 6px 6px; 
     color:white;
+}
+
+.incident-description-holder p {
+    padding-left:10px;
+    margin-bottom: 15px;
+}
+
+.incident-data-holder {
+    max-height: 300px;
+    overflow: auto;
+    border-style: ridge;
+    padding-left: 10px;
+    margin-left: 15px;
 }
 
 .menu-logo {
