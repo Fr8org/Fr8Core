@@ -3,25 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Data.Entities;
+using Hub.Interfaces;
 using Utilities.Configuration.Azure;
 
-namespace Hub.Utilization
+namespace Hub.Services
 {
-    public class ActivityExecutionRate
-    {
-        public string UserId
-        {
-            get;
-            set;
-        }
-
-        public int ActivitiesExecuted
-        {
-            get;
-            set;
-        }
-    }
-
     public class UtilizationMonitoringService : IDisposable, IUtilizationMonitoringService
     {
         private const int DefaultReportAggregationUnit = 120; // in seconds

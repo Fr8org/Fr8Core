@@ -34,8 +34,6 @@ using System.Linq.Expressions;
 using Castle.DynamicProxy;
 using Fr8Data.DataTransferObjects;
 using Hub.Security.ObjectDecorators;
-using Hub.Utilization;
-using Hub.Utilization.Impl;
 
 namespace Hub.StructureMap
 {

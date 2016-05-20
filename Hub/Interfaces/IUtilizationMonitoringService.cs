@@ -1,6 +1,6 @@
 using Data.Entities;
 
-namespace Hub.Utilization
+namespace Hub.Interfaces
 {
     public interface IUtilizationMonitoringService
     {

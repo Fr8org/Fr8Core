@@ -410,12 +410,12 @@
     <Compile Include="Services\Subscription.cs" />
     <Compile Include="Services\Time.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
-    <Compile Include="Utilization\IActivityExecutionRateLimitingService.cs" />
-    <Compile Include="Utilization\Impl\MockedUtilizationDataProvider.cs" />
-    <Compile Include="Utilization\IUtilizationDataProvider.cs" />
-    <Compile Include="Utilization\IUtilizationMonitoringService.cs" />
-    <Compile Include="Utilization\ActivityExecutionRateLimitingService.cs" />
-    <Compile Include="Utilization\UtilizationMonitoringService.cs" />
+    <Compile Include="Interfaces\IActivityExecutionRateLimitingService.cs" />
+    <Compile Include="Services\Utilization\Impl\MockedUtilizationDataProvider.cs" />
+    <Compile Include="Interfaces\IUtilizationDataProvider.cs" />
+    <Compile Include="Interfaces\IUtilizationMonitoringService.cs" />
+    <Compile Include="Services\Utilization\ActivityExecutionRateLimitingService.cs" />
+    <Compile Include="Services\Utilization\UtilizationMonitoringService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj">

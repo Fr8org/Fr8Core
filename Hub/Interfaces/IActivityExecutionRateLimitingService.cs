@@ -1,4 +1,4 @@
-﻿namespace Hub.Utilization
+﻿namespace Hub.Interfaces
 {
     public interface IActivityExecutionRateLimitingService
     {

@@ -1,4 +1,6 @@
-﻿namespace Hub.Utilization.Impl
+﻿using Hub.Interfaces;
+
+namespace Hub.Services
 {
     public class MockedUtilizationDataProvider : IUtilizationDataProvider
     {

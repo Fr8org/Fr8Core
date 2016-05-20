@@ -4,12 +4,13 @@ using System.Linq;
 using System.Threading;
 using Data.Interfaces;
 using Data.States;
+using Hub.Interfaces;
 using log4net;
 using StructureMap;
 using Utilities.Configuration.Azure;
 using Utilities.Interfaces;
 
-namespace Hub.Utilization
+namespace Hub.Services
 {
     public class ActivityExecutionRateLimitingService : IDisposable, IActivityExecutionRateLimitingService
     {
@@ -19,7 +20,6 @@ namespace Hub.Utilization
 
         private static readonly ILog Logger = Utilities.Logging.Logger.GetCurrentClassLogger();
 
-        private readonly IUtilizationMonitoringService _utilizationMonitoringService;
         private readonly IUtilizationDataProvider _utilizationDataProvider;
         private readonly IPusherNotifier _pusherNotifier;
         private readonly Timer _utilizationRenewTimer;
@@ -36,7 +36,6 @@ namespace Hub.Utilization
             _overheatingThreshold = GetSetting("ActivityExecutionOverheatingThreshold", DefaultOverheatingThreshold);
             _userBanTime = GetSetting("OverheatedUserBanTime", DefaultUserBanTime);
             
-            _utilizationMonitoringService = utilizationMonitoringService;
             _utilizationDataProvider = utilizationDataProvider;
             _pusherNotifier = pusherNotifier;
 

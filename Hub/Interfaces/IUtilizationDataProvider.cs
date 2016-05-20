@@ -1,4 +1,4 @@
-﻿namespace Hub.Utilization
+﻿namespace Hub.Interfaces
 {
     public class OverheatingUsersUpdateResults
     {
@@ -9,6 +9,21 @@
         {
             StartedOverheating = startedOverheating;
             StoppedOverheating = stoppedOverheating;
+        }
+    }
+
+    public class ActivityExecutionRate
+    {
+        public string UserId
+        {
+            get;
+            set;
+        }
+
+        public int ActivitiesExecuted
+        {
+            get;
+            set;
         }
     }
 
