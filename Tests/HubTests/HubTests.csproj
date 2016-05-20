@@ -314,6 +314,8 @@
     <Compile Include="Services\UserServiceTests.cs" />
     <Compile Include="Utilities\DateUtilityTests.cs" />
     <Compile Include="ConfigurationOverride.cs" />
+    <Compile Include="Utilization\ActivityExecutionRateLimiterIntTests.cs" />
+    <Compile Include="Utilization\ActivityExecutionRateLimiterTests.cs" />
     <Compile Include="Utilization\UtilizationMonitoringTests.cs" />
     <Compile Include="Wrapper\DcousingAccountTest.cs" />
   </ItemGroup>
