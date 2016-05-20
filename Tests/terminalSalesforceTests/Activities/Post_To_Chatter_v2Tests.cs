@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Entities;
 using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using Hub.Managers;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
@@ -58,8 +56,7 @@ namespace terminalSalesforceTests.Activities
             {
                 ActivityPayload = new ActivityPayload
                 {
-                    CrateStorage = new CrateStorage()
-
+                    CrateStorage = new CrateStorage(Crate.FromContent(string.Empty, new OperationalStateCM()))
                 },
                 AuthorizationToken = {
                     Token = Token.Token
@@ -80,10 +77,9 @@ namespace terminalSalesforceTests.Activities
             {
                 ActivityPayload = new ActivityPayload
                 {
-                    CrateStorage = new CrateStorage()
-
+                    CrateStorage = new CrateStorage(Crate.FromContent(string.Empty, new OperationalStateCM()))
                 },
-                AuthorizationToken = {
+                AuthorizationToken = new AuthorizationToken {
                     Token = Token.Token
                 }
             };
@@ -107,10 +103,9 @@ namespace terminalSalesforceTests.Activities
             {
                 ActivityPayload = new ActivityPayload
                 {
-                    CrateStorage = new CrateStorage()
-
+                    CrateStorage = new CrateStorage(Crate.FromContent(string.Empty, new OperationalStateCM()))
                 },
-                AuthorizationToken = {
+                AuthorizationToken = new AuthorizationToken {
                     Token = Token.Token
                 }
             };
@@ -141,10 +136,9 @@ namespace terminalSalesforceTests.Activities
             {
                 ActivityPayload = new ActivityPayload
                 {
-                    CrateStorage = new CrateStorage()
-
+                    CrateStorage = new CrateStorage(Crate.FromContent(string.Empty, new OperationalStateCM()))
                 },
-                AuthorizationToken = {
+                AuthorizationToken = new AuthorizationToken {
                     Token = Token.Token
                 }
             };

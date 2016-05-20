@@ -115,7 +115,7 @@ namespace terminalTests.Integration
                     CrateStorage = new CrateStorage()
 
                 },
-                AuthorizationToken = {
+                AuthorizationToken = new AuthorizationToken{
                     Token = authToken.Token
                 }
             };
