@@ -17,7 +17,7 @@ namespace TerminalBase.Infrastructure
 
         public static void ConfigureTest()
         {
-            ObjectFactory.Configure(x => x.AddRegistry<LiveMode>());
+            ObjectFactory.Configure(x => x.AddRegistry<TestMode>());
         }
 
         public class LiveMode : Registry
@@ -28,6 +28,16 @@ namespace TerminalBase.Infrastructure
                 For<ICrateManager>().Use<CrateManager>();
                 For<ActivityExecutor>().Use<ActivityExecutor>();
             }            
+        }
+
+        public class TestMode : Registry
+        {
+            public TestMode()
+            {
+                For<IHubCommunicator>().Use<DefaultHubCommunicator>();
+                For<ICrateManager>().Use<CrateManager>();
+                For<ActivityExecutor>().Use<ActivityExecutor>();
+            }
         }
     }
 }

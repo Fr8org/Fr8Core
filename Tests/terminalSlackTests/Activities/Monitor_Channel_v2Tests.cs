@@ -17,6 +17,7 @@ using TerminalBase.Infrastructure;
 using UtilitiesTesting;
 using TerminalBase.Models;
 using Fr8Data.Crates;
+using terminalSlack.Activities;
 
 namespace terminalSlackTests.Activities
 {
@@ -25,7 +26,7 @@ namespace terminalSlackTests.Activities
     {
         private static readonly CrateManager CrateManager = new CrateManager();
 
-        private static readonly AuthorizationTokenDO AuthorizationToken = new AuthorizationTokenDO { Token = "1" };
+        private static readonly AuthorizationToken AuthorizationToken = new AuthorizationToken { Token = "1" };
 
         public override void SetUp()
         {
@@ -114,11 +115,13 @@ namespace terminalSlackTests.Activities
         public async Task Activate_WhenConfiguredProperly_SubscribesToSlackRtmEvents()
         {
             var activity = new Monitor_Channel_v2();
-            var activityContext = new ActivityContext {
+            var activityContext = new ActivityContext
+            {
+                AuthorizationToken = AuthorizationToken,
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage()
-                 }
+                }
             };
             await activity.Configure(activityContext);
             activityContext.ActivityPayload.CrateStorage.UpdateControls<Monitor_Channel_v2.ActivityUi>(x => x.MonitorDirectMessagesOption.Selected = true);

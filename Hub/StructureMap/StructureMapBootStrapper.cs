@@ -180,6 +180,7 @@ namespace Hub.StructureMap
                 For<IFile>().Use<InternalClass.File>();
 
                 For<ICrateManager>().Use<CrateManager>();
+
                 For<IManifest>().Use<Manifest>();
                 For<IFindObjectsPlan>().Use<FindObjectsPlan>();
                 For<IAuthorization>().Use<Authorization>();

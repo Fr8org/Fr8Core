@@ -631,7 +631,7 @@ namespace TerminalBase.BaseClasses
 
             try
             {
-                if (!await Validate())
+                if (!await ValidateInternal())
                 {
                     RaiseError("Activity was incorrectly configured");
                     return;
@@ -722,7 +722,7 @@ namespace TerminalBase.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected async Task ValidateAndFollowUp()
+        private async Task<bool> ValidateInternal()
         {
             Storage.Remove<ValidationResultsCM>();
             ValidationManager.Reset();
@@ -734,9 +734,18 @@ namespace TerminalBase.BaseClasses
             if (ValidationManager.HasErrors)
             {
                 Storage.Add(Crate.FromContent("Validation Results", ValidationManager.GetResults()));
-                return;
+                return false;
             }
-            await FollowUp();
+
+            return true;
+        }
+
+        protected async Task ValidateAndFollowUp()
+        {
+            if(await ValidateInternal())
+            { 
+                await FollowUp();
+            }
         }
 
         public async Task Configure(ActivityContext activityContext)
@@ -787,7 +796,10 @@ namespace TerminalBase.BaseClasses
                 return;
             }
 
-            await Activate();
+            if (await ValidateInternal())
+            {
+                await Activate();
+            }
         }
 
         public async Task Deactivate(ActivityContext activityContext)

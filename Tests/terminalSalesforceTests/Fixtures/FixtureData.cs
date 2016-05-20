@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Data.Entities;
+using Fr8Data.Crates;
 using Salesforce.Common;
 using TerminalBase.Models;
 using Fr8Data.DataTransferObjects;
@@ -9,7 +10,7 @@ namespace terminalSalesforceTests.Fixtures
 {
     public class FixtureData
     {
-        public static async Task<AuthorizationTokenDO>  Salesforce_AuthToken()
+        public static async Task<AuthorizationToken>  Salesforce_AuthToken()
         {
             var auth = new AuthenticationClient();
             await auth.UsernamePasswordAsync(
@@ -18,10 +19,10 @@ namespace terminalSalesforceTests.Fixtures
                 "alex@dockyard.company",
                 "thales@123");
 
-            return new AuthorizationTokenDO()
+            return new AuthorizationToken()
             {
                 Token = auth.AccessToken,
-                AdditionalAttributes = string.Format("refresh_token=;instance_url={0};api_version={1}", auth.InstanceUrl, auth.ApiVersion)
+                AdditionalAttributes = $"refresh_token=;instance_url={auth.InstanceUrl};api_version={auth.ApiVersion}"
             };
         }
 
@@ -112,6 +113,21 @@ namespace terminalSalesforceTests.Fixtures
             };
 
             return activityContext;
+        }
+
+        public static async Task<ActivityContext> SaveToSalesforceTestActivityDO1()
+        {
+            var activityTemplate = SaveToSalesforceActivityTemplateDTO();
+            return new ActivityContext
+            {
+                AuthorizationToken = await Salesforce_AuthToken(),
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage(),
+                    Id = new Guid("8339DC87-F011-4FB1-B47C-FEC406E4100A"),
+                    ActivityTemplate = activityTemplate
+                },
+            };
         }
 
         public static ActivityDO PostToChatterTestActivityDO1()

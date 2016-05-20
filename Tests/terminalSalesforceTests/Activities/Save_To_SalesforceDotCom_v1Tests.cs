@@ -37,8 +37,8 @@ namespace terminalSalesforceTests.Actions
             TerminalSalesforceStructureMapBootstrapper.ConfigureDependencies(TerminalSalesforceStructureMapBootstrapper.DependencyType.TEST);
 
             PayloadDTO testPayloadDTO = new PayloadDTO(new Guid());
-
-            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(testPayloadDTO))
+            ObjectFactory.Configure(x => x.For<ICrateManager>().Use(CrateManager));
+            using (var crateStorage = CrateManager.GetUpdatableStorage(testPayloadDTO))
             {
                 crateStorage.Add(Crate.FromContent("Operational Status", new OperationalStateCM()));
             }
@@ -95,9 +95,7 @@ namespace terminalSalesforceTests.Actions
             //Arrange
             //perform initial and follow up config
             var result = await PerformInitialConfig();
-            var authToken = await FixtureData.Salesforce_AuthToken();
             await _saveToSFDotCom_v1.Configure(result);
-
             //Act
             await _saveToSFDotCom_v1.Activate(result);
 
@@ -170,14 +168,7 @@ namespace terminalSalesforceTests.Actions
 
         private async Task<ActivityContext> PerformInitialConfig()
         {
-            var activityContext = new ActivityContext
-            {
-                ActivityPayload = new ActivityPayload
-                {
-                    CrateStorage = new CrateStorage()
-
-                },
-            };
+            var activityContext = await FixtureData.SaveToSalesforceTestActivityDO1();
             //Act
             await _saveToSFDotCom_v1.Configure(activityContext);
 

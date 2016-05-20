@@ -63,10 +63,7 @@ namespace TerminalBase.BaseClasses
         public sealed override async Task Activate()
         {
             SyncConfControls();
-            if (await Validate())
-            {
-                await ActivateETA();
-            }
+            await ActivateETA();
         }
 
         /**********************************************************************************/
