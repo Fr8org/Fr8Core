@@ -33,12 +33,11 @@ namespace Hub.Services
 
         public ActivityExecutionRateLimitingService(IUtilizationMonitoringService utilizationMonitoringService, IUtilizationDataProvider utilizationDataProvider, IPusherNotifier pusherNotifier)
         {
-            // AggregationUnitDuration / 2000 is half of AggregationUnitDuration (represented in milliseconds) converted to seconds
-            var renewInterval = Math.Max(GetSetting ("UtilizationSateRenewInterval", utilizationMonitoringService.AggregationUnitDuration / 2000), MinimalRenewInterval);
+            var renewInterval = Math.Max(GetSetting ("UtilizationSateRenewInterval", utilizationMonitoringService.AggregationUnitDuration / 2), MinimalRenewInterval);
 
             _overheatingThreshold = GetSetting("ActivityExecutionOverheatingThreshold", DefaultOverheatingThreshold);
             _userBanTime = TimeSpan.FromSeconds(GetSetting("OverheatedUserBanTime", DefaultUserBanTime));
-            _reportValidInterval = TimeSpan.FromMilliseconds(utilizationMonitoringService.AggregationUnitDuration * 1.5f);
+            _reportValidInterval = TimeSpan.FromSeconds(Math.Ceiling(utilizationMonitoringService.AggregationUnitDuration * 1.5f));
 
             _utilizationDataProvider = utilizationDataProvider;
             _pusherNotifier = pusherNotifier;

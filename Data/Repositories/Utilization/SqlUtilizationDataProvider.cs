@@ -100,8 +100,9 @@ namespace Data.Repositories.Utilization
 
                     command.Parameters.Clear();
                     command.Parameters.AddWithValue("@Now", DateTimeOffset.Now);
-                    command.CommandText = "update dbo.RateLimiterState set IsOverheating = 0 and BlockTill = NULL" +
-                                          "output inserted.UserId where BlockTill < @Now";
+                    command.CommandText = @"update dbo.RateLimiterState set IsOverheating = 0, BlockTill = NULL 
+                                           output inserted.UserId 
+                                           where BlockTill < @Now ";
 
                     var resumedUsers = new List<string>();
 
