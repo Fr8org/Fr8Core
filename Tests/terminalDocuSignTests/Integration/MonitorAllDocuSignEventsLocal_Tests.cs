@@ -70,7 +70,7 @@ namespace terminalDocuSignTests.Integration
 
 
         private const int MaxAwaitPeriod = 400000;
-        private const int SingleAwaitPeriod = 10000;
+        private const int SingleAwaitPeriod = 50000;
         private const string DocuSignEmail = "fr8.madse.testing@gmail.com"; // "freight.testing@gmail.com";
         private const string DocuSignApiPassword = "I6HmXEbCxN";
 
