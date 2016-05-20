@@ -179,6 +179,7 @@ namespace Hub.Services
                 {
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
+                        AuthorizationTokenDO authToken;
                         var existingAction = uow.PlanRepository.GetById<ActivityDO>(submittedActivity.Id);
 
                         if (existingAction == null)
@@ -190,8 +191,6 @@ namespace Hub.Services
                         {
                             return Mapper.Map<ActivityDTO>(submittedActivity);
                         }
-
-                        submittedActivity.AuthorizationToken = uow.AuthorizationTokenRepository.FindTokenById(submittedActivity.AuthorizationTokenId);
 
                         var activatedActivityDTO = await CallTerminalActivityAsync<ActivityDTO>(uow, "activate", submittedActivity, Guid.Empty);
                         var activatedActivityDo = Mapper.Map<ActivityDO>(activatedActivityDTO);
@@ -465,8 +464,6 @@ namespace Hub.Services
             }
 
             var curActivityDO = (ActivityDO) exisiting.Clone();
-
-            curActivityDO.AuthorizationToken = uow.AuthorizationTokenRepository.FindTokenById(curActivityDO.AuthorizationTokenId);
 
             var dto = Mapper.Map<ActivityDO, ActivityDTO>(curActivityDO);
             bool skipDeactivation = false;

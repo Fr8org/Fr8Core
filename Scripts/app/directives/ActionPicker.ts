@@ -26,6 +26,8 @@ module dockyard.directives {
             controller: ['$scope', '$element', 'WebServiceService', '$timeout',
                 ($scope: IActionPickerScope, $element: ng.IRootElementService, webServiceService: services.IWebServiceService, $timeout: ng.ITimeoutService) => {
 
+                    console.log($scope);
+
                     $scope.actionCategories = [
                         { id: 1, name: "Monitor", description: "Learn when something happen", icon: "eye" },
                         { id: 2, name: "Get", description: "In-process Crates from a web service", icon: "download" },
