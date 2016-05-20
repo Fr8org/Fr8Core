@@ -247,7 +247,7 @@ namespace TerminalBase.Helpers
         {
             var parsedConditions = new List<string>();
 
-            filterData.ForEach(condition =>
+            filterData?.ForEach(condition =>
             {
                 string parsedCondition = condition.Field;
 
