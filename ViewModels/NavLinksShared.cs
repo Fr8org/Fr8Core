@@ -2,7 +2,7 @@ namespace HubWeb.ViewModels
 {
     public class NavLinksShared
     {
-        public string HowItWorks = "/Services/HowItWorks";
+        public string HowItWorks = "/#about";
         public string Company = "/#aboutus";
     }
 }
