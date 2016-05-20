@@ -9,6 +9,7 @@ using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using terminalGoogle.Actions;
+using terminalGoogle.Activities;
 
 namespace terminalGoogleTests.Integration
 {
