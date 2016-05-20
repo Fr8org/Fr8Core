@@ -108,7 +108,7 @@ namespace HubWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var user = uow.UserRepository.FindOne(u => u.Id == id);
-                return Ok(new UserDTO { FirstName = user.FirstName, LastName = user.LastName });
+                return Ok(Mapper.Map<UserDTO>(user));
             }
         }
 
