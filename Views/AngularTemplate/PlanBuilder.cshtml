@@ -80,12 +80,12 @@
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                            <div class="jumptarget-wrapper" ng-if="envelope.jumpTargets.length > 0" style="display: inline-block; height: 50px; margin: 84px 10px 0 7px; width: 55px;">
-                                <div class="action-arrow-right action-arrow-right-jumptarget"><action-picker ng-if="$last"></action-picker></div>
-                                <div ng-repeat="jumpTarget in envelope.jumpTargets" class="col-md-12">
-                                    <div class="action-arrow-right-{{jumpTarget.TransitionType}}"></div>
-                                    <div class="jump-target-text">{{jumpTarget.Target}}</div>
+                                <div class="jumptarget-wrapper" ng-if="envelope.jumpTargets.length > 0" style="display: inline-block; height: 50px; margin: 84px 10px 0 7px; width: 55px;">
+                                    <div class="action-arrow-right action-arrow-right-jumptarget"><action-picker ng-if="$last"></action-picker></div>
+                                    <div ng-repeat="jumpTarget in envelope.jumpTargets" class="col-md-12">
+                                        <div class="action-arrow-right-{{jumpTarget.TransitionType}}"></div>
+                                        <div class="jump-target-text">{{jumpTarget.Target}}</div>
+                                    </div>
                                 </div>
                                 <div ng-if="envelope.allowsSiblings" class="action-arrow-right"></div>
                                 <div ng-if="!envelope.allowsSiblings && (!envelope.jumpTargets || envelope.jumpTargets.length < 1)" style="display: inline-block; height: 50px; margin: 84px 10px 0 7px; width: 1px;"></div>
@@ -99,7 +99,6 @@
                                 <div class="action-arrow-right"></div>
                             </div>
                         </div>
-
                     </div>
                 </div>
             </div>
