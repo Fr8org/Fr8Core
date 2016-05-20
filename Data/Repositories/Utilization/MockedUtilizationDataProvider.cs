@@ -1,6 +1,7 @@
-﻿using Hub.Interfaces;
+﻿using System;
+using Data.Interfaces;
 
-namespace Hub.Services
+namespace Data.Repositories.Utilization
 {
     public class MockedUtilizationDataProvider : IUtilizationDataProvider
     {
@@ -8,7 +9,7 @@ namespace Hub.Services
         {
         }
 
-        public virtual OverheatingUsersUpdateResults UpdateOverheatingUsers(int threshold)
+        public virtual OverheatingUsersUpdateResults UpdateOverheatingUsers(int threshold, TimeSpan metricReportValidTime, TimeSpan banTime)
         {
             return new OverheatingUsersUpdateResults(new string[0],  new string[0]);
         }

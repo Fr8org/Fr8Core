@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Data.Entities;
+using Data.Interfaces;
 using Hub.Interfaces;
 using Utilities.Configuration.Azure;
 

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
+using Data.Repositories.Utilization;
 using Hub.Interfaces;
 using Hub.Services;
 using Moq;
@@ -48,7 +49,7 @@ namespace HubTests.Utilization
                 return _overheatingUsers;
             }
 
-            public override OverheatingUsersUpdateResults UpdateOverheatingUsers(int threshold)
+            public override OverheatingUsersUpdateResults UpdateOverheatingUsers(int threshold, TimeSpan metricReportValidTime, TimeSpan banTime)
             {
                 if (_readyResults != null)
                 {
@@ -58,7 +59,7 @@ namespace HubTests.Utilization
                     return result;
                 }
 
-                return base.UpdateOverheatingUsers(threshold);
+                return base.UpdateOverheatingUsers(threshold, metricReportValidTime, banTime);
             }
         }
 

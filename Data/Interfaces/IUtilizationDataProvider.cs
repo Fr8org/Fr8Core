@@ -1,4 +1,6 @@
-﻿namespace Hub.Interfaces
+﻿using System;
+
+namespace Data.Interfaces
 {
     public class OverheatingUsersUpdateResults
     {
@@ -30,7 +32,7 @@
     public interface IUtilizationDataProvider
     {
         void UpdateActivityExecutionRates(ActivityExecutionRate[] reports);
-        OverheatingUsersUpdateResults UpdateOverheatingUsers(int threshold);
+        OverheatingUsersUpdateResults UpdateOverheatingUsers(int threshold, TimeSpan metricReportValidTime, TimeSpan banTime);
         string[] GetOverheatingUsers();
     }
 }

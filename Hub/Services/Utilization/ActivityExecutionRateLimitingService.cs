@@ -25,7 +25,8 @@ namespace Hub.Services
         private readonly Timer _utilizationRenewTimer;
         private readonly HashSet<string> _overheatingUsers = new HashSet<string>();
         private readonly int _overheatingThreshold;
-        private readonly int _userBanTime; // in seconds
+        private readonly TimeSpan _userBanTime;
+        private readonly TimeSpan _reportValidInterval;
         private readonly object _sync = new object();
        
         private bool _isInitialized;
@@ -34,9 +35,11 @@ namespace Hub.Services
         {
             // AggregationUnitDuration / 2000 is half of AggregationUnitDuration (represented in milliseconds) converted to seconds
             var renewInterval = Math.Max(GetSetting ("UtilizationSateRenewInterval", utilizationMonitoringService.AggregationUnitDuration / 2000), MinimalRenewInterval);
+
             _overheatingThreshold = GetSetting("ActivityExecutionOverheatingThreshold", DefaultOverheatingThreshold);
-            _userBanTime = GetSetting("OverheatedUserBanTime", DefaultUserBanTime);
-            
+            _userBanTime = TimeSpan.FromSeconds(GetSetting("OverheatedUserBanTime", DefaultUserBanTime));
+            _reportValidInterval = TimeSpan.FromMilliseconds(utilizationMonitoringService.AggregationUnitDuration * 1.5f);
+
             _utilizationDataProvider = utilizationDataProvider;
             _pusherNotifier = pusherNotifier;
 
@@ -91,7 +94,7 @@ namespace Hub.Services
 
                 try
                 {
-                    overheatUpdateResults = _utilizationDataProvider.UpdateOverheatingUsers(_overheatingThreshold);
+                    overheatUpdateResults = _utilizationDataProvider.UpdateOverheatingUsers(_overheatingThreshold, _reportValidInterval, _userBanTime);
 
                     foreach (var userId in overheatUpdateResults.StartedOverheating)
                     {
@@ -131,7 +134,7 @@ namespace Hub.Services
             if (userName != null)
             {
                 _pusherNotifier.NotifyUser("You are running more Activities than your capacity right now. " +
-                                           $"This Account will be prevented from processing Activities for the next {Math.Ceiling(_userBanTime / 60.0f)} minutes. " +
+                                           $"This Account will be prevented from processing Activities for the next {Math.Ceiling(_userBanTime.TotalSeconds / 60.0f)} minutes. " +
                                            "Contact support@fr8.co for assistance", NotificationChannel.GenericFailure, userName);
             }
         }

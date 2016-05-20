@@ -411,8 +411,6 @@
     <Compile Include="Services\Time.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
     <Compile Include="Interfaces\IActivityExecutionRateLimitingService.cs" />
-    <Compile Include="Services\Utilization\Impl\MockedUtilizationDataProvider.cs" />
-    <Compile Include="Interfaces\IUtilizationDataProvider.cs" />
     <Compile Include="Interfaces\IUtilizationMonitoringService.cs" />
     <Compile Include="Services\Utilization\ActivityExecutionRateLimitingService.cs" />
     <Compile Include="Services\Utilization\UtilizationMonitoringService.cs" />

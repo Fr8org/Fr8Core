@@ -32,6 +32,8 @@ using System.Net.Http;
 using Microsoft.ApplicationInsights;
 using System.Linq.Expressions;
 using Castle.DynamicProxy;
+using Data.Interfaces;
+using Data.Repositories.Utilization;
 using Fr8Data.DataTransferObjects;
 using Hub.Security.ObjectDecorators;
 
@@ -209,7 +211,6 @@ namespace Hub.StructureMap
                 // For<Hub.Managers.Event>().Use<Hub.Managers.Event>().Singleton();
                 For<IPlanTemplates>().Use<PlanTemplates>();
                 For<IUtilizationMonitoringService>().Use<UtilizationMonitoringService>().Singleton();
-                For<IUtilizationDataProvider>().Use<MockedUtilizationDataProvider>().Singleton();
                 For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
             }
         }
