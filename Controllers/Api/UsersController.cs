@@ -52,7 +52,7 @@ namespace HubWeb.Controllers
                     return Ok(GetUsers(uow, predicate));
                 }
 
-                //todo: show not authorized messsage in activityStream
+                //todo: show not authorized messsage in activityStream.
                 return Ok();
             }
         }
