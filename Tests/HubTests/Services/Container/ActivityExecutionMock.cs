@@ -89,6 +89,13 @@ namespace HubTests.Services.Container
         {
            return _activity.Delete(id);
         }
+
+        public Task DeleteChildNodes(Guid id)
+        {
+            return _activity.DeleteChildNodes(id);
+        }
     }
 
 }
+
+
