@@ -76,37 +76,35 @@ namespace HubWeb.Controllers
             }
         }
 
-        public IHttpActionResult Get(string id)
+        [HttpGet]
+        [DockyardAuthorize(Roles = Roles.Admin)]
+        public IHttpActionResult UserData(string id = "")
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 Fr8AccountDO user;
-                UserDTO userDTO;
 
                 if (string.IsNullOrEmpty(id))
                 {
                     user = uow.UserRepository.FindOne(u => u.EmailAddress.Address == User.Identity.Name);
-                    userDTO = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
-                    userDTO.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(userDTO.Id).Select(r => r.Name).ToArray());
-                    return Ok(userDTO);
+                }
+                else
+                {
+                    user = uow.UserRepository.FindOne(u => u.Id == id);
                 }
 
-                user = uow.UserRepository.FindOne(u => u.Id == id);
-                userDTO = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
-                userDTO.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository
-                    .GetRoles(userDTO.Id).Select(r => r.Name).ToArray());
+                UserDTO userDTO = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
+                userDTO.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(userDTO.Id).Select(r => r.Name).ToArray());
                 return Ok(userDTO);
             }
         }
 
         [HttpPost]
-        public IHttpActionResult Update(string oldPassword, string newPassword, string confirmPassword)
+        public IHttpActionResult Update(string oldPassword, string newPassword)
         {
             if (string.IsNullOrEmpty(oldPassword))
                 throw new Exception("Old password is required.");
-            if (!string.Equals(newPassword, confirmPassword, StringComparison.OrdinalIgnoreCase))
-                throw new Exception("New password and confirm password did not match.");
-
+            
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var user = uow.UserRepository.FindOne(u => u.EmailAddress.Address == User.Identity.Name);

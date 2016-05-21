@@ -16,7 +16,7 @@ module dockyard.services {
 
     app.factory('UserService', [
         '$resource', ($resource: ng.resource.IResourceService): IUserService =>
-            <IUserService>$resource('/api/users?id=:id', { id: '@id' }, {
+            <IUserService>$resource('/api/users/userdata?id=:id', { id: '@id' }, {
                 getAll: {
                     method: 'GET',
                     isArray: true,
@@ -25,7 +25,7 @@ module dockyard.services {
                 getCurrentUser: {
                     method: 'GET',
                     isArray: false,
-                    url: '/api/users'
+                    url: '/api/users/userdata'
                 },
                 getProfiles: {
                     method: 'GET',
