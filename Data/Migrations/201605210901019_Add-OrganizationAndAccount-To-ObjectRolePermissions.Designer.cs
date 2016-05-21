@@ -7,13 +7,13 @@ namespace Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class AddOrganizationToObjectRolePermissions : IMigrationMetadata
+    public sealed partial class AddOrganizationAndAccountToObjectRolePermissions : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(AddOrganizationToObjectRolePermissions));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(AddOrganizationAndAccountToObjectRolePermissions));
         
         string IMigrationMetadata.Id
         {
-            get { return "201605202001048_Add-Organization-To-ObjectRolePermissions"; }
+            get { return "201605210901019_Add-OrganizationAndAccount-To-ObjectRolePermissions"; }
         }
         
         string IMigrationMetadata.Source

@@ -2,15 +2,17 @@ namespace Data.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
-
-    public partial class Add_Fr8AccountId_To_ObjectRolePermissions : DbMigration
+    
+    public partial class AddOrganizationAndAccountToObjectRolePermissions : DbMigration
     {
         public override void Up()
         {
             AddColumn("dbo.ObjectRolePermissions", "Fr8AccountId", c => c.String(nullable: false, maxLength: 128));
             CreateIndex("dbo.ObjectRolePermissions", "Fr8AccountId");
             AddForeignKey("dbo.ObjectRolePermissions", "Fr8AccountId", "dbo.Users", "Id");
-
+            AddColumn("dbo.ObjectRolePermissions", "OrganizationId", c => c.Int(nullable: true));
+            CreateIndex("dbo.ObjectRolePermissions", "OrganizationId");
+            AddForeignKey("dbo.ObjectRolePermissions", "OrganizationId", "dbo.Organizations", "Id");
             var sqlMigration = @"
                 declare @permissionSetId uniqueidentifier;
                 set @permissionSetId = newid();
@@ -50,6 +52,9 @@ namespace Data.Migrations
             DropForeignKey("dbo.ObjectRolePermissions", "Fr8AccountId", "dbo.Users");
             DropIndex("dbo.ObjectRolePermissions", "Fr8AccountId");
             DropColumn("dbo.ObjectRolePermissions", "Fr8AccountId");
+            DropForeignKey("dbo.ObjectRolePermissions", "OrganizationId", "dbo.Organizations");
+            DropIndex("dbo.ObjectRolePermissions", "OrganizationId");
+            DropColumn("dbo.ObjectRolePermissions", "OrganizationId");
         }
     }
 }
