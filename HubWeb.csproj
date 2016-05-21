@@ -404,7 +404,6 @@
     <Compile Include="Controllers\SupportController.cs" />
     <Compile Include="Controllers\WelcomeController.cs" />
     <Compile Include="Controllers\Api\FieldController.cs" />
-    <Compile Include="Controllers\Api\CriteriaController.cs" />
     <Compile Include="Controllers\DocuSignTemplateController.cs" />
     <Compile Include="Controllers\Api\PlanNodesController.cs" />
     <Compile Include="Controllers\AuthenticationCallbackController.cs" />
@@ -1153,6 +1152,7 @@
     <Content Include="Views\AngularTemplate\Organization.cshtml" />
     <Content Include="Views\AngularTemplate\QueryBuilder.cshtml" />
     <Content Include="Views\AngularTemplate\QueryBuilderCondition.cshtml" />
+    <Content Include="Views\AngularTemplate\ReportIncidentModal.cshtml" />
     <None Include="Web.Demo.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -4638,13 +4638,13 @@
   </Target>
   <PropertyGroup>
     <CopyAllFilesToSingleFolderForPackageDependsOn>
-    CustomCollectFiles;
-    $(CopyAllFilesToSingleFolderForPackageDependsOn);
-  </CopyAllFilesToSingleFolderForPackageDependsOn>
+      CustomCollectFiles;
+      $(CopyAllFilesToSingleFolderForPackageDependsOn);
+    </CopyAllFilesToSingleFolderForPackageDependsOn>
     <CopyAllFilesToSingleFolderForMsdeployDependsOn>
-    CustomCollectFiles;
-    $(CopyAllFilesToSingleFolderForPackageDependsOn);
-  </CopyAllFilesToSingleFolderForMsdeployDependsOn>
+      CustomCollectFiles;
+      $(CopyAllFilesToSingleFolderForPackageDependsOn);
+    </CopyAllFilesToSingleFolderForMsdeployDependsOn>
   </PropertyGroup>
   <Target Name="CustomCollectFiles">
     <ItemGroup>
@@ -4702,8 +4702,8 @@
       CleanBowerComponents;
     </CleanDependsOn>
     <CleanDependsOn>
-	  $(CleanDependsOn);
-	  RemoveCompiledJsFiles;
+      $(CleanDependsOn);
+      RemoveCompiledJsFiles;
     </CleanDependsOn>
   </PropertyGroup>
   <Target Name="CleanBowerComponents">

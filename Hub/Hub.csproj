@@ -410,6 +410,10 @@
     <Compile Include="Services\Subscription.cs" />
     <Compile Include="Services\Time.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
+    <Compile Include="Interfaces\IActivityExecutionRateLimitingService.cs" />
+    <Compile Include="Interfaces\IUtilizationMonitoringService.cs" />
+    <Compile Include="Services\Utilization\ActivityExecutionRateLimitingService.cs" />
+    <Compile Include="Services\Utilization\UtilizationMonitoringService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj">

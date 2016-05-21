@@ -38,12 +38,20 @@ namespace Hub.Services
             private OperationalStateCM _operationalState;
             private readonly IActivity _activity;
             private readonly ICrateManager _crate;
-            
+            private readonly IUtilizationMonitoringService _utilizationMonitoringService;
+            private readonly IActivityExecutionRateLimitingService _activityRateLimiter;
+
             /**********************************************************************************/
             // Functions
             /**********************************************************************************/
 
-            public ExecutionSession(IUnitOfWork uow, OperationalStateCM.ActivityCallStack callStack, ContainerDO container, IActivity activity, ICrateManager crateManager)
+            public ExecutionSession(IUnitOfWork uow, 
+                                    OperationalStateCM.ActivityCallStack callStack, 
+                                    ContainerDO container, 
+                                    IActivity activity, 
+                                    ICrateManager crateManager, 
+                                    IUtilizationMonitoringService utilizationMonitoringService,
+                                    IActivityExecutionRateLimitingService activityRateLimiter)
             {
                 _uow = uow;
                 _callStack = callStack;
@@ -51,6 +59,8 @@ namespace Hub.Services
 
                 _activity = activity;
                 _crate = crateManager;
+                _utilizationMonitoringService = utilizationMonitoringService;
+                _activityRateLimiter = activityRateLimiter;
             }
 
             /**********************************************************************************/
@@ -113,7 +123,7 @@ namespace Hub.Services
                     {
                         throw new Exception($"PlanNode with id: {topFrame.NodeId} was not found. Container: {_container.Id}. PlanId: {_container.PlanId}.");
                     }
-
+                    
                     try
                     {
                         try
@@ -127,6 +137,13 @@ namespace Hub.Services
                                 _operationalState.CurrentActivityResponse = null;
                                 // update container's payload
                                 payloadStorage.Flush();
+
+                                if (!_activityRateLimiter.CheckActivityExecutionRate(currentNode.Fr8AccountId))
+                                {
+                                    _callStack.Clear();
+                                    _container.State = State.Failed;
+                                    return;
+                                }
 
                                 if (topFrame.CurrentActivityExecutionPhase == OperationalStateCM.ActivityExecutionPhase.WasNotExecuted)
                                 {
@@ -168,6 +185,11 @@ namespace Hub.Services
                                     }
                                 }
                             }
+                        }
+                        catch
+                        {
+                            _container.State = State.Failed;
+                            throw;
                         }
                         finally
                         {
@@ -321,7 +343,7 @@ namespace Hub.Services
                         }
 
 
-                        // @alexavrutin here: commented this block since this check broke Test and Branch in Kiosk mode 
+                        // @alexavrutin here: commented this block since this check broke Make a Decision in Kiosk mode 
                         // when a new plan is being created. 
                         // currentNode = _uow.PlanRepository.GetById<PlanNodeDO>(topFrame.NodeId);
                         //if (currentNode.RootPlanNodeId != targetNode.RootPlanNodeId)
@@ -421,10 +443,10 @@ namespace Hub.Services
                         }
                         break;
                 }
-
+                
                 return true;
             }
-
+            
             /**********************************************************************************/
 
             private void LoadAndRunPlan(Guid planId)
@@ -465,6 +487,8 @@ namespace Hub.Services
                 {
                     return;
                 }
+                
+                _utilizationMonitoringService.TrackActivityExecution(currentActivity, _container);
 
                 var payload = await _activity.Run(_uow, currentActivity, mode, _container);
 
