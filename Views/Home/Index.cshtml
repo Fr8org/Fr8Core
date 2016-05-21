@@ -10,7 +10,7 @@
 <!--[if IE 8 ]><html class="ie ie8" lang="en" class="no-js"> <![endif]-->
 <!--[if (gte IE 9)|!(IE)]><!-->
 <html lang="en" class="no-js">
- <!--<![endif]-->
+<!--<![endif]-->
 <!--Google Analytics code block. should probably be moved to a common js file -->
 <script>
     (function (i, s, o, g, r, a, m) {
@@ -22,7 +22,9 @@
 
     ga('create', 'UA-52048536-1', 'kwasant.com');
     ga('send', 'pageview');
-
+    window.analytics = window.analytics || [], window.analytics.methods = ["identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off", "trackLink", "trackForm", "trackClick", "trackSubmit"], window.analytics.factory = function (t) { return function () { var a = Array.prototype.slice.call(arguments); return a.unshift(t), window.analytics.push(a), window.analytics } }; for (var i = 0; i < window.analytics.methods.length; i++) { var key = window.analytics.methods[i]; window.analytics[key] = window.analytics.factory(key) } window.analytics.load = function (t) { if (!document.getElementById("analytics-js")) { var a = document.createElement("script"); a.type = "text/javascript", a.id = "analytics-js", a.async = !0, a.src = ("https:" === document.location.protocol ? "https://" : "http://") + "cdn.segment.io/analytics.js/v1/" + t + "/analytics.min.js"; var n = document.getElementsByTagName("script")[0]; n.parentNode.insertBefore(a, n) } }, window.analytics.SNIPPET_VERSION = "2.0.9",
+    window.analytics.load("@(new ConfigRepository().Get("SegmentWriteKey"))");
+    window.analytics.page('Home');
 </script>
 <head>
     <meta charset="utf-8">
@@ -41,7 +43,7 @@
 
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Dosis:300,400,500,600,700|Open+Sans:300,400,400italic,600,700,800|Francois+One|Didact+Gothic|Droid+Sans|CabinFjalla+One|Cantarell|Ubuntu|Hind|Roboto|Roboto+Condensed:700|Nunito&subset=latin,cyrillic"
-        rel="stylesheet" type="text/css">
+          rel="stylesheet" type="text/css">
 
     <!-- IE 9 Fallback-->
     <!--[if IE 9]>
@@ -59,7 +61,7 @@
     <link rel='shortcut icon' type='image/x-icon' href='/Content/img/favicon.ico' />
 </head>
 <body id="top">
-    
+
     @Html.Partial("_HomeNavNew", new HubWeb.ViewModels.NavLinksHome())
 
     <!-- HERO UNIT -->
@@ -267,21 +269,21 @@
         <!-- END CONTACT -->
         <!-- TWITTER STREAM -->
         @*<div id="twitter-stream" class="section twitter-stream">
-            <div class="container">
-                <div class="row">
-                    <div class="col-sm-4">
-                        <h4>Contact</h4>
-                    </div>
-                    <div class="col-sm-4">
-                        <h4>About</h4>
-                        <p>Fr8 is the open standard for cloud workflow.</p>
-                    </div>
-                    <div class="col-sm-4">
-                        <h4>Company Updates</h4>
+                <div class="container">
+                    <div class="row">
+                        <div class="col-sm-4">
+                            <h4>Contact</h4>
+                        </div>
+                        <div class="col-sm-4">
+                            <h4>About</h4>
+                            <p>Fr8 is the open standard for cloud workflow.</p>
+                        </div>
+                        <div class="col-sm-4">
+                            <h4>Company Updates</h4>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>*@
+            </div>*@
         <!-- TWITTER STREAM -->
 
     </div>
