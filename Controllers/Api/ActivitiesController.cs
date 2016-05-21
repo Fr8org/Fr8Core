@@ -98,7 +98,7 @@ namespace HubWeb.Controllers
         [Fr8HubWebHMACAuthenticate]
         public async Task<IHttpActionResult> DeleteChildNodes(Guid activityId)
         {
-            await _activity.Delete(activityId);
+            await _activity.DeleteChildNodes(activityId);
             return Ok();
         }
 
