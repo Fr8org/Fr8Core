@@ -50,7 +50,7 @@ namespace HubTests.Controllers
         {
             var controller = CreateController<UsersController>();
 
-            var result = controller.Get(_testAccount2.Id) as OkNegotiatedContentResult<UserDTO>;
+            var result = controller.UserData(_testAccount2.Id) as OkNegotiatedContentResult<UserDTO>;
 
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Content);
