@@ -460,8 +460,8 @@ namespace HubWeb.Controllers
                             if (currentPlanType == PlanType.Monitoring)
                             {
                                 _pusherNotifier.NotifyUser($"Plan \"{plan.Name}\" activated. It will wait and respond to specified external events.",
-                                       NotificationChannel.GenericSuccess,
-                                       User.Identity.Name);
+                                    NotificationChannel.GenericSuccess,
+                                    User.Identity.Name);
 
                                 return Ok(new ContainerDTO
                                 {
@@ -488,30 +488,25 @@ namespace HubWeb.Controllers
 
                         string message = String.Format("Complete processing for Plan \"{0}\".{1}", plan.Name, responseMsg);
 
-                        _pusherNotifier.NotifyUser(message, NotificationChannel.GenericSuccess, User.Identity.Name);
+                        if (container.State != State.Failed)
+                        {
+                            _pusherNotifier.NotifyUser(message, NotificationChannel.GenericSuccess, User.Identity.Name);
+                        }
+                        else
+                        {
+                            _pusherNotifier.NotifyUser($"Failed executing plan \"{plan.Name}\"", NotificationChannel.GenericFailure, User.Identity.Name);
+                        }
+
                         EventManager.ContainerLaunched(container);
 
                         var containerDTO = Mapper.Map<ContainerDTO>(container);
                         containerDTO.CurrentPlanType = currentPlanType;
 
-                        // THIS CODE IS HERE ONLY TO SUPPORT CURRENT UI LOGIC THAT DISPLAYS PLAN LISTS.
-                        // It should be updated to show  as 'running' only:
-                        //   1. Plans that have at least one executing container
-                        //   2. Active monitoring plans
-                        if (currentPlanType == PlanType.RunOnce)
-                        {
-                            using (var planStatUpdateUow = ObjectFactory.GetInstance<IUnitOfWork>())
-                            {
-                                planStatUpdateUow.PlanRepository.GetById<PlanDO>(planId).PlanState = PlanState.Inactive;
-                                planStatUpdateUow.SaveChanges();
-                            }
-                        }
-
                         EventManager.ContainerExecutionCompleted(container);
 
                         return Ok(containerDTO);
                     }
-                    
+
                     return BadRequest();
                 }
                 catch (InvalidTokenRuntimeException exception)
@@ -541,6 +536,21 @@ namespace HubWeb.Controllers
                     var errorMessage = "An internal error has occured. Please, contact the administrator.";
                     NotifyWithErrorMessage(e, plan, User.Identity.Name, errorMessage);
                     throw;
+                }
+                finally
+                {
+                    // THIS CODE IS HERE ONLY TO SUPPORT CURRENT UI LOGIC THAT DISPLAYS PLAN LISTS.
+                    // It should be updated to show  as 'running' only:
+                    //   1. Plans that have at least one executing container
+                    //   2. Active monitoring plans
+                    if (currentPlanType == PlanType.RunOnce)
+                    {
+                        using (var planStatUpdateUow = ObjectFactory.GetInstance<IUnitOfWork>())
+                        {
+                            planStatUpdateUow.PlanRepository.GetById<PlanDO>(planId).PlanState = PlanState.Inactive;
+                            planStatUpdateUow.SaveChanges();
+                        }
+                    }
                 }
             }
         }
