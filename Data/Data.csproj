@@ -642,6 +642,14 @@
     <Compile Include="Migrations\201605202117041_UtilizationMonitoring.Designer.cs">
       <DependentUpon>201605202117041_UtilizationMonitoring.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201605191926256_Add_Fr8AccountId_To_ObjectRolePermissions.cs" />
+    <Compile Include="Migrations\201605191926256_Add_Fr8AccountId_To_ObjectRolePermissions.Designer.cs">
+      <DependentUpon>201605191926256_Add_Fr8AccountId_To_ObjectRolePermissions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201605202001048_Add-Organization-To-ObjectRolePermissions.cs" />
+    <Compile Include="Migrations\201605202001048_Add-Organization-To-ObjectRolePermissions.Designer.cs">
+      <DependentUpon>201605202001048_Add-Organization-To-ObjectRolePermissions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -1228,6 +1236,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201605202117041_UtilizationMonitoring.resx">
       <DependentUpon>201605202117041_UtilizationMonitoring.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605202001048_Add-Organization-To-ObjectRolePermissions.resx">
+      <DependentUpon>201605202001048_Add-Organization-To-ObjectRolePermissions.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
