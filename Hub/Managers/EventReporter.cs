@@ -548,7 +548,7 @@ namespace Hub.Managers
                 }
                 catch(Exception exp)
                 {
-                    Logger.LogError($"Can`t add incident to repository. Exception = [{exp}]");
+                    //Logger.LogError($"Can`t add incident to repository. Exception = [{exp}]");
                 }
                 finally
                 {
