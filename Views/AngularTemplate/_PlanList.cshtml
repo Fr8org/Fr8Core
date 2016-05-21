@@ -155,3 +155,6 @@
     <md-table-pagination md-limit="inActiveQuery.planPerPage" md-limit-options="[5, 10, 15, 20]" md-page="inActiveQuery.page" md-total="{{(inActivePlans.totalPlanCount || inActivePlans.totalPlanCount === 0) ? inActivePlans.totalPlanCount : 'NaN'}}" md-on-paginate="getInactivePlans" md-page-select></md-table-pagination>
 
 </md-content>
+<script type="text/javascript">
+        window.analytics.page('Plan Dashboard');
+</script>
