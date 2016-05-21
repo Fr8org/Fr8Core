@@ -2,20 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using AutoMapper.Internal;
+using Data.Validations;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using StructureMap;
+using terminalDocuSign.Activities;
 using terminalDocuSign.DataTransferObjects;
-using terminalDocuSign.Interfaces;
+using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using TerminalBase.Infrastructure.Behaviors;
 using Utilities;
 
-namespace terminalDocuSign.Activities
+namespace terminalDocuSign.Actions
 {
     public class Send_DocuSign_Envelope_v2 : EnhancedDocuSignActivity<Send_DocuSign_Envelope_v2.ActivityUi>
     {
@@ -37,7 +39,24 @@ namespace terminalDocuSign.Activities
 
             [DynamicControls]
             public List<DropDownList> DropDownListFields { get; set; }
+
+            public ActivityUi()
+            {
+                TemplateSelector = new DropDownList
+                                   {
+                                       Name = nameof(TemplateSelector),
+                                       Events = new List<ControlEvent> { ControlEvent.RequestConfig }
+                                   };
+                RolesFields = new List<TextSource>();
+                TextFields = new List<TextSource>();
+                CheckBoxFields = new List<CheckBox>();
+                RadioButtonGroupFields = new List<RadioButtonGroup>();
+                DropDownListFields = new List<DropDownList>();
+                Controls.Add(TemplateSelector);
+            }
         }
+
+        private const string UserFieldsAndRolesCrateLabel = "Fields and Roles";
 
         //TODO: remove this constructor after introducing constructor injection
         public Send_DocuSign_Envelope_v2() : this(ObjectFactory.GetInstance<IDocuSignManager>())
@@ -46,14 +65,12 @@ namespace terminalDocuSign.Activities
 
         public Send_DocuSign_Envelope_v2(IDocuSignManager docuSignManager) : base(docuSignManager)
         {
+            DisableValidationOnFollowup = false;
         }
 
         protected override Task Initialize(CrateSignaller crateSignaller)
         {
-            var configuratin = DocuSignManager.SetUp(AuthorizationToken);
-            ConfigurationControls.TemplateSelector.ListItems = DocuSignManager.GetTemplatesList(configuratin)
-                                                                              .Select(x => new ListItem { Key = x.Key, Value = x.Value })
-                                                                              .ToList();
+            LoadDocuSignTemplates();
             return Task.FromResult(0);
         }
 
@@ -67,6 +84,7 @@ namespace terminalDocuSign.Activities
             {
                 PreviousSelectedTemplateId = null;
                 ClearTemplateFields();
+                CurrentActivityStorage.RemoveByLabel(UserFieldsAndRolesCrateLabel);
                 return;
             }
             if (selectedTemplateId == PreviousSelectedTemplateId)
@@ -76,7 +94,8 @@ namespace terminalDocuSign.Activities
             PreviousSelectedTemplateId = selectedTemplateId;
             var docuSignConfiguration = DocuSignManager.SetUp(AuthorizationToken);
             var tabsAndFields = DocuSignManager.GetTemplateRecipientsTabsAndDocuSignTabs(docuSignConfiguration, selectedTemplateId);
-            var roles = tabsAndFields.Item1.Where(x => x.Tags.Contains("DocuSigner", StringComparison.InvariantCultureIgnoreCase)).ToArray();
+            var roles = tabsAndFields.Item1.Where(x => x.Tags.Contains(DocuSignConstants.DocuSignSignerTag, StringComparison.InvariantCultureIgnoreCase)).ToArray();
+            var userDefinedFields = tabsAndFields.Item1.Where(x => x.Tags.Contains(DocuSignConstants.DocuSignTabTag));
             var envelopeData = tabsAndFields.Item2.ToLookup(x => x.Fr8DisplayType);
             //Add TextSource control for every DocuSign role to activity UI
             ConfigurationControls.RolesFields.AddRange(roles.Select(x => UiBuilder.CreateSpecificOrUpstreamValueChooser(x.Key, x.Key, requestUpstream: true)));
@@ -115,18 +134,54 @@ namespace terminalDocuSign.Activities
                             Value = string.IsNullOrEmpty(y.Text) ? y.Value : y.Text,
                             Selected = y.Selected
                         })
-                                                .ToList()
+                        .ToList()
                     }));
+
+            CurrentActivityStorage.ReplaceByLabel(Crate.FromContent(UserFieldsAndRolesCrateLabel, new FieldDescriptionsCM(userDefinedFields.Concat(roles)), AvailabilityType.Configuration));
         }
 
         protected override Task Validate(ValidationManager validationManager)
         {
-            return base.Validate(validationManager);
+            if (string.IsNullOrEmpty(SelectedTemplateId))
+            {
+                validationManager.SetError("Template was not selected", ConfigurationControls.TemplateSelector);
+            }
+            foreach (var roleControl in ConfigurationControls.RolesFields.Where(x => x.InitialLabel.Contains(DocuSignConstants.DocuSignRoleEmail)))
+            {
+                if (roleControl.HasSpecificValue && !roleControl.TextValue.IsValidEmailAddress())
+                {
+                    validationManager.SetError($"The value of '{roleControl.InitialLabel}' is not a valid email address", roleControl);
+                }
+            }
+            return Task.FromResult(0);
         }
 
-        protected override Task RunCurrentActivity()
+        protected override async Task RunCurrentActivity()
         {
-            throw new NotImplementedException();
+            var userDefinedFields = CurrentActivityStorage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == UserFieldsAndRolesCrateLabel);
+            if (userDefinedFields == null)
+            {
+                throw new ActivityExecutionException();
+            }
+            var allFields = userDefinedFields.Content.Fields;
+            var roleValues = ConfigurationControls.RolesFields.Select(x => new { x.Name, Value = x.GetValue(CurrentPayloadStorage) }).ToDictionary(x => x.Name, x => x.Value);
+            var fieldValues = ConfigurationControls.CheckBoxFields.Select(x => new { x.Name, Value = x.Selected.ToString().ToLower() })
+                                                   .Concat(ConfigurationControls.DropDownListFields.Select(x => new { x.Name, Value = x.selectedKey }))
+                                                   .Concat(ConfigurationControls.RadioButtonGroupFields.Select(x => new { x.Name, x.Radios.FirstOrDefault(y => y.Selected)?.Value }))
+                                                   .Concat(ConfigurationControls.TextFields.Select(x => new { x.Name, Value = x.GetValue(CurrentPayloadStorage) }))
+                                                   .ToDictionary(x => x.Name, x => x.Value);
+            var docuSignConfiguration = DocuSignManager.SetUp(AuthorizationToken);
+            var roleFields = allFields.Where(x => x.Tags.Contains(DocuSignConstants.DocuSignSignerTag, StringComparison.InvariantCultureIgnoreCase)).ToList();
+            foreach (var roleField in roleFields)
+            {
+                roleField.Value = roleValues[roleField.Key];
+            }
+            var userFields = allFields.Where(x => x.Tags.Contains(DocuSignConstants.DocuSignTabTag)).ToList();
+            foreach (var userField in userFields)
+            {
+                userField.Value = fieldValues[userField.Key];
+            }
+            DocuSignManager.SendAnEnvelopeFromTemplate(docuSignConfiguration, roleFields, userFields, SelectedTemplateId);
         }
 
         #region Implementations details

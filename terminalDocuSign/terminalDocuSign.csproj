@@ -286,6 +286,7 @@
     <Compile Include="Interfaces\IDocuSignFolders.cs" />
     <Compile Include="Interfaces\IDocuSignPlan.cs" />
     <Compile Include="Services\DocuSignConnect.cs" />
+    <Compile Include="Services\DocuSignConstants.cs" />
     <Compile Include="Services\DocuSignFolders.cs" />
     <Compile Include="Services\DocuSignFoldersWrapper.cs" />
     <Compile Include="Services\DocuSignPolling.cs" />
