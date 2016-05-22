@@ -124,6 +124,7 @@
     <Compile Include="BaseClasses\UpstreamQueryManager.cs" />
     <Compile Include="Errors\AuthorizationTokenExpiredOrInvalidException.cs" />
     <Compile Include="Errors\TerminalErrorCode.cs" />
+    <Compile Include="Infrastructure\ActivityHelper.cs" />
     <Compile Include="Infrastructure\BaseTerminalEvent.cs" />
     <Compile Include="Infrastructure\Behaviors\BaseControlMappingBehavior.cs" />
     <Compile Include="Infrastructure\Behaviors\CheckBoxMappingBehavior.cs" />

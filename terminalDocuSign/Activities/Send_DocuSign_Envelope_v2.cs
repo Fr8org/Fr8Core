@@ -129,7 +129,7 @@ namespace terminalDocuSign.Actions
                     .ToList()
                 }));
             //Add CheckBox for every DocuSign template yes/no field to activity UI
-            ConfigurationControls.CheckBoxFields.AddRange(envelopeData[ControlTypes.TextBox].Select(x => new CheckBox { Name = x.Name, Label = x.Name }));
+            ConfigurationControls.CheckBoxFields.AddRange(envelopeData[ControlTypes.CheckBox].Select(x => new CheckBox { Name = x.Name, Label = x.Name }));
             //Add DropDownList for every DocuSign template list selection field to activity UI
             ConfigurationControls.DropDownListFields.AddRange(
                 envelopeData[ControlTypes.DropDownList]
