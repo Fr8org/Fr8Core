@@ -28,7 +28,7 @@ namespace TerminalBase.BaseClasses
         /**********************************************************************************/
 
         private const string ConfigurationValuesCrateLabel = "Configuration Values";
-        
+
         /**********************************************************************************/
 
         private bool _isRunTime;
@@ -74,6 +74,7 @@ namespace TerminalBase.BaseClasses
         protected UiBuilder UiBuilder { get; private set; }
         protected int LoopIndex => GetLoopIndex(OperationalState);
         protected bool DisableValidationOnFollowup { get; set; }
+        protected bool SaveActivityStorageAfterRun { get; set; }
 
         /**********************************************************************************/
         // Functions
@@ -85,7 +86,7 @@ namespace TerminalBase.BaseClasses
             IsAuthenticationRequired = isAuthenticationRequired;
             UiBuilder = new UiBuilder();
             ActivityName = GetType().Name;
-        } 
+        }
 
         /**********************************************************************************/
 
@@ -165,7 +166,7 @@ namespace TerminalBase.BaseClasses
                 throw new InvalidOperationException(message);
             }
         }
-        
+
         /**********************************************************************************/
 
         private async Task InitialConfiguration(CrateSignaller crateSignaller)
@@ -184,24 +185,23 @@ namespace TerminalBase.BaseClasses
 
         private async Task FollowupConfiguration(CrateSignaller crateSignaller)
         {
-            SyncConfControls();
-
-            CurrentActivityStorage.Remove<ValidationResultsCM>();
-
-            var validationManager = CreateValidationManager();
-
-            if (!DisableValidationOnFollowup)
-            {
-                await Validate(validationManager);
-            }
-
-            if (!validationManager.HasErrors || DisableValidationOnFollowup)
+            using (SyncConfControls())
             {
                 CurrentActivityStorage.Remove<ValidationResultsCM>();
-                await Configure(crateSignaller, validationManager);
-            }
 
-            SyncConfControlsBack();
+                var validationManager = CreateValidationManager();
+
+                if (!DisableValidationOnFollowup)
+                {
+                    await Validate(validationManager);
+                }
+
+                if (!validationManager.HasErrors || DisableValidationOnFollowup)
+                {
+                    CurrentActivityStorage.Remove<ValidationResultsCM>();
+                    await Configure(crateSignaller, validationManager);
+                }
+            }
         }
 
         /**********************************************************************************/
@@ -236,23 +236,18 @@ namespace TerminalBase.BaseClasses
             using (var storage = CrateManager.GetUpdatableStorage(CurrentActivity))
             {
                 CurrentActivityStorage = storage;
-
-                SyncConfControls();
-
-                CurrentActivityStorage.Remove<ValidationResultsCM>();
-
-                var validationManager = CreateValidationManager();
-
-                await Validate(validationManager);
-
-                if (!validationManager.HasErrors)
+                using (SyncConfControls())
                 {
                     CurrentActivityStorage.Remove<ValidationResultsCM>();
-                    await Activate();
+                    var validationManager = CreateValidationManager();
+                    await Validate(validationManager);
+                    if (!validationManager.HasErrors)
+                    {
+                        CurrentActivityStorage.Remove<ValidationResultsCM>();
+                        await Activate();
+                    }
                 }
-               
             }
-
             return curActivityDO;
         }
 
@@ -267,9 +262,10 @@ namespace TerminalBase.BaseClasses
             using (var storage = CrateManager.GetUpdatableStorage(CurrentActivity))
             {
                 CurrentActivityStorage = storage;
-                SyncConfControls();
-
-                await Deactivate();
+                using (SyncConfControls())
+                {
+                    await Deactivate();
+                }
             }
 
             return curActivityDO;
@@ -302,7 +298,7 @@ namespace TerminalBase.BaseClasses
 
             AuthorizationToken = authTokenDO;
             CurrentActivity = curActivityDO;
-            
+
             UpstreamQueryManager = new UpstreamQueryManager(CurrentActivity, HubCommunicator, CurrentFr8UserId);
 
             _isRunTime = true;
@@ -319,11 +315,10 @@ namespace TerminalBase.BaseClasses
                 {
                     throw new InvalidOperationException("Operational state crate is not found");
                 }
-
-                SyncConfControls();
-
+                var syncBack = SyncConfControls();
                 try
                 {
+
                     var validationCm = new ValidationResultsCM();
                     var validationManager = new ValidationManager(validationCm, CurrentPayloadStorage);
 
@@ -360,23 +355,30 @@ namespace TerminalBase.BaseClasses
                 {
                     Error(ex.Message);
                 }
-            }
-            try
-            {
-                var previousActivityStorage = JToken.Parse(activityStorageContents);
-                var currentActivityStorage = JToken.Parse(CurrentActivity.CrateStorage);
-                if (!JToken.DeepEquals(previousActivityStorage, currentActivityStorage))
+                finally
                 {
-                    await HubCommunicator.SaveActivity(CurrentActivity, CurrentFr8UserId);
+                    syncBack?.Dispose();
                 }
             }
-            catch (Exception ex)
+            if (SaveActivityStorageAfterRun)
             {
-                Error(ex.Message);
+                try
+                {
+                    var previousActivityStorage = JToken.Parse(activityStorageContents);
+                    var currentActivityStorage = JToken.Parse(CurrentActivity.CrateStorage);
+                    if (!JToken.DeepEquals(previousActivityStorage, currentActivityStorage))
+                    {
+                        await HubCommunicator.SaveActivity(CurrentActivity, CurrentFr8UserId);
+                    }
+                }
+                catch (Exception ex)
+                {
+                    Error(ex.Message);
+                }
             }
             return processPayload;
         }
-        
+
         /**********************************************************************************/
 
         protected T AssignNamesForUnnamedControls(T configurationControls)
@@ -394,19 +396,19 @@ namespace TerminalBase.BaseClasses
 
             return configurationControls;
         }
-        
+
         /**********************************************************************************/
 
         protected virtual T CrateConfigurationControls()
         {
-            var uiBuilderConstructor = typeof (T).GetConstructor(new [] {typeof (UiBuilder)});
+            var uiBuilderConstructor = typeof(T).GetConstructor(new[] { typeof(UiBuilder) });
 
             if (uiBuilderConstructor != null)
             {
-                return AssignNamesForUnnamedControls((T) uiBuilderConstructor.Invoke(new object[] {UiBuilder}));
+                return AssignNamesForUnnamedControls((T)uiBuilderConstructor.Invoke(new object[] { UiBuilder }));
             }
 
-            var defaultConstructor = typeof (T).GetConstructor(new Type[0]);
+            var defaultConstructor = typeof(T).GetConstructor(new Type[0]);
 
             if (defaultConstructor == null)
             {
@@ -507,7 +509,7 @@ namespace TerminalBase.BaseClasses
         // But when we deserialize activity's crate storage we get StandardConfigurationControlsCM. So we need a way to 'convert' StandardConfigurationControlsCM
         // from crate storage to ActivityUI.
         // SyncConfControls takes properties of controls in StandardConfigurationControlsCM from activity's storage and copies them into ActivityUi.
-        private void SyncConfControls()
+        private IDisposable SyncConfControls()
         {
             var ui = CurrentActivityStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
@@ -518,7 +520,7 @@ namespace TerminalBase.BaseClasses
 
             ConfigurationControls = CrateConfigurationControls();
             ConfigurationControls.SyncWith(ui);
-            
+
             if (ui.Controls != null)
             {
                 var dynamicControlsCollection = Fr8ReflectionHelper.GetMembers(ConfigurationControls.GetType()).Where(x => x.CanRead && x.GetCustomAttribute<DynamicControlsAttribute>() != null && CheckIfMemberIsControlsCollection(x)).ToDictionary(x => x.Name, x => x);
@@ -565,6 +567,7 @@ namespace TerminalBase.BaseClasses
                     }
                 }
             }
+            return new SyncConfControlsToken<T>(this);
         }
 
         /**********************************************************************************/
@@ -606,7 +609,7 @@ namespace TerminalBase.BaseClasses
 
             return false;
         }
-        
+
         /**********************************************************************************/
         // Activity logic can update state of configuration controls. But as long we have copied  configuration controls crate from the storage into 
         // new instance of ActivityUi changes made to ActivityUi won't be reflected in storage.
@@ -724,7 +727,7 @@ namespace TerminalBase.BaseClasses
         protected void RequestJumpToActivity(Guid targetActivityId)
         {
             SetResponse(ActivityResponse.JumpToActivity);
-            OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() {Details = targetActivityId});
+            OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetActivityId });
         }
 
         /**********************************************************************************/
@@ -757,7 +760,7 @@ namespace TerminalBase.BaseClasses
 
             if (!string.IsNullOrWhiteSpace(message) || details != null)
             {
-                OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() {Message = message, Details = details});
+                OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Message = message, Details = details });
             }
         }
 
@@ -791,7 +794,7 @@ namespace TerminalBase.BaseClasses
             return base.ValidateActivity(activityDo, currActivityCrateStorage, validationManager);
         }
 
-        public  override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
             return base.ConfigurationEvaluator(curActivityDO);
         }
@@ -847,5 +850,18 @@ namespace TerminalBase.BaseClasses
         }
 
         /**********************************************************************************/
+        private class SyncConfControlsToken<TActivityUi> : IDisposable where TActivityUi : StandardConfigurationControlsCM
+        {
+            private readonly EnhancedTerminalActivity<TActivityUi> _activity;
+            public SyncConfControlsToken(EnhancedTerminalActivity<TActivityUi> activity)
+            {
+                _activity = activity;
+            }
+
+            public void Dispose()
+            {
+                _activity.SyncConfControlsBack();
+            }
+        }
     }
 }

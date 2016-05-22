@@ -81,6 +81,7 @@ namespace terminalFr8Core.Actions
         public FilterObjectListByIncomingMessage_v1() : base(false)
         {
             ActivityName = "Match Incoming Text and Build Object List";
+            SaveActivityStorageAfterRun = true;
         }
 
         protected override async Task Initialize(CrateSignaller crateSignaller)

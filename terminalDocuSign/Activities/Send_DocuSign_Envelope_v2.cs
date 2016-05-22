@@ -54,6 +54,15 @@ namespace terminalDocuSign.Actions
                 DropDownListFields = new List<DropDownList>();
                 Controls.Add(TemplateSelector);
             }
+
+            public void ClearDynamicFields()
+            {
+                RolesFields?.Clear();
+                TextFields?.Clear();
+                CheckBoxFields?.Clear();
+                RadioButtonGroupFields?.Clear();
+                DropDownListFields?.Clear();
+            }
         }
 
         private const string UserFieldsAndRolesCrateLabel = "Fields and Roles";
@@ -65,7 +74,7 @@ namespace terminalDocuSign.Actions
 
         public Send_DocuSign_Envelope_v2(IDocuSignManager docuSignManager) : base(docuSignManager)
         {
-            DisableValidationOnFollowup = false;
+            DisableValidationOnFollowup = true;
         }
 
         protected override Task Initialize(CrateSignaller crateSignaller)
@@ -83,7 +92,7 @@ namespace terminalDocuSign.Actions
             if (string.IsNullOrEmpty(selectedTemplateId))
             {
                 PreviousSelectedTemplateId = null;
-                ClearTemplateFields();
+                ConfigurationControls.ClearDynamicFields();
                 CurrentActivityStorage.RemoveByLabel(UserFieldsAndRolesCrateLabel);
                 return;
             }
@@ -91,6 +100,7 @@ namespace terminalDocuSign.Actions
             {
                 return;
             }
+            ConfigurationControls.ClearDynamicFields();
             PreviousSelectedTemplateId = selectedTemplateId;
             var docuSignConfiguration = DocuSignManager.SetUp(AuthorizationToken);
             var tabsAndFields = DocuSignManager.GetTemplateRecipientsTabsAndDocuSignTabs(docuSignConfiguration, selectedTemplateId);
@@ -148,7 +158,7 @@ namespace terminalDocuSign.Actions
             }
             foreach (var roleControl in ConfigurationControls.RolesFields.Where(x => x.InitialLabel.Contains(DocuSignConstants.DocuSignRoleEmail)))
             {
-                if (roleControl.HasSpecificValue && !roleControl.TextValue.IsValidEmailAddress())
+                if ((roleControl.ValueSource == null || roleControl.ValueSource == TextSource.SpecificValueSource)  && !roleControl.TextValue.IsValidEmailAddress())
                 {
                     validationManager.SetError($"The value of '{roleControl.InitialLabel}' is not a valid email address", roleControl);
                 }
@@ -185,13 +195,6 @@ namespace terminalDocuSign.Actions
         }
 
         #region Implementations details
-        private void ClearTemplateFields()
-        {
-            ConfigurationControls.CheckBoxFields.Clear();
-            ConfigurationControls.DropDownListFields.Clear();
-            ConfigurationControls.RadioButtonGroupFields.Clear();
-            ConfigurationControls.TextFields.Clear();
-        }
 
         private void LoadDocuSignTemplates()
         {
