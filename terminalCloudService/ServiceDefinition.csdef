@@ -159,7 +159,17 @@
           <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalYammer.fr8.co" />
         </Bindings>
       </Site>
-    </Sites>
+      <Site name="PlanDirectory" physicalDirectory="..\..\..\Services\PlanDirectory\azure.publish">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="PlanDirectory" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="directory.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-directory.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-directory.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="directory.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-directory.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-directory.fr8.co" />
+        </Bindings>
+      </Site>    </Sites>
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
       <Setting name="Fr8.ConnectionString"/>
@@ -179,7 +189,7 @@
       <Setting name="terminalTwilio.TerminalEndpoint"/>
       <Setting name="terminalYammer.TerminalEndpoint"/>
       <Setting name="OutboundUserName"/>
-      <Setting name="OutboundPassword"/>
+      <Setting name="OutboundUserPassword"/>
     </ConfigurationSettings>
     <Endpoints>
       <!-- Endpoint name must strongly match terminal name. This rule is expected 
@@ -199,8 +209,9 @@
       <InputEndpoint name="terminalGoogle" protocol="http" port="25923" />
       <InputEndpoint name="terminalDropbox" protocol="http" port="19760" />
       <InputEndpoint name="terminalAtlassian" protocol="http" port="39768" />
-      <InputEndpoint name="terminalQuickBooks" protocol="http" port="48317" />
       <InputEndpoint name="terminalYammer" protocol="http" port="39555" />
+      <InputEndpoint name="terminalQuickBooks" protocol="http" port="48317" />
+      <InputEndpoint name="PlanDirectory" protocol="http" port="64879" />
     </Endpoints>
     <Imports>
       <Import moduleName="RemoteAccess" />
