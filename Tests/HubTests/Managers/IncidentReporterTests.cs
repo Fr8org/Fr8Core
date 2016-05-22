@@ -29,13 +29,13 @@ namespace HubTests.Managers
             _incidentReporter.SubscribeToAlerts();
 
             var terminalUrl = "localhost:1234";
-            var activityDTO = "test_action"; 
+            var additionalData = "test_action"; 
             var errorMessage = "error_message";
 
             //var data = terminalUrl + "      " + activityDTO + " " + errorMessage;
-            var data = terminalUrl + "  ActionId = [" + activityDTO + "] " + errorMessage;
+            var data = terminalUrl + " [ " + additionalData + " ] " + errorMessage;
 
-            EventManager.TerminalRunFailed(terminalUrl, activityDTO, errorMessage, System.Guid.NewGuid().ToString());
+            EventManager.TerminalRunFailed(terminalUrl, additionalData, errorMessage, System.Guid.NewGuid().ToString());
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {   
