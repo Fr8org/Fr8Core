@@ -29,10 +29,10 @@ namespace Data.Infrastructure
         public delegate void IncidentTerminalRunPOSTFailureHandler(string terminalUrl, string curActionDTO, string errorMessage, string objectId);
         public static event IncidentTerminalRunPOSTFailureHandler IncidentTerminalRunFailed;
 
-        public delegate void IncidentTerminalInternalFailureHandler(string terminalUrl, string curActionDTO, Exception e, string objectId);
+        public delegate void IncidentTerminalInternalFailureHandler(string terminalUrl, string containerId, Exception e, string objectId);
         public static event IncidentTerminalInternalFailureHandler IncidentTerminalInternalFailureOccurred;
 
-        public delegate void IncidentTerminalActionActivationPOSTFailureHandler(string terminalUrl, string curActivityDTO, string objectId);
+        public delegate void IncidentTerminalActionActivationPOSTFailureHandler(string terminalUrl, string additionalData, string objectId);
         public static event IncidentTerminalActionActivationPOSTFailureHandler IncidentTerminalActionActivationFailed;
 
         public delegate void TerminalActionActivatedHandler(ActivityDO activity);
@@ -272,28 +272,28 @@ namespace Data.Infrastructure
             }
         }
 
-        public static void TerminalConfigureFailed(string terminalUrl, string activityId, string errorMessage, string objectId)
+        public static void TerminalConfigureFailed(string terminalUrl, string additionalData, string errorMessage, string objectId)
         {
             IncidentTerminalConfigurePOSTFailureHandler handler = IncidentTerminalConfigureFailed;
-            if (handler != null) handler(terminalUrl, activityId, errorMessage, objectId);
+            if (handler != null) handler(terminalUrl, additionalData, errorMessage, objectId);
         }
 
-        public static void TerminalRunFailed(string terminalUrl, string activityId, string errorMessage, string objectId)
+        public static void TerminalRunFailed(string terminalUrl, string additionalData, string errorMessage, string objectId)
         {
             IncidentTerminalRunPOSTFailureHandler handler = IncidentTerminalRunFailed;
-            if (handler != null) handler(terminalUrl, activityId, errorMessage, objectId);
+            if (handler != null) handler(terminalUrl, additionalData, errorMessage, objectId);
         }
 
-        public static void TerminalInternalFailureOccurred(string terminalUrl, string containerId, Exception e, string objectId)
+        public static void TerminalInternalFailureOccurred(string terminalUrl, string additionalData, Exception e, string objectId)
         {
             IncidentTerminalInternalFailureHandler handler = IncidentTerminalInternalFailureOccurred;
-            if (handler != null) handler(terminalUrl, containerId, e, objectId);
+            if (handler != null) handler(terminalUrl, additionalData, e, objectId);
         }
 
-        public static void TerminalActionActivationFailed(string terminalUrl, string activityId, string errorMessage, string objectId)
+        public static void TerminalActionActivationFailed(string terminalUrl, string additional, string errorMessage, string objectId)
         {
             IncidentTerminalActionActivationPOSTFailureHandler handler = IncidentTerminalActionActivationFailed;
-            if (handler != null) handler(terminalUrl, activityId, objectId);
+            if (handler != null) handler(terminalUrl, additional, objectId);
         }
 
         public static void PlanActivationFailed(PlanDO plan, string reason)
