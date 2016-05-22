@@ -443,7 +443,7 @@ namespace HubWeb.Controllers
                         // that's bad. Reset containerId to run plan with new container
                         containerId = null;
                     }
-                }
+                } 
 
                 PlanType? currentPlanType = null;
 
