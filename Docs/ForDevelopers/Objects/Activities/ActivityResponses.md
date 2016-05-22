@@ -1,10 +1,8 @@
-# ACTIVITIES – SIGNALLING STATUS
-[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md) 
 
-When a Terminal completes processing of an Activity, it signals status via Activity Response structure, which is part of the Http response to the Hub.
 
 ## Activity Responses
 
+When a Terminal completes processing of an Activity, it signals status via Activity Response structure, which is part of the Http response to the Hub.
 Hubs are aware of the following Activity Responses:
 
 Value |	What the Hub Does |	Discussion
@@ -27,5 +25,3 @@ Name | Data Type | Description
 --- | --- | ---
 Type |	string |	One of the string values in the table above
 Body |	string |	A JSON element of arbitrary complexity. Most ActivityResponses do not currently need or use this. A key exception is Error, which uses this to return Error explanation text.
-
-[Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md) 

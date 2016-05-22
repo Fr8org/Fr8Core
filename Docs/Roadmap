@@ -1,0 +1,8 @@
+Roadmap
+
+
+Planned Work Items
+
+- Smarter Dependency Tracking
+Right now, when an Activity is configured, the system calls configure on all downstream Activities to make sure there are no broken references. Replace
+that with a smarter approach that tracks dependencies between Activities and only calls configure on downstream dependencies.
