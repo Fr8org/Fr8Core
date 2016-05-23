@@ -65,8 +65,7 @@ namespace terminalSalesforceTests.Actions
         public async Task Configure_InitialConfig_CheckControlsCrate()
         {
             //Arrange
-            var activityDO = FixtureData.PostToChatterTestActivityDO1();
-            var activityContext = FixtureData.GetFileListTestActivityContext2();
+            var activityContext = await FixtureData.GetFileListTestActivityContext2();
 
             //Act
             await postToChatter_v1.Configure(activityContext);
@@ -82,9 +81,11 @@ namespace terminalSalesforceTests.Actions
         public async Task Run_Check_PayloadDTO_ForObjectData()
         {
             //Arrange
-            var authToken = await FixtureData.Salesforce_AuthToken();
-            var activityContext = FixtureData.GetFileListTestActivityContext2();
-            var executionContext = new ContainerExecutionContext();
+            var activityContext = await FixtureData.GetFileListTestActivityContext2();
+            var executionContext = new ContainerExecutionContext
+            {
+                PayloadStorage = new CrateStorage()
+            };
             
             //perform initial configuration
             await postToChatter_v1.Configure(activityContext);
@@ -94,7 +95,7 @@ namespace terminalSalesforceTests.Actions
             await postToChatter_v1.Run(activityContext, executionContext);
 
             //Assert
-            var storage = activityContext.ActivityPayload.CrateStorage;
+            var storage = executionContext.PayloadStorage;
             Assert.IsNotNull(storage.FirstCrateOrDefault<StandardPayloadDataCM>(), "Payload doesn't contain crate with posted feed Id");
         }
 

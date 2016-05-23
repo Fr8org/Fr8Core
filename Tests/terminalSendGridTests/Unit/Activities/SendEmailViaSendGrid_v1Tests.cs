@@ -44,10 +44,9 @@ namespace terminalSendGridTests.Unit.Activities
         {
             // Act
             var controlsCrates = activityPayload.CrateStorage;
-
             // Assert
             Assert.IsNotNull(controlsCrates);
-            Assert.AreEqual(controlsCrates.Count(), 2);
+            Assert.AreEqual(controlsCrates.Count(), 1);
         }
 
         [Test]

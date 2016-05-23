@@ -63,7 +63,7 @@ namespace terminalSalesforceTests.Actions
         public async Task Configure_InitialConfig_CheckControlsCrate()
         {
             //Arrange
-            var activityContext = FixtureData.GetFileListTestActivityContext1();
+            var activityContext = await FixtureData.GetFileListTestActivityContext1();
 
             //Act
             await _getData_v1.Configure(activityContext);
@@ -79,7 +79,7 @@ namespace terminalSalesforceTests.Actions
         public async Task Configure_FollowUpConfig_CheckObjectFields()
         {
             // Arrange
-            var activityContext = FixtureData.GetFileListTestActivityContext2();
+            var activityContext = await FixtureData.GetFileListTestActivityContext2();
             await _getData_v1.Configure(activityContext);
             SelectSalesforceAccount(activityContext);
 
@@ -107,7 +107,7 @@ namespace terminalSalesforceTests.Actions
         {
             //Arrange
             var authToken = await FixtureData.Salesforce_AuthToken();
-            var activityContext = FixtureData.GetFileListTestActivityContext1();
+            var activityContext = await FixtureData.GetFileListTestActivityContext1();
             var executionContext = new ContainerExecutionContext();
 
             //perform initial configuration

@@ -125,7 +125,7 @@ namespace terminalTwilio.Activities
         /// </summary>
         /// <param name="crateDTO"></param>
         /// <returns>Key = SMS Number; Value = SMS Body</returns>
-        public FieldDTO ParseSMSNumberAndMsg()
+        private FieldDTO ParseSMSNumberAndMsg()
         {
             var smsNumber = GetSMSNumber((TextSource)ConfigurationControls.Controls[0], Payload);
             var smsBody = GetSMSBody((TextSource)ConfigurationControls.Controls[1], Payload);

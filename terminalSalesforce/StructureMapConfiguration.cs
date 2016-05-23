@@ -22,10 +22,10 @@ namespace terminalSalesforce
              switch (type)
              {
                  case DependencyType.TEST:
-                     ObjectFactory.Initialize(x => x.AddRegistry<TestMode>()); 
+                     ObjectFactory.Configure(x => x.AddRegistry<TestMode>()); 
                      break;
                  case DependencyType.LIVE:
-                     ObjectFactory.Initialize(x => x.AddRegistry<LiveMode>());
+                     ObjectFactory.Configure(x => x.AddRegistry<LiveMode>());
                      break;
              }
          }

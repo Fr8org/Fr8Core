@@ -34,26 +34,12 @@ namespace terminalSendGrid.Actions
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        public SendEmailViaSendGrid_v1(): base(true)
+        public SendEmailViaSendGrid_v1(): base(false)
         {
             _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
             _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();
         }
         
-
-        /// <summary>
-        /// this entire function gets passed as a delegate to the main processing code in the base class
-        /// currently many actions have two stages of configuration, and this method determines which stage should be applied
-        /// </summary>
-        private ConfigurationRequestType EvaluateReceivedRequest()
-        {
-            if (Storage == null || Storage.Count == 0)
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            return ConfigurationRequestType.Followup;
-        }
 
         public override async Task Initialize()
         {

@@ -28,7 +28,8 @@ namespace terminalTwilio.Tests.Fixtures
             };
             var activityContext = new ActivityContext
             {
-                ActivityPayload = activityPayload
+                ActivityPayload = activityPayload,
+                AuthorizationToken = AuthTokenDOTest1()
             };
             return activityContext;
         }
@@ -53,14 +54,14 @@ namespace terminalTwilio.Tests.Fixtures
             return Crate.FromContent("Configuration_Controls", confControls);
         }
 
-        public static AuthorizationTokenDO AuthTokenDOTest1()
+        public static AuthorizationToken AuthTokenDOTest1()
         {
-            return new AuthorizationTokenDO
+            return new AuthorizationToken
             {
                 Token =
                     @"{""Email"":""docusign_developer@dockyard.company"",""ApiPassword"":""VIXdYMrnnyfmtMaktD+qnD4sBdU=""}",
                 ExternalAccountId = "docusign_developer@dockyard.company",
-                UserID = "0addea2e-9f27-4902-a308-b9f57d811c0a"
+                UserId = "0addea2e-9f27-4902-a308-b9f57d811c0a"
 
             };
         }

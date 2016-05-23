@@ -59,24 +59,7 @@ namespace terminalSalesforceTests.Fixtures
             };
         }
 
-        public static ActivityContext GetFileListTestActivityContext1()
-        {
-            var actionTemplate = GetDataActivityTemplateDTO();
-
-            var activityPayload = new ActivityPayload()
-            {
-                Id = new Guid("8339DC87-F011-4FB1-B47C-FEC406E4100A"),
-                ActivityTemplate = actionTemplate,
-                CrateStorage = new CrateStorage(),
-
-            };
-            var activityContext = new ActivityContext()
-            {
-                ActivityPayload = activityPayload
-            };
-            return activityContext;
-        }
-        public static ActivityContext GetFileListTestActivityContext2()
+        public static async Task<ActivityContext> GetFileListTestActivityContext1()
         {
             var actionTemplate = GetDataActivityTemplateDTO();
 
@@ -89,10 +72,24 @@ namespace terminalSalesforceTests.Fixtures
             var activityContext = new ActivityContext()
             {
                 ActivityPayload = activityPayload,
-                AuthorizationToken = new AuthorizationToken
-                {
-                    Token = Salesforce_AuthToken().Result.Token
-                }
+                AuthorizationToken = await FixtureData.Salesforce_AuthToken()
+            };
+            return activityContext;
+        }
+        public static async Task<ActivityContext> GetFileListTestActivityContext2()
+        {
+            var actionTemplate = GetDataActivityTemplateDTO();
+
+            var activityPayload = new ActivityPayload()
+            {
+                Id = new Guid("8339DC87-F011-4FB1-B47C-FEC406E4100A"),
+                ActivityTemplate = actionTemplate,
+                CrateStorage = new CrateStorage()
+            };
+            var activityContext = new ActivityContext()
+            {
+                ActivityPayload = activityPayload,
+                AuthorizationToken = await FixtureData.Salesforce_AuthToken()
             };
             return activityContext;
         }
