@@ -44,7 +44,7 @@ namespace terminalTests.Unit
             var fileds = new FieldDescriptionsCM(new FieldDTO[] { });
 
             var hubCommunicatorMock = new Mock<IHubCommunicator>();
-            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<Guid>(), It.IsAny<string>())).Returns(Task.FromResult(payload));
+            //hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<Guid>(), It.IsAny<string>())).Returns(Task.FromResult(payload));
             hubCommunicatorMock.Setup(h => h.GetDesignTimeFieldsByDirection(It.IsAny<Guid>(), It.IsAny<CrateDirection>(), 
                                         It.IsAny<AvailabilityType>(), It.IsAny<string>())).Returns(Task.FromResult(fileds));
             ObjectFactory.Container.Inject(hubCommunicatorMock);
