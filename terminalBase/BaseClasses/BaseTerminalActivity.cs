@@ -687,6 +687,7 @@ namespace TerminalBase.BaseClasses
                     RaiseError("Activity was incorrectly configured");
                     return;
                 }
+
                 OperationalState.CurrentActivityResponse = null;
                 await Run();
                 if (OperationalState.CurrentActivityResponse == null)
