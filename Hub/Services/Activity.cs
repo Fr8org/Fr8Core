@@ -27,6 +27,7 @@ using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
 using Utilities;
 using Hub.Exceptions;
+using Segment;
 
 namespace Hub.Services
 {
@@ -105,7 +106,7 @@ namespace Hub.Services
 
                 if (parentNode is PlanDO)
                 {
-                    if (((PlanDO) parentNode).StartingSubPlan == null)
+                    if (((PlanDO)parentNode).StartingSubPlan == null)
                     {
                         parentNode.ChildNodes.Add(parentNode = new SubPlanDO
                         {
@@ -115,7 +116,7 @@ namespace Hub.Services
                     }
                     else
                     {
-                        parentNode = ((PlanDO) parentNode).StartingSubPlan;
+                        parentNode = ((PlanDO)parentNode).StartingSubPlan;
                     }
 
                 }
@@ -142,7 +143,6 @@ namespace Hub.Services
             {
                 return plan;
             }
-
             return activity;
         }
 
@@ -415,7 +415,7 @@ namespace Hub.Services
 
                     if (originalActions.TryGetValue(submitted.Id, out existingActivity))
                     {
-                        RestoreSystemProperties(existingActivity, (ActivityDO) submitted);
+                        RestoreSystemProperties(existingActivity, (ActivityDO)submitted);
                     }
                 }
             }
@@ -493,7 +493,7 @@ namespace Hub.Services
                 return;
             }
 
-            var curActivityDO = (ActivityDO) exisiting.Clone();
+            var curActivityDO = (ActivityDO)exisiting.Clone();
 
             var dto = Mapper.Map<ActivityDO, ActivityDTO>(curActivityDO);
             bool skipDeactivation = false;
@@ -512,7 +512,7 @@ namespace Hub.Services
             }
             else
             {
-               skipDeactivation = true;
+                skipDeactivation = true;
             }
 
             if (!skipDeactivation)
@@ -568,7 +568,7 @@ namespace Hub.Services
                     throw;
                 }
             }
-
+            Analytics.Client.Track("TestUser", "Added Activity Added Activity to Plan", new Segment.Model.Properties() { { "Activity Name", submittedActivity.Name } });
             return Mapper.Map<ActivityDO>(tempActionDTO);
         }
 

@@ -15,7 +15,7 @@
             <md-icon md-font-icon="fa fa-search material-fa-icon"></md-icon>
             <div flex name="filter.form">
                 <md-input-container class="md-block" flex-gt-sm>
-                    <input flex type="text" ng-model="activeQuery.filter" ng-model-options="filter.options" placeholder="Search" style="border-bottom: 1px solid #000000; border-bottom: 1px solid rgba(0,0,0,.12) !important">
+                    <input flex type="text" ng-model="activeQuery.filter" ng-model-options="filter.options" placeholder="Search" style="border-bottom: 1px solid #000000; border-bottom: 1px solid rgba(0, 0, 0, .12) !important">
                 </md-input-container>
             </div>
             <md-button class="md-icon-button" ng-click="removeActiveFilter()">
@@ -27,49 +27,49 @@
     <md-table-container>
         <table md-table md-progress="activePromise">
             <thead md-head md-order="activeQuery.orderBy" md-on-reorder="getActivePlans">
-                <tr md-row>
-                    <th md-column md-order-by="name" style="width: 20%;"><span>Name</span></th>
-                    <th md-column style="width: 35%;"><span>Description</span></th>
-                    <th md-column md-order-by="lastUpdated" style="width: 20%;">Last Updated</th>
-                    <th md-column style="width: 10%;">Status</th>
-                    <th md-column md-numeric style="width: 15%;">Actions</th>
-                </tr>
+            <tr md-row>
+                <th md-column md-order-by="name" style="width: 20%;"><span>Name</span></th>
+                <th md-column style="width: 35%;"><span>Description</span></th>
+                <th md-column md-order-by="lastUpdated" style="width: 20%;">Last Updated</th>
+                <th md-column style="width: 10%;">Status</th>
+                <th md-column md-numeric style="width: 15%;">Actions</th>
+            </tr>
             </thead>
             <tbody md-body>
-                <tr md-row ng-repeat="plan in activePlans.plans | filter: {planState:2}">
-                    <td md-cell class="column-spacer">{{ plan.name }}</td>
-                    <td md-cell class="column-spacer">{{ plan.description }}</td>
-                    <td md-cell>{{ plan.lastUpdated | date:"MM/dd/yyyy h:mm:ss a"}}</td>
-                    <td md-cell>
-                        <span class="bold font-green-haze">{{plan.planState == 2 ? 'Active' : 'Inactive' }}</span>
-                    </td>
-                    <td md-cell style="display: flex;">
-                        <md-button class="md-icon-button md-table-fr8-button" ng-click="goToPlanPage(plan.id);">
-                            <md-icon md-font-icon="fa-edit" class="fa fa-lg"></md-icon>
-                            <md-tooltip md-direction="top">
-                                Edit
-                            </md-tooltip>
-                        </md-button>            
-                        <md-button class="md-icon-button md-table-fr8-button" ng-click="deletePlan(plan.id,plan.planState);">
-                            <md-icon md-font-icon="fa-trash" class="fa fa-lg"></md-icon>
-                            <md-tooltip md-direction="top">
-                                Delete
-                            </md-tooltip>
-                        </md-button>
-                        <md-button class="md-icon-button md-table-fr8-button" ng-click="deactivatePlan(plan);">
-                            <md-icon md-font-icon="fa fa-stop" class="fa fa-lg"></md-icon>
-                            <md-tooltip md-direction="top">
-                                Deactivate
-                            </md-tooltip>
-                        </md-button>
-                        <md-button class="md-icon-button md-table-fr8-button" ng-click="goToPlanDetailsPage(plan.id);">
-                            <md-icon md-font-icon="fa fa-ellipsis-h" class="fa fa-lg"></md-icon>
-                            <md-tooltip md-direction="top">
-                                Settings
-                            </md-tooltip>
-                        </md-button>
-                    </td>
-                </tr>
+            <tr md-row ng-repeat="plan in activePlans.plans | filter: {planState:2}">
+                <td md-cell class="column-spacer">{{ plan.name }}</td>
+                <td md-cell class="column-spacer">{{ plan.description }}</td>
+                <td md-cell>{{ plan.lastUpdated | date:"MM/dd/yyyy h:mm:ss a"}}</td>
+                <td md-cell>
+                    <span class="bold font-green-haze">{{plan.planState == 2 ? 'Active' : 'Inactive' }}</span>
+                </td>
+                <td md-cell style="display: flex;">
+                    <md-button class="md-icon-button md-table-fr8-button" ng-click="goToPlanPage(plan.id);">
+                        <md-icon md-font-icon="fa-edit" class="fa fa-lg"></md-icon>
+                        <md-tooltip md-direction="top">
+                            Edit
+                        </md-tooltip>
+                    </md-button>
+                    <md-button class="md-icon-button md-table-fr8-button" ng-click="deletePlan(plan.id,plan.planState);">
+                        <md-icon md-font-icon="fa-trash" class="fa fa-lg"></md-icon>
+                        <md-tooltip md-direction="top">
+                            Delete
+                        </md-tooltip>
+                    </md-button>
+                    <md-button class="md-icon-button md-table-fr8-button" ng-click="deactivatePlan(plan);">
+                        <md-icon md-font-icon="fa fa-stop" class="fa fa-lg"></md-icon>
+                        <md-tooltip md-direction="top">
+                            Deactivate
+                        </md-tooltip>
+                    </md-button>
+                    <md-button class="md-icon-button md-table-fr8-button" ng-click="goToPlanDetailsPage(plan.id);">
+                        <md-icon md-font-icon="fa fa-ellipsis-h" class="fa fa-lg"></md-icon>
+                        <md-tooltip md-direction="top">
+                            Settings
+                        </md-tooltip>
+                    </md-button>
+                </td>
+            </tr>
             </tbody>
         </table>
     </md-table-container>
@@ -93,7 +93,7 @@
             <md-icon md-font-icon="fa fa-search material-fa-icon"></md-icon>
             <div flex name="filter.form">
                 <md-input-container class="md-block" flex-gt-sm>
-                    <input flex type="text" ng-model="inActiveQuery.filter" ng-model-options="filter.options" placeholder="Search" style="border-bottom: 1px solid #000000; border-bottom: 1px solid rgba(0,0,0,.12) !important">
+                    <input flex type="text" ng-model="inActiveQuery.filter" ng-model-options="filter.options" placeholder="Search" style="border-bottom: 1px solid #000000; border-bottom: 1px solid rgba(0, 0, 0, .12) !important">
                 </md-input-container>
             </div>
             <md-button class="md-icon-button" ng-click="removeInactiveFilter()">
@@ -105,49 +105,49 @@
     <md-table-container>
         <table md-table md-progress="inActivePromise">
             <thead md-head md-order="inActiveQuery.orderBy" md-on-reorder="getInactivePlans">
-                <tr md-row>
-                    <th md-column md-order-by="name" style="width: 20%;"><span>Name</span></th>
-                    <th md-column style="width: 35%;"><span>Description</span></th>
-                    <th md-column md-order-by="lastUpdated" style="width: 20%;">Last Updated</th>
-                    <th md-column style="width: 10%;">Status</th>
-                    <th md-column md-numeric style="width: 15%;">Actions</th>
-                </tr>
+            <tr md-row>
+                <th md-column md-order-by="name" style="width: 20%;"><span>Name</span></th>
+                <th md-column style="width: 35%;"><span>Description</span></th>
+                <th md-column md-order-by="lastUpdated" style="width: 20%;">Last Updated</th>
+                <th md-column style="width: 10%;">Status</th>
+                <th md-column md-numeric style="width: 15%;">Actions</th>
+            </tr>
             </thead>
             <tbody md-body>
-                <tr md-row ng-repeat="plan in inActivePlans.plans | filter: {planState:1}">
-                    <td md-cell class="column-spacer">{{ plan.name }}</td>
-                    <td md-cell class="column-spacer">{{ plan.description }}</td>
-                    <td md-cell>{{ plan.lastUpdated | date:"MM/dd/yyyy h:mm:ss a"}}</td>
-                    <td md-cell>
-                        <span class="bold">{{plan.planState == 2 ? 'Active' : 'Inactive' }}</span>
-                    </td>
-                    <td md-cell style="display: flex;">
-                        <md-button class="md-icon-button md-table-fr8-button" ng-click="goToPlanPage(plan.id);">
-                            <md-icon md-font-icon="fa-edit" class="fa fa-lg"></md-icon>
-                            <md-tooltip md-direction="top">
-                                Edit
-                            </md-tooltip>
-                        </md-button>
-                        <md-button class="md-icon-button md-table-fr8-button" ng-click="deletePlan(plan.id,plan.planState);">
-                            <md-icon md-font-icon="fa-trash" class="fa fa-lg"></md-icon>
-                            <md-tooltip md-direction="top">
-                                Delete
-                            </md-tooltip>
-                        </md-button>
-                        <md-button class="md-icon-button md-table-fr8-button" ng-click="executePlan(plan,$event);">
-                            <md-icon md-font-icon="fa-play" class="fa fa-lg font-green-haze"></md-icon>
-                            <md-tooltip md-direction="top">
-                                Run
-                            </md-tooltip>
-                        </md-button>
-                        <md-button class="md-icon-button md-table-fr8-button" ng-click="goToPlanDetailsPage(plan.id);">
-                            <md-icon md-font-icon="fa fa-ellipsis-h" class="fa fa-lg"></md-icon>
-                            <md-tooltip md-direction="top">
-                                Settings
-                            </md-tooltip>
-                        </md-button>
-                    </td>
-                </tr>
+            <tr md-row ng-repeat="plan in inActivePlans.plans | filter: {planState:1}">
+                <td md-cell class="column-spacer">{{ plan.name }}</td>
+                <td md-cell class="column-spacer">{{ plan.description }}</td>
+                <td md-cell>{{ plan.lastUpdated | date:"MM/dd/yyyy h:mm:ss a"}}</td>
+                <td md-cell>
+                    <span class="bold">{{plan.planState == 2 ? 'Active' : 'Inactive' }}</span>
+                </td>
+                <td md-cell style="display: flex;">
+                    <md-button class="md-icon-button md-table-fr8-button" ng-click="goToPlanPage(plan.id);">
+                        <md-icon md-font-icon="fa-edit" class="fa fa-lg"></md-icon>
+                        <md-tooltip md-direction="top">
+                            Edit
+                        </md-tooltip>
+                    </md-button>
+                    <md-button class="md-icon-button md-table-fr8-button" ng-click="deletePlan(plan.id,plan.planState);">
+                        <md-icon md-font-icon="fa-trash" class="fa fa-lg"></md-icon>
+                        <md-tooltip md-direction="top">
+                            Delete
+                        </md-tooltip>
+                    </md-button>
+                    <md-button id="btnRunPlanFromPlanDashboard" class="md-icon-button md-table-fr8-button" ng-click="executePlan(plan,$event);">
+                        <md-icon md-font-icon="fa-play" class="fa fa-lg font-green-haze"></md-icon>
+                        <md-tooltip md-direction="top">
+                            Run
+                        </md-tooltip>
+                    </md-button>
+                    <md-button class="md-icon-button md-table-fr8-button" ng-click="goToPlanDetailsPage(plan.id);">
+                        <md-icon md-font-icon="fa fa-ellipsis-h" class="fa fa-lg"></md-icon>
+                        <md-tooltip md-direction="top">
+                            Settings
+                        </md-tooltip>
+                    </md-button>
+                </td>
+            </tr>
             </tbody>
         </table>
     </md-table-container>
@@ -155,6 +155,3 @@
     <md-table-pagination md-limit="inActiveQuery.planPerPage" md-limit-options="[5, 10, 15, 20]" md-page="inActiveQuery.page" md-total="{{(inActivePlans.totalPlanCount || inActivePlans.totalPlanCount === 0) ? inActivePlans.totalPlanCount : 'NaN'}}" md-on-paginate="getInactivePlans" md-page-select></md-table-pagination>
 
 </md-content>
-<script type="text/javascript">
-        window.analytics.page('Plan Dashboard');
-</script>

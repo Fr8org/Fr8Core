@@ -1,4 +1,5 @@
 ﻿@using Microsoft.AspNet.Identity
+@using Utilities
 @if (Request.IsAuthenticated)
 {
     using (Html.BeginForm("Index", "Home", FormMethod.Post, new { id = "logoutForm", @class = " " }))
@@ -10,7 +11,7 @@
                 <ul class="dropdown-menu">
                     <li><a href="/Services/DocuSign">DocuSign</a></li>
                     @*<li><a href="/Services/Salesforce">Salesforce.com</a></li>
-                    <li><a href="/Services/GoogleApps">Google Apps</a></li>*@
+                        <li><a href="/Services/GoogleApps">Google Apps</a></li>*@
                     @*<li><a href="/Home/ConditionalLogicBranching">Conditional Logic Branching</a></li>
                         <li><a href="/Home/IntegrationWithOtherDataServices">Integration with Other Data Services</a></li>
                         <li><a href="/Home/InterOrganizationWorkflows">Inter-Organization Workflows</a></li>
@@ -55,7 +56,7 @@ else
             <ul class="dropdown-menu">
                 <li><a href="/Services/DocuSign">DocuSign</a></li>
                 @*<li><a href="/Services/Salesforce">Salesforce.com</a></li>
-                <li><a href="/Services/GoogleApps">Google Apps</a></li>*@
+                    <li><a href="/Services/GoogleApps">Google Apps</a></li>*@
                 @*<li><a href="/Home/ConditionalLogicBranching">Conditional Logic Branching</a></li>
                     <li><a href="/Home/IntegrationWithOtherDataServices">Integration with Other Data Services</a></li>
                     <li><a href="/Home/InterOrganizationWorkflows">Inter-Organization Workflows</a></li>
