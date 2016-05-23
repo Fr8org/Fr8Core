@@ -463,17 +463,15 @@ namespace Fr8Data.Control
         {
             switch (ValueSource)
             {
+                case null:
                 case SpecificValueSource:
                     return TextValue;
-
                 case UpstreamValueSrouce:
                     if (payloadCrateStorage == null)
                     {
                         throw new Exception("Can't resolve upstream value without payload crate storage provided");
                     }
-
                     return payloadCrateStorage.FindField(this.selectedKey);
-
                 default:
                     return null;
             }

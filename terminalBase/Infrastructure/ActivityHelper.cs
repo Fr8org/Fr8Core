@@ -2,8 +2,6 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
 using Data.Entities;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
@@ -11,7 +9,6 @@ using Fr8Data.Helpers;
 using Fr8Data.Manifests;
 using Hub.Managers;
 using TerminalBase.BaseClasses;
-using IMemberAccessor = Fr8Data.Helpers.IMemberAccessor;
 
 namespace TerminalBase.Infrastructure
 {
@@ -22,6 +19,19 @@ namespace TerminalBase.Infrastructure
         /// </summary>
         public static ActivityDO UpdateControls<TActivityUi>(this ActivityDO activity, Action<TActivityUi> action) where TActivityUi : StandardConfigurationControlsCM, new()
         {
+            return UpdateControls((object)activity, action) as ActivityDO;
+        }
+
+        /// <summary>
+        /// Lets you update activity UI control values without need to unpack and repack control crates
+        /// </summary>
+        public static ActivityDTO UpdateControls<TActivityUi>(this ActivityDTO activity, Action<TActivityUi> action) where TActivityUi : StandardConfigurationControlsCM, new()
+        {
+            return UpdateControls((object)activity, action) as ActivityDTO;
+        }
+
+        private static object UpdateControls<TActivityUi>(object activity, Action<TActivityUi> action) where TActivityUi : StandardConfigurationControlsCM, new()
+        {
             if (activity == null)
             {
                 throw new ArgumentNullException(nameof(activity));
@@ -30,8 +40,10 @@ namespace TerminalBase.Infrastructure
             {
                 throw new ArgumentNullException(nameof(action));
             }
+            var activityDO = activity as ActivityDO;
+            var activityDTO = activity as ActivityDTO;
             var crateManager = new CrateManager();
-            using (var storage = crateManager.GetUpdatableStorage(activity))
+            using (var storage = activityDO == null ? crateManager.GetUpdatableStorage(activityDTO) : crateManager.GetUpdatableStorage(activityDO))
             {
                 var controlsCrate = storage.FirstCrate<StandardConfigurationControlsCM>();
                 var activityUi = new TActivityUi().ClonePropertiesFrom(controlsCrate.Content) as TActivityUi;
@@ -42,18 +54,9 @@ namespace TerminalBase.Infrastructure
                 activityUi.SaveDynamicControlsTo(newControls);
 
             }
-            return activity;
+            return activityDO ?? (object)activityDTO;
         }
 
-        /// <summary>
-        /// Lets you update activity UI control values without need to unpack and repack control crates
-        /// </summary>
-        public static ActivityDTO UpdateControls<TActivityUi>(this ActivityDTO activity, Action<TActivityUi> action) where TActivityUi : StandardConfigurationControlsCM, new()
-        {
-            var activityDO = Mapper.Map<ActivityDO>(activity);
-            activityDO.UpdateControls(action);
-            return Mapper.Map<ActivityDTO>(activityDO);
-        }
         /// <summary>
         /// Returns a copy of AcvitityUI for the given activity
         /// </summary>

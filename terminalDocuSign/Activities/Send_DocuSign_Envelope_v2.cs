@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper.Internal;
 using Data.Validations;
 using Fr8Data.Control;
 using Fr8Data.Crates;
