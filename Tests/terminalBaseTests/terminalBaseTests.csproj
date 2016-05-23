@@ -149,7 +149,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseClasses\BaseTerminalActivityTests.cs" />
-    <Compile Include="BaseClasses\BaseTerminalControllerTests.cs" />
+    <Compile Include="BaseClasses\ActivityExecutorTests.cs" />
     <Compile Include="BaseClasses\EnhancedTerminalActivityTests.cs" />
     <Compile Include="Fixtures\FixtureData - CoreSelfHostFactory.cs" />
     <Compile Include="Fixtures\FixtureData - HandleFr8Request.cs" />
