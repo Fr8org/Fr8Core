@@ -2,7 +2,7 @@
 using Data.Entities;
 using Data.Interfaces;
 
-namespace terminalSendGrid.Infrastructure
+namespace terminalUtilities.SendGrid
 {
     public interface IEmailPackager
     {
