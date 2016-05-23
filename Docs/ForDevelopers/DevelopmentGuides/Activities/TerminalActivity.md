@@ -26,21 +26,22 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
   The single parameter constructor creates a new BaseTerminalActivity instance and sets the ActivityName field to the value of the name parameter. This constructor also initializes the CrateManager and HubCommunicator fields
 
 ## Methods
-* void SetCurrentUser(string UserId, string UserEmail)
+### void SetCurrentUser(string UserId, string UserEmail)
 
   Sets the CurrentFr8UserId and CurrentFr8UserEmail fields
   * Params
     * string UserId: the id for the current user
     * string UserEmail: the email address for the current user
-
-* PayloadDTO SuspendHubExecution(PayloadDTO payload)
+---
+### PayloadDTO SuspendHubExecution(PayloadDTO payload)
 
   Creates an OperationalStateCM Crate object with a value of ActivityResponse.RequestSuspend
   * Params
     * PayloadDTO payload: a PayloadDTO object that contains (?)
   * returns
     * PayloadDTO object that contains (?)
-* PayloadDTO TerminateHubExecution(PayloadDTO payloadDTO, string message)
+---
+### PayloadDTO TerminateHubExecution(PayloadDTO payloadDTO, string message)
 
   Creates an OperationalStateCM Crate object with a value of ActivityResponse.RequestTerminate
   * Params
@@ -48,7 +49,8 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
     * string message: a message that is used for (?)
   * returns
     * PayloadDTO object which contains (?)
-* PayloadDTO LaunchPlan(PayloadDTO payloadDTO, Guid targetPlanId)
+---
+### PayloadDTO LaunchPlan(PayloadDTO payloadDTO, Guid targetPlanId)
 
   Creates an OperationalStateCM Crate object with a value of ActivityResponse.LaunchAdditionalPlan
   * Params
@@ -56,7 +58,8 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
     * Guid targetPlanId: the ID of the plan which should be launched
   * returns
     * PayloadDTO object which contains (?)
-* PayloadDTO JumpToSubplan(PayloadDTO payload, Guid targetSubplanId)
+---
+### PayloadDTO JumpToSubplan(PayloadDTO payload, Guid targetSubplanId)
 
   Creates an OperationalStateCM Crate object with a value of ActivityResponse.JumpToSubplan
   * Params
@@ -64,7 +67,8 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
     * Guid targetSubplanId: the ID of the Subplan which should be executed
   * returns
     * PayloadDTO object which contains (?)
-* PayloadDTO JumpToActivity(PayloadDTO payload, Guid targetActivityId)
+---
+### PayloadDTO JumpToActivity(PayloadDTO payload, Guid targetActivityId)
 
   Creates an OperationalStateCM Crate object with a value of ActivityResponse.JumpToActivity
   * Params
@@ -72,7 +76,8 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
     * Guid targetActivityId: the ID of the activity which should be moved to
   * returns
     * PayloadDTO object which contains (?)
-* PayloadDTO LaunchAdditionalPlan(PayloadDTO payload, Guid targetSubplanId)
+---
+### PayloadDTO LaunchAdditionalPlan(PayloadDTO payload, Guid targetSubplanId)
 
   Jumps to an activity that resides in the same subplan as the current activity
   * Params
@@ -80,7 +85,8 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
     * Guid targetSubplanId: the ID of the subplan which should be launched
   * returns
     * PayloadDTO object which contains (?)
-* PayloadDTO Success(PayloadDTO payload, string message = "")
+---
+### PayloadDTO Success(PayloadDTO payload, string message = "")
 
   returns a success response in a PayloadDTO
   * Params
@@ -88,13 +94,15 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
     * string message: defaults to the empty string, used in the CurrentActivityResponse
   * returns
     * PayloadDTO object which contains (?)
-* void Success(IUpdatableCrateStorage crateStorage, string message = "")
+---
+### void Success(IUpdatableCrateStorage crateStorage, string message = "")
 
   Creates a success response using IUpdatableCrateStorage
   * Params
     * IUpdatableCrateStorage crateStorage: IUpdatableCrateStroage object which contains (?)
     * string message: defaults to null, sets the message in the CurrentActivityResponse
-* PayloadDTO ExecuteClientActivity(PayloadDTO payload, string clientActionName)
+---
+### PayloadDTO ExecuteClientActivity(PayloadDTO payload, string clientActionName)
 
   Creates a CurrentActivityResponse object which an ActivityResponseDTO of type ExecuteClientActivity
   * Params
@@ -102,12 +110,14 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
     * string clientActionName: the name fo the activity to execute set as the CurrentClientActivityName of the OperationalState object
   * returns
     * PayloadDTO payload: the PayloadDTO object which contains (?)
-* void SkipChildren(IUpdatableCrateStorage crateStorage)
+---
+### void SkipChildren(IUpdatableCrateStorage crateStorage)
 
   Creates an OperationalState crate whose CurrentActivityResponse type is ActivityResponse.SkipChildren
   * Params
     * IUpdatableCrateStorage crateStorage: an IUpdatableCrateStorage object which contains (?)
-* PayloadDTO Error(PayloadDTO payload, string errorMessage = null, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
+---
+### PayloadDTO Error(PayloadDTO payload, string errorMessage = null, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
 
   Creates a PayloadDTO with an error message to be sent to the Hub
   * Params
@@ -118,7 +128,8 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
     * string currentTerminal: the name of the terminal where the error occurred
   * returns
     * a PayloadDTO object which contains (?)
-* PayloadDTO Error(PayloadDTO payload, string errorMessage, ErrorType errorType, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
+---
+### PayloadDTO Error(PayloadDTO payload, string errorMessage, ErrorType errorType, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
 
   Creates a PayloadDTO with an error message to be sent to the Hub
   * Params
@@ -130,7 +141,8 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
     * string currentTerminal: defaults to null, the name of the terminal which defines the activity which was running when the error occurred
   * returns
     * PayloadDTO object which contains (?)
-* void Error(IUpdatableCrateStorage crateStorage, string errorMessage = null, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
+---
+### void Error(IUpdatableCrateStorage crateStorage, string errorMessage = null, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
 
   Creates an error message
   * Params
@@ -139,14 +151,16 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
     * ActivityErrorCode errorCode: the machine-friendly error code enum associated with the error
     * string currentActivity: defaults to null, the name of the activity that was running when the error occurred
     * string currentTerminal: defaults to null, the name of the terminal which owns the activity that was running when the error occurred
-* PayloadDTO NeedsAuthenticationError(PayloadDTO payload)
+---
+### PayloadDTO NeedsAuthenticationError(PayloadDTO payload)
 
   Utility method that generates an error when there is no authentication token provided for the activity
   * Params
     * PayloadDTO payload: the PayloadDTO object which contains (?)
   * returns
     * a call to Error with ErrorType.Authentication and ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID
-* PayloadDTO InvalidTokenError(PayloadDTO payload, string instructionsToUser = null)
+---
+### PayloadDTO InvalidTokenError(PayloadDTO payload, string instructionsToUser = null)
 
   Utility method that generates an error associated with an invalid authentication token
   * Params
@@ -154,7 +168,8 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
     * string instructionsToUser: defaults to null, a detailed message that will displayed in the UI in order to help the user understand the authentication token failure
   * returns
     * a call to Error with ErrorType ErrorType.Authentication and ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID
-* virtual async Task<PayloadDTO> ExecuteChildActivities(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+---
+### virtual async Task<PayloadDTO> ExecuteChildActivities(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
 
   Utility method which asynchronously calls Success after extracting the PayloadDTO object from the curActivityDO and containerId parameters
   * Params
@@ -163,7 +178,8 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
     * AuthorizationTokenDO authTokenDO: the AuthorizationTokenDO object associated with the request
   * returns
     * the result of Success(PayloadDTO payloadDTO)
-* bool CheckAuthentication(ActivityDO activity, AuthorizationTokenDO authTokenDO)
+---
+### bool CheckAuthentication(ActivityDO activity, AuthorizationTokenDO authTokenDO)
 
   Helper method that checks whether the activity requires authentication and adds a crate with authentication details to the ActivityDO object
   * Params
@@ -171,20 +187,23 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
     * AuthorizationTokenDO authTokenDO: the AuthorizationTokenDO object which contains authentication details
   * returns
     * bool which indicates whether the activity requires authentication and, if so, whether the authentication crate was successfully created
-* void AddAuthenticationCrate(ActivityDO activityDO, bool revocation)
+---
+### void AddAuthenticationCrate(ActivityDO activityDO, bool revocation)
 
   Helper method which creates a crate containing authentication details
   * Params
     * ActivityDO activityDO: the ActivityDO object which contains (?)
     * bool revocation: flag indicating whether StandardAuthenticationCM.Revocation should be set
-* virtual bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
+---
+### virtual bool NeedsAuthentication(AuthorizationTokenDO authTokenDO)
 
   Helper method which indicates whether the activity requires authentication
   * Params
     * AuthorizationTokenDO authorizationTokenDO: the AuthorizationTokenDO object used to determine whether the activity requires authentication
   * returns
     * boolean value indicating whether the AuthorizationTokenDO object is null
-* async Task<PayloadDTO> GetPayload(ActivityDO activityDO, Guid containerId)
+---
+### async Task<PayloadDTO> GetPayload(ActivityDO activityDO, Guid containerId)
 
   Helper method which uses the HubCommunicator to get a PayloadDTO object
   * Params
@@ -192,7 +211,8 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
     * Guid containerId: the ID of the container
   * returns
     * A Task generated by a call to HubCommunicator.GetPayload
-* async Task<UserDTO> GetCurrentUserData(ActivityDO activityDO, Guid containerId)
+---
+### async Task<UserDTO> GetCurrentUserData(ActivityDO activityDO, Guid containerId)
 
   Helper method which uses HubCommunicator to get an UserDTO object
   * Params
@@ -200,21 +220,24 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
     * Guid containerId: the ID of the container
   * returns
     * A Task generated by a call to HubCommunicator.GetCurrentUser
-* async Task<PlanDTO> GetPlansByActivity(string activityId)
+---
+### async Task<PlanDTO> GetPlansByActivity(string activityId)
 
   Helper method which users HubCommunicator to get a PlanDTO object
   * Params
     * string activityId: the ID of the activity for which the PlanDTO should be retrieved
   * returns
     * A Task generated by a call to HubCommunicator.GetPlansByActivity
-* async Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan)
+---
+### async Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan)
 
   Helper method which users HubCommunicator to update a PlanDTO object
   * Params
     * PlanEmptyDTO plan: the PlanEmptyDTO object which contains (?)
   * returns
     * A Task generated by a call to HubCommunicator.UpcdatePlan
-* virtual Task ValidateActivity(ActivityDO activityDo, ICrateStorage currActivityCrateStorage, ValidationManager validationManager)
+---
+### virtual Task ValidateActivity(ActivityDO activityDo, ICrateStorage currActivityCrateStorage, ValidationManager validationManager)
 
   Method that should be implemented by subclasses of BaseTerminalActivity. The implementation should return a Task which meets the validation requiresments of the terminal implementation
   * Params
@@ -223,7 +246,8 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
     * ValidationManager validationManager: the implementation of the ValidationManager which should be used to validate the activity
   * returns
     * A Task which indicates whether the activity configuration is valid
-* async Task<ActivityDO> ProcessConfigurationRequest(ActivityDO curActivityDO, ConfigurationEvaluator configurationEvaluationResult, AuthorizationTokenDO authToken)
+---
+### async Task<ActivityDO> ProcessConfigurationRequest(ActivityDO curActivityDO, ConfigurationEvaluator configurationEvaluationResult, AuthorizationTokenDO authToken)
 
   Processes a configuration request for the activity
   * Params
@@ -232,7 +256,8 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
     * AuthorizationTokenDO authToken: The AuthorizationTokenDTO associated with the activity, used if the activity requires authentication
   * returns
     * A Task for an ActivityDO object for the configured Activity
-* virtual async Task<ActivityDO> Configure(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
+---
+### virtual async Task<ActivityDO> Configure(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
 
   Public helper method which calls the protected ProcessConfigurationRequest method
   * Params
@@ -240,14 +265,16 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
     * AuthorizationTokenDO authTokenDO: the AuthorizationTokenDO object which provides authorization details for the activity
   * returns
     * A Task object generated by a call to ProcessConfigurationRequest
-* virtual ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+---
+### virtual ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
 
   This method "evaluates" as to what configuration should be called. Every terminal action will have its own decision making; hence this method must be implemented in the relevant child class.
   * Params
     * ActivityDO curActivityDO: the ActivityDO object that describes the activity
   * returns
     * A ConfigurationRequestType object generated by the ConfigurationEvaluator implementation
-* virtual async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+---
+### virtual async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
 
   Virtual method which is used to generate an ActivityDO object which contains configuration information for an activity. Some activities require multiple configuration requests, and the initial configuration request sets the baseline configuration for the activity
   * Params
@@ -255,26 +282,29 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
     * AuthorizationTokenDO authTokenDO: the AuthorizationTokenDO object for the activity
   * returns
     * a Task for an ActivityDO object containing the details of the baseline configuration for the activity
-* virtual async Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+---
+### virtual async Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
 
-  Virtual method which signals the activity that it should be moved to an activated state
-  * Params
-    * ActivityDO curActivityDO: the ActivityDO which describes the current activity
-    * AuthorizationTokenDO authTokenDO: the AuthorizationTokenDO for the activity
-  * returns
-    * A Task for an ActivityDO object which has been activated
-* virtual async Task<ActivityDO> Deactivate(ActivityDO curActivityDO)
+Virtual method which signals the activity that it should be moved to an activated state
+* Params
+  * ActivityDO curActivityDO: the ActivityDO which describes the current activity
+  * AuthorizationTokenDO authTokenDO: the AuthorizationTokenDO for the activity
+* returns
+  * A Task for an ActivityDO object which has been activated
+---
+### virtual async Task<ActivityDO> Deactivate(ActivityDO curActivityDO)
 
-  Virtual method which deactivates an activity
-  * Params
-    * ActivityDO curActivityDO: the ActivityDO which describes the activity
-  * returns
-    * A Task for the ActivityDO which has been deactivated
-* virtual async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+Virtual method which deactivates an activity
+* Params
+  * ActivityDO curActivityDO: the ActivityDO which describes the activity
+* returns
+  * A Task for the ActivityDO which has been deactivated
+---
+### virtual async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
 
-  Virtual method used to configure the activity after the baseline activity has been completed
-  * Params
-    * ActivityDO activityDO: the ActivityDO which describes the activity to configure
-    * AuthorizationTokenDO authTokenDO: the AuthorizationTokenDO used to authorize the activity
-  * returns
-    * A Task for an ActivityDO which has been configured
+Virtual method used to configure the activity after the baseline activity has been completed
+* Params
+  * ActivityDO activityDO: the ActivityDO which describes the activity to configure
+  * AuthorizationTokenDO authTokenDO: the AuthorizationTokenDO used to authorize the activity
+* returns
+  * A Task for an ActivityDO which has been configured
