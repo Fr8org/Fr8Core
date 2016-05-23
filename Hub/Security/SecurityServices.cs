@@ -335,6 +335,21 @@ namespace Hub.Security
 
         private bool EvaluateProfilesPermissionSet(PermissionType permissionType, List<int> permissionSet, string fr8AccountId)
         {
+            var claimIdentity = Thread.CurrentPrincipal.Identity as ClaimsIdentity;
+            var claim = claimIdentity?.FindFirst("Organization");
+            if (claim != null)
+            {
+                int orgId;
+                if (int.TryParse(claim.Value, out orgId))
+                {
+                    if (fr8AccountId == GetCurrentUser())
+                    {
+                        return true;
+                    }
+                    else return false;
+                }
+            }
+
             if (permissionType == PermissionType.CreateObject)
             {
                 var currentPermission = permissionSet.FirstOrDefault(x => x == (int)permissionType);
@@ -346,10 +361,7 @@ namespace Hub.Security
             if (viewAllData != 0 && permissionType == PermissionType.ReadObject) return true;
             if (modifyAllData != 0) return true;
 
-            if (fr8AccountId == GetCurrentUser())
-            {
-                return true;
-            }
+
 
             return false;
         }
