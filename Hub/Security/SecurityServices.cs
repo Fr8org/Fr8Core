@@ -351,8 +351,20 @@ namespace Hub.Security
                     }
                     else return false;
                 }
-            }           
-                      
+            }
+
+            //double check for orgs
+            if (!string.IsNullOrEmpty(fr8AccountId))
+            {
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var currentAccount = GetCurrentAccount(uow);
+                    if (!currentAccount.OrganizationId.HasValue && fr8AccountId != currentAccount.Id) 
+                    {
+                        return false;
+                    }
+                }
+            }
 
             if (permissionType == PermissionType.CreateObject)
             {
