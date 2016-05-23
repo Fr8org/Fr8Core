@@ -61,7 +61,7 @@ namespace terminalSalesforceTests.Activities
                 {
                     CrateStorage = new CrateStorage()
                 },
-                AuthorizationToken = {
+                AuthorizationToken = new AuthorizationToken{
                     Token = Token.Token
                 }
             };

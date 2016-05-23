@@ -14,6 +14,7 @@ using Hub.Managers;
 using Newtonsoft.Json.Linq;
 using Fr8Data.Managers;
 using TerminalBase.Models;
+using Hub.Services;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -50,6 +51,23 @@ namespace UtilitiesTesting.Fixtures
                     Secret = Guid.NewGuid().ToString()
                 },
 
+                Version = "1"
+            };
+        }
+        public static ActivityTemplateDTO ActivityTemplate2()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = GetTestGuidById(1),
+                Name = "Send an Email",
+                Terminal = new TerminalDTO
+                {
+                    Name = "Send an Email",
+                    Label = "Send an Email",
+                    Version = "1",
+                    Endpoint = "",
+                    TerminalStatus = TerminalStatus.Active
+                },
                 Version = "1"
             };
         }
@@ -280,6 +298,20 @@ namespace UtilitiesTesting.Fixtures
             {
                 ActivityPayload = activityPayload,
                 AuthorizationToken = AuthToken_TerminalIntegration()
+            };
+            return activityContext;
+        }
+        public static ActivityContext TestActivityContextWithoutAuthorization()
+        {
+            var activityPayload = new ActivityPayload
+            {
+                Id = GetTestGuidById(2),
+                ActivityTemplate = ActivityTemplate2(),
+                CrateStorage = new CrateStorage()
+            };
+            var activityContext = new ActivityContext
+            {
+                ActivityPayload = activityPayload,
             };
             return activityContext;
         }

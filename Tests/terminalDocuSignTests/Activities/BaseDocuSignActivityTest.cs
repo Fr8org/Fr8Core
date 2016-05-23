@@ -31,7 +31,7 @@ namespace terminalDocuSignTests.Activities
         public async void Run_WhenNoAuthorization_Fails()
         {
             var activity = DocuSignActivityFixtureData.BaseDocuSignAcitvity();
-            var activityContext = FixtureData.TestActivityContext1();
+            var activityContext = FixtureData.TestActivityContextWithoutAuthorization();
             var executionContext = FixtureData.ContainerExecutionContext1();
             await activity.Run(activityContext, executionContext);
             AssertEx.AssertPayloadHasAuthenticationError(executionContext.PayloadStorage);
@@ -54,7 +54,7 @@ namespace terminalDocuSignTests.Activities
             //activityMock.Setup(x => x.ValidateActivity(It.IsAny<ActivityDO>(), It.IsAny<ICrateStorage>(), It.IsAny<ValidationManager>())).Returns(Task.FromResult(0));
                         
             activityMock.Setup(x => x.Run(It.IsAny<ActivityContext>(), It.IsAny<ContainerExecutionContext>()))
-                        //.Returns(Task.FromResult(FixtureData.PayloadDTO2()))
+                        .Returns(Task.FromResult(FixtureData.PayloadDTO2()))
                         .Verifiable("RunInternal was not invoked when activity has auth token and is valid");
             var activityContext = FixtureData.TestActivityContext1();
             var executionContext = FixtureData.ContainerExecutionContext1();
