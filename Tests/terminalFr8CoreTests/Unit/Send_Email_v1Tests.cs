@@ -19,6 +19,7 @@ using Data.Entities;
 using System;
 using Fr8Data.DataTransferObjects;
 using terminalFr8Core.Activities;
+using terminalUtilities.Interfaces;
 
 namespace terminalTests.Unit
 {

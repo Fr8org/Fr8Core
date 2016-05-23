@@ -7,6 +7,7 @@ using Fr8Data.States;
 using StructureMap;
 using terminalFr8Core.Infrastructure;
 using terminalFr8Core.Interfaces;
+using terminalUtilities.Infrastructure;
 using terminalUtilities.Interfaces;
 using terminalUtilities.Models;
 using TerminalBase.BaseClasses;

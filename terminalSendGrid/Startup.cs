@@ -4,8 +4,8 @@ using Microsoft.Owin;
 using Owin;
 using TerminalBase.BaseClasses;
 using System.Web.Http.Dispatcher;
+using terminalSendGrid.Activities;
 using TerminalBase.Services;
-using terminalSendGrid.Actions;
 
 [assembly: OwinStartup("SendGridStartup", typeof(terminalSendGrid.Startup))]
 namespace terminalSendGrid

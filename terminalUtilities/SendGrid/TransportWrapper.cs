@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Hub.ExternalServices;
 using SendGrid;
 
 namespace terminalUtilities.SendGrid

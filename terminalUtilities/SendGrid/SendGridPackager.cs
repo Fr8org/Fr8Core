@@ -6,6 +6,9 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using SendGrid;
 using StructureMap;
+using terminalUtilities.Helpers;
+using terminalUtilities.Interfaces;
+using terminalUtilities.Models;
 using Utilities;
 
 namespace terminalUtilities.SendGrid

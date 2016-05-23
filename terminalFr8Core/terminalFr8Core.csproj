@@ -257,8 +257,6 @@
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Activities\MapFields_v1.cs" />
-    <Compile Include="Helpers\EmailHelper.cs" />
-    <Compile Include="Infrastructure\EmailParticipantType.cs" />
     <Compile Include="Infrastructure\FindObjectHelper.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

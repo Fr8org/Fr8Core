@@ -1,4 +1,4 @@
-﻿namespace terminalFr8Core.Infrastructure
+﻿namespace terminalUtilities.Infrastructure
 {
     public class EmailParticipantType
     {

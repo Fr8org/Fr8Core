@@ -1,9 +1,9 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using Fr8Data.DataTransferObjects;
-using terminalFr8Core.Infrastructure;
+using terminalUtilities.Infrastructure;
 
-namespace terminalFr8Core.Helpers
+namespace terminalUtilities.Helpers
 {
     public static class EmailHelper
     {

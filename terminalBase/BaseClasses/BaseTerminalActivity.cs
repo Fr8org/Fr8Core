@@ -604,7 +604,11 @@ namespace TerminalBase.BaseClasses
             return foundActivity;
         }
 
-
+        protected async Task DeleteChildActivities(ActivityPayload parent)
+        {
+            await HubCommunicator.DeleteExistingChildNodesFromActivity(parent.Id, CurrentUserId);
+            parent.ChildrenActivities = new List<ActivityPayload>();
+        }
 
         public SolutionPageDTO GetDefaultDocumentation(string solutionName, double solutionVersion, string terminalName, string body)
         {

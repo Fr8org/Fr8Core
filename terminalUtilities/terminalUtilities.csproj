@@ -101,6 +101,8 @@
   <ItemGroup>
     <Compile Include="Excel\ExcelUtils.cs" />
     <Compile Include="Excel\ExcelWriter.cs" />
+    <Compile Include="Helpers\EmailHelper.cs" />
+    <Compile Include="Infrastructure\EmailParticipantType.cs" />
     <Compile Include="Models\MailerDO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Interfaces\IEmailPackager.cs" />
@@ -112,17 +114,9 @@
     <Compile Include="Twilio\TwilioService.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Data\Data.csproj">
-      <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
-      <Name>Data</Name>
-    </ProjectReference>
     <ProjectReference Include="..\Fr8Data\Fr8Data.csproj">
       <Project>{a3178d71-a2c3-45b9-8334-adcc7c313541}</Project>
       <Name>Fr8Data</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\Hub\Hub.csproj">
-      <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
-      <Name>Hub</Name>
     </ProjectReference>
     <ProjectReference Include="..\terminalBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
