@@ -84,9 +84,9 @@ namespace terminalSalesforceTests.Actions
             var activityContext = await FixtureData.GetFileListTestActivityContext2();
             var executionContext = new ContainerExecutionContext
             {
-                PayloadStorage = new CrateStorage()
+                PayloadStorage = new CrateStorage(Crate.FromContent(string.Empty, new OperationalStateCM()))
             };
-            
+
             //perform initial configuration
             await postToChatter_v1.Configure(activityContext);
             activityContext = SetValues(activityContext);
