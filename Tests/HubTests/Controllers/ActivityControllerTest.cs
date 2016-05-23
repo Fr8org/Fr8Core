@@ -144,7 +144,7 @@ namespace HubTests.Controllers
 
             var plan = new PlanDO
             {
-                PlanState = PlanState.Active,
+                PlanState = PlanState.Running,
                 Name = "name",
                 ChildNodes = { activity }
             };
