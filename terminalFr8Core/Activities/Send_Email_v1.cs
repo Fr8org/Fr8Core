@@ -84,6 +84,15 @@ namespace terminalFr8Core.Actions
             return Task.FromResult(0);
         }
 
+        protected override Task Validate (ValidationManager validationManager)
+        {
+            validationManager.ValidateTextSourceNotEmpty(ConfigurationControls.EmailAddress, "Email address can't be empty");
+            validationManager.ValidateTextSourceNotEmpty(ConfigurationControls.EmailSubject, "Email subject can't be empty");
+            validationManager.ValidateTextSourceNotEmpty(ConfigurationControls.EmailBody, "Email body can't be empty");
+
+            return Task.FromResult(0);
+        }
+    
         protected override async Task RunCurrentActivity()
         {
             var fromAddress = CloudConfigurationManager.GetSetting("OutboundFromAddress");

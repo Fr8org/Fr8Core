@@ -40,5 +40,16 @@ namespace TerminalBase.Infrastructure
         }
 
 
+        public static bool ValidateTextSourceNotEmpty(this ValidationManager validationManager, TextSource control, string errorMessage)
+        {
+            if (control.CanGetValue(validationManager.Payload)
+                && string.IsNullOrWhiteSpace(control.GetValue(validationManager.Payload)))
+            {
+                validationManager.SetError(errorMessage, control);
+                return false;
+            }
+
+            return true;
+        }
     }
 }
