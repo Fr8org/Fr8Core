@@ -31,7 +31,7 @@ namespace HubTests.Controllers
         [Test]
         public void Get()
         {
-            var controller = CreateController<UserController>();
+            var controller = CreateController<UsersController>();
 
             var result = controller.Get() as OkNegotiatedContentResult<List<UserDTO>>;
                 
@@ -48,9 +48,9 @@ namespace HubTests.Controllers
         [Test]
         public void GetById()
         {
-            var controller = CreateController<UserController>();
+            var controller = CreateController<UsersController>();
 
-            var result = controller.Get(_testAccount2.Id) as OkNegotiatedContentResult<UserDTO>;
+            var result = controller.UserData(_testAccount2.Id) as OkNegotiatedContentResult<UserDTO>;
 
             Assert.IsNotNull(result);
             Assert.IsNotNull(result.Content);

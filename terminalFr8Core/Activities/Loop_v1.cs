@@ -180,13 +180,13 @@ namespace terminalFr8Core.Actions
             return curActivityDO;
         }
 
-        private async Task<List<FieldDTO>> GetLabelsByManifestType(ActivityDO curActivityDO, string manifestType)
+        private async Task<List<string>> GetLabelsByManifestType(ActivityDO curActivityDO, string manifestType)
         {
             var upstreamCrates = await GetCratesByDirection(curActivityDO, CrateDirection.Upstream);
             return upstreamCrates
                     .Where(c => c.ManifestType.Type == manifestType)
                     .GroupBy(c => c.Label)
-                    .Select(c => new FieldDTO(c.Key, c.Key)).ToList();
+                    .Select(c => c.Key).ToList();
         }
 
         protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
@@ -202,8 +202,7 @@ namespace terminalFr8Core.Actions
 
                     using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
                     {
-                        crateStorage.RemoveByLabel("Available Labels");
-                        crateStorage.Add(Crate.FromContent("Available Labels", new FieldDescriptionsCM { Fields = labelList }));
+                        UpdateCrateDescriptionLabel(crateStorage, labelList.FirstOrDefault());
                         SelectTheOnlyCrate(crateStorage.FirstCrate<StandardConfigurationControlsCM>().Content);
                     }
                 }
@@ -220,6 +219,16 @@ namespace terminalFr8Core.Actions
             }
 
             return curActivityDO;
+        }
+
+        public static void UpdateCrateDescriptionLabel(IUpdatableCrateStorage crateStorage, string label)
+        {
+            var updatableCrateChooser =
+                            crateStorage.FirstCrate<StandardConfigurationControlsCM>()
+                                .Content.Controls.OfType<CrateChooser>()
+                                .Single();
+            updatableCrateChooser.CrateDescriptions.FirstOrDefault(x => x.Selected).Label =
+                label;
         }
 
         private void SelectTheOnlyCrate(StandardConfigurationControlsCM controls)

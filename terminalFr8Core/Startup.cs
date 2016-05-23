@@ -18,7 +18,7 @@ namespace terminalFr8Core
 
         public void Configuration(IAppBuilder app, bool selfHost)
         {
-            ConfigureProject(selfHost, null);
+            ConfigureProject(selfHost, Fr8CoreStructureMapConfiguration.LiveConfiguration);
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
 
