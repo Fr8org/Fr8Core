@@ -49,8 +49,6 @@ namespace terminalTests.Integration
                    .Returns(Task.FromResult(ActivityTemplates));
             hubMock.Setup(x => x.GetActivityTemplates(It.IsAny<string>(), It.IsAny<string>()))
                    .Returns<string, string>((tags, user) => Task.FromResult(ActivityTemplates.Where(x => x.Tags.Contains(tags)).ToList()));
-            hubMock.Setup(x => x.GetPayload(It.IsAny<Guid>(), It.IsAny<string>()))
-                   .Returns<ActivityDO, Guid, string>((act, contId, user) => Task.FromResult(HealthMonitor_FixtureData.PayloadWithOnlyOperationalState()));
             ObjectFactory.Container.Inject(hubMock);
             ObjectFactory.Container.Inject(hubMock.Object);
         }
@@ -76,18 +74,16 @@ namespace terminalTests.Integration
         [Test]
         public async Task Configure_WhenDataSourceIsChanged_RemoveAndReconfigureChildActivity()
         {
-            var authToken = new AuthorizationTokenDO { Token = "1" };
+            var authToken = new AuthorizationToken { Token = "1" };
             var activity = new FilterObjectListByIncomingMessage_v1();
             var activityContext = new ActivityContext
             {
                 ActivityPayload = new ActivityPayload
                 {
-                    CrateStorage = new CrateStorage()
-
+                    CrateStorage = new CrateStorage(),
+                    ChildrenActivities = new List<ActivityPayload>()
                 },
-                AuthorizationToken = {
-                    Token = authToken.Token
-                }
+                AuthorizationToken = authToken
             };
             //Initial config
             await activity.Configure(activityContext);
@@ -105,20 +101,18 @@ namespace terminalTests.Integration
         [Test]
         public async Task Run_WhenNoDataIsCahced_RunsChildActivitiy()
         {
-            var authToken = new AuthorizationTokenDO { Token = "1" };
+            var authToken = new AuthorizationToken { Token = "1" };
             var activity = new FilterObjectListByIncomingMessage_v1();
-            var containerExecutionContext = new ContainerExecutionContext();
             var activityContext = new ActivityContext
             {
                 ActivityPayload = new ActivityPayload
                 {
-                    CrateStorage = new CrateStorage()
-
+                    CrateStorage = new CrateStorage(),
+                    ChildrenActivities = new List<ActivityPayload>()
                 },
-                AuthorizationToken = new AuthorizationToken{
-                    Token = authToken.Token
-                }
+                AuthorizationToken = authToken
             };
+            var containerExecutionContext = HealthMonitor_FixtureData.ExecutionContextWithOnlyOperationalState();
             //Initial and followup config
             await activity.Configure(activityContext);
             activityContext.ActivityPayload.CrateStorage.UpdateControls<FilterObjectListByIncomingMessage_v1.ActivityUi>(x => x.DataSourceSelector.Value = ActivityTemplates[0].Id.ToString());
@@ -138,28 +132,18 @@ namespace terminalTests.Integration
         public async Task Run_Always_FiltersDataAndSkipsChildActivities()
         {
             //Setup
-            var hubMock = ObjectFactory.GetInstance<Mock<IHubCommunicator>>();
-            var payload = HealthMonitor_FixtureData.PayloadWithOnlyOperationalState();
-            using (var storage = new CrateManager().GetUpdatableStorage(payload))
-            {
-                storage.Add(Crate<FieldDescriptionsCM>.FromContent("Message is here", new FieldDescriptionsCM(new FieldDTO("Message", "This message should be checked for keywords"))));
-            }
-            hubMock.Setup(x => x.GetPayload(It.IsAny<Guid>(), It.IsAny<string>()))
-                    .Returns<ActivityDO, Guid, string>((act, contId, user) => Task.FromResult(payload));
-
-            var authToken = new AuthorizationTokenDO { Token = "1" };
+            var containerExecutionContext = HealthMonitor_FixtureData.ExecutionContextWithOnlyOperationalState();
+            containerExecutionContext.PayloadStorage.Add(Crate<FieldDescriptionsCM>.FromContent("Message is here", new FieldDescriptionsCM(new FieldDTO("Message", "This message should be checked for keywords"))));
+            var authToken = new AuthorizationToken { Token = "1" };
             var activity = new FilterObjectListByIncomingMessage_v1();
-            var containerExecutionContext = new ContainerExecutionContext();
             var activityContext = new ActivityContext
             {
                 ActivityPayload = new ActivityPayload
                 {
-                    CrateStorage = new CrateStorage()
-
+                    CrateStorage = new CrateStorage(),
+                    ChildrenActivities = new List<ActivityPayload>()
                 },
-                AuthorizationToken = {
-                    Token = authToken.Token
-                }
+                AuthorizationToken = authToken
             };
             //Initial and followup config
             await activity.Configure(activityContext);
