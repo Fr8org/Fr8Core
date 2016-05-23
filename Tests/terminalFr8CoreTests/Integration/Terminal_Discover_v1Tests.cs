@@ -35,8 +35,8 @@ namespace terminalFr8CoreTests.Integration
         private const string ExtractTableField = "ExtractTableField";
         private const string AppBuilder = "AppBuilder";
         private const string GetDataFromFr8Warehouse = "GetDataFromFr8Warehouse";
-        private const string SendEmailViaSendGrid = "Send_Email_Via_SendGrid";
-        private const string SendSMSViaTwilio = "Send_SMS_Via_Twilio";
+        private const string SendEmailViaSendGrid = "Send_Email";
+        private const string SendSMSViaTwilio = "Send_SMS";
 
 
         public override string TerminalName
