@@ -7,14 +7,14 @@ A  fr8 Plan consists of Activities, and each Activity is likely to have 1 or mor
 
 [Plan Definition](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/PlanJSONDefinition.md)  
 
-Creating Routes
+Creating Plans
 
-Configuring Routes
+Configuring Plans
 
 [Activating & Running Plans](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/PlansActivationAndRunning.md)  
 
 ## Plan States
 
-Currently defined states are Active, Inactive, and Deleted
+Currently defined states are Running, Inactive, and Deleted
 
 [Go to Contents](https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md)  
