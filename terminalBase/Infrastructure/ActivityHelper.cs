@@ -74,6 +74,27 @@ namespace TerminalBase.Infrastructure
             return activityUi;
         }
 
+        internal static string GetDynamicControlName(string controlName, string controlOwnerName)
+        {
+            return $"{controlOwnerName}_{controlName}";
+        }
+
+        private static readonly Tuple<string, string> EmptyDynamicControlNameAndOwner = new Tuple<string, string>(string.Empty, string.Empty);
+
+        internal static Tuple<string, string> GetDynamicControlNameAndOwner(string dynamicControlName)
+        {
+            if (string.IsNullOrWhiteSpace(dynamicControlName))
+            {
+                return EmptyDynamicControlNameAndOwner;
+            }
+            var delim = dynamicControlName.IndexOf('_');
+            if (delim <= 0)
+            {
+                return EmptyDynamicControlNameAndOwner;
+            }
+            return new Tuple<string, string>(dynamicControlName.Substring(delim + 1), dynamicControlName.Substring(0, delim));
+        }
+
         internal static void RestoreDynamicControlsFrom<TActivityUi>(this TActivityUi source, StandardConfigurationControlsCM destination)
         {
             if (destination == null)
@@ -90,22 +111,14 @@ namespace TerminalBase.Infrastructure
             {
                 foreach (var control in destination.Controls)
                 {
-                    if (string.IsNullOrWhiteSpace(control.Name))
+                    var nameAndOwner = GetDynamicControlNameAndOwner(control.Name);
+                    if (string.IsNullOrEmpty(nameAndOwner.Item2))
                     {
                         continue;
                     }
-
-                    var delim = control.Name.IndexOf('_');
-
-                    if (delim <= 0)
-                    {
-                        continue;
-                    }
-
-                    var prefix = control.Name.Substring(0, delim);
                     IMemberAccessor member;
 
-                    if (!dynamicControlsCollection.TryGetValue(prefix, out member))
+                    if (!dynamicControlsCollection.TryGetValue(nameAndOwner.Item2, out member))
                     {
                         continue;
                     }
@@ -123,7 +136,7 @@ namespace TerminalBase.Infrastructure
                         member.SetValue(source, controlsCollection);
                     }
 
-                    control.Name = control.Name.Substring(delim + 1);
+                    control.Name = nameAndOwner.Item1;
                     controlsCollection.Add(control);
                 }
             }
@@ -147,7 +160,7 @@ namespace TerminalBase.Infrastructure
                     {
                         foreach (var control in collection.Cast<object>().OfType<ControlDefinitionDTO>())
                         {
-                            control.Name = member.Name + "_" + control.Name;
+                            control.Name = GetDynamicControlName(control.Name, member.Name);
                             destination.Controls.Insert(insertIndex, control);
                             insertIndex++;
                         }

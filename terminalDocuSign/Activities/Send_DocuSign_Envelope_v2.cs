@@ -159,7 +159,7 @@ namespace terminalDocuSign.Actions
             {
                 if ((roleControl.ValueSource == null || roleControl.ValueSource == TextSource.SpecificValueSource)  && !roleControl.TextValue.IsValidEmailAddress())
                 {
-                    validationManager.SetError($"The value of '{roleControl.InitialLabel}' is not a valid email address", roleControl);
+                    validationManager.SetDynamicControlError($"The value of '{roleControl.InitialLabel}' is not a valid email address", roleControl, () => ConfigurationControls.RolesFields);
                 }
             }
             return Task.FromResult(0);

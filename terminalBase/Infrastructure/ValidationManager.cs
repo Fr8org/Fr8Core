@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using Data.Interfaces.Manifests;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
@@ -29,6 +30,30 @@ namespace TerminalBase.Infrastructure
             CheckSettings();
 
             _validationResults.ValidationErrors?.Clear();
+        }
+
+        public void SetDynamicControlError<TDynamicControlHolder>(string errorMessage, ControlDefinitionDTO control, Expression<Func<TDynamicControlHolder>> dynamicControlHolder)
+        {
+            if (control == null)
+            {
+                throw new ArgumentNullException(nameof(control));
+            }
+            var dynamicControllName = string.Empty;
+            if (dynamicControlHolder == null)
+            {
+                dynamicControllName = ActivityHelper.GetDynamicControlName(control.Name, control.Name);
+            }
+            else
+            {
+                var propertyExpression = dynamicControlHolder.Body as MemberExpression;
+                if (propertyExpression == null)
+                {
+                    throw new ArgumentException("Only property access or field access expressions are allowed", nameof(dynamicControlHolder));
+                }
+                dynamicControllName = ActivityHelper.GetDynamicControlName(control.Name, propertyExpression.Member.Name);
+            }
+            SetError(errorMessage, dynamicControllName);
+
         }
 
         public void SetError(string errorMessage, params ControlDefinitionDTO[] controls)
