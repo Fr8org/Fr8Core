@@ -37,12 +37,12 @@ namespace HealthMonitor
 
             var selfHostedApps = GetSelfHostedApps();
 
+            Console.WriteLine("Part before first access to database....");
             using (var uow = _container.GetInstance<IUnitOfWork>())
             {
                 terminals = uow.TerminalRepository.GetAll();
             }
-
-
+            Console.WriteLine("Part after first access to database....");
             try
             {
                 foreach (SelfHostedAppsElement app in selfHostedApps)
