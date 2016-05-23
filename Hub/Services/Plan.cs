@@ -307,7 +307,7 @@ namespace Hub.Services
 
                 if (result.ValidationErrors.Count == 0)
                 {
-                    plan.PlanState = PlanState.Active;
+                    plan.PlanState = PlanState.Running;
                     plan.LastUpdated = DateTimeOffset.UtcNow;
                     uow.SaveChanges();
                 }
@@ -646,8 +646,6 @@ namespace Hub.Services
 
         public async Task<PlanDO> Clone(Guid planId)
         {
-
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var currentUser = _security.GetCurrentAccount(uow);
