@@ -72,14 +72,18 @@ namespace terminalDocuSignTests.Activities
             {
                 ActivityPayload = new ActivityPayload
                 {
-                    CrateStorage = new CrateStorage()
+                    CrateStorage = new CrateStorage(),
+                },
+                AuthorizationToken = new AuthorizationToken {
+                    Token = FakeToken.Token
                 }
+                
             };
             await activity.Configure(activityContext);
             var executionContext = FixtureData.ContainerExecutionContext1();
             await activity.Run(activityContext, executionContext);
-            var crateStorage = activityContext.ActivityPayload.CrateStorage;
-            var resultManifest = crateStorage.FirstCrateOrDefault<DocuSignEnvelopeCM_v3>()?.Content;
+            var payloadStorage = executionContext.PayloadStorage;
+            var resultManifest = payloadStorage.FirstCrateOrDefault<DocuSignEnvelopeCM_v3>()?.Content;
             Assert.IsNotNull(resultManifest, "Run didn't produce crate with expected manifest");
             Assert.AreEqual(1, resultManifest.Envelopes.Count, "Run didn't get expected number of envelopes");
         }
