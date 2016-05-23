@@ -80,7 +80,7 @@
                                     <td ng-click="goToPlanDetailsPage(plan.id)">{{ plan.description }}</td>
                                     <td ng-click="goToPlanDetailsPage(plan.id)">{{ plan.lastUpdated }}</td>
                                     <td ng-click="goToPlanDetailsPage(plan.id)">
-                                    <span class="bold font-green-haze">{{plan.planState == 2 ? 'Active' : 'Inactive' }}</span>
+                                    <span class="bold font-green-haze">{{plan.planState == 2 ? 'Running' : 'Inactive' }}</span>
                                     <td>
                                         <div>
                                             <button type="button" class="btn btn-sm red" ng-click="deletePlan(plan.id,plan.planState);">Delete</button>
