@@ -108,7 +108,10 @@ namespace terminalSalesforceTests.Actions
             //Arrange
             var authToken = await FixtureData.Salesforce_AuthToken();
             var activityContext = await FixtureData.GetFileListTestActivityContext1();
-            var executionContext = new ContainerExecutionContext();
+            var executionContext = new ContainerExecutionContext
+            {
+                PayloadStorage = new CrateStorage(Crate.FromContent(string.Empty, new OperationalStateCM()))
+            };
 
             //perform initial configuration
             await _getData_v1.Configure(activityContext);
@@ -125,7 +128,7 @@ namespace terminalSalesforceTests.Actions
             //Act
             await _getData_v1.Run(activityContext, executionContext);
             //Assert
-            var stroage = activityContext.ActivityPayload.CrateStorage;
+            var stroage = executionContext.PayloadStorage;
             Assert.AreEqual(3, stroage.Count, "Number of Payload crates not populated correctly");
 
             Assert.IsNotNull(stroage.CratesOfType<StandardTableDataCM>().Single(), "Not able to get the required salesforce object");
