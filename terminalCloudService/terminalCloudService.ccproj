@@ -123,6 +123,7 @@
     <SecondarySite Include="..\terminalAtlassian\terminalAtlassian.csproj" />
     <SecondarySite Include="..\terminalQuickBooks\terminalQuickBooks.csproj" />
     <SecondarySite Include="..\terminalYammer\terminalYammer.csproj" />
+    <SecondarySite Include="..\Services\PlanDirectory\PlanDirectory.csproj" />
   </ItemGroup>
   <Target Name="CleanSecondarySites">
     <RemoveDir Directories="%(SecondarySite.RootDir)%(Directory)$(SecondarySitePublishDir)" />

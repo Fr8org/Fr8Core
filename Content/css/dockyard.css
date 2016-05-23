@@ -108,6 +108,10 @@
     padding: 5px 0px 0 15px
 }
 
+.sub-panel-header .designer-header-title.page-title {
+    padding: 5px 0px 0px 0px
+}
+
 .design-header-title-editField {
     display: none;
     font-size: 22px;
@@ -143,9 +147,15 @@
     cursor: pointer;
 }
 
+.sub-plan-container {
+    padding-top:50px;
+}
+
 .route-name {
     display: inline-block;
     vertical-align: top;
+    color: #697882;
+    font-weight: 400;
 }
 
 .designer-header-status {
@@ -235,6 +245,11 @@
     float: left;
 }
 
+.action-arrow-right-jumptarget {
+    display: block;
+    margin-left: 14px;
+}
+
 .jump-target-text {
     padding-top: 15px; 
     margin-left: 60px;
@@ -274,6 +289,8 @@
     .action .pane-configure-action {
         min-height: 250px;
         padding: 2%;
+        outline: none;
+        cursor: default;
     }
 
     .action .ap-resize {
@@ -418,6 +435,12 @@ div.action-header {
     min-height: 375px;
 }
 
+.jumptarget-wrapper .action-add {
+    position: absolute;
+    top: 81px;
+    right: -66px;
+}
+
 .action-add-button, .action-category-icon {
     background: #fCfCfC;
     border-radius: 50%;
@@ -438,11 +461,14 @@ div.action-header {
     margin-left: -128px;
     transition: all 0.2s ease-out;
     pointer-events: none;
+    z-index: 200;
 }
 
 .action-categories {
     margin-top: 144px;
     transition: all 0.2s ease-out;
+    z-index: 100;
+    background-color: #EFF3F8;
 }
 
 .action-category {
@@ -1300,6 +1326,19 @@ footer p {
     border-radius:6px !important; 
     padding:6px 6px 6px 6px; 
     color:white;
+}
+
+.incident-description-holder p {
+    padding-left:10px;
+    margin-bottom: 15px;
+}
+
+.incident-data-holder {
+    max-height: 300px;
+    overflow: auto;
+    border-style: ridge;
+    padding-left: 10px;
+    margin-left: 15px;
 }
 
 .menu-logo {

@@ -31,7 +31,7 @@ namespace terminalFr8CoreTests.Integration
         private const string GetFileFromFr8Store = "GetFileFromFr8Store";
         private const string BuildMessage = "Build_Message";
         private const string SearchFr8Warehouse = "SearchFr8Warehouse";
-        private const string TestAndBranch = "TestAndBranch";
+        private const string MakeADecision = "MakeADecision";
         private const string ExtractTableField = "ExtractTableField";
         private const string AppBuilder = "AppBuilder";
         private const string GetDataFromFr8Warehouse = "GetDataFromFr8Warehouse";
@@ -72,7 +72,7 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == GetFileFromFr8Store));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == BuildMessage));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SearchFr8Warehouse));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == TestAndBranch));
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == MakeADecision));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ExtractTableField));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == AppBuilder));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == GetDataFromFr8Warehouse));
