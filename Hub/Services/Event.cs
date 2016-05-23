@@ -13,6 +13,9 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Utilities.Logging;
+using Fr8Data.Constants;
+using Newtonsoft.Json;
+using Hub.Managers;
 
 namespace Hub.Services
 {
@@ -21,44 +24,42 @@ namespace Hub.Services
     /// </summary>
     public class Event : IEvent
     {
-
+        private delegate void EventRouter(LoggingDataCM loggingDataCm);
         private readonly ITerminal _terminal;
         private readonly IPlan _plan;
+        private ICrateManager _crateManager;
 
         public Event()
         {
+            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
             _terminal = ObjectFactory.GetInstance<ITerminal>();
             _plan = ObjectFactory.GetInstance<IPlan>();
         }
         /// <see cref="IEvent.HandleTerminalIncident"/>
-        public void HandleTerminalIncident(LoggingDataCm incident)
+        public void HandleTerminalIncident(LoggingDataCM incident)
         {
             EventManager.ReportTerminalIncident(incident);
         }
 
-        public void HandleTerminalEvent(LoggingDataCm eventDataCm)
+        public void HandleTerminalEvent(LoggingDataCM eventDataCm)
         {
             EventManager.ReportTerminalEvent(eventDataCm);
         }
 
-        //public void ProcessInbound(string userID, EventReportMS curEventReport)
-        //{
-        //    //check if CrateDTO is not null
-        //    if (curEventReport == null)
-        //        throw new ArgumentNullException("Paramter Standard Event Report is null.");
+        private EventRouter GetEventRouter(EventReportCM eventCm)
+        {
+            if (eventCm.EventNames.Equals("Terminal Incident"))
+            {
+                return HandleTerminalIncident;
+            }
 
-        //    //Matchup process
-        //    IList<PlanDO> matchingPlans = _plan.GetMatchingPlans(userID, curEventReport);
-        //    using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        foreach (var subPlan in matchingPlans)
-        //        {
-        //            //4. When there's a match, it means that it's time to launch a new Process based on this Plan, 
-        //            //so make the existing call to Plan#LaunchProcess.
-        //            _plan.LaunchProcess(unitOfWork, subPlan);
-        //        }
-        //    }
-        //}
+            if (eventCm.EventNames.Equals("Terminal Event"))
+            {
+                return HandleTerminalEvent;
+            }
+
+            throw new InvalidOperationException("Unknown EventDTO with name: " + eventCm.EventNames);
+        }
 
         public async Task ProcessInboundEvents(Crate curCrateStandardEventReport)
         {
@@ -77,8 +78,27 @@ namespace Hub.Services
                 {
                     try
                     {
-                        Fr8AccountDO systemUser = uow.UserRepository.GetOrCreateUser(systemUserEmail);
-                        FindAndExecuteAccountPlans(uow, eventReportMS, curCrateStandardEventReport, systemUser.Id);
+                        var eventCm = curCrateStandardEventReport.Get<EventReportCM>();
+
+                        EventRouter currentRouter = GetEventRouter(eventCm);
+
+                        var errorMsgList = new List<string>();
+                        foreach (var crate in eventCm.EventPayload)
+                        {
+                            if (crate.ManifestType.Id != (int)MT.LoggingData)
+                            {
+                                errorMsgList.Add("Don't know how to process an EventReport with the Contents: " + _crateManager.ToDto(crate));
+                                continue;
+                            }
+
+                            var loggingData = crate.Get<LoggingDataCM>();
+                            currentRouter(loggingData);
+                        }
+
+                        if (errorMsgList.Count > 0)
+                        {
+                            throw new InvalidOperationException(String.Join(";;;", errorMsgList));
+                        }
                     }
                     catch (Exception ex)
                     {

@@ -72,7 +72,7 @@ namespace TerminalBase.BaseClasses
             return null;
 
             //TODO: Commented during development only. So that app loads fast.
-            //return Json(ReportStartUp(terminalName));
+            return Json(ReportStartUp(terminalName));
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace TerminalBase.BaseClasses
             if (_integrationTestMode)
                 return Task.FromResult<string>(String.Empty);
 
-            return _baseTerminalEvent.SendEventOrIncidentReport(terminalName, "Terminal Incident");
+            return _baseTerminalEvent.SendEventOrIncidentReport(terminalName, "Terminal Event");
         }
 
 

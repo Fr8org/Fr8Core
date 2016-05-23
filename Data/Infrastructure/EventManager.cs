@@ -95,7 +95,7 @@ namespace Data.Infrastructure
         public static event OAuthEventHandler AlertTokenObtained;
         public static event OAuthEventHandler AlertTokenRevoked;
 
-        public delegate void TerminalIncidentHandler(LoggingDataCm incidentItem);
+        public delegate void TerminalIncidentHandler(LoggingDataCM incidentItem);
         public static event TerminalIncidentHandler TerminalIncidentReported;
 
         public delegate void EventDocuSignNotificationReceivedHandler();
@@ -131,7 +131,7 @@ namespace Data.Infrastructure
         public delegate void EventActionDispatchedHandler(ActivityDO curActivity, Guid processId);
         public static event EventActionDispatchedHandler EventActionDispatched;
 
-        public delegate void TerminalEventHandler(LoggingDataCm eventDataCm);
+        public delegate void TerminalEventHandler(LoggingDataCM eventDataCm);
         public static event TerminalEventHandler TerminalEventReported;
 
         public delegate void ExternalEventReceivedHandler(string curEventPayload);
@@ -317,7 +317,7 @@ namespace Data.Infrastructure
             if (handler != null) handler(userid, message, expiresIn);
         }
 
-        public static void ReportTerminalIncident(LoggingDataCm incidentItem)
+        public static void ReportTerminalIncident(LoggingDataCM incidentItem)
         {
             TerminalIncidentHandler handler = TerminalIncidentReported;
             if (handler != null) handler(incidentItem);
@@ -556,7 +556,7 @@ namespace Data.Infrastructure
             if (handler != null) handler(curActivity, processId);
         }
 
-        public static void ReportTerminalEvent(LoggingDataCm eventDataCm)
+        public static void ReportTerminalEvent(LoggingDataCM eventDataCm)
         {
             TerminalEventHandler handler = TerminalEventReported;
             if (handler != null) handler(eventDataCm);

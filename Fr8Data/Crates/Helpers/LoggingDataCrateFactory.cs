@@ -4,7 +4,7 @@ namespace Fr8Data.Crates.Helpers
 {
     public class LoggingDataCrateFactory
     {
-        public Crate Create(LoggingDataCm loggingDataCm)
+        public Crate Create(LoggingDataCM loggingDataCm)
         {
             return Crate.FromContent("Dockyard Terminal Event or Incident Report", loggingDataCm);
 
