@@ -105,7 +105,6 @@ namespace terminalSlackTests.Activities
                 PayloadStorage = new CrateStorage(Crate.FromContent(string.Empty, new OperationalStateCM()))
             };
             await activity.Configure(activityContext);
-            activity.ResetState();
 
             var configurationControls = activityContext.ActivityPayload.CrateStorage.FirstCrate<StandardConfigurationControlsCM>().Content;
 
@@ -184,7 +183,6 @@ namespace terminalSlackTests.Activities
                 PayloadStorage = HealthMonitor_FixtureData.GetDirectMessageEventPayload()
             };
             await activity.Configure(activityContext);
-            activity.ResetState();
             activityContext.ActivityPayload.CrateStorage.UpdateControls<Monitor_Channel_v2.ActivityUi>(x =>
             {
                 x.MonitorDirectMessagesOption.Selected = true;

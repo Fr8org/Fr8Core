@@ -128,13 +128,11 @@ namespace terminalSalesforceTests.Actions
             //Arrange
             //perform initial and follow up config, activate
             var result = await PerformInitialConfig();
-            var executionContext = new ContainerExecutionContext();
-
-            var authToken = await FixtureData.Salesforce_AuthToken();
-            var authorizationToken = new AuthorizationToken
-            {
-                Token = authToken.Token
+            var executionContext = new ContainerExecutionContext {
+                PayloadStorage = new CrateStorage(Crate.FromContent(string.Empty, new OperationalStateCM()))
             };
+
+            var authorizationToken = await FixtureData.Salesforce_AuthToken();
             await _saveToSFDotCom_v1.Configure(result);
             await _saveToSFDotCom_v1.Activate(result);
 
@@ -153,7 +151,7 @@ namespace terminalSalesforceTests.Actions
 
             //Act
             await _saveToSFDotCom_v1.Run(result, executionContext);
-            var payload = result.ActivityPayload.CrateStorage;
+            var payload = executionContext.PayloadStorage;
             //Assert
             var newlyCreatedLead = payload.CratesOfType<StandardPayloadDataCM>()
                                     .Single().Content.PayloadObjects[0].PayloadObject;
@@ -168,7 +166,7 @@ namespace terminalSalesforceTests.Actions
 
         private async Task<ActivityContext> PerformInitialConfig()
         {
-            var activityContext = await FixtureData.SaveToSalesforceTestActivityDO1();
+            var activityContext = await FixtureData.SaveToSalesforceTestActivityContext();
             //Act
             await _saveToSFDotCom_v1.Configure(activityContext);
 

@@ -112,7 +112,7 @@ namespace terminalSalesforceTests.Fixtures
             return activityContext;
         }
 
-        public static async Task<ActivityContext> SaveToSalesforceTestActivityDO1()
+        public static async Task<ActivityContext> SaveToSalesforceTestActivityContext()
         {
             var activityTemplate = SaveToSalesforceActivityTemplateDTO();
             return new ActivityContext
