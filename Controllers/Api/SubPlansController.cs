@@ -86,7 +86,6 @@ namespace HubWeb.Controllers
             }
         }
 
-        [ResponseType(typeof(SubPlanDTO))]
         [HttpDelete]
         public async Task<IHttpActionResult> Delete(Guid id)
         {
@@ -97,11 +96,15 @@ namespace HubWeb.Controllers
                 {
                     return BadRequest();
                 }
-
-                await _subPlan.Delete(uow, id);
-
-                uow.SaveChanges();
-
+                try
+                {
+                    await _subPlan.Delete(uow, id);
+                    uow.SaveChanges();
+                }
+                catch (Exception ex)
+                {
+                    return InternalServerError(ex);
+                }
                 return Ok();
             }
         }
