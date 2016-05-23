@@ -124,7 +124,7 @@ namespace terminalTests.Integration
             AddChild(activityContext.ActivityPayload, childActivity, 1);
             //Run
             await activity.Run(activityContext, containerExecutionContext);
-            var operationalState = activityContext.ActivityPayload.CrateStorage.FirstCrate<OperationalStateCM>().Content;
+            var operationalState = containerExecutionContext.PayloadStorage.FirstCrate<OperationalStateCM>().Content;
             Assert.AreEqual(ActivityResponse.Success.ToString(), operationalState.CurrentActivityResponse.Type, "Child activities should be ran during normal execution flow");
         }
 
@@ -179,7 +179,7 @@ namespace terminalTests.Integration
             AddChild(activityContext.ActivityPayload, childActivity,1) ;
             //Run
             await activity.Run(activityContext, containerExecutionContext);
-            var operationalState = activityContext.ActivityPayload.CrateStorage.FirstCrate<OperationalStateCM>().Content;
+            var operationalState = containerExecutionContext.PayloadStorage.FirstCrate<OperationalStateCM>().Content;
             Assert.AreEqual(ActivityResponse.SkipChildren.ToString(), operationalState.CurrentActivityResponse.Type, "Child activities should be skipped during normal execution flow");
             var filteredData = activityContext.ActivityPayload.CrateStorage.FirstCrate<StandardTableDataCM>().Content;
             Assert.AreEqual(3, filteredData.Table.Count, "Filtered data doesn't contain proper row count");
