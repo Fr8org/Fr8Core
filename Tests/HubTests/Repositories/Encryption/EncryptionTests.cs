@@ -75,7 +75,7 @@ namespace HubTests.Repositories.Encryption
             {
                 Id = NewGuid(13),
                 Name = "Plan",
-                PlanState = PlanState.Active,
+                PlanState = PlanState.Running,
                 Description = "PlanDesc",
                 Fr8Account = new Fr8AccountDO()
                 {

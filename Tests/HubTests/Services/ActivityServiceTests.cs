@@ -117,7 +117,7 @@ namespace HubTests.Services
             {
                 var plan = new PlanDO
                 {
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     Name = "name",
                     ChildNodes = { tree }
                 };
@@ -153,7 +153,7 @@ namespace HubTests.Services
             {
                 var plan = new PlanDO
                 {
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     Name = "name",
                     ChildNodes = { tree }
                 };
@@ -199,7 +199,7 @@ namespace HubTests.Services
                 var plan = new PlanDO
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { tree }
                 };
 
@@ -303,7 +303,7 @@ namespace HubTests.Services
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { activityDo }
                 });
                 uow.SaveChanges();
@@ -349,7 +349,7 @@ namespace HubTests.Services
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "sdfsdf",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { activityDo }
                 });
                 uow.SaveChanges();
@@ -384,7 +384,7 @@ namespace HubTests.Services
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { activityDo }
                 });
                 uow.SaveChanges();
@@ -424,7 +424,7 @@ namespace HubTests.Services
                 uow.PlanRepository.Add(new PlanDO
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { activityDo }
                 });
                 uow.SaveChanges();
