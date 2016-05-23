@@ -123,11 +123,11 @@ app.config(['applicationInsightsServiceProvider', function (applicationInsightsS
     //Temporary instr key (for local instances) until the real one is loaded
     applicationInsightsServiceProvider.configure('e08e940f-1491-440c-8d39-f38e9ff053db', options, true);
 
-    $.get('/api/v1/configuration/appinsights').then((appInsightsInstrKey: string) => {
-        console.log(appInsightsInstrKey);
-        if (appInsightsInstrKey.indexOf('0000') == -1) { // if not local instance ('Debug' configuration)
+    $.get('/api/v1/configuration/instrumentation-key').then((instrumentationKey: string) => {
+        console.log(instrumentationKey);
+        if (instrumentationKey.indexOf('0000') == -1) { // if not local instance ('Debug' configuration)
             options = { applicationName: 'HubWeb' };
-            applicationInsightsServiceProvider.configure(appInsightsInstrKey, options, true);
+            applicationInsightsServiceProvider.configure(instrumentationKey, options, true);
         } else {
             // don't send telemetry 
             options = {
@@ -137,7 +137,7 @@ app.config(['applicationInsightsServiceProvider', function (applicationInsightsS
                 autoExceptionTracking: false,
                 sessionInactivityTimeout: 1
             };
-            applicationInsightsServiceProvider.configure(appInsightsInstrKey, options, false);
+            applicationInsightsServiceProvider.configure(instrumentationKey, options, false);
         }
     });
 }]);
