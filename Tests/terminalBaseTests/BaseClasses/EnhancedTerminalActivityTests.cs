@@ -43,7 +43,13 @@ namespace terminaBaselTests.BaseClasses
         {
         }
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
+        public static ActivityTemplateDTO ActivityTemplate = new ActivityTemplateDTO
+        {
+            Terminal = new TerminalDTO { Name = "TestTerminal" },
+            Name = "BaseTerminalActivityMock"
+        };
+
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplate;
         public override Task Run()
         {
             return Task.FromResult(0);
@@ -70,13 +76,13 @@ namespace terminaBaselTests.BaseClasses
         {
         }
 
-        /*
-        protected override StandardConfigurationControlsCM CrateConfigurationControls()
+        public static ActivityTemplateDTO ActivityTemplate = new ActivityTemplateDTO
         {
-            return new StandardConfigurationControlsCM();
-        }*/
+            Terminal = new TerminalDTO {Name = "TestTerminal"},
+            Name = "ActivityOverrideCheckMock"
+        };
 
-        protected override ActivityTemplateDTO MyTemplate => new ActivityTemplateDTO();
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplate;
 
         protected override ConfigurationRequestType GetConfigurationRequestType()
         {
@@ -164,6 +170,7 @@ namespace terminaBaselTests.BaseClasses
 
     class UiSyncDynamicActivityMock : EnhancedTerminalActivity<UiSyncDynamicActivityMock.ActivityUi>
     {
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public TextBox TextBox;
@@ -228,12 +235,25 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
+        public static ActivityTemplateDTO ActivityTemplate = new ActivityTemplateDTO
+        {
+            Terminal = new TerminalDTO { Name = "TestTerminal" },
+            Name = "UiSyncDynamicActivityMock"
+        };
+
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplate;
     }
 
 
     class UiSyncActivityMock : EnhancedTerminalActivity<UiSyncActivityMock.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplate = new ActivityTemplateDTO
+        {
+            Terminal = new TerminalDTO { Name = "TestTerminal" },
+            Name = "UiSyncActivityMock"
+        };
+
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplate;
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public TextSource TextSource;
@@ -288,11 +308,18 @@ namespace terminaBaselTests.BaseClasses
         {
             return Task.FromResult(0);
         }
-        protected override ActivityTemplateDTO MyTemplate { get; }
+       
     }
 
     class ActivityWithUiBuilder : EnhancedTerminalActivity<ActivityWithUiBuilder.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplate = new ActivityTemplateDTO
+        {
+            Terminal = new TerminalDTO { Name = "TestTerminal" },
+            Name = "ActivityWithUiBuilder"
+        };
+
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplate;
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public ActivityUi(UiBuilder uiBuilder)
@@ -321,7 +348,6 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected override ActivityTemplateDTO MyTemplate { get; }
     }
 
     [TestFixture]
@@ -365,21 +391,16 @@ namespace terminaBaselTests.BaseClasses
             FixtureData.AddTestActivityTemplate();
         }
 
-        private ActivityDO CreateActivity(params Crate[] crates)
-        {
-            return new ActivityDO
-            {
-                CrateStorage = _crateManager.CrateStorageAsStr(new CrateStorage(crates))
-            };
-        }
         private ActivityContext CreateActivityContext(params Crate[] crates)
         {
             return new ActivityContext
             {
-                ActivityPayload =
+                ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage(crates)
-                }
+                     
+                },
+                AuthorizationToken = new AuthorizationToken()
             };
         }
 
@@ -396,7 +417,7 @@ namespace terminaBaselTests.BaseClasses
         public async Task CanConfigure()
         {
             var activity = new ActivityOverrideCheckMock(false);
-            await activity.Configure(CreateActivityContext(Crate.FromContent("crate", new StandardConfigurationControlsCM())));
+            await activity.Configure(CreateActivityContext(Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new StandardConfigurationControlsCM())));
             Assert.IsTrue(activity.CalledMethods == (CalledMethod.Configure | CalledMethod.Validate));
         }
 
@@ -404,7 +425,9 @@ namespace terminaBaselTests.BaseClasses
         public async Task CanActivate()
         {
             var activity = new ActivityOverrideCheckMock(false);
-            await activity.Activate(CreateActivityContext(Crate.FromContent("crate", new StandardConfigurationControlsCM())));
+            var configCrate = Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new StandardConfigurationControlsCM());
+            var activityContext = CreateActivityContext(configCrate);
+            await activity.Activate(activityContext);
             Assert.IsTrue(activity.CalledMethods == (CalledMethod.Activate | CalledMethod.Validate));
         }
 
@@ -412,7 +435,7 @@ namespace terminaBaselTests.BaseClasses
         public async Task CanDeactivate()
         {
             var activity = new ActivityOverrideCheckMock(false);
-            await activity.Deactivate(CreateActivityContext(Crate.FromContent("crate", new StandardConfigurationControlsCM())));
+            await activity.Deactivate(CreateActivityContext(Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new StandardConfigurationControlsCM())));
             Assert.IsTrue(activity.CalledMethods == (CalledMethod.Deactivate));
         }
         
@@ -420,9 +443,9 @@ namespace terminaBaselTests.BaseClasses
         public async Task CanRun()
         {
             var activity = new ActivityOverrideCheckMock(false);
-            var executionContext = new ContainerExecutionContext();
+            var executionContext = CreateContainerExecutionContext();
             await ObjectFactory.GetInstance<IHubCommunicator>().Configure("testTerminal");
-            await activity.Run(CreateActivityContext(Crate.FromContent("crate", new StandardConfigurationControlsCM())), executionContext);
+            await activity.Run(CreateActivityContext(Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new StandardConfigurationControlsCM())), executionContext);
             Assert.IsTrue(activity.CalledMethods == (CalledMethod.Run | CalledMethod.Validate));
         }
 
@@ -430,10 +453,18 @@ namespace terminaBaselTests.BaseClasses
         public async Task CanChildActivitiesExecuted()
         {
             var activity = new ActivityOverrideCheckMock(false);
-            var executionContext = new ContainerExecutionContext();
+            var executionContext = CreateContainerExecutionContext();
             await ObjectFactory.GetInstance<IHubCommunicator>().Configure("testTerminal");
-            await activity.RunChildActivities(CreateActivityContext(Crate.FromContent("crate", new StandardConfigurationControlsCM())), executionContext);
+            await activity.RunChildActivities(CreateActivityContext(Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new StandardConfigurationControlsCM())), executionContext);
             Assert.IsTrue(activity.CalledMethods == (CalledMethod.ChildActivitiesExecuted | CalledMethod.Validate));
+        }
+
+        private ContainerExecutionContext CreateContainerExecutionContext()
+        {
+            return new ContainerExecutionContext
+            {
+                PayloadStorage = new CrateStorage(CrateManager.CreateOperationalStatusCrate("", new OperationalStateCM()))
+            };
         }
 
         [Test]
@@ -443,11 +474,11 @@ namespace terminaBaselTests.BaseClasses
             {
                 ValidationState = false
             };
-            var executionContext = new ContainerExecutionContext();
+            var executionContext = CreateContainerExecutionContext();
 
             await ObjectFactory.GetInstance<IHubCommunicator>().Configure("testTerminal");
 
-            var activityContext = CreateActivityContext(Crate.FromContent("crate", new StandardConfigurationControlsCM()));
+            var activityContext = CreateActivityContext(Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new StandardConfigurationControlsCM()));
 
             await activity.Run(activityContext, executionContext);
 
@@ -534,7 +565,7 @@ namespace terminaBaselTests.BaseClasses
 
             var refCC = new UiSyncActivityMock.ActivityUi();
 
-            var activityContext = CreateActivityContext(Crate.FromContent("", refCC));
+            var activityContext = CreateActivityContext(Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, refCC));
             await activity.Configure(activityContext);
             var cc = activityContext.ActivityPayload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
@@ -564,7 +595,7 @@ namespace terminaBaselTests.BaseClasses
         public async Task CanUseUiBuilder()
         {
             var activity = new ActivityWithUiBuilder();
-            await activity.Configure(CreateActivityContext(Crate.FromContent("crate", new StandardConfigurationControlsCM())));
+            await activity.Configure(CreateActivityContext(Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new StandardConfigurationControlsCM())));
         }
 
         [Test]
@@ -592,7 +623,7 @@ namespace terminaBaselTests.BaseClasses
             {
                 controlDefinitionDto.Value = controlDefinitionDto.Name + "_value";
             }
-            await activity.Configure(CreateActivityContext(Crate.FromContent("cc", cc)));
+            await activity.Configure(CreateActivityContext(Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, cc)));
             //cc = _crateManager.GetStorage(dto).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
         }
     }

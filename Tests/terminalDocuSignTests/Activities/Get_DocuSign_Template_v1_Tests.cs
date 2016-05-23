@@ -78,8 +78,7 @@ namespace terminalDocuSignTests.Activities
 
             //var activityPayload = FixtureData.TestActivityContext1().ActivityPayload;
             var result = await Validate(target, activityContext);
-
-            Assert.AreEqual(false, result.HasErrors);
+            Assert.AreEqual(null, result);
         }
 
         private void SelectTemplate(ActivityPayload activity)

@@ -48,8 +48,9 @@ namespace HubTests.Managers
         //
         //        }
 
-
-        [Test]
+/*
+        [Test, Ignore]
+        [Obsolete("AddLogMessage is not used by anywhere on code, it is just used by this test")]
         public void CanAddLogMessageToContainerDO()
         {
             // Arrange
@@ -86,7 +87,7 @@ namespace HubTests.Managers
 
             Assert.AreEqual(eq, curLogItemList.Count);
         }
-
+        */
         [Test]
         public void FromNullCrateStorageDTO_ReturnsEmptyStorage()
         {

@@ -98,7 +98,7 @@ namespace terminalDocuSignTests.Activities
             SetTemplateConditionSelected(activityContext.ActivityPayload);
             SetTemplate(activityContext.ActivityPayload);
             var result = await Validate(target, activityContext);
-            Assert.AreEqual(false, result.HasErrors);
+            Assert.AreEqual(null, result);
         }
 
         private void SetNotificationSelected(ActivityPayload activity)
