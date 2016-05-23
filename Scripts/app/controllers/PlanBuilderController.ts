@@ -453,6 +453,10 @@ module dockyard.controllers {
             // Handles Response from Configure call from PaneConfiguration
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ConfigureCallResponse],
                 (event: ng.IAngularEvent, callConfigureResponseEventArgs: pca.CallConfigureResponseEventArgs) => this.PaneConfigureAction_ConfigureCallResponse(callConfigureResponseEventArgs));
+            
+            // Handles Advisory Messages from Configure call for Activity and render some context-sensitive help/suggestions
+            this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ShowAdvisoryMessages],
+            (event: ng.IAngularEvent, showAdvisoryMessagesEventArgs: pca.ShowAdvisoryMessagesEventArgs) => this.PaneConfigureAction_ShowAdvisoryMessages(showAdvisoryMessagesEventArgs));
         }
 
 
@@ -835,6 +839,10 @@ module dockyard.controllers {
                     this.$scope.$broadcast(<any>planEvents.ON_FIELD_FOCUS, callConfigureResponseEventArgs);
                 }
             }, 300);
+        }
+
+        private PaneConfigureAction_ShowAdvisoryMessages(showAdvisoryMessagesEventArgs: pca.ShowAdvisoryMessagesEventArgs) {
+            alert("Plan Builder Message!");
         }
 
         private getActionSubPlan(activity: interfaces.IActivityDTO): any {

@@ -13,6 +13,7 @@ using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services.NewApi;
 using Utilities.Configuration.Azure;
 using System.IO;
+using System.Text.RegularExpressions;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
@@ -29,6 +30,9 @@ namespace terminalDocuSign.Services.New_Api
     public class DocuSignManager : IDocuSignManager
     {
         public const string DocusignTerminalName = "terminalDocuSign";
+        private static readonly string[] DefaultControlNames = new[] { "Text", "CheckBox", "Radio Group", "List", "Note", "Number" };
+        private static readonly string[] NoCustomizedName = new[] { "Sign Here", "Company", "Email", "Initial", "Date Signed", "First Name", "Full Name", "Last Name" };
+        const string StrRegex = @"\s*\d+$";
 
         public DocuSignApiConfiguration SetUp(AuthorizationTokenDO authTokenDO)
         {
@@ -226,6 +230,39 @@ namespace terminalDocuSign.Services.New_Api
             // sending an envelope
             envelopesApi.Update(loginInfo.AccountId, envelopeSummary.EnvelopeId, new Envelope() { Status = "sent" });
         }
+
+        public bool DocuSignTemplateDefaultNames(IEnumerable<FieldDTO> templateDefinedFiels)
+        {
+            //filter out default names that start with the following strings: signature, initial, date signed
+
+            //2) evalute the remaining fields and return true if at least 80 % of the fields match a default name pattern.This consists of:
+            //a) a word from this list(Text, Checkbox, Radio Group, Drop Down, Name)
+            //b) followed by a space
+            //c) followed by an integer
+            var result = false;
+            var defaultTemplateNamesCount = 0;
+            var totalTemplateNamesCount = 0;
+            foreach (var item in templateDefinedFiels)
+            {
+                foreach (var x in DefaultControlNames)
+                {
+                    totalTemplateNamesCount++;
+                    if (!item.Key.StartsWith(x)) continue;
+
+                    var regex = new Regex(StrRegex);
+                    var res = regex.Replace(item.Key, "");
+
+                    var number = 0;
+                    if (int.TryParse(res, out number))
+                    {
+                        defaultTemplateNamesCount++;
+                    }
+                }
+            }
+
+            return ((defaultTemplateNamesCount / totalTemplateNamesCount) * 100) >= 80;
+        }
+
 
         #endregion
 

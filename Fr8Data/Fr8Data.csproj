@@ -99,6 +99,7 @@
     <Compile Include="DataTransferObjects\ActivityTemplateCategoryDTO.cs" />
     <Compile Include="DataTransferObjects\ActivityTemplateDTO.cs" />
     <Compile Include="DataTransferObjects\ActivityTypeListDTO.cs" />
+    <Compile Include="DataTransferObjects\AdvisoryMessageDTO.cs" />
     <Compile Include="DataTransferObjects\AlarmDTO.cs" />
     <Compile Include="DataTransferObjects\AuthenticateResponse.cs" />
     <Compile Include="DataTransferObjects\AuthorizationTokenDTO.cs" />
@@ -169,6 +170,7 @@
     <Compile Include="Infrastructure\JsonNet\CreateTimeConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\TerminalActivityTemplateConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\WebServiceConverter.cs" />
+    <Compile Include="Manifests\AdvisoryMessagesCM.cs" />
     <Compile Include="Manifests\ChartOfAccountsCM.cs" />
     <Compile Include="Manifests\CrateDescriptionCM.cs" />
     <Compile Include="Manifests\CrateManifestTypes.cs" />

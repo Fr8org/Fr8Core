@@ -17,7 +17,8 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_ConfigureFocusElement,
         PaneConfigureAction_AuthCompleted,
         PaneConfigureAction_DownStreamReconfiguration,
-        PaneConfigureAction_UpdateValidationMessages
+        PaneConfigureAction_UpdateValidationMessages,
+        PaneConfigureAction_ShowAdvisoryMessages
     }
 
     export class ActionReconfigureEventArgs {
@@ -103,6 +104,16 @@ module dockyard.directives.paneConfigureAction {
         constructor(id: string, validationResults: model.ValidationResults) {
             this.id = id;
             this.validationResults = validationResults;
+        }
+    }
+    
+    export class ShowAdvisoryMessagesEventArgs {
+        public id: string;
+        public advisories: model.AdvisoryMessages;
+
+        constructor(id: string, advisories: model.AdvisoryMessages) {
+            this.id = id;
+            this.advisories = advisories;
         }
     }
 
@@ -610,6 +621,15 @@ module dockyard.directives.paneConfigureAction {
                     }
                 }
 
+                if (this.crateHelper.hasCrateOfManifestType(this.$scope.currentAction.crateStorage, 'Advisory Messages')) {
+                    var advisoryCrate = this.crateHelper
+                        .findByManifestType(this.$scope.currentAction.crateStorage, 'Advisory Messages');
+                    var advisoryMessages = (<model.AdvisoryMessages>advisoryCrate.contents);
+                    if (advisoryMessages && advisoryMessages.advisories.length > 0) {
+                        this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ShowAdvisoryMessages], new ShowAdvisoryMessagesEventArgs(this.$scope.currentAction.id, advisoryMessages));
+                    }
+                }
+
                 var hasConditionalBranching = _.any(this.$scope.currentAction.configurationControls.fields, (field: model.ControlDefinitionDTO) => {
                     return field.type === 'ContainerTransition';
                 });
@@ -622,7 +642,7 @@ module dockyard.directives.paneConfigureAction {
                 // useless call.
                 this.ignoreConfigurationChange = true;
 
-            
+                    
 
                 this.$timeout(() => { // let the control list create, we don't want false change notification during creation process
                     this.$scope.configurationWatchUnregisterer = this.$scope.$watch<model.ControlsList>(
