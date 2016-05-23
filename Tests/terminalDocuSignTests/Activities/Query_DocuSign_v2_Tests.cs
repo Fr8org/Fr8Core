@@ -34,6 +34,10 @@ namespace terminalDocuSignTests.Activities
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage()
+                },
+                AuthorizationToken = new AuthorizationToken
+                {
+                    Token = "test"
                 }
             };
             await activity.Configure(activityContext);
@@ -51,6 +55,10 @@ namespace terminalDocuSignTests.Activities
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage()
+                },
+                AuthorizationToken = new AuthorizationToken
+                {
+                    Token = "test"
                 }
             };
             await activity.Configure(activityContext);

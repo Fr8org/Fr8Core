@@ -39,7 +39,7 @@ namespace terminaBaselTests.BaseClasses
 
     class BaseTerminalActivityMock : BaseTerminalActivity
     {
-        public BaseTerminalActivityMock(bool isAuthenticationRequired) : base(isAuthenticationRequired)
+        public BaseTerminalActivityMock() : base(false)
         {
             
         }

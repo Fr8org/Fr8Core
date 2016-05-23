@@ -49,7 +49,15 @@ namespace terminalSlackTests.Activities
         public async Task Initialize_Always_LoadsChannelList()
         {
             var activity = new Monitor_Channel_v2();
-            await activity.Configure(new ActivityContext());
+            var activityContext = new ActivityContext
+            {
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
+                },
+                AuthorizationToken = AuthorizationToken
+            };
+            await activity.Configure(activityContext);
             ObjectFactory.GetInstance<Mock<ISlackIntegration>>().Verify(x => x.GetChannelList(It.IsAny<string>(), false), "Channel list was not loaded from Slack");
         }
 

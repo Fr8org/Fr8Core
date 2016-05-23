@@ -32,10 +32,17 @@ namespace terminalDropboxTests.Fixtures
 
         public static ActivityContext GetFileListActivityDO()
         {
+            var terminalDTO = Fixture.Build<TerminalDTO>()
+                 .With(x => x.Name)
+                 .With(x => x.Version)
+                 .OmitAutoProperties()
+                 .Create();
+
             ActivityTemplateDTO activityTemplateDTO = Fixture.Build<ActivityTemplateDTO>()
                  .With(x => x.Id)
                  .With(x => x.Name)
                  .With(x => x.Version)
+                 .With(x => x.Terminal, terminalDTO)
                  .OmitAutoProperties()
                  .Create();
             ActivityPayload activityPayload = Fixture.Build<ActivityPayload>()

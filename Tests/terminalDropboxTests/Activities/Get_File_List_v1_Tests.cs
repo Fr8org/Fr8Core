@@ -32,21 +32,21 @@ namespace terminalDropboxTests.Activities
             ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(restfulServiceClient.Object));
 
             _getFileList_v1 = ObjectFactory.GetInstance<Get_File_List_v1>();
-            _getFileList_v1.HubCommunicator.Configure("terminalDropbox");
+            //_getFileList_v1.HubCommunicator.Configure("terminalDropbox");
         }
 
         [Test]
-        public void Initialize_ReturnsActivityDto()
+        public async Task Initialize_ReturnsActivityDto()
         {
             //Arrange
             var curActivityContext = FixtureData.GetFileListActivityDO();
             AuthorizationToken tokenDTO = FixtureData.DropboxAuthorizationToken();
-
+            curActivityContext.AuthorizationToken = tokenDTO;
             //Act
-            var activityContext = _getFileList_v1.Configure(curActivityContext);
+            await _getFileList_v1.Configure(curActivityContext);
 
             // Assert
-            Assert.NotNull(activityContext);
+            Assert.True(curActivityContext.ActivityPayload.CrateStorage.Count > 0);
         }
     }
 }

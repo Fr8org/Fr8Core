@@ -105,7 +105,7 @@ namespace terminalBaseTests.BaseClasses
             object[] parameters = new object[] { FixtureData.FieldDefinitionDTO1() };
 
             //Act
-            var result = (Crate)ClassMethod.Invoke(typeof(BaseTerminalActivity), "PackControlsCrate", parameters);
+            var result = (Crate)ClassMethod.Invoke(typeof(BaseTerminalActivityMock), "PackControlsCrate", parameters);
 
             //Assert
             Assert.IsNotNull(result);
