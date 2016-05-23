@@ -10,8 +10,6 @@ using StructureMap;
 using Hub.Managers;
 using System.Linq;
 using Fr8Data.Control;
-using Data.Interfaces;
-using Data.Entities;
 using System;
 using Fr8Data.DataTransferObjects;
 using Data.States;
@@ -32,11 +30,16 @@ namespace terminalTests.Unit
         {
             base.SetUp();
 
-            var payload = new PayloadDTO(Guid.Empty);
-            using (var storage = CrateManager.GetUpdatableStorage(payload))
+            var activityContext = new ActivityContext
             {
-                storage.Add(Crate.FromContent(string.Empty, new OperationalStateCM()));
-            }
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
+
+                }
+            };
+            var storage = activityContext.ActivityPayload.CrateStorage;
+            storage.Add(Crate.FromContent(string.Empty, new OperationalStateCM()));
 
             var fileds = new FieldDescriptionsCM(new FieldDTO[] { });
 
