@@ -529,7 +529,7 @@ namespace terminaBaselTests.BaseClasses
                                  new ListItem() {Key = "sk2", Selected = false, Value = "sk2"} }
                 }
             });
-            var activityContext = CreateActivityContext(Crate.FromContent("", refCC));
+            var activityContext = CreateActivityContext(Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, refCC));
             await activity.Configure(activityContext);
             var cc = activityContext.ActivityPayload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             

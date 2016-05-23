@@ -682,7 +682,7 @@ namespace TerminalBase.BaseClasses
 
             try
             {
-                if (!await Validate())
+                if (!await ValidateInternal())
                 {
                     RaiseError("Activity was incorrectly configured");
                     return;

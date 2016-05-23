@@ -134,6 +134,7 @@ namespace terminalSlack.Activities
             if (!IsMonitoringDirectMessages && (!IsMonitoringChannels || (!IsMonitoringAllChannels && !IsMonitoringSpecificChannels)))
             {
                 ValidationManager.SetError("At least one of the monitoring options must be selected", ActivityUI.MonitorDirectMessagesOption, ActivityUI.MonitorChannelsOption);
+                return Task.FromResult(false);
             }
 
             return Task.FromResult(true);
