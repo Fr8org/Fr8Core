@@ -21,6 +21,7 @@ using Fr8Infrastructure.Communication;
 using Fr8Data.States;
 using Hub.Managers;
 using terminaBaselTests.BaseClasses;
+using TerminalBase.Models;
 
 namespace terminalBaseTests.BaseClasses
 {
@@ -40,7 +41,8 @@ namespace terminalBaseTests.BaseClasses
             TerminalBootstrapper.ConfigureTest();
             ObjectFactory.Configure(x => x.For<IRestfulServiceClient>().Use<RestfulServiceClient>().SelectConstructor(() => new RestfulServiceClient()));
             _baseTerminalActivity = new BaseTerminalActivityMock(false);
-            _baseTerminalActivity.HubCommunicator.Configure("terminal");
+
+            //_baseTerminalActivity.HubCommunicator.Configure("terminal");
             _coreServer = terminalBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
 
@@ -124,8 +126,13 @@ namespace terminalBaseTests.BaseClasses
                 });
                 uow.SaveChanges();
 
-                ActivityDO curAction = FixtureData.TestAction257();
-
+                var curAction = FixtureData.TestAction257();
+                var activityContext = new ActivityContext
+                {
+                    ActivityPayload = curAction
+                };
+                //this initializes the class
+                await _baseTerminalActivity.Configure(activityContext);
                 var result = await _baseTerminalActivity.GetDesignTimeFields(CrateDirection.Upstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(216, result.Fields.Count);
@@ -145,8 +152,13 @@ namespace terminalBaseTests.BaseClasses
                 });
                 uow.SaveChanges();
 
-                ActivityDO curAction = FixtureData.TestAction257();
-
+                var curAction = FixtureData.TestAction257();
+                var activityContext = new ActivityContext
+                {
+                    ActivityPayload = curAction
+                };
+                //this initializes the class
+                await _baseTerminalActivity.Configure(activityContext);
                 var result = await _baseTerminalActivity.GetDesignTimeFields(CrateDirection.Downstream);
                 Assert.NotNull(result);
                 Assert.AreEqual(270, result.Fields.Count);

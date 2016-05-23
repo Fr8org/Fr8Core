@@ -21,12 +21,25 @@ namespace TerminalBase.Services
 
         public async Task<object> HandleFr8Request(string curTerminal, string curActionPath, Fr8DataDTO curDataDTO)
         {
+            if (curDataDTO == null)
+            {
+                throw new ArgumentNullException(nameof(curDataDTO));
+            }
+            if (curDataDTO.ActivityDTO == null)
+            {
+                throw new ArgumentException(nameof(curDataDTO.ActivityDTO) + " is null");
+            }
+            if (curDataDTO.ActivityDTO.ActivityTemplate == null)
+            {
+                throw new ArgumentException(nameof(curDataDTO.ActivityDTO.ActivityTemplate) +" is null");
+            }
+
             try
             {
                 IActivityFactory factory = ActivityStore.GetValue(curDataDTO.ActivityDTO.ActivityTemplate);
                 if (factory == null)
                 {
-                    throw new Exception("Activity template registration not found");
+                    throw new ArgumentException("Activity template registration not found with name" + curDataDTO.ActivityDTO.ActivityTemplate.Name);
                 }
 
                 ActivityContext activityContext = DeserializeRequest(curDataDTO);
@@ -59,7 +72,6 @@ namespace TerminalBase.Services
             }
             catch (Exception e)
             {
-                int a = 12;
                 throw;
             }
 

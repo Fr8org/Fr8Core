@@ -72,6 +72,24 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
+        public static ActivityTemplateDTO ActivityTemplateDummy()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = GetTestGuidById(1),
+                Name = "Test",
+                Terminal = new TerminalDTO
+                {
+                    Name = "Test",
+                    Label = "Test",
+                    Version = "1",
+                    Endpoint = "",
+                    TerminalStatus = TerminalStatus.Active,
+                },
+                Version = "1"
+            };
+        }
+
         public static ActivityTemplateDO ActivityTemplateSMS()
         {
             return new ActivityTemplateDO()
@@ -591,14 +609,16 @@ namespace UtilitiesTesting.Fixtures
             return curAuthorizationTokenDO;
         }
 
-        public static ActivityDO TestAction257()
+        public static ActivityPayload TestAction257()
         {
-            return new ActivityDO()
+            return new ActivityPayload()
             {
                 Id = GetTestGuidById(57),
                 Ordering = 2,
                 ParentPlanNodeId = GetTestGuidById(54),
-                ActivityTemplateId = GetTestGuidById(1)
+                ActivityTemplate = ActivityTemplateDummy(),
+                CrateStorage = new CrateStorage()
+                //ActivityTemplateId = GetTestGuidById(1)
             };
 
         }       

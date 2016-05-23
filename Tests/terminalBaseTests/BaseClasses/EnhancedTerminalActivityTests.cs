@@ -41,12 +41,14 @@ namespace terminaBaselTests.BaseClasses
     {
         public BaseTerminalActivityMock(bool isAuthenticationRequired) : base(isAuthenticationRequired)
         {
+            
         }
 
         public static ActivityTemplateDTO ActivityTemplate = new ActivityTemplateDTO
         {
             Terminal = new TerminalDTO { Name = "TestTerminal" },
-            Name = "BaseTerminalActivityMock"
+            Name = "BaseTerminalActivityMock",
+            Version = "1"
         };
 
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplate;
@@ -398,7 +400,6 @@ namespace terminaBaselTests.BaseClasses
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage(crates)
-                     
                 },
                 AuthorizationToken = new AuthorizationToken()
             };
@@ -484,7 +485,7 @@ namespace terminaBaselTests.BaseClasses
 
             Assert.IsTrue(activity.CalledMethods == (CalledMethod.Validate));
 
-            var storage = activityContext.ActivityPayload.CrateStorage;
+            var storage = executionContext.PayloadStorage;
             var opState = storage.CrateContentsOfType<OperationalStateCM>().Single();
 
             Assert.AreEqual(ActivityResponse.Error.ToString(), opState.CurrentActivityResponse.Type); 

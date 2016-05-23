@@ -106,19 +106,19 @@ namespace TerminalBase.BaseClasses
         {
             OperationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.RequestTerminate);
             OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Message = message });
-            }
+        }
 
         protected void LaunchPlan(Guid targetPlanId)
         {
             OperationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.LaunchAdditionalPlan);
             OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Details = targetPlanId });
-            }
+        }
 
         protected void JumpToSubplan(Guid targetSubplanId)
         {
             OperationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.JumpToSubplan);
             OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Details = targetSubplanId });
-            }
+        }
 
         /// <summary>
         /// Jumps to an activity that resides in same subplan as current activity
@@ -129,7 +129,7 @@ namespace TerminalBase.BaseClasses
         {
             OperationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.JumpToActivity);
             OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Details = targetActivityId });
-            }
+        }
 
         /// <summary>
         /// Jumps to an activity that resides in same subplan as current activity
@@ -140,7 +140,7 @@ namespace TerminalBase.BaseClasses
         {
             OperationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.LaunchAdditionalPlan);
             OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Details = targetPlanId });
-            }
+        }
 
         /// <summary>
         /// returns success to hub
@@ -151,7 +151,7 @@ namespace TerminalBase.BaseClasses
         {
             OperationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Success);
             OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO { Message = message });
-            }
+        }
 
         protected void ExecuteClientActivity(string clientActivityName)
         {
