@@ -32,12 +32,16 @@ namespace terminalBaseTests.BaseClasses
         public override void SetUp()
         {
             base.SetUp();
+            //AutoMapperBootstrapper.ConfigureAutoMapper();
             ObjectFactory.Configure(x => x.AddRegistry<StructureMapBootStrapper.TestMode>());
             ObjectFactory.Configure(cfg => cfg.For<IHubCommunicator>().Use<DefaultHubCommunicator>());
             CrateManagerHelper = new CrateManager();
             _activityExecutor = ObjectFactory.GetInstance<ActivityExecutor>();
             _coreServer = terminalBaseTests.Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
-            ActivityStore.RegisterActivity<BaseTerminalActivityMock>(BaseTerminalActivityMock.ActivityTemplate);
+            if(ActivityStore.GetValue(BaseTerminalActivityMock.ActivityTemplate) == null)
+            { 
+                ActivityStore.RegisterActivity<BaseTerminalActivityMock>(BaseTerminalActivityMock.ActivityTemplate);
+            }
         }
 
         [TearDown]
