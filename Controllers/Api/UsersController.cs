@@ -19,12 +19,12 @@ using Utilities;
 namespace HubWeb.Controllers
 {
     [DockyardAuthorize]
-    public class UserController : ApiController
+    public class UsersController : ApiController
     {
         private readonly IMappingEngine _mappingEngine;
         private readonly ISecurityServices _securityServices;
 
-        public UserController()
+        public UsersController()
         {
             _securityServices = ObjectFactory.GetInstance<ISecurityServices>();
             _mappingEngine = ObjectFactory.GetInstance<IMappingEngine>();
@@ -52,7 +52,7 @@ namespace HubWeb.Controllers
                     return Ok(GetUsers(uow, predicate));
                 }
 
-                //todo: show not authorized messsage in activityStream
+                //todo: show not authorized messsage in activityStream.
                 return Ok();
             }
         }
@@ -76,51 +76,35 @@ namespace HubWeb.Controllers
             }
         }
 
-        [DockyardAuthorize(Roles = Roles.Admin)]
-        public IHttpActionResult Get(string id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var user = uow.UserRepository.FindOne(u => u.Id == id);
-                var userDTO = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
-                userDTO.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository
-                    .GetRoles(userDTO.Id).Select(r => r.Name).ToArray());
-                return Ok(userDTO);
-            }
-        }
-
-        //[Route("api/user/getCurrent")]
         [HttpGet]
-        public IHttpActionResult GetCurrent()
+        [DockyardAuthorize(Roles = Roles.Admin)]
+        public IHttpActionResult UserData(string id = "")
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var user = uow.UserRepository.FindOne(u => u.EmailAddress.Address == User.Identity.Name);
-                var userDTO = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
+                Fr8AccountDO user;
+
+                if (string.IsNullOrEmpty(id))
+                {
+                    user = uow.UserRepository.FindOne(u => u.EmailAddress.Address == User.Identity.Name);
+                }
+                else
+                {
+                    user = uow.UserRepository.FindOne(u => u.Id == id);
+                }
+
+                UserDTO userDTO = _mappingEngine.Map<Fr8AccountDO, UserDTO>(user);
                 userDTO.Role = ConvertRolesToRoleString(uow.AspNetUserRolesRepository.GetRoles(userDTO.Id).Select(r => r.Name).ToArray());
                 return Ok(userDTO);
             }
         }
-        //[Route("api/user/getUserData?id=")]
-        [HttpGet]
-        public IHttpActionResult GetUserData(string id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var user = uow.UserRepository.FindOne(u => u.Id == id);
-                return Ok(new UserDTO { FirstName = user.FirstName, LastName = user.LastName });
-            }
-        }
-
 
         [HttpPost]
-        public IHttpActionResult UpdatePassword(string oldPassword, string newPassword, string confirmPassword)
+        public IHttpActionResult Update(string oldPassword, string newPassword)
         {
             if (string.IsNullOrEmpty(oldPassword))
                 throw new Exception("Old password is required.");
-            if (!string.Equals(newPassword, confirmPassword, StringComparison.OrdinalIgnoreCase))
-                throw new Exception("New password and confirm password did not match.");
-
+            
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var user = uow.UserRepository.FindOne(u => u.EmailAddress.Address == User.Identity.Name);

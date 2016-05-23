@@ -34,6 +34,7 @@ namespace TerminalBase.BaseClasses
         private bool _isRunTime;
         private ICrateStorage _currentPayloadStorage;
         private OperationalStateCM _operationalState;
+        private Guid _currentContainerId;
 
         /**********************************************************************************/
 
@@ -62,6 +63,20 @@ namespace TerminalBase.BaseClasses
             {
                 CheckRunTime("Operations state is not available at the design time");
                 _operationalState = value;
+            }
+        }
+
+        protected Guid CurrentContainerId
+        {
+            get
+            {
+                CheckRunTime("Container ID is not available at the design time");
+                return _currentContainerId;
+            }
+            private set
+            {
+                CheckRunTime("Container ID is not available at the design time");
+                _currentContainerId = value;
             }
         }
 
@@ -310,6 +325,7 @@ namespace TerminalBase.BaseClasses
                 CurrentActivityStorage = activityStorage;
                 CurrentPayloadStorage = payloadstorage;
                 OperationalState = CurrentPayloadStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
+                CurrentContainerId = containerId;
 
                 if (OperationalState == null)
                 {

@@ -215,13 +215,8 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Infrastructure\IEmailPackager.cs" />
-    <Compile Include="Infrastructure\TerminalMailerDO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SelfHostFactory.cs" />
-    <Compile Include="Services\SendGridPackager.cs" />
-    <Compile Include="Services\TransportFactory.cs" />
-    <Compile Include="Services\TransportWrapper.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="StructureMapConfiguration.cs" />
     <Compile Include="Tests\Activities\SendEmailViaSendGrid_v1Tests.cs" />
@@ -243,6 +238,8 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Infrastructure\" />
+    <Folder Include="Services\" />
     <Folder Include="Views\Action\" />
     <Folder Include="Views\Terminal\" />
   </ItemGroup>
@@ -265,6 +262,10 @@
     <ProjectReference Include="..\terminalBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
       <Name>TerminalBase</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\terminalUtilities\terminalUtilities.csproj">
+      <Project>{e46b602a-287b-450f-b455-5eed20c93eb7}</Project>
+      <Name>terminalUtilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>

@@ -1,12 +1,17 @@
 ﻿using Hub.StructureMap;
 using SendGrid;
 using StructureMap;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
 using terminalUtilities.SendGrid;
+using terminalUtilities.Twilio;
 using Utilities;
 
-namespace terminalSendGrid
+namespace terminalFr8Core
 {
-    public static class TerminalSendGridStructureMapBootstrapper
+    public class Fr8CoreStructureMapConfiguration
     {
         public enum DependencyType
         {
@@ -33,6 +38,7 @@ namespace terminalSendGrid
             {
                 For<IEmailPackager>().Use<SendGridPackager>();
                 For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>()));
+                For<ITwilioService>().Use<TwilioService>();
             }
         }
 
