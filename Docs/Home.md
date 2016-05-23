@@ -5,11 +5,12 @@
     - [Part 1 - Introduction](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Introduction.md)   
     - [Part 2 - Understanding the Fr8 Architectural Model](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ArchitecturalModel.md)   
     - [Part 3 - The Fr8 Data Model](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/DataModel.md)  
-    - Operating Concepts  
+    - Operating Concepts
+        * [Activity Validation](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/ActivitiesValidation.md)
         * [Fr8 Modes](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Fr8ConfigurationProcess.md)  
         * [How Fr8 Manipulates Data](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/TypesOfFr8.md)   
         * [Events](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Events.md)   
-        * [Fr8 Security - Authorization](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Authorization.md)   
+        * [Fr8 Security - Authorization](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Authorization.md)
         * [Solutions](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Solutions)
     - Objects  
         * [Activities](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Activities.md)  
