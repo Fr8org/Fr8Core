@@ -115,7 +115,7 @@ namespace terminalDocuSignTests.Activities
             var validationCrate = storage.FirstCrateOrDefault<ValidationResultsCM>();
             Assert.IsNotNull(validationCrate, "Validation crate was not found in activity storage");
             Assert.AreEqual(1, validationCrate.Content.ValidationErrors.Count, "Incorrect number of validation errors");
-            Assert.AreEqual(1, validationCrate.Content.GetErrorsForControl(DocuSignConstants.DocuSignRoleEmail).Count, "Incorrect number of validation error for role email control");
+            Assert.AreEqual(1, validationCrate.Content.GetErrorsForControl($"{nameof(Send_DocuSign_Envelope_v2.ActivityUi.RolesFields)}_{DocuSignConstants.DocuSignRoleEmail}").Count, "Incorrect number of validation error for role email control");
         }
 
         [Test]
