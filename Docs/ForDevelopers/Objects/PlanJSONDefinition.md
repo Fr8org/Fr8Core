@@ -4,26 +4,26 @@
 The JSON specification for a Plan is:
 ```javascript
 {
-    "subroutes": [
+    "subplans": [
         {
             "activities": [
-                {}, 
+                {},
                 {}
-            ], 
-            "id": "e9e89349-3871-46e4-ad11-71e9e207a9f3", 
-            "planId": "91d3d82e-f471-4095-bd59-9f88ea86d5af", 
-            "name": null, 
+            ],
+            "id": "e9e89349-3871-46e4-ad11-71e9e207a9f3",
+            "planId": "91d3d82e-f471-4095-bd59-9f88ea86d5af",
+            "name": null,
             "transitionKey": null
         }
-    ], 
-    "fr8UserId": "fcc7d694-4820-4d04-bc83-67251fcf8a15", 
-    "id": "91d3d82e-f471-4095-bd59-9f88ea86d5af", 
-    "name": "MonitorAllDocuSignEvents", 
-    "tag": "docusign-auto-monitor-plan-fcc7d694-4820-4d04-bc83-67251fcf8a15", 
+    ],
+    "fr8UserId": "fcc7d694-4820-4d04-bc83-67251fcf8a15",
+    "id": "91d3d82e-f471-4095-bd59-9f88ea86d5af",
+    "name": "MonitorAllDocuSignEvents",
+    "tag": "docusign-auto-monitor-plan-fcc7d694-4820-4d04-bc83-67251fcf8a15",
     "visibility": "standard"
-    "description": "MonitorAllDocuSignEvents", 
-    "lastUpdated": "0001-01-01T00:00:00+00:00", 
-    "routeState": 2, 
+    "description": "MonitorAllDocuSignEvents",
+    "lastUpdated": "0001-01-01T00:00:00+00:00",
+    "planState": 2, 
     "startingSubrouteId": "e9e89349-3871-46e4-ad11-71e9e207a9f3"
 }
 ```
