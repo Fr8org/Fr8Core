@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using Data.Interfaces;
 
-namespace terminalSendGrid.Infrastructure
+namespace terminalUtilities.SendGrid
 {
-    public class TerminalMailerDO : IMailerDO
+    public class MailerDO : IMailerDO
     {
         public int Id { get; set; }
 
