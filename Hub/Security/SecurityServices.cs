@@ -301,12 +301,15 @@ namespace Hub.Security
                     int orgId;
                     if (int.TryParse(claim.Value, out orgId) && organizationId.HasValue)
                     {
-                        var permissionSetOrg = (from x in rolePermissions.Where(x => x.Role.RoleName != Roles.OwnerOfCurrentObject) where roles.Contains(x.Role.RoleName) from i in x.PermissionSet.Permissions.Select(m => m.Id) select i).ToList();
+                        if(orgId == organizationId)
+                        {
+                            var permissionSetOrg = (from x in rolePermissions.Where(x => x.Role.RoleName != Roles.OwnerOfCurrentObject) where roles.Contains(x.Role.RoleName) from i in x.PermissionSet.Permissions.Select(m => m.Id) select i).ToList();
 
-                        var modifyAllData = permissionSetOrg.FirstOrDefault(x => x == (int)PermissionType.ModifyAllObjects);
-                        var viewAllData = permissionSetOrg.FirstOrDefault(x => x == (int)PermissionType.ViewAllObjects);
-                        if (viewAllData != 0 && permissionType == PermissionType.ReadObject) return true;
-                        if (modifyAllData != 0) return true;
+                            var modifyAllData = permissionSetOrg.FirstOrDefault(x => x == (int)PermissionType.ModifyAllObjects);
+                            var viewAllData = permissionSetOrg.FirstOrDefault(x => x == (int)PermissionType.ViewAllObjects);
+                            if (viewAllData != 0 && permissionType == PermissionType.ReadObject) return true;
+                            if (modifyAllData != 0) return true;
+                        }
                     }
 
                     return false;
@@ -348,7 +351,8 @@ namespace Hub.Security
                     }
                     else return false;
                 }
-            }
+            }           
+                      
 
             if (permissionType == PermissionType.CreateObject)
             {
@@ -360,9 +364,7 @@ namespace Hub.Security
             var viewAllData = permissionSet.FirstOrDefault(x => x == (int)PermissionType.ViewAllObjects);
             if (viewAllData != 0 && permissionType == PermissionType.ReadObject) return true;
             if (modifyAllData != 0) return true;
-
-
-
+            
             return false;
         }
     }
