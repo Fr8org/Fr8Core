@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Twilio;
 
-namespace terminalTwilio.Services
+namespace terminalUtilities.Twilio
 {
     public interface ITwilioService
     {

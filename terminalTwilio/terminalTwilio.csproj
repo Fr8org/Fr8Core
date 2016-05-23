@@ -257,6 +257,10 @@
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
       <Name>TerminalBase</Name>
     </ProjectReference>
+    <ProjectReference Include="..\terminalUtilities\terminalUtilities.csproj">
+      <Project>{e46b602a-287b-450f-b455-5eed20c93eb7}</Project>
+      <Name>terminalUtilities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
       <Name>Utilities</Name>
@@ -275,10 +279,6 @@
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Services\Event.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
-    <Compile Include="Interfaces\ITwilioService.cs" />
-    <Compile Include="Services\TwilioService.cs">
-      <SubType>Code</SubType>
-    </Compile>
     <Compile Include="Startup.cs" />
     <Compile Include="TerminalTwilioMapBootstrapper.cs" />
   </ItemGroup>

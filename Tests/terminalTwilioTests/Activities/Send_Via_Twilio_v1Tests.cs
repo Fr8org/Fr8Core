@@ -11,7 +11,6 @@ using terminalTwilio.Actions;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
-using terminalTwilio.Services;
 using terminalTwilio.Tests.Fixtures;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
@@ -22,6 +21,8 @@ using Fr8Data.Manifests;
 using Fr8Data.States;
 using UtilitiesTesting;
 using terminalTwilio;
+using terminalUtilities.Twilio;
+
 
 namespace terminalTwilioTests.Activities
 {

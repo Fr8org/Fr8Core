@@ -31,7 +31,7 @@
 
         private Submit(isValid) {
             if (isValid) {
-                this.UserService.updatePassword({
+                this.UserService.update({
                     oldPassword: this.$scope.CurrentPassword,
                     newPassword: this.$scope.NewPassword,
                     confirmPassword: this.$scope.ConfirmNewPassword
