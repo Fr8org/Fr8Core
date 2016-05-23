@@ -181,7 +181,7 @@ namespace terminalSlackTests.Activities
             };
             var executionContext = new ContainerExecutionContext
             {
-                PayloadStorage = new CrateStorage(Crate.FromContent(string.Empty, new OperationalStateCM()))
+                PayloadStorage = HealthMonitor_FixtureData.GetDirectMessageEventPayload()
             };
             await activity.Configure(activityContext);
             activity.ResetState();
@@ -190,11 +190,10 @@ namespace terminalSlackTests.Activities
                 x.MonitorDirectMessagesOption.Selected = true;
                 x.MonitorChannelsOption.Selected = false;
             });
-            HealthMonitor_FixtureData.ConfigureHubToReturnPayloadWithDirectMessageEvent();
             await activity.Run(activityContext, executionContext);
             var operationalState = CrateManager.GetOperationalState(executionContext.PayloadStorage);
             Assert.AreEqual(ActivityResponse.Success.ToString(), operationalState.CurrentActivityResponse.Type, "RequestTerminate response was not produced when event didn't match monitoring options");
-            Assert.IsNotNull(activityContext.ActivityPayload.CrateStorage.FirstCrateOrDefault<StandardPayloadDataCM>(), "Activity didn't produce crate with payload data");
+            Assert.IsNotNull(executionContext.PayloadStorage.FirstCrateOrDefault<StandardPayloadDataCM>(), "Activity didn't produce crate with payload data");
         }
     }
 }
