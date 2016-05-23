@@ -22,9 +22,9 @@ using Fr8Data.DataTransferObjects;
 namespace terminalTests.Unit
 {
     [TestFixture, Category("terminalFr8.Unit")]
-    public class Send_Email_Via_SendGrid_v1Tests : BaseTest
+    public class Send_Email_v1Tests : BaseTest
     {
-        private Send_Email_Via_SendGrid_v1 _sendEmailActivity;
+        private Send_Email_v1 _sendEmailActivity;
 
         public override void SetUp()
         {
@@ -53,7 +53,7 @@ namespace terminalTests.Unit
         public async Task Initialize_CheckConfigControls()
         {
             //Arrage
-            _sendEmailActivity = new Send_Email_Via_SendGrid_v1();
+            _sendEmailActivity = new Send_Email_v1();
 
             //Act
             var curActivity = await _sendEmailActivity.Configure(new Data.Entities.ActivityDO(), null);
@@ -68,7 +68,7 @@ namespace terminalTests.Unit
         public async Task FollowUp_WithControlValues_CheckControlsValuesRetained()
         {
             //Arrage
-            _sendEmailActivity = new Send_Email_Via_SendGrid_v1();
+            _sendEmailActivity = new Send_Email_v1();
             var curActivity = await _sendEmailActivity.Configure(new Data.Entities.ActivityDO(), null);
 
             using (var storage = CrateManager.GetUpdatableStorage(curActivity))
@@ -92,7 +92,7 @@ namespace terminalTests.Unit
         public async Task Run_CheckSendCalledOnlyOnce()
         {
             //Arrage
-            _sendEmailActivity = new Send_Email_Via_SendGrid_v1();
+            _sendEmailActivity = new Send_Email_v1();
             var curActivity = await _sendEmailActivity.Configure(new Data.Entities.ActivityDO(), null);
 
             using (var storage = CrateManager.GetUpdatableStorage(curActivity))

@@ -233,8 +233,8 @@
     <Compile Include="Activities\GetFileFromFr8Store_v1.cs" />
     <Compile Include="Activities\SearchFr8Warehouse_v1.cs" />
     <Compile Include="Activities\ExtractTableField_v1.cs" />
-    <Compile Include="Activities\Send_Email_Via_SendGrid_v1.cs" />
-    <Compile Include="Activities\Send_SMS_Via_Twilio_v1.cs" />
+    <Compile Include="Activities\Send_Email_v1.cs" />
+    <Compile Include="Activities\Send_SMS_v1.cs" />
     <Compile Include="Activities\MakeADecision_v1.cs" />
     <Compile Include="Activities\StoreFile_v1.cs" />
     <Compile Include="Activities\ConvertCrates_v1.cs" />

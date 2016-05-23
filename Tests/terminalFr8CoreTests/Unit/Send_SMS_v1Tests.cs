@@ -22,9 +22,9 @@ using System.Collections.Generic;
 namespace terminalTests.Unit
 {
     [TestFixture, Category("terminalFr8.Unit")]
-    public class Send_SMS_Via_Twilio_v1Tests : BaseTest
+    public class Send_SMS_v1Tests : BaseTest
     {
-        private Send_SMS_Via_Twilio_v1 _sendSmsActivity;
+        private Send_SMS_v1 _sendSmsActivity;
 
         public override void SetUp()
         {
@@ -56,7 +56,7 @@ namespace terminalTests.Unit
         public async Task Initialize__CheckConfigControls()
         {
             //Arrage
-            _sendSmsActivity = new Send_SMS_Via_Twilio_v1();
+            _sendSmsActivity = new Send_SMS_v1();
 
             //Act
             var curActivity = await _sendSmsActivity.Configure(new ActivityDO(), null);
@@ -71,7 +71,7 @@ namespace terminalTests.Unit
         public async Task Initialize__CheckAvailableFields()
         {
             //Arrage
-            _sendSmsActivity = new Send_SMS_Via_Twilio_v1();
+            _sendSmsActivity = new Send_SMS_v1();
 
             //Act
             var curActivity = await _sendSmsActivity.Configure(new ActivityDO(), null);
@@ -87,7 +87,7 @@ namespace terminalTests.Unit
         public async Task Run_CheckSendCalledOnlyOnce()
         {
             //Arrage
-            _sendSmsActivity = new Send_SMS_Via_Twilio_v1();
+            _sendSmsActivity = new Send_SMS_v1();
             var curActivity = await _sendSmsActivity.Configure(new Data.Entities.ActivityDO(), null);
 
             using (var storage = CrateManager.GetUpdatableStorage(curActivity))

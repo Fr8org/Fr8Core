@@ -347,8 +347,8 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
-                Name = "Send_Email_Via_SendGrid",
-                Label = "Send Email via Send Grid using Fr8 core account",
+                Name = "Send_Email",
+                Label = "Send Email using Fr8 core account",
                 Version = "1",
                 Category = ActivityCategory.Forwarders,
                 NeedsAuthentication = false,
@@ -359,8 +359,8 @@ namespace terminalFr8Core.Controllers
 
             result.Add(new ActivityTemplateDTO
             {
-                Name = "Send_SMS_Via_Twilio",
-                Label = "Send SMS via Twilio using Fr8 core account",
+                Name = "Send_SMS",
+                Label = "Send SMS using Fr8 core account",
                 Version = "1",
                 Category = ActivityCategory.Forwarders,
                 NeedsAuthentication = false,

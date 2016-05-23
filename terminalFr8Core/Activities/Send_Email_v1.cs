@@ -16,7 +16,7 @@ using Utilities.Configuration.Azure;
 
 namespace terminalFr8Core.Actions
 {
-    public class Send_Email_Via_SendGrid_v1 : EnhancedTerminalActivity<Send_Email_Via_SendGrid_v1.ActivityUi>
+    public class Send_Email_v1 : EnhancedTerminalActivity<Send_Email_v1.ActivityUi>
     {
         private IEmailPackager _emailPackager;
 
@@ -68,7 +68,7 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        public Send_Email_Via_SendGrid_v1() : base(false)
+        public Send_Email_v1() : base(false)
         {
             ActivityName = "Send Email";
             _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();

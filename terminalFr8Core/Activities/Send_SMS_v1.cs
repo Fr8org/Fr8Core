@@ -17,7 +17,7 @@ using Twilio;
 
 namespace terminalFr8Core.Actions
 {
-    public class Send_SMS_Via_Twilio_v1 : EnhancedTerminalActivity<Send_SMS_Via_Twilio_v1.ActivityUi>
+    public class Send_SMS_v1 : EnhancedTerminalActivity<Send_SMS_v1.ActivityUi>
     {
         private ITwilioService _twilio;
 
@@ -56,7 +56,7 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        public Send_SMS_Via_Twilio_v1() : base(false)
+        public Send_SMS_v1() : base(false)
         {
             ActivityName = "Send SMS";
             _twilio = ObjectFactory.GetInstance<ITwilioService>();
