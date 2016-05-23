@@ -19,6 +19,7 @@ using Data.Repositories.Security.StorageImpl;
 using Data.Repositories.Security.StorageImpl.Cache;
 using Data.Repositories.Security.StorageImpl.SqlBased;
 using Data.Repositories.SqlBased;
+using Data.Repositories.Utilization;
 using StructureMap.Configuration.DSL;
 using Utilities.Configuration.Azure;
 
@@ -104,6 +105,7 @@ namespace Data.Infrastructure.StructureMap
                 For<ISqlConnectionProvider>().Use<SqlConnectionProvider>();
                 For<ISecurityObjectsStorageProvider>().Use<SqlSecurityObjectsStorageProvider>();
                 For<ISecurityObjectsStorageProvider>().DecorateAllWith<SecurityObjectsStorage>();
+                For<IUtilizationDataProvider>().Use<SqlUtilizationDataProvider>();
                 
                 var defaultEncryptionProvider = CloudConfigurationManager.GetSetting("DefaultEncryptionProvider");
 
@@ -145,6 +147,8 @@ namespace Data.Infrastructure.StructureMap
                 For<IMtTypeStorageProvider>().Use<InMemoryMtTypeStorageProvider>();
                 For<ISecurityObjectsStorageProvider>().Use<InMemorySecurityObjectsStorageProvider>();
                 For<IEncryptionProvider>().Use<BypassEncryptionProvider>().Singleton();
+                For<IUtilizationDataProvider>().Use<MockedUtilizationDataProvider>().Singleton();
+
                 DataAutoMapperBootStrapper.ConfigureAutoMapper();
             }
         }

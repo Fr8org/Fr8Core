@@ -123,11 +123,11 @@ app.config(['applicationInsightsServiceProvider', function (applicationInsightsS
     //Temporary instr key (for local instances) until the real one is loaded
     applicationInsightsServiceProvider.configure('e08e940f-1491-440c-8d39-f38e9ff053db', options, true);
 
-    $.get('/api/v1/configuration/appinsights').then((appInsightsInstrKey: string) => {
-        console.log(appInsightsInstrKey);
-        if (appInsightsInstrKey.indexOf('0000') == -1) { // if not local instance ('Debug' configuration)
+    $.get('/api/v1/configuration/instrumentation-key').then((instrumentationKey: string) => {
+        console.log(instrumentationKey);
+        if (instrumentationKey.indexOf('0000') == -1) { // if not local instance ('Debug' configuration)
             options = { applicationName: 'HubWeb' };
-            applicationInsightsServiceProvider.configure(appInsightsInstrKey, options, true);
+            applicationInsightsServiceProvider.configure(instrumentationKey, options, true);
         } else {
             // don't send telemetry 
             options = {
@@ -137,7 +137,7 @@ app.config(['applicationInsightsServiceProvider', function (applicationInsightsS
                 autoExceptionTracking: false,
                 sessionInactivityTimeout: 1
             };
-            applicationInsightsServiceProvider.configure(appInsightsInstrKey, options, false);
+            applicationInsightsServiceProvider.configure(instrumentationKey, options, false);
         }
     });
 }]);
@@ -180,58 +180,117 @@ app.config(['$stateProvider', '$urlRouterProvider', '$httpProvider', '$locationP
         }
     }]);
 
+    class ApiRequestCoordinatorService {
+        private configurePattern: string = 'activities/configure';
+        private savePattern: string = 'activities/save';
+        private currentConfigurationRequests: string[] = [];
+
+        // If the function returns false, request must be rejected. If true, the request can proceed.
+        public startRequest(url: string, activityId: string): boolean {
+            if (url.indexOf(this.configurePattern) > -1) {
+                // check if such activity is currently being configured. if so, reject the request.
+                if (this.currentConfigurationRequests.indexOf(activityId) > -1) {
+                    return false;
+                }
+                else {
+                    // if not, add it in the list of configured activities
+                    this.currentConfigurationRequests.push(activityId);
+                }
+            }
+
+            else if (url.indexOf(this.savePattern) > -1) {
+                if (this.currentConfigurationRequests.indexOf(activityId) > -1) {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public endRequest(url: string, activityId: string) {
+            if (url.indexOf(this.configurePattern) == -1) return;
+
+            // check if such activity is currently being configured. if so, remove it from the array
+            let idx: number = this.currentConfigurationRequests.indexOf(activityId);
+            if (idx > -1) {
+                this.currentConfigurationRequests.splice(idx, 1);
+            }
+        }
+    }
+
+    app.service('ApiRequestCoordinatorService', [ApiRequestCoordinatorService]);
+
+
     // Install a HTTP request interceptor that syncronizes Save and Config requests for a single activity.
     // If a Configure request is currently executing, Save and other Configure requests will be dropped. 
     // See FR-3475 for rationale. 
     $httpProvider.interceptors.push(['$q', ($q: ng.IQService) => {
-        let currentConfigurationRequests: string[] = [];
+
+        // Since we cannot reference services from initialization code, we define a nested class and instantiate it. 
+        class ApiRequestCoordinatorService {
+            private configurePattern: string = 'activities/configure';
+            private savePattern: string = 'activities/save';
+            private currentConfigurationRequests: string[] = [];
+
+            // If the function returns false, request must be rejected. If true, the request can proceed.
+            public startRequest(url: string, activityId: string): boolean {
+                if (url.indexOf(this.configurePattern) > -1) {
+                    // check if such activity is currently being configured. if so, reject the request.
+                    if (this.currentConfigurationRequests.indexOf(activityId) > -1) {
+                        return false;
+                    }
+                    else {
+                        // if not, add it in the list of configured activities
+                        this.currentConfigurationRequests.push(activityId);
+                    }
+                }
+
+                else if (url.indexOf(this.savePattern) > -1) {
+                    if (this.currentConfigurationRequests.indexOf(activityId) > -1) {
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            public endRequest(url: string, activityId: string) {
+                if (url.indexOf(this.configurePattern) == -1) return;
+
+                // check if such activity is currently being configured. if so, remove it from the array
+                let idx: number = this.currentConfigurationRequests.indexOf(activityId);
+                if (idx > -1) {
+                    this.currentConfigurationRequests.splice(idx, 1);
+                }
+            }
+        }
+
+        let apiRequestCoordinatorService = new ApiRequestCoordinatorService();
 
         return {
             request: (config) => {
                 // bypass any requests which are not of interest for us
-                if (config.method != 'POST' || !config.url || config.url.indexOf('activities') == -1) return config;
+                if (config.method != 'POST') return config;
                 if (!config.params || !config.params.id) return config;
-
-                if (config.url.indexOf('activities/configure') > -1) {
-                    // check if such activity is currently being configured. if so, reject the request.
-                    if (currentConfigurationRequests.indexOf(config.params.id) > -1) {
-                        return $q.reject(config);
-                    }
-                    else {
-                        // if not, add it in the list of configured activities
-                        currentConfigurationRequests.push(config.params.id);
-                    }
-                }
-
-                else if (config.url.indexOf('activities/save') > -1) {
-                    if (currentConfigurationRequests.indexOf(config.params.id) > -1) {
-                        return $q.reject(config);
-                    }
+                if (!apiRequestCoordinatorService.startRequest(config.url, config.params.id)) {
+                    var canceler = $q.defer();
+                    config.timeout = canceler.promise;
+                    canceler.resolve();
                 }
                 return config;
             },
 
             response: (response) => {
                 let config = response.config;
-                if (!config.url || config.url.indexOf('activities/configure') == -1) return response;
-
-                // check if such activity is currently being configured. if so, remove it from the array
-                let idx: number = currentConfigurationRequests.indexOf(response.data.id);
-                if (idx > -1) {
-                    currentConfigurationRequests.splice(idx, 1);
-                }
+                if (!config.url) return response;
+                if (!response.data || !response.data.id) return response;
+                apiRequestCoordinatorService.endRequest(config.url, response.data.id)
                 return response;
             },
 
             responseError: (response) => {
-                let config = response.config;
-                if (!config.url || config.url.indexOf('activities/configure') == -1) return response;
-
-                // check if such activity is currently being configured. if so, remove it from the array
-                let idx: number = currentConfigurationRequests.indexOf(config.data.id);
-                if (idx > -1) {
-                    currentConfigurationRequests.splice(idx, 1);
-                }
+                if (!response.url) return $q.reject(response);
+                if (!response.data || !response.data.id) return $q.reject(response);
+                apiRequestCoordinatorService.endRequest(response.url, response.data.id)
                 return $q.reject(response);
             }
         }
