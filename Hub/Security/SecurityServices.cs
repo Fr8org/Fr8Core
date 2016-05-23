@@ -174,9 +174,10 @@ namespace Hub.Security
                 return true;
 
             Guid profileId = GetCurrentUserProfile();
+            string fr8AccountId = null;
             if (curObjectType == nameof(PlanNodeDO))
             {
-                if (CheckForAppBuilderPlanAndBypassSecurity(curObjectId))
+                if (CheckForAppBuilderPlanAndBypassSecurity(curObjectId,out fr8AccountId))
                 {
                     return true;
                 }
@@ -185,6 +186,7 @@ namespace Hub.Security
             //first check Record Based Permission.
             bool? evaluator = null;
             var objRolePermissionWrapper = _securityObjectStorageProvider.GetRecordBasedPermissionSetForObject(curObjectId);
+            if (string.IsNullOrEmpty(objRolePermissionWrapper.Fr8AccountId)) objRolePermissionWrapper.Fr8AccountId = fr8AccountId;
             if (objRolePermissionWrapper.RolePermissions.Any() || objRolePermissionWrapper.Properties.Any())
             {
                 if (string.IsNullOrEmpty(propertyName))
@@ -210,10 +212,11 @@ namespace Hub.Security
             return EvaluateProfilesPermissionSet(permissionType, permissionSets);
         }
 
-        private bool CheckForAppBuilderPlanAndBypassSecurity(string curObjectId)
+        private bool CheckForAppBuilderPlanAndBypassSecurity(string curObjectId, out string fr8AccountId)
         {
             //todo: @makigjuro temp fix until FR-3008 is implemented 
             //bypass security on AppBuilder plan, because that one is visible for every user that has this url
+            fr8AccountId = null;
             var activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -221,6 +224,7 @@ namespace Hub.Security
                 if (!Guid.TryParse(curObjectId, out id)) return false;
 
                 var planNode = uow.PlanRepository.GetById<PlanNodeDO>(id);
+                fr8AccountId = planNode.Fr8AccountId;
                 var mainPlan = uow.PlanRepository.GetById<PlanDO>(planNode.RootPlanNodeId);
                 if (mainPlan.Visibility == PlanVisibility.Internal) return true;
                 return mainPlan.ChildNodes.OfType<SubPlanDO>().Any(subPlan => subPlan.ChildNodes.OfType<ActivityDO>().Select(activity => activityTemplate.GetByKey(activity.ActivityTemplateId)).Any(template => template.Name == "AppBuilder"));
