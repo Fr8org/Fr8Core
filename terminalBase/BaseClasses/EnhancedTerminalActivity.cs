@@ -47,15 +47,22 @@ namespace TerminalBase.BaseClasses
 
         public sealed override async Task FollowUp()
         {
-            SyncConfControls();
             await ConfigureETA();
             SyncConfControlsBack();
         }
 
         protected sealed override async Task<bool> Validate()
         {
-            SyncConfControls();
             return await ValidateETA();
+        }
+
+        protected override async Task ValidateAndFollowUp()
+        {
+            SyncConfControls();
+            if (await ValidateInternal())
+            {
+                await FollowUp();
+            }
         }
 
         /**********************************************************************************/
@@ -214,7 +221,7 @@ namespace TerminalBase.BaseClasses
             
             if (ConfigurationControls.Controls != null)
             {
-                var dynamicControlsCollection = Fr8ReflectionHelper.GetMembers(ConfigurationControls.GetType()).Where(x => x.CanRead && x.GetCustomAttribute<DynamicControlsAttribute>() != null && CheckIfMemberIsControlsCollection(x)).ToDictionary(x => x.Name, x => x);
+                var dynamicControlsCollection = Fr8ReflectionHelper.GetMembers(ActivityUI.GetType()).Where(x => x.CanRead && x.GetCustomAttribute<DynamicControlsAttribute>() != null && CheckIfMemberIsControlsCollection(x)).ToDictionary(x => x.Name, x => x);
 
                 if (dynamicControlsCollection.Count > 0)
                 {
@@ -240,7 +247,7 @@ namespace TerminalBase.BaseClasses
                             continue;
                         }
 
-                        var controlsCollection = (IList)member.GetValue(ConfigurationControls);
+                        var controlsCollection = (IList)member.GetValue(ActivityUI);
 
                         if (controlsCollection == null && (!member.CanWrite || member.MemberType.IsAbstract || member.MemberType.IsInterface))
                         {
@@ -250,7 +257,7 @@ namespace TerminalBase.BaseClasses
                         if (controlsCollection == null)
                         {
                             controlsCollection = (IList)Activator.CreateInstance(member.MemberType);
-                            member.SetValue(ConfigurationControls, controlsCollection);
+                            member.SetValue(ActivityUI, controlsCollection);
                         }
 
                         control.Name = control.Name.Substring(delim + 1);
@@ -315,12 +322,11 @@ namespace TerminalBase.BaseClasses
             Storage.Add(Crate.FromContent(ConfigurationControlsLabel, configurationControlsToAdd, AvailabilityType.Configuration));
 
             int insertIndex = 0;
-
-            foreach (var member in Fr8ReflectionHelper.GetMembers(ConfigurationControls.GetType()).Where(x => x.CanRead))
+            foreach (var member in Fr8ReflectionHelper.GetMembers(ActivityUI.GetType()).Where(x => x.CanRead))
             {
                 if (member.GetCustomAttribute<DynamicControlsAttribute>() != null && CheckIfMemberIsControlsCollection(member))
                 {
-                    var collection = member.GetValue(ConfigurationControls) as IList;
+                    var collection = member.GetValue(ActivityUI) as IList;
 
                     if (collection != null)
                     {
@@ -338,7 +344,7 @@ namespace TerminalBase.BaseClasses
                     }
                 }
 
-                var controlDef = member.GetValue(ConfigurationControls) as IControlDefinition;
+                var controlDef = member.GetValue(ActivityUI) as IControlDefinition;
                 if (!string.IsNullOrWhiteSpace(controlDef?.Name))
                 {
                     for (int i = 0; i < configurationControlsToAdd.Controls.Count; i++)

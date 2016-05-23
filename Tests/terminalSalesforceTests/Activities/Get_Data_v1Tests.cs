@@ -33,8 +33,7 @@ namespace terminalSalesforceTests.Actions
         {
             base.SetUp();
             TerminalBootstrapper.ConfigureTest();
-            TerminalSalesforceStructureMapBootstrapper.ConfigureDependencies(TerminalSalesforceStructureMapBootstrapper.DependencyType.TEST);
-
+            ObjectFactory.Configure(x => x.AddRegistry<TerminalSalesforceStructureMapBootstrapper.TestMode>());
             PayloadDTO testPayloadDTO = new PayloadDTO(new Guid());
 
             using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(testPayloadDTO))

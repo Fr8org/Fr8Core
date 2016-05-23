@@ -67,7 +67,7 @@ namespace terminalSalesforceTests.Fixtures
             {
                 Id = new Guid("8339DC87-F011-4FB1-B47C-FEC406E4100A"),
                 ActivityTemplate = actionTemplate,
-                CrateStorage = null,
+                CrateStorage = new CrateStorage(),
 
             };
             var activityContext = new ActivityContext()
@@ -84,7 +84,7 @@ namespace terminalSalesforceTests.Fixtures
             {
                 Id = new Guid("8339DC87-F011-4FB1-B47C-FEC406E4100A"),
                 ActivityTemplate = actionTemplate,
-                CrateStorage = null,
+                CrateStorage = new CrateStorage()
             };
             var activityContext = new ActivityContext()
             {
@@ -105,7 +105,7 @@ namespace terminalSalesforceTests.Fixtures
             {
                 Id = new Guid("8339DC87-F011-4FB1-B47C-FEC406E4100A"),
                 ActivityTemplate = actionTemplate,
-                CrateStorage = null,
+                CrateStorage = new CrateStorage(),
             };
             var activityContext = new ActivityContext()
             {

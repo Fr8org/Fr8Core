@@ -50,19 +50,21 @@ namespace terminalTwilioTests.Activities
             var activityDO = FixtureData.ConfigureTwilioActivity();
             var actionService = new Mock<IActivity>();
             ObjectFactory.Configure(cfg => cfg.For<IActivity>().Use(actionService.Object));
+            /*
             var activity = FixtureData.ConfigureTwilioActivity();
+            
             var baseTerminalAction = new Mock<BaseTerminalActivity>();
             baseTerminalAction
                 .Setup(c => c.GetDesignTimeFields(CrateDirection.Upstream, AvailabilityType.NotSet))
                 .Returns(Task.FromResult(FixtureData.TestFields()));
             ObjectFactory.Configure(cfg => cfg.For<BaseTerminalActivity>().Use(baseTerminalAction.Object));
-
+            */
             var hubCommunicator = new Mock<IHubCommunicator>();
             hubCommunicator.Setup(hc => hc.GetDesignTimeFieldsByDirection(
                                                 It.IsAny<Guid>(), 
                                                 CrateDirection.Upstream, 
                                                 It.IsAny<AvailabilityType>(), 
-                                                It.IsAny<string>())).Returns(Task.FromResult(new FieldDescriptionsCM()));
+                                                It.IsAny<string>())).Returns(Task.FromResult(FixtureData.TestFields()));
             ObjectFactory.Configure(cfg => cfg.For<IHubCommunicator>().Use(hubCommunicator.Object));
         }
 

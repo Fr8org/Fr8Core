@@ -101,7 +101,6 @@
     <Compile Include="Integration\Terminal_Discover_v1Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Unit\Activities\SendEmailViaSendGrid_v1Tests.cs" />
-    <Compile Include="Unit\BaseTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Data\Data.csproj">
@@ -135,6 +134,10 @@
     <ProjectReference Include="..\HealthMonitorUtility\HealthMonitorUtility.csproj">
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
       <Name>HealthMonitorUtility</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\UtilitiesTesting\UtilitiesTesting.csproj">
+      <Project>{6B855C3F-07A9-4787-9FDE-29FA567C43E2}</Project>
+      <Name>UtilitiesTesting</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

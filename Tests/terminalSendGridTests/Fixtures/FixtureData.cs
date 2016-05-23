@@ -14,19 +14,19 @@ namespace terminalSendGridTests.Fixtures
             return new Guid("A0287C2A-28D3-48C5-8CAC-26FE27E8EA9B");
         }
 
-        public static ActivityDTO ConfigureSendEmailViaSendGridActivity()
+        public static ActivityPayload ConfigureSendEmailViaSendGridActivity()
         {
             var actionTemplate = SendEmailViaSendGridActivityTemplateDTO();
 
-            var activityDTO = new ActivityDTO()
+            var activityPayload = new ActivityPayload()
             {
                 Id = TestGuid_Id_333(),
                 //ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
-                CrateStorage = new CrateStorageDTO()
+                CrateStorage = new CrateStorage()
             };
 
-            return activityDTO;
+            return activityPayload;
         }
 
         public static Guid TestContainerGuid()
@@ -73,18 +73,16 @@ namespace terminalSendGridTests.Fixtures
             return new Guid("07EF735F-42F5-435E-8DC2-D039351463FD");
         }
 
-        public static PayloadDTO CratePayloadDTOForSendEmailViaSendGridConfiguration
+        public static ContainerExecutionContext CrateExecutionContextForSendEmailViaSendGridConfiguration
         {
             get
             {
-                var payloadDTO = new PayloadDTO(PayloadDTO_ContainerId());
-                using (var crateStorage = new CrateManager().GetUpdatableStorage(payloadDTO))
+                var exeuctionContext = new ContainerExecutionContext
                 {
-                    var operationalStatus = new OperationalStateCM();
-                    var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
-                    crateStorage.Add(operationsCrate);
-                }
-                return payloadDTO;
+                    ContainerId = PayloadDTO_ContainerId(),
+                    PayloadStorage = new CrateStorage(Crate.FromContent("Operational Status", new OperationalStateCM()))
+                };
+                return exeuctionContext;
             }
         }
         public static ActivityContext TestActivityContext1()
@@ -93,7 +91,8 @@ namespace terminalSendGridTests.Fixtures
             {
                 Id = Guid.NewGuid(),
                 Name = "Type1",
-                Version = "1"
+                Version = "1",
+                Terminal = new TerminalDTO { Name = "TestTerminal"}
             };
             var activityPayload = new ActivityPayload
             {

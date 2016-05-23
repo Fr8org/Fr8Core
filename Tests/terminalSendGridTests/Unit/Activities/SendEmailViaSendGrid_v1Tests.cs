@@ -1,27 +1,24 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
 using Fr8Data.Control;
 using Fr8Data.Crates;
-using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
-using Moq;
 using NUnit.Framework;
 using SendGrid;
 using StructureMap;
+using terminalSendGrid;
 using terminalSendGrid.Actions;
 using terminalSendGrid.Infrastructure;
 using terminalSendGrid.Services;
+using terminalSendGridTests.Fixtures;
+using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using TerminalBase.Models;
-using Fr8Data.Managers;
-using Fr8Infrastructure.Interfaces;
-using terminalSendGridTests.Fixtures;
 using Utilities;
+using UtilitiesTesting;
 
-namespace terminalSendGrid.Tests.Actions
+namespace terminalSendGridTests.Unit.Activities
 {
     [TestFixture]
     [Category("terminalSendGrid")]
@@ -29,49 +26,24 @@ namespace terminalSendGrid.Tests.Actions
     {
         private SendEmailViaSendGrid_v1 _gridActivity;
         private ICrateManager _crate;
-        private ActivityDTO activityDto;
+        private ActivityPayload activityPayload;
 
         public override void SetUp()
         {
             base.SetUp();
-            //StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
-            TerminalSendGridStructureMapBootstrapper.ConfigureDependencies(TerminalSendGridStructureMapBootstrapper.DependencyType.LIVE);
+            ObjectFactory.Configure(x => x.AddRegistry<TerminalSendGridStructureMapBootstrapper.LiveMode>());
             ObjectFactory.Configure(cfg => cfg.For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>())));
             ObjectFactory.Configure(cfg => cfg.For<IEmailPackager>().Use(new SendGridPackager()));
             TerminalBootstrapper.ConfigureTest();
-
             _crate = ObjectFactory.GetInstance<ICrateManager>();
-            /*
-            var planNode = new Mock<IPlanNode>();
-            
-            planNode.Setup(c => c.GetCratesByDirection<FieldDescriptionsCM>(It.IsAny<Guid>(), It.IsAny<CrateDirection>()))
-                    .Returns(Task.FromResult(new List<Crate<FieldDescriptionsCM>>()));
-            planNode.Setup(c => c.GetDesignTimeFieldsByDirectionTerminal(It.IsAny<Guid>(), It.IsAny<CrateDirection>(), It.IsAny<AvailabilityType>()))
-                    .Returns(Task.FromResult(new FieldDescriptionsCM()));
-            ObjectFactory.Configure(cfg => cfg.For<IPlanNode>().Use(routeNode.Object));
-            */
-            activityDto = GetActivityResult();
-            var payLoadDto = FixtureData.CratePayloadDTOForSendEmailViaSendGridConfiguration;
-            payLoadDto.CrateStorage = activityDto.CrateStorage;
-
-            using (var crateStorage = new CrateManager().GetUpdatableStorage(payLoadDto))
-            {
-                var operationalStatus = new OperationalStateCM();
-                var operationsCrate = Crate.FromContent("Operational Status", operationalStatus);
-                crateStorage.Add(operationsCrate);
-            }
-
-            var restfulServiceClient = new Mock<IRestfulServiceClient>();
-            restfulServiceClient.Setup(r => r.GetAsync<PayloadDTO>(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
-                .Returns(Task.FromResult(payLoadDto));
-            ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(restfulServiceClient.Object));
+            activityPayload = GetActivityResult().Result;
         }
 
         [Test]
         public void Configure_ReturnsCrateDTO()
         {
             // Act
-            var controlsCrates = activityDto.CrateStorage.Crates;
+            var controlsCrates = activityPayload.CrateStorage;
 
             // Assert
             Assert.IsNotNull(controlsCrates);
@@ -82,7 +54,7 @@ namespace terminalSendGrid.Tests.Actions
         public void Configure_ReturnsCrateDTOStandardConfigurationControlsMS()
         {
             // Act
-            var controlsCrate = _crate.FromDto(activityDto.CrateStorage).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var controlsCrate = activityPayload.CrateStorage.CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
             // Assert
             Assert.IsNotNull(controlsCrate);
@@ -95,61 +67,41 @@ namespace terminalSendGrid.Tests.Actions
         public void Configure_ReturnsEmailControls()
         {
             // Act && Assert
-            var standardControls = _crate.FromDto(activityDto.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var standardControls = activityPayload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             Assert.IsNotNull(standardControls);
 
-            var controls = standardControls.Controls.Where(a => a.Type == "TextSource").Count();
+            var controls = standardControls.Controls.Count(a => a.Type == "TextSource");
 
             Assert.AreEqual(3, controls);
         }
 
-        private ActivityDTO GetActivityResult()
+        private async Task<ActivityPayload> GetActivityResult()
         {
             _gridActivity = new SendEmailViaSendGrid_v1();
-            var curActivityDO = FixtureData.ConfigureSendEmailViaSendGridActivity();
             var activityContext = FixtureData.TestActivityContext1();
-            ActivityDTO curActionDTO = Mapper.Map<ActivityDTO>(curActivityDO);
-            var curAuthTokenDO = Mapper.Map<AuthorizationToken>(curActionDTO.AuthToken);
-            _gridActivity.Configure(activityContext);
-            return Mapper.Map<ActivityDTO>(activityContext);
+            await _gridActivity.Configure(activityContext);
+            return activityContext.ActivityPayload;
         }
 
         [Test]
-        public void Run_Returns_PayloadDTO()
+        public async Task Run_Shouldnt_Throw_Exception()
         {
             // Arrange
             ICrateManager Crate = ObjectFactory.GetInstance<ICrateManager>();
             _gridActivity = new SendEmailViaSendGrid_v1();
-            var curActivityDO = FixtureData.ConfigureSendEmailViaSendGridActivity();
             var activityContext = FixtureData.TestActivityContext1();
-            var executionContext = new ContainerExecutionContext();
-
-            ActivityDTO curActionDTO = Mapper.Map<ActivityDTO>(curActivityDO);
-            curActionDTO.CrateStorage = activityDto.CrateStorage;
-            var curAuthTokenDO = Mapper.Map<AuthorizationToken>(curActionDTO.AuthToken);
-            var activityDO = Mapper.Map<ActivityDTO>(curActionDTO);
-
+            var executionContext = FixtureData.CrateExecutionContextForSendEmailViaSendGridConfiguration;
             //updating controls
-            var standardControls = _crate.FromDto(activityDto.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            var standardControls = activityPayload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             foreach (TextSource control in standardControls.Controls)
             {
                 control.ValueSource = "specific";
                 control.Value = (control.Name == "EmailAddress") ? "test@mail.com" : "test";
             }
-            var crate = Crate.CreateStandardConfigurationControlsCrate("SendGrid", standardControls.Controls.ToArray());
-
-            using (var crateStorage = Crate.GetUpdatableStorage(activityDO))
-            {
-                crateStorage.RemoveByManifestId(6);
-                crateStorage.Add(crate);
-            }
-
-            var container = FixtureData.TestContainer();
+            var crate = Crate.CreateStandardConfigurationControlsCrate(BaseTerminalActivity.ConfigurationControlsLabel, standardControls.Controls.ToArray());
+            activityContext.ActivityPayload.CrateStorage.Add(crate);
             // Act
-            var payloadDTOResult = _gridActivity.Run(activityContext, executionContext);
-
-            // Assert
-            Assert.NotNull(payloadDTOResult);
+            await _gridActivity.Run(activityContext, executionContext);
         }
     }
 }

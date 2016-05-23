@@ -48,20 +48,15 @@ namespace terminalTwilio.Activities
 
         private async Task<Crate> CreateAvailableFieldsCrate()
         {
-            var curUpstreamFields =
-                (await GetCratesByDirection<FieldDescriptionsCM>(CrateDirection.Upstream))
-
-                .Where(x => x.Label != "Available Groups")
-                .SelectMany(x => x.Content.Fields)
-                .ToArray();
+            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(ActivityId, CrateDirection.Upstream, AvailabilityType.RunTime, CurrentUserId) ?? new FieldDescriptionsCM();
 
             var availableFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(
-                    "Available Fields",
-                    curUpstreamFields
-                );
+                    "Upstream Terminal-Provided Fields",
+                    curUpstreamFields.Fields,
+                    AvailabilityType.Configuration);
 
             return availableFieldsCrate;
-            }
+        }
 
         private Crate PackCrate_ConfigurationControls()
         {

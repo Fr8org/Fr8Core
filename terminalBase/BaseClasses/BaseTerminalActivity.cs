@@ -28,7 +28,8 @@ namespace TerminalBase.BaseClasses
         }
 
         private void InitializeActivity(ActivityContext activityContext, ContainerExecutionContext containerExecutionContext = null)
-    {
+        {
+            ResetState();
             ActivityContext = activityContext;
             ExecutionContext = containerExecutionContext;
             CrateManager = ObjectFactory.GetInstance<ICrateManager>();
@@ -405,7 +406,6 @@ namespace TerminalBase.BaseClasses
         public void ResetState()
         {
             _configurationControls = null;
-
         }
 
         public virtual bool NeedsAuthentication()
@@ -731,7 +731,12 @@ namespace TerminalBase.BaseClasses
             return Task.FromResult(0);
         }
 
-        private async Task<bool> ValidateInternal()
+        protected virtual Task<bool> Validate()
+        {
+            return Task.FromResult(true);
+        }
+
+        protected async Task<bool> ValidateInternal()
         {
             Storage.Remove<ValidationResultsCM>();
             ValidationManager.Reset();
@@ -749,7 +754,7 @@ namespace TerminalBase.BaseClasses
             return true;
         }
 
-        protected async Task ValidateAndFollowUp()
+        protected virtual async Task ValidateAndFollowUp()
         {
             if(await ValidateInternal())
             { 
@@ -790,11 +795,6 @@ namespace TerminalBase.BaseClasses
                 }
                 throw;
             }
-        }
-
-        protected virtual Task<bool> Validate()
-        {
-            return Task.FromResult(true);
         }
 
         public async Task Activate(ActivityContext activityContext)

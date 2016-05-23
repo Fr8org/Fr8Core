@@ -495,7 +495,7 @@ namespace terminaBaselTests.BaseClasses
         {
             var activity = new UiSyncActivityMock();
             var activityContext = CreateActivityContext();
-            await activity.Configure(CreateActivityContext());
+            await activity.Configure(activityContext);
             var cc = activityContext.ActivityPayload.CrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             var refCC = new UiSyncActivityMock.ActivityUi();
 
