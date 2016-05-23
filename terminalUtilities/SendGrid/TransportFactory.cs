@@ -4,7 +4,7 @@ using SendGrid;
 using Utilities;
 using Utilities.Configuration.Azure;
 
-namespace terminalFr8Core.Services.SendGrid
+namespace terminalUtilities.SendGrid
 {
     class TransportFactory
     {

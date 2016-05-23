@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using Fr8Data.DataTransferObjects;
 
-namespace terminalFr8Core.Models
+namespace terminalUtilities.Models
 {
     public class TerminalMailerDO
     {
@@ -15,10 +15,7 @@ namespace terminalFr8Core.Models
         
         public string TemplateName { get; set; }
         
-        public IDictionary<string, object> MergeData
-        {
-            get { return null; }
-        }
+        public IDictionary<string, object> MergeData => null;
         public EmailDTO Email { get; set; }
         public string Footer { get; set; }
     }

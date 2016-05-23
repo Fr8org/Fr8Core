@@ -1,9 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Hub.ExternalServices;
 using SendGrid;
 
-namespace terminalFr8Core.Services.SendGrid
+namespace Hub.Managers.APIManagers.Packagers.SendGrid
 {
     class TransportWrapper : ITransport
     {
@@ -13,7 +16,7 @@ namespace terminalFr8Core.Services.SendGrid
         public TransportWrapper(ITransport transport)
         {
             if (transport == null)
-                throw new ArgumentNullException(nameof(transport));
+                throw new ArgumentNullException("transport");
             _transport = transport;
             _serviceManager = new ServiceManager<TransportWrapper>("SendGrid Service", "Email Services");
         }

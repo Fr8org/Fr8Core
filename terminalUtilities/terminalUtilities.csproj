@@ -101,7 +101,12 @@
   <ItemGroup>
     <Compile Include="Excel\ExcelUtils.cs" />
     <Compile Include="Excel\ExcelWriter.cs" />
+    <Compile Include="Models\MailerDO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Interfaces\IEmailPackager.cs" />
+    <Compile Include="SendGrid\SendGridPackager.cs" />
+    <Compile Include="SendGrid\TransportFactory.cs" />
+    <Compile Include="SendGrid\TransportWrapper.cs" />
     <Compile Include="TabularUtilities.cs" />
     <Compile Include="Twilio\ITwilioService.cs" />
     <Compile Include="Twilio\TwilioService.cs" />

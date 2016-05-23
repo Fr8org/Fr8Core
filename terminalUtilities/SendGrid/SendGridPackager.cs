@@ -6,12 +6,9 @@ using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
 using SendGrid;
 using StructureMap;
-using terminalFr8Core.Helpers;
-using terminalFr8Core.Interfaces;
-using terminalFr8Core.Models;
 using Utilities;
 
-namespace terminalFr8Core.Services.SendGrid
+namespace terminalUtilities.SendGrid
 {
     public class SendGridPackager : IEmailPackager
     {

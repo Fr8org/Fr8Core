@@ -1,7 +1,6 @@
 ﻿using System.Threading.Tasks;
-using terminalFr8Core.Models;
 
-namespace terminalFr8Core.Interfaces
+namespace terminalUtilities.Interfaces
 {
     public interface IEmailPackager
     {

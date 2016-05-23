@@ -1,9 +1,6 @@
 ﻿using SendGrid;
 using StructureMap;
-using terminalUtilities.SendGrid;
 using Utilities;
-using terminalSendGrid.Infrastructure;
-using terminalSendGrid.Services;
 using Fr8Infrastructure.StructureMap;
 
 namespace terminalSendGrid
@@ -33,8 +30,8 @@ namespace terminalSendGrid
         {
             public LiveMode()
             {
-                For<IEmailPackager>().Use<SendGridPackager>();
-                For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>()));
+                //For<IEmailPackager>().Use<SendGridPackager>();
+                //For<ITransport>().Use(c => TransportFactory.CreateWeb(c.GetInstance<IConfigRepository>()));
             }
         }
 

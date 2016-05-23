@@ -260,9 +260,7 @@
     <Compile Include="Helpers\EmailHelper.cs" />
     <Compile Include="Infrastructure\EmailParticipantType.cs" />
     <Compile Include="Infrastructure\FindObjectHelper.cs" />
-    <Compile Include="Interfaces\IEmailPackager.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
-    <Compile Include="Models\MailerDO.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Converters\DocuSignTemplateToStandardFileDescriptionConversion.cs" />
@@ -271,9 +269,6 @@
     <Compile Include="Services\MT\MTSearchHelper.IMtQueryProvider.cs" />
     <Compile Include="Services\MT\MTSearchHelper.MtQueryProviderT.cs" />
     <Compile Include="Services\MT\MTTypesHelper.cs" />
-    <Compile Include="Services\SendGrid\SendGridPackager.cs" />
-    <Compile Include="Services\SendGrid\TransportFactory.cs" />
-    <Compile Include="Services\SendGrid\TransportWrapper.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="StructureMapConfiguration.cs" />
     <Compile Include="TerminalData.cs" />

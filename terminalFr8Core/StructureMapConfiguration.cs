@@ -6,7 +6,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using terminalFr8Core.Interfaces;
-using terminalFr8Core.Services.SendGrid;
+using terminalUtilities.Interfaces;
+using terminalUtilities.SendGrid;
 using terminalUtilities.Twilio;
 using Utilities;
 
