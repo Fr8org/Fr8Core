@@ -20,6 +20,8 @@ using System;
 using Fr8Data.DataTransferObjects;
 using terminalFr8Core.Activities;
 using terminalUtilities.Interfaces;
+using Fr8Data.Managers;
+using TerminalBase.Models;
 
 namespace terminalTests.Unit
 {
@@ -27,6 +29,8 @@ namespace terminalTests.Unit
     public class Send_Email_v1Tests : BaseTest
     {
         private Send_Email_v1 _sendEmailActivity;
+        private ICrateManager _crate;
+        private ActivityPayload activityPayload;
 
         public override void SetUp()
         {

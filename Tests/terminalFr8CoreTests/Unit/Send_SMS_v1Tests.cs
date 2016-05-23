@@ -19,6 +19,7 @@ using Fr8Data.States;
 using terminalUtilities.Twilio;
 using System.Collections.Generic;
 using terminalFr8Core.Activities;
+using TerminalBase.Models;
 
 namespace terminalTests.Unit
 {
@@ -40,8 +41,8 @@ namespace terminalTests.Unit
             var fileds = new FieldDescriptionsCM(new FieldDTO[] { });
 
             var hubCommunicatorMock = new Mock<IHubCommunicator>();
-            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>())).Returns(Task.FromResult(payload));
-            hubCommunicatorMock.Setup(h => h.GetDesignTimeFieldsByDirection(It.IsAny<ActivityDO>(), It.IsAny<CrateDirection>(), 
+            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<Guid>(), It.IsAny<string>())).Returns(Task.FromResult(payload));
+            hubCommunicatorMock.Setup(h => h.GetDesignTimeFieldsByDirection(It.IsAny<Guid>(), It.IsAny<CrateDirection>(), 
                                         It.IsAny<AvailabilityType>(), It.IsAny<string>())).Returns(Task.FromResult(fileds));
             ObjectFactory.Container.Inject(hubCommunicatorMock);
             ObjectFactory.Container.Inject(hubCommunicatorMock.Object);
@@ -60,10 +61,18 @@ namespace terminalTests.Unit
             _sendSmsActivity = new Send_SMS_v1();
 
             //Act
-            var curActivity = await _sendSmsActivity.Configure(new ActivityDO(), null);
+            var activityContext = new ActivityContext
+            {
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
+
+                }
+            };
+            await _sendSmsActivity.Configure(activityContext);
 
             //Assert
-            var configControls = CrateManager.GetStorage(curActivity).CratesOfType<StandardConfigurationControlsCM>().Single();
+            var configControls = activityContext.ActivityPayload.CrateStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
             Assert.IsNotNull(configControls, "Send SMS is not initialized properly.");
             Assert.IsTrue(configControls.Content.Controls.Count == 2, "Send SMS configuration controls are not created correctly.");
         }
@@ -75,10 +84,18 @@ namespace terminalTests.Unit
             _sendSmsActivity = new Send_SMS_v1();
 
             //Act
-            var curActivity = await _sendSmsActivity.Configure(new ActivityDO(), null);
+            var activityContext = new ActivityContext
+            {
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
+
+                }
+            };
+            await _sendSmsActivity.Configure(activityContext);
 
             //Assert
-            var availableFields = CrateManager.GetStorage(curActivity)
+            var availableFields = activityContext.ActivityPayload.CrateStorage
                                               .CratesOfType<FieldDescriptionsCM>()
                                               .Single(f => f.Label.Equals("Upstream Terminal-Provided Fields"));
             Assert.IsNotNull(availableFields, "Send SMS does not have available fields.");
@@ -89,31 +106,41 @@ namespace terminalTests.Unit
         {
             //Arrage
             _sendSmsActivity = new Send_SMS_v1();
-            var curActivity = await _sendSmsActivity.Configure(new Data.Entities.ActivityDO(), null);
-
-            using (var storage = CrateManager.GetUpdatableStorage(curActivity))
+            var activityContext = new ActivityContext
             {
-                var controls = storage.CratesOfType<StandardConfigurationControlsCM>().Single();
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage()
+                }
+            };
 
-                var smsNumber = controls.Content.Controls.OfType<TextSource>().Single(t => t.Name.Equals("SmsNumber"));
-                smsNumber.TextValue = "+918055967968"; //This is some dummy number. This number is not valid
+            var containerExecutionContext = new ContainerExecutionContext
+            {
+                PayloadStorage = new CrateStorage(Crate.FromContent(string.Empty, new OperationalStateCM()))
+            };
+            await _sendSmsActivity.Configure(activityContext);
 
-                var smsBody = controls.Content.Controls.OfType<TextSource>().Single(t => t.Name.Equals("SmsBody"));
-                smsBody.TextValue = "some body";
+            var controls = activityContext.ActivityPayload.CrateStorage.CratesOfType<StandardConfigurationControlsCM>().Single();
 
-                smsBody.ValueSource = smsNumber.ValueSource = "specific";
-            }
+            var smsNumber = controls.Content.Controls.OfType<TextSource>().Single(t => t.Name.Equals("SmsNumber"));
+            smsNumber.TextValue = "+918055967968"; //This is some dummy number. This number is not valid
+
+            var smsBody = controls.Content.Controls.OfType<TextSource>().Single(t => t.Name.Equals("SmsBody"));
+            smsBody.TextValue = "some body";
+
+            smsBody.ValueSource = smsNumber.ValueSource = "specific";
 
             //Act
-            var payLoad = await _sendSmsActivity.Run(curActivity, new System.Guid(), new AuthorizationTokenDO { Token = "1" });
+            activityContext.AuthorizationToken.Token = "1";
+            await _sendSmsActivity.Run(activityContext, containerExecutionContext);
 
             //Assert
-            var messageDataCrate = CrateManager.GetStorage(payLoad).CratesOfType<StandardPayloadDataCM>().Single(p => p.Label.Equals("Message Data"));
+            var messageDataCrate = containerExecutionContext.PayloadStorage.CratesOfType<StandardPayloadDataCM>().Single(p => p.Label.Equals("Message Data"));
             Assert.IsNotNull(messageDataCrate, "Send SMS activity is not run.");
             Assert.AreEqual(4, messageDataCrate.Content.AllValues().ToList().Count, "Message fields are not getting populated when Send SMS is executed.");
 
             var twilioService = Mock.Get(ObjectFactory.GetInstance<ITwilioService>());
-            twilioService.Verify(t => t.SendSms(It.IsAny<string>(), It.IsAny<string>()), Times.Once());
+            twilioService.Verify(t => t.SendSms(It.IsAny<string>(), It.IsAny<string>()));
         }
     }
 }
