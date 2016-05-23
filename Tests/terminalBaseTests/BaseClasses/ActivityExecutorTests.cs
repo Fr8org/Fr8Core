@@ -32,7 +32,7 @@ namespace terminalBaseTests.BaseClasses
         public override void SetUp()
         {
             base.SetUp();
-            StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
+            ObjectFactory.Configure(x => x.AddRegistry<StructureMapBootStrapper.TestMode>());
             ObjectFactory.Configure(cfg => cfg.For<IHubCommunicator>().Use<DefaultHubCommunicator>());
             CrateManagerHelper = new CrateManager();
             _activityExecutor = ObjectFactory.GetInstance<ActivityExecutor>();

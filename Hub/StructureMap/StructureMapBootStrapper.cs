@@ -55,10 +55,10 @@ namespace Hub.StructureMap
             switch (type)
             {
                 case DependencyType.TEST:
-                    ObjectFactory.Configure(x => x.AddRegistry<TestMode>());
+                    ObjectFactory.Initialize(x => x.AddRegistry<TestMode>());
                     break;
                 case DependencyType.LIVE:
-                    ObjectFactory.Configure(x => x.AddRegistry<LiveMode>());
+                    ObjectFactory.Initialize(x => x.AddRegistry<LiveMode>());
                     break;
             }
             return ObjectFactory.Container;
