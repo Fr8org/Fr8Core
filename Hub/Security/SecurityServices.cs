@@ -361,7 +361,8 @@ namespace Hub.Security
                     var currentAccount = GetCurrentAccount(uow);
                     if (!currentAccount.OrganizationId.HasValue && fr8AccountId != currentAccount.Id) 
                     {
-                        return false;
+                        if(currentAccount.Profile?.Name != DefaultProfiles.Fr8Administrator)
+                            return false;
                     }
                 }
             }
