@@ -14,7 +14,7 @@ using terminalUtilities.Excel;
 using TerminalBase.BaseClasses;
 using Utilities;
 
-namespace terminalExcel.Actions
+namespace terminalExcel.Activities
 {
     public class SetExcelTemplate_v1 : BaseTerminalActivity
     {
@@ -108,26 +108,26 @@ namespace terminalExcel.Actions
             return await HubCommunicator.GetCratesByDirection<StandardFileDescriptionCM>(ActivityId, CrateDirection.Upstream, CurrentUserId);
         }
 
-        private async Task<StandardTableDataCM> GetUpstreamTableData()
-        {
-            var upstreamFileHandleCrates = await GetUpstreamFileHandleCrates();
+        //private async Task<StandardTableDataCM> GetUpstreamTableData()
+        //{
+        //    var upstreamFileHandleCrates = await GetUpstreamFileHandleCrates();
 
-            //if no "Standard File Handle" crate found then return
-            if (!upstreamFileHandleCrates.Any())
-                return null;
+        //    //if no "Standard File Handle" crate found then return
+        //    if (!upstreamFileHandleCrates.Any())
+        //        return null;
 
-            //if more than one "Standard File Handle" crates found then throw an exception
-            if (upstreamFileHandleCrates.Count > 1)
-                throw new Exception("More than one Standard File Handle crates found upstream.");
+        //    //if more than one "Standard File Handle" crates found then throw an exception
+        //    if (upstreamFileHandleCrates.Count > 1)
+        //        throw new Exception("More than one Standard File Handle crates found upstream.");
 
-            // Deserialize the Standard File Handle crate to StandardFileHandleMS object
-            StandardFileDescriptionCM fileHandleMS = upstreamFileHandleCrates.First().Get<StandardFileDescriptionCM>();
+        //    // Deserialize the Standard File Handle crate to StandardFileHandleMS object
+        //    StandardFileDescriptionCM fileHandleMS = upstreamFileHandleCrates.First().Get<StandardFileDescriptionCM>();
 
-            // Use the url for file from StandardFileHandleMS and read from the file and transform the data into StandardTableData and assign it to Action's crate storage
-            StandardTableDataCM tableDataMS = ExcelUtils.GetExcelFile(fileHandleMS.DirectUrl);
+        //    // Use the url for file from StandardFileHandleMS and read from the file and transform the data into StandardTableData and assign it to Action's crate storage
+        //    StandardTableDataCM tableDataMS = ExcelUtils.GetExcelFile(fileHandleMS.DirectUrl);
 
-            return tableDataMS;
-        }
+        //    return tableDataMS;
+        //}
 
 
         /// <summary>

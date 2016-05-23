@@ -10,6 +10,8 @@ using StructureMap;
 using terminalSendGrid;
 using terminalSendGrid.Activities;
 using terminalSendGridTests.Fixtures;
+using terminalUtilities.Interfaces;
+using terminalUtilities.SendGrid;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using TerminalBase.Models;

@@ -82,6 +82,7 @@ namespace terminalExcel.Activities
 
         protected override async Task ConfigureETA()
         {
+            var excelUtils = new ExcelUtils(HubCommunicator, CurrentUserId);
             Storage.RemoveByLabel(ColumnHeadersCrateLabel);
             //If file is not uploaded we hide file description
             if (string.IsNullOrEmpty(ActivityUI.FilePicker.Value))
@@ -102,7 +103,7 @@ namespace terminalExcel.Activities
                     var selectedFileDescription = new FieldDTO(ActivityUI.FilePicker.Value, ExtractFileName(ActivityUI.FilePicker.Value));
                     var columnHeadersCrate = Crate.FromContent(
                         ColumnHeadersCrateLabel,
-                        ExcelUtils.GetColumnHeadersData(selectedFileDescription.Key,ColumnHeadersCrateLabel),
+                        excelUtils.GetColumnHeadersData(selectedFileDescription.Key,ColumnHeadersCrateLabel),
                         AvailabilityType.Always
                     );
 
@@ -111,7 +112,7 @@ namespace terminalExcel.Activities
                     SelectedFileDescription = selectedFileDescription;
 
                     // Process table and get the Table and optionally (if one row) fields crate
-                    var fileAsByteArray = ExcelUtils.GetExcelFileAsByteArray(ActivityUI.FilePicker.Value);
+                    var fileAsByteArray = excelUtils.GetExcelFileAsByteArray(ActivityUI.FilePicker.Value);
                     var tableCrates = GetExcelFileDescriptionCrates(fileAsByteArray, ActivityUI.FilePicker.Value, true, null, false);
 
                     foreach (var crate in tableCrates)
@@ -167,7 +168,7 @@ namespace terminalExcel.Activities
                 RaiseError("Excel file is not selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
 
-            var byteArray = ExcelUtils.GetExcelFileAsByteArray(ActivityUI.FilePicker.Value);
+            var byteArray = new ExcelUtils(HubCommunicator, CurrentUserId).GetExcelFileAsByteArray(ActivityUI.FilePicker.Value);
             var tableCrates = GetExcelFileDescriptionCrates(byteArray, ActivityUI.FilePicker.Value, true, null, true);
 
             var fileDescription = new StandardFileDescriptionCM

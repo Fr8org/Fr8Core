@@ -10,7 +10,7 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using HealthMonitor.Utility;
-using Hub.Managers;
+using Fr8Data.Managers;
 using NUnit.Framework;
 using terminalFr8Core.Actions;
 using terminalFr8CoreTests.Fixtures;

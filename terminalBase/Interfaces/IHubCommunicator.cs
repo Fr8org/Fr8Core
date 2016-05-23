@@ -39,6 +39,7 @@ namespace TerminalBase.Infrastructure
         Task<IEnumerable<PlanDTO>> GetPlansByName(string name, string userId, PlanVisibility visibility = PlanVisibility.Standard);
         Task<FileDTO> SaveFile(string name, Stream stream, string userId);
         Task<Stream> DownloadFile(int fileId, string userId);
+        Task<Stream> DownloadFile(string filePath, string userId);
         Task<IEnumerable<FileDTO>> GetFiles(string userId);
         Task ApplyNewToken(Guid activityId, Guid authTokenId, string userId);
         Task Configure(string terminalName);

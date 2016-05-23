@@ -268,6 +268,11 @@ namespace TerminalBase.Services
             throw new NotImplementedException();
         }
 
+        public Task<Stream> DownloadFile(string filePath, string userId)
+        {
+            throw new NotImplementedException();
+        }
+
         public Task<IEnumerable<FileDTO>> GetFiles(string userId)
         {
             throw new NotImplementedException();
