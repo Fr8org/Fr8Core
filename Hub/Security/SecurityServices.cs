@@ -206,14 +206,9 @@ namespace Hub.Security
                 return evaluator.Value;
             }
             
-            if(fr8AccountId == GetCurrentUser())
-            {
-                return true;
-            }
-
             //Object Based permission set checks
             var permissionSets = _securityObjectStorageProvider.GetObjectBasedPermissionSetForObject(curObjectId, curObjectType, profileId);
-            return EvaluateProfilesPermissionSet(permissionType, permissionSets);
+            return EvaluateProfilesPermissionSet(permissionType, permissionSets, fr8AccountId);
         }
 
         private bool CheckForAppBuilderPlanAndBypassSecurity(string curObjectId, out string fr8AccountId)
@@ -338,7 +333,7 @@ namespace Hub.Security
             return null;
         }
 
-        private bool EvaluateProfilesPermissionSet(PermissionType permissionType, List<int> permissionSet)
+        private bool EvaluateProfilesPermissionSet(PermissionType permissionType, List<int> permissionSet, string fr8AccountId)
         {
             if (permissionType == PermissionType.CreateObject)
             {
@@ -350,6 +345,11 @@ namespace Hub.Security
             var viewAllData = permissionSet.FirstOrDefault(x => x == (int)PermissionType.ViewAllObjects);
             if (viewAllData != 0 && permissionType == PermissionType.ReadObject) return true;
             if (modifyAllData != 0) return true;
+
+            if (fr8AccountId == GetCurrentUser())
+            {
+                return true;
+            }
 
             return false;
         }
