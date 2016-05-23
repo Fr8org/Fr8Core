@@ -186,7 +186,6 @@ namespace Hub.Security
             //first check Record Based Permission.
             bool? evaluator = null;
             var objRolePermissionWrapper = _securityObjectStorageProvider.GetRecordBasedPermissionSetForObject(curObjectId);
-            if (string.IsNullOrEmpty(objRolePermissionWrapper.Fr8AccountId)) objRolePermissionWrapper.Fr8AccountId = fr8AccountId;
             if (objRolePermissionWrapper.RolePermissions.Any() || objRolePermissionWrapper.Properties.Any())
             {
                 if (string.IsNullOrEmpty(propertyName))
@@ -207,6 +206,11 @@ namespace Hub.Security
                 return evaluator.Value;
             }
             
+            if(fr8AccountId == GetCurrentUser())
+            {
+                return true;
+            }
+
             //Object Based permission set checks
             var permissionSets = _securityObjectStorageProvider.GetObjectBasedPermissionSetForObject(curObjectId, curObjectType, profileId);
             return EvaluateProfilesPermissionSet(permissionType, permissionSets);
@@ -214,7 +218,7 @@ namespace Hub.Security
 
         private bool CheckForAppBuilderPlanAndBypassSecurity(string curObjectId, out string fr8AccountId)
         {
-            //todo: @makigjuro temp fix until FR-3008 is implemented 
+            //TODO: @makigjuro temp fix until FR-3008 is implemented 
             //bypass security on AppBuilder plan, because that one is visible for every user that has this url
             fr8AccountId = null;
             var activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
