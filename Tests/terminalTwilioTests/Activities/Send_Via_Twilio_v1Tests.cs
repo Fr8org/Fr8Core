@@ -6,7 +6,6 @@ using Fr8Data.Managers;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
-using terminalTwilio.Services;
 using terminalTwilio.Tests.Fixtures;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
@@ -20,6 +19,7 @@ using Fr8Infrastructure.StructureMap;
 using TerminalBase.Models;
 using Fr8Data.Crates;
 using System.Linq;
+using terminalUtilities.Twilio;
 
 namespace terminalTwilioTests.Activities
 {

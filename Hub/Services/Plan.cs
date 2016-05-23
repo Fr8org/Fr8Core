@@ -187,6 +187,11 @@ namespace Hub.Services
             }
         }
 
+        public PlanDO GetFullPlan(IUnitOfWork uow, Guid id)
+        {
+            return uow.PlanRepository.GetById<PlanDO>(id);
+        }
+
         public PlanDO Create(IUnitOfWork uow, string name, string category = "")
         {
             var plan = new PlanDO
@@ -612,6 +617,7 @@ namespace Hub.Services
                 catch (Exception ex)
                 {
                     EventManager.ContainerFailed(curPlan, ex, containerId);
+                    this.Deactivate(curPlan.Id);
                     throw;
                 }
             }

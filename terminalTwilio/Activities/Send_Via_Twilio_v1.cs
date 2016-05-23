@@ -9,10 +9,11 @@ using Fr8Data.Manifests;
 using Fr8Data.States;
 using PhoneNumbers;
 using StructureMap;
-using terminalTwilio.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Twilio;
+using terminalUtilities.Twilio;
+
 
 namespace terminalTwilio.Activities
 {

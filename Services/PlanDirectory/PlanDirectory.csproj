@@ -34,6 +34,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' != 'Debug' ">
+    <DeployOnBuild>true</DeployOnBuild>
+  </PropertyGroup>  
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
@@ -298,6 +301,61 @@
   </ProjectExtensions>
   <Target Name="EnsureNmpPackageBuildAndGulpBuild" BeforeTargets="BeforeBuild">
     <Exec Command="PreBuild.bat" WorkingDirectory="$(ProjectDir)" />
+  </Target>
+  <PropertyGroup>
+    <CopyAllFilesToSingleFolderForPackageDependsOn>
+      CustomCollectFiles;
+      $(CopyAllFilesToSingleFolderForPackageDependsOn);
+    </CopyAllFilesToSingleFolderForPackageDependsOn>
+    <CopyAllFilesToSingleFolderForMsdeployDependsOn>
+      CustomCollectFiles;
+      $(CopyAllFilesToSingleFolderForPackageDependsOn);
+    </CopyAllFilesToSingleFolderForMsdeployDependsOn>
+  </PropertyGroup>
+  <Target Name="CustomCollectFiles">
+    <ItemGroup>
+      <_CustomFiles Include=".\bower_components\**\*" />
+      <FilesForPackagingFromProject Include="%(_CustomFiles.Identity)">
+        <DestinationRelativePath>bower_components\%(RecursiveDir)%(Filename)%(Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+    </ItemGroup>
+  </Target>
+  <PropertyGroup>
+    <CopyAllFilesToSingleFolderForPackageDependsOn>
+      $(CopyAllFilesToSingleFolderForPackageDependsOn);
+      CollectGulpOutput;
+    </CopyAllFilesToSingleFolderForPackageDependsOn>
+    <CopyAllFilesToSingleFolderForMsdeployDependsOn>
+      $(CopyAllFilesToSingleFolderForMsdeployDependsOn);
+      CollectGulpOutput;
+    </CopyAllFilesToSingleFolderForMsdeployDependsOn>
+  </PropertyGroup>
+  <PropertyGroup>
+    <CleanDependsOn>
+      $(CleanDependsOn);
+      CleanBowerComponents;
+    </CleanDependsOn>
+    <CleanDependsOn>
+      $(CleanDependsOn);
+      RemoveCompiledJsFiles;
+    </CleanDependsOn>
+  </PropertyGroup>
+  <Target Name="CollectGulpOutput">
+    <ItemGroup>
+      <FilesForPackagingFromProject Include="%(_CustomGulpFiles.Identity)">
+        <DestinationRelativePath>Scripts\app\%(Filename)%(Extension)</DestinationRelativePath>
+      </FilesForPackagingFromProject>
+    </ItemGroup>
+    <Message Text="CollectGulpOutput list: %(_CustomGulpFiles.Identity)" />
+  </Target>
+  <Target Name="CleanBowerComponents">
+    <RemoveDir Directories="bower_components" />
+  </Target>
+  <Target Name="RemoveCompiledJsFiles">
+    <ItemGroup>
+      <_CompiledJsFiles Include="Scripts\app\**\*.js" />
+    </ItemGroup>
+    <Delete Files="@(_CompiledJsFiles)" />
   </Target>
   <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
     <PropertyGroup>

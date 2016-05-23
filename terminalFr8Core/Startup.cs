@@ -26,7 +26,7 @@ namespace terminalFr8Core
             Hub.StructureMap.StructureMapBootStrapper.ConfigureDependencies(Hub.StructureMap.StructureMapBootStrapper.DependencyType.LIVE);
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             TerminalBootstrapper.ConfigureLive();
-            ConfigureProject(selfHost, null);
+            ConfigureProject(selfHost, Fr8CoreStructureMapConfiguration.LiveConfiguration);
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
 
@@ -67,6 +67,8 @@ namespace terminalFr8Core
             ActivityStore.RegisterActivity<StoreFile_v1>(StoreFile_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<MakeADecision_v1>(MakeADecision_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<TestIncomingData_v1>(TestIncomingData_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Send_Email_v1>(Send_Email_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Send_SMS_v1>(Send_SMS_v1.ActivityTemplateDTO);
         }
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)

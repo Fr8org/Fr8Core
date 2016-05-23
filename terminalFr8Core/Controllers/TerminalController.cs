@@ -353,6 +353,30 @@ namespace terminalFr8Core.Controllers
                 MinPaneWidth = 400
             });
 
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "Send_Email",
+                Label = "Send Email using Fr8 core account",
+                Version = "1",
+                Category = ActivityCategory.Forwarders,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                WebService = webService,
+                MinPaneWidth = 400
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "Send_SMS",
+                Label = "Send SMS using Fr8 core account",
+                Version = "1",
+                Category = ActivityCategory.Forwarders,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                WebService = webService,
+                MinPaneWidth = 400
+            });
+
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,

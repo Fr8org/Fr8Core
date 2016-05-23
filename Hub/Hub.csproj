@@ -338,14 +338,10 @@
     <Compile Include="Managers\APIManagers\Authorizers\OAuthAuthorizationResult.cs" />
     <Compile Include="Managers\APIManagers\Authorizers\OAuthException.cs" />
     <Compile Include="Managers\APIManagers\Packagers\SegmentIO\SegmentIO.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportFactory.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportWrapper.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Http\IAuthorizingHttpChannel.cs" />
     <Compile Include="Managers\APIManagers\Transmitters\Http\OAuthHttpChannel.cs" />
     <Compile Include="Managers\APIManagers\Packagers\DataTable\DataTablesPackager.cs" />
     <Compile Include="Helper\RoleData.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\SendGrid\SendGridPackager.cs" />
-    <Compile Include="Managers\APIManagers\Packagers\IEmailPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\Kwasant\KwasantPackager.cs" />
     <Compile Include="Managers\APIManagers\Packagers\UnknownEmailPackagerException.cs" />
     <Compile Include="Managers\CommunicationManager.cs" />
@@ -395,6 +391,10 @@
     <Compile Include="Services\Subscription.cs" />
     <Compile Include="Services\Time.cs" />
     <Compile Include="StructureMap\StructureMapBootStrapper.cs" />
+    <Compile Include="Interfaces\IActivityExecutionRateLimitingService.cs" />
+    <Compile Include="Interfaces\IUtilizationMonitoringService.cs" />
+    <Compile Include="Services\Utilization\ActivityExecutionRateLimitingService.cs" />
+    <Compile Include="Services\Utilization\UtilizationMonitoringService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Data\Data.csproj">

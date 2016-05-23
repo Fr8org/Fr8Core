@@ -22,6 +22,8 @@ namespace HubTests.Services.Container
         {
             base.SetUp();
 
+            InitializeContainer();
+            
             CrateManager = ObjectFactory.GetInstance<ICrateManager>();
             ActivityService = new ActivityServiceMock(ObjectFactory.GetInstance<Hub.Interfaces.IActivity>());
             ObjectFactory.Container.Inject(typeof(Hub.Interfaces.IActivity), ActivityService);
@@ -31,6 +33,9 @@ namespace HubTests.Services.Container
             FixtureData.AddTestActivityTemplate();
         }
 
+        protected virtual void InitializeContainer()
+        {
+        }
 
         protected void AssertExecutionSequence(ActivityExecutionCall[] expected, List<ActivityExecutionCall> actual)
         {

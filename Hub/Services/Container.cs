@@ -14,16 +14,22 @@ using Hub.Managers;
 
 namespace Hub.Services
 {
-    public partial class Container : Hub.Interfaces.IContainer
+    public partial class Container : Interfaces.IContainer
     {
-        // Declarations
+        private readonly IUtilizationMonitoringService _utilizationMonitoringService;
+        private readonly IActivityExecutionRateLimitingService _activityRateLimiter;
         private readonly IActivity _activity;
         private readonly ICrateManager _crate;
 
-        public Container()
+        public Container(IActivity activity, 
+                         ICrateManager crateManager, 
+                         IUtilizationMonitoringService utilizationMonitoringService,
+                         IActivityExecutionRateLimitingService activityRateLimiter)
         {
-            _activity = ObjectFactory.GetInstance<IActivity>();
-            _crate = ObjectFactory.GetInstance<ICrateManager>();
+            _utilizationMonitoringService = utilizationMonitoringService;
+            _activityRateLimiter = activityRateLimiter;
+            _activity = activity;
+            _crate = crateManager;
         }
 
         public List<ContainerDO> LoadContainers(IUnitOfWork uow, PlanDO plan)
@@ -63,7 +69,7 @@ namespace Hub.Services
             curContainerDO.State = State.Executing;
             uow.SaveChanges();
 
-            var executionSession = new ExecutionSession(uow, callStack, curContainerDO, _activity, _crate);
+            var executionSession = new ExecutionSession(uow, callStack, curContainerDO, _activity, _crate, _utilizationMonitoringService, _activityRateLimiter);
 
             await executionSession.Run();
         }

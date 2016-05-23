@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
@@ -10,12 +9,9 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Helpers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using Hub.Managers;
 using Newtonsoft.Json.Linq;
-using StructureMap.Diagnostics;
 using TerminalBase;
 using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
@@ -35,21 +31,69 @@ namespace terminalFr8Core.Activities
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        protected override Task RunChildActivities()
+        public override async Task Run()
         {
-            JumpToActivity(ActivityId);
-            return Task.FromResult(0);
-        }
-
-        protected virtual Task Validate()
-        {
-            var crateChooser = GetControl<CrateChooser>("Available_Crates");
-            if (!crateChooser.CrateDescriptions.Any(c => c.Selected))
+            if (OperationalState == null)
             {
-                ValidationManager.SetError("Please select an item from the list", crateChooser);
+                RaiseError("This Action can't run without OperationalStateCM crate", ActivityErrorCode.PAYLOAD_DATA_MISSING);
+                return;
+            }
+            var crateDescriptionToProcess = FindCrateDescriptionToProcess();
+            var loopData = OperationalState.CallStack.GetLocalData<OperationalStateCM.LoopStatus>("Loop");
+            if (loopData == null)
+            {
+                loopData = new OperationalStateCM.LoopStatus
+                {
+                    CrateManifest = new CrateDescriptionCM(crateDescriptionToProcess)
+                };
+            }
+            else
+            {
+                loopData.Index++;
+            }
+            OperationalState.CallStack.StoreLocalData("Loop", loopData);
+            var crateToProcess = FindCrateToProcess(crateDescriptionToProcess);
+            if (crateToProcess == null)
+            {
+                RaiseError("This Action can't run without OperationalStateCM crate", ActivityErrorCode.PAYLOAD_DATA_MISSING);
+                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any crate with Manifest Type: \"" + crateToProcess.ManifestType + "\" and Label: \"" + crateToProcess.Label + "\"");
             }
 
-            return Task.FromResult(0);
+            var dataListSize = GetDataListSize(crateToProcess);
+
+            if (dataListSize == null)
+            {
+                RaiseError("Unable to find a list in specified crate with Manifest Type: \"" + crateToProcess.ManifestType.Type + "\" and Label: \"" + crateToProcess.Label + "\"", ActivityErrorCode.PAYLOAD_DATA_MISSING);
+                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING);
+            }
+
+            if (loopData.Index >= dataListSize.Value)
+            {
+                SkipChildren();
+                return;
+            }
+
+            Success();
+        }
+
+        protected override async Task RunChildActivities()
+        {
+            JumpToActivity(ActivityId);
+        }
+
+        protected override Task<bool> Validate()
+        {
+            if (ConfigurationControls != null)
+            {
+                var crateChooser = GetControl<CrateChooser>("Available_Crates");
+                if (!crateChooser.CrateDescriptions.Any(c => c.Selected))
+                {
+                    ValidationManager.SetError("Please select an item from the list", crateChooser);
+                    return Task.FromResult(false);
+                }
+            }
+
+            return Task.FromResult(true);
         }
 
         internal static int? GetDataListSize(Crate crateToProcess)
@@ -114,13 +158,55 @@ namespace terminalFr8Core.Activities
             return null;
         }
 
-        private async Task<List<FieldDTO>> GetLabelsByManifestType(string manifestType)
+        public override async Task Initialize()
+        {
+            //build a controls crate to render the pane
+            var configurationControlsCrate = await CreateControlsCrate();
+            Storage.Add(configurationControlsCrate);
+            SelectTheOnlyCrate(ConfigurationControls);
+        }
+
+        private async Task<List<string>> GetLabelsByManifestType(string manifestType)
         {
             var upstreamCrates = await GetCratesByDirection(CrateDirection.Upstream);
             return upstreamCrates
                     .Where(c => c.ManifestType.Type == manifestType)
                     .GroupBy(c => c.Label)
-                    .Select(c => new FieldDTO(c.Key, c.Key)).ToList();
+                    .Select(c => c.Key).ToList();
+        }
+
+        public override async Task FollowUp()
+        {
+            var crateChooser = GetControl<CrateChooser>("Available_Crates");
+            if (crateChooser.CrateDescriptions != null)
+            {
+                var selected = crateChooser.CrateDescriptions.FirstOrDefault(x => x.Selected);
+                if (selected != null)
+                {
+                    var labelList = await GetLabelsByManifestType(selected.ManifestType);
+
+                    UpdateCrateDescriptionLabel(labelList.FirstOrDefault());
+                    SelectTheOnlyCrate(ConfigurationControls);
+                }
+                else
+                {
+                    var configurationControlsCrate = await CreateControlsCrate();
+                    Storage.Clear();
+                    Storage.Add(configurationControlsCrate);
+                    SelectTheOnlyCrate(ConfigurationControls);
+                }
+            }
+
+            return;
+        }
+
+        public void UpdateCrateDescriptionLabel(string label)
+        {
+            var updatableCrateChooser = Storage.FirstCrate<StandardConfigurationControlsCM>()
+                                .Content.Controls.OfType<CrateChooser>()
+                                .Single();
+            updatableCrateChooser.CrateDescriptions.FirstOrDefault(x => x.Selected).Label =
+                label;
         }
 
         private void SelectTheOnlyCrate(StandardConfigurationControlsCM controls)
@@ -146,74 +232,6 @@ namespace terminalFr8Core.Activities
 
         public Loop_v1() : base(false)
         {
-        }
-
-        public override async Task Run()
-        {
-            var crateDescriptionToProcess = FindCrateDescriptionToProcess();
-            var loopData = OperationalState.CallStack.GetLocalData<OperationalStateCM.LoopStatus>("Loop");
-            if (loopData == null)
-            {
-                loopData = new OperationalStateCM.LoopStatus();
-                loopData.CrateManifest = new CrateDescriptionCM(crateDescriptionToProcess);
-            }
-            else
-            {
-                loopData.Index++;
-            }
-            OperationalState.CallStack.StoreLocalData("Loop", loopData);
-            var crateToProcess = FindCrateToProcess(crateDescriptionToProcess);
-            if (crateToProcess == null)
-            {
-                RaiseError("This Action can't run without OperationalStateCM crate", ActivityErrorCode.PAYLOAD_DATA_MISSING);
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING, "Unable to find any crate with Manifest Type: \"" + crateToProcess.ManifestType + "\" and Label: \"" + crateToProcess.Label + "\"");
-            }
-
-            var dataListSize = GetDataListSize(crateToProcess);
-            if (dataListSize == null)
-            {
-                RaiseError("Unable to find a list in specified crate with Manifest Type: \"" + crateToProcess.ManifestType.Type + "\" and Label: \"" + crateToProcess.Label + "\"", ActivityErrorCode.PAYLOAD_DATA_MISSING);
-                throw new TerminalCodedException(TerminalErrorCode.PAYLOAD_DATA_MISSING);
-            }
-
-            if (loopData.Index >= dataListSize.Value)
-            {
-                SkipChildren();
-                return;
-            }
-
-            Success();
-        }
-
-        public override async Task Initialize()
-        {
-            //build a controls crate to render the pane
-            var configurationControlsCrate = await CreateControlsCrate();
-            Storage.Add(configurationControlsCrate);
-            SelectTheOnlyCrate(Storage.FirstCrate<StandardConfigurationControlsCM>().Content);
-        }
-
-        public override async Task FollowUp()
-        {
-            var crateChooser = GetControl<CrateChooser>("Available_Crates");
-            if (crateChooser.CrateDescriptions != null)
-            {
-                var selected = crateChooser.CrateDescriptions.FirstOrDefault(x => x.Selected);
-                if (selected != null)
-                {
-                    var labelList = await GetLabelsByManifestType(selected.ManifestType);
-                    Storage.RemoveByLabel("Available Labels");
-                    Storage.Add(Crate.FromContent("Available Labels", new FieldDescriptionsCM { Fields = labelList }));
-                    SelectTheOnlyCrate(Storage.FirstCrate<StandardConfigurationControlsCM>().Content);
-                }
-                else
-                {
-                    var configurationControlsCrate = await CreateControlsCrate();
-                    Storage.Clear();
-                    Storage.Add(configurationControlsCrate);
-                    SelectTheOnlyCrate(Storage.FirstCrate<StandardConfigurationControlsCM>().Content);
-                }
-            }
         }
     }
 }

@@ -11,7 +11,7 @@
     </div>
 
     <div class="pane-configure-action-returnToSolution" ng-if="currentAction.activityTemplate.category==='Solution' && mode !== 'solution'" ng-init="populateAllActivities()">
-        <label>This solution has {{allActivities.length}} {{allActivities.length > 1 ? "parts" : "part"}}: </label>
+        <label ng-if="allActivities.length != 0">This solution has {{allActivities.length}} {{allActivities.length > 1 ? "parts" : "part"}}: </label>
         <div class="solution-parts">
             <label ng-repeat="childAction in allActivities">
                 {{$index +1}}. {{childAction.activityTemplate.label}}
