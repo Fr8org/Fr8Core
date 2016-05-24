@@ -205,6 +205,11 @@ module dockyard.services {
                                 ngToast.danger(messageToShow);
                             }
 
+                            $rootScope.$broadcast(
+                                directives.paneConfigureAction.MessageType[directives.paneConfigureAction.MessageType.PaneConfigureAction_ResetValidationMessages],
+                                new directives.paneConfigureAction.ResetValidationMessagesEventArgs ()
+                            );
+
                             // if we have validation errors, send them to activities
                             if (container && container.validationErrors != null) {
                                 for (var key in container.validationErrors) {
