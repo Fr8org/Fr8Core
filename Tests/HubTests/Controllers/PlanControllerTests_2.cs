@@ -66,7 +66,7 @@ namespace HubTests.Controllers
 
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(3)] = new SuspenderActivityMock(CrateManager);
 
-                plan.PlanState = PlanState.Active;
+                plan.PlanState = PlanState.Running;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
                 var userAcct = FixtureData.TestUser1();
                 uow.UserRepository.Add(userAcct);
@@ -119,6 +119,11 @@ namespace HubTests.Controllers
             Mock<IPlan> planMock = new Mock<IPlan>();
             planMock.Setup(x => x.Run(It.IsAny<Guid>(), It.IsAny<Crate[]>())).ReturnsAsync(new ContainerDO());
             planMock.Setup(x => x.Activate(It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(new ActivateActivitiesDTO());
+            planMock.Setup(x=> x.GetFullPlan(uowMock.Object, (It.IsAny<Guid>()))).Returns(new PlanDO()
+            {
+                Fr8Account = FixtureData.TestDockyardAccount1(),
+                StartingSubPlan = new SubPlanDO()
+            });
 
             Mock<IPusherNotifier> pusherMock = new Mock<IPusherNotifier>();
             pusherMock.Setup(x => x.Notify(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()));
@@ -189,6 +194,11 @@ namespace HubTests.Controllers
             Mock<IPlan> planMock = new Mock<IPlan>();
             planMock.Setup(x => x.Run(It.IsAny<Guid>(), It.IsAny<Crate[]>())).ReturnsAsync(new ContainerDO());
             planMock.Setup(x => x.Activate(It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(new ActivateActivitiesDTO());
+            planMock.Setup(x => x.GetFullPlan(uowMock.Object, (It.IsAny<Guid>()))).Returns(new PlanDO()
+            {
+                Fr8Account = FixtureData.TestDockyardAccount1(),
+                StartingSubPlan = new SubPlanDO()
+            });
 
             Mock<IPusherNotifier> pusherMock = new Mock<IPusherNotifier>();
             pusherMock.Setup(x => x.Notify(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()));

@@ -77,7 +77,7 @@ namespace HubTests.Services
                     }
                 });
 
-                plan.PlanState = PlanState.Active;
+                plan.PlanState = PlanState.Running;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
 
                 var userAcct = FixtureData.TestUser1();
@@ -141,7 +141,7 @@ namespace HubTests.Services
                     }
                 });
 
-                plan.PlanState = PlanState.Active;
+                plan.PlanState = PlanState.Running;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
 
                 var userAcct = FixtureData.TestUser1();
@@ -257,7 +257,7 @@ namespace HubTests.Services
                     }
                 });
 
-                plan.PlanState = PlanState.Active;
+                plan.PlanState = PlanState.Running;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
 
                 var userAcct = FixtureData.TestUser1();
@@ -386,7 +386,7 @@ namespace HubTests.Services
                     }
                 });
 
-                plan.PlanState = PlanState.Active;
+                plan.PlanState = PlanState.Running;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
 
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(4)] = new SuspenderActivityMock(CrateManager);
@@ -484,7 +484,7 @@ namespace HubTests.Services
 
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(3)] = new JumperActivityMock(CrateManager, FixtureData.GetTestGuidById(5));
 
-                plan.PlanState = PlanState.Active;
+                plan.PlanState = PlanState.Running;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
 
                 var userAcct = FixtureData.TestUser1();
@@ -566,7 +566,7 @@ namespace HubTests.Services
 
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(3)] = new JumperActivityMock(CrateManager, FixtureData.GetTestGuidById(5));
 
-                plan.PlanState = PlanState.Active;
+                plan.PlanState = PlanState.Running;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
 
                 var userAcct = FixtureData.TestUser1();
@@ -623,7 +623,7 @@ namespace HubTests.Services
 
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(2)] = new JumpToSelfActivityMock(CrateManager);
 
-                plan.PlanState = PlanState.Active;
+                plan.PlanState = PlanState.Running;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
 
                 var userAcct = FixtureData.TestUser1();
@@ -698,7 +698,7 @@ namespace HubTests.Services
                     }
                 });
 
-                plan.PlanState = PlanState.Active;
+                plan.PlanState = PlanState.Running;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
 
                 var userAcct = FixtureData.TestUser1();
@@ -775,7 +775,7 @@ namespace HubTests.Services
                     }
                 });
 
-                plan.PlanState = PlanState.Active;
+                plan.PlanState = PlanState.Running;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
 
                 var userAcct = FixtureData.TestUser1();
@@ -840,7 +840,7 @@ namespace HubTests.Services
                     }
                 });
 
-                plan.PlanState = PlanState.Active;
+                plan.PlanState = PlanState.Running;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
 
                 var userAcct = FixtureData.TestUser1();
@@ -942,7 +942,7 @@ namespace HubTests.Services
                     }
                 });
 
-                plan.PlanState = PlanState.Active;
+                plan.PlanState = PlanState.Running;
                 plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
 
                 var userAcct = FixtureData.TestUser1();
