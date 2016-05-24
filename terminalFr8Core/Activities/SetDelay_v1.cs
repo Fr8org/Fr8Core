@@ -64,10 +64,7 @@ namespace terminalFr8Core.Actions
             }
             return new AlarmDTO
             {
-                ActivityDTO = Mapper.Map<ActivityDTO>(activityDO),
                 ContainerId = containerId,
-                TerminalName = "fr8Core",
-                TerminalVersion = "v1",
                 StartTime = DateTime.UtcNow.Add(duration)
             };
         }
