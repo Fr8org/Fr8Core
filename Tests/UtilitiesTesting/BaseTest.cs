@@ -26,6 +26,7 @@ namespace UtilitiesTesting
         [SetUp]
         public virtual void SetUp()
         {
+            ObjectFactory.Initialize();
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
             MockedDBContext.WipeMockedDatabase();
             ConfigureAutoMapper();

@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 
 namespace Fr8Data.Crates.Helpers
 {
