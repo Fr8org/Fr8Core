@@ -147,10 +147,6 @@
     <Compile Include="Infrastructure\ValidationManager.cs" />
     <Compile Include="Errors\TerminalCodedException.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Services\MT\MTSearchHelper.cs" />
-    <Compile Include="Services\MT\MTSearchHelper.IMtQueryProvider.cs" />
-    <Compile Include="Services\MT\MTSearchHelper.MtQueryProviderT.cs" />
-    <Compile Include="Services\MT\MTTypesHelper.cs" />
     <Compile Include="WebApiExceptionFilterAttribute.cs" />
   </ItemGroup>
   <ItemGroup>

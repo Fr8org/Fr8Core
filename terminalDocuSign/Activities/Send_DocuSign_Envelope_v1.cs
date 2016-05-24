@@ -395,7 +395,7 @@ namespace terminalDocuSign.Actions
             {
                 fieldSelectDocusignTemplateDTO
             };
-            
+
             return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
         }
     }
