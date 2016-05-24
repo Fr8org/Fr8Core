@@ -7,7 +7,7 @@ using Data.Repositories.MultiTenant;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.States;
 
-namespace TerminalBase.Services.MT
+namespace Hub.Services.MT
 {
     public class MTTypesHelper
     {
