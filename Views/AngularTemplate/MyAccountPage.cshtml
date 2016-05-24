@@ -1,5 +1,4 @@
-﻿@using Utilities
-<ul class="page-breadcrumb breadcrumb hide">
+﻿<ul class="page-breadcrumb breadcrumb hide">
     <!-- BEGIN PAGE BREADCRUMB -->
     <li>
         <a href="#">Home</a><i class="fa fa-circle"></i>
@@ -18,7 +17,7 @@
                 <md-tab label="My Plans">
                     <md-content class="md-padding">
                         <div id="Myfr8lines">
-                            <h3>My Plans <a ui-sref="planForm" class="btn green route-list-header-button">Add Plan</a></h3>
+                            <h3>My Plans <a id="btnAddNewPlan" ui-sref="planForm" class="btn green route-list-header-button">Add Plan</a></h3>
 
                             @Html.Partial("_PlanList")
 
@@ -44,39 +43,8 @@
     </div>
 </div>
 <!-- END MAIN CONTENT -->
-
-<script type="text/javascript">
-    $(document).ready(function () {
-        $(".left-pills li").click(function () {
-            $(".left-pills li").removeClass("active");
-            // $(".tab").addClass("active"); // instead of this do the below
-            $(this).addClass("active");
-        });
-    });
-    windows.onLoad = function () {
-        window.analytics = window.analytics || [], window.analytics.methods = ["identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off", "trackLink", "trackForm", "trackClick", "trackSubmit"], window.analytics.factory = function (t) {
-            return function () {
-                var a = Array.prototype.slice.call(arguments);
-                return a.unshift(t), window.analytics.push(a), window.analytics;
-            };
-        };
-        for (var i = 0; i < window.analytics.methods.length; i++) {
-            var key = window.analytics.methods[i];
-            window.analytics[key] = window.analytics.factory(key);
-        }
-        window.analytics.load = function (t) {
-            if (!document.getElementById("analytics-js")) {
-                var a = document.createElement("script");
-                a.type = "text/javascript", a.id = "analytics-js", a.async = !0, a.src = ("https:" === document.location.protocol ? "https://" : "http://") + "cdn.segment.io/analytics.js/v1/" + t + "/analytics.min.js";
-                var n = document.getElementsByTagName("script")[0];
-                n.parentNode.insertBefore(a, n);
-            }
-        }, window.analytics.SNIPPET_VERSION = "2.0.9",
-            window.analytics.load("@(new ConfigRepository().Get("SegmentWriteKey"))");
-        window.analytics.page('Plan Dashboard');
-        var btnRunPlanFromPlanBuilder = document.getElementById("btnRunPlanFromPlanBuilder");
-        window.analytics.trackLink(btnRunPlanFromPlanBuilder, "Clicked Run Plan Button");
-        var btnRunPlanFromPlanDashboard = document.getElementById("btnRunPlanFromPlanDashboard");
-        window.analytics.trackLink(btnRunPlanFromPlanDashboard, "Clicked Run Plan Button");
-    }
+<script>
+    analytics.page('Plan Dashboard');
+    var btnAddNewPlan = document.getElementById("btnAddNewPlan");
+    analytics.trackLink(btnAddNewPlan, "Clicked AddPlan Button");
 </script>
