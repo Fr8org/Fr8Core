@@ -18,7 +18,6 @@ namespace HealthMonitor.Utility
 
         public BaseTerminalIntegrationTest()
         {
-            ObjectFactory.Initialize();
             ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
             HMACService = new Fr8HMACService();
         }
