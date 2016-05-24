@@ -1,5 +1,5 @@
 #PayloadDTO
-The Payload Data Transfer object is the basic data transfer object that contains a [CrateStorageDTO](CrateStorgeDTO.md) as well as a container ID.
+The Payload Data Transfer object is the basic data transfer object that contains a [CrateStorageDTO](CrateStorageDTO.md) as well as a container ID.
 
 ##Fields
 _Guid ContainerId_: The ID of the PayloadDTO. Defined with a getter and setter.
