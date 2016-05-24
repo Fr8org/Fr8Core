@@ -18,13 +18,14 @@ namespace terminalYammer.Actions
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Version = "1",
-            Name = "Create_Journal_Entry",
-            Label = "Create Journal Entry",
+            Name = "Post_To_Yammer",
+            Label = "Post To Yammer",
+            Tags = "Notifier",
             Category = ActivityCategory.Forwarders,
-            Terminal = TerminalData.TerminalDTO,
             NeedsAuthentication = true,
+            Version = "1",
             MinPaneWidth = 330,
+            Terminal = TerminalData.TerminalDTO,
             WebService = TerminalData.WebServiceDTO
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
