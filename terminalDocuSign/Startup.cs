@@ -26,7 +26,6 @@ namespace terminalDocuSign
         {
             ConfigureProject(selfHost, TerminalDocusignStructureMapBootstrapper.LiveConfiguration);
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
-            //TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
 
