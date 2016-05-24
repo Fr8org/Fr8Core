@@ -129,5 +129,30 @@ namespace Fr8Data.Helpers
                    || type == typeof(DateTime)
                    || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>) && IsPrimitiveType(type.GetGenericArguments()[0]));
         }
+
+        public static bool CheckIfMemberIsCollectionOf<TItem>(IMemberAccessor member)
+        {
+            if (member.MemberType.IsInterface && CheckIfTypeIsCollectionOf<TItem>(member.MemberType))
+            {
+                return true;
+            }
+
+            return member.MemberType.GetInterfaces().Any(x => CheckIfTypeIsCollectionOf(x, typeof(TItem)));
+        }
+
+        public static bool CheckIfTypeIsCollectionOf<TItem>(Type type)
+        {
+            return CheckIfTypeIsCollectionOf(type, typeof(TItem));
+        }
+
+        public static bool CheckIfTypeIsCollectionOf(Type type, Type itemType)
+        {
+            var enumerableInterface = type.IsInterface && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>) ? type : type.GetInterface("IEnumerable`1");
+            if (enumerableInterface == null)
+            {
+                return false;
+            }
+            return itemType.IsAssignableFrom(enumerableInterface.GetGenericArguments()[0]);
+        }
     }
 }

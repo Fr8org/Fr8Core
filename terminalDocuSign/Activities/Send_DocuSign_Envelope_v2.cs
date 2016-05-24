@@ -149,6 +149,12 @@ namespace terminalDocuSign.Actions
             CurrentActivityStorage.ReplaceByLabel(Crate.FromContent(UserFieldsAndRolesCrateLabel, new FieldDescriptionsCM(userDefinedFields.Concat(roles)), AvailabilityType.Configuration));
         }
 
+        protected override ValidationManager CreateValidationManager()
+        {
+            var validationResult = GetOrCreateValidationResults();
+            return new EnhancedValidationManager<ActivityUi>(validationResult, this,  TryGetCurrentPayloadStorage());
+        }
+
         protected override Task Validate(ValidationManager validationManager)
         {
             if (string.IsNullOrEmpty(SelectedTemplateId))
@@ -157,10 +163,7 @@ namespace terminalDocuSign.Actions
             }
             foreach (var roleControl in ConfigurationControls.RolesFields.Where(x => x.InitialLabel.Contains(DocuSignConstants.DocuSignRoleEmail)))
             {
-                if ((roleControl.ValueSource == null || roleControl.ValueSource == TextSource.SpecificValueSource)  && !roleControl.TextValue.IsValidEmailAddress())
-                {
-                    validationManager.SetDynamicControlError($"The value of '{roleControl.InitialLabel}' is not a valid email address", roleControl, () => ConfigurationControls.RolesFields);
-                }
+                validationManager.ValidateEmail(roleControl);
             }
             return Task.FromResult(0);
         }

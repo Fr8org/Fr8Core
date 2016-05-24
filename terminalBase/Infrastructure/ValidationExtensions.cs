@@ -15,6 +15,15 @@ namespace TerminalBase.Infrastructure
             }
         }
 
+        public static void ValidateEmail(this ValidationManager validationManager, TextSource textSource, string errorMessage = null)
+        {
+            var value = textSource.CanGetValue(validationManager.Payload) ? textSource.GetValue(validationManager.Payload) : string.Empty;
+            if (!value.IsValidEmailAddress())
+            {
+                validationManager.SetError(errorMessage ?? "Not a valid e-mail address", textSource);
+            }
+        }
+
         public static bool ValidatePhoneNumber(this ValidationManager validationManager, string number, TextSource control)
         {
             try

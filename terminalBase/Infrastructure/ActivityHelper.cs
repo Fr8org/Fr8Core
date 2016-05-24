@@ -69,7 +69,7 @@ namespace TerminalBase.Infrastructure
             var crateManager = new CrateManager();
             var storage = crateManager.GetStorage(activity);
             var controls = storage.FirstCrateOrDefault<StandardConfigurationControlsCM>()?.Content;
-            var activityUi =  new TActivityUi().ClonePropertiesFrom(controls) as TActivityUi;
+            var activityUi = new TActivityUi().ClonePropertiesFrom(controls) as TActivityUi;
             activityUi.RestoreDynamicControlsFrom(controls);
             return activityUi;
         }
@@ -105,7 +105,10 @@ namespace TerminalBase.Infrastructure
             {
                 throw new ArgumentNullException(nameof(source));
             }
-            var dynamicControlsCollection = Fr8ReflectionHelper.GetMembers(source.GetType()).Where(x => x.CanRead && x.GetCustomAttribute<DynamicControlsAttribute>() != null && CheckIfMemberIsControlsCollection(x)).ToDictionary(x => x.Name, x => x);
+            var dynamicControlsCollection = Fr8ReflectionHelper.GetMembers(source.GetType()).Where(x => x.CanRead
+                                                                                                        && x.GetCustomAttribute<DynamicControlsAttribute>() != null
+                                                                                                        && Fr8ReflectionHelper.CheckIfMemberIsCollectionOf<IControlDefinition>(x))
+                                                               .ToDictionary(x => x.Name, x => x);
 
             if (dynamicControlsCollection.Count > 0)
             {
@@ -152,7 +155,7 @@ namespace TerminalBase.Infrastructure
 
             foreach (var member in Fr8ReflectionHelper.GetMembers(source.GetType()).Where(x => x.CanRead))
             {
-                if (member.GetCustomAttribute<DynamicControlsAttribute>() != null && CheckIfMemberIsControlsCollection(member))
+                if (member.GetCustomAttribute<DynamicControlsAttribute>() != null && Fr8ReflectionHelper.CheckIfMemberIsCollectionOf<IControlDefinition>(member))
                 {
                     var collection = member.GetValue(source) as IList;
 
@@ -180,34 +183,6 @@ namespace TerminalBase.Infrastructure
                     }
                 }
             }
-        }
-
-        private static bool CheckIfMemberIsControlsCollection(IMemberAccessor member)
-        {
-            if (member.MemberType.IsInterface && CheckIfTypeIsControlsCollection(member.MemberType))
-            {
-                return true;
-            }
-
-            return member.MemberType.GetInterfaces().Any(CheckIfTypeIsControlsCollection);
-        }
-
-        private static bool CheckIfTypeIsControlsCollection(Type type)
-        {
-            if (type.IsGenericType)
-            {
-                var genericTypeDef = type.GetGenericTypeDefinition();
-
-                if (typeof(IList<>) == genericTypeDef)
-                {
-                    if (typeof(IControlDefinition).IsAssignableFrom(type.GetGenericArguments()[0]))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
         }
     }
 }

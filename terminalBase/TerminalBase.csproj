@@ -134,6 +134,7 @@
     <Compile Include="Infrastructure\Behaviors\TextSourceMappingBehavior.cs" />
     <Compile Include="Infrastructure\DefaultHubCommunicator.cs" />
     <Compile Include="Infrastructure\DataHubCommunicatorBase.cs" />
+    <Compile Include="Infrastructure\EnhancedValidationManager.cs" />
     <Compile Include="Infrastructure\ExplicitConfigurationHelper.cs" />
     <Compile Include="Infrastructure\ExplicitDataHubCommunicator.cs" />
     <Compile Include="Infrastructure\fr8TerminalHMACAuthenticateAttribute.cs" />

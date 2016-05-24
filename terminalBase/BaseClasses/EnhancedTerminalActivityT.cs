@@ -52,6 +52,11 @@ namespace TerminalBase.BaseClasses
             }
         }
 
+        protected ICrateStorage TryGetCurrentPayloadStorage()
+        {
+            return _currentPayloadStorage;
+        }
+
         protected OperationalStateCM OperationalState
         {
             get
@@ -84,7 +89,7 @@ namespace TerminalBase.BaseClasses
         protected ICrateStorage CurrentActivityStorage { get; private set; }
         protected ActivityDO CurrentActivity { get; private set; }
         protected AuthorizationTokenDO AuthorizationToken { get; private set; }
-        protected T ConfigurationControls { get; private set; }
+        protected internal T ConfigurationControls { get; private set; }
         protected UpstreamQueryManager UpstreamQueryManager { get; private set; }
         protected UiBuilder UiBuilder { get; private set; }
         protected int LoopIndex => GetLoopIndex(OperationalState);
@@ -221,17 +226,21 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        protected ValidationManager CreateValidationManager()
+        protected virtual ValidationManager CreateValidationManager()
+        {
+            var validationResults = GetOrCreateValidationResults();
+            return new ValidationManager(validationResults, _currentPayloadStorage);
+        }
+
+        protected ValidationResultsCM GetOrCreateValidationResults()
         {
             var validationResults = CurrentActivityStorage.CrateContentsOfType<ValidationResultsCM>().FirstOrDefault();
-
             if (validationResults == null)
             {
                 validationResults = new ValidationResultsCM();
                 CurrentActivityStorage.Add(Crate.FromContent("Validation Errors", validationResults));
             }
-
-            return new ValidationManager(validationResults, _currentPayloadStorage);
+            return validationResults;
         }
 
         /**********************************************************************************/
