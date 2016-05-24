@@ -33,7 +33,8 @@ namespace TerminalBase.BaseClasses
             ActivityContext = activityContext;
             ExecutionContext = containerExecutionContext;
             CrateManager = ObjectFactory.GetInstance<ICrateManager>();
-            //HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
+            //a hack to merge this branch at once
+            HubCommunicator = HubCommunicator ?? ObjectFactory.GetInstance<IHubCommunicator>();
             HubCommunicator.Configure(MyTemplate.Terminal.Name);
             CrateSignaller = new CrateSignaller(Storage, MyTemplate.Name);
         }
