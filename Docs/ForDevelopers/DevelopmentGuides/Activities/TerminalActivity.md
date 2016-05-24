@@ -18,12 +18,13 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
 * ExcludedManifestTypes
 
 ## Constructors
-* BaseTerminalActivity()
+**BaseTerminalActivity()**
 
-  The no parameter constructor calls the single parameter constructor with the value "unknown". This constructor shold not be used.
-* BaseTerminalActivity(string name)
+ The no parameter constructor calls the single parameter constructor with the value "unknown". This constructor shold not be used.
 
-  The single parameter constructor creates a new BaseTerminalActivity instance and sets the ActivityName field to the value of the name parameter. This constructor also initializes the CrateManager and HubCommunicator fields
+**BaseTerminalActivity(string name)**
+
+ The single parameter constructor creates a new BaseTerminalActivity instance and sets the ActivityName field to the value of the name parameter. This constructor also initializes the CrateManager and HubCommunicator fields
 
 ## Methods
 **void SetCurrentUser(string UserId, string UserEmail)**
@@ -34,73 +35,73 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
   * string UserEmail: the email address for the current user
 
 ---
-**PayloadDTO SuspendHubExecution(PayloadDTO payload)**
+**[PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) SuspendHubExecution([PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) payload)**
 
   Creates an OperationalStateCM Crate object with a value of ActivityResponse.RequestSuspend
 * Params
-  * PayloadDTO payload: a PayloadDTO object that contains (?)
+  * [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) payload: a [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) object that contains (?)
 * returns
-  * PayloadDTO object that contains (?)
+  * [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) object that contains (?)
 
 ---
-**PayloadDTO TerminateHubExecution(PayloadDTO payloadDTO, string message)**
+**[PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) TerminateHubExecution([PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md), string message)**
 
   Creates an OperationalStateCM Crate object with a value of ActivityResponse.RequestTerminate
 * Params
-  * PayloadDTO payload: a PayloadDTO object which contains (?)
+  * [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) payload: a [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) object which contains (?)
   * string message: a message that is used for (?)
 * returns
-  * PayloadDTO object which contains (?)
+  * [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) object which contains (?)
 
 ---
-**PayloadDTO LaunchPlan(PayloadDTO payloadDTO, Guid targetPlanId)**
+**[PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) LaunchPlan([PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md), Guid targetPlanId)**
 
   Creates an OperationalStateCM Crate object with a value of ActivityResponse.LaunchAdditionalPlan
 * Params
-  * PayloadDTO payload: a PayloadDTO object which contains (?)
+  * [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) payload: a [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) object which contains (?)
   * Guid targetPlanId: the ID of the plan which should be launched
 * returns
-  * PayloadDTO object which contains (?)
+  * [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) object which contains (?)
 
 ---
-**PayloadDTO JumpToSubplan(PayloadDTO payload, Guid targetSubplanId)**
+**[PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) JumpToSubplan([PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) payload, Guid targetSubplanId)**
 
   Creates an OperationalStateCM Crate object with a value of ActivityResponse.JumpToSubplan
 * Params
-  * PayloadDTO payload: a PayloadDTO object which contains (?)
+  * [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) payload: a [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) object which contains (?)
   * Guid targetSubplanId: the ID of the Subplan which should be executed
 * returns
-  * PayloadDTO object which contains (?)
+  * [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) object which contains (?)
 
 ---
-**PayloadDTO JumpToActivity(PayloadDTO payload, Guid targetActivityId)**
+**[PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) JumpToActivity([PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) payload, Guid targetActivityId)**
 
   Creates an OperationalStateCM Crate object with a value of ActivityResponse.JumpToActivity
 * Params
-  * PayloadDTO payload: A PayloadDTO obejct which contains (?)
+  * [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) payload: A [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) obejct which contains (?)
   * Guid targetActivityId: the ID of the activity which should be moved to
 * returns
-  * PayloadDTO object which contains (?)
+  * [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) object which contains (?)
 
 ---
-**PayloadDTO LaunchAdditionalPlan(PayloadDTO payload, Guid targetSubplanId)**
+**[PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) LaunchAdditionalPlan([PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) payload, Guid targetSubplanId)**
 
   Jumps to an activity that resides in the same subplan as the current activity
 * Params
-  * PayloadDTO payload: a PayloadDTO object which contains (?)
+  * [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) payload: a [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) object which contains (?)
   * Guid targetSubplanId: the ID of the subplan which should be launched
 * returns
-  * PayloadDTO object which contains (?)
+  * [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) object which contains (?)
 
 ---
-**PayloadDTO Success(PayloadDTO payload, string message = "")**
+**[PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) Success([PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) payload, string message = "")**
 
-  returns a success response in a PayloadDTO
+  returns a success response in a [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md)
 * Params
-  * PayloadDTO payload: the PayloadDTO object which contains (?)
+  * [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) payload: the [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) object which contains (?)
   * string message: defaults to the empty string, used in the CurrentActivityResponse
 * returns
-  * PayloadDTO object which contains (?)
+  * [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) object which contains (?)
 
 ---
 **void Success(IUpdatableCrateStorage crateStorage, string message = "")**
@@ -111,14 +112,14 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
   * string message: defaults to null, sets the message in the CurrentActivityResponse
 
 ---
-**PayloadDTO ExecuteClientActivity(PayloadDTO payload, string clientActionName)**
+**[PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) ExecuteClientActivity([PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) payload, string clientActionName)**
 
   Creates a CurrentActivityResponse object which an ActivityResponseDTO of type ExecuteClientActivity
 * Params
-  * PayloadDTO payload: the PayloadDTO object which contains (?)
+  * [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) payload: the [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) object which contains (?)
   * string clientActionName: the name fo the activity to execute set as the CurrentClientActivityName of the OperationalState object
 * returns
-  * PayloadDTO payload: the PayloadDTO object which contains (?)
+  * [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) payload: the [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) object which contains (?)
 
 ---
 **void SkipChildren(IUpdatableCrateStorage crateStorage)**
@@ -128,72 +129,72 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
   * IUpdatableCrateStorage crateStorage: an IUpdatableCrateStorage object which contains (?)
 
 ---
-**PayloadDTO Error(PayloadDTO payload, string errorMessage = null, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)**
+**[PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) Error([PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) payload, string errorMessage = null, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)**
 
-  Creates a PayloadDTO with an error message to be sent to the Hub
+  Creates a [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) with an error message to be sent to the Hub
 * Params
-  * PayloadDTO payload: a PayloadDTO object which contains (?)
+  * [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) payload: a [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) object which contains (?)
   * string errorMessage: defaults to null, the message to send to the Hub
   * ActivityErrorCode errorCode: the machine-friendly error code
   * string currentActivity: defaults to null, the name ofo the activity for which the error will be reported
   * string currentTerminal: the name of the terminal where the error occurred
 * returns
-  * a PayloadDTO object which contains (?)
+  * a [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) object which contains (?)
 
 ---
-**PayloadDTO Error(PayloadDTO payload, string errorMessage, ErrorType errorType, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)**
+**[PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) Error([PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) payload, string errorMessage, ErrorType errorType, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)**
 
-  Creates a PayloadDTO with an error message to be sent to the Hub
+  Creates a [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) with an error message to be sent to the Hub
 * Params
-  * PayloadDTO payload: the PayloadDTO object which contains (?)
+  * [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) payload: the [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) object which contains (?)
   * string errorMessage: the detailed error message to send to the Hub
   * ErrorType errorType: the machine-friendly ErrorType for the error
   * ActivityErrorCode errorCode: defaults to null, the machine-friendly error code associated with the error
   * string currentActivity: defaults to null, the name of the activity which was running when the error occurred
   * string currentTerminal: defaults to null, the name of the terminal which defines the activity which was running when the error occurred
 * returns
-   * PayloadDTO object which contains (?)
+   * [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) object which contains (?)
 
 ---
 **void Error(IUpdatableCrateStorage crateStorage, string errorMessage = null, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)**
 
   Creates an error message
 * Params
-  * IUpdatableCrateStorage crateStorage: the PayloadDTO which contains (?)
+  * IUpdatableCrateStorage crateStorage: the [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) which contains (?)
   * string errorMessage: defaults to null, the detailed error message to report
   * ActivityErrorCode errorCode: the machine-friendly error code enum associated with the error
   * string currentActivity: defaults to null, the name of the activity that was running when the error occurred
   * string currentTerminal: defaults to null, the name of the terminal which owns the activity that was running when the error occurred
 
 ---
-**PayloadDTO NeedsAuthenticationError(PayloadDTO payload)**
+**[PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) NeedsAuthenticationError([PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) payload)**
 
   Utility method that generates an error when there is no authentication token provided for the activity
 * Params
-  * PayloadDTO payload: the PayloadDTO object which contains (?)
+  * [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) payload: the [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) object which contains (?)
 * returns
   * a call to Error with ErrorType.Authentication and ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID
 
 ---
-**PayloadDTO InvalidTokenError(PayloadDTO payload, string instructionsToUser = null)**
+**[PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) InvalidTokenError([PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) payload, string instructionsToUser = null)**
 
   Utility method that generates an error associated with an invalid authentication token
 * Params
-  * PayloadDTO payload: the PayloadDTO object which contains (?)
+  * [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) payload: the [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) object which contains (?)
   * string instructionsToUser: defaults to null, a detailed message that will displayed in the UI in order to help the user understand the authentication token failure
 * returns
   * a call to Error with ErrorType ErrorType.Authentication and ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID
 
 ---
-**virtual async Task<PayloadDTO> ExecuteChildActivities(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)**
+**virtual async Task<[PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md)> ExecuteChildActivities(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)**
 
-  Utility method which asynchronously calls Success after extracting the PayloadDTO object from the curActivityDO and containerId parameters
+  Utility method which asynchronously calls Success after extracting the [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) object from the curActivityDO and containerId parameters
 * Params
   * ActivityDO curActivityDO: the ActivityDO which contains (?)
   * Guid containerId: the ID of the container being run
   * AuthorizationTokenDO authTokenDO: the AuthorizationTokenDO object associated with the request
 * returns
-  * the result of Success(PayloadDTO payloadDTO)
+  * the result of Success([PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md))
 
 ---
 **bool CheckAuthentication(ActivityDO activity, AuthorizationTokenDO authTokenDO)**
@@ -223,9 +224,9 @@ Should developers be encouraged to extend the EnhancedTerminalActivity instead o
   * boolean value indicating whether the AuthorizationTokenDO object is null
 
 ---
-**async Task<PayloadDTO> GetPayload(ActivityDO activityDO, Guid containerId)**
+**async Task<[PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md)> GetPayload(ActivityDO activityDO, Guid containerId)**
 
-  Helper method which uses the HubCommunicator to get a PayloadDTO object
+  Helper method which uses the HubCommunicator to get a [PayloadDTO](/fr8org/fr8core/Docs/ForDevelopers/objects/DataTransfer/PayloadDTO.md) object
 * Params
   * ActivityDO activityDO: the ActivityDO object which describes the current activity
   * Guid containerId: the ID of the container
