@@ -39,7 +39,7 @@ namespace TerminalBase.BaseClasses
         /// Reports Terminal Error incident
         /// </summary>
         [HttpGet]
-        public IHttpActionResult ReportTerminalError(string terminalName, Exception terminalError,string userId = null)
+        public IHttpActionResult ReportTerminalError(string terminalName, Exception terminalError, string userId = null)
         {
             if (_integrationTestMode)
                 return Ok();
@@ -47,7 +47,7 @@ namespace TerminalBase.BaseClasses
             var exceptionMessage = terminalError.GetFullExceptionMessage() + "  \n\r   " + terminalError.ToString();//string.Format("{0}\r\n{1}", terminalError.Message, terminalError.StackTrace);
             try
             {
-                return Json(_baseTerminalEvent.SendTerminalErrorIncident(terminalName, exceptionMessage, terminalError.GetType().Name,userId));
+                return Json(_baseTerminalEvent.SendTerminalErrorIncident(terminalName, exceptionMessage, terminalError.GetType().Name, userId));
             }
             catch (Exception ex)
             {
@@ -146,12 +146,12 @@ namespace TerminalBase.BaseClasses
             return _baseTerminalEvent.SendEventOrIncidentReport(terminalName, "Terminal Event");
         }
 
-        void LogWhenRequestRecived(string actionPath,string terminalName, string activityId)
+        void LogWhenRequestRecived(string actionPath, string terminalName, string activityId)
         {
             Logger.LogInfo($"[{terminalName}] received /{actionPath} call  at {DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt")} for ActivityID {activityId}", terminalName);
         }
 
-        void LogWhenRequestResponded(string actionPath,string terminalName, string activityId)
+        void LogWhenRequestResponded(string actionPath, string terminalName, string activityId)
         {
             Logger.LogInfo($"[{terminalName}] responded to /{actionPath} call  at {DateTime.UtcNow.ToString("yyyy-MM-dd hh:mm:ss tt")} for ActivityID {activityId}", terminalName);
         }
@@ -164,7 +164,7 @@ namespace TerminalBase.BaseClasses
                 Logger.LogError($"curDataDTO activity DTO is null", curTerminal);
                 throw new ArgumentNullException(nameof(curDataDTO.ActivityDTO));
             }
-                
+
 
             if (curDataDTO.ActivityDTO.ActivityTemplate == null)
                 throw new ArgumentException("ActivityTemplate is null", nameof(curDataDTO.ActivityDTO));
@@ -190,7 +190,7 @@ namespace TerminalBase.BaseClasses
                     curTerminal), "curActionDTO");
 
             MethodInfo curMethodInfo = calledType.GetMethod(curActionPath, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
-            
+
             object curObject = Activator.CreateInstance(calledType);
 
             if (_integrationTestMode)
@@ -241,7 +241,7 @@ namespace TerminalBase.BaseClasses
 
                             LogWhenRequestResponded(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDTO.Id.ToString());
 
-                            return resultPayloadDTO;        
+                            return resultPayloadDTO;
                         }
                     case "initialconfigurationresponse":
                         {
@@ -299,18 +299,18 @@ namespace TerminalBase.BaseClasses
                             return resutlActionDO.ContinueWith(x => Mapper.Map<ActivityDTO>(x.Result));
                         }
                     case "documentation":
-                    {
-                        if (curMethodInfo == null)
                         {
-                            return getDefaultDocumentation();
+                            if (curMethodInfo == null)
+                            {
+                                return getDefaultDocumentation();
+                            }
+
+                            var resultDCN = await HandleDocumentationRequest(curObject, curMethodInfo, curActivityDTO, curDocumentation);
+
+                            LogWhenRequestResponded(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDTO.Id.ToString());
+
+                            return resultDCN;
                         }
-
-                        var resultDCN = await HandleDocumentationRequest(curObject, curMethodInfo, curActivityDTO, curDocumentation); 
-                        
-                        LogWhenRequestResponded(curActionPath.ToLower(), curActionDTO.ActivityTemplate.Terminal.Name, curActivityDTO.Id.ToString());
-
-                        return resultDCN;
-                    }
                     default:
                         response = (Task<ActivityDTO>)curMethodInfo.Invoke(curObject, new Object[] { curActivityDTO });
 
@@ -319,7 +319,7 @@ namespace TerminalBase.BaseClasses
                         return result;
                 }
 
-                
+
             }
             catch (Exception e)
             {
@@ -331,9 +331,11 @@ namespace TerminalBase.BaseClasses
                 //Logger.GetLogger().Error($"Exception caught while processing {curActionPath} for {this.GetType()}", e);
                 Logger.LogError($"Exception caught while processing {curActionPath} for {this.GetType()} with exception {e.Data} and stack trace {e.StackTrace} and message {e.GetFullExceptionMessage()}", curTerminal);
                 var endpoint = (curActivityDTO.ActivityTemplate != null && curActivityDTO.ActivityTemplate.Terminal != null && curActivityDTO.ActivityTemplate.Terminal.Endpoint != null) ? curActivityDTO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
-                //EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActivityDTO, settings), e, curActivityDTO.Id.ToString());
-                //TODO check this
-                throw;              
+                //EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActivityDO, settings), e, curActivityDO.Id.ToString());
+                // null checking
+                var containerId = curDataDTO?.ContainerId?.ToString() ?? "";
+                //EventManager.TerminalInternalFailureOccurred(endpoint, containerId, e, curActivityDO.Id.ToString());
+                throw;
             }
         }
         private void OnStartActivity(string terminalName, string actionName, bool isTestActivityTemplate)
@@ -385,7 +387,7 @@ namespace TerminalBase.BaseClasses
             return content;
         }
 
-        private async Task<dynamic> HandleDocumentationRequest(object classInstance,MethodInfo curMethodInfo, ActivityDTO curActivityDTO, string curDocumentation)
+        private async Task<dynamic> HandleDocumentationRequest(object classInstance, MethodInfo curMethodInfo, ActivityDTO curActivityDTO, string curDocumentation)
         {
             if (!curDocumentation.IsNullOrEmpty() && curDocumentation.Split(',').Contains("MainPage"))
             {
@@ -399,7 +401,7 @@ namespace TerminalBase.BaseClasses
                     .Invoke(classInstance, new Object[] { curActivityDTO, curDocumentation });
                 return await resultActivityRepsonceDTO;
             }
-            return Task.FromResult(new ActivityResponseDTO {Type = ActivityResponse.Error.ToString(), Body = "Unknown display method"});
+            return Task.FromResult(new ActivityResponseDTO { Type = ActivityResponse.Error.ToString(), Body = "Unknown display method" });
         }
 
         private SolutionPageDTO getDefaultDocumentation()
