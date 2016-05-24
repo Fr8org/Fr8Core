@@ -4,11 +4,15 @@ using System.Web.Http.Dispatcher;
 using Data.Infrastructure.AutoMapper;
 using Microsoft.Owin;
 using Owin;
+using StructureMap;
 using terminalDocuSign;
 using terminalDocuSign.Controllers;
 using TerminalBase.BaseClasses;
 using terminalDocuSign.Actions;
 using terminalDocuSign.Activities;
+using terminalDocuSign.Interfaces;
+using terminalDocuSign.Services;
+using terminalDocuSign.Services.New_Api;
 using TerminalBase.Services;
 
 [assembly: OwinStartup(typeof(Startup))]
@@ -28,14 +32,11 @@ namespace terminalDocuSign
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();
-
             app.UseWebApi(_configuration);
-
             if (!selfHost)
             {
                 StartHosting("terminalDocuSign");
             }
-            
         }
 
         protected override void RegisterActivities()
