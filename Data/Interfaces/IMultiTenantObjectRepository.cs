@@ -11,6 +11,8 @@ namespace Data.Interfaces
     {
         MtTypeReference FindTypeReference(Type clrType);
         MtTypeReference FindTypeReference(Guid typeId);
+        MtTypeReference FindTypeReference(string alias);
+
         MtTypeReference[] ListTypeReferences();
         MtTypePropertyReference[] ListTypePropertyReferences(Guid typeId);
 

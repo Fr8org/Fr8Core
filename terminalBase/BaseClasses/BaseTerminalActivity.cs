@@ -974,6 +974,11 @@ namespace TerminalBase.BaseClasses
 
         protected ControlDefinitionDTO GetControl(StandardConfigurationControlsCM controls, string name, string controlType = null)
         {
+            if (controls == null)
+            {
+                return null;
+            }
+
             Func<ControlDefinitionDTO, bool> predicate = x => x.Name == name;
             if (controlType != null)
             {

@@ -343,7 +343,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = GetTestGuidById(1),
                 Name = "A",
                 Description = "B",
-                PlanState = PlanState.Active
+                PlanState = PlanState.Running
             };
 
             var containerDO = new ContainerDO()
@@ -408,7 +408,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = GetTestGuidById(1),
                 Description = "descr 1",
                 Name = "template1",
-                PlanState = PlanState.Active,
+                PlanState = PlanState.Running,
                 Fr8Account = FixtureData.TestDockyardAccount1()
             };
 

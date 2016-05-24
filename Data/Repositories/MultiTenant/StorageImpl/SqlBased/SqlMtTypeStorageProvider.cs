@@ -182,6 +182,42 @@ namespace Data.Repositories.MultiTenant.Sql
             }
         }
 
+        public MtTypeReference FindTypeReference(ISqlConnectionProvider connectionProvider, string alias)
+        {
+            const string loadTypeReferences = "select * from MtTypes where Alias = @alias";
+
+            using (var connection = OpenConnection(connectionProvider))
+            using (var command = new SqlCommand(loadTypeReferences, connection))
+            {
+                command.Parameters.AddWithValue("@alias", alias);
+
+                using (var reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        var fullTypeName = reader["ClrName"];
+
+                        if (fullTypeName == DBNull.Value)
+                        {
+                            continue;
+                        }
+
+                        var type = Type.GetType((string)fullTypeName);
+
+                        if (type == null)
+                        {
+                            continue;
+                        }
+
+                        var mtType = ReadType(reader, "Id", type);
+                        return new MtTypeReference(mtType.Alias, mtType.ClrType, mtType.Id);
+                    }
+                }
+
+                return null;
+            }
+        }
+
         // Currently we don't need a support for object properties that have type of 'object'.
         // All our properties are of primitive types (types that has no own properties) and  we don't want to introduce unnecessary complications related to types graphs
         // So we make assumption that we can always safely load the type with all possible references by loading only topmost level of type hierarchy
