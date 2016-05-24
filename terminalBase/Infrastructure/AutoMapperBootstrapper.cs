@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using AutoMapper;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
@@ -26,7 +27,7 @@ namespace TerminalBase.Infrastructure
                 .ForMember(x => x.AuthCompletedNotificationRequired, opts => opts.MapFrom(src => src.AuthCompletedNotificationRequired));
 
             Mapper.CreateMap<ActivityDTO, ActivityPayload>()
-                .ForMember(x => x.ChildrenActivities, opts => opts.MapFrom(src => src.ChildrenActivities.ToList()))
+                .ForMember(x => x.ChildrenActivities, opts => opts.MapFrom(src => src.ChildrenActivities != null ? src.ChildrenActivities.ToList() : new List<ActivityDTO>()))
                 .ForMember(x => x.CrateStorage, opts => opts.Ignore())
                 .AfterMap((activityDTO, activityPayload) =>
                 {

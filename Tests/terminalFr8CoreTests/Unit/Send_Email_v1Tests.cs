@@ -117,6 +117,10 @@ namespace terminalTests.Unit
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage()
+                },
+                AuthorizationToken = new AuthorizationToken
+                {
+                    Token = "1"
                 }
             };
             var executionContext = new ContainerExecutionContext
@@ -140,7 +144,6 @@ namespace terminalTests.Unit
             subjectControl.ValueSource = bodyControl.ValueSource = emailAddressControl.ValueSource = "specific";
 
             //Act
-            activityContext.AuthorizationToken.Token = "1";
             await _sendEmailActivity.Run(activityContext,executionContext);
 
             //Assert

@@ -114,6 +114,10 @@ namespace terminalTests.Unit
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage()
+                },
+                AuthorizationToken = new AuthorizationToken
+                {
+                    Token = "1"
                 }
             };
 
@@ -134,7 +138,6 @@ namespace terminalTests.Unit
             smsBody.ValueSource = smsNumber.ValueSource = "specific";
 
             //Act
-            activityContext.AuthorizationToken.Token = "1";
             await _sendSmsActivity.Run(activityContext, containerExecutionContext);
 
             //Assert

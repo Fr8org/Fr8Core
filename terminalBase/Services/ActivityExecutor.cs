@@ -68,6 +68,13 @@ namespace TerminalBase.Services
                         activity = factory.Create();
                         await activity.Run(activityContext, executionContext);
                         return SerializeResponse(executionContext);
+
+                    case "executechildactivities":
+                        await HubCommunicator.Configure(curTerminal);
+                        var executionContext2 = await CreateContainerExecutionContext(curDataDTO);
+                        activity = factory.Create();
+                        await activity.RunChildActivities(activityContext, executionContext2);
+                        return SerializeResponse(executionContext2);
                 }
             }
             catch (Exception e)
@@ -75,7 +82,7 @@ namespace TerminalBase.Services
                 throw;
             }
 
-            throw new Exception("Unsupported request");
+            throw new ArgumentException("Unsupported request", nameof(curActionPath));
         }
 
         private async Task<ContainerExecutionContext> CreateContainerExecutionContext(Fr8DataDTO curDataDTO)
@@ -88,7 +95,7 @@ namespace TerminalBase.Services
             var payload = await HubCommunicator.GetPayload(curDataDTO.ContainerId.Value, curDataDTO.ActivityDTO.AuthToken.UserId);
             return new ContainerExecutionContext
             {
-                PayloadStorage = CrateManager.GetUpdatableStorage(payload),
+                PayloadStorage = CrateManager.GetStorage(payload),
                 ContainerId = curDataDTO.ContainerId.Value
             };
         }
