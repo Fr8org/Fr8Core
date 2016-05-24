@@ -39,7 +39,7 @@ namespace UtilitiesTesting.Fixtures
                 });
             var eventDto = new EventReportCM
             {
-                EventNames = "Terminal Event",
+                EventNames = "Terminal Fact",
                 ExternalAccountId = "system1@fr8.co"
             };
 

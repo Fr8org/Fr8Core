@@ -53,7 +53,7 @@ namespace Hub.Services
                 return HandleTerminalIncident;
             }
 
-            if (eventCm.EventNames.Equals("Terminal Event"))
+            if (eventCm.EventNames.Equals("Terminal Fact"))
             {
                 return HandleTerminalEvent;
             }

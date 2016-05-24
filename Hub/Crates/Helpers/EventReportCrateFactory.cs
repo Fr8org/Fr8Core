@@ -25,12 +25,12 @@ namespace Hub.Crates.Helpers
 
             eventDTO.EventPayload.AddRange(crates);
 
-            return Crate.FromContent("Fr8 Terminal Event or Incident Report", eventDTO);
+            return Crate.FromContent("Fr8 Terminal Fact or Incident Report", eventDTO);
         }
 
         public Crate Create(EventReportCM eventCm)
         {
-            return Crate.FromContent("Fr8 Terminal Event or Incident Report", eventCm);
+            return Crate.FromContent("Fr8 Terminal Fact or Incident Report", eventCm);
         }
     }
 }

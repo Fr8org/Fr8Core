@@ -83,7 +83,7 @@ namespace TerminalBase.Infrastructure
             //TODO inpect this
             //I am not sure what to supply for parameters eventName and palletId, so i passed terminalName and eventType
             return restClient.PostAsync(new Uri(eventWebServerUrl, UriKind.Absolute),
-                _crateManager.ToDto(_eventReportCrateFactory.Create("Terminal Event", terminalName, loggingDataCrate)));
+                _crateManager.ToDto(_eventReportCrateFactory.Create("Terminal Fact", terminalName, loggingDataCrate)));
         }
 
         /// <summary>
