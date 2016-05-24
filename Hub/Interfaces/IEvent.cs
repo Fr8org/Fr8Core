@@ -14,12 +14,12 @@ namespace Hub.Interfaces
         /// <summary>
         /// Handles Terminal Incident
         /// </summary>
-        void HandleTerminalIncident(LoggingDataCm incident);
+        void HandleTerminalIncident(LoggingDataCM incident);
         
         /// <summary>
         /// Handles Terminal Event 
         /// </summary>
-        void HandleTerminalEvent(LoggingDataCm eventDataCm);
+        void HandleTerminalEvent(LoggingDataCM eventDataCm);
 
         Task ProcessInboundEvents(Crate curCrateStandardEventReport);
         Task LaunchProcess(PlanDO curPlan, Crate curEventData = null);

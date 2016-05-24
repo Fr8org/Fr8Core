@@ -35,7 +35,7 @@ namespace TerminalBase.Infrastructure
             }
             else
             {
-                eventWebServerUrl += "api/v1/event/gen1_event";
+                eventWebServerUrl += "api/v1/events";
             }
 
             _eventReportCrateFactory = new EventReportCrateFactory();
@@ -51,7 +51,7 @@ namespace TerminalBase.Infrastructure
             //return;
             //make Post call
             var restClient = PrepareRestClient();
-            var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingDataCm
+            var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingDataCM
             {
                 ObjectId = terminalName,
                 Data = "service_start_up",
@@ -72,7 +72,7 @@ namespace TerminalBase.Infrastructure
             if (eventsDisabled) return Task.FromResult(string.Empty);
             //make Post call
             var restClient = PrepareRestClient();
-            var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingDataCm
+            var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingDataCM
             {
                 ObjectId = terminalName,
                 Data = message,
@@ -83,7 +83,7 @@ namespace TerminalBase.Infrastructure
             //TODO inpect this
             //I am not sure what to supply for parameters eventName and palletId, so i passed terminalName and eventType
             return restClient.PostAsync(new Uri(eventWebServerUrl, UriKind.Absolute),
-                _crateManager.ToDto(_eventReportCrateFactory.Create("Terminal Event", terminalName, loggingDataCrate)));
+                _crateManager.ToDto(_eventReportCrateFactory.Create("Terminal Fact", terminalName, loggingDataCrate)));
         }
 
         /// <summary>
@@ -102,7 +102,7 @@ namespace TerminalBase.Infrastructure
             var restClient = PrepareRestClient();
 
             //create event logging data with required information
-            var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingDataCm
+            var loggingDataCrate = _loggingDataCrateFactory.Create(new LoggingDataCM
             {
                 Fr8UserId = fr8UserId,
                 ObjectId = terminalName,
@@ -136,7 +136,7 @@ namespace TerminalBase.Infrastructure
         {
             var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
-            var fr8EventUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "api/v1/event/processevents";
+            var fr8EventUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "api/v1/events";
             var eventReportCrateDTO = _crateManager.ToDto(await parser.Invoke(curExternalEventPayload));
             
             if (eventReportCrateDTO != null)
