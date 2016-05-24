@@ -3,33 +3,32 @@
  
 ## General Information
 
+As a starting point, read about Activities here:
 [Activities](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Activities.md)
 
-A well designed Fr8 Action encapsulates a useful piece of computational functionality and wraps it in a friendly point-and-click interface. It looks “upstream” to dynamically discover what other Actions, Crates, Fields and Lists have been inserted by the builder of a Route, so that it can offer up ways for the User to tie the data together.
+A well designed Fr8 Activity encapsulates a useful piece of computational functionality and wraps it in a friendly point-and-click interface. It looks “upstream” to dynamically discover what Crates and Fields are being signalled by upstream Activities, so that it can offer up ways for the User to tie the data together.
 
 [Tutorials: A Basic Twilio Terminal That Can Send an SMS Message](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Tutorials/TwilioTutorial.md)
 
-### Action Testing
+### Activity Testing
 
-Each Action needs to have integration tests that test calls to /configure (both initial and followup configuration response), /activate, and /execute.
+Each Activity needs to have integration tests that test calls to /configure (both initial and followup configuration response), /activate, and /execute.
 
-### Solutions
+### Additional Topics
 
-Solutions are specialized Actions that encapsulate a series of child actions in a unified look and feel.
+[Solutions](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/OperatingConcepts/Solutions) are specialized Actions that encapsulate a series of child actions in a unified look and feel.
 
-Tutorials: Solution Development Guide
+[Building Documentation](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ActivityDevelopmentBuildingDocumentation.md)
 
-[Building Documentation for an Activity](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ActivityDevelopmentBuildingDocumentation.md)
 
-[Activities – Communication](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/ActivitiesCommunication.md)
 
 ### Before You Begin
 
-[Plans](https://github.com/Fr8org/Fr8Core/blob/master/Docs/ForDevelopers/Objects/Plans.md)
 
-[Modified Action Controller in Terminals](https://maginot.atlassian.net/wiki/display/DDW/Modified+Action+Controller+in+Terminals)
 
-It’s very important that you understand the role of Crates and how Actions pull data from both upstream and downstream sources.
+[Modified Activity Controller in Terminals](https://maginot.atlassian.net/wiki/display/DDW/Modified+Action+Controller+in+Terminals)
+
+
 
 ## Manifest Schemas
 
