@@ -183,7 +183,12 @@ namespace TerminalBase.BaseClasses
             InitializeInternalState(activityContext, null);
             return Deactivate();
         }
-        
+
+        public void SetHubCommunicator(IHubCommunicator hubCommunicator)
+        {
+            throw new NotImplementedException();
+        }
+
         /**********************************************************************************/
 
         public Task Run(ActivityContext activityContext, ContainerExecutionContext containerExecutionContext)
