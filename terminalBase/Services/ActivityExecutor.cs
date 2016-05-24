@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Managers;
+using StructureMap;
 using TerminalBase.Infrastructure;
 using TerminalBase.Interfaces;
 using TerminalBase.Models;
@@ -36,6 +37,21 @@ namespace TerminalBase.Services
 
             try
             {
+                var integrationTestMode = false;
+                //we should remove this mode
+                var activityTemplateName = curDataDTO.ActivityDTO.ActivityTemplate.Name;
+                if (activityTemplateName.EndsWith("_TEST"))
+                {
+                    integrationTestMode = true;
+                    curDataDTO.ActivityDTO.ActivityTemplate.Name = activityTemplateName.Substring(0, activityTemplateName.Length - "_TEST".Length);
+                }
+                //just created this for existing integration tests
+                //we should find a smoother way for integration tests
+                var hubCommunicator = integrationTestMode
+                    ? new TestMonitoringHubCommunicator(curDataDTO.ExplicitData)
+                    : ObjectFactory.GetInstance<IHubCommunicator>();
+                
+
                 IActivityFactory factory = ActivityStore.GetValue(curDataDTO.ActivityDTO.ActivityTemplate);
                 if (factory == null)
                 {
@@ -43,36 +59,31 @@ namespace TerminalBase.Services
                 }
 
                 ActivityContext activityContext = DeserializeRequest(curDataDTO);
-                IActivity activity;
-
+                IActivity activity = factory.Create();
+                activity.SetHubCommunicator(hubCommunicator);
                 switch (curActionPath.ToLower())
                 {
                     case "configure":
-                        activity = factory.Create();
                         await activity.Configure(activityContext);
                         return SerializeResponse(activityContext);
 
                     case "activate":
-                        activity = factory.Create();
                         await activity.Activate(activityContext);
                         return SerializeResponse(activityContext);
 
                     case "deactivate":
-                        activity = factory.Create();
                         await activity.Deactivate(activityContext);
                         return SerializeResponse(activityContext);
 
                     case "run":
                         await HubCommunicator.Configure(curTerminal);
                         var executionContext = await CreateContainerExecutionContext(curDataDTO);
-                        activity = factory.Create();
                         await activity.Run(activityContext, executionContext);
                         return SerializeResponse(executionContext);
 
                     case "executechildactivities":
                         await HubCommunicator.Configure(curTerminal);
                         var executionContext2 = await CreateContainerExecutionContext(curDataDTO);
-                        activity = factory.Create();
                         await activity.RunChildActivities(activityContext, executionContext2);
                         return SerializeResponse(executionContext2);
                 }

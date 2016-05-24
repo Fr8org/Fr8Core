@@ -124,6 +124,7 @@ namespace Hub.StructureMap
                 For<IPlanTemplates>().Use<PlanTemplates>();
                 For<IUtilizationMonitoringService>().Use<UtilizationMonitoringService>().Singleton();
                 For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
+                For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
             }
         }
 
