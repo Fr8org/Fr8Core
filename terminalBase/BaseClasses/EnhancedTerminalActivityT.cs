@@ -204,7 +204,8 @@ namespace TerminalBase.BaseClasses
 
         private async Task FollowupConfiguration(CrateSignaller crateSignaller)
         {
-            using (SyncConfControls())
+            SyncConfControls();
+            try
             {
                 CurrentActivityStorage.Remove<ValidationResultsCM>();
 
@@ -220,6 +221,10 @@ namespace TerminalBase.BaseClasses
                     CurrentActivityStorage.Remove<ValidationResultsCM>();
                     await Configure(crateSignaller, validationManager);
                 }
+            }
+            finally
+            {
+                SyncConfControlsBack();
             }
         }
 
@@ -259,7 +264,8 @@ namespace TerminalBase.BaseClasses
             using (var storage = CrateManager.GetUpdatableStorage(CurrentActivity))
             {
                 CurrentActivityStorage = storage;
-                using (SyncConfControls())
+                SyncConfControls();
+                try
                 {
                     CurrentActivityStorage.Remove<ValidationResultsCM>();
                     var validationManager = CreateValidationManager();
@@ -269,6 +275,10 @@ namespace TerminalBase.BaseClasses
                         CurrentActivityStorage.Remove<ValidationResultsCM>();
                         await Activate();
                     }
+                }
+                finally
+                {
+                    SyncConfControlsBack();
                 }
             }
             return curActivityDO;
@@ -285,9 +295,14 @@ namespace TerminalBase.BaseClasses
             using (var storage = CrateManager.GetUpdatableStorage(CurrentActivity))
             {
                 CurrentActivityStorage = storage;
-                using (SyncConfControls())
+                SyncConfControls();
+                try
                 {
                     await Deactivate();
+                }
+                finally
+                {
+                    SyncConfControlsBack();
                 }
             }
 
@@ -326,7 +341,6 @@ namespace TerminalBase.BaseClasses
 
             _isRunTime = true;
 
-            var activityStorageContents = CurrentActivity.CrateStorage;
             using (var payloadstorage = CrateManager.GetUpdatableStorage(processPayload))
             using (var activityStorage = CrateManager.GetUpdatableStorage(CurrentActivity))
             {
@@ -339,7 +353,7 @@ namespace TerminalBase.BaseClasses
                 {
                     throw new InvalidOperationException("Operational state crate is not found");
                 }
-                var syncBack = SyncConfControls();
+                SyncConfControls();
                 try
                 {
 
@@ -378,10 +392,6 @@ namespace TerminalBase.BaseClasses
                 catch (Exception ex)
                 {
                     Error(ex.Message);
-                }
-                finally
-                {
-                    syncBack?.Dispose();
                 }
             }
             return processPayload;
@@ -517,7 +527,7 @@ namespace TerminalBase.BaseClasses
         // But when we deserialize activity's crate storage we get StandardConfigurationControlsCM. So we need a way to 'convert' StandardConfigurationControlsCM
         // from crate storage to ActivityUI.
         // SyncConfControls takes properties of controls in StandardConfigurationControlsCM from activity's storage and copies them into ActivityUi.
-        internal IDisposable SyncConfControls()
+        private void SyncConfControls()
         {
             var ui = CurrentActivityStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
             if (ui == null)
@@ -530,7 +540,6 @@ namespace TerminalBase.BaseClasses
             {
                 ConfigurationControls.RestoreDynamicControlsFrom(ui);
             }
-            return new SyncConfControlsToken<T>(this);
         }
 
         /**********************************************************************************/
@@ -735,18 +744,5 @@ namespace TerminalBase.BaseClasses
         }
 
         /**********************************************************************************/
-        private class SyncConfControlsToken<TActivityUi> : IDisposable where TActivityUi : StandardConfigurationControlsCM
-        {
-            private readonly EnhancedTerminalActivity<TActivityUi> _activity;
-            public SyncConfControlsToken(EnhancedTerminalActivity<TActivityUi> activity)
-            {
-                _activity = activity;
-            }
-
-            public void Dispose()
-            {
-                _activity.SyncConfControlsBack();
-            }
-        }
     }
 }
