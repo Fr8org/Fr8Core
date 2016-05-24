@@ -8,7 +8,7 @@ using Data.Repositories.SqlBased;
 
 namespace Data.Repositories.MultiTenant.Sql
 {
-    public class SqlMtObjectsStorage : IMtObjectsStorage
+    public partial class SqlMtObjectsStorage : IMtObjectsStorage
     {
         private readonly string _connectionString;
         private readonly IMtObjectConverter _converter;
@@ -160,7 +160,8 @@ namespace Data.Repositories.MultiTenant.Sql
             var parameters = new List<string>
             {
                 "@type",
-                "@account",
+                "@account1",
+                "@account2",
                 "@isDeleted"
             };
 
@@ -178,10 +179,11 @@ namespace Data.Repositories.MultiTenant.Sql
                 {
                     command.Connection = connection;
                     command.Parameters.AddWithValue("@type", type.Id);
-                    command.Parameters.AddWithValue("@account", fr8AccountId);
+                    command.Parameters.AddWithValue("@account1", fr8AccountId);
+                    command.Parameters.AddWithValue("@account2", fr8AccountId);
                     command.Parameters.AddWithValue("@isDeleted", false);
 
-                    string cmd = string.Format("select {0} from MtData where Type=@type and fr8AccountId=@account and IsDeleted = @isDeleted", tableDefintion);
+                    string cmd = string.Format(MtSelectQueryTemplate, tableDefintion);
 
                     if (where != null)
                     {
@@ -189,7 +191,7 @@ namespace Data.Repositories.MultiTenant.Sql
 
                         astConverter.Convert(@where);
 
-                        cmd += " and " + astConverter.SqlCommand;
+                        cmd += " where " + astConverter.SqlCommand;
 
                         for (int index = 0; index < astConverter.Constants.Count; index++)
                         {

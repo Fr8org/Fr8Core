@@ -4,7 +4,7 @@ using Hub.ExternalServices;
 using Twilio;
 using Utilities.Configuration.Azure;
 
-namespace terminalTwilio.Services
+namespace terminalUtilities.Twilio
 {
     public class TwilioService : ITwilioService
     {
