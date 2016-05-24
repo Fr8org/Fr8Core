@@ -94,7 +94,6 @@ namespace TerminalBase.BaseClasses
         protected UiBuilder UiBuilder { get; private set; }
         protected int LoopIndex => GetLoopIndex(OperationalState);
         protected bool DisableValidationOnFollowup { get; set; }
-        protected bool SaveActivityStorageAfterRun { get; set; }
 
         /**********************************************************************************/
         // Functions
@@ -383,22 +382,6 @@ namespace TerminalBase.BaseClasses
                 finally
                 {
                     syncBack?.Dispose();
-                }
-            }
-            if (SaveActivityStorageAfterRun)
-            {
-                try
-                {
-                    var previousActivityStorage = JToken.Parse(activityStorageContents);
-                    var currentActivityStorage = JToken.Parse(CurrentActivity.CrateStorage);
-                    if (!JToken.DeepEquals(previousActivityStorage, currentActivityStorage))
-                    {
-                        await HubCommunicator.SaveActivity(CurrentActivity, CurrentFr8UserId);
-                    }
-                }
-                catch (Exception ex)
-                {
-                    Error(ex.Message);
                 }
             }
             return processPayload;
