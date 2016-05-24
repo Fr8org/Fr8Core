@@ -6,30 +6,24 @@ using System.Reflection;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.Internal;
+using Newtonsoft.Json;
+using StructureMap;
 using Data.Interfaces;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-<<<<<<< HEAD
-using Newtonsoft.Json;
-using StructureMap;
-using terminalFr8Core.Services.MT;
-using TerminalBase.BaseClasses;
-using MTSearchHelper = terminalFr8Core.Services.MT.MTSearchHelper;
-=======
 using Hub.Services;
 using Hub.Services.MT;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
->>>>>>> refs/remotes/origin/dev
 
-namespace terminalFr8Core.Activities
+namespace terminalFr8Core.Actions
 {
-    public class GetDataFromFr8Warehouse_v1: EnhancedTerminalActivity<GetDataFromFr8Warehouse_v1.ActivityUi>
+    public class GetDataFromFr8Warehouse_v1
+        : EnhancedTerminalActivity<GetDataFromFr8Warehouse_v1.ActivityUi>
     {
-
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
             Name = "GetDataFromFr8Warehouse",
@@ -110,7 +104,9 @@ namespace terminalFr8Core.Activities
                 Guid selectedObjectId;
                 if (Guid.TryParse(ActivityUI.AvailableObjects.Value, out selectedObjectId))
                 {
-                    Storage.ReplaceByLabel(Crate.FromContent("Queryable Criteria",
+                    Storage.ReplaceByLabel(
+                        Crate.FromContent(
+                            "Queryable Criteria",
                             new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(selectedObjectId, AvailabilityType.RunTime))
                         )
                     );
@@ -120,6 +116,7 @@ namespace terminalFr8Core.Activities
             ActivityUI.QueryBuilder.IsHidden = !hasSelectedObject;
             ActivityUI.SelectObjectLabel.IsHidden = hasSelectedObject;
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+
             await Task.Yield();
         }
 
@@ -137,25 +134,19 @@ namespace terminalFr8Core.Activities
                 var conditions = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(
                     ActivityUI.QueryBuilder.Value
                 );
-                
+
                 var manifestType = mtType.ClrType;
                 var queryBuilder = MTSearchHelper.CreateQueryProvider(manifestType);
                 var converter = CrateManifestToRowConverter(manifestType);
-<<<<<<< HEAD
-                var foundObjects = queryBuilder.Query(uow,AuthorizationToken.UserId,conditions)
-                    .ToArray();
-                
-=======
 
                 var foundObjects = queryBuilder
                     .Query(
                         uow,
-                        AuthorizationToken.UserID,
+                        CurrentUserId,
                         conditions
                     )
                     .ToArray();
 
->>>>>>> refs/remotes/origin/dev
                 var searchResult = new StandardTableDataCM();
 
                 if (foundObjects.Length > 0)
@@ -182,7 +173,12 @@ namespace terminalFr8Core.Activities
                     searchResult.Table.Add(converter(foundObject));
                 }
 
-                Payload.Add(Crate.FromContent(RunTimeCrateLabel,searchResult));
+                Payload.Add(
+                    Crate.FromContent(
+                        RunTimeCrateLabel,
+                        searchResult
+                    )
+                );
             }
 
             await Task.Yield();
@@ -245,7 +241,5 @@ namespace terminalFr8Core.Activities
                     .ToList();
             }
         }
-
-        
     }
 }

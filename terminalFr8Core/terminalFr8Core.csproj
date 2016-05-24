@@ -263,10 +263,6 @@
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Converters\DocuSignTemplateToStandardFileDescriptionConversion.cs" />
     <Compile Include="Converters\ICrateConversion.cs" />
-    <Compile Include="Services\MT\MTSearchHelper.cs" />
-    <Compile Include="Services\MT\MTSearchHelper.IMtQueryProvider.cs" />
-    <Compile Include="Services\MT\MTSearchHelper.MtQueryProviderT.cs" />
-    <Compile Include="Services\MT\MTTypesHelper.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="StructureMapConfiguration.cs" />
     <Compile Include="TerminalData.cs" />
@@ -359,7 +355,9 @@
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Services\" />
+  </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
     <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>

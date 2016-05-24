@@ -9,6 +9,7 @@ using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Hub.Infrastructure;
 using Hub.Managers;
+using Hub.Services;
 using HubWeb.Infrastructure_HubWeb;
 
 namespace HubWeb.Controllers

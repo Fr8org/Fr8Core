@@ -6,29 +6,21 @@ using System.Reflection;
 using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.Internal;
-using Newtonsoft.Json;
 using Data.Interfaces;
-using TerminalBase.Infrastructure;
-using TerminalBase.BaseClasses;
-using Data.Entities;
-using StructureMap;
-using Hub.Managers;
-using Hub.Services;
-using Hub.Services.MT;
-using Data.States;
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-<<<<<<< HEAD
-using terminalFr8Core.Services.MT;
-using MTSearchHelper = terminalFr8Core.Services.MT.MTSearchHelper;
-=======
->>>>>>> refs/remotes/origin/dev
+using Hub.Services;
+using Hub.Services.MT;
+using Newtonsoft.Json;
+using StructureMap;
+using TerminalBase.BaseClasses;
 
-namespace terminalFr8Core.Actions
+
+namespace terminalFr8Core.Activities
 {
     public class QueryFr8Warehouse_v1 : BaseTerminalActivity
     {
