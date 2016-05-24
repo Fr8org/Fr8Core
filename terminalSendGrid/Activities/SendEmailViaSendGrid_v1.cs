@@ -10,6 +10,7 @@ using terminalUtilities.Infrastructure;
 using terminalUtilities.Interfaces;
 using terminalUtilities.Models;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 using Utilities;
 
 namespace terminalSendGrid.Activities
@@ -113,6 +114,17 @@ namespace terminalSendGrid.Activities
             var htmlText = string.Format(template, emailBody);
 
             return htmlText;
+        }
+
+        protected override Task<bool> Validate()
+        {
+            var emailAddressField = GetControl<TextSource>("EmailAddress", ControlTypes.TextSource);
+            var emailSubjectField = GetControl<TextSource>("EmailSubject", ControlTypes.TextSource);
+            var emailBodyField = GetControl<TextSource>("EmailBody", ControlTypes.TextSource);
+            ValidationManager.ValidateTextSourceNotEmpty(emailAddressField, "Email address can't be empty");
+            ValidationManager.ValidateTextSourceNotEmpty(emailSubjectField, "Email subject can't be empty");
+            ValidationManager.ValidateTextSourceNotEmpty(emailBodyField, "Email body can't be empty");
+            return Task.FromResult(true);
         }
 
         public override async Task Run()

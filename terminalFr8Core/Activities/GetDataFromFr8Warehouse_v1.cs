@@ -12,11 +12,18 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+<<<<<<< HEAD
 using Newtonsoft.Json;
 using StructureMap;
 using terminalFr8Core.Services.MT;
 using TerminalBase.BaseClasses;
 using MTSearchHelper = terminalFr8Core.Services.MT.MTSearchHelper;
+=======
+using Hub.Services;
+using Hub.Services.MT;
+using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
+>>>>>>> refs/remotes/origin/dev
 
 namespace terminalFr8Core.Activities
 {
@@ -134,9 +141,21 @@ namespace terminalFr8Core.Activities
                 var manifestType = mtType.ClrType;
                 var queryBuilder = MTSearchHelper.CreateQueryProvider(manifestType);
                 var converter = CrateManifestToRowConverter(manifestType);
+<<<<<<< HEAD
                 var foundObjects = queryBuilder.Query(uow,AuthorizationToken.UserId,conditions)
                     .ToArray();
                 
+=======
+
+                var foundObjects = queryBuilder
+                    .Query(
+                        uow,
+                        AuthorizationToken.UserID,
+                        conditions
+                    )
+                    .ToArray();
+
+>>>>>>> refs/remotes/origin/dev
                 var searchResult = new StandardTableDataCM();
 
                 if (foundObjects.Length > 0)

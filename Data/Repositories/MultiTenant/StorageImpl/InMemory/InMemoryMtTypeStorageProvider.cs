@@ -75,6 +75,22 @@ namespace Data.Repositories.MultiTenant.InMemory
             }
         }
 
+        public MtTypeReference FindTypeReference(ISqlConnectionProvider connectionProvider, string alias)
+        {
+            MtTypeDefinition typeDef;
+
+            lock (Types)
+            {
+                typeDef = Types.FirstOrDefault(x => x.Alias == alias);
+                if (typeDef == null)
+                {
+                    return null;
+                }
+
+                return new MtTypeReference(typeDef.Alias, typeDef.ClrType, typeDef.Id);
+            }
+        }
+
         public bool TryLoadType(ISqlConnectionProvider connectionProvider, Type clrType, out MtTypeDefinition mtType)
         {
             lock (Types)

@@ -11,6 +11,7 @@ using terminalUtilities.Infrastructure;
 using terminalUtilities.Interfaces;
 using terminalUtilities.Models;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 using Utilities.Configuration.Azure;
 
 namespace terminalFr8Core.Activities
@@ -93,6 +94,16 @@ namespace terminalFr8Core.Activities
         protected override Task ConfigureETA()
         {
             return Task.FromResult(0);
+        }
+
+        
+        protected override Task<bool> ValidateETA()
+        {
+            ValidationManager.ValidateTextSourceNotEmpty(ActivityUI.EmailAddress, "Email address can't be empty");
+            ValidationManager.ValidateTextSourceNotEmpty(ActivityUI.EmailSubject, "Email subject can't be empty");
+            ValidationManager.ValidateTextSourceNotEmpty(ActivityUI.EmailBody, "Email body can't be empty");
+
+            return Task.FromResult(true);
         }
 
         protected override async Task RunETA()

@@ -676,9 +676,19 @@ namespace TerminalBase.BaseClasses
 
         public async Task Run(ActivityContext activityContext, ContainerExecutionContext containerExecutionContext)
         {
+<<<<<<< HEAD
             _isRunTime = true;
             InitializeActivity(activityContext, containerExecutionContext);
             if (IsAuthenticationRequired && NeedsAuthentication())
+=======
+            if (controls == null)
+            {
+                return null;
+            }
+
+            Func<ControlDefinitionDTO, bool> predicate = x => x.Name == name;
+            if (controlType != null)
+>>>>>>> refs/remotes/origin/dev
             {
                 RaiseNeedsAuthenticationError();
                 return;

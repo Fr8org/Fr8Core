@@ -9,6 +9,7 @@ using terminalSlack.Interfaces;
 using terminalSlack.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Errors;
+using TerminalBase.Infrastructure;
 using TerminalBase.Services;
 
 namespace terminalSlack.Activities
@@ -72,18 +73,23 @@ namespace terminalSlack.Activities
             return Task.FromResult(0);
         }
 
+        protected override Task<bool> ValidateETA()
+        {
+            if (string.IsNullOrEmpty(ActivityUI.ChannelSelector.Value))
+            {
+                ValidationManager.SetError("Channel or user is not specified", ActivityUI.ChannelSelector);
+                return Task.FromResult(false);
+            }
+
+            ValidationManager.ValidateTextSourceNotEmpty(ActivityUI.MessageSource, "Can't post empty message to Slack");
+
+            return Task.FromResult(true);
+        }
+
         protected override async Task RunETA()
         {
             var channel = ActivityUI.ChannelSelector.Value;
-            if (string.IsNullOrEmpty(channel))
-            {
-                throw new ActivityExecutionException("Channel or user is not specified");
-            }
             var message = ActivityUI.MessageSource.GetValue(Payload);
-            if (string.IsNullOrWhiteSpace(message))
-            {
-                throw new ActivityExecutionException("Can't post empty message to Slack");
-            }
             var success = await _slackIntegration.PostMessageToChat(AuthorizationToken.Token, channel, message).ConfigureAwait(false);
             if (!success)
             {

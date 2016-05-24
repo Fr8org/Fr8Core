@@ -3,17 +3,28 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Entities;
+<<<<<<< HEAD
 using Data.Interfaces;
+=======
+using Hub.Managers;
+using StructureMap;
+using TerminalBase.Infrastructure;
+using Data.States;
+>>>>>>> refs/remotes/origin/dev
 using Data.Repositories.MultiTenant;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+<<<<<<< HEAD
 using Newtonsoft.Json;
 using StructureMap;
 using terminalDocuSign.Services.MT;
 using TerminalBase.Models;
+=======
+using Hub.Services.MT;
+>>>>>>> refs/remotes/origin/dev
 
 namespace terminalDocuSign.Activities
 {

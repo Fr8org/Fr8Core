@@ -32,7 +32,27 @@ namespace terminalSlack.Activities
             MinPaneWidth = 330
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
-                
+
+
+        protected override Task<bool> Validate()
+        {
+            var messageField = GetControl<TextSource>("Select_Message_Field", ControlTypes.TextSource);
+            var actionChannelId = GetControl<DropDownList>("Selected_Slack_Channel").Value;
+
+            if (string.IsNullOrEmpty(actionChannelId))
+            {
+                ValidationManager.SetError("Channel or user is not specified", "Selected_Slack_Channel");
+                return Task.FromResult(false);
+            }
+
+            if (messageField.CanGetValue(ValidationManager.Payload) && string.IsNullOrWhiteSpace(messageField.GetValue(ValidationManager.Payload)))
+            {
+                ValidationManager.SetError("Can't post empty message to Slack", messageField);
+                return Task.FromResult(false);
+            }
+
+            return Task.FromResult(true);
+        }
 
         public override async Task Run()
         {
@@ -81,7 +101,7 @@ namespace terminalSlack.Activities
             Storage.Add(configurationCrate);
         }
 
-        public Publish_To_Slack_v1() :base(true)
+        public Publish_To_Slack_v1() : base(true)
         {
             _slackIntegration = new SlackIntegration();
         }
@@ -178,7 +198,7 @@ namespace terminalSlack.Activities
             return Task.FromResult(0);
         }
 
-       
+
 
 
         #endregion
