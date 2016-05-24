@@ -232,19 +232,13 @@ namespace TerminalBase.BaseClasses
 
         protected virtual ValidationManager CreateValidationManager()
         {
-            var validationResults = GetOrCreateValidationResults();
-            return new ValidationManager(validationResults, _currentPayloadStorage);
-        }
-
-        protected ValidationResultsCM GetOrCreateValidationResults()
-        {
             var validationResults = CurrentActivityStorage.CrateContentsOfType<ValidationResultsCM>().FirstOrDefault();
             if (validationResults == null)
             {
                 validationResults = new ValidationResultsCM();
                 CurrentActivityStorage.Add(Crate.FromContent("Validation Errors", validationResults));
             }
-            return validationResults;
+            return new EnhancedValidationManager<T>(validationResults, this, _currentPayloadStorage);
         }
 
         /**********************************************************************************/

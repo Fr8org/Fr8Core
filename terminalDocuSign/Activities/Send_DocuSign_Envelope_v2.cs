@@ -149,12 +149,6 @@ namespace terminalDocuSign.Actions
             CurrentActivityStorage.ReplaceByLabel(Crate.FromContent(UserFieldsAndRolesCrateLabel, new FieldDescriptionsCM(userDefinedFields.Concat(roles)), AvailabilityType.Configuration));
         }
 
-        protected override ValidationManager CreateValidationManager()
-        {
-            var validationResult = GetOrCreateValidationResults();
-            return new EnhancedValidationManager<ActivityUi>(validationResult, this,  TryGetCurrentPayloadStorage());
-        }
-
         protected override Task Validate(ValidationManager validationManager)
         {
             if (string.IsNullOrEmpty(SelectedTemplateId))
@@ -173,7 +167,7 @@ namespace terminalDocuSign.Actions
             var userDefinedFields = CurrentActivityStorage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == UserFieldsAndRolesCrateLabel);
             if (userDefinedFields == null)
             {
-                throw new ActivityExecutionException();
+                throw new ActivityExecutionException("Activity storage doesn't contain info about DocuSign envelope properties. This may indicate that activity was not properly configured. Try to reconfigure this activity");
             }
             var allFields = userDefinedFields.Content.Fields;
             var roleValues = ConfigurationControls.RolesFields.Select(x => new { x.Name, Value = x.GetValue(CurrentPayloadStorage) }).ToDictionary(x => x.Name, x => x.Value);
