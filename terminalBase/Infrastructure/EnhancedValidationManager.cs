@@ -13,7 +13,7 @@ namespace TerminalBase.Infrastructure
     public class EnhancedValidationManager<TActivityUi> : ValidationManager where TActivityUi : StandardConfigurationControlsCM
     {
         private readonly TActivityUi _activityUi;
-
+        //'Owner' in this context is the name of property holding the collection that contains particular control
         private readonly Dictionary<IControlDefinition, string> _ownerNameByControl; 
         public EnhancedValidationManager(ValidationResultsCM validationResults, EnhancedTerminalActivity<TActivityUi> activity,  ICrateStorage payload) : base(validationResults, payload)
         {
