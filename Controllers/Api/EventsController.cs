@@ -17,75 +17,19 @@ namespace HubWeb.Controllers
     /// <summary>
     /// Central logging Events controller
     /// </summary>
-    public class EventController : ApiController
+    public class EventsController : ApiController
     {
         private readonly IEvent _event;
         private readonly ICrateManager _crate;
         private IJobDispatcher _jobDispatcher;
 
-        private delegate void EventRouter(LoggingDataCm loggingDataCm);
+        private delegate void EventRouter(LoggingDataCM loggingDataCm);
 
-        public EventController()
+        public EventsController()
         {
             _event = ObjectFactory.GetInstance<IEvent>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
             _jobDispatcher = ObjectFactory.GetInstance<IJobDispatcher>();
-        }
-
-        private EventRouter GetEventRouter(EventCM eventCm)
-        {
-            if (eventCm.EventName.Equals("Terminal Incident"))
-            {
-                return _event.HandleTerminalIncident;
-            }
-
-            if (eventCm.EventName.Equals("Terminal Event"))
-            {
-                return _event.HandleTerminalEvent;
-            }
-
-            throw new InvalidOperationException("Unknown EventDTO with name: " + eventCm.EventName);
-        }
-
-        [HttpPost]
-        [ActionName("gen1_event")]
-        public IHttpActionResult CreateEventLog(CrateDTO submittedEventsCrate)
-        {
-            var eventCm = _crate.FromDto(submittedEventsCrate).Get<EventCM>();
-
-            if (eventCm.CrateStorage == null)
-            {
-                return Ok();
-            }
-
-            //Request of alex to keep things simple for now
-            if (eventCm.CrateStorage.Count != 1)
-            {
-                throw new InvalidOperationException("Only single crate can be processed for now.");
-            }
-
-            EventRouter currentRouter = GetEventRouter(eventCm);
-
-            var errorMsgList = new List<string>();
-            foreach (var crateDTO in eventCm.CrateStorage)
-            {
-                if (crateDTO.ManifestType.Id != (int)MT.LoggingData)
-                {
-                    errorMsgList.Add("Don't know how to process an EventReport with the Contents: " + JsonConvert.SerializeObject(_crate.ToDto(crateDTO)));
-                    continue;
-                }
-
-                var loggingData = crateDTO.Get<LoggingDataCm>();
-                currentRouter(loggingData);
-            }
-
-            if (errorMsgList.Count > 0)
-            {
-                throw new InvalidOperationException(String.Join(";;;", errorMsgList));
-            }
-
-            return Ok();
-
         }
 
         public static Task ProcessEventsInternal(CrateDTO raw)
@@ -95,8 +39,7 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        [ActionName("processevents")]
-        public async Task<IHttpActionResult> ProcessEvents(CrateDTO raw)
+        public async Task<IHttpActionResult> Post(CrateDTO raw)
         {
             //check if its not null
             if (raw == null)
@@ -113,7 +56,6 @@ namespace HubWeb.Controllers
 
             var eventReportMS = curCrateStandardEventReport.Get<EventReportCM>();
             Logger.LogInfo($"Crate {raw.Id} with incoming event '{eventReportMS.EventNames}' is received for external account '{eventReportMS.ExternalAccountId}'");
-
 
             if (eventReportMS.EventPayload == null)
             {

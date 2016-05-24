@@ -33,7 +33,7 @@ namespace terminalBaseTests.Infrastructure
 
             //verify that the post call is made to Fr8 Event Controller
             restClientMock.Verify(
-                client => client.PostAsync(new Uri(CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "api/v1/event/gen1_event", UriKind.Absolute), 
+                client => client.PostAsync(new Uri(CloudConfigurationManager.GetSetting("CoreWebServerUrl") + "api/v1/events", UriKind.Absolute), 
                     It.IsAny<CrateDTO>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()), Times.Exactly(1));
 
             restClientMock.VerifyAll();

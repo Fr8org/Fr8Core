@@ -295,7 +295,6 @@
     <Compile Include="Managers\APIManagers\Packagers\SendGrid\TransportWrapper.cs" />
     <Compile Include="Managers\HangfireJobDispatcher.cs" />
     <Compile Include="Interfaces\IJobDispatcher.cs" />
-    <Compile Include="Managers\PlanManager.cs" />
     <Compile Include="Interfaces\IFact.cs" />
     <Compile Include="Interfaces\IOrganization.cs" />
     <Compile Include="Security\AuthorizeActivityInterceptor.cs" />

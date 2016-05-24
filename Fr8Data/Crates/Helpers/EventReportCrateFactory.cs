@@ -13,20 +13,20 @@ namespace Fr8Data.Crates.Helpers
 
         public Crate Create(String eventName, String palletId, IEnumerable<Crate> crates)
         {
-            var eventDTO = new EventCM
+            var eventDTO = new EventReportCM
             {
-                EventName = eventName,
-                PalletId = palletId,
+                EventNames = eventName,
+                ExternalAccountId = "system1@fr8.co"
             };
 
-            eventDTO.CrateStorage.AddRange(crates);
+            eventDTO.EventPayload.AddRange(crates);
 
-            return Crate.FromContent("Fr8 Terminal Event or Incident Report", eventDTO);
+            return Crate.FromContent("Fr8 Terminal Fact or Incident Report", eventDTO);
         }
 
-        public Crate Create(EventCM eventCm)
+        public Crate Create(EventReportCM eventCm)
         {
-            return Crate.FromContent("Fr8 Terminal Event or Incident Report", eventCm);
+            return Crate.FromContent("Fr8 Terminal Fact or Incident Report", eventCm);
         }
     }
 }

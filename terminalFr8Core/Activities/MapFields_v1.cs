@@ -30,7 +30,7 @@ namespace terminalFr8Core.Activities
 
         public MapFields_v1() : base(false)
         {
-            
+
         }
 
         /// <summary>
@@ -108,8 +108,8 @@ namespace terminalFr8Core.Activities
             mappedFields = mappedFields.Where(x => x.Key != null && x.Value != null).ToList();
             try
             {
-                var processedMappedFields = mappedFields.Select(a => new FieldDTO(a.Value, ExtractPayloadFieldValue(a.Key)));
-                Payload.Add(Crate.FromContent("MappedFields", new StandardPayloadDataCM(processedMappedFields)));
+                //var processedMappedFields = mappedFields.Select(a => new FieldDTO(a.Value, ExtractPayloadFieldValue(a.Key)));
+                //Payload.Add(Crate.FromContent("MappedFields", new StandardPayloadDataCM(processedMappedFields)));
                 Success();
             }
             catch (ApplicationException exception)
