@@ -8,6 +8,12 @@ Terminals can generate events and post them to the Hub. Event data is crated usi
 
 Separately, Terminals will often communicate with their corresponding web services and register for events to be sent directly to the Terminal. For example, the DocuSign terminal will register with DocuSign to receive notification of events affecting certain Fr8 users that have DocuSign accounts.
 
+## Facts and Incidents
+
+Terminals can use events endpoint to report Facts and Incidents to the Hub. In order to do that EventReport crate has to have ExternalAccountId set to "system1@fr8.co" and to have LoggingData crates in its crate storage.
+LoggingData crates with "Terminal Fact" name are processed as Facts, and crates with "Terminal Incident" name are processed as Incidents.
+Facts are supposed to represent data that is useful for bussines analysis, while Incidents are supposed to represent critical issues in the work of the terminal.
+
 ## At Design-Time
 
 Activities can “subscribe” to an event by adding to themselves a Crate of manifest “Standard Event Subscriptions” and loading it with the names of the events they want to subscribe to.
