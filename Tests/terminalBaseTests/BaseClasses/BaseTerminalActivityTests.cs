@@ -115,7 +115,7 @@ namespace terminalBaseTests.BaseClasses
                 uow.PlanRepository.Add(new PlanDO
                 {
                     Name="Test plan",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { FixtureData.TestActivity2Tree()}
                 });
                 uow.SaveChanges();
@@ -136,7 +136,7 @@ namespace terminalBaseTests.BaseClasses
                 uow.PlanRepository.Add(new PlanDO
                 {
                     Name = "Test plan",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { FixtureData.TestActivity2Tree() }
                 });
                 uow.SaveChanges();
@@ -163,7 +163,7 @@ namespace terminalBaseTests.BaseClasses
                 uow.PlanRepository.Add(new PlanDO
                 {
                     Name = "Test plan",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { FixtureData.TestActivity2Tree() }
                 });
                 uow.SaveChanges();
@@ -194,7 +194,7 @@ namespace terminalBaseTests.BaseClasses
                 uow.PlanRepository.Add(new PlanDO
                 {
                     Name = "Test plan",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { FixtureData.TestActivity2Tree() }
                 });
                 uow.SaveChanges();

@@ -31,7 +31,7 @@ namespace UtilitiesTesting.Fixtures
                 Id = GetTestGuidById(1000),
                 Name = "Test Plan Name",
                 Description = "Test Plan Description",
-                PlanState = PlanState.Active,
+                PlanState = PlanState.Running,
             };
         }
 
