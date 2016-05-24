@@ -6,10 +6,10 @@
             @"select {0} from (
 	            select distinct [md].*
 	            from [MtData] [md]
-	            inner join [AspNetUserRoles] [anur]
-		            on [anur].[UserId] = @account1
 	            inner join [MtTypes] [mt]
 		            on [mt].[Id] = [md].[Type]
+	            left join [AspNetUserRoles] [anur]
+		            on [anur].[UserId] = @account1
 	            left join [RolePermissions] [rp]
 		            on [rp].[RoleId] = [anur].[RoleId]
 	            left join [PermissionSets] [ps]
