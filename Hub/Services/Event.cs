@@ -85,7 +85,7 @@ namespace Hub.Services
                         var errorMsgList = new List<string>();
                         foreach (var crate in eventCm.EventPayload)
                         {
-                            if (crate.ManifestType.Id != (int)MT.LoggingData)
+                            if (crate.ManifestType.Id != (int)Fr8Data.Constants.MT.LoggingData)
                             {
                                 errorMsgList.Add("Don't know how to process an EventReport with the Contents: " + _crateManager.ToDto(crate));
                                 continue;
