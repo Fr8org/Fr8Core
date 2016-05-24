@@ -15,18 +15,18 @@
             '$resource',
             ($resource: ng.resource.IResourceService): IManageAuthTokenService =>
                 <IManageAuthTokenService> $resource(
-                    '/api/manageAuthTokens',
+                    '/api/authentication',
                     {},
                     {
                         list: {
                             method: 'GET',
                             isArray: true,
-                            url: '/api/manageAuthToken'
+                            url: '/api/authentication/usertokens'
                         },
 
                         revoke: {
                             method: 'POST',
-                            url: '/api/manageAuthToken/revoke/:id',
+                            url: '/api/authentication/revoketoken/:id',
                             params: {
                                 id: '@id'
                             }

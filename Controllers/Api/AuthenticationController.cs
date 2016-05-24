@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Configuration;
+using System.Linq;
 using System.Net.Http;
 using System.Security.Claims;
 using System.Threading.Tasks;
@@ -60,6 +62,7 @@ namespace HubWeb.Controllers
             return Ok(new
             {
                 TerminalId = response.AuthorizationToken?.TerminalID,
+                TerminalName = terminalDO.Name,
                 AuthTokenId = response.AuthorizationToken?.Id.ToString(),
                 Error = response.Error
             });
@@ -69,14 +72,15 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         [ActionName("initial_url")]
         public async Task<IHttpActionResult> GetOAuthInitiationURL(
-            [FromUri(Name = "id")]int terminalId)
+            [FromUri(Name = "terminal")]string name,
+            [FromUri(Name = "version")]string version)
         {
             Fr8AccountDO account;
             TerminalDO terminal;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                terminal = _terminal.GetByKey(terminalId);
+                terminal = _terminal.GetByNameAndVersion(name, version);
 
                 if (terminal == null)
                 {
@@ -176,6 +180,90 @@ namespace HubWeb.Controllers
         public IHttpActionResult RenewToken([FromBody]AuthorizationTokenDTO token)
         {
             _authorization.RenewToken(Guid.Parse(token.Id), token.ExternalAccountId, token.Token);
+            return Ok();
+        }
+
+        // TODO: FR-3383, make sure endpoint GET /manageauthtokens/ no longer used!
+        /// <summary>
+        /// Extract user's auth-tokens and parent terminals.
+        /// </summary>
+        [HttpGet]
+        [Fr8ApiAuthorize]
+        [Fr8HubWebHMACAuthenticate]
+        public IHttpActionResult UserTokens()
+        {
+            var terminals = _terminal.GetAll();
+            var authTokens = _authorization.GetAllTokens(User.Identity.GetUserId());
+
+            var groupedTerminals = terminals
+                .Where(x => authTokens.Any(y => y.TerminalID == x.Id))
+                .OrderBy(x => x.Name)
+                .Select(x => new ManageAuthToken_Terminal
+                {
+                    Id = x.Id,
+                    Name = x.Name,
+                    Label = x.Label,
+                    AuthTokens = authTokens
+                        .Where(y => y.TerminalID == x.Id && !string.IsNullOrEmpty(y.ExternalAccountId))
+                        .Select(y => new ManageAuthToken_AuthToken
+                        {
+                            Id = y.Id,
+                            ExternalAccountName = y.DisplayName,
+                            IsMain = y.IsMain
+                        })
+                        .OrderBy(y => y.ExternalAccountName)
+                        .ToList()
+                })
+                .ToList();
+
+            return Ok(groupedTerminals);
+        }
+
+        // TODO: FR-3383, make sure endpoint POST /manageauthtokens/revoke no longer used!
+        /// <summary>
+        /// Revoke token.
+        /// </summary>
+        [HttpPost]
+        [Fr8ApiAuthorize]
+        [Fr8HubWebHMACAuthenticate]
+        public IHttpActionResult RevokeToken(Guid id)
+        {
+            var accountId = User.Identity.GetUserId();
+            _authorization.RevokeToken(accountId, id);
+
+            return Ok();
+        }
+
+        // TODO: FR-3383, make sure endpoint POST /manageauthtokens/setdefault no longer used!
+        [HttpPost]
+        [Fr8ApiAuthorize]
+        [Fr8HubWebHMACAuthenticate]
+        public IHttpActionResult SetDefaultToken(Guid id)
+        {
+            var userId = User.Identity.GetUserId();
+            _authorization.SetMainToken(userId, id);
+
+            return Ok();
+        }
+
+        // TODO: FR-3383, make sure endpoint POST /manageauthtokens/apply no longer used!
+        [HttpPost]
+        [Fr8ApiAuthorize]
+        [Fr8HubWebHMACAuthenticate]
+        public IHttpActionResult GrantTokens(IEnumerable<ManageAuthToken_Apply> authTokenList)
+        {
+            var userId = User.Identity.GetUserId();
+
+            foreach (var applyItem in authTokenList)
+            {
+                _authorization.GrantToken(applyItem.ActivityId, applyItem.AuthTokenId);
+
+                if (applyItem.IsMain)
+                {
+                    _authorization.SetMainToken(userId, applyItem.AuthTokenId);
+                }
+            }
+
             return Ok();
         }
     }

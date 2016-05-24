@@ -545,8 +545,8 @@ module dockyard.controllers {
         private chooseAuthToken(action: model.ActivityDTO) {
             var self = this;
 
-            var modalScope = <any>self.$scope.$new(true);
-            modalScope.actionIds = [action.id];
+            var modalScope = <IAuthenticationDialogScope>self.$scope.$new(true);
+            modalScope.activities = [action];
 
             self.$modal.open({
                 animation: true,

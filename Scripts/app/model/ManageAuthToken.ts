@@ -1,7 +1,8 @@
 ﻿module dockyard.model {
 
     export class ManageAuthToken_TerminalDTO {
-        id: number;
+        // TODO: FR-3383, remove.
+        // id: number;
         name: string;
         label: string;
         version: string;
@@ -10,13 +11,15 @@
         selectedAuthTokenId: number;
 
         constructor(
-            id: number,
+            // TODO: FR-3383, remove.
+            // id: number,
             name: string,
             authTokens: Array<ManageAuthToken_AuthTokenDTO>,
             authenticationType: number,
             selectedAuthTokenId: number) {
 
-            this.id = id;
+            // TODO: FR-3383, remove.
+            // this.id = id;
             this.name = name;
             this.authTokens = authTokens;
             this.authenticationType = authenticationType;
