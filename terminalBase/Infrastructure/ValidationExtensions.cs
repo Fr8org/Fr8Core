@@ -49,5 +49,22 @@ namespace TerminalBase.Infrastructure
 
             return true;
         }
+
+        public static bool ValidateCrateChooserNotEmpty(this ValidationManager validationManager, CrateChooser crateChooser, string errorMessage)
+        {
+            if (!crateChooser.HasValue)
+            {
+                validationManager.SetError(errorMessage, crateChooser);
+                return false;
+            }
+
+            if (crateChooser.CanGetValue(validationManager.Payload) && crateChooser.GetValue(validationManager.Payload) == null)
+            {
+                validationManager.SetError(errorMessage, crateChooser);
+                return false;
+            }
+
+            return true;
+        }
     }
 }

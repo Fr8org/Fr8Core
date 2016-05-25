@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
+using Data.Entities;
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
@@ -13,12 +14,28 @@ using Newtonsoft.Json;
 using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Interfaces;
+using TerminalBase.BaseClasses;
 using Google.GData.Client;
+using TerminalBase.Errors;
+using TerminalBase.Infrastructure;
 
 namespace terminalGoogle.Actions
 {
     public class Save_To_Google_Sheet_v1 : BaseGoogleTerminalActivity<Save_To_Google_Sheet_v1.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Save_To_Google_Sheet",
+            Label = "Save To Google Sheet",
+            Version = "1",
+            Category = ActivityCategory.Forwarders,
+            Terminal = TerminalData.TerminalDTO,
+            NeedsAuthentication = true,
+            MinPaneWidth = 300,
+            WebService = TerminalData.WebServiceDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public CrateChooser UpstreamCrateChooser { get; set; }
@@ -131,12 +148,33 @@ namespace terminalGoogle.Actions
         private const string SelectedSpreadsheetCrateLabel = "Selected Spreadsheet";
 
         private readonly IGoogleSheet _googleSheet;
-        private readonly IGoogleIntegration _googleIntegration;
+        
+        private string SelectedSpreadsheet
+        {
+            get
+            {
+                var storedValue = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == SelectedSpreadsheetCrateLabel);
+                return storedValue?.Content.Fields.First().Key;
+            }
+            set
+            {
+                Storage.RemoveByLabel(SelectedSpreadsheetCrateLabel);
+                if (string.IsNullOrEmpty(value))
+                {
+                    return;
+                }
+                Storage.Add(Crate<FieldDescriptionsCM>.FromContent(SelectedSpreadsheetCrateLabel, new FieldDescriptionsCM(new FieldDTO(value)), AvailabilityType.Configuration));
+            }
+        }
 
         public Save_To_Google_Sheet_v1()
         {
             _googleSheet = ObjectFactory.GetInstance<IGoogleSheet>();
-            _googleIntegration = ObjectFactory.GetInstance<IGoogleIntegration>();
+        }
+
+        private GoogleAuthDTO GetGoogleAuthToken()
+        {
+            return JsonConvert.DeserializeObject<GoogleAuthDTO>(AuthorizationToken.Token);
         }
 
         protected override async Task InitializeETA()
@@ -169,59 +207,38 @@ namespace terminalGoogle.Actions
             }
         }
 
-        private string SelectedSpreadsheet
+        protected override Task<bool> ValidateETA()
         {
-            get
-            {
-                var storedValue = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == SelectedSpreadsheetCrateLabel);
-                return storedValue?.Content.Fields.First().Key;
-            }
-            set
-            {
-                Storage.RemoveByLabel(SelectedSpreadsheetCrateLabel);
-                if (string.IsNullOrEmpty(value))
-                {
-                    return;
-                }
-                Storage.Add(Crate<FieldDescriptionsCM>.FromContent(SelectedSpreadsheetCrateLabel, new FieldDescriptionsCM(new FieldDTO(value)), AvailabilityType.Configuration));
-            }
-        }
-
-        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
-        {
-            Name = "Save_To_Google_Sheet",
-            Label = "Save To Google Sheet",
-            Version = "1",
-            Category = ActivityCategory.Forwarders,
-            Terminal = TerminalData.TerminalDTO,
-            NeedsAuthentication = true,
-            MinPaneWidth = 300,
-            WebService = TerminalData.WebServiceDTO
-        };
-        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
-
-        protected override async Task RunETA()
-        {
-            if (!ActivityUI.UpstreamCrateChooser.CrateDescriptions.Any(x => x.Selected))
-            {
-                RaiseError($"Failed to run {ActivityTemplateDTO.Name} because upstream crate is not selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
-            }
+            ValidationManager.ValidateCrateChooserNotEmpty(ActivityUI.UpstreamCrateChooser, "upstream crate is not selected");
+            var status = true;
             if ((ActivityUI.UseNewSpreadsheetOption.Selected && string.IsNullOrWhiteSpace(ActivityUI.NewSpreadsheetName.Value))
                 || (ActivityUI.UseExistingSpreadsheetOption.Selected && string.IsNullOrEmpty(ActivityUI.ExistingSpreadsheetsList.Value)))
             {
-                RaiseError($"Failed to run {ActivityTemplateDTO.Name} because spreadsheet name is not specified", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                ValidationManager.SetError("Spreadsheet name is not specified", ActivityUI.SpreadsheetSelectionGroup);
+                status = false;
             }
+
             if ((ActivityUI.UseNewWorksheetOption.Selected && string.IsNullOrWhiteSpace(ActivityUI.NewWorksheetName.Value))
                 || (ActivityUI.UseExistingWorksheetOption.Selected && string.IsNullOrEmpty(ActivityUI.ExistingWorksheetsList.Value)))
             {
-                RaiseError($"Failed to run {ActivityTemplateDTO.Name} because worksheet name is not specified", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                ValidationManager.SetError("Worksheet name is not specified", ActivityUI.WorksheetSelectionGroup);
+                status = false;
             }
+
+            return Task.FromResult(status);
+        }
+        
+        protected override async Task RunETA()
+        {
             var crateToProcess = FindCrateToProcess();
+
             if (crateToProcess == null)
             {
-                RaiseError($"Failed to run {ActivityTemplateDTO.Name} because specified upstream crate was not found in payload");
+                throw new ActivityExecutionException($"Failed to run {ActivityPayload.Name} because specified upstream crate was not found in payload");
             }
+
             var tableToSave = StandardTableDataCMTools.ExtractPayloadCrateDataToStandardTableData(crateToProcess);
+
             try
             {
                 var spreadsheetUri = await GetOrCreateSpreadsheet();
@@ -230,14 +247,12 @@ namespace terminalGoogle.Actions
             }
             catch (GDataRequestException ex)
             {
-                if (ex?.InnerException.Message.IndexOf("(401) Unauthorized") > -1)
+                if (ex.InnerException.Message.IndexOf("(401) Unauthorized") > -1)
                 {
                     throw new TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException();
                 }
-                else
-                {
-                    throw;
-                }
+
+                throw;
             }
         }
 

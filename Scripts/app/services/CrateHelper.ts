@@ -207,8 +207,27 @@
             }
         }
 
+        public resetValidationErrors(fields: Array<model.ControlDefinitionDTO>) {
+            for (var i = 0; i < fields.length; i++) {
+
+                fields[i].errorMessage = null;
+                
+                let field: any = fields[i];
+                if (field.controls) {
+                    this.resetValidationErrors((<model.ISupportsNestedFields>field).controls);
+                }
+                // If we encountered radiobuttonGroup, we need to check every individual option if it has any nested fields
+                if (field.radios) {
+                    this.resetValidationErrors((<model.RadioButtonGroup>field).radios);
+                }
+            }
+        }
+
         public setValidationErrors(fields: Array<model.ControlDefinitionDTO>, validationResults: model.ValidationResults) {
             for (var i = 0; i < fields.length; i++) {
+
+                fields[i].errorMessage = null;
+
                 this.setFieldValidationErrors(fields[i], validationResults);
 
                 let field: any = fields[i];
