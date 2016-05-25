@@ -45,7 +45,7 @@ namespace terminalTests.Integration
             hubMock.Setup(x => x.GetActivityTemplates(It.IsAny<string>(), It.IsAny<bool>()))
                    .Returns(Task.FromResult(ActivityTemplates));
             hubMock.Setup(x => x.GetActivityTemplates(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
-                   .Returns<string, string>((tags, user) => Task.FromResult(ActivityTemplates.Where(x => x.Tags.Contains(tags)).ToList()));
+                   .Returns<string, string, bool>((tags, user, getLatest) => Task.FromResult(ActivityTemplates.Where(x => x.Tags.Contains(tags)).ToList()));
             hubMock.Setup(x => x.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
                    .Returns<ActivityDO, Guid, string>((act, contId, user) => Task.FromResult(HealthMonitor_FixtureData.PayloadWithOnlyOperationalState()));
             ObjectFactory.Container.Inject(hubMock);
