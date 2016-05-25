@@ -25,9 +25,6 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Post(AlarmDTO alarmDTO)
         {
-            //TODO what happens to AlarmsController? does it stay in memory all this time?
-            //TODO inspect this and change callback function to a static function if necessary
-
             BackgroundJob.Schedule(() => Execute(alarmDTO), alarmDTO.StartTime);
 
             //TODO: Commented as part of DO - 1520. Need to rethink about this.
@@ -53,10 +50,10 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        public async Task Schedule(string external_account_id, string fr8AccountId, string minutes, string terminalId)
+        public async Task Polling(string job_id, string fr8_account_id, string minutes, string terminal_id)
         {
-            string jobId = external_account_id.GetHashCode().ToString();
-            RecurringJob.AddOrUpdate(jobId, () => ExecuteSchedulledJob(external_account_id, fr8AccountId, minutes, terminalId), "*/" + minutes + " * * * *");
+            string jobId = job_id.GetHashCode().ToString();
+            RecurringJob.AddOrUpdate(jobId, () => ExecuteSchedulledJob(job_id, fr8_account_id, minutes, terminal_id), "*/" + minutes + " * * * *");
         }
 
         public void ExecuteSchedulledJob(string external_account_id, string fr8AccountId, string minutes, string terminalId)
@@ -74,8 +71,8 @@ namespace HubWeb.Controllers
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     var terminal = uow.TerminalRepository.GetQuery().Where(a => a.PublicIdentifier == terminalId).FirstOrDefault();
-                    string url = terminal.Endpoint + "/terminals/" + terminal.Name + "/polling?"
-                        + string.Format("external_account_Id={0}&fr8AccountId={1}&polling_interval={2}", external_account_id, fr8AccountId, minutes);
+                    string url = terminal.Endpoint + "/terminals/" + terminal.Name + "/polling_notifications?"
+                        + string.Format("job_id={0}&fr8_account_id={1}&polling_interval={2}", external_account_id, fr8AccountId, minutes);
 
                     using (var client = new HttpClient())
                     {
