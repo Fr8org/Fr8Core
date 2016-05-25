@@ -166,6 +166,7 @@ namespace terminalExcel.Activities
             if (string.IsNullOrEmpty(ActivityUI.FilePicker.Value))
             {
                 RaiseError("Excel file is not selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                return;
             }
 
             var byteArray = await new ExcelUtils(HubCommunicator, CurrentUserId).GetExcelFileAsByteArray(ActivityUI.FilePicker.Value);
