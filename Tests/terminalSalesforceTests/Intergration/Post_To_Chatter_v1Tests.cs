@@ -12,6 +12,7 @@ using Data.Entities;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using TerminalBase.Infrastructure;
 
 namespace terminalSalesforceTests.Intergration
 {
