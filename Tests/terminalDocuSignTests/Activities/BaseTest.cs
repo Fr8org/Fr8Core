@@ -61,13 +61,6 @@ namespace terminalDocuSignTests.Activities
             }
         }
 
-        protected void AssertControlErrorMessage(ValidationResultsCM validationResults, string controlName, string errorMessage)
-        {
-            var errors = validationResults.GetErrorsForControl(controlName);
-
-            Assert.IsTrue(errors.Any(x => x == errorMessage), "Error message is missing for control: " + controlName);
-        }
-
         protected void AssertErrorMessage(ValidationResultsCM validationResults, string errorMessage)
         {
             Assert.IsTrue(validationResults.ValidationErrors.Any(x => x.ErrorMessage == errorMessage), $"Error message '{errorMessage}' is missing");

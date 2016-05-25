@@ -427,6 +427,10 @@ namespace Fr8Data.Control
 
     public class TextSource : DropDownList
     {
+        public const string SpecificValueSource = "specific";
+
+        public const string UpstreamValueSrouce = "upstream";
+
         [JsonProperty("initialLabel")]
         public string InitialLabel;
 
@@ -439,16 +443,15 @@ namespace Fr8Data.Control
         [JsonProperty("valueSource")]
         public string ValueSource;
 
-        public TextSource() : base()
+        public TextSource()
         {
             Type = ControlTypes.TextSource;
         }
 
-        public TextSource(string initialLabel, string upstreamSourceLabel, string name) : base()
+        public TextSource(string initialLabel, string upstreamSourceLabel, string name) : this()
         {
-            Type = ControlTypes.TextSource;
-            this.InitialLabel = initialLabel;
-            this.Name = name;
+            InitialLabel = initialLabel;
+            Name = name;
             Source = new FieldSourceDTO
             {
                 Label = upstreamSourceLabel,
@@ -460,17 +463,15 @@ namespace Fr8Data.Control
         {
             switch (ValueSource)
             {
-                case "specific":
+                case null:
+                case SpecificValueSource:
                     return TextValue;
-
-                case "upstream":
+                case UpstreamValueSrouce:
                     if (payloadCrateStorage == null)
                     {
                         throw new Exception("Can't resolve upstream value without payload crate storage provided");
                     }
-
                     return payloadCrateStorage.FindField(this.selectedKey);
-
                 default:
                     return null;
             }
@@ -483,7 +484,7 @@ namespace Fr8Data.Control
                 return true;
             }
 
-            if (ValueSource == "upstream" && payloadCrateStorage == null)
+            if (ValueSource == UpstreamValueSrouce && payloadCrateStorage == null)
             {
                 return false;
             }
@@ -492,8 +493,8 @@ namespace Fr8Data.Control
         }
 
         public bool HasValue => !string.IsNullOrEmpty(ValueSource) && (HasUpstreamValue || HasSpecificValue);
-        public bool HasUpstreamValue => (ValueSource == "upstream" && !string.IsNullOrEmpty(this.Value));
-        public bool HasSpecificValue => (ValueSource == "specific" && !string.IsNullOrEmpty(this.TextValue));
+        public bool HasUpstreamValue => ValueSource == UpstreamValueSrouce && !string.IsNullOrEmpty(Value);
+        public bool HasSpecificValue => ValueSource == SpecificValueSource && !string.IsNullOrEmpty(TextValue);
     }
 
     public class Button : ControlDefinitionDTO
