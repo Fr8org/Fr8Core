@@ -15,13 +15,12 @@ namespace terminalFr8Core.Activities
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            Name = "TestAndBranch",
-            Label = "Test and Branch",
+            Name = "MakeADecision",
+            Label = "Make a Decision",
             Version = "1",
             Category = ActivityCategory.Processors,
             NeedsAuthentication = false,
             MinPaneWidth = 550,
-            Tags = Tags.AggressiveReload,
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO
         };
