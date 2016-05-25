@@ -339,7 +339,7 @@ namespace terminalFr8Core.Actions
             };
             var infoText = new TextBlock()
             {
-                Value = "Create a form to app builder. Fr8 will generate a URL that you can distribute to users. The URL will launch this plan and collect data.",
+                Value = "Start by adding UI controls that your users will see. Then add additional activities. When you click Run, we'll generate a URL that you can use to launch your App. <a href='http://documentation.fr8.co/action-development-building-documentation/' target='_blank'>?</a>",
                 Name = "info_text"
             };
 
