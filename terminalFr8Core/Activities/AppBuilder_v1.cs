@@ -163,9 +163,9 @@ namespace terminalFr8Core.Activities
             return Path.GetExtension(path1);
         }
 
-        private byte[] ProcessExcelFile(string filePath)
+        private async Task<byte[]> ProcessExcelFile(string filePath)
         {
-            var byteArray = new ExcelUtils(HubCommunicator, CurrentUserId).GetExcelFileAsByteArray(filePath);
+            var byteArray = await new ExcelUtils(HubCommunicator, CurrentUserId).GetExcelFileAsByteArray(filePath);
             var payloadCrate = Crate.FromContent(RuntimeCrateLabelPrefix, ExcelUtils.GetExcelFile(byteArray, filePath, false), AvailabilityType.RunTime);
             Payload.Add(payloadCrate);
             return byteArray;
@@ -198,7 +198,7 @@ namespace terminalFr8Core.Activities
             fieldsCrate.Content.PayloadObjects[0].PayloadObject.Add(new FieldDTO(textBox.Label, textBox.Value));
         }
 
-        private void ProcessFilePickers( IEnumerable<ControlDefinitionDTO> filepickers)
+        private async Task ProcessFilePickers( IEnumerable<ControlDefinitionDTO> filepickers)
         {
             int labeless_pickers = 0;
             foreach (FilePicker filepicker in filepickers)
@@ -208,7 +208,7 @@ namespace terminalFr8Core.Activities
                 switch (GetUriFileExtension(uploadFilePath))
                 {
                     case ".xlsx":
-                        file = ProcessExcelFile(uploadFilePath);
+                        file = await ProcessExcelFile(uploadFilePath);
                         break;
                 }
 
@@ -234,7 +234,7 @@ namespace terminalFr8Core.Activities
             }
         }
 
-        private void ProcessCollectionControls(StandardConfigurationControlsCM collectionControls)
+        private async Task ProcessCollectionControls(StandardConfigurationControlsCM collectionControls)
         {
             var fieldsPayloadCrate = Crate.FromContent(RuntimeFieldCrateLabelPrefix, new StandardPayloadDataCM(new FieldDTO[] { }), AvailabilityType.RunTime);
             Payload.Add(fieldsPayloadCrate);
@@ -244,7 +244,7 @@ namespace terminalFr8Core.Activities
                 ProcessCollectionControl(controlDefinitionDTO);
             }
 
-            ProcessFilePickers(collectionControls.Controls.Where(a => a.Type == ControlTypes.FilePicker));
+            await ProcessFilePickers(collectionControls.Controls.Where(a => a.Type == ControlTypes.FilePicker));
         }
 
         protected Crate CreateCollectionControlsCrate()
@@ -313,7 +313,7 @@ namespace terminalFr8Core.Activities
             }
             RemoveFlagCrate();
             //this means we were run by clicking the submit button
-            ProcessCollectionControls(collectionControls);
+            await ProcessCollectionControls(collectionControls);
             Success();
         }
 

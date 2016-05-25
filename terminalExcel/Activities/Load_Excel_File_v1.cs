@@ -103,7 +103,7 @@ namespace terminalExcel.Activities
                     var selectedFileDescription = new FieldDTO(ActivityUI.FilePicker.Value, ExtractFileName(ActivityUI.FilePicker.Value));
                     var columnHeadersCrate = Crate.FromContent(
                         ColumnHeadersCrateLabel,
-                        excelUtils.GetColumnHeadersData(selectedFileDescription.Key,ColumnHeadersCrateLabel),
+                        await excelUtils.GetColumnHeadersData(selectedFileDescription.Key,ColumnHeadersCrateLabel),
                         AvailabilityType.Always
                     );
 
@@ -112,7 +112,7 @@ namespace terminalExcel.Activities
                     SelectedFileDescription = selectedFileDescription;
 
                     // Process table and get the Table and optionally (if one row) fields crate
-                    var fileAsByteArray = excelUtils.GetExcelFileAsByteArray(ActivityUI.FilePicker.Value);
+                    var fileAsByteArray = await excelUtils.GetExcelFileAsByteArray(ActivityUI.FilePicker.Value);
                     var tableCrates = GetExcelFileDescriptionCrates(fileAsByteArray, ActivityUI.FilePicker.Value, true, null, false);
 
                     foreach (var crate in tableCrates)
@@ -168,7 +168,7 @@ namespace terminalExcel.Activities
                 RaiseError("Excel file is not selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
 
-            var byteArray = new ExcelUtils(HubCommunicator, CurrentUserId).GetExcelFileAsByteArray(ActivityUI.FilePicker.Value);
+            var byteArray = await new ExcelUtils(HubCommunicator, CurrentUserId).GetExcelFileAsByteArray(ActivityUI.FilePicker.Value);
             var tableCrates = GetExcelFileDescriptionCrates(byteArray, ActivityUI.FilePicker.Value, true, null, true);
 
             var fileDescription = new StandardFileDescriptionCM
