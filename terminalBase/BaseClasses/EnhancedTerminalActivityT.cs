@@ -28,7 +28,7 @@ namespace TerminalBase.BaseClasses
         /**********************************************************************************/
 
         private const string ConfigurationValuesCrateLabel = "Configuration Values";
-        
+
         /**********************************************************************************/
 
         private bool _isRunTime;
@@ -50,6 +50,11 @@ namespace TerminalBase.BaseClasses
                 CheckRunTime("Payload storage is not available at the design time");
                 _currentPayloadStorage = value;
             }
+        }
+
+        protected ICrateStorage TryGetCurrentPayloadStorage()
+        {
+            return _currentPayloadStorage;
         }
 
         protected OperationalStateCM OperationalState
@@ -84,7 +89,7 @@ namespace TerminalBase.BaseClasses
         protected ICrateStorage CurrentActivityStorage { get; private set; }
         protected ActivityDO CurrentActivity { get; private set; }
         protected AuthorizationTokenDO AuthorizationToken { get; private set; }
-        protected T ConfigurationControls { get; private set; }
+        protected internal T ConfigurationControls { get; private set; }
         protected UpstreamQueryManager UpstreamQueryManager { get; private set; }
         protected UiBuilder UiBuilder { get; private set; }
         protected int LoopIndex => GetLoopIndex(OperationalState);
@@ -100,7 +105,7 @@ namespace TerminalBase.BaseClasses
             IsAuthenticationRequired = isAuthenticationRequired;
             UiBuilder = new UiBuilder();
             ActivityName = GetType().Name;
-        } 
+        }
 
         /**********************************************************************************/
 
@@ -180,7 +185,7 @@ namespace TerminalBase.BaseClasses
                 throw new InvalidOperationException(message);
             }
         }
-        
+
         /**********************************************************************************/
 
         private async Task InitialConfiguration(CrateSignaller crateSignaller)
@@ -200,38 +205,40 @@ namespace TerminalBase.BaseClasses
         private async Task FollowupConfiguration(CrateSignaller crateSignaller)
         {
             SyncConfControls();
-
-            CurrentActivityStorage.Remove<ValidationResultsCM>();
-
-            var validationManager = CreateValidationManager();
-
-            if (!DisableValidationOnFollowup)
-            {
-                await Validate(validationManager);
-            }
-
-            if (!validationManager.HasErrors || DisableValidationOnFollowup)
+            try
             {
                 CurrentActivityStorage.Remove<ValidationResultsCM>();
-                await Configure(crateSignaller, validationManager);
-            }
 
-            SyncConfControlsBack();
+                var validationManager = CreateValidationManager();
+
+                if (!DisableValidationOnFollowup)
+                {
+                    await Validate(validationManager);
+                }
+
+                if (!validationManager.HasErrors || DisableValidationOnFollowup)
+                {
+                    CurrentActivityStorage.Remove<ValidationResultsCM>();
+                    await Configure(crateSignaller, validationManager);
+                }
+            }
+            finally
+            {
+                SyncConfControlsBack();
+            }
         }
 
         /**********************************************************************************/
 
-        protected ValidationManager CreateValidationManager()
+        protected virtual ValidationManager CreateValidationManager()
         {
             var validationResults = CurrentActivityStorage.CrateContentsOfType<ValidationResultsCM>().FirstOrDefault();
-
             if (validationResults == null)
             {
                 validationResults = new ValidationResultsCM();
                 CurrentActivityStorage.Add(Crate.FromContent("Validation Errors", validationResults));
             }
-
-            return new ValidationManager(validationResults, _currentPayloadStorage);
+            return new EnhancedValidationManager<T>(validationResults, this, _currentPayloadStorage);
         }
 
         /**********************************************************************************/
@@ -251,23 +258,23 @@ namespace TerminalBase.BaseClasses
             using (var storage = CrateManager.GetUpdatableStorage(CurrentActivity))
             {
                 CurrentActivityStorage = storage;
-
                 SyncConfControls();
-
-                CurrentActivityStorage.Remove<ValidationResultsCM>();
-
-                var validationManager = CreateValidationManager();
-
-                await Validate(validationManager);
-
-                if (!validationManager.HasErrors)
+                try
                 {
                     CurrentActivityStorage.Remove<ValidationResultsCM>();
-                    await Activate();
+                    var validationManager = CreateValidationManager();
+                    await Validate(validationManager);
+                    if (!validationManager.HasErrors)
+                    {
+                        CurrentActivityStorage.Remove<ValidationResultsCM>();
+                        await Activate();
+                    }
                 }
-               
+                finally
+                {
+                    SyncConfControlsBack();
+                }
             }
-
             return curActivityDO;
         }
 
@@ -283,8 +290,14 @@ namespace TerminalBase.BaseClasses
             {
                 CurrentActivityStorage = storage;
                 SyncConfControls();
-
-                await Deactivate();
+                try
+                {
+                    await Deactivate();
+                }
+                finally
+                {
+                    SyncConfControlsBack();
+                }
             }
 
             return curActivityDO;
@@ -317,12 +330,11 @@ namespace TerminalBase.BaseClasses
 
             AuthorizationToken = authTokenDO;
             CurrentActivity = curActivityDO;
-            
+
             UpstreamQueryManager = new UpstreamQueryManager(CurrentActivity, HubCommunicator, CurrentFr8UserId);
 
             _isRunTime = true;
 
-            var activityStorageContents = CurrentActivity.CrateStorage;
             using (var payloadstorage = CrateManager.GetUpdatableStorage(processPayload))
             using (var activityStorage = CrateManager.GetUpdatableStorage(CurrentActivity))
             {
@@ -335,11 +347,10 @@ namespace TerminalBase.BaseClasses
                 {
                     throw new InvalidOperationException("Operational state crate is not found");
                 }
-
                 SyncConfControls();
-
                 try
                 {
+
                     var validationCm = new ValidationResultsCM();
                     var validationManager = new ValidationManager(validationCm, CurrentPayloadStorage);
 
@@ -377,22 +388,9 @@ namespace TerminalBase.BaseClasses
                     Error(ex.Message);
                 }
             }
-            try
-            {
-                var previousActivityStorage = JToken.Parse(activityStorageContents);
-                var currentActivityStorage = JToken.Parse(CurrentActivity.CrateStorage);
-                if (!JToken.DeepEquals(previousActivityStorage, currentActivityStorage))
-                {
-                    await HubCommunicator.SaveActivity(CurrentActivity, CurrentFr8UserId);
-                }
-            }
-            catch (Exception ex)
-            {
-                Error(ex.Message);
-            }
             return processPayload;
         }
-        
+
         /**********************************************************************************/
 
         protected T AssignNamesForUnnamedControls(T configurationControls)
@@ -410,19 +408,19 @@ namespace TerminalBase.BaseClasses
 
             return configurationControls;
         }
-        
+
         /**********************************************************************************/
 
         protected virtual T CrateConfigurationControls()
         {
-            var uiBuilderConstructor = typeof (T).GetConstructor(new [] {typeof (UiBuilder)});
+            var uiBuilderConstructor = typeof(T).GetConstructor(new[] { typeof(UiBuilder) });
 
             if (uiBuilderConstructor != null)
             {
-                return AssignNamesForUnnamedControls((T) uiBuilderConstructor.Invoke(new object[] {UiBuilder}));
+                return AssignNamesForUnnamedControls((T)uiBuilderConstructor.Invoke(new object[] { UiBuilder }));
             }
 
-            var defaultConstructor = typeof (T).GetConstructor(new Type[0]);
+            var defaultConstructor = typeof(T).GetConstructor(new Type[0]);
 
             if (defaultConstructor == null)
             {
@@ -526,103 +524,18 @@ namespace TerminalBase.BaseClasses
         private void SyncConfControls()
         {
             var ui = CurrentActivityStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-
             if (ui == null)
             {
                 throw new InvalidOperationException("Configuration controls crate is missing");
             }
-
             ConfigurationControls = CrateConfigurationControls();
             ConfigurationControls.SyncWith(ui);
-            
             if (ui.Controls != null)
             {
-                var dynamicControlsCollection = Fr8ReflectionHelper.GetMembers(ConfigurationControls.GetType()).Where(x => x.CanRead && x.GetCustomAttribute<DynamicControlsAttribute>() != null && CheckIfMemberIsControlsCollection(x)).ToDictionary(x => x.Name, x => x);
-
-                if (dynamicControlsCollection.Count > 0)
-                {
-                    foreach (var control in ui.Controls)
-                    {
-                        if (string.IsNullOrWhiteSpace(control.Name))
-                        {
-                            continue;
-                        }
-
-                        var delim = control.Name.IndexOf('_');
-
-                        if (delim <= 0)
-                        {
-                            continue;
-                        }
-
-                        var prefix = control.Name.Substring(0, delim);
-                        IMemberAccessor member;
-
-                        if (!dynamicControlsCollection.TryGetValue(prefix, out member))
-                        {
-                            continue;
-                        }
-
-                        var controlsCollection = (IList)member.GetValue(ConfigurationControls);
-
-                        if (controlsCollection == null && (!member.CanWrite || member.MemberType.IsAbstract || member.MemberType.IsInterface))
-                        {
-                            continue;
-                        }
-
-                        if (controlsCollection == null)
-                        {
-                            controlsCollection = (IList)Activator.CreateInstance(member.MemberType);
-                            member.SetValue(ConfigurationControls, controlsCollection);
-                        }
-
-                        control.Name = control.Name.Substring(delim + 1);
-                        controlsCollection.Add(control);
-                    }
-                }
+                ConfigurationControls.RestoreDynamicControlsFrom(ui);
             }
         }
 
-        /**********************************************************************************/
-
-        private static bool CheckIfMemberIsControlsCollection(IMemberAccessor member)
-        {
-            if (member.MemberType.IsInterface && CheckIfTypeIsControlsCollection(member.MemberType))
-            {
-                return true;
-            }
-
-            foreach (var @interface in member.MemberType.GetInterfaces())
-            {
-                if (CheckIfTypeIsControlsCollection(@interface))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        /**********************************************************************************/
-
-        private static bool CheckIfTypeIsControlsCollection(Type type)
-        {
-            if (type.IsGenericType)
-            {
-                var genericTypeDef = type.GetGenericTypeDefinition();
-
-                if (typeof(IList<>) == genericTypeDef)
-                {
-                    if (typeof(IControlDefinition).IsAssignableFrom(type.GetGenericArguments()[0]))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-        
         /**********************************************************************************/
         // Activity logic can update state of configuration controls. But as long we have copied  configuration controls crate from the storage into 
         // new instance of ActivityUi changes made to ActivityUi won't be reflected in storage.
@@ -633,47 +546,9 @@ namespace TerminalBase.BaseClasses
             CurrentActivityStorage.Remove<StandardConfigurationControlsCM>();
             // we create new StandardConfigurationControlsCM with controls from ActivityUi.
             // We do this because ActivityUi can has properties to access specific controls. We don't want those propeties exist in serialized crate.
-
             var configurationControlsToAdd = new StandardConfigurationControlsCM(ConfigurationControls.Controls);
             CurrentActivityStorage.Add(Crate.FromContent(ConfigurationControlsLabel, configurationControlsToAdd, AvailabilityType.Configuration));
-
-            int insertIndex = 0;
-
-            foreach (var member in Fr8ReflectionHelper.GetMembers(ConfigurationControls.GetType()).Where(x => x.CanRead))
-            {
-                if (member.GetCustomAttribute<DynamicControlsAttribute>() != null && CheckIfMemberIsControlsCollection(member))
-                {
-                    var collection = member.GetValue(ConfigurationControls) as IList;
-
-                    if (collection != null)
-                    {
-                        for (int index = 0; index < collection.Count; index++)
-                        {
-                            var control = collection[index] as ControlDefinitionDTO;
-
-                            if (control != null)
-                            {
-                                control.Name = member.Name + "_" + control.Name;
-                                configurationControlsToAdd.Controls.Insert(insertIndex, control);
-                                insertIndex++;
-                            }
-                        }
-                    }
-                }
-
-                var controlDef = member.GetValue(ConfigurationControls) as IControlDefinition;
-                if (!string.IsNullOrWhiteSpace(controlDef?.Name))
-                {
-                    for (int i = 0; i < configurationControlsToAdd.Controls.Count; i++)
-                    {
-                        if (configurationControlsToAdd.Controls[i].Name == controlDef.Name)
-                        {
-                            insertIndex = i + 1;
-                            break;
-                        }
-                    }
-                }
-            }
+            ConfigurationControls.SaveDynamicControlsTo(configurationControlsToAdd);
         }
 
         /**********************************************************************************/
@@ -740,7 +615,7 @@ namespace TerminalBase.BaseClasses
         protected void RequestJumpToActivity(Guid targetActivityId)
         {
             SetResponse(ActivityResponse.JumpToActivity);
-            OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() {Details = targetActivityId});
+            OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetActivityId });
         }
 
         /**********************************************************************************/
@@ -773,7 +648,7 @@ namespace TerminalBase.BaseClasses
 
             if (!string.IsNullOrWhiteSpace(message) || details != null)
             {
-                OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() {Message = message, Details = details});
+                OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Message = message, Details = details });
             }
         }
 
@@ -807,7 +682,7 @@ namespace TerminalBase.BaseClasses
             return base.ValidateActivity(activityDo, currActivityCrateStorage, validationManager);
         }
 
-        public  override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
         {
             return base.ConfigurationEvaluator(curActivityDO);
         }

@@ -10,6 +10,7 @@ using Hub.Managers;
 using terminalSlackTests.Fixtures;
 using terminalSlack.Actions;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalSlackTests.Integration
 {
