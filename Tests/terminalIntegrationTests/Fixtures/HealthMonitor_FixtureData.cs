@@ -31,7 +31,7 @@ namespace terminalIntegrationTests.Fixtures
                 Id = Guid.NewGuid(),
                 Description = name,
                 Name = name,
-                PlanState = PlanState.Active,
+                PlanState = PlanState.Running,
             };
             return curPlanDO;
         }

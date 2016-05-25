@@ -41,8 +41,6 @@ namespace HealthMonitor
             {
                 terminals = uow.TerminalRepository.GetAll();
             }
-
-
             try
             {
                 foreach (SelfHostedAppsElement app in selfHostedApps)

@@ -268,7 +268,6 @@
     <Compile Include="Managers\CrateManagerTests.Fixtures.cs" />
     <Compile Include="Managers\EventReporterTests.cs" />
     <Compile Include="Managers\IncidentReporterTests.cs" />
-    <Compile Include="Managers\PlanManagerTests.cs" />
     <Compile Include="ManifestDiscoveryTests.cs" />
     <Compile Include="MockedDB\MockedDBTests.cs" />
     <Compile Include="MockedDB\MoqDemoTests.cs" />

@@ -39,6 +39,11 @@ namespace Data.Repositories.MultiTenant
             return _typeStorageProvider.FindTypeReference(_connectionProvider, typeId);
         }
 
+        public MtTypeReference FindTypeReference(string alias)
+        {
+            return _typeStorageProvider.FindTypeReference(_connectionProvider, alias);
+        }
+
         private bool IsManifest(Type clrType)
         {
             CrateManifestType dummy;

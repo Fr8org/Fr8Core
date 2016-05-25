@@ -642,6 +642,10 @@
     <Compile Include="Migrations\201605202117041_UtilizationMonitoring.Designer.cs">
       <DependentUpon>201605202117041_UtilizationMonitoring.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201605231150066_AddOrganizationAndAccountToObjectRolePermissions.cs" />
+    <Compile Include="Migrations\201605231150066_AddOrganizationAndAccountToObjectRolePermissions.Designer.cs">
+      <DependentUpon>201605231150066_AddOrganizationAndAccountToObjectRolePermissions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\MigrationConfiguration.ProcessTemplateBuilder.cs" />
     <Compile Include="Migrations\SqlHelper.cs" />
     <Compile Include="Repositories\AspNetUserClaimsRepository.cs" />
@@ -656,6 +660,7 @@
     <Compile Include="Repositories\Authorization\Impl\EfAuthorizationTokenStorageProvider.cs" />
     <Compile Include="Repositories\Authorization\Impl\KeyVaultAuthorizationTokenRepository.cs" />
     <Compile Include="Repositories\Authorization\Impl\MockedDbAuthorizationTokenStorageProvider.cs" />
+    <Compile Include="Repositories\MultiTenant\StorageImpl\SqlBased\SqlMtObjectStorage.Queries.cs" />
     <Compile Include="Repositories\PlanTemplates\ActivityDescriptionRepository.cs" />
     <Compile Include="Repositories\PlanTemplates\NodeTransitionRepository.cs" />
     <Compile Include="Repositories\PlanTemplates\PlanNodeDescriptionsRepository.cs" />
@@ -1228,6 +1233,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201605202117041_UtilizationMonitoring.resx">
       <DependentUpon>201605202117041_UtilizationMonitoring.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201605231150066_AddOrganizationAndAccountToObjectRolePermissions.resx">
+      <DependentUpon>201605231150066_AddOrganizationAndAccountToObjectRolePermissions.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

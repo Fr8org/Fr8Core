@@ -8,7 +8,7 @@ using Data.Repositories.MultiTenant.Queryable;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 
-namespace TerminalBase.Services
+namespace Hub.Services
 {
     static partial class MTSearchHelper
     {
@@ -17,7 +17,7 @@ namespace TerminalBase.Services
         // We want to use reflection as little as possible. So we create generic class for converting Query Builder filters and will create instance if this class using reflection. To access members of this class we will use non-generic interface.
         // Se creating new instance will be the only place reflection is used.
         private class MtQueryProvider<T> : IMtQueryProvider
-            where  T : Manifest
+            where  T : Fr8Data.Manifests.Manifest
         {
             public Type Type
             {
