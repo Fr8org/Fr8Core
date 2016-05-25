@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,22 +10,49 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using Fr8Infrastructure.Interfaces;
 using Newtonsoft.Json;
 using StructureMap;
 using TerminalBase.Infrastructure;
 using TerminalBase.Models;
+using Utilities.Configuration.Azure;
 
 namespace TerminalBase.Services
 {
     public abstract class DataHubCommunicatorBase : IHubCommunicator
     {
+        private readonly IRestfulServiceClient _restfulServiceClient;
+        private readonly IHMACService _hmacService;
         public ICrateManager Crate { get; set; }
         public string ExplicitData { get; set; }
+        protected string TerminalSecret { get; set; }
+        protected string TerminalId { get; set; }
 
         protected DataHubCommunicatorBase(string explicitData)
         {
             Crate = ObjectFactory.GetInstance<ICrateManager>();
+            _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
+            _hmacService = ObjectFactory.GetInstance<IHMACService>();
             this.ExplicitData = explicitData;
+        }
+
+        public Task Configure(string terminalName)
+        {
+            if (string.IsNullOrEmpty(terminalName))
+                throw new ArgumentNullException(nameof(terminalName));
+
+            TerminalSecret = CloudConfigurationManager.GetSetting("TerminalSecret");
+            TerminalId = CloudConfigurationManager.GetSetting("TerminalId");
+
+            //we might be on integration test currently
+            if (TerminalSecret == null || TerminalId == null)
+            {
+                TerminalSecret = ConfigurationManager.AppSettings[terminalName + "TerminalSecret"];
+                TerminalId = ConfigurationManager.AppSettings[terminalName + "TerminalId"];
+            }
+
+            IsConfigured = true;
+            return Task.FromResult<object>(null);
         }
 
         protected abstract string LabelPrefix { get; }
@@ -43,11 +71,6 @@ namespace TerminalBase.Services
                     crate.Label = crate.Label.Substring((prefix + "_").Length);
                 }
             }
-        }
-
-        public virtual Task Configure(string terminalName)
-        {
-            return Task.FromResult<object>(null);
         }
 
         public Task<PayloadDTO> GetPayload(Guid containerId, string userId)
@@ -268,11 +291,19 @@ namespace TerminalBase.Services
             throw new NotImplementedException();
         }
 
-        public Task<Stream> DownloadFile(string filePath, string userId)
+        private async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri, string userId)
+        {
+            if (!IsConfigured)
+                throw new InvalidOperationException("Please call Configure() before using the class.");
+
+            return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId);
+        }
+
+        public async Task<Stream> DownloadFile(string filePath, string userId)
         {
             throw new NotImplementedException();
         }
-
+        
         public Task<IEnumerable<FileDTO>> GetFiles(string userId)
         {
             throw new NotImplementedException();

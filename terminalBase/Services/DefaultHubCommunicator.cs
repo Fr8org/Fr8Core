@@ -420,14 +420,6 @@ namespace TerminalBase.Services
             return await _restfulServiceClient.PostAsync<FileDTO>(uri, multiPartData, null, await GetHMACHeader(uri, userId, (HttpContent)multiPartData));
         }
 
-        public async Task<Stream> DownloadFile(string filePath, string userId)
-        {
-            var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
-                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/files/byPath/" + filePath;
-            var uri = new Uri(hubUrl);
-            return await _restfulServiceClient.DownloadAsync(uri, null, await GetHMACHeader(uri, userId));
-        }
-
         public async Task<IEnumerable<FileDTO>> GetFiles(string userId)
         {
             var hubUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")

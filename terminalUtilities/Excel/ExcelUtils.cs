@@ -12,6 +12,7 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using Fr8Infrastructure.Interfaces;
 using RestSharp.Extensions;
 using TerminalBase.Infrastructure;
 
@@ -21,8 +22,10 @@ namespace terminalUtilities.Excel
     {
         private IHubCommunicator _hubCommunicator;
         private string _userId;
+        private readonly IRestfulServiceClient _restfulServiceClient;
         public ExcelUtils(IHubCommunicator hubCommunicator, string userId)
         {
+            _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
             _hubCommunicator = hubCommunicator;
             _userId = userId;
         }
@@ -281,8 +284,7 @@ namespace terminalUtilities.Excel
             {
                 throw new ArgumentException("Expected '.xls' or '.xlsx'", "selectedFile");
             }
-
-            return _hubCommunicator.DownloadFile(filePath, _userId).Result.ReadAsBytes();
+            return _restfulServiceClient.DownloadAsync(new Uri(filePath)).Result.ReadAsBytes();
         }
 
         public static List<TableRowDTO> CreateTableCellPayloadObjects(Dictionary<string, List<Tuple<string, string>>> rowsDictionary, string[] headersArray = null, bool includeHeadersAsFirstRow = false)
