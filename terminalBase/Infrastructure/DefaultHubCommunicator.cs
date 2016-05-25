@@ -483,7 +483,7 @@ namespace TerminalBase.Infrastructure
         {
             var hubAlarmsUrl = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion")
-               + string.Format("/alarms/schedule?external_account_id={0}&fr8AccountId={1}&minutes={2}&terminalId={3}",
+               + string.Format("/alarms/polling?job_id={0}&fr8_account_id={1}&minutes={2}&terminal_id={3}",
                externalAccountId, curFr8UserId, minutes, TerminalId);
             var uri = new Uri(hubAlarmsUrl);
             await _restfulServiceClient.PostAsync(uri, null, await GetHMACHeader(uri, curFr8UserId));
