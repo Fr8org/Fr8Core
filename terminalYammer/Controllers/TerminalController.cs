@@ -24,7 +24,7 @@ namespace terminalYammer.Controllers
             StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = TerminalData.TerminalDTO,
-                Activities = ActivityStore.GetAllActivities()
+                Activities = ActivityStore.GetAllActivities(TerminalData.TerminalDTO)
             };
             return Json(curStandardFr8TerminalCM);
         }

@@ -20,7 +20,12 @@ namespace TerminalBase.Services
             }
         }
 
-        public static void RegisterActivity<T>(ActivityTemplateDTO activityTemplate)
+        /// <summary>
+        /// Registers activity with default Activity Factory
+        /// </summary>
+        /// <typeparam name="T">Type of activity</typeparam>
+        /// <param name="activityTemplate"></param>
+        public static void RegisterActivity<T>(ActivityTemplateDTO activityTemplate) where T : IActivity
         {
             RegisterActivity(activityTemplate, new DefaultActivityFactory(typeof(T)));
         }
@@ -34,10 +39,20 @@ namespace TerminalBase.Services
             }
             return factory;
         }
-
-        public static List<ActivityTemplateDTO> GetAllActivities()
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="terminal">
+        /// Terminals on integrations tests share same environment
+        /// so we are providing terminal information to seperate terminal activities
+        /// </param>
+        /// <returns></returns>
+        public static List<ActivityTemplateDTO> GetAllActivities(TerminalDTO terminal)
         {
-            return _activityRegistrations.Select(y => y.Key.ActivityTemplateDTO).ToList();
+            return _activityRegistrations
+                .Select(y => y.Key.ActivityTemplateDTO)
+                .Where(t => t.Terminal.Name == terminal.Name)
+                .ToList();
         }
     }
 }
