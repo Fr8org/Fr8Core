@@ -189,33 +189,41 @@ namespace terminalSalesforce.Actions
             
             if (IsPostingToQueryiedChatter)
             {
-                var chatters = await _salesforceManager.Query(SelectedChatter.ToEnum<SalesforceObjectType>(),
+                try
+                {
+                    var chatters = await _salesforceManager.Query(SelectedChatter.ToEnum<SalesforceObjectType>(),
                                                               new[] { "Id" },
                                                               ControlHelper.ParseConditionToText(JsonConvert.DeserializeObject<List<FilterConditionDTO>>(ChatterFilter)),
                                                               AuthorizationToken);
-                var tasks = new List<Task<string>>(chatters.Table.Count);
-                foreach (var chatterId in chatters.DataRows.Select(x => x.Row[0].Cell.Value))
-                {
-                    Logger.Info($"Posting message to chatter id: {chatterId}");
-
-                    tasks.Add(_salesforceManager.PostToChatter(StripHTML(feedText), chatterId, AuthorizationToken).ContinueWith(x =>
+                    var tasks = new List<Task<string>>(chatters.Table.Count);
+                    foreach (var chatterId in chatters.DataRows.Select(x => x.Row[0].Cell.Value))
                     {
-                        Logger.Info($"Posting message to chatter succeded with feedId: {x.Result}");
-                        return x.Result;
-                    }));
+                        Logger.Info($"Posting message to chatter id: {chatterId}");
+
+                        tasks.Add(_salesforceManager.PostToChatter(StripHTML(feedText), chatterId, AuthorizationToken).ContinueWith(x =>
+                        {
+                            Logger.Info($"Posting message to chatter succeded with feedId: {x.Result}");
+                            return x.Result;
+                        }));
+                    }
+                    await Task.WhenAll(tasks);
+                    //If we did not find any chatter object we don't fail activity execution but rather returns empty list and inform caller about it 
+                    if (!chatters.HasDataRows)
+                    {
+                        Logger.Info($"No salesforce objects were found to use as chatter id.");
+                        Success($"No {SelectedChatter} that satisfies specified conditions were found. No message were posted");
+                    }
+                    else
+                    {
+                        var resultPayload = new StandardPayloadDataCM();
+                        resultPayload.PayloadObjects.AddRange(tasks.Select(x => new PayloadObjectDTO(new FieldDTO(FeedIdKeyName, x.Result))));
+                        Payload.Add(Crate<StandardPayloadDataCM>.FromContent(PostedFeedCrateLabel, resultPayload));
+                    }
                 }
-                await Task.WhenAll(tasks);
-                //If we did not find any chatter object we don't fail activity execution but rather returns empty list and inform caller about it 
-                if (!chatters.HasDataRows)
+                catch (Exception ex)
                 {
-                    Logger.Info($"No salesforce objects were found to use as chatter id.");
-                    Success($"No {SelectedChatter} that satisfies specified conditions were found. No message were posted");
-                }
-                else
-                {
-                    var resultPayload = new StandardPayloadDataCM();
-                    resultPayload.PayloadObjects.AddRange(tasks.Select(x => new PayloadObjectDTO(new FieldDTO(FeedIdKeyName, x.Result))));
-                    Payload.Add(Crate<StandardPayloadDataCM>.FromContent(PostedFeedCrateLabel, resultPayload));
+                    RaiseError(ex.Message);
+                    return;
                 }
             }
             else
