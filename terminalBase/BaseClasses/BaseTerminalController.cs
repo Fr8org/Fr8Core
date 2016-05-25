@@ -72,7 +72,7 @@ namespace TerminalBase.BaseClasses
             return null;
 
             //TODO: Commented during development only. So that app loads fast.
-            //return Json(ReportStartUp(terminalName));
+            return Json(ReportStartUp(terminalName));
         }
 
         /// <summary>
@@ -84,7 +84,7 @@ namespace TerminalBase.BaseClasses
             if (_integrationTestMode)
                 return Task.FromResult<string>(String.Empty);
 
-            return _baseTerminalEvent.SendEventOrIncidentReport(terminalName, "Terminal Incident");
+            return _baseTerminalEvent.SendEventOrIncidentReport(terminalName, "Terminal Fact");
         }
 
 
@@ -140,12 +140,12 @@ namespace TerminalBase.BaseClasses
         /// Reports event when process an action
         /// </summary>
         /// <param name="terminalName"></param>
-        private Task<string> ReportEvent(string terminalName)
+        private Task<string> ReportFact(string terminalName)
         {
             if (_integrationTestMode)
                 return Task.FromResult<string>(String.Empty);
 
-            return _baseTerminalEvent.SendEventOrIncidentReport(terminalName, "Terminal Event");
+            return _baseTerminalEvent.SendEventOrIncidentReport(terminalName, "Terminal Fact");
         }
 
         void LogWhenRequestRecived(string actionPath,string terminalName, string activityId)
@@ -333,8 +333,11 @@ namespace TerminalBase.BaseClasses
                 //Logger.GetLogger().Error($"Exception caught while processing {curActionPath} for {this.GetType()}", e);
                 Logger.LogError($"Exception caught while processing {curActionPath} for {this.GetType()} with exception {e.Data} and stack trace {e.StackTrace} and message {e.GetFullExceptionMessage()}", curTerminal);
                 var endpoint = (curActivityDO.ActivityTemplate != null && curActivityDO.ActivityTemplate.Terminal != null && curActivityDO.ActivityTemplate.Terminal.Endpoint != null) ? curActivityDO.ActivityTemplate.Terminal.Endpoint : "<no terminal url>";
-                EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActivityDO, settings), e, curActivityDO.Id.ToString());
+                //EventManager.TerminalInternalFailureOccurred(endpoint, JsonConvert.SerializeObject(curActivityDO, settings), e, curActivityDO.Id.ToString());
+                // null checking
+                var containerId = curDataDTO?.ContainerId?.ToString() ?? "";
 
+                EventManager.TerminalInternalFailureOccurred(endpoint, containerId, e, curActivityDO.Id.ToString());
                 throw;              
             }
         }

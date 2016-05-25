@@ -12,6 +12,7 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Helpers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using log4net;
 using Newtonsoft.Json;
 using ServiceStack;
 using TerminalBase.Infrastructure;
@@ -94,16 +95,16 @@ namespace terminalSalesforce.Actions
         }
 
         public const string QueryFilterCrateLabel = "Queryable Criteria";
-
         public const string PostedFeedCrateLabel = "Posted Salesforce Feed";
-
         public const string SalesforceObjectFieldsCrateLabel = "Salesforce Object Fields";
-
         public const string PostedFeedPropertiesCrateLabel = "Posted Feeds";
-
         public const string FeedIdKeyName = "FeedId";
 
+        private static readonly ILog Logger = Utilities.Logging.Logger.GetCurrentClassLogger();
+            
+
         private readonly ISalesforceManager _salesforceManager;
+       
 
         public Post_To_Chatter_v2()
         {
@@ -154,17 +155,23 @@ namespace terminalSalesforce.Actions
             crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(PostedFeedCrateLabel);
         }
 
+
+        protected override Task Validate(ValidationManager validationManager)
+        {
+            validationManager.ValidateTextSourceNotEmpty(ConfigurationControls.FeedTextSource, "Can't post empty message to chatter");
+
+            if (!IsPostingToQueryiedChatter && !IsUsingIncomingChatterId)
+            {
+                validationManager.SetError("Chatter Id value source is not specified", ConfigurationControls.ChatterSelectionGroup);
+            }
+
+            return Task.FromResult(0);
+        }
+
         protected override async Task RunCurrentActivity()
         {
             var feedText = FeedText;
-            if (string.IsNullOrEmpty(feedText))
-            {
-                throw new ActivityExecutionException("Can't post empty message to chatter");
-            }
-            if (!IsPostingToQueryiedChatter && !IsUsingIncomingChatterId)
-            {
-                throw new ActivityExecutionException("Chatter Id value source is not specified");
-            }
+            
             if (IsPostingToQueryiedChatter)
             {
                 var chatters = await _salesforceManager.Query(SelectedChatter.ToEnum<SalesforceObjectType>(),
@@ -174,12 +181,19 @@ namespace terminalSalesforce.Actions
                 var tasks = new List<Task<string>>(chatters.Table.Count);
                 foreach (var chatterId in chatters.DataRows.Select(x => x.Row[0].Cell.Value))
                 {
-                    tasks.Add(_salesforceManager.PostToChatter(StripHTML(feedText), chatterId, AuthorizationToken));
+                    Logger.Info($"Posting message to chatter id: {chatterId}");
+
+                    tasks.Add(_salesforceManager.PostToChatter(StripHTML(feedText), chatterId, AuthorizationToken).ContinueWith(x =>
+                    {
+                        Logger.Info($"Posting message to chatter succeded with feedId: {x.Result}");
+                        return x.Result;
+                    }));
                 }
                 await Task.WhenAll(tasks);
                 //If we did not find any chatter object we don't fail activity execution but rather returns empty list and inform caller about it 
                 if (!chatters.HasDataRows)
                 {
+                    Logger.Info($"No salesforce objects were found to use as chatter id.");
                     Success($"No {SelectedChatter} that satisfies specified conditions were found. No message were posted");
                 }
                 else
@@ -196,7 +210,13 @@ namespace terminalSalesforce.Actions
                 {
                     throw new ActivityExecutionException("Upstream crates doesn't contain value for feed parent Id");
                 }
+
+                Logger.Info($"Posting message to chatter id: {incomingChatterId}");
+
                 var feedId = await _salesforceManager.PostToChatter(StripHTML(feedText), incomingChatterId, AuthorizationToken);
+
+                Logger.Info($"Posting message to chatter succeded with feedId: {feedId}");
+
                 CurrentPayloadStorage.Add(Crate.FromContent(PostedFeedCrateLabel, new StandardPayloadDataCM(new FieldDTO(FeedIdKeyName, feedId))));
             }
         }

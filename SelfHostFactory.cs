@@ -72,7 +72,7 @@ namespace HubWeb
                     typeof(ConfigurationController),
                     typeof(ContainersController),
                     typeof(DocumentationController),
-                    typeof(EventController),
+                    typeof(EventsController),
                     typeof(FieldController),
                     typeof(FilesController),
                     // TODO: FR-3383, remove this.

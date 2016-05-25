@@ -869,7 +869,7 @@ namespace Hub.Managers
             SaveAndLogFact(fact);
         }
 
-        private void LogTerminalEvent(LoggingDataCm eventDataCm)
+        private void LogTerminalEvent(LoggingDataCM eventDataCm)
         {
             var fact = new FactDO
             {
