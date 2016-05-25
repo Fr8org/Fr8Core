@@ -121,6 +121,7 @@ module dockyard.services {
             // if offsetLeft negative, return 0
             offsetLeft = offsetLeft < 0 ? 0 : offsetLeft;
 
+
             return offsetLeft;
         }
 
