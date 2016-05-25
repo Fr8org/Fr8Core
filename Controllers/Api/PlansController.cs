@@ -109,7 +109,7 @@ namespace HubWeb.Controllers
                 _plan.CreateOrUpdate(uow, curPlanDO);
 
                 uow.SaveChanges();
-                var result = PlanMappingHelper.MapPlanToDto(uow, uow.PlanRepository.GetById<PlanDO>(curPlanDO.Id));
+                var result = PlanMappingHelper.MapPlanToDto(uow, _plan.GetFullPlan(uow, curPlanDO.Id));
                 return Ok(result);
             }
         }
@@ -123,7 +123,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = uow.PlanRepository.GetById<PlanDO>(id);
+                var plan = _plan.GetFullPlan(uow, id);
                 var result = PlanMappingHelper.MapPlanToDto(uow, plan);
 
                 return Ok(result);
@@ -198,7 +198,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curPlanDO = uow.PlanRepository.GetById<PlanDO>(id);
+                var curPlanDO = _plan.GetFullPlan(uow, id);
                 if (curPlanDO == null)
                 {
                     throw new ApplicationException("Unable to find plan with specified id.");
@@ -331,7 +331,7 @@ namespace HubWeb.Controllers
                         User.Identity.Name);
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
-                        var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
+                        var planDO = _plan.GetFullPlan(uow, planId); 
                         var currentPlanType = _plan.IsMonitoringPlan(uow, planDO) ? PlanType.Monitoring.ToString() : PlanType.RunOnce.ToString();
                         return BadRequest(currentPlanType);
                     }
@@ -391,7 +391,7 @@ namespace HubWeb.Controllers
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var plan = uow.PlanRepository.GetById<PlanDO>(planId);
+                    var plan = _plan.GetFullPlan(uow, planId); ;
                     var failedActivities = new List<string>();
 
                     foreach (var key in activationResults.ValidationErrors.Keys)
@@ -430,7 +430,7 @@ namespace HubWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 ContainerDO container;
-                var plan = uow.PlanRepository.GetById<PlanDO>(planId);
+                var plan = _plan.GetFullPlan(uow, planId); ;
 
                 // it container id was passed validate it
                 if (containerId != null)
@@ -443,7 +443,7 @@ namespace HubWeb.Controllers
                         // that's bad. Reset containerId to run plan with new container
                         containerId = null;
                     }
-                }
+                } 
 
                 PlanType? currentPlanType = null;
 

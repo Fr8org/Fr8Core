@@ -15,14 +15,7 @@ namespace HubWeb
 
             // Web API routes            
 
-            // NOTE :: API plan is changed for ProcessEvents.  
-            config.Routes.MapHttpRoute(
-                name: "DefaultApiEvents",
-                routeTemplate: "api/v1/events",
-                defaults: new { action = "ProcessEvents", controller = "Event" },
-                constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Post) }
-                );
-
+  
             config.Routes.MapHttpRoute(
                name: "manifest_registries route",
                routeTemplate: "api/v1/manifest_registries/{action}",

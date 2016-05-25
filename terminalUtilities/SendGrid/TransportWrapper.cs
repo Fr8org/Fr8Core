@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 using SendGrid;
 using Hub.ExternalServices;
 
-namespace terminalSendGrid.Services
+namespace terminalUtilities.SendGrid
 {
     class TransportWrapper : ITransport
     {

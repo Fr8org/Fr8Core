@@ -72,7 +72,7 @@ namespace HubWeb
                     typeof(ConfigurationController),
                     typeof(ContainersController),
                     typeof(DocumentationController),
-                    typeof(EventController),
+                    typeof(EventsController),
                     typeof(FieldController),
                     typeof(FilesController),
                     typeof(ManageAuthTokenController),
@@ -82,7 +82,7 @@ namespace HubWeb
                     typeof(PlanNodesController),
                     typeof(PlansController),
                     typeof(TerminalsController),
-                    typeof(UserController),
+                    typeof(UsersController),
                     typeof(WarehouseController),
                     typeof(WebServicesController)
                 };

@@ -18,6 +18,7 @@ using Data.Interfaces.DataTransferObjects;
 using Data.Repositories.Security;
 using Data.Repositories.Security.Entities;
 using Data.States;
+using Fr8Data.States;
 using Hub.Exceptions;
 using Hub.Infrastructure;
 using Hub.Interfaces;
@@ -106,12 +107,17 @@ namespace Hub.Security
                 var role = uow.AspNetRolesRepository.GetByKey(roleId);
                 identity.AddClaim(new Claim(ClaimTypes.Role, role.Name));
             }
+            if (fr8AccountDO.OrganizationId.HasValue)
+            {
+                identity.AddClaim(new Claim("Organization", fr8AccountDO.OrganizationId.Value.ToString()));
+            }
 
             //save profileId from current logged user for future usage inside authorization activities logic
             identity.AddClaim(new Claim(ProfileClaim, fr8AccountDO.ProfileId.ToString()));
 
             return identity;
         }
+
 
         /// <summary>
         /// For every new created object setup default security with permissions for Read Object, Edit Object, Delete Object 
@@ -121,8 +127,26 @@ namespace Hub.Security
         /// <param name="dataObjectType"></param>
         public void SetDefaultObjectSecurity(Guid dataObjectId, string dataObjectType)
         {
-            var securityStorageProvider = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
-            securityStorageProvider.SetDefaultObjectSecurity(dataObjectId.ToString(), dataObjectType);
+            if (!IsAuthenticated()) return;
+
+            var currentUserId = GetCurrentUser();
+            if (string.IsNullOrEmpty(currentUserId))
+            {
+                return;
+            }
+
+            //get organization id
+            int? organizationId = null;
+            var claimIdentity = Thread.CurrentPrincipal.Identity as ClaimsIdentity;
+            var claim = claimIdentity?.FindFirst("Organization");
+            if (claim != null)
+            {
+                int orgId;
+                int.TryParse(claim.Value, out orgId);
+                if (orgId != 0) organizationId = orgId;
+            }
+
+            _securityObjectStorageProvider.SetDefaultObjectSecurity(currentUserId, dataObjectId.ToString(), dataObjectType, Guid.Empty, organizationId);
         }
 
         /// <summary>
@@ -140,7 +164,7 @@ namespace Hub.Security
             if (!IsAuthenticated())
                 return true; 
 
-            //check if request came from terminal todo: review this part
+            //check if request came from terminal 
             if (Thread.CurrentPrincipal is Fr8Principle)
                 return true;
 
@@ -150,27 +174,60 @@ namespace Hub.Security
                 return true;
 
             Guid profileId = GetCurrentUserProfile();
+            string fr8AccountId = null;
+            if (curObjectType == nameof(PlanNodeDO))
+            {
+                if (CheckForAppBuilderPlanAndBypassSecurity(curObjectId,out fr8AccountId))
+                {
+                    return true;
+                }
+            }
 
             //first check Record Based Permission.
+            bool? evaluator = null;
             var objRolePermissionWrapper = _securityObjectStorageProvider.GetRecordBasedPermissionSetForObject(curObjectId);
             if (objRolePermissionWrapper.RolePermissions.Any() || objRolePermissionWrapper.Properties.Any())
             {
                 if (string.IsNullOrEmpty(propertyName))
                 {
-                    var permissionSet = objRolePermissionWrapper.RolePermissions.Where(x => roles.Contains(x.Role.RoleName)).SelectMany(l => l.PermissionSet.Permissions.Select(m => m.Id)).ToList();
-                    return EvaluatePermissionSet(permissionType, permissionSet);
+                    //security check for the whole object
+                    evaluator = EvaluateObjectPermissionSet(permissionType, objRolePermissionWrapper.Fr8AccountId, objRolePermissionWrapper.RolePermissions, roles);
                 }
                 else
                 {
+                    //security check for property inside object
                     var permissionsCollection = objRolePermissionWrapper.Properties[propertyName];
-                    var permissionSet = permissionsCollection.Where(x => roles.Contains(x.Role.RoleName)).SelectMany(l => l.PermissionSet.Permissions.Select(m => m.Id)).ToList();
-                    return EvaluatePermissionSet(permissionType, permissionSet);
+                    evaluator = EvaluateObjectPermissionSet(permissionType, objRolePermissionWrapper.Fr8AccountId, permissionsCollection, roles);
                 }
             }
 
+            if (evaluator.HasValue)
+            {
+                return evaluator.Value;
+            }
+            
             //Object Based permission set checks
             var permissionSets = _securityObjectStorageProvider.GetObjectBasedPermissionSetForObject(curObjectId, curObjectType, profileId);
-            return EvaluatePermissionSet(permissionType, permissionSets);
+            return EvaluateProfilesPermissionSet(permissionType, permissionSets, fr8AccountId);
+        }
+
+        private bool CheckForAppBuilderPlanAndBypassSecurity(string curObjectId, out string fr8AccountId)
+        {
+            //TODO: @makigjuro temp fix until FR-3008 is implemented 
+            //bypass security on AppBuilder plan, because that one is visible for every user that has this url
+            fr8AccountId = null;
+            var activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Guid id;
+                if (!Guid.TryParse(curObjectId, out id)) return false;
+
+                var planNode = uow.PlanRepository.GetById<PlanNodeDO>(id);
+                fr8AccountId = planNode.Fr8AccountId;
+                var mainPlan = uow.PlanRepository.GetById<PlanDO>(planNode.RootPlanNodeId);
+                if (mainPlan.Visibility == PlanVisibility.Internal) return true;
+                return mainPlan.ChildNodes.OfType<SubPlanDO>().Any(subPlan => subPlan.ChildNodes.OfType<ActivityDO>().Select(activity => activityTemplate.GetByKey(activity.ActivityTemplateId)).Any(template => template.Name == "AppBuilder"));
+            }
         }
 
         /// <summary>
@@ -222,17 +279,105 @@ namespace Hub.Security
             return permissions.Any(x => x.Permission == (int)permissionType && x.ObjectType == objectType);
         }
 
-        private bool EvaluatePermissionSet(PermissionType permissionType, List<int> permissionSet)
+        private bool? EvaluateObjectPermissionSet(PermissionType permissionType, string fr8AccountId, List<RolePermission> rolePermissions, List<string> roles, int? organizationId = null)
         {
-            var modifyAllData = permissionSet.FirstOrDefault(x => x == (int) PermissionType.ModifyAllObjects);
-            var viewAllData = permissionSet.FirstOrDefault(x => x == (int) PermissionType.ViewAllObjects);
+            //first check if current user is the owner here
+            if (fr8AccountId == GetCurrentUser())
+            {
+                var ownerRolePermission = rolePermissions.FirstOrDefault(x => x.Role.RoleName == Roles.OwnerOfCurrentObject);
+                if (ownerRolePermission != null && roles.Contains(ownerRolePermission.Role.RoleName))
+                {
+                    var currentPermission = ownerRolePermission.PermissionSet.Permissions.Select(x => x.Id).FirstOrDefault(l => l == (int)permissionType);
+                    return currentPermission != 0;
+                }
+            }
+            else
+            {
+                //check also organization
+                var claimIdentity = Thread.CurrentPrincipal.Identity as ClaimsIdentity;
+                var claim = claimIdentity?.FindFirst("Organization");
+                if (claim != null)
+                {
+                    int orgId;
+                    if (int.TryParse(claim.Value, out orgId) && organizationId.HasValue)
+                    {
+                        if(orgId == organizationId)
+                        {
+                            var permissionSetOrg = (from x in rolePermissions.Where(x => x.Role.RoleName != Roles.OwnerOfCurrentObject) where roles.Contains(x.Role.RoleName) from i in x.PermissionSet.Permissions.Select(m => m.Id) select i).ToList();
 
+                            var modifyAllData = permissionSetOrg.FirstOrDefault(x => x == (int)PermissionType.ModifyAllObjects);
+                            var viewAllData = permissionSetOrg.FirstOrDefault(x => x == (int)PermissionType.ViewAllObjects);
+                            if (viewAllData != 0 && permissionType == PermissionType.ReadObject) return true;
+                            if (modifyAllData != 0) return true;
+                        }
+                    }
+
+                    return false;
+                }
+
+                var permissionSet = (from x in rolePermissions.Where(x => x.Role.RoleName != Roles.OwnerOfCurrentObject) where roles.Contains(x.Role.RoleName) from i in x.PermissionSet.Permissions.Select(m => m.Id) select i).ToList();
+                if (permissionSet.Any())
+                {
+                    if (permissionType == PermissionType.CreateObject)
+                    {
+                        var currentPermission = permissionSet.FirstOrDefault(x => x == (int)permissionType);
+                        return currentPermission != 0;
+                    }
+
+                    var modifyAllData = permissionSet.FirstOrDefault(x => x == (int)PermissionType.ModifyAllObjects);
+                    var viewAllData = permissionSet.FirstOrDefault(x => x == (int)PermissionType.ViewAllObjects);
+                    if (viewAllData != 0 && permissionType == PermissionType.ReadObject) return true;
+                    if (modifyAllData != 0) return true;
+
+                    return false;
+                }
+            }
+
+            return null;
+        }
+
+        private bool EvaluateProfilesPermissionSet(PermissionType permissionType, List<int> permissionSet, string fr8AccountId)
+        {
+            var claimIdentity = Thread.CurrentPrincipal.Identity as ClaimsIdentity;
+            var claim = claimIdentity?.FindFirst("Organization");
+            if (claim != null)
+            {
+                int orgId;
+                if (int.TryParse(claim.Value, out orgId))
+                {
+                    if (fr8AccountId == GetCurrentUser())
+                    {
+                        return true;
+                    }
+                    else return false;
+                }
+            }
+
+            //double check for orgs
+            if (!string.IsNullOrEmpty(fr8AccountId))
+            {
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var currentAccount = GetCurrentAccount(uow);
+                    if (!currentAccount.OrganizationId.HasValue && fr8AccountId != currentAccount.Id) 
+                    {
+                        if(currentAccount.Profile?.Name != DefaultProfiles.Fr8Administrator)
+                            return false;
+                    }
+                }
+            }
+
+            if (permissionType == PermissionType.CreateObject)
+            {
+                var currentPermission = permissionSet.FirstOrDefault(x => x == (int)permissionType);
+                return currentPermission != 0;
+            }
+
+            var modifyAllData = permissionSet.FirstOrDefault(x => x == (int)PermissionType.ModifyAllObjects);
+            var viewAllData = permissionSet.FirstOrDefault(x => x == (int)PermissionType.ViewAllObjects);
             if (viewAllData != 0 && permissionType == PermissionType.ReadObject) return true;
             if (modifyAllData != 0) return true;
-
-            var currentPermission = permissionSet.FirstOrDefault(x => x == (int) permissionType);
-            if (currentPermission != 0) return true;
-
+            
             return false;
         }
     }
