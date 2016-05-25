@@ -187,6 +187,11 @@ namespace Hub.Services
             }
         }
 
+        public PlanDO GetFullPlan(IUnitOfWork uow, Guid id)
+        {
+            return uow.PlanRepository.GetById<PlanDO>(id);
+        }
+
         public PlanDO Create(IUnitOfWork uow, string name, string category = "")
         {
             var plan = new PlanDO
@@ -302,7 +307,7 @@ namespace Hub.Services
 
                 if (result.ValidationErrors.Count == 0)
                 {
-                    plan.PlanState = PlanState.Active;
+                    plan.PlanState = PlanState.Running;
                     plan.LastUpdated = DateTimeOffset.UtcNow;
                     uow.SaveChanges();
                 }
@@ -612,6 +617,7 @@ namespace Hub.Services
                 catch (Exception ex)
                 {
                     EventManager.ContainerFailed(curPlan, ex, containerId);
+                    this.Deactivate(curPlan.Id);
                     throw;
                 }
             }
@@ -640,8 +646,6 @@ namespace Hub.Services
 
         public async Task<PlanDO> Clone(Guid planId)
         {
-
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var currentUser = _security.GetCurrentAccount(uow);

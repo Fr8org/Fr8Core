@@ -97,6 +97,18 @@ namespace Fr8Data.Helpers
                 }
             }
 
+            if (searchArea is Crate)
+            {
+                if (((Crate) searchArea).IsKnownManifest)
+                {
+                    searchArea = ((Crate) searchArea).Get();
+                }
+                else
+                {
+                    return null;
+                }
+            }
+
             //we should find first related field and return
             var fields = Fr8ReflectionHelper.FindFieldsRecursive(searchArea);
             var fieldMatch = fields.FirstOrDefault(f => f.Key == fieldKey);

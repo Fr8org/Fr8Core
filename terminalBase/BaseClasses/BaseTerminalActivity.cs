@@ -565,6 +565,12 @@ namespace TerminalBase.BaseClasses
             return result;
         }
 
+        protected async Task DeleteChildActivities(ActivityDO parent)
+        {
+            await HubCommunicator.DeleteExistingChildNodesFromActivity(parent.Id, CurrentFr8UserId);
+            parent.ChildNodes = new List<PlanNodeDO>();
+        }
+
 
         /// <summary>
         /// Update Plan name if the current Plan name is the same as the passed parameter OriginalPlanName to avoid overwriting the changes made by the user
@@ -637,32 +643,6 @@ namespace TerminalBase.BaseClasses
             };
 
             return curSolutionPage;
-        }
-
-        /*******************************************************************************************/
-        // Working with payload values
-        /*******************************************************************************************/
-
-        /// <summary>
-        /// Extracts crate with specified label and ManifestType = Standard Design Time,
-        /// then extracts field with specified fieldKey.
-        /// </summary>
-        protected string ExtractPayloadFieldValue(ICrateStorage crateStorage, string fieldKey, ActivityDO curActivity)
-        {
-            var fieldValues = crateStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.GetValues(fieldKey))
-                .Where(s => !string.IsNullOrEmpty(s))
-                .ToArray();
-
-            if (fieldValues.Length > 0)
-                return fieldValues[0];
-
-            var baseEvent = new BaseTerminalEvent();
-            var exceptionMessage = string.Format("No field found with specified key: {0}.", fieldKey);
-            //This is required for proper logging of the Incidents
-            var fr8UserId = curActivity.AuthorizationToken.UserID;
-            baseEvent.SendTerminalErrorIncident(ActivityName, exceptionMessage, ActivityName, fr8UserId);
-
-            throw new ApplicationException(exceptionMessage);
         }
 
         /*******************************************************************************************/
@@ -994,6 +974,11 @@ namespace TerminalBase.BaseClasses
 
         protected ControlDefinitionDTO GetControl(StandardConfigurationControlsCM controls, string name, string controlType = null)
         {
+            if (controls == null)
+            {
+                return null;
+            }
+
             Func<ControlDefinitionDTO, bool> predicate = x => x.Name == name;
             if (controlType != null)
             {

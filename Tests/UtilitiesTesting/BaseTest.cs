@@ -38,7 +38,11 @@ namespace UtilitiesTesting
                 
         }
 
-
+        [TearDown]
+        public virtual void TearDown()
+        {
+            ObjectFactory.Container.Dispose();
+        }
 
         /// <summary>
         /// Creates an API controller with optional authorization context

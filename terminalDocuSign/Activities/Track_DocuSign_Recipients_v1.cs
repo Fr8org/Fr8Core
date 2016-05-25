@@ -8,7 +8,6 @@ using Data.Entities;
 using Hub.Managers;
 using StructureMap;
 using TerminalBase.Infrastructure;
-using TerminalBase.Services.MT;
 using Data.States;
 using Data.Repositories.MultiTenant;
 using Fr8Data.Control;
@@ -16,6 +15,7 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using Hub.Services.MT;
 
 namespace terminalDocuSign.Actions
 {
@@ -165,6 +165,13 @@ namespace terminalDocuSign.Actions
                 return activityDO;
             }
 
+            bool hasChildren = false;
+            if (activityDO.ChildNodes.Any())
+            {
+                hasChildren = true;
+                await DeleteChildActivities(activityDO);
+            }
+
             var monitorDocusignAT = await GetActivityTemplate("terminalDocuSign", "Monitor_DocuSign_Envelope_Activity");
             var setDelayAT = await GetActivityTemplate("terminalFr8Core", "SetDelay");
             var queryFr8WareHouseAT = await GetActivityTemplate("terminalFr8Core", "QueryFr8Warehouse");
@@ -172,21 +179,34 @@ namespace terminalDocuSign.Actions
             var buildMessageAT = await GetActivityTemplate("terminalFr8Core", "Build_Message");
 
             //DocuSign
+            var tasks = new List<Task>();
+
             var monitorDocuSignActionTask = AddAndConfigureChildActivity(activityDO, monitorDocusignAT, "Monitor Docusign Envelope Activity", "Monitor Docusign Envelope Activity", 1);
+            tasks.Add(monitorDocuSignActionTask);
+
             var setDelayActionTask = AddAndConfigureChildActivity(activityDO, setDelayAT, "Set Delay", "Set Delay", 2);
+            tasks.Add(setDelayActionTask);
+
             var queryFr8WarehouseActionTask = AddAndConfigureChildActivity(activityDO, queryFr8WareHouseAT, "Query Fr8 Warehouse", "Query Fr8 Warehouse", 3);
+            tasks.Add(queryFr8WarehouseActionTask);
+
             var filterActionTask = AddAndConfigureChildActivity(activityDO, testIncomingDataAT, "Test Incoming Data", "Test Incoming Data", 4);
+            tasks.Add(filterActionTask);
 
-            var buildMessageActivityTask = AddAndConfigureChildActivity((Guid)activityDO.ParentPlanNodeId, buildMessageAT, "Build a Message", "Build a Message", 2);
+            Task<ActivityDO> buildMessageActivityTask = null;
+            if (!hasChildren)
+            {
+                buildMessageActivityTask = AddAndConfigureChildActivity((Guid)activityDO.ParentPlanNodeId, buildMessageAT, "Build a Message", "Build a Message", 2);
+                tasks.Add(buildMessageActivityTask);
+            }
 
-            await Task.WhenAll(monitorDocuSignActionTask, setDelayActionTask, queryFr8WarehouseActionTask, filterActionTask, buildMessageActivityTask);
+            await Task.WhenAll(tasks);
 
             var monitorDocuSignAction = monitorDocuSignActionTask.Result;
             var setDelayAction = setDelayActionTask.Result;
             var queryFr8WarehouseAction = queryFr8WarehouseActionTask.Result;
             var filterAction = filterActionTask.Result;
             // var notifierActivity = notifierActivityTask.Result;
-            var buildMessageActivity = buildMessageActivityTask.Result;
 
             if (specificRecipientOption.Selected)
             {
@@ -199,18 +219,26 @@ namespace terminalDocuSign.Actions
                    ddlbTemplate.ListItems.Single(a => a.Key == ddlbTemplate.selectedKey));
             }
 
-            SetControlValue(buildMessageActivity, "Body", MessageBody);
-            SetControlValue(buildMessageActivity, "Name", "NotificationMessage");
+            if (buildMessageActivityTask != null)
+            {
+                var buildMessageActivity = buildMessageActivityTask.Result;
 
-            buildMessageActivity = await HubCommunicator.ConfigureActivity(buildMessageActivity, CurrentFr8UserId);
+                SetControlValue(buildMessageActivity, "Body", MessageBody);
+                SetControlValue(buildMessageActivity, "Name", "NotificationMessage");
 
-            var notifierAT = await GetActivityTemplate(Guid.Parse(howToBeNotifiedDdl.Value));
-            var notifierActivity = await AddAndConfigureChildActivity((Guid)activityDO.ParentPlanNodeId, notifierAT, howToBeNotifiedDdl.selectedKey, howToBeNotifiedDdl.selectedKey, 3);
-            SetNotifierActivityBody(notifierActivity);
+                buildMessageActivity = await HubCommunicator.ConfigureActivity(buildMessageActivity, CurrentFr8UserId);
+            }
+
+            if (!hasChildren)
+            {
+                var notifierAT = await GetActivityTemplate(Guid.Parse(howToBeNotifiedDdl.Value));
+                var notifierActivity = await AddAndConfigureChildActivity((Guid)activityDO.ParentPlanNodeId, notifierAT, howToBeNotifiedDdl.selectedKey, howToBeNotifiedDdl.selectedKey, 3);
+                SetNotifierActivityBody(notifierActivity);
+
+                await HubCommunicator.ConfigureActivity(notifierActivity, CurrentFr8UserId);
+            }
 
             SetControlValue(monitorDocuSignAction, "EnvelopeSent", "true");
-
-            var configureNotifierTask = HubCommunicator.ConfigureActivity(notifierActivity, CurrentFr8UserId);
 
             //let's make followup configuration for monitorDocuSignEventAction
             //followup call places EventSubscription crate in storage
@@ -225,7 +253,7 @@ namespace terminalDocuSign.Actions
             var recipientEventStatus = (DropDownList)controls.FindByName("RecipientEvent");
             SetFilterUsingRunTimeActivityFields(filterAction, recipientEventStatus.Value);
 
-            await Task.WhenAll(configureMonitorDocusignTask, configureQueryMTTask, configureNotifierTask);
+            await Task.WhenAll(configureMonitorDocusignTask, configureQueryMTTask);
 
             monitorDocuSignAction = configureMonitorDocusignTask.Result;
             activityDO.ChildNodes = activityDO.ChildNodes.OrderBy(a => a.Ordering).ToList();

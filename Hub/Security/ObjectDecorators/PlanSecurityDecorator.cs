@@ -95,6 +95,18 @@ namespace Hub.Security.ObjectDecorators
             return _target.Create(uow, name, category);
         }
 
+        public PlanDO GetFullPlan(IUnitOfWork uow, Guid planId)
+        {
+            if (_securityServices.AuthorizeActivity(PermissionType.ReadObject, planId.ToString(), nameof(PlanNodeDO)))
+            {
+                return _target.GetFullPlan(uow, planId);
+            }
+            else
+            {
+                throw new HttpException(403, "You are not authorized to perform this activity!");
+            }
+        }
+
         public void CreateOrUpdate(IUnitOfWork uow, PlanDO submittedPlan)
         {
             _target.CreateOrUpdate(uow, submittedPlan);

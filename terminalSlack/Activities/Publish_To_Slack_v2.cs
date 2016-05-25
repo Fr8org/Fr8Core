@@ -35,6 +35,18 @@ namespace terminalSlack.Actions
             _slackIntegration = new SlackIntegration();
         }
 
+        protected override Task Validate(ValidationManager validationManager)
+        {
+            if (string.IsNullOrEmpty(ConfigurationControls.ChannelSelector.Value))
+            {
+                validationManager.SetError("Channel or user is not specified", ConfigurationControls.ChannelSelector);    
+            }
+
+            validationManager.ValidateTextSourceNotEmpty(ConfigurationControls.MessageSource, "Can't post empty message to Slack");
+
+            return Task.FromResult(0);
+        }
+
         protected override async Task Initialize(CrateSignaller crateSignaller)
         {
             var usersTask = _slackIntegration.GetUserList(AuthorizationToken.Token);
@@ -59,16 +71,9 @@ namespace terminalSlack.Actions
         protected override async Task RunCurrentActivity()
         {
             var channel = ConfigurationControls.ChannelSelector.Value;
-            if (string.IsNullOrEmpty(channel))
-            {
-                throw new ActivityExecutionException("Channel or user is not specified");
-            }
             var message = ConfigurationControls.MessageSource.GetValue(CurrentPayloadStorage);
-            if (string.IsNullOrWhiteSpace(message))
-            {
-                throw new ActivityExecutionException("Can't post empty message to Slack");
-            }
             var success = await _slackIntegration.PostMessageToChat(AuthorizationToken.Token, channel, message).ConfigureAwait(false);
+
             if (!success)
             {
                 throw new ActivityExecutionException("Failed to post message to Slack");

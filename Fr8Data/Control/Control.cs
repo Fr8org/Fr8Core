@@ -778,6 +778,29 @@ namespace Fr8Data.Control
 
         [JsonProperty("requestUpstream")]
         public bool RequestUpstream { get; set; }
+
+        [JsonIgnore]
+        public bool HasValue
+        {
+            get { return CrateDescriptions != null && CrateDescriptions.Any(x => x.Selected); }
+        }
+
+        public bool CanGetValue(ICrateStorage crateStorage)
+        {
+            return crateStorage != null;
+        }
+
+        public Crate GetValue(ICrateStorage crateStorage)
+        {
+            var selectedCrate = CrateDescriptions?.FirstOrDefault(x => x.Selected);
+
+            if (selectedCrate == null)
+            {
+                return null;
+            }
+
+            return crateStorage.FirstOrDefault(x => x.Label == selectedCrate.Label && x.ManifestType.Type == selectedCrate.ManifestType);
+        }
     }
 
     public class UpstreamFieldChooser : ControlDefinitionDTO
