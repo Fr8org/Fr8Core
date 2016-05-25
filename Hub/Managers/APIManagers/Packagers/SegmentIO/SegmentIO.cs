@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using Segment;
-using Segment.Model;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using Hub.Interfaces;
 using Hub.Services;
+using Segment.Model;
 
 namespace Hub.Managers.APIManagers.Packagers.SegmentIO
 //When a user visits Kwasant, we try three ways to get their ID:
@@ -43,43 +43,43 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
             }
         }
 
-        private Dictionary<String, object> GetProperties(Fr8AccountDO dockyardAccountDO)
+        private Dictionary<String, object> GetProperties(Fr8AccountDO fr8AccountDO)
         {
             var user = new Fr8Account();
 
             return new Dictionary<string, object>
             {
-                {"First Name", dockyardAccountDO.FirstName},
-                {"Last Name", dockyardAccountDO.LastName},
-                {"Username", dockyardAccountDO.UserName},
-                {"Email", dockyardAccountDO.EmailAddress.Address},
-                {"Delegate Account", user.GetMode(dockyardAccountDO) == CommunicationMode.Delegate },
-                {"Class", dockyardAccountDO.Class }
+                {"First Name", fr8AccountDO.FirstName},
+                {"Last Name", fr8AccountDO.LastName},
+                {"Username", fr8AccountDO.UserName},
+                {"Email", fr8AccountDO.EmailAddress.Address},
+                {"Delegate Account", user.GetMode(fr8AccountDO) == CommunicationMode.Delegate },
+                {"Class", fr8AccountDO.Class }
             };
         }
 
-        public void Identify(Fr8AccountDO dockyardAccountDO)
+        public void Identify(Fr8AccountDO fr8AccountDO)
         {
             var props = new Traits();
-            foreach (var prop in GetProperties(dockyardAccountDO))
+            foreach (var prop in GetProperties(fr8AccountDO))
                 props.Add(prop.Key, prop.Value);
 
-            Analytics.Client.Identify(dockyardAccountDO.Id, props);
+            Analytics.Client.Identify(fr8AccountDO.Id, props);
         }
 
-        public void Track(Fr8AccountDO dockyardAccountDO, String eventName, String action, Dictionary<String, object> properties = null)
+        public void Track(Fr8AccountDO fr8AccountDO, String eventName, String action, Dictionary<String, object> properties = null)
         {
             if (properties == null)
                 properties = new Dictionary<string, object>();
-            properties["Action"] = action;
+            properties["Activity Name"] = action;
 
-            Track(dockyardAccountDO, eventName, properties);
+            Track(fr8AccountDO, eventName, properties);
         }
 
-        public void Track(Fr8AccountDO dockyardAccountDO, String eventName, Dictionary<String, object> properties = null)
+        public void Track(Fr8AccountDO fr8AccountDO, String eventName, Dictionary<String, object> properties = null)
         {
             var props = new Segment.Model.Properties();
-            foreach (var prop in GetProperties(dockyardAccountDO))
+            foreach (var prop in GetProperties(fr8AccountDO))
                 props.Add(prop.Key, prop.Value);
 
             if (properties != null)
@@ -88,7 +88,18 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
                     props[prop.Key] = prop.Value;
             }
 
-            Analytics.Client.Track(dockyardAccountDO.Id, eventName, props);
+            Analytics.Client.Track(fr8AccountDO.Id, eventName, props);
+        }
+        public void Track(IUnitOfWork uow, string userId, string eventName, Segment.Model.Properties properties)
+        {
+            Fr8AccountDO fr8AccountDO;
+            using (uow) { fr8AccountDO = uow.UserRepository.GetByKey(userId); }
+
+            var props = new Segment.Model.Properties();
+            foreach (var prop in GetProperties(fr8AccountDO))
+                props.Add(prop.Key, prop.Value);
+
+            Analytics.Client.Track(fr8AccountDO.Id, eventName, props);
         }
     }
 }

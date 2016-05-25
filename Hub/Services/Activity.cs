@@ -143,6 +143,7 @@ namespace Hub.Services
             {
                 return plan;
             }
+            ObjectFactory.GetInstance<ITracker>().Track(uow, userId, "Added Activity to Plan", new Segment.Model.Properties() { { "Activity Name", name } });
             return activity;
         }
 
@@ -568,7 +569,6 @@ namespace Hub.Services
                     throw;
                 }
             }
-            Analytics.Client.Track("TestUser", "Added Activity Added Activity to Plan", new Segment.Model.Properties() { { "Activity Name", submittedActivity.Name } });
             return Mapper.Map<ActivityDO>(tempActionDTO);
         }
 
