@@ -93,7 +93,7 @@ namespace terminalDocuSign.Services.NewApi
             {
                 string tab_type = item.Name;
                 var fields = fieldList.Where(a => a.Tags.Contains(tab_type) && a.Tags.Contains("recipientId:" + corresponding_template_recipient.RecipientId));
-                foreach (JObject tab in item.Value)
+                foreach (JObject tab in item.Value) 
                 {
                     FieldDTO corresponding_field = null;
                     switch (tab_type)
