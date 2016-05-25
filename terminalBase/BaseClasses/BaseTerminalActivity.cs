@@ -380,8 +380,7 @@ namespace TerminalBase.BaseClasses
 
         protected void AddAuthenticationCrate(bool revocation)
         {
-            var terminalAuthType = ActivityContext.ActivityPayload.ActivityTemplate.Terminal.AuthenticationType;
-
+            var terminalAuthType = MyTemplate.Terminal.AuthenticationType;
             AuthenticationMode mode;
             switch (terminalAuthType)
             {
