@@ -40,10 +40,7 @@ namespace terminalSalesforceTests.Intergration
         }
 
         [Test, Category("intergration.terminalSalesforce")]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException)
-        )]
-        public async Task Post_To_Chatter_Initial_Configuration_Without_AuthToken_Exception_Thrown()
+        public async Task Post_To_Chatter_Initial_Configuration_Without_AuthToken_Should_Fail()
         {
             //Arrange
             string terminalConfigureUrl = GetTerminalConfigureUrl();
@@ -54,7 +51,11 @@ namespace terminalSalesforceTests.Intergration
 
             //Act
             //perform post request to terminal and return the result
-            await HttpPostAsync<Fr8DataDTO, ActivityDTO>(terminalConfigureUrl, dataDTO);
+            var response = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(terminalConfigureUrl, dataDTO);
+            Assert.NotNull(response);
+            Assert.NotNull(response.CrateStorage);
+            Assert.NotNull(response.CrateStorage.Crates);
+            Assert.True(response.CrateStorage.Crates.Any(x => x.ManifestType == "Standard Authentication"));
         }
 
         [Test, Category("intergration.terminalSalesforce"), Ignore]

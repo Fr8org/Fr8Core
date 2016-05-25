@@ -134,7 +134,7 @@ namespace terminalSlack.Actions
                     || ActivityUI.ChannelList.Value == incomingMessageContents["channel_id"];
                 if (channelMatches)
                 {
-                    Storage.Add(Crate.FromContent(ResultPayloadCrateLabel, new StandardPayloadDataCM(incomingMessageContents.Fields), AvailabilityType.RunTime));
+                    Payload.Add(Crate.FromContent(ResultPayloadCrateLabel, new StandardPayloadDataCM(incomingMessageContents.Fields), AvailabilityType.RunTime));
                 }
                 else
                 {
@@ -150,7 +150,7 @@ namespace terminalSlack.Actions
 
         private FieldDescriptionsCM ExtractIncomingMessageContentFromPayload()
         {
-            var eventReport = Storage.CrateContentsOfType<EventReportCM>().FirstOrDefault();
+            var eventReport = Payload.CrateContentsOfType<EventReportCM>().FirstOrDefault();
             if (eventReport == null)
             {
                 return null;
