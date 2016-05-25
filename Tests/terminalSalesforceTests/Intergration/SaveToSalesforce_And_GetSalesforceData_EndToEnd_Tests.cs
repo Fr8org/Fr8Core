@@ -41,7 +41,8 @@ namespace terminalSalesforceTests.Intergration
                 authTokenDO = await Fixtures.HealthMonitor_FixtureData.CreateSalesforceAuthToken();
                 authorizationToken = new AuthorizationToken
                 {
-                    Token = authTokenDO.Token
+                    Token = authTokenDO.Token,
+                    Id = authTokenDO.Id.ToString()
                 };
                 //Create the required plan with all initial activities initial config
                 initialPlanId = await CreatePlan_SaveAndGetDataFromSalesforce(authTokenDO);
@@ -144,12 +145,12 @@ namespace terminalSalesforceTests.Intergration
 
             if (initialPlanId != Guid.Empty)
             {
-                await HttpDeleteAsync(_baseUrl + "Plans/Delete?id=" + initialPlanId.ToString());
+                await HttpDeleteAsync(_baseUrl + "Plans/Delete?id=" + initialPlanId);
             }
 
             if (authToken != null)
             {
-                await HttpPostAsync<string>(_baseUrl + "manageauthtoken/revoke?id=" + authToken.Id.ToString(), null);
+                await HttpPostAsync<string>(_baseUrl + "manageauthtoken/revoke?id=" + authToken.Id, null);
             }
         }
 
