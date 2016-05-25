@@ -65,16 +65,16 @@ namespace terminalIntegrationTests.EndToEnd
 
             CreateMtDataRecords(mtData);
 
-            var url = GetHubApiBaseUrl() + "warehouse/search";
+            var url = GetHubApiBaseUrl() + "warehouse/query";
             var query = QueryFixture();
 
             var response = await HttpPostAsync<QueryDTO, JToken>(url, query);
-            Assert.NotNull(response, "Response from warehouse/search is null.");
+            Assert.NotNull(response, "Response from warehouse/query is null.");
 
             var searchedData = response.ToObject<List<DocuSignEnvelopeCM>>();
-            Assert.AreEqual(1, searchedData.Count, "Response from warehouse/search contains wrong number of results.");
+            Assert.AreEqual(1, searchedData.Count, "Response from warehouse/query contains wrong number of results.");
 
-            Assert.AreEqual(mtData[1].EnvelopeId, searchedData[0].EnvelopeId, "Response from warehouse/search contains wrong value for EnvelopeId.");
+            Assert.AreEqual(mtData[1].EnvelopeId, searchedData[0].EnvelopeId, "Response from warehouse/query contains wrong value for EnvelopeId.");
         }
 
         private void CreateMtDataRecords(IEnumerable<DocuSignEnvelopeCM> data)
