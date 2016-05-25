@@ -29,10 +29,10 @@ namespace Data.Infrastructure
         public delegate void IncidentTerminalRunPOSTFailureHandler(string terminalUrl, string curActionDTO, string errorMessage, string objectId);
         public static event IncidentTerminalRunPOSTFailureHandler IncidentTerminalRunFailed;
 
-        public delegate void IncidentTerminalInternalFailureHandler(string terminalUrl, string curActionDTO, Exception e, string objectId);
+        public delegate void IncidentTerminalInternalFailureHandler(string terminalUrl, string containerId, Exception e, string objectId);
         public static event IncidentTerminalInternalFailureHandler IncidentTerminalInternalFailureOccurred;
 
-        public delegate void IncidentTerminalActionActivationPOSTFailureHandler(string terminalUrl, string curActivityDTO, string objectId);
+        public delegate void IncidentTerminalActionActivationPOSTFailureHandler(string terminalUrl, string additionalData, string objectId);
         public static event IncidentTerminalActionActivationPOSTFailureHandler IncidentTerminalActionActivationFailed;
 
         public delegate void TerminalActionActivatedHandler(ActivityDO activity);
@@ -95,7 +95,7 @@ namespace Data.Infrastructure
         public static event OAuthEventHandler AlertTokenObtained;
         public static event OAuthEventHandler AlertTokenRevoked;
 
-        public delegate void TerminalIncidentHandler(LoggingDataCm incidentItem);
+        public delegate void TerminalIncidentHandler(LoggingDataCM incidentItem);
         public static event TerminalIncidentHandler TerminalIncidentReported;
 
         public delegate void EventDocuSignNotificationReceivedHandler();
@@ -131,20 +131,11 @@ namespace Data.Infrastructure
         public delegate void EventActionDispatchedHandler(ActivityDO curActivity, Guid processId);
         public static event EventActionDispatchedHandler EventActionDispatched;
 
-        public delegate void TerminalEventHandler(LoggingDataCm eventDataCm);
+        public delegate void TerminalEventHandler(LoggingDataCM eventDataCm);
         public static event TerminalEventHandler TerminalEventReported;
-
-        public delegate void ExternalEventReceivedHandler(string curEventPayload);
-        public static event ExternalEventReceivedHandler ExternalEventReceived;
 
         public delegate void IncidentDocuSignFieldMissingHandler(string envelopeId, string fieldName);
         public static event IncidentDocuSignFieldMissingHandler IncidentDocuSignFieldMissing;
-
-        public delegate void IncidentMissingFieldInPayloadHandler(string fieldKey, ActivityDO activity, string curUserId);
-        public static event IncidentMissingFieldInPayloadHandler IncidentMissingFieldInPayload;
-
-        public delegate void UnparseableNotificationReceivedHandler(string curNotificationUrl, string curNotificationPayload);
-        public static event UnparseableNotificationReceivedHandler UnparseableNotificationReceived;
 
         public delegate void EventTwilioSMSSentHandler(string number, string message);
         public static event EventTwilioSMSSentHandler EventTwilioSMSSent;
@@ -281,28 +272,28 @@ namespace Data.Infrastructure
             }
         }
 
-        public static void TerminalConfigureFailed(string terminalUrl, string activityDTO, string errorMessage, string objectId)
+        public static void TerminalConfigureFailed(string terminalUrl, string additionalData, string errorMessage, string objectId)
         {
             IncidentTerminalConfigurePOSTFailureHandler handler = IncidentTerminalConfigureFailed;
-            if (handler != null) handler(terminalUrl, activityDTO, errorMessage, objectId);
+            if (handler != null) handler(terminalUrl, additionalData, errorMessage, objectId);
         }
 
-        public static void TerminalRunFailed(string terminalUrl, string activityDTO, string errorMessage, string objectId)
+        public static void TerminalRunFailed(string terminalUrl, string additionalData, string errorMessage, string objectId)
         {
             IncidentTerminalRunPOSTFailureHandler handler = IncidentTerminalRunFailed;
-            if (handler != null) handler(terminalUrl, activityDTO, errorMessage, objectId);
+            if (handler != null) handler(terminalUrl, additionalData, errorMessage, objectId);
         }
 
-        public static void TerminalInternalFailureOccurred(string terminalUrl, string activityDTO, Exception e, string objectId)
+        public static void TerminalInternalFailureOccurred(string terminalUrl, string additionalData, Exception e, string objectId)
         {
             IncidentTerminalInternalFailureHandler handler = IncidentTerminalInternalFailureOccurred;
-            if (handler != null) handler(terminalUrl, activityDTO, e, objectId);
+            if (handler != null) handler(terminalUrl, additionalData, e, objectId);
         }
 
-        public static void TerminalActionActivationFailed(string terminalUrl, string activityDTO, string errorMessage, string objectId)
+        public static void TerminalActionActivationFailed(string terminalUrl, string additional, string errorMessage, string objectId)
         {
             IncidentTerminalActionActivationPOSTFailureHandler handler = IncidentTerminalActionActivationFailed;
-            if (handler != null) handler(terminalUrl, activityDTO, objectId);
+            if (handler != null) handler(terminalUrl, additional, objectId);
         }
 
         public static void PlanActivationFailed(PlanDO plan, string reason)
@@ -317,7 +308,7 @@ namespace Data.Infrastructure
             if (handler != null) handler(userid, message, expiresIn);
         }
 
-        public static void ReportTerminalIncident(LoggingDataCm incidentItem)
+        public static void ReportTerminalIncident(LoggingDataCM incidentItem)
         {
             TerminalIncidentHandler handler = TerminalIncidentReported;
             if (handler != null) handler(incidentItem);
@@ -556,33 +547,16 @@ namespace Data.Infrastructure
             if (handler != null) handler(curActivity, processId);
         }
 
-        public static void ReportTerminalEvent(LoggingDataCm eventDataCm)
+        public static void ReportTerminalEvent(LoggingDataCM eventDataCm)
         {
             TerminalEventHandler handler = TerminalEventReported;
             if (handler != null) handler(eventDataCm);
-        }
-
-        public static void ReportExternalEventReceived(string curEventPayload)
-        {
-            ExternalEventReceivedHandler handler = ExternalEventReceived;
-            if (handler != null) handler(curEventPayload);
-        }
-
-        public static void ReportUnparseableNotification(string curNotificationUrl, string curNotificationPayload)
-        {
-            UnparseableNotificationReceivedHandler handler = UnparseableNotificationReceived;
-            if (handler != null) handler(curNotificationUrl, curNotificationPayload);
         }
 
         public static void DocuSignFieldMissing(string envelopeId, string fieldName)
         {
             var handler = IncidentDocuSignFieldMissing;
             if (handler != null) handler(envelopeId, fieldName);
-        }
-        public static void MissingFieldInPayload(string fieldKey, ActivityDO activity, string userId)
-        {
-            var handler = IncidentMissingFieldInPayload;
-            if (handler != null) handler(fieldKey, activity, userId);
         }
 
         public static void OAuthAuthenticationFailed(string requestQueryString, string errorMessage)
