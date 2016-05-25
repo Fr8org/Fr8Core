@@ -228,17 +228,17 @@ namespace terminalQuickBooks.Actions
             //The check on the accounts' existence in QB is performed only once in the run method
             //ChartOfAccounts is perloaded once and the accounts are compared with the the perloaded list
             if (ChartOfAccountsCrate == null || ChartOfAccountsCrate.Accounts.Count == 0)
-                {
-                    var crate = Payload.CrateContentsOfType<ChartOfAccountsCM>();
-                    ChartOfAccountsCrate = crate != null
-                        ? crate.Single()
-                        : _chartOfAccounts.GetChartOfAccounts(AuthorizationToken, CurrentUserId, HubCommunicator);
-                    curDebitAccount = GetDebitAccount(Payload);
-                    memoText = GetMemoText(Payload);
-                    //Check that the required input is provided by the user
-                    //Namely: debit/credit type
-                    ValidateControls(Payload);
-                }
+            {
+                var crate = Storage.CrateContentsOfType<ChartOfAccountsCM>();
+                ChartOfAccountsCrate = crate != null
+                    ? crate.Single()
+                    : _chartOfAccounts.GetChartOfAccounts(AuthorizationToken, CurrentUserId, HubCommunicator);
+                curDebitAccount = GetDebitAccount(Storage);
+                memoText = GetMemoText(Storage);
+                //Check that the required input is provided by the user
+                //Namely: debit/credit type
+                ValidateControls(Storage);
+            }
             StandardAccountingTransactionCM curStandardAccouningTransactionCM;
             if (curDebitAccount != null)
             {
