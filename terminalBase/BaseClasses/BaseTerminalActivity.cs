@@ -422,7 +422,7 @@ namespace TerminalBase.BaseClasses
         {
             var operationalState = storage.CrateContentsOfType<OperationalStateCM>().SingleOrDefault();
             if (operationalState == null)
-                throw new Exception("No Operational State Crate found.");
+                throw new Exception("Operational state crate is not found");
             return operationalState;
         }
         // do not use after EnhancedTerminalActivity is introduced
@@ -709,6 +709,7 @@ namespace TerminalBase.BaseClasses
             catch (Exception ex)
             {
                 RaiseError(ex.Message);
+                throw;
             }
         }
 

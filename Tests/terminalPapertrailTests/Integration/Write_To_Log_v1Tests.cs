@@ -202,6 +202,7 @@ namespace terminalPapertrailTests.Integration
             //prepare action DTO with valid target URL
             var activityDTO = await GetActivityDTO_LogToPapertrailIntegrationTest();
             var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
             //Act
             var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
         }
