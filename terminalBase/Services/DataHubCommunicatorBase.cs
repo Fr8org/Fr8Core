@@ -255,7 +255,7 @@ namespace TerminalBase.Services
 
         public Task RenewToken(AuthorizationTokenDTO token, string userId)
         {
-            throw new NotImplementedException();
+            return Task.FromResult(0);
         }
 
         public Task RenewToken(string id, string externalAccountId, string token, string userId)

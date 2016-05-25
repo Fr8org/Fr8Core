@@ -57,7 +57,7 @@ namespace terminalGoogle.Actions
                     var newToken = _googleIntegration.RefreshToken(token);
                     var tokenDTO = new AuthorizationTokenDTO()
                     {
-                        Id = AuthorizationToken.Id.ToString(),
+                        Id = AuthorizationToken.Id,
                         ExternalAccountId = AuthorizationToken.ExternalAccountId,
                         Token = JsonConvert.SerializeObject(newToken)
                     };

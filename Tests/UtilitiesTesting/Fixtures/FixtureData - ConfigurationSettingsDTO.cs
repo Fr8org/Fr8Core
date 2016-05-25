@@ -33,7 +33,7 @@ namespace UtilitiesTesting.Fixtures
 
         public static ControlDefinitionDTO TestConnectionString2()
         {
-            return new TextBlock()
+            return new TextBox()
             {
                 Name = "Connection_String",
                 Value = @"Server = tcp:s79ifqsqga.database.windows.net,1433; Database = demodb_health_test; User ID = IntegrationTest@s79ifqsqga; Password = thmxsGv2Jqo; Trusted_Connection = False; Encrypt = True; Connection Timeout = 30; "

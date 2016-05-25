@@ -35,7 +35,7 @@ namespace terminalFr8CoreTests.Integration
         {
             Assert.AreEqual(2, control.Controls.Count);
 
-            Assert.IsTrue(control.Controls[0] is TextBlock);
+            Assert.IsTrue(control.Controls[0] is TextBox);
             Assert.AreEqual("Connection String", control.Controls[0].Label);
             Assert.AreEqual("ConnectionString", control.Controls[0].Name);
             
