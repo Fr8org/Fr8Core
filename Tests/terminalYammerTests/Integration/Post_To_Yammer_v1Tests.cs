@@ -5,6 +5,7 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using HealthMonitor.Utility;
 using Fr8Data.Managers;
+using Fr8Infrastructure.Communication;
 using NUnit.Framework;
 using terminalYammerTests.Fixtures;
 
