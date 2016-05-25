@@ -507,6 +507,9 @@ div.action-header {
     margin-top: -16px;
 }
 
+.action-add .action-category, .action-add--active .action-category {
+    outline:none;
+}
 .action-add:hover .action-category, .action-add--active .action-category {
     margin-top: 8px;
 }
