@@ -111,7 +111,7 @@ namespace HealthMonitor.Utility
         protected async Task RevokeTokens(string terminalName)
         {
             var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
-                _baseUrl + "manageauthtoken/"
+                _baseUrl + "authentication/usertokens"
             );
 
             if (tokens != null)
@@ -122,7 +122,7 @@ namespace HealthMonitor.Utility
                     foreach (var token in docusignTokens.AuthTokens)
                     {
                         await HttpPostAsync<string>(
-                            _baseUrl + "manageauthtoken/revoke?id=" + token.Id.ToString(),
+                            _baseUrl + "authentication/revoketoken?id=" + token.Id.ToString(),
                             null
                         );
                     }

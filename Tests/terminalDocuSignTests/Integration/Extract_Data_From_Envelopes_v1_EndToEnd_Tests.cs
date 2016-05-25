@@ -94,7 +94,7 @@ namespace terminalDocuSignTests.Integration
                 };
 
                 await HttpPostAsync<ManageAuthToken_Apply[], string>(
-                    _baseUrl + "ManageAuthToken/apply",
+                    _baseUrl + "authentication/granttokens",
                     new ManageAuthToken_Apply[] { applyToken }
                 );
             }
@@ -172,7 +172,7 @@ namespace terminalDocuSignTests.Integration
                 };
 
                 await HttpPostAsync<ManageAuthToken_Apply[], string>(
-                    _baseUrl + "ManageAuthToken/apply",
+                    _baseUrl + "authentication/granttokens",
                     new ManageAuthToken_Apply[] { applyToken }
                 );
             }
@@ -298,7 +298,7 @@ namespace terminalDocuSignTests.Integration
             {
                 var terminalsAndTokens =
                     await HttpGetAsync<ManageAuthToken_Terminal[]>(
-                        _baseUrl + "manageauthtoken/"
+                        _baseUrl + "authentication/usertokens"
                     );
 
                 var terminalDocuSign = terminalsAndTokens
@@ -346,7 +346,7 @@ namespace terminalDocuSignTests.Integration
                 };
 
                 await HttpPostAsync<ManageAuthToken_Apply[], string>(
-                    _baseUrl + "ManageAuthToken/apply",
+                    _baseUrl + "authentication/granttokens",
                     new ManageAuthToken_Apply[] { applyToken }
                 );
             }

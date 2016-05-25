@@ -448,7 +448,7 @@ namespace terminalDocuSignTests.Integration
             var errorMessage = $"Authorization token for Google is not found for the integration testing user {TestUserEmail}. Please go to the target instance of fr8 and log in with the integration testing user credentials. Then add a Google action to any plan and be sure to set the \"Use for all Activities\" checkbox on the Authorize Accounts dialog while authenticating. Reason: ";
 
             var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
-                _baseUrl + "manageauthtoken/"
+                _baseUrl + "authentication/usertokens"
             );
 
             Assert.NotNull(tokens, errorMessage + "No auth-tokens found");

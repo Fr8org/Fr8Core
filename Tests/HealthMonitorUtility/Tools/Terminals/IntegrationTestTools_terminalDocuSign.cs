@@ -72,7 +72,7 @@ namespace terminaBaselTests.Tools.Terminals
                 AuthTokenId = tokenGuid,
                 IsMain = true
             };
-            await _baseHubITest.HttpPostAsync<ManageAuthToken_Apply[], string>(_baseHubITest.GetHubApiBaseUrl() + "ManageAuthToken/apply", new[] { applyToken });
+            await _baseHubITest.HttpPostAsync<ManageAuthToken_Apply[], string>(_baseHubITest.GetHubApiBaseUrl() + "authentication/granttokens", new[] { applyToken });
 
             return tokenGuid;
         }
