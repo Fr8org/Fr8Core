@@ -317,13 +317,10 @@ namespace TerminalBase.Helpers
             AddControl(storage, textSourceControl);
         }
 
-        protected void AddControl(ICrateStorage storage, ControlDefinitionDTO control)
+        public void AddControl(ICrateStorage storage, ControlDefinitionDTO control)
         {
             var controlsCrate = EnsureControlsCrate(storage);
-
-            if (controlsCrate.Content == null) { return; }
-
-            controlsCrate.Content.Controls.Add(control);
+            controlsCrate.Content?.Controls.Add(control);
         }
 
         public Crate<StandardConfigurationControlsCM> EnsureControlsCrate(ICrateStorage storage)

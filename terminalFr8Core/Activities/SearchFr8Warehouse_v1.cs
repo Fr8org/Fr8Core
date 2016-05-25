@@ -121,7 +121,7 @@ namespace terminalFr8Core.Activities
         /// <param name="activityPayload"></param>
         /// <param name="curDocumentation"></param>
         /// <returns></returns>
-        public dynamic Documentation(ActivityPayload activityPayload, string curDocumentation)
+        protected override Task<SolutionPageDTO> GetDocumentation(string curDocumentation)
         {
             if (curDocumentation.Contains("MainPage"))
             {

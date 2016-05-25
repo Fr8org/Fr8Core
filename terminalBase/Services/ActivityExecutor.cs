@@ -88,6 +88,10 @@ namespace TerminalBase.Services
                         var executionContext2 = await CreateContainerExecutionContext(hubCommunicator, curDataDTO, curTerminal);
                         await activity.RunChildActivities(activityContext, executionContext2);
                         return SerializeResponse(executionContext2);
+
+                    case "documentation":
+                        var documentation = await activity.GetDocumentation(activityContext, curDataDTO.ActivityDTO.Documentation);
+                        return SerializeResponse(documentation);
                 }
             }
             catch (Exception e)
@@ -112,11 +116,10 @@ namespace TerminalBase.Services
                 throw new ArgumentNullException(nameof(curDataDTO.ContainerId), "NULL Container ID");
             }
             */
-            var payload = await hubCommunicator.GetPayload(containerId, curDataDTO.ActivityDTO.AuthToken.UserId);
+            var payload = await hubCommunicator.GetPayload(containerId, curDataDTO.ActivityDTO.AuthToken?.UserId);
             return new ContainerExecutionContext
             {
                 PayloadStorage = CrateManager.GetStorage(payload),
-                
                 ContainerId = containerId
             };
         }
@@ -134,6 +137,11 @@ namespace TerminalBase.Services
         private PayloadDTO SerializeResponse(ContainerExecutionContext activityContext)
         {
             return Mapper.Map<PayloadDTO>(activityContext);
+        }
+
+        private SolutionPageDTO SerializeResponse(SolutionPageDTO documentation)
+        {
+            return documentation;
         }
     }
 }

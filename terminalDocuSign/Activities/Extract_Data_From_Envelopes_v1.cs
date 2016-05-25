@@ -133,7 +133,7 @@ namespace terminalDocuSign.Activities
         /// <param name="activityDO"></param>
         /// <param name="curDocumentation"></param>
         /// <returns></returns>
-        public dynamic Documentation(ActivityDO activityDO, string curDocumentation)
+        protected override Task<SolutionPageDTO> GetDocumentation(string curDocumentation)
         {
             if (curDocumentation.Contains("MainPage"))
             {

@@ -184,6 +184,11 @@ namespace TerminalBase.BaseClasses
             return Deactivate();
         }
 
+        public Task<SolutionPageDTO> GetDocumentation(ActivityContext activityContext, string documentationType)
+        {
+            throw new NotImplementedException();
+        }
+
         public void SetHubCommunicator(IHubCommunicator hubCommunicator)
         {
             throw new NotImplementedException();

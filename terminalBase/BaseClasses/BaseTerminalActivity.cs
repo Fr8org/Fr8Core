@@ -489,12 +489,12 @@ namespace TerminalBase.BaseClasses
             return ControlHelper.GetControl<T>(ConfigurationControls, name, controlType);
         }
 
-        public ActivityResponseDTO GenerateDocumentationResponse(string documentation)
+        public SolutionPageDTO GenerateDocumentationResponse(string documentation)
         {
-            return new ActivityResponseDTO
+            return new SolutionPageDTO
             {
                 Body = documentation,
-                Type = ActivityResponse.ShowDocumentation.ToString()
+                //Type = ActivityResponse.ShowDocumentation.ToString()
             };
         }
 
@@ -520,7 +520,7 @@ namespace TerminalBase.BaseClasses
 
         protected void AddControl(ControlDefinitionDTO control)
         {
-            ConfigurationControls.Controls.Add(control);
+            ControlHelper.AddControl(Storage, control);
         }
 
         protected virtual bool IsTokenInvalidation(Exception ex)
@@ -629,12 +629,12 @@ namespace TerminalBase.BaseClasses
             return curSolutionPage;
         }
 
-        public ActivityResponseDTO GenerateErrorResponse(string errorMessage)
+        public SolutionPageDTO GenerateErrorResponse(string errorMessage)
         {
-            return new ActivityResponseDTO
+            return new SolutionPageDTO
             {
                 Body = errorMessage,
-                Type = ActivityResponse.ShowDocumentation.ToString()
+                //Type = ActivityResponse.ShowDocumentation.ToString()
             };
         }
 
@@ -735,6 +735,21 @@ namespace TerminalBase.BaseClasses
         protected virtual Task<bool> Validate()
         {
             return Task.FromResult(true);
+        }
+
+        protected virtual Task<SolutionPageDTO> GetDocumentation(string documentationType)
+        {
+            return Task.FromResult(new SolutionPageDTO
+            {
+                Name = "No Documentation method found",
+                Body = "Please add the Documentation method to the Solution class"
+            });
+        }
+
+        public async Task<SolutionPageDTO> GetDocumentation(ActivityContext activityContext, string documentationType)
+        {
+            InitializeActivity(activityContext);
+            return await GetDocumentation(documentationType);
         }
 
         protected async Task<bool> ValidateInternal()
