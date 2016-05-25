@@ -692,18 +692,8 @@ namespace TerminalBase.BaseClasses
 
             try
             {
-                if (!await ValidateInternal())
-                {
-                    RaiseError("Activity was incorrectly configured");
-                    return;
-                }
-
-                OperationalState.CurrentActivityResponse = null;
-                await Run();
-                if (OperationalState.CurrentActivityResponse == null)
-                {
-                    Success();
-                }
+                await ValidateAndRun();
+                
             }
             catch (AuthorizationTokenExpiredOrInvalidException ex)
             {
@@ -770,6 +760,22 @@ namespace TerminalBase.BaseClasses
             if (await ValidateInternal())
             {
                 await FollowUp();
+            }
+        }
+
+        protected virtual async Task ValidateAndRun()
+        {
+            if (!await ValidateInternal())
+            {
+                RaiseError("Activity was incorrectly configured");
+                return;
+            }
+
+            OperationalState.CurrentActivityResponse = null;
+            await Run();
+            if (OperationalState.CurrentActivityResponse == null)
+            {
+                Success();
             }
         }
 

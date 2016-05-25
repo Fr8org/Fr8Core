@@ -56,13 +56,16 @@ namespace TerminalBase.BaseClasses
             return await ValidateETA();
         }
 
+        protected override async Task ValidateAndRun()
+        {
+            SyncConfControls();
+            await base.ValidateAndRun();
+        }
+
         protected override async Task ValidateAndFollowUp()
         {
             SyncConfControls();
-            if (await ValidateInternal())
-            {
-                await FollowUp();
-            }
+            await base.ValidateAndFollowUp();
         }
 
         /**********************************************************************************/
