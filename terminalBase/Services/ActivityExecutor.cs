@@ -12,11 +12,9 @@ namespace TerminalBase.Services
 {
     public class ActivityExecutor
     {
-        protected readonly IHubCommunicator HubCommunicator;
         protected readonly ICrateManager CrateManager;
-        public ActivityExecutor(IHubCommunicator hubCommunicator, ICrateManager crateManager)
+        public ActivityExecutor(ICrateManager crateManager)
         {
-            HubCommunicator = hubCommunicator;
             CrateManager = crateManager;
         }
 
@@ -39,23 +37,29 @@ namespace TerminalBase.Services
             {
                 var integrationTestMode = false;
                 //we should remove this mode
-                var activityTemplateName = curDataDTO.ActivityDTO.ActivityTemplate.Name;
-                if (activityTemplateName.EndsWith("_TEST"))
+                var activityTemplate = curDataDTO.ActivityDTO.ActivityTemplate;
+                var originalActivityTemplateName = activityTemplate.Name;
+                if (activityTemplate.Name.EndsWith("_TEST"))
                 {
                     integrationTestMode = true;
-                    curDataDTO.ActivityDTO.ActivityTemplate.Name = activityTemplateName.Substring(0, activityTemplateName.Length - "_TEST".Length);
+                    activityTemplate.Name = activityTemplate.Name.Substring(0, activityTemplate.Name.Length - "_TEST".Length);
                 }
                 //just created this for existing integration tests
                 //we should find a smoother way for integration tests
                 var hubCommunicator = integrationTestMode
                     ? new TestMonitoringHubCommunicator(curDataDTO.ExplicitData)
                     : ObjectFactory.GetInstance<IHubCommunicator>();
-                
 
                 IActivityFactory factory = ActivityStore.GetValue(curDataDTO.ActivityDTO.ActivityTemplate);
                 if (factory == null)
                 {
                     throw new ArgumentException("Activity template registration not found with name" + curDataDTO.ActivityDTO.ActivityTemplate.Name);
+                }
+
+                if (integrationTestMode)
+                {
+                    //let's restore activity template name
+                    activityTemplate.Name = originalActivityTemplateName;
                 }
 
                 ActivityContext activityContext = DeserializeRequest(curDataDTO);
@@ -76,14 +80,12 @@ namespace TerminalBase.Services
                         return SerializeResponse(activityContext);
 
                     case "run":
-                        await HubCommunicator.Configure(curTerminal);
-                        var executionContext = await CreateContainerExecutionContext(curDataDTO);
+                        var executionContext = await CreateContainerExecutionContext(hubCommunicator, curDataDTO, curTerminal);
                         await activity.Run(activityContext, executionContext);
                         return SerializeResponse(executionContext);
 
                     case "executechildactivities":
-                        await HubCommunicator.Configure(curTerminal);
-                        var executionContext2 = await CreateContainerExecutionContext(curDataDTO);
+                        var executionContext2 = await CreateContainerExecutionContext(hubCommunicator, curDataDTO, curTerminal);
                         await activity.RunChildActivities(activityContext, executionContext2);
                         return SerializeResponse(executionContext2);
                 }
@@ -96,18 +98,26 @@ namespace TerminalBase.Services
             throw new ArgumentException("Unsupported request", nameof(curActionPath));
         }
 
-        private async Task<ContainerExecutionContext> CreateContainerExecutionContext(Fr8DataDTO curDataDTO)
+        private async Task<ContainerExecutionContext> CreateContainerExecutionContext(IHubCommunicator hubCommunicator, Fr8DataDTO curDataDTO, string terminalName)
         {
+            await hubCommunicator.Configure(terminalName);
+            //this is just to keep integrations tests running
+            //integration tests don't provide a containerid
+            //we should modify integration tests
+            //disabled for integration tests
+            var containerId = curDataDTO.ContainerId ?? Guid.NewGuid();
+            /*
             if (curDataDTO.ContainerId == null)
             {
                 throw new ArgumentNullException(nameof(curDataDTO.ContainerId), "NULL Container ID");
             }
-
-            var payload = await HubCommunicator.GetPayload(curDataDTO.ContainerId.Value, curDataDTO.ActivityDTO.AuthToken.UserId);
+            */
+            var payload = await hubCommunicator.GetPayload(containerId, curDataDTO.ActivityDTO.AuthToken.UserId);
             return new ContainerExecutionContext
             {
                 PayloadStorage = CrateManager.GetStorage(payload),
-                ContainerId = curDataDTO.ContainerId.Value
+                
+                ContainerId = containerId
             };
         }
 
