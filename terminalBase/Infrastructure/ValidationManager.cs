@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using Data.Interfaces.Manifests;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
@@ -33,7 +34,7 @@ namespace TerminalBase.Infrastructure
 
         public void SetError(string errorMessage, params ControlDefinitionDTO[] controls)
         {
-            SetError(errorMessage, controls.Select(x => x.Name).Where(x => !string.IsNullOrWhiteSpace(x)).ToArray());
+            SetError(errorMessage, controls.Select(ResolveControlName).Where(x => !string.IsNullOrWhiteSpace(x)).ToArray());
         }
 
         public void SetError(string errorMessage)
@@ -55,6 +56,11 @@ namespace TerminalBase.Infrastructure
                 ErrorMessage = errorMessage,
                 ControlNames = controlNames != null ? new List<string>(controlNames) : null
             });
+        }
+
+        protected virtual string ResolveControlName(ControlDefinitionDTO control)
+        {
+            return control?.Name;
         }
 
         private void CheckSettings()

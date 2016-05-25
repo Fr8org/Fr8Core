@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace TerminalBase.Services
+namespace Hub.Services
 {
     // Helper for querying MT DB
     public static partial class MTSearchHelper

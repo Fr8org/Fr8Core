@@ -18,6 +18,7 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_AuthCompleted,
         PaneConfigureAction_DownStreamReconfiguration,
         PaneConfigureAction_UpdateValidationMessages,
+        PaneConfigureAction_ResetValidationMessages,
         PaneConfigureAction_ShowAdvisoryMessages
     }
 
@@ -95,6 +96,9 @@ module dockyard.directives.paneConfigureAction {
         constructor(id: string) {
             this.id = id;
         }
+    }
+
+    export class ResetValidationMessagesEventArgs {
     }
 
     export class UpdateValidationMessagesEventArgs {
@@ -227,6 +231,10 @@ module dockyard.directives.paneConfigureAction {
                         }
                     });
                 }
+            });
+
+            $scope.$on(MessageType[MessageType.PaneConfigureAction_ResetValidationMessages], (event: ng.IAngularEvent, e: ResetValidationMessagesEventArgs) => {
+               crateHelper.resetValidationErrors($scope.currentAction.configurationControls.fields);
             });
 
             $scope.$on(MessageType[MessageType.PaneConfigureAction_UpdateValidationMessages], (event: ng.IAngularEvent, e: UpdateValidationMessagesEventArgs) => {

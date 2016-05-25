@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 
 namespace Fr8Data.Helpers
 {
@@ -36,31 +37,38 @@ namespace Fr8Data.Helpers
                 }
                 return result;
             }
-            var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
-            var fields = type.GetFields(BindingFlags.Public | BindingFlags.Instance | BindingFlags.NonPublic);
-            //We skip indexer properties as we won't be able to supply arguments
-            foreach (var property in properties.Where(x => x.GetIndexParameters().Length == 0))
+
+
+            var propsToIgnore = new HashSet<string>();
+            var manifestType = typeof(Manifest);
+            var members = Fr8ReflectionHelper.GetMembers(type);
+
+            // ingore properties from Manifest base class
+            if (manifestType.IsAssignableFrom(type))
             {
-                if (IsPrimitiveType(property.PropertyType))
+                foreach (var prop in Fr8ReflectionHelper.GetMembers(manifestType))
                 {
-                    result.Add(new FieldDTO(property.Name, property.GetValue(obj)?.ToString()));
+                    propsToIgnore.Add(prop.Name);
+                }
+            }
+
+            foreach (var memberAccessor in members)
+            {
+                if (propsToIgnore.Contains(memberAccessor.Name))
+                {
+                    continue;
+                }
+
+                if (IsPrimitiveType(memberAccessor.MemberType))
+                {
+                    result.Add(new FieldDTO(memberAccessor.Name, memberAccessor.GetValue(obj)?.ToString()));
                 }
                 else
                 {
-                    result.AddRange(FindFieldsRecursive(property.GetValue(obj)));
+                    result.AddRange(FindFieldsRecursive(memberAccessor.GetValue(obj)));
                 }
             }
-            foreach (var field in fields)
-            {
-                if (IsPrimitiveType(field.FieldType))
-                {
-                    result.Add(new FieldDTO(field.Name, field.GetValue(obj)?.ToString()));
-                }
-                else
-                {
-                    result.AddRange(FindFieldsRecursive(field.GetValue(obj)));
-                }
-            }
+
             return result;
         }
 
@@ -116,7 +124,7 @@ namespace Fr8Data.Helpers
 
         public static IEnumerable<IMemberAccessor> GetMembers(Type type)
         {
-            return type.GetProperties(BindingFlags.Instance | BindingFlags.Public).Select(x => (IMemberAccessor)new PropertyMemberAccessor(x))
+            return type.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.GetIndexParameters().Length == 0).Select(x => (IMemberAccessor)new PropertyMemberAccessor(x))
                        .Concat(type.GetFields(BindingFlags.Instance | BindingFlags.Public).Select(x => (IMemberAccessor)new FieldMemberAccessor(x)));
         }
 
@@ -128,6 +136,31 @@ namespace Fr8Data.Helpers
                    || type == typeof(Guid)
                    || type == typeof(DateTime)
                    || (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>) && IsPrimitiveType(type.GetGenericArguments()[0]));
+        }
+
+        public static bool CheckIfMemberIsCollectionOf<TItem>(IMemberAccessor member)
+        {
+            if (member.MemberType.IsInterface && CheckIfTypeIsCollectionOf<TItem>(member.MemberType))
+            {
+                return true;
+            }
+
+            return member.MemberType.GetInterfaces().Any(x => CheckIfTypeIsCollectionOf(x, typeof(TItem)));
+        }
+
+        public static bool CheckIfTypeIsCollectionOf<TItem>(Type type)
+        {
+            return CheckIfTypeIsCollectionOf(type, typeof(TItem));
+        }
+
+        public static bool CheckIfTypeIsCollectionOf(Type type, Type itemType)
+        {
+            var enumerableInterface = type.IsInterface && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(IEnumerable<>) ? type : type.GetInterface("IEnumerable`1");
+            if (enumerableInterface == null)
+            {
+                return false;
+            }
+            return itemType.IsAssignableFrom(enumerableInterface.GetGenericArguments()[0]);
         }
     }
 }
