@@ -124,7 +124,7 @@ namespace Fr8Data.Helpers
 
         public static IEnumerable<IMemberAccessor> GetMembers(Type type)
         {
-            return type.GetProperties(BindingFlags.Instance | BindingFlags.Public).Select(x => (IMemberAccessor)new PropertyMemberAccessor(x))
+            return type.GetProperties(BindingFlags.Instance | BindingFlags.Public).Where(x => x.GetIndexParameters().Length == 0).Select(x => (IMemberAccessor)new PropertyMemberAccessor(x))
                        .Concat(type.GetFields(BindingFlags.Instance | BindingFlags.Public).Select(x => (IMemberAccessor)new FieldMemberAccessor(x)));
         }
 
