@@ -278,15 +278,24 @@ app.directive('stickyFooter', [
     }
 ]);
 
-app.directive('eventAddplan', ['$timeout', function ($timeout) {
+app.directive('eventAddplan', ['$timeout', '$window', function ($timeout, $window) {
     return {
         restrict: 'A',
-        link: function (scope, element, attributes) {
+        link: function (scope, element) {
             element.on('click', function () {
-                var segKey = '<%=ConfigurationManager.AppSettings["SegmentWriteKey"].ToString()%>';
-                this.window.analytics = this.window.analytics || [], this.window.analytics.methods = ["identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off", "trackLink", "trackForm", "trackClick", "trackSubmit"], this.window.analytics.factory = function (t) { return function () { var a = Array.prototype.slice.call(arguments); return a.unshift(t), this.window.analytics.push(a), this.window.analytics } }; for (var i = 0; i < this.window.analytics.methods.length; i++) { var key = this.window.analytics.methods[i]; this.window.analytics[key] = this.window.analytics.factory(key) } this.window.analytics.load = function (t) { if (!document.getElementById("analytics-js")) { var a = document.createElement("script"); a.type = "text/javascript", a.id = "analytics-js", a.async = !0, a.src = ("https:" === document.location.protocol ? "https://" : "http://") + "cdn.segment.io/analytics.js/v1/" + t + "/analytics.min.js"; var n = document.getElementsByTagName("script")[0]; n.parentNode.insertBefore(a, n) } }, this.window.analytics.SNIPPET_VERSION = "2.0.9",
-                    this.window.analytics.load(segKey);
-                this.window.analytics.TrackLink(element, "Clicked Add Plan Button");
+                var btn = $window.document.getElementById("Myfr8lines");
+                $window.analytics.trackLink(btn, "Clicked Add Plan Button");
+            });
+        }
+    };
+}]);
+app.directive('eventRunplan', ['$timeout', '$window', function ($timeout, $window) {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            element.on('click', function () {
+                var runButtons = $window.document.getElementsByClassName("_analytics-run-button"); 
+                $window.analytics.trackLink(runButtons, "Clicked Run Plan Button");
             });
         }
     };
