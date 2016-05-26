@@ -49,6 +49,7 @@ module dockyard.directives.upstreamDataChooser {
                     var alertMessage = new model.AlertDTO();
                     alertMessage.title = "Notification";
                     alertMessage.body = error.message;
+                    alertMessage.isOkCancelVisible = false;
                     uiHelperService.openConfirmationModal(alertMessage);
                 });
             }

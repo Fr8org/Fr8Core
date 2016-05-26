@@ -2,6 +2,9 @@ using System.Web.Http;
 using WebActivatorEx;
 using HubWeb;
 using Swashbuckle.Application;
+using Swashbuckle.Swagger;
+using System.Web.Http.Description;
+using System.Linq;
 
 [assembly: PreApplicationStartMethod(typeof(SwaggerConfig), "Register")]
 
@@ -160,6 +163,9 @@ namespace HubWeb
                         //
                         c.DocumentFilter<RemoveDuplicatesDocumentFilter>();
 
+                        //Removing duplicates filter
+                        c.DocumentFilter<RemoveDuplicatesDocumentFilter>();
+
                         // In contrast to WebApi, Swagger 2.0 does not include the query string component when mapping a URL
                         // to an action. As a result, Swashbuckle will raise an exception if it encounters multiple actions
                         // with the same path (sans query string) and HTTP method. You can workaround this by providing a
@@ -226,4 +232,23 @@ namespace HubWeb
                     });
         }
     }
+
+    public class RemoveDuplicatesDocumentFilter : IDocumentFilter
+    {
+        public void Apply(SwaggerDocument swaggerDoc, SchemaRegistry schemaRegistry, IApiExplorer apiExplorer)
+        {
+            var duplicates1 = apiExplorer.ApiDescriptions.Where(x => x.RelativePath.ToLower().Contains("/" + x.HttpMethod.Method.ToLower() + "/") || x.RelativePath.ToLower().Contains("/" + x.HttpMethod.Method.ToLower() + "?")).ToList();
+            var duplicates2 = apiExplorer.ApiDescriptions.Where(x => x.RelativePath.EndsWith(x.HttpMethod.Method, System.StringComparison.OrdinalIgnoreCase)).ToList();
+            duplicates1.AddRange(duplicates2);
+            foreach (var item in duplicates1)
+            {
+                apiExplorer.ApiDescriptions.Remove(item);
+            }
+            foreach (var item in duplicates1)
+            {
+                swaggerDoc.paths.Remove("/" + item.RelativePath);
+            }
+        }
+    }
+
 }
