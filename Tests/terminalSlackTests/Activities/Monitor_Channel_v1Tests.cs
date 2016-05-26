@@ -120,24 +120,26 @@ namespace terminalSlackTests.Integration
                     }
                  }
             );
-            var storage = Crate.GetStorage(activityDTO);
-            selectedChannel = selectedChannel.StartsWith("#") ? selectedChannel : $"#{selectedChannel}";
-            storage.UpdateControls<Monitor_Channel_v1.ActivityUi>(x =>
+            using (var storage = Crate.GetUpdatableStorage(activityDTO))
             {
-                if (string.IsNullOrEmpty(selectedChannel))
+                selectedChannel = selectedChannel.StartsWith("#") ? selectedChannel : $"#{selectedChannel}";
+                storage.UpdateControls<Monitor_Channel_v1.ActivityUi>(x =>
                 {
-                    x.AllChannelsOption.Selected = true;
-                    x.SpecificChannelOption.Selected = false;
-                }
-                else
-                {
-                    x.AllChannelsOption.Selected = false;
-                    x.SpecificChannelOption.Selected = true;
-                    var channelListItem = x.ChannelList.ListItems.FirstOrDefault(y => y.Key == selectedChannel);
-                    x.ChannelList.selectedKey = channelListItem?.Key;
-                    x.ChannelList.Value = channelListItem?.Value;
-                }
-            });
+                    if (string.IsNullOrEmpty(selectedChannel))
+                    {
+                        x.AllChannelsOption.Selected = true;
+                        x.SpecificChannelOption.Selected = false;
+                    }
+                    else
+                    {
+                        x.AllChannelsOption.Selected = false;
+                        x.SpecificChannelOption.Selected = true;
+                        var channelListItem = x.ChannelList.ListItems.FirstOrDefault(y => y.Key == selectedChannel);
+                        x.ChannelList.selectedKey = channelListItem?.Key;
+                        x.ChannelList.Value = channelListItem?.Value;
+                    }
+                });
+            }
             return requestDataDTO;
         }
 
