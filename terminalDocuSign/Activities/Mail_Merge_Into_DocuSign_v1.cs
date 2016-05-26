@@ -254,7 +254,7 @@ namespace terminalDocuSign.Actions
         /// <returns></returns>
         private async Task<ActivityDO> CreateFirstChildActivity(ReconfigurationContext context)
         {
-            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
+            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null, true))
                 .Select(Mapper.Map<ActivityTemplateDO>)
                 .ToList();
 
@@ -295,7 +295,7 @@ namespace terminalDocuSign.Actions
                 return false;
             }
 
-            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
+            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null, true))
                 .Select(x => Mapper.Map<ActivityTemplateDO>(x))
                 .ToList();
 
@@ -339,7 +339,7 @@ namespace terminalDocuSign.Actions
 
         private async Task<ActivityDO> CreateSecondChildActivity(ReconfigurationContext context)
         {
-            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
+            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null, true))
                 .Select(Mapper.Map<ActivityTemplateDO>)
                 .ToList();
 
@@ -388,7 +388,7 @@ namespace terminalDocuSign.Actions
 
         private async Task<ActivityDO> ConfigureSecondChildActivity(ReconfigurationContext context)
         {
-            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
+            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null, true))
                 .Select(x => Mapper.Map<ActivityTemplateDO>(x))
                 .ToList();
 

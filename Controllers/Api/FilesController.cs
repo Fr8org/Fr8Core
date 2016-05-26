@@ -131,7 +131,7 @@ namespace HubWeb.Controllers
         [HttpGet]
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
-        public IHttpActionResult List()
+        public IHttpActionResult Get()
         {
             IList<FileDTO> fileList;
 
