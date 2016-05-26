@@ -18,13 +18,11 @@ namespace terminalDocuSign.Services
 {
     public class Event : terminalDocuSign.Interfaces.IEvent
     {
-        private readonly EventReporter _alertReporter;
         private readonly IDocuSignPlan _docuSignPlan;
         private readonly ICrateManager _crateManager;
 
         public Event()
         {
-            _alertReporter = ObjectFactory.GetInstance<EventReporter>();
             _docuSignPlan = ObjectFactory.GetInstance<IDocuSignPlan>();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
