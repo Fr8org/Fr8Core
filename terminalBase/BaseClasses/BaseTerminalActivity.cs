@@ -841,11 +841,15 @@ namespace TerminalBase.BaseClasses
             {
                 return;
             }
-
-            if (await ValidateInternal())
+            Storage.Remove<ValidationResultsCM>();
+            ValidationManager.Reset();
+            await Validate();
+            if (ValidationManager.HasErrors)
             {
-                await Activate();
+                Storage.Add(Crate.FromContent("Validation Results", ValidationManager.GetResults()));
+                return;
             }
+            await Activate();
         }
 
         public async Task Deactivate(ActivityContext activityContext)
