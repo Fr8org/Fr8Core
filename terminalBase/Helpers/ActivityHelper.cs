@@ -7,6 +7,7 @@ using Fr8Data.Helpers;
 using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using TerminalBase.BaseClasses;
+using TerminalBase.Models;
 
 namespace TerminalBase.Helpers
 {
@@ -161,14 +162,12 @@ namespace TerminalBase.Helpers
         /// <summary>
         /// Returns a copy of AcvitityUI for the given activity
         /// </summary>
-        public static TActivityUi GetReadonlyActivityUi<TActivityUi>(this ICrateStorage crateStorage) where TActivityUi : StandardConfigurationControlsCM, new()
+        public static TActivityUi GetReadonlyActivityUi<TActivityUi>(this ICrateStorage storage) where TActivityUi : StandardConfigurationControlsCM, new()
         {
-            if (crateStorage == null)
-            {
-                throw new ArgumentNullException(nameof(crateStorage));
-            }
-
-            return new TActivityUi().ClonePropertiesFrom(crateStorage.FirstCrateOrDefault<StandardConfigurationControlsCM>()?.Content) as TActivityUi;
+            var controls = storage.FirstCrateOrDefault<StandardConfigurationControlsCM>()?.Content;
+            var activityUi = new TActivityUi().ClonePropertiesFrom(controls) as TActivityUi;
+            activityUi.RestoreDynamicControlsFrom(controls);
+            return activityUi;
         }
     }
 }

@@ -17,7 +17,6 @@ using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
 using TerminalBase.Helpers;
-using TerminalBase.Helpers;
 using TerminalBase.Models;
 
 namespace terminalDocuSignTests.Activities
@@ -97,7 +96,6 @@ namespace terminalDocuSignTests.Activities
                 AuthorizationToken = FakeToken
             };
             await activity.Configure(context);
-
             context.ActivityPayload.CrateStorage.UpdateControls<Send_DocuSign_Envelope_v2.ActivityUi>(x => x.TemplateSelector.SelectByValue("1"));
             await activity.Configure(context);
             var activityUi = context.ActivityPayload.CrateStorage.GetReadonlyActivityUi<Send_DocuSign_Envelope_v2.ActivityUi>();
