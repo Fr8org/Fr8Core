@@ -54,23 +54,23 @@ namespace HubWeb.Controllers
             RecurringJob.AddOrUpdate(jobId, () => ExecuteSchedulledJob(job_id, fr8_account_id, minutes, terminal_id), "*/" + minutes + " * * * *");
         }
 
-        public void ExecuteSchedulledJob(string external_account_id, string fr8AccountId, string minutes, string terminalId)
+        private void ExecuteSchedulledJob(string job_id, string fr8AccountId, string minutes, string terminal_id)
         {
-            var request = RequestPolling(external_account_id, fr8AccountId, minutes, terminalId);
+            var request = RequestPolling(job_id, fr8AccountId, minutes, terminal_id);
             var result = request.Result;
             if (!result)
-                RecurringJob.RemoveIfExists(external_account_id.GetHashCode().ToString());
+                RecurringJob.RemoveIfExists(job_id.GetHashCode().ToString());
         }
 
-        public async Task<bool> RequestPolling(string external_account_id, string fr8AccountId, string minutes, string terminalId)
+        private async Task<bool> RequestPolling(string job_id, string fr8_account_id, string minutes, string terminal_id)
         {
             try
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var terminal = uow.TerminalRepository.GetQuery().Where(a => a.PublicIdentifier == terminalId).FirstOrDefault();
+                    var terminal = uow.TerminalRepository.GetQuery().Where(a => a.PublicIdentifier == terminal_id).FirstOrDefault();
                     string url = terminal.Endpoint + "/terminals/" + terminal.Name + "/polling_notifications?"
-                        + string.Format("job_id={0}&fr8_account_id={1}&polling_interval={2}", external_account_id, fr8AccountId, minutes);
+                        + string.Format("job_id={0}&fr8_account_id={1}&polling_interval={2}", job_id, fr8_account_id, minutes);
 
                     using (var client = new HttpClient())
                     {
