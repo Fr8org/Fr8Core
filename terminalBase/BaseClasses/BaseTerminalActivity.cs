@@ -77,7 +77,7 @@ namespace TerminalBase.BaseClasses
         protected int LoopIndex => GetLoopIndex();
         protected UpstreamQueryManager UpstreamQueryManager => _upstreamQueryManager ?? (_upstreamQueryManager = new UpstreamQueryManager(ActivityContext, HubCommunicator));
         protected ControlHelper ControlHelper => _controlHelper ?? (_controlHelper = new ControlHelper(ActivityContext, HubCommunicator, CrateManager));
-        protected ValidationManager ValidationManager => _validationManager ?? (_validationManager = new ValidationManager());
+        protected ValidationManager ValidationManager => _validationManager ?? (_validationManager = GetValidationManager());
         protected PlanHelper PlanHelper => _planHelper ?? (_planHelper = new PlanHelper(HubCommunicator, CurrentUserId));
         protected Guid ActivityId => ActivityContext.ActivityPayload.Id;
         protected ActivityPayload ActivityPayload => ActivityContext.ActivityPayload;
@@ -89,6 +89,11 @@ namespace TerminalBase.BaseClasses
         protected BaseTerminalEvent EventLogger => _eventLogger ?? (_eventLogger = new BaseTerminalEvent());
         protected void SendEventReport(string message) => EventLogger.SendEventReport(MyTemplate.Terminal.Name, message);
         #endregion
+
+        protected virtual ValidationManager GetValidationManager()
+        {
+            return new ValidationManager();
+        }
 
         #region RETURN_CODES
 

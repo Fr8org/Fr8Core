@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using System.Threading.Tasks;
@@ -8,8 +9,14 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using StructureMap;
+using terminalDocuSign.Activities;
 using terminalDocuSign.Infrastructure;
+using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
+using terminalDocuSign.Services.New_Api;
+using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 using FolderItem = DocuSign.eSign.Model.FolderItem;
 using ListItem = Fr8Data.Control.ListItem;
 
@@ -67,6 +74,21 @@ namespace terminalDocuSign.Activities
                 Controls.Add(FolderFilter);
                 Controls.Add(StatusFilter);
             }
+        }
+
+        protected readonly IDocuSignFolders DocuSignFolders;
+        //TODO: remove this constructor after introduction of constructor injection
+        public Query_DocuSign_v2() : this(ObjectFactory.GetInstance<IDocuSignManager>(), ObjectFactory.GetInstance<IDocuSignFolders>())
+        {
+        }
+
+        public Query_DocuSign_v2(IDocuSignManager docuSignManager, IDocuSignFolders docuSignFolders) : base(docuSignManager)
+        {
+            if (docuSignFolders == null)
+            {
+                throw new ArgumentNullException(nameof(docuSignFolders));
+            }
+            DocuSignFolders = docuSignFolders;
         }
 
         private static IEnumerable<FieldDTO> GetEnvelopeProperties()

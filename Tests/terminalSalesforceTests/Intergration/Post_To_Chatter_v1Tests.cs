@@ -109,14 +109,14 @@ namespace terminalSalesforceTests.Intergration
             using (var crateStorage = Crate.GetUpdatableStorage(resultActionDto))
             {
                 crateStorage.UpdateControls<Post_To_Chatter_v1.ActivityUi>(x =>
-                {
-                    x.UseUserOrGroupOption.Selected = true;
-                    var selectedUser = x.UserOrGroupSelector.ListItems.First(y => y.Key == "Fr8 Admin");
-                    x.UserOrGroupSelector.selectedKey = selectedUser.Key;
-                    x.UserOrGroupSelector.Value = selectedUser.Value;
-                    x.FeedTextSource.ValueSource = "specific";
-                    x.FeedTextSource.TextValue = "IntegrationTestFeed";
-                });
+            {
+                x.UseUserOrGroupOption.Selected = true;
+                var selectedUser = x.UserOrGroupSelector.ListItems.First(y => y.Key == "Fr8 Admin");
+                x.UserOrGroupSelector.selectedKey = selectedUser.Key;
+                x.UserOrGroupSelector.Value = selectedUser.Value;
+                x.FeedTextSource.ValueSource = "specific";
+                x.FeedTextSource.TextValue = "IntegrationTestFeed";
+            });
             }
             return resultActionDto;
         }

@@ -155,7 +155,7 @@ namespace TerminalBase.Services
             return Task.FromResult(fileDO);
         }
 
-        public Task<List<ActivityTemplateDTO>> GetActivityTemplates(string userId)
+        public Task<List<ActivityTemplateDTO>> GetActivityTemplates(string userId, bool getLatestsVersionsOnly = false)
         {
             var searchLabel = LabelPrefix + "_ActivityTemplate";
 
@@ -171,7 +171,7 @@ namespace TerminalBase.Services
             return Task.FromResult(activityTemplates);
         }
 
-        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category, string userId)
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category, string userId, bool getLatestsVersionsOnly = false)
         {
             var allTemplates = await GetActivityTemplates(userId);
             var activityTemplates = allTemplates
@@ -181,7 +181,7 @@ namespace TerminalBase.Services
             return activityTemplates;
         }
 
-        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, string userId)
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, string userId, bool getLatestsVersionsOnly = false)
         {
             var allTemplates = await GetActivityTemplates(userId);
             if (string.IsNullOrEmpty(tag))

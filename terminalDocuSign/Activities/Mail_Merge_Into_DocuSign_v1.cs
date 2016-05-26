@@ -69,20 +69,20 @@ namespace terminalDocuSign.Actions
             {
                 new DropDownList()
                 {
-                    Label = "1. Where is your Source Data?",
-                    Name = "DataSource",
-                    ListItems = await GetDataSourceListItems("Table Data Generator"),
-                    Required = true
+                Label = "1. Where is your Source Data?",
+                Name = "DataSource",
+                ListItems = await GetDataSourceListItems("Table Data Generator"),
+                Required = true
                 },
                 CreateDocuSignTemplatePicker(false, "DocuSignTemplate", "2. Use which DocuSign Template?"),
                 new Button()
+            {
+                Label = "Prepare Mail Merge",
+                Name = "Continue",
+                Events = new List<ControlEvent>()
                 {
-                    Label = "Prepare Mail Merge",
-                    Name = "Continue",
-                    Events = new List<ControlEvent>()
-                    {
-                        new ControlEvent("onClick", "requestConfig")
-                    }
+                    new ControlEvent("onClick", "requestConfig")
+                }
                 }
             };
 
@@ -100,11 +100,11 @@ namespace terminalDocuSign.Actions
         /// </summary>
         protected override async Task InitializeDS()
         {
-            //build a controls crate to render the pane
+                        //build a controls crate to render the pane
             var configurationCrate = await CreateConfigurationControlsCrate();
             FillDocuSignTemplateSource(configurationCrate, "DocuSignTemplate");
             Storage.Add(configurationCrate);
-        }
+                    }
 
         protected override Task<bool> Validate()
         {
@@ -112,12 +112,12 @@ namespace terminalDocuSign.Actions
             if (!ValidationManager.ValidateControlExistance(templateList))
             {
                 return Task.FromResult(false);
-            }
+        }
             ValidationManager.ValidateTemplateList(templateList);
             var sourceConfigControl = GetControl<DropDownList>("DataSource");
 
             if (!ValidationManager.ValidateControlExistance(sourceConfigControl))
-            {
+        {
                 return Task.FromResult(false);
             }
             if (DocuSignValidationUtils.AtLeastOneItemExists(sourceConfigControl))
@@ -223,7 +223,7 @@ namespace terminalDocuSign.Actions
         /// <returns></returns>
         private async Task<ActivityPayload> CreateFirstChildActivity(ReconfigurationContext context)
         {
-            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
+            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null, true))
                 .Select(Mapper.Map<ActivityTemplateDO>)
                 .ToList();
 
@@ -260,7 +260,8 @@ namespace terminalDocuSign.Actions
             {
                 return false;
             }
-            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
+
+            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null, true))
                 .ToList();
 
             var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
@@ -303,7 +304,7 @@ namespace terminalDocuSign.Actions
 
         private async Task<ActivityPayload> CreateSecondChildActivity(ReconfigurationContext context)
         {
-            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
+            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null, true))
                 .ToList();
 
             var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
@@ -316,11 +317,11 @@ namespace terminalDocuSign.Actions
                 var loopActivity = await AddAndConfigureChildActivity(context.SolutionActivity, loopAT, "Loop", "Loop", 2);
                 var loopConfigControls = ControlHelper.GetConfigurationControls(loopActivity.CrateStorage);
                 var crateChooser = ControlHelper.GetControl<CrateChooser>(loopConfigControls, "Available_Crates");
-                var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(c => c.ManifestId == (int)MT.StandardTableData);
-                if (tableDescription != null)
-                {
-                    tableDescription.Selected = true;
-                }
+                    var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(c => c.ManifestId == (int)MT.StandardTableData);
+                    if (tableDescription != null)
+                    {
+                        tableDescription.Selected = true;
+                    }
                 parentActivity = loopActivity;
                 activityIndex = 1;
             }
@@ -343,7 +344,7 @@ namespace terminalDocuSign.Actions
 
         private async Task<ActivityPayload> ConfigureSecondChildActivity(ReconfigurationContext context)
         {
-            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null))
+            var curActivityTemplates = (await HubCommunicator.GetActivityTemplates(null, true))
                 .ToList();
 
             var selectedReceiver = curActivityTemplates.Single(x => x.Name == _dataSourceValue);
@@ -365,11 +366,11 @@ namespace terminalDocuSign.Actions
 
                 var loopConfigControls = ControlHelper.GetConfigurationControls(loopActivity.CrateStorage);
                 var crateChooser = ControlHelper.GetControl<CrateChooser>(loopConfigControls, "Available_Crates");
-                var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(c => c.ManifestId == (int)MT.StandardTableData);
-                if (tableDescription != null)
-                {
-                    tableDescription.Selected = true;
-                }
+                    var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(c => c.ManifestId == (int)MT.StandardTableData);
+                    if (tableDescription != null)
+                    {
+                        tableDescription.Selected = true;
+                    }
                 parentActivity = loopActivity;
                 activityIndex = 1;
             }

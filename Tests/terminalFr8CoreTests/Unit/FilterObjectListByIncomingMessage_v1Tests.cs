@@ -45,10 +45,10 @@ namespace terminalTests.Integration
             base.SetUp();
             var hubMock = new Mock<IHubCommunicator>();
             //hubMock.Setup(x => x.DeleteExistingChildNodesFromActivity(It.IsAny<Guid>(), It.IsAny<string>())).Verifiable();
-            hubMock.Setup(x => x.GetActivityTemplates(It.IsAny<string>()))
+            hubMock.Setup(x => x.GetActivityTemplates(It.IsAny<string>(), It.IsAny<bool>()))
                    .Returns(Task.FromResult(ActivityTemplates));
-            hubMock.Setup(x => x.GetActivityTemplates(It.IsAny<string>(), It.IsAny<string>()))
-                   .Returns<string, string>((tags, user) => Task.FromResult(ActivityTemplates.Where(x => x.Tags.Contains(tags)).ToList()));
+            hubMock.Setup(x => x.GetActivityTemplates(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
+                   .Returns<string, string, bool>((tags, user, getLatest) => Task.FromResult(ActivityTemplates.Where(x => x.Tags.Contains(tags)).ToList()));
             ObjectFactory.Container.Inject(hubMock);
             ObjectFactory.Container.Inject(hubMock.Object);
         }
@@ -139,7 +139,7 @@ namespace terminalTests.Integration
             var activityContext = new ActivityContext
             {
                 ActivityPayload = new ActivityPayload
-                {
+            {
                     CrateStorage = new CrateStorage(),
                     ChildrenActivities = new List<ActivityPayload>()
                 },
@@ -155,22 +155,22 @@ namespace terminalTests.Integration
             await activity.Configure(activityContext);
             var crateStorage = activityContext.ActivityPayload.CrateStorage;
             var configurationValues = crateStorage.FirstCrate<FieldDescriptionsCM>(x => x.Label == "Configuration Values");
-            configurationValues.Content.Fields.First(x => x.Key == "Cache Created At").Value = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
+                configurationValues.Content.Fields.First(x => x.Key == "Cache Created At").Value = DateTime.UtcNow.ToString("yyyyMMddHHmmss");
             crateStorage.Add(Crate<StandardTableDataCM>.FromContent("Cached table",
-                new StandardTableDataCM
-                {
-                    FirstRowHeaders = true,
-                    Table = new List<TableRowDTO>
+                    new StandardTableDataCM
                     {
-                        new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new FieldDTO("Header", "Header") } } },
-                        //Will pass filter
-                        new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new FieldDTO("Header", "message") } } },
-                        new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO {  Cell = new FieldDTO("Header", "checked") } } },
-                        //Won't pass filter
-                        new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new FieldDTO("Header", "nothing") } } },
-                        new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new FieldDTO("Header", "anything") } } }
-                    }
-                }));
+                        FirstRowHeaders = true,
+                        Table = new List<TableRowDTO>
+                        {
+                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new FieldDTO("Header", "Header") } } },
+                            //Will pass filter
+                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new FieldDTO("Header", "message") } } },
+                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO {  Cell = new FieldDTO("Header", "checked") } } },
+                            //Won't pass filter
+                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new FieldDTO("Header", "nothing") } } },
+                            new TableRowDTO { Row = new List<TableCellDTO> { new TableCellDTO { Cell = new FieldDTO("Header", "anything") } } }
+                        }
+                    }));
             await activity.Configure(activityContext);
             var childActivity = new ActivityPayload
             {

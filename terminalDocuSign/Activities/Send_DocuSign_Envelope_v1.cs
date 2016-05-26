@@ -14,6 +14,7 @@ using Fr8Data.States;
 using Hub.Managers;
 using terminalDocuSign.Activities;
 using terminalDocuSign.DataTransferObjects;
+using terminalDocuSign.Services;
 using TerminalBase.Infrastructure;
 using TerminalBase.Infrastructure.Behaviors;
 using terminalDocuSign.Services.New_Api;
@@ -186,11 +187,11 @@ namespace terminalDocuSign.Actions
 
         protected override async Task InitializeDS()
         {
-            // Only do it if no existing MT.FieldDescription crate is present to avoid loss of existing settings
-            // Two crates are created
-            // One to hold the ui controls
+                // Only do it if no existing MT.FieldDescription crate is present to avoid loss of existing settings
+                // Two crates are created
+                // One to hold the ui controls
             if (Storage.All(c => c.ManifestType.Id != (int)MT.FieldDescription))
-            {
+                {
                 var configurationCrate = await CreateDocusignTemplateConfigurationControls();
                 FillDocuSignTemplateSource(configurationCrate, "target_docusign_template");
                 Storage.Clear();
@@ -199,7 +200,7 @@ namespace terminalDocuSign.Actions
         }
 
         protected override async Task FollowUpDS()
-        {
+            {
             var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(AuthorizationToken.Token);
             await HandleFollowUpConfiguration();
         }
@@ -235,7 +236,8 @@ namespace terminalDocuSign.Actions
 
             var conf = DocuSignManager.SetUp(AuthorizationToken);
             var tabsandfields = DocuSignManager.GetTemplateRecipientsTabsAndDocuSignTabs(conf, docusignTemplateId);
-            var roles = tabsandfields.Item1.Where(a => a.Tags.Contains("DocuSigner"));
+
+            var roles = tabsandfields.Item1.Where(a => a.Tags.Contains(DocuSignConstants.DocuSignSignerTag));
             var crateRolesDTO = CrateManager.CreateDesignTimeFieldsCrate(
               "DocuSignTemplateRolesFields",
               AvailabilityType.Configuration,
@@ -249,7 +251,7 @@ namespace terminalDocuSign.Actions
 
             var envelopeDataDTO = tabsandfields.Item2;
 
-            var userDefinedFields = tabsandfields.Item1.Where(a => a.Tags.Contains("DocuSignTab"));
+            var userDefinedFields = tabsandfields.Item1.Where(a => a.Tags.Contains(DocuSignConstants.DocuSignTabTag));
 
             var crateUserDefinedDTO = CrateManager.CreateDesignTimeFieldsCrate(
                 "DocuSignTemplateUserDefinedFields",

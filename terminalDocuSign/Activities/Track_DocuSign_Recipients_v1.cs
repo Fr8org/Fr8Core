@@ -6,6 +6,7 @@ using Data.Entities;
 using Data.Interfaces;
 using StructureMap;
 using Data.Repositories.MultiTenant;
+using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;

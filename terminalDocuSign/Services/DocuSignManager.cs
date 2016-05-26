@@ -172,12 +172,12 @@ namespace terminalDocuSign.Services.New_Api
             //updating recipients
             foreach (var recepient in recipients.Signers)
             {
-                var corresponding_template_recipient = templateRecepients.Signers.Where(a => a.RoutingOrder == recepient.RoutingOrder).FirstOrDefault();
-                var related_fields = rolesList.Where(a => a.Tags.Contains("recipientId:" + corresponding_template_recipient.RecipientId));
-                string new_email = related_fields.Where(a => a.Key.Contains("role email")).FirstOrDefault().Value;
-                string new_name = related_fields.Where(a => a.Key.Contains("role name")).FirstOrDefault().Value;
-                recepient.Name = string.IsNullOrEmpty(new_name) ? recepient.Name : new_name;
-                recepient.Email = string.IsNullOrEmpty(new_email) ? recepient.Email : new_email;
+                var correspondingTemplateRecipient = templateRecepients.Signers.FirstOrDefault(a => a.RoutingOrder == recepient.RoutingOrder);
+                var relatedFields = rolesList.Where(a => a.Tags.Contains("recipientId:" + correspondingTemplateRecipient?.RecipientId)).ToArray();
+                var newEmail = relatedFields.FirstOrDefault(a => a.Key.Contains(DocuSignConstants.DocuSignRoleEmail))?.Value;
+                var newName = relatedFields.FirstOrDefault(a => a.Key.Contains(DocuSignConstants.DocuSignRoleName))?.Value;
+                recepient.Name = string.IsNullOrEmpty(newName) ? recepient.Name : newName;
+                recepient.Email = string.IsNullOrEmpty(newEmail) ? recepient.Email : newEmail;
 
                 if (!recepient.Email.IsValidEmailAddress())
                 {
@@ -185,9 +185,9 @@ namespace terminalDocuSign.Services.New_Api
                 }
 
                 //updating tabs
-                var tabs = override_document ? templatesApi.ListTabs(loginInfo.AccountId, curTemplateId, corresponding_template_recipient.RecipientId, new Tabs()) : envelopesApi.ListTabs(loginInfo.AccountId, envelopeSummary.EnvelopeId, recepient.RecipientId);
+                var tabs = override_document ? templatesApi.ListTabs(loginInfo.AccountId, curTemplateId, correspondingTemplateRecipient.RecipientId, new Tabs()) : envelopesApi.ListTabs(loginInfo.AccountId, envelopeSummary.EnvelopeId, recepient.RecipientId);
 
-                JObject jobj = DocuSignTab.ApplyValuesToTabs(fieldList, corresponding_template_recipient, tabs);
+                JObject jobj = DocuSignTab.ApplyValuesToTabs(fieldList, correspondingTemplateRecipient, tabs);
                 recepient.Tabs = jobj.ToObject<Tabs>();
             }
 

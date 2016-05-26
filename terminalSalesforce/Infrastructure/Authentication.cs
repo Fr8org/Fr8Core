@@ -54,13 +54,32 @@ namespace terminalSalesforce.Infrastructure
 
             AuthenticationClient authClient = (AuthenticationClient)Task.Run(() => GetAuthToken(code)).Result;
 
-            //By Default, Salesforce returns the User ID of the currently logged in user which is not friendly one.
-            var friendlyUserName = GetFriendlyUserName(authClient);
+            string username = "";
+            string externalAccountId = "";
+            var curUserInfo =
+                  Task.Run(
+                      () =>
+                          new ForceClient(authClient.InstanceUrl, authClient.AccessToken, authClient.ApiVersion)
+                              .UserInfo<object>(authClient.Id)).Result;
+
+            JToken propertyValue;
+
+            var jCurUserInfo = (JObject)curUserInfo;
+            if (jCurUserInfo.TryGetValue("display_name", out propertyValue))
+            {
+                username = propertyValue.Value<string>();
+            }
+
+            if (jCurUserInfo.TryGetValue("user_id", out propertyValue))
+            {
+                externalAccountId = propertyValue.Value<string>();
+            }
 
             return new AuthorizationTokenDTO()
             {
                 Token = authClient.AccessToken,
-                ExternalAccountId = friendlyUserName,
+                ExternalAccountId = externalAccountId,
+                ExternalAccountName = username,
                 ExternalStateToken = state,
                 AdditionalAttributes = $"refresh_token={authClient.RefreshToken};" +
                                        $"instance_url={authClient.InstanceUrl};" +
@@ -115,35 +134,6 @@ namespace terminalSalesforce.Infrastructure
                                                   $"instance_url={authClient.InstanceUrl};" +
                                                   $"api_version={authClient.ApiVersion}";
             return curAuthToken;
-        }
-
-        /// <summary>
-        /// Gets Salesforce Friendly Name for the Auth Token User ID.
-        /// </summary>
-        private string GetFriendlyUserName(AuthenticationClient oauthToken)
-        {
-            string userName = string.Empty;
-
-            var curUserInfo =
-                    Task.Run(
-                        () =>
-                            new ForceClient(oauthToken.InstanceUrl, oauthToken.AccessToken, oauthToken.ApiVersion)
-                                .UserInfo<object>(oauthToken.Id)).Result;
-
-            JToken propertyValue;
-
-            var jCurUserInfo = (JObject) curUserInfo; 
-            if (jCurUserInfo.TryGetValue("display_name", out propertyValue))
-            {
-                userName = propertyValue.Value<string>();
-            }
-
-            if (jCurUserInfo.TryGetValue("user_id", out propertyValue))
-            {
-                userName += string.Format(" [{0}]", propertyValue.Value<string>());
-            }
-
-            return userName;
         }
     }
 }

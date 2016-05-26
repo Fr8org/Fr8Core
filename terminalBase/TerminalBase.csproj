@@ -147,6 +147,7 @@
     <Compile Include="Infrastructure\Behaviors\RadioButtonGroupMappingBehavior.cs" />
     <Compile Include="Infrastructure\Behaviors\ReconfigurationListBehavior.cs" />
     <Compile Include="Infrastructure\Behaviors\TextSourceMappingBehavior.cs" />
+    <Compile Include="Infrastructure\EnhancedValidationManager.cs" />
     <Compile Include="Services\DefaultHubCommunicator.cs" />
     <Compile Include="Services\DataHubCommunicatorBase.cs" />
     <Compile Include="Services\ExplicitDataHubCommunicator.cs" />

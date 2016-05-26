@@ -22,11 +22,11 @@ namespace TerminalBase.Infrastructure
 
         Task CreateAlarm(AlarmDTO alarmDTO, string userId);
 
-        Task<List<ActivityTemplateDTO>> GetActivityTemplates(string userId);
+        Task<List<ActivityTemplateDTO>> GetActivityTemplates(string userId, bool getLatestsVersionsOnly = false);
 
-        Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category, string userId);
+        Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category, string userId, bool getLatestsVersionsOnly = false);
 
-        Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, string userId);
+        Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, string userId, bool getLatestsVersionsOnly = false);
         Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields, string userId);
         Task<AuthorizationToken> GetAuthToken(string authTokenId, string curFr8UserId);
         Task ScheduleEvent(string externalAccountId, string curFr8UserId, string minutes);

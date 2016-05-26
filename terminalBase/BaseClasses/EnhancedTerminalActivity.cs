@@ -3,14 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
-using Fr8Data.DataTransferObjects.Helpers;
-using Fr8Data.Helpers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using TerminalBase.Errors;
+using TerminalBase.Helpers;
+using TerminalBase.Infrastructure;
 using TerminalBase.Services;
 
 namespace TerminalBase.BaseClasses
@@ -47,8 +45,14 @@ namespace TerminalBase.BaseClasses
 
         public sealed override async Task FollowUp()
         {
-            await ConfigureETA();
-            SyncConfControlsBack();
+            try
+            {
+                await ConfigureETA();
+            }
+            finally
+            { 
+                SyncConfControlsBack();
+            }
         }
 
         protected sealed override async Task<bool> Validate()
@@ -73,7 +77,14 @@ namespace TerminalBase.BaseClasses
         protected sealed override async Task Activate()
         {
             SyncConfControls();
-            await ActivateETA();
+            try
+            { 
+                await ActivateETA();
+            }
+            finally
+            {
+                SyncConfControlsBack();
+            }
         }
 
         /**********************************************************************************/
@@ -81,7 +92,14 @@ namespace TerminalBase.BaseClasses
         protected sealed override async Task Deactivate()
         {
             SyncConfControls();
-            await DeactivateETA();
+            try
+            {
+                await DeactivateETA();
+            }
+            finally
+            {
+                SyncConfControlsBack();
+            }
         }
 
 
@@ -110,7 +128,12 @@ namespace TerminalBase.BaseClasses
 
             return configurationControls;
         }
-        
+
+        protected override ValidationManager GetValidationManager()
+        {
+           return new EnhancedValidationManager<T>(null, this, Payload);
+        }
+
         /**********************************************************************************/
 
         protected virtual T CrateActivityUI()
@@ -224,92 +247,10 @@ namespace TerminalBase.BaseClasses
             
             if (ConfigurationControls.Controls != null)
             {
-                var dynamicControlsCollection = Fr8ReflectionHelper.GetMembers(ActivityUI.GetType()).Where(x => x.CanRead && x.GetCustomAttribute<DynamicControlsAttribute>() != null && CheckIfMemberIsControlsCollection(x)).ToDictionary(x => x.Name, x => x);
-
-                if (dynamicControlsCollection.Count > 0)
-                {
-                    foreach (var control in ConfigurationControls.Controls)
-                    {
-                        if (string.IsNullOrWhiteSpace(control.Name))
-                        {
-                            continue;
-                        }
-
-                        var delim = control.Name.IndexOf('_');
-
-                        if (delim <= 0)
-                        {
-                            continue;
-                        }
-
-                        var prefix = control.Name.Substring(0, delim);
-                        IMemberAccessor member;
-
-                        if (!dynamicControlsCollection.TryGetValue(prefix, out member))
-                        {
-                            continue;
-                        }
-
-                        var controlsCollection = (IList)member.GetValue(ActivityUI);
-
-                        if (controlsCollection == null && (!member.CanWrite || member.MemberType.IsAbstract || member.MemberType.IsInterface))
-                        {
-                            continue;
-                        }
-
-                        if (controlsCollection == null)
-                        {
-                            controlsCollection = (IList)Activator.CreateInstance(member.MemberType);
-                            member.SetValue(ActivityUI, controlsCollection);
-                        }
-
-                        control.Name = control.Name.Substring(delim + 1);
-                        controlsCollection.Add(control);
-                    }
-                }
+                ConfigurationControls.RestoreDynamicControlsFrom(ConfigurationControls);
             }
         }
 
-        /**********************************************************************************/
-
-        private static bool CheckIfMemberIsControlsCollection(IMemberAccessor member)
-        {
-            if (member.MemberType.IsInterface && CheckIfTypeIsControlsCollection(member.MemberType))
-            {
-                return true;
-            }
-
-            foreach (var @interface in member.MemberType.GetInterfaces())
-            {
-                if (CheckIfTypeIsControlsCollection(@interface))
-                {
-                    return true;
-                }
-            }
-
-            return false;
-        }
-
-        /**********************************************************************************/
-
-        private static bool CheckIfTypeIsControlsCollection(Type type)
-        {
-            if (type.IsGenericType)
-            {
-                var genericTypeDef = type.GetGenericTypeDefinition();
-
-                if (typeof(IList<>) == genericTypeDef)
-                {
-                    if (typeof(IControlDefinition).IsAssignableFrom(type.GetGenericArguments()[0]))
-                    {
-                        return true;
-                    }
-                }
-            }
-
-            return false;
-        }
-        
         /**********************************************************************************/
         // Activity logic can update state of configuration controls. But as long we have copied  configuration controls crate from the storage into 
         // new instance of ActivityUi changes made to ActivityUi won't be reflected in storage.
@@ -323,43 +264,7 @@ namespace TerminalBase.BaseClasses
 
             var configurationControlsToAdd = new StandardConfigurationControlsCM(ActivityUI.Controls);
             Storage.Add(Crate.FromContent(ConfigurationControlsLabel, configurationControlsToAdd, AvailabilityType.Configuration));
-
-            int insertIndex = 0;
-            foreach (var member in Fr8ReflectionHelper.GetMembers(ActivityUI.GetType()).Where(x => x.CanRead))
-            {
-                if (member.GetCustomAttribute<DynamicControlsAttribute>() != null && CheckIfMemberIsControlsCollection(member))
-                {
-                    var collection = member.GetValue(ActivityUI) as IList;
-
-                    if (collection != null)
-                    {
-                        for (int index = 0; index < collection.Count; index++)
-                        {
-                            var control = collection[index] as ControlDefinitionDTO;
-
-                            if (control != null)
-                            {
-                                control.Name = member.Name + "_" + control.Name;
-                                configurationControlsToAdd.Controls.Insert(insertIndex, control);
-                                insertIndex++;
-                            }
-                        }
-                    }
-                }
-
-                var controlDef = member.GetValue(ActivityUI) as IControlDefinition;
-                if (!string.IsNullOrWhiteSpace(controlDef?.Name))
-                {
-                    for (int i = 0; i < configurationControlsToAdd.Controls.Count; i++)
-                    {
-                        if (configurationControlsToAdd.Controls[i].Name == controlDef.Name)
-                        {
-                            insertIndex = i + 1;
-                            break;
-                        }
-                    }
-                }
-            }
+            ConfigurationControls.SaveDynamicControlsTo(configurationControlsToAdd);
         }
     }
 }

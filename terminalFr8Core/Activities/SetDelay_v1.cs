@@ -27,17 +27,14 @@ namespace terminalFr8Core.Activities
 
         private const int MinDurationSeconds = 10;
         private AlarmDTO CreateAlarm(TimeSpan duration)
-        {
+                {
             if (duration.TotalSeconds == 0)
             {
                 duration.Add(TimeSpan.FromSeconds(MinDurationSeconds));
             }
             return new AlarmDTO
             {
-                ActivityDTO = Mapper.Map<ActivityDTO>(ActivityContext.ActivityPayload),
                 ContainerId = ExecutionContext.ContainerId,
-                TerminalName = TerminalData.TerminalDTO.Name,
-                TerminalVersion = TerminalData.TerminalDTO.Version,
                 StartTime = DateTime.UtcNow.Add(duration)
             };
         }
@@ -87,14 +84,14 @@ namespace terminalFr8Core.Activities
             OperationalState.CallStack.StoreLocalData("Delay", "suspended");
 
             SuspendHubExecution();
-        }
+            }
 
         public override Task Initialize()
-        {
+            {
             var configurationControlsCrate = CreateControlsCrate();
             Storage.Add(configurationControlsCrate);
             return Task.FromResult(0);
-        }
+            }
 
         public override Task FollowUp()
         {

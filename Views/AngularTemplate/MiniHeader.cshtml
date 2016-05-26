@@ -1,10 +1,6 @@
-@using Data.States
-@using HubWeb.Infrastructure_HubWeb
-@using Microsoft.AspNet.Identity
 <div style="padding-bottom: 51px;"></div>
 <div data-ng-controller="HeaderController" class="page-header" style="position:fixed;z-index: 500;top: 0px;right:0;left:0">
 
-    <!-- END HEADER TOP -->
     <!-- BEGIN HEADER MENU -->
     <div class="page-header-menu">
         <div class="container">
@@ -12,20 +8,21 @@
             <!-- DOC: Apply "hor-menu-light" class after the "hor-menu" class below to have a horizontal menu with white background -->
             <!-- DOC: Remove dropdown-menu-hover and data-close-others="true" attributes below to disable the dropdown opening on mouse hover -->
             <div class="hor-menu">
+                <!-- BEGIN NAVIGATION BAR -->
                 <ul class="nav navbar-nav">
+                    <!-- BEGIN LOGO -->
                     <li>
-                        <!-- BEGIN LOGO -->
                         <a class="menu-logo" href="http://www.fr8.company">
                             <img style="height:33px" src="/Content/img/dockyard_logo.png" alt="logo" class="logo-default">
                         </a>
-                        <!--BEGIN STICKER-->
-                        <!--END STICKER-->
-                        <!-- END LOGO -->
                     </li>
+                    <!-- END LOGO -->
+
                     <li class="active">
                         <a ui-sref="myaccount">Home</a>
                     </li>
 
+                    <!-- SOLUTIONS DROPDOWN -->
                     <li class="menu-dropdown classic-menu-dropdown">
                         <a href="#" data-toggle="dropdown" class="dropdown-toggle">Solutions <i class="fa fa-angle-down"></i></a>
                         <ul class="dropdown-menu pull-left" ng-controller="SolutionListController">
@@ -48,10 +45,10 @@
                         </ul>
                     </li>
 
+                    <!-- PLANS DROPDOWN -->
                     <li class="menu-dropdown classic-menu-dropdown">
                         <a data-toggle="dropdown" href="#" class="dropdown-toggle">Plans <i class="fa fa-angle-down"></i></a>
                         <ul class="dropdown-menu">
-
                             <li><a ui-sref="planList">Show All</a></li>
                             <li><a ui-sref="planForm">Add</a></li>
                             <li><a ui-sref="findObjects">Find Objects</a></li>
@@ -59,61 +56,53 @@
                         </ul>
                     </li>
 
+                    <!-- CONTAINERS DROPDOWN -->
                     <li class="menu-dropdown classic-menu-dropdown">
                         <a data-toggle="dropdown" href="#" class="dropdown-toggle">Containers <i class="fa fa-angle-down"></i></a>
                         <ul class="dropdown-menu">
-
                             <li><a ui-sref="containers">Show All</a></li>
-
                         </ul>
                     </li>
 
+                    <!-- TOOLS DROPDOWN -->
                     <li class="menu-dropdown classic-menu-dropdown">
                         <a data-toggle="dropdown" href="#" class="dropdown-toggle">Tools <i class="fa fa-angle-down"></i></a>
                         <ul class="dropdown-menu">
-
-                            <li><a ui-sref="managefiles">Manage Files</a></li>
+                            <!-- <li><a ui-sref="managefiles">Manage Files</a></li>-->
                             <li><a ui-sref="manageAuthTokens">Manage Auth Tokens</a></li>
                             <li><a ui-sref="configureSolution({solutionName: 'SearchFr8Warehouse'})">Search Fr8 Warehouse</a></li>
-
                         </ul>
                     </li>
 
+                    <!-- DEVELOPER DROPDOWN -->
                     <li class="menu-dropdown classic-menu-dropdown">
                         <a data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">Developer <i class="fa fa-angle-down"></i></a>
                         <ul class="dropdown-menu">
-
                             <li><a href="http://documentation.fr8.co">Developer Home</a></li>
                             <li><a href="/Documentation/RestAPIGuide.html">Fr8 Development Resources - DocuSign</a></li>
-                            <li><a href ng-click="goToPlanDirectory('@System.Configuration.ConfigurationManager.AppSettings["PlanDirectoryUrl"]')">Plan Directory</a></li>
+                            <li><a ng-click="goToPlanDirectory('@System.Configuration.ConfigurationManager.AppSettings["PlanDirectoryUrl"]')">Plan Directory</a></li>
                         </ul>
                     </li>
+
                     <li class="menu-dropdown classic-menu-dropdown pull-right" style="position: absolute;right:100px" flex>
                         <div class="top-menu">
                             <ul class="nav navbar-nav pull-right">
                                 <!-- BEGIN USER LOGIN DROPDOWN -->
-                                @if (Request.IsAuthenticated)
-                                {
+                                @using Data.States                @using HubWeb.Infrastructure                @using Microsoft.AspNet.Identity
+                                @if (Request.IsAuthenticated) {
                                     <li class="dropdown dropdown-user dropdown-dark">
                                         <a data-toggle="dropdown" href="#" class="dropdown-toggle" data-close-others="true">
-                                            @*<img alt="" class="img-circle" src="/Content/templates/metronic/assets/admin/layout3/img/avatar1.jpg" />*@
-
                                             <span class="username username-hide-mobile">
                                                 Hello
-                                                @if (User.IsInRole("Guest"))
-                                                {
+                                                @if (User.IsInRole("Guest")) {
                                                     <text>Guest User</text>
-                                                }
-                                                else
-                                                {
+                                                } else {
                                                     <text>@User.Identity.GetUserName()</text>
                                                 }!
-
                                             </span>
                                         </a>
 
-                                        @if (!User.IsInRole("Guest"))
-                                        {
+                                        @if (!User.IsInRole("Guest")) {
                                             <ul class="dropdown-menu dropdown-menu-default">
                                                 <li>
                                                     <a ui-sref="myaccount">
@@ -132,11 +121,9 @@
                                                 </li>
                                             </ul>
                                         }
-
                                     </li>
-                        <!-- END USER LOGIN DROPDOWN -->
-                                    if (@User.IsInRole("Guest"))
-                                    {
+                                    <!-- END USER LOGIN DROPDOWN -->
+                                    @if (@User.IsInRole("Guest")) {
                                         <li class="have-account-login-guest visible-lg visible-md visible-sm">
                                             <a href="/DockyardAccount/Logoff">
                                                 <span>Have an Account? Login</span>
@@ -146,10 +133,10 @@
                                 }
                             </ul>
                         </div>
-
                     </li>
-                    @if (Html.HasManageUsersPermission(PermissionType.ManageInternalUsers))
-                    {
+
+                    <!-- ADMIN DROPDOWN -->
+                    @if (Html.HasManageUsersPermission(PermissionType.ManageInternalUsers)) {
                         <li class="menu-dropdown classic-menu-dropdown pull-right" style="position: absolute; right:0;">
                             <a data-toggle="dropdown" href="#" class="dropdown-toggle">Admin <i class="fa fa-angle-down"></i></a>
                             <ul class="dropdown-menu">
@@ -160,8 +147,7 @@
                         </li>
                     }
 
-                    @if (Html.HasManageUsersPermission(PermissionType.ManageFr8Users))
-                    {
+                    @if (Html.HasManageUsersPermission(PermissionType.ManageFr8Users)) {
                         <li class="menu-dropdown classic-menu-dropdown pull-right" style="position: absolute; right:0;">
                             <a data-toggle="dropdown" href="#" class="dropdown-toggle">Admin <i class="fa fa-angle-down"></i></a>
                             <ul class="dropdown-menu">
@@ -175,21 +161,15 @@
                             </ul>
                         </li>
                     }
-
-                    @if (User.IsInRole("Guest"))
-                    {
+                    @if (User.IsInRole("Guest")) {
                         <li class="visible-xs">
-                            <a href="/DockyardAccount/Logoff">
-                                Have an Account? Login
-                            </a>
+                            <a href="/DockyardAccount/Logoff"> Have an Account? Login </a>
                         </li>
                     }
-
                 </ul>
-
+                <!-- END NAVIGATION BAR -->
             </div>
-            @if (User.IsInRole("Guest"))
-            {
+            @if (User.IsInRole("Guest")) {
                 <ul class="nav navbar-nav navbar-right pull-right">
                     <li class="pull-right register-guest-user" style="background-color: crimson;">@Html.ActionLink("Register!", "RegisterGuestUser", "DockyardAccount")</li>
                 </ul>

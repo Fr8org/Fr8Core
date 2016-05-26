@@ -142,16 +142,16 @@ namespace terminalIntegrationTests.EndToEnd
             docuSignActivity = await Configure(docuSignActivity);
             docuSignActivity.UpdateControls<Send_DocuSign_Envelope_v2.ActivityUi>(x =>
             {
-                var roleEmailControl = x.RolesFields.First(y => y.Name == "TestSigner role email");
-                roleEmailControl.ValueSource = TextSource.UpstreamValueSrouce;
-                roleEmailControl.selectedKey = "SuppliedEmail";
-                roleEmailControl.Value = "SuppliedEmail";
+                                                                                      var roleEmailControl = x.RolesFields.First(y => y.Name == "TestSigner role email");
+                                                                                      roleEmailControl.ValueSource = TextSource.UpstreamValueSrouce;
+                                                                                      roleEmailControl.selectedKey = "SuppliedEmail";
+                                                                                      roleEmailControl.Value = "SuppliedEmail";
 
-                var roleNameControl = x.RolesFields.First(y => y.Name == "TestSigner role name");
-                roleNameControl.ValueSource = TextSource.UpstreamValueSrouce;
-                roleNameControl.selectedKey = "SuppliedName";
-                roleNameControl.Value = "SuppliedName";
-            });
+                                                                                      var roleNameControl = x.RolesFields.First(y => y.Name == "TestSigner role name");
+                                                                                      roleNameControl.ValueSource = TextSource.UpstreamValueSrouce;
+                                                                                      roleNameControl.selectedKey = "SuppliedName";
+                                                                                      roleNameControl.Value = "SuppliedName";
+                                                                                  });
             return new Tuple<ActivityDTO, Guid>(await Save(docuSignActivity), tokenId);
         }
 

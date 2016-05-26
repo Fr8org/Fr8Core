@@ -258,6 +258,7 @@
     <Compile Include="Activities\Get_DocuSign_Envelope_v1.cs" />
     <Compile Include="Activities\Monitor_DocuSign_Envelope_Activity_v1.cs" />
     <Compile Include="Activities\Prepare_DocuSign_Events_For_Storage_v1.cs" />
+    <Compile Include="Activities\Send_DocuSign_Envelope_v2.cs" />
     <Compile Include="Activities\Track_DocuSign_Recipients_v1.cs" />
     <Compile Include="Activities\Send_DocuSign_Envelope_v1.cs" />
     <Compile Include="Activities\Use_DocuSign_Template_With_New_Document_v1.cs" />
@@ -286,6 +287,7 @@
     <Compile Include="Interfaces\IDocuSignFolders.cs" />
     <Compile Include="Interfaces\IDocuSignPlan.cs" />
     <Compile Include="Services\DocuSignConnect.cs" />
+    <Compile Include="Services\DocuSignConstants.cs" />
     <Compile Include="Services\DocuSignFolders.cs" />
     <Compile Include="Services\DocuSignFoldersWrapper.cs" />
     <Compile Include="Services\DocuSignPolling.cs" />

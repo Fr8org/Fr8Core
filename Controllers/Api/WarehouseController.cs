@@ -48,7 +48,7 @@ namespace HubWeb.Controllers
 
         [Fr8HubWebHMACAuthenticate]
         [HttpPost]
-        public IHttpActionResult Search(QueryDTO query)
+        public IHttpActionResult Query(QueryDTO query)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

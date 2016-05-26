@@ -13,7 +13,6 @@ using terminalGoogle.Interfaces;
 using terminalUtilities;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using terminalUtilities;
 
 namespace terminalGoogle.Activities
 {
@@ -125,8 +124,7 @@ namespace terminalGoogle.Activities
         {
             var spreadsheets = await _googleApi.GetSpreadsheets(GetGoogleAuthToken());
             ActivityUI.SpreadsheetList.ListItems = spreadsheets.Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
-
-            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel, true);
         }
 
         protected override async Task ConfigureETA()
@@ -206,7 +204,7 @@ namespace terminalGoogle.Activities
                     Storage.RemoveByLabel(TabularUtilities.ExtractedFieldsCrateLabel);
                 }
             }
-            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel, true);
         }
 
         private async Task<List<TableRowDTO>> GetSelectedSpreadSheet()

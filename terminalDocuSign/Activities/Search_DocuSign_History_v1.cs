@@ -155,11 +155,12 @@ namespace terminalDocuSign.Activities
                 ActivityPayload.ChildrenActivities.Add(activity);
             }
             activity.CrateStorage = storage;
+
         }
 
         private async Task<IEnumerable<ActivityTemplateDTO>> FindTemplates(Predicate<ActivityTemplateDTO> query)
         {
-            var templates = await HubCommunicator.GetActivityTemplates(CurrentUserId);
+            var templates = await HubCommunicator.GetActivityTemplates(CurrentUserId, true);
             return templates.Where(x => query(x));
         }
     }

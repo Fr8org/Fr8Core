@@ -186,12 +186,12 @@ namespace terminalSalesforce.Actions
             var loopActivity = await AddAndConfigureChildActivity(context.SolutionActivity, await GetActivityTemplate("terminalFr8Core", "Loop"), "Loop", "Loop", 2);
             var crateStorage = loopActivity.CrateStorage;
             var loopConfigControls = ControlHelper.GetConfigurationControls(crateStorage);
-            var crateChooser = loopConfigControls.Controls.OfType<CrateChooser>().Single();
-            var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(x => x.ManifestId == (int)MT.StandardTableData);
-            if (tableDescription != null)
-            {
-                tableDescription.Selected = true;
-            }
+                var crateChooser = loopConfigControls.Controls.OfType<CrateChooser>().Single();
+                var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(x => x.ManifestId == (int)MT.StandardTableData);
+                if (tableDescription != null)
+                {
+                    tableDescription.Selected = true;
+                }
             var solutionActivityUi = new ActivityUi().ClonePropertiesFrom(context.SolutionActivity.CrateStorage.FirstCrate<StandardConfigurationControlsCM>().Content) as ActivityUi;
             var mailSenderActivityTemplate = await GetActivityTemplate(Guid.Parse(solutionActivityUi.MailSenderActivitySelector.Value));
             var sendEmailActivity = await AddAndConfigureChildActivity(loopActivity, mailSenderActivityTemplate, order: 1);
@@ -239,16 +239,16 @@ namespace terminalSalesforce.Actions
         }
 
         private void CopySolutionUiValuesToSalesforceActivity(ActivityPayload solutionActivity, ActivityPayload salesforceActivity)
-        {
+            {
             var storage = salesforceActivity.CrateStorage;
-            var controlsCrate = storage.FirstCrate<StandardConfigurationControlsCM>();
-            var activityUi = new Get_Data_v1.ActivityUi().ClonePropertiesFrom(controlsCrate.Content) as Get_Data_v1.ActivityUi;
+                var controlsCrate = storage.FirstCrate<StandardConfigurationControlsCM>();
+                var activityUi = new Get_Data_v1.ActivityUi().ClonePropertiesFrom(controlsCrate.Content) as Get_Data_v1.ActivityUi;
             var solutionActivityUi = new ActivityUi().ClonePropertiesFrom(solutionActivity.CrateStorage.FirstCrate<StandardConfigurationControlsCM>().Content) as ActivityUi;
-            activityUi.SalesforceObjectSelector.selectedKey = solutionActivityUi.SalesforceObjectSelector.selectedKey;
-            activityUi.SalesforceObjectSelector.Value = solutionActivityUi.SalesforceObjectSelector.Value;
-            activityUi.SalesforceObjectFilter.Value = solutionActivityUi.SalesforceObjectFilter.Value;
-            storage.ReplaceByLabel(Crate.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
-        }
+                activityUi.SalesforceObjectSelector.selectedKey = solutionActivityUi.SalesforceObjectSelector.selectedKey;
+                activityUi.SalesforceObjectSelector.Value = solutionActivityUi.SalesforceObjectSelector.Value;
+                activityUi.SalesforceObjectFilter.Value = solutionActivityUi.SalesforceObjectFilter.Value;
+                storage.ReplaceByLabel(Crate.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
+            }
 
         private async Task ConfigureSolutionActivityUi()
         {
@@ -279,7 +279,7 @@ namespace terminalSalesforce.Actions
         protected override async Task InitializeETA()
         {
             ActivityUI.SalesforceObjectSelector.ListItems = _salesforceManager.GetSalesforceObjectTypes().Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
-            var activityTemplates = await HubCommunicator.GetActivityTemplates(Tags.EmailDeliverer, CurrentUserId);
+            var activityTemplates = await HubCommunicator.GetActivityTemplates(Tags.EmailDeliverer, CurrentUserId, true);
             activityTemplates.Sort((x, y) => x.Name.CompareTo(y.Name));
             ActivityUI.MailSenderActivitySelector.ListItems = activityTemplates
                                                                             .Select(x => new ListItem { Key = x.Label, Value = x.Id.ToString() })
