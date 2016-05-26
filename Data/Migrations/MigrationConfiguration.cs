@@ -5,8 +5,6 @@ using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Security;
-using System.Web;
 using Data.Repositories;
 using Data.States;
 using Data.States.Templates;
@@ -16,8 +14,8 @@ using Data.Interfaces;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using Fr8Data.States;
 using StructureMap;
-//using MT_FieldService = Data.Infrastructure.MultiTenant.MT_Field;
 
 namespace Data.Migrations
 {
@@ -390,6 +388,7 @@ namespace Data.Migrations
             CreateAdmin("bahadir.bb@gmail.com", "123456ab", unitOfWork);
             CreateAdmin("omer@fr8.co", "123456ab", unitOfWork);
             CreateAdmin("alp@fr8.co", "123qwe", unitOfWork);
+            CreateAdmin("emre@fr8.co", "123qwe", unitOfWork);
             CreateAdmin("mvcdeveloper@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("maki.gjuroski@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("fr8system_monitor@fr8.company", "123qwe", unitOfWork);

@@ -1,18 +1,16 @@
 ﻿using Hangfire;
 using Hub.Infrastructure;
 using Hub.Interfaces;
-using HubWeb.Infrastructure;
 using StructureMap;
 using System;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Fr8Data.DataTransferObjects;
+using HubWeb.Infrastructure_HubWeb;
 using log4net;
-using Utilities.Configuration;
 using Data.Interfaces;
 using System.Linq;
 using System.Net.Http;
-using System.Collections.Generic;
 
 namespace HubWeb.Controllers
 {
@@ -25,9 +23,6 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Post(AlarmDTO alarmDTO)
         {
-            //TODO what happens to AlarmsController? does it stay in memory all this time?
-            //TODO inspect this and change callback function to a static function if necessary
-
             BackgroundJob.Schedule(() => Execute(alarmDTO), alarmDTO.StartTime);
 
             //TODO: Commented as part of DO - 1520. Need to rethink about this.
@@ -53,29 +48,29 @@ namespace HubWeb.Controllers
         }
 
         [HttpPost]
-        public async Task Schedule(string external_account_id, string fr8AccountId, string minutes, string terminalId)
+        public async Task Polling(string job_id, string fr8_account_id, string minutes, string terminal_id)
         {
-            string jobId = external_account_id.GetHashCode().ToString();
-            RecurringJob.AddOrUpdate(jobId, () => ExecuteSchedulledJob(external_account_id, fr8AccountId, minutes, terminalId), "*/" + minutes + " * * * *");
+            string jobId = job_id.GetHashCode().ToString();
+            RecurringJob.AddOrUpdate(jobId, () => ExecuteSchedulledJob(job_id, fr8_account_id, minutes, terminal_id), "*/" + minutes + " * * * *");
         }
 
-        public void ExecuteSchedulledJob(string external_account_id, string fr8AccountId, string minutes, string terminalId)
+        private void ExecuteSchedulledJob(string job_id, string fr8AccountId, string minutes, string terminal_id)
         {
-            var request = RequestPolling(external_account_id, fr8AccountId, minutes, terminalId);
+            var request = RequestPolling(job_id, fr8AccountId, minutes, terminal_id);
             var result = request.Result;
             if (!result)
-                RecurringJob.RemoveIfExists(external_account_id.GetHashCode().ToString());
+                RecurringJob.RemoveIfExists(job_id.GetHashCode().ToString());
         }
 
-        public async Task<bool> RequestPolling(string external_account_id, string fr8AccountId, string minutes, string terminalId)
+        private async Task<bool> RequestPolling(string job_id, string fr8_account_id, string minutes, string terminal_id)
         {
             try
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var terminal = uow.TerminalRepository.GetQuery().Where(a => a.PublicIdentifier == terminalId).FirstOrDefault();
-                    string url = terminal.Endpoint + "/terminals/" + terminal.Name + "/polling?"
-                        + string.Format("external_account_Id={0}&fr8AccountId={1}&polling_interval={2}", external_account_id, fr8AccountId, minutes);
+                    var terminal = uow.TerminalRepository.GetQuery().Where(a => a.PublicIdentifier == terminal_id).FirstOrDefault();
+                    string url = terminal.Endpoint + "/terminals/" + terminal.Name + "/polling_notifications?"
+                        + string.Format("job_id={0}&fr8_account_id={1}&polling_interval={2}", job_id, fr8_account_id, minutes);
 
                     using (var client = new HttpClient())
                     {

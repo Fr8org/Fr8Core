@@ -234,6 +234,7 @@ module dockyard.directives.paneConfigureAction {
             });
 
             $scope.$on(MessageType[MessageType.PaneConfigureAction_ResetValidationMessages], (event: ng.IAngularEvent, e: ResetValidationMessagesEventArgs) => {
+                this.ignoreConfigurationChange = true;
                crateHelper.resetValidationErrors($scope.currentAction.configurationControls.fields);
             });
 

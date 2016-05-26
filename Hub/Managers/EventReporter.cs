@@ -3,7 +3,6 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using StructureMap;
 using Data.Entities;
 using Data.Infrastructure;
@@ -15,6 +14,7 @@ using Utilities.Logging;
 using System.Data.Entity.Infrastructure;
 using Fr8Data.Constants;
 using Fr8Data.DataTransferObjects;
+using Fr8Infrastructure.Interfaces;
 using Utilities.Interfaces;
 
 //NOTES: Do NOT put Incidents here. Put them in IncidentReporter

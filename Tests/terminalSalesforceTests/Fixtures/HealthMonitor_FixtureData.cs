@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using Hub.Managers;
 using Moq;
 using TerminalBase.Infrastructure;
+using Fr8Data.Managers;
 
 namespace terminalSalesforceTests.Fixtures
 {
@@ -38,7 +38,7 @@ namespace terminalSalesforceTests.Fixtures
             {
                 storage.Add(Crate.FromContent(string.Empty, new OperationalStateCM()));
             }
-            ObjectFactory.Container.GetInstance<Mock<IHubCommunicator>>().Setup(x => x.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
+            ObjectFactory.Container.GetInstance<Mock<IHubCommunicator>>().Setup(x => x.GetPayload(It.IsAny<Guid>(), It.IsAny<string>()))
                                .Returns(Task.FromResult(result));
         }
 

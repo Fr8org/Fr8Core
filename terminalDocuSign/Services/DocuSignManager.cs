@@ -18,6 +18,7 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using TerminalBase.Errors;
+using TerminalBase.Models;
 
 namespace terminalDocuSign.Services.New_Api
 {
@@ -34,12 +35,12 @@ namespace terminalDocuSign.Services.New_Api
         private static readonly string[] NoCustomizedName = new[] { "Sign Here", "Company", "Email", "Initial", "Date Signed", "First Name", "Full Name", "Last Name" };
         const string StrRegex = @"\s*\d+$";
 
-        public DocuSignApiConfiguration SetUp(AuthorizationTokenDO authTokenDO)
+        public DocuSignApiConfiguration SetUp(AuthorizationToken authToken)
         {
             string baseUrl = string.Empty;
             string integratorKey = string.Empty;
 
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authToken.Token);
             //create configuration for future api calls
             if (docuSignAuthDTO.IsDemoAccount)
             {

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Net;
 using SendGrid;
 using Utilities;
@@ -12,7 +11,7 @@ namespace terminalUtilities.SendGrid
         public static ITransport CreateWeb(IConfigRepository configRepository)
         {
             if (configRepository == null)
-                throw new ArgumentNullException("configRepository");
+                throw new ArgumentNullException(nameof(configRepository));
             var credentials = new NetworkCredential
             {
                 UserName = CloudConfigurationManager.GetSetting("OutboundUserName"),

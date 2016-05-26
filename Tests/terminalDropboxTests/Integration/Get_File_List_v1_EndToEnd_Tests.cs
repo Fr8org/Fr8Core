@@ -32,10 +32,11 @@ namespace terminalDropboxTests.Integration
             _googleActivityConfigurator = new IntegrationTestTools_terminalGoogle(this);
             _terminalDropboxConfigurator = new IntegrationTestTools_terminalDropbox(this);
         }
-
+        
         [Test]
         public async Task Get_File_List_v1_EndToEnd()
         {
+            /*
             // Create plan
             var plan = await _plansHelper.CreateNewPlan();
 
@@ -90,8 +91,9 @@ namespace terminalDropboxTests.Integration
 
                 // Delete plan
                 await HttpDeleteAsync(_baseUrl + "plans?id=" + plan.Plan.Id);
-            }
-
+                */
         }
+
     }
+    
 }

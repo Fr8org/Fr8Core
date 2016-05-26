@@ -9,8 +9,8 @@ using Data.Interfaces;
 using Data.Utility;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using Fr8Infrastructure.Interfaces;
 using Hub.Interfaces;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using StructureMap;
 using Utilities.Configuration.Azure;
 

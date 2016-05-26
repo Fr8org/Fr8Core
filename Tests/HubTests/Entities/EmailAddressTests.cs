@@ -185,36 +185,31 @@ namespace HubTests.Entities
         [Test]
         public void TestIllegalSurroundingCharactersInvalid()
         {
-            var ru = new RegexUtilities();
-            Assert.False(ru.IsValidEmailAddress("'rjrudman@gmail.com'"));
+            Assert.False(RegexUtilities.IsValidEmailAddress("'rjrudman@gmail.com'"));
         }
 
         [Test]
         public void TestEmailNameWithPeriod()
         {
-            var ru = new RegexUtilities();
-            Assert.True(ru.IsValidEmailAddress("rj.rudman@gmail.com"));
+            Assert.True(RegexUtilities.IsValidEmailAddress("rj.rudman@gmail.com"));
         }
 
         [Test]
         public void TestEmailNameWithDash()
         {
-            var ru = new RegexUtilities();
-            Assert.True(ru.IsValidEmailAddress("rj-rudman@gmail.com"));
+            Assert.True(RegexUtilities.IsValidEmailAddress("rj-rudman@gmail.com"));
         }
 
         [Test]
         public void TestEmailDomainWithPeriod()
         {
-            var ru = new RegexUtilities();
-            Assert.True(ru.IsValidEmailAddress("rjrudman@gmail.net.au"));
+            Assert.True(RegexUtilities.IsValidEmailAddress("rjrudman@gmail.net.au"));
         }
 
         [Test]
         public void TestEmailUnderscore()
         {
-            var ru = new RegexUtilities();
-            Assert.True(ru.IsValidEmailAddress("br_notify@kwasant.com"));
+            Assert.True(RegexUtilities.IsValidEmailAddress("br_notify@kwasant.com"));
         }
 
         [Test]

@@ -11,6 +11,7 @@ using Hub.Managers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using HubWeb.Controllers;
+using Fr8Data.Managers;
 
 namespace HubTests.Controllers
 {

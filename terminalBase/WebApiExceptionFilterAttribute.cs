@@ -10,7 +10,6 @@ using TerminalBase.Errors;
 using Utilities;
 using Microsoft.ApplicationInsights;
 using System.Collections.Generic;
-using Hub.Exceptions;
 
 namespace TerminalBase
 {

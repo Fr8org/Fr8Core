@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Hub.Managers;
+using Fr8Data.Managers;
 using NUnit.Framework;
-using terminalDocuSign.Actions;
+using terminalDocuSign.Activities;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Tests.Fixtures;
 using UtilitiesTesting;

@@ -1163,7 +1163,7 @@ i.activity-stream-font {
     margin-left:17px;
     position:relative;
     margin-bottom:15px;
-    min-width:10%;
+    min-width:13%;
     margin-right:-15px;
 }
 .activity-stream-template {
@@ -1177,7 +1177,7 @@ i.activity-stream-font {
 }
 
 .configuration-control-form-group {
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
 
 /* Metronic Theme patch (until it's updated) */
@@ -1351,4 +1351,11 @@ footer p {
 
 md-checkbox.md-checked.green .md-icon {
  background-color: rgb(38, 166, 154);
+}
+
+.text-block {
+    display: block; 
+    margin-top: 0px; 
+    margin-bottom: 5px;
+    font-size: 15px;
 }
