@@ -17,6 +17,11 @@ namespace TerminalBase.Infrastructure
 
         public static void ValidateEmail(this ValidationManager validationManager, TextSource textSource, string errorMessage = null)
         {
+            //The validation actually won't go further only if Upstream is set as source but payload is not avaialable. That means we can't yet validate
+            if (!textSource.CanGetValue(validationManager.Payload) && !textSource.ValueSourceIsNotSet)
+            {
+                return;
+            }
             var value = textSource.CanGetValue(validationManager.Payload) ? textSource.GetValue(validationManager.Payload) : string.Empty;
             if (!value.IsValidEmailAddress())
             {
@@ -34,7 +39,7 @@ namespace TerminalBase.Infrastructure
                 PhoneNumber phoneNumber = phoneUtil.Parse(number, "");
                 if (isAlphaNumber || !phoneUtil.IsValidNumber(phoneNumber))
                 {
-                    validationManager.SetError( control.InitialLabel + " Is Invalid", control);
+                    validationManager.SetError(control.InitialLabel + " Is Invalid", control);
                     return false;
                 }
 

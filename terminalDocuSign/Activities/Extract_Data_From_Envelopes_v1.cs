@@ -165,8 +165,8 @@ namespace terminalDocuSign.Actions
 
         private async Task<List<ListItem>> GetFinalActionListItems()
         {
-            var templates = await HubCommunicator.GetActivityTemplates(ActivityCategory.Forwarders, CurrentFr8UserId);
-            return templates.Select(x => new ListItem() { Key = x.Label, Value = x.Id.ToString() }).ToList();
+            var templates = await HubCommunicator.GetActivityTemplates(ActivityCategory.Forwarders, CurrentFr8UserId, true);
+            return templates.OrderBy(x => x.Label).Select(x => new ListItem { Key = x.Label, Value = x.Id.ToString() }).ToList();
         }
         #endregion
     }
