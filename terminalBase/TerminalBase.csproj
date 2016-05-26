@@ -112,6 +112,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BaseClasses\StatefullTerminalActivity.cs" />
+    <Compile Include="Helpers\ActivityHelper.cs" />
     <Compile Include="Helpers\ControlHelper.cs" />
     <Compile Include="Helpers\PlanHelper.cs" />
     <Compile Include="Infrastructure\ValidationExtensions.cs" />
