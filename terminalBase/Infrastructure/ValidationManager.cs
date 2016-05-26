@@ -17,7 +17,7 @@ namespace TerminalBase.Infrastructure
 
         public ValidationManager(ValidationResultsCM validationResults, ICrateStorage payload)
         {
-            _validationResults = validationResults;
+            _validationResults = validationResults ?? new ValidationResultsCM();
             Payload = payload;
         }
 

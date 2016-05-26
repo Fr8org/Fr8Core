@@ -131,7 +131,8 @@ namespace TerminalBase.BaseClasses
 
         protected override ValidationManager GetValidationManager()
         {
-           return new EnhancedValidationManager<T>(null, this, Payload);
+            var payload = ExecutionContext?.PayloadStorage;
+           return new EnhancedValidationManager<T>(null, this, payload);
         }
 
         /**********************************************************************************/
