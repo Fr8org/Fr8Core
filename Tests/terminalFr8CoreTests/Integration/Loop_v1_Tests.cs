@@ -69,4 +69,5 @@ namespace terminalFr8CoreTests.Integration
                 chooser.CrateDescriptions[0].Label);
         }
     }*/
+    }
 }
