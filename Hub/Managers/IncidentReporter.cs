@@ -275,7 +275,7 @@ namespace Hub.Managers
             SaveAndLogIncident(incident);
         }
 
-        private void LogTerminalIncident(LoggingDataCm incidentItem)
+        private void LogTerminalIncident(LoggingDataCM incidentItem)
         {
             var currentIncident = new IncidentDO
             {

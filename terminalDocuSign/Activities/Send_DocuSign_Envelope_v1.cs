@@ -13,6 +13,7 @@ using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Managers;
 using terminalDocuSign.DataTransferObjects;
+using terminalDocuSign.Services;
 using TerminalBase.Infrastructure;
 using TerminalBase.Infrastructure.Behaviors;
 using terminalDocuSign.Services.New_Api;
@@ -258,7 +259,7 @@ namespace terminalDocuSign.Actions
 
             var tabsandfields = DocuSignManager.GetTemplateRecipientsTabsAndDocuSignTabs(conf, docusignTemplateId);
 
-            var roles = tabsandfields.Item1.Where(a => a.Tags.Contains("DocuSigner"));
+            var roles = tabsandfields.Item1.Where(a => a.Tags.Contains(DocuSignConstants.DocuSignSignerTag));
             var crateRolesDTO = CrateManager.CreateDesignTimeFieldsCrate(
               "DocuSignTemplateRolesFields",
               AvailabilityType.Configuration,
@@ -272,7 +273,7 @@ namespace terminalDocuSign.Actions
 
             var envelopeDataDTO = tabsandfields.Item2;
 
-            var userDefinedFields = tabsandfields.Item1.Where(a => a.Tags.Contains("DocuSignTab"));
+            var userDefinedFields = tabsandfields.Item1.Where(a => a.Tags.Contains(DocuSignConstants.DocuSignTabTag));
 
             var crateUserDefinedDTO = CrateManager.CreateDesignTimeFieldsCrate(
                 "DocuSignTemplateUserDefinedFields",
@@ -394,7 +395,7 @@ namespace terminalDocuSign.Actions
             {
                 fieldSelectDocusignTemplateDTO
             };
-            
+
             return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
         }
     }

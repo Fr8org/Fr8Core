@@ -48,14 +48,14 @@ namespace terminalFr8Core.Actions
             mappedFields = mappedFields.Where(x => x.Key != null && x.Value != null).ToList();
             var storage = CrateManager.FromDto(processPayload.CrateStorage);
 
-            IEnumerable<FieldDTO> processedMappedFields;
+            //IEnumerable<FieldDTO> processedMappedFields;
             try
             {
-                processedMappedFields = mappedFields.Select(a => { return new FieldDTO(a.Value, ExtractPayloadFieldValue(storage, a.Key, activityDO)); });
+               // processedMappedFields = mappedFields.Select(a => { return new FieldDTO(a.Value, ExtractPayloadFieldValue(storage, a.Key, activityDO)); });
 
                 using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().UpdateStorage(() => processPayload.CrateStorage))
                 {
-                    crateStorage.Add(Fr8Data.Crates.Crate.FromContent("MappedFields", new StandardPayloadDataCM(processedMappedFields)));
+                    //crateStorage.Add(Fr8Data.Crates.Crate.FromContent("MappedFields", new StandardPayloadDataCM(processedMappedFields)));
                     return Success(processPayload);
                 }
             }

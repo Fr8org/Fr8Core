@@ -124,6 +124,7 @@
     <Compile Include="BaseClasses\UpstreamQueryManager.cs" />
     <Compile Include="Errors\AuthorizationTokenExpiredOrInvalidException.cs" />
     <Compile Include="Errors\TerminalErrorCode.cs" />
+    <Compile Include="Infrastructure\ActivityHelper.cs" />
     <Compile Include="Infrastructure\BaseTerminalEvent.cs" />
     <Compile Include="Infrastructure\Behaviors\BaseControlMappingBehavior.cs" />
     <Compile Include="Infrastructure\Behaviors\CheckBoxMappingBehavior.cs" />
@@ -133,6 +134,7 @@
     <Compile Include="Infrastructure\Behaviors\TextSourceMappingBehavior.cs" />
     <Compile Include="Infrastructure\DefaultHubCommunicator.cs" />
     <Compile Include="Infrastructure\DataHubCommunicatorBase.cs" />
+    <Compile Include="Infrastructure\EnhancedValidationManager.cs" />
     <Compile Include="Infrastructure\ExplicitConfigurationHelper.cs" />
     <Compile Include="Infrastructure\ExplicitDataHubCommunicator.cs" />
     <Compile Include="Infrastructure\fr8TerminalHMACAuthenticateAttribute.cs" />

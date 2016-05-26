@@ -49,6 +49,7 @@ module dockyard.directives.upstreamDataChooser {
                     var alertMessage = new model.AlertDTO();
                     alertMessage.title = "Notification";
                     alertMessage.body = error.message;
+                    alertMessage.isOkCancelVisible = false;
                     uiHelperService.openConfirmationModal(alertMessage);
                 });
             }
@@ -104,7 +105,7 @@ module dockyard.directives.upstreamDataChooser {
                         }
                         else {
                             $scope.field.listItems = listItems;
-                            $scope.tableParams = new NgTableParams({ count: 50 }, { data: $scope.field.listItems, counts: [], groupBy: 'sourceCrateLabel' });
+                            $scope.tableParams = new NgTableParams({ count: $scope.field.listItems.length }, { data: $scope.field.listItems, counts: [], groupBy: 'sourceCrateLabel' });
                         }
                     });
             };
