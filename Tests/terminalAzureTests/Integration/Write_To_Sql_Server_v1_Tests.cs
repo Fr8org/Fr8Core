@@ -1,6 +1,5 @@
 ﻿using System.Linq;
 using HealthMonitor.Utility;
-using Hub.Managers;
 using NUnit.Framework;
 using terminalAzureTests.Fixtures;
 using UtilitiesTesting.Fixtures;

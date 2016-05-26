@@ -4,7 +4,6 @@ using Data.Entities;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using Hub.Managers;
 using Hub.StructureMap;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -275,8 +274,7 @@ namespace HubTests.Managers
 
             var newCrateStorageDto = GetKnownManifestsStorageDto("newValue");
             var newCrateStorage = _crateManager.FromDto(newCrateStorageDto);
-
-            using (var crateStorage = _crateManager.GetUpdatableStorage(actionDo))
+            using (var crateStorage = Hub.Managers.CrateManagerExtensions.GetUpdatableStorage( _crateManager ,actionDo))
             {
                 crateStorage.Clear();
 

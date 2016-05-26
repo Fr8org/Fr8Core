@@ -20,7 +20,7 @@ namespace terminalDocuSignTests.Activities
 {
     public class BaseTest : UtilitiesTesting.BaseTest
     {
-        protected readonly AuthorizationTokenDO FakeToken = new AuthorizationTokenDO { Token = "1" };
+        protected readonly AuthorizationToken FakeToken = new AuthorizationToken { Token = "1" };
         [SetUp]
         public override void SetUp()
         {

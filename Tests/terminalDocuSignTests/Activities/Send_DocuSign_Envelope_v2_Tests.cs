@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Entities;
-using Data.Interfaces.Manifests;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Hub.Managers;
 using Moq;
@@ -17,6 +17,7 @@ using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
 using TerminalBase.Infrastructure;
+using TerminalBase.Models;
 
 namespace terminalDocuSignTests.Activities
 {
@@ -62,7 +63,12 @@ namespace terminalDocuSignTests.Activities
         public async Task Initialize_Always_LoadsDocuSignTemplates()
         {
             var activity = ObjectFactory.GetInstance<Send_DocuSign_Envelope_v2>();
-            await activity.Configure(new ActivityDO(), FakeToken);
+            var context = new ActivityContext
+            {
+                ActivityPayload = new ActivityPayload { CrateStorage = new CrateStorage()},
+                AuthorizationToken = FakeToken
+            };
+            await activity.Configure(context);
             ObjectFactory.GetInstance<Mock<IDocuSignManager>>().Verify(x => x.GetTemplatesList(It.IsAny<DocuSignApiConfiguration>()), Times.Once(), "Template list was not loaded from DosuSign");
         }
 
@@ -70,8 +76,13 @@ namespace terminalDocuSignTests.Activities
         public async Task Configure_Always_ReloadsDocuSignTemplates()
         {
             var activity = ObjectFactory.GetInstance<Send_DocuSign_Envelope_v2>();
-            var currentActivity = await activity.Configure(new ActivityDO(), FakeToken);
-            await activity.Configure(currentActivity, FakeToken);
+            var context = new ActivityContext
+            {
+                ActivityPayload = new ActivityPayload { CrateStorage = new CrateStorage() },
+                AuthorizationToken = FakeToken
+            };
+            await activity.Configure(context);
+            await activity.Configure(context);
             ObjectFactory.GetInstance<Mock<IDocuSignManager>>().Verify(x => x.GetTemplatesList(It.IsAny<DocuSignApiConfiguration>()), Times.Exactly(2), "Template list was not reloaded from DosuSign");
         }
 
@@ -79,10 +90,16 @@ namespace terminalDocuSignTests.Activities
         public async Task Configure_Always_MapsDocuSignTemplateFieldsToControls()
         {
             var activity = ObjectFactory.GetInstance<Send_DocuSign_Envelope_v2>();
-            var currentActivity = await activity.Configure(new ActivityDO(), FakeToken);
-            currentActivity.UpdateControls<Send_DocuSign_Envelope_v2.ActivityUi>(x => x.TemplateSelector.SelectByValue("1"));
-            currentActivity = await activity.Configure(currentActivity, FakeToken);
-            var activityUi = currentActivity.GetReadonlyActivityUi<Send_DocuSign_Envelope_v2.ActivityUi>();
+            var context = new ActivityContext
+            {
+                ActivityPayload = new ActivityPayload { CrateStorage = new CrateStorage() },
+                AuthorizationToken = FakeToken
+            };
+            await activity.Configure(context);
+
+            context.ActivityPayload.CrateStorage.UpdateControls<Send_DocuSign_Envelope_v2.ActivityUi>(x => x.TemplateSelector.SelectByValue("1"));
+            await activity.Configure(context);
+            var activityUi = context.ActivityPayload.CrateStorage.GetReadonlyActivityUi<Send_DocuSign_Envelope_v2.ActivityUi>();
             Assert.AreEqual(1, activityUi.RolesFields.Count, "Incorrect number of controls were generated for role fields");
             Assert.AreEqual(1, activityUi.TextFields.Count, "Incorrect number of controls were generated for text fields");
             Assert.AreEqual(1, activityUi.CheckBoxFields.Count, "Incorrect number of controls were generated for check box fields");
@@ -94,9 +111,14 @@ namespace terminalDocuSignTests.Activities
         public async Task Activate_WhenTemplateIsNotSelected_FailsValidation()
         {
             var activity = ObjectFactory.GetInstance<Send_DocuSign_Envelope_v2>();
-            var currentActivity = await activity.Configure(new ActivityDO(), FakeToken);
-            currentActivity = await activity.Activate(currentActivity, FakeToken);
-            var storage = CrateManager.GetStorage(currentActivity);
+            var context = new ActivityContext
+            {
+                ActivityPayload = new ActivityPayload { CrateStorage = new CrateStorage() },
+                AuthorizationToken = FakeToken
+            };
+            await activity.Configure(context);
+            await activity.Activate(context);
+            var storage = context.ActivityPayload.CrateStorage;
             var validationCrate = storage.FirstCrateOrDefault<ValidationResultsCM>();
             Assert.IsNotNull(validationCrate, "Validation crate was not found in activity storage");
             Assert.AreEqual(1, validationCrate.Content.ValidationErrors.Count, "Incorrect number of validation errors");
@@ -107,11 +129,16 @@ namespace terminalDocuSignTests.Activities
         public async Task Activate_WhenRoleEmailValueIsIncorrect_FailsValidation()
         {
             var activity = ObjectFactory.GetInstance<Send_DocuSign_Envelope_v2>();
-            var currentActivity = await activity.Configure(new ActivityDO(), FakeToken);
-            currentActivity.UpdateControls<Send_DocuSign_Envelope_v2.ActivityUi>(x => x.TemplateSelector.SelectByValue("1"));
-            currentActivity = await activity.Configure(currentActivity, FakeToken);
-            currentActivity = await activity.Activate(currentActivity, FakeToken);
-            var storage = CrateManager.GetStorage(currentActivity);
+            var context = new ActivityContext
+            {
+                ActivityPayload = new ActivityPayload { CrateStorage = new CrateStorage() },
+                AuthorizationToken = FakeToken
+            };
+            await activity.Configure(context);
+            context.ActivityPayload.CrateStorage.UpdateControls<Send_DocuSign_Envelope_v2.ActivityUi>(x => x.TemplateSelector.SelectByValue("1"));
+            await activity.Configure(context);
+            await activity.Activate(context);
+            var storage = context.ActivityPayload.CrateStorage;
             var validationCrate = storage.FirstCrateOrDefault<ValidationResultsCM>();
             Assert.IsNotNull(validationCrate, "Validation crate was not found in activity storage");
             Assert.AreEqual(1, validationCrate.Content.ValidationErrors.Count, "Incorrect number of validation errors");
@@ -122,10 +149,15 @@ namespace terminalDocuSignTests.Activities
         public async Task Run_WhenValidationSucceeds_MapsControlsValuesToDocuSignTemplateFieldsAndSendEmail()
         {
             var activity = ObjectFactory.GetInstance<Send_DocuSign_Envelope_v2>();
-            var currentActivity = await activity.Configure(new ActivityDO(), FakeToken);
-            currentActivity.UpdateControls<Send_DocuSign_Envelope_v2.ActivityUi>(x => x.TemplateSelector.SelectByValue("1"));
-            currentActivity = await activity.Configure(currentActivity, FakeToken);
-            currentActivity.UpdateControls<Send_DocuSign_Envelope_v2.ActivityUi>(x =>
+            var context = new ActivityContext
+            {
+                ActivityPayload = new ActivityPayload { CrateStorage = new CrateStorage() },
+                AuthorizationToken = FakeToken
+            };
+            await activity.Configure(context);
+            context.ActivityPayload.CrateStorage.UpdateControls<Send_DocuSign_Envelope_v2.ActivityUi>(x => x.TemplateSelector.SelectByValue("1"));
+            await activity.Configure(context);
+            context.ActivityPayload.CrateStorage.UpdateControls<Send_DocuSign_Envelope_v2.ActivityUi>(x =>
                                                                                  {
                                                                                      x.CheckBoxFields[0].Selected = true;
                                                                                      x.DropDownListFields[0].SelectByKey("Value");
@@ -135,7 +167,7 @@ namespace terminalDocuSignTests.Activities
                                                                                  });
             ObjectFactory.GetInstance<Mock<IDocuSignManager>>().Setup(x => x.SendAnEnvelopeFromTemplate(It.IsAny<DocuSignApiConfiguration>(), It.IsAny<List<FieldDTO>>(), It.IsAny<List<FieldDTO>>(), It.IsAny<string>(), It.IsAny<StandardFileDescriptionCM>()))
                          .Callback<DocuSignApiConfiguration, List<FieldDTO>, List<FieldDTO>, string, StandardFileDescriptionCM>(AssertEnvelopeParameters);
-            await activity.Run(currentActivity, Guid.Empty, FakeToken);
+            await activity.Run(context, new ContainerExecutionContext() {ContainerId = Guid.NewGuid(), PayloadStorage = new CrateStorage()});
             ObjectFactory.GetInstance<Mock<IDocuSignManager>>().Verify(x => x.SendAnEnvelopeFromTemplate(It.IsAny<DocuSignApiConfiguration>(), It.IsAny<List<FieldDTO>>(), It.IsAny<List<FieldDTO>>(), It.IsAny<string>(), null),
                                                                        Times.Once(),
                                                                        "Run didn't send DocuSign envelope");

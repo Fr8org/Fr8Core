@@ -1,5 +1,4 @@
 ﻿using HealthMonitor.Utility;
-using Hub.Managers;
 using NUnit.Framework;
 using System;
 using System.Globalization;

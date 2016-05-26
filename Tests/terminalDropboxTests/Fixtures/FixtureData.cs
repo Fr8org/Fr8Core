@@ -3,7 +3,6 @@ using Data.Entities;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using Hub.Managers;
 using Ploeh.AutoFixture;
 using TerminalBase.Models;
 using Fr8Data.Managers;

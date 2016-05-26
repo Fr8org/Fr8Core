@@ -16,7 +16,6 @@ using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Hub.Interfaces;
-using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
 using Hub.Services;
 using TerminalBase.Infrastructure;
@@ -329,7 +328,7 @@ namespace HubTests.Services
         {
             ActivityDO activityDO = FixtureData.TestActivity23();
 
-            using (var crateStorage = _crate.GetUpdatableStorage(activityDO))
+            using (var crateStorage = Hub.Managers.CrateManagerExtensions.GetUpdatableStorage(_crate, activityDO))
             {
                 crateStorage.AddRange(FixtureData.CrateStorageDTO());
             }

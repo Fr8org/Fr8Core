@@ -4,7 +4,6 @@ using NUnit.Framework;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.Generic;
-using Hub.Managers;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using terminalSalesforce.Actions;

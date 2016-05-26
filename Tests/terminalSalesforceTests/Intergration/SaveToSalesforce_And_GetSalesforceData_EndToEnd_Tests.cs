@@ -1,6 +1,5 @@
 ﻿using Data.Entities;
 using HealthMonitor.Utility;
-using Hub.Managers;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using System;

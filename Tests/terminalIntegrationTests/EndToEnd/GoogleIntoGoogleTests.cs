@@ -12,6 +12,7 @@ using StructureMap;
 using terminaBaselTests.Tools.Activities;
 using terminaBaselTests.Tools.Plans;
 using terminalFr8Core.Actions;
+using terminalFr8Core.Activities;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services;
 using terminalGoogle.Services.Authorization;

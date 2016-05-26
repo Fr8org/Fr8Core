@@ -1,7 +1,6 @@
 ﻿using HealthMonitor.Utility;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using Hub.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;

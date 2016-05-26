@@ -6,7 +6,6 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using Hub.Managers;
 using Moq;
 using StructureMap;
 using TerminalBase.Infrastructure;
