@@ -13,6 +13,7 @@ using terminalDocuSign.Actions;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
+using TerminalBase.Infrastructure;
 using UtilitiesTesting.Fixtures;
 
 namespace terminalDocuSignTests.Activities

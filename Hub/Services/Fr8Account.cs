@@ -452,7 +452,7 @@ namespace Hub.Services
                 var planQuery = unitOfWork.PlanRepository.GetPlanQueryUncached().Include(i => i.Fr8Account);
 
                 planQuery
-                    .Where(pt => pt.PlanState == PlanState.Active)//1.
+                    .Where(pt => pt.PlanState == PlanState.Running)//1.
                     .Where(id => id.Fr8Account.Id == userId);//2
 
                 activePlans = planQuery.ToList();

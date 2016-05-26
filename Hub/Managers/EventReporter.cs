@@ -121,8 +121,7 @@ namespace Hub.Managers
 
         private void ActivityResponseReceived(ActivityDO activityDo, ActivityResponse responseType)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
+           
                 var template = _activityTemplate.GetByKey(activityDo.ActivityTemplateId);
 
                 var factDO = new FactDO()
@@ -139,12 +138,7 @@ namespace Hub.Managers
                     "Activity Name: " + template?.Name)
                 };
 
-                LogHistoryItem(factDO);
-
-                uow.FactRepository.Add(factDO);
-                uow.MultiTenantObjectRepository.Add(factDO.ToFactCM(), _security.GetCurrentUser());
-                uow.SaveChanges();
-            }
+                SaveAndLogFact(factDO);
         }
 
         private void ActivityRunRequested(ActivityDO activityDo, ContainerDO containerDO)
@@ -172,15 +166,12 @@ namespace Hub.Managers
                         )
                     };
 
-                    LogHistoryItem(factDO);
-
-                    uow.FactRepository.Add(factDO);
-                    uow.MultiTenantObjectRepository.Add(factDO.ToFactCM(), _security.GetCurrentUser());
-
+                    
                     var planDO = uow.PlanRepository.GetById<PlanDO>(activityDo.RootPlanNodeId);
-                    uow.SaveChanges();
                     planId = planDO.Id;
                     planLastUpdated = planDO.LastUpdated;
+
+                    SaveAndLogFact(factDO);
                 }
 
                 //create user notifications
@@ -203,8 +194,6 @@ namespace Hub.Managers
 
         private void ContainerExecutionCompleted(ContainerDO containerDO)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
                 var factDO = new FactDO()
                 {
                     PrimaryCategory = "Container Execution",
@@ -220,13 +209,7 @@ namespace Hub.Managers
                     ),
                 };
 
-                LogHistoryItem(factDO);
-
-                uow.FactRepository.Add(factDO);
-                uow.MultiTenantObjectRepository.Add(factDO.ToFactCM(), _security.GetCurrentUser());
-
-                uow.SaveChanges();
-            }
+                SaveAndLogFact(factDO);
         }
 
         private FactDO CreatedPlanFact(Guid planId, string state)
@@ -250,8 +233,6 @@ namespace Hub.Managers
 
         private void PlanDeactivated(Guid planId)
         {
-            using (var uowFact = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
                 PlanDO planDO = null;
                 using (var uowPlan = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
@@ -261,19 +242,12 @@ namespace Hub.Managers
                 {
                     var factDO = CreatedPlanFact(planId, "Deactivated");
 
-                    LogHistoryItem(factDO);
-                    uowFact.FactRepository.Add(factDO);
-                    uowFact.MultiTenantObjectRepository.Add(factDO.ToFactCM(), _security.GetCurrentUser());
-
-                    uowFact.SaveChanges();
+                    SaveAndLogFact(factDO);
                 }
-            }
         }
 
         private void PlanActivated(Guid planId)
         {
-            using (var uowFact = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
                 PlanDO planDO = null;
                 using (var uowPlan = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
@@ -283,19 +257,12 @@ namespace Hub.Managers
                 {
                     var factDO = CreatedPlanFact(planId, "Activated");
 
-                    LogHistoryItem(factDO);
-                    uowFact.FactRepository.Add(factDO);
-                    uowFact.MultiTenantObjectRepository.Add(factDO.ToFactCM(), _security.GetCurrentUser());
-
-                    uowFact.SaveChanges();
+                    SaveAndLogFact(factDO);
                 }
-            }
         }
 
         private void ProcessingTerminatedPerActivityResponse(ContainerDO containerDO, ActivityResponse resposneType)
         {
-            using (var uowFact = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
                 var factDO = new FactDO()
                 {
                     PrimaryCategory = "Container Execution",
@@ -310,12 +277,7 @@ namespace Hub.Managers
                    "Container Id: " + containerDO.Name)
                 };
 
-                LogHistoryItem(factDO);
-                uowFact.FactRepository.Add(factDO);
-                uowFact.MultiTenantObjectRepository.Add(factDO.ToFactCM(), _security.GetCurrentUser());
-
-                uowFact.SaveChanges();
-            }
+               SaveAndLogFact(factDO);
         }
 
         private string FormatTerminalName(AuthorizationTokenDO authorizationToken)
@@ -332,8 +294,7 @@ namespace Hub.Managers
 
         private void AuthTokenCreated(AuthorizationTokenDO authToken)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
+            
                 var factDO = new FactDO();
                 factDO.PrimaryCategory = "AuthToken";
                 factDO.SecondaryCategory = "Created";
@@ -348,18 +309,12 @@ namespace Hub.Managers
                     "External AccountId: " + authToken.ExternalAccountId
                 );
 
-                LogHistoryItem(factDO);
-                uow.FactRepository.Add(factDO);
-                uow.MultiTenantObjectRepository.Add(factDO.ToFactCM(), _security.GetCurrentUser());
-
-                uow.SaveChanges();
-            }
+                SaveAndLogFact(factDO);
+            
         }
 
         private void AuthTokenRemoved(AuthorizationTokenDO authToken)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
                 var newFactDO = new FactDO
                 {
                     PrimaryCategory = "AuthToken",
@@ -376,19 +331,12 @@ namespace Hub.Managers
                     )
                 };
 
-                LogHistoryItem(newFactDO);
-                uow.FactRepository.Add(newFactDO);
-                uow.MultiTenantObjectRepository.Add(newFactDO.ToFactCM(), _security.GetCurrentUser());
-
-                uow.SaveChanges();
-            }
+               SaveAndLogFact(newFactDO);
         }
 
         private void TrackablePropertyUpdated(string entityName, string propertyName, object id,
             object value)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
                 var newFactDO = new FactDO
                 {
                     PrimaryCategory = entityName,
@@ -399,18 +347,11 @@ namespace Hub.Managers
                     Status = value != null ? value.ToString() : null,
                 };
 
-                LogHistoryItem(newFactDO);
-                uow.FactRepository.Add(newFactDO);
-                uow.MultiTenantObjectRepository.Add(newFactDO.ToFactCM(), _security.GetCurrentUser());
-
-                uow.SaveChanges();
-            }
+               SaveAndLogFact(newFactDO);
         }
 
         private void EntityStateChanged(string entityName, object id, string stateName, string stateValue)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
                 var newFactDO = new FactDO
                 {
                     PrimaryCategory = entityName,
@@ -422,12 +363,7 @@ namespace Hub.Managers
                     Status = stateValue,
                 };
 
-                LogHistoryItem(newFactDO);
-                uow.FactRepository.Add(newFactDO);
-                uow.MultiTenantObjectRepository.Add(newFactDO.ToFactCM(), _security.GetCurrentUser());
-
-                uow.SaveChanges();
-            }
+                SaveAndLogFact(newFactDO);
         }
 
         private void EventManagerOnEventProcessRequestReceived(ContainerDO containerDO)
@@ -600,9 +536,6 @@ namespace Hub.Managers
                 Data = message
             };
 
-            LogHistoryItem(incidentDO);
-            
-
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 uow.IncidentRepository.Add(incidentDO);
@@ -613,8 +546,16 @@ namespace Hub.Managers
                 {
                     uow.SaveChanges();
                 }
-                catch { }
+                catch(Exception exp)
+                {
+                    Logger.LogError($"Can`t add incident to repository. Exception = [{exp}]");
+                }
+                finally
+                {
+                    LogHistoryItem(incidentDO);
+                }
             }
+            
         }
 
         /// <summary>
@@ -641,12 +582,12 @@ namespace Hub.Managers
             SaveAndLogFact(fact); 
         }
 
-        private void SaveFact(FactDO curAction)
+        private void SaveFact(FactDO curFact)
         {
             using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                uow.FactRepository.Add(curAction);
-                uow.MultiTenantObjectRepository.Add(curAction.ToFactCM(), _security.GetCurrentUser());
+                uow.FactRepository.Add(curFact);
+                uow.MultiTenantObjectRepository.Add(curFact.ToFactCM(), _security.GetCurrentUser());
 
                 uow.SaveChanges();
             }
@@ -660,8 +601,6 @@ namespace Hub.Managers
 
         public void UserRegistered(Fr8AccountDO curUser)
         {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
                 FactDO curFactDO = new FactDO
                 {
                     PrimaryCategory = "User",
@@ -673,14 +612,7 @@ namespace Hub.Managers
                     //Data = "User registrated with " + curUser.EmailAddress.Address
                 };
 
-                LogHistoryItem(curFactDO);
-
-
-                uow.FactRepository.Add(curFactDO);
-                uow.MultiTenantObjectRepository.Add(curFactDO.ToFactCM(), _security.GetCurrentUser());
-
-                uow.SaveChanges();
-            }
+                SaveAndLogFact(curFactDO);
         }
 
         public void ActivityTemplatesSuccessfullyRegistered(int count)
@@ -698,14 +630,7 @@ namespace Hub.Managers
                 };
 
                 //Logger.GetLogger().Info(curFactDO.Data);
-                LogHistoryItem(curFactDO);
-
-
-
-                uow.FactRepository.Add(curFactDO);
-                uow.MultiTenantObjectRepository.Add(curFactDO.ToFactCM(), _security.GetCurrentUser());
-
-                uow.SaveChanges();
+                SaveAndLogFact(curFactDO);
             }
         }
 
@@ -720,8 +645,6 @@ namespace Hub.Managers
             };
 
             //Logger.GetLogger().Error(message);
-            LogHistoryItem(incidentDO,EventType.Error);
-
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -733,7 +656,14 @@ namespace Hub.Managers
                 {
                     uow.SaveChanges();
                 }
-                catch { }
+                catch(Exception exp)
+                {
+                    Logger.LogError($"Can`t add incident to repository. Exception = [{exp}]");
+                }
+                finally
+                {
+                    LogHistoryItem(incidentDO, EventType.Error);
+                }
             }
         }
 
@@ -750,11 +680,7 @@ namespace Hub.Managers
                     Fr8UserId = userId,
                 };
 
-                LogHistoryItem(factDO);
-                uow.FactRepository.Add(factDO);
-                uow.MultiTenantObjectRepository.Add(factDO.ToFactCM(), _security.GetCurrentUser());
-
-                uow.SaveChanges();
+                SaveAndLogFact(factDO);
             }
         }
 
@@ -776,12 +702,13 @@ namespace Hub.Managers
                 historyItem.Fr8UserId = (historyItem as FactDO).CreatedByID;
             }
 
-            var message = $"{itemType}: {historyItem.PrimaryCategory} " +
-                              $"{historyItem.SecondaryCategory}" +
-                              $"{historyItem.Activity}, " +
-                              $"Data = {substring}, " +
-                              $"Fr8User = {historyItem.Fr8UserId}, " +
-                              $"ObjectId = {historyItem.ObjectId}";
+            var message =     $"HistoryItemId = [{historyItem.Id}]; "+
+                              $"[{itemType}]: [{historyItem.PrimaryCategory}] " +
+                              $"[{historyItem.SecondaryCategory}]" +
+                              $"[{historyItem.Activity}], " +
+                              $"Data = [{substring}], " +
+                              $"Fr8User = [{historyItem.Fr8UserId}], " +
+                              $"ObjectId = [{historyItem.ObjectId}]";
 
             return message;
         }
@@ -942,7 +869,7 @@ namespace Hub.Managers
             SaveAndLogFact(fact);
         }
 
-        private void LogTerminalEvent(LoggingDataCm eventDataCm)
+        private void LogTerminalEvent(LoggingDataCM eventDataCm)
         {
             var fact = new FactDO
             {
@@ -1025,14 +952,9 @@ namespace Hub.Managers
                     var activityTemplate = _activityTemplate.GetByKey(activityDO.ActivityTemplateId);
                     curFact.Data = string.Format("Terminal: {0} - Action: {1}.", activityTemplate.Terminal.Name, activityTemplate.Name);
                 }
-
-                LogHistoryItem(curFact);
-                
                 //LogFactInformation(curFact, curFact.Data);
-                uow.FactRepository.Add(curFact);
-                uow.MultiTenantObjectRepository.Add(curFact.ToFactCM(), _security.GetCurrentUser());
 
-                uow.SaveChanges();
+                SaveAndLogFact(curFact);
             }
         }
 

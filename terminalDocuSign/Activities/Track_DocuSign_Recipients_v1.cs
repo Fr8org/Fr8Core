@@ -8,14 +8,15 @@ using Data.Entities;
 using Hub.Managers;
 using StructureMap;
 using TerminalBase.Infrastructure;
-using TerminalBase.Services.MT;
 using Data.States;
 using Data.Repositories.MultiTenant;
+using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using Hub.Services.MT;
 
 namespace terminalDocuSign.Actions
 {
@@ -452,13 +453,11 @@ namespace terminalDocuSign.Actions
 
         private async Task<Crate> PackAvailableHandlers(ActivityDO activityDO)
         {
-            var templates = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId);
-            var taggedTemplates = templates.Where(x => x.Tags != null && x.Tags.Contains("Notifier"));
-
+            var templates = await HubCommunicator.GetActivityTemplates(Tags.Notifier, CurrentFr8UserId, true);
             var availableHandlersCrate =
                 CrateManager.CreateDesignTimeFieldsCrate(
                     "AvailableHandlers",
-                    taggedTemplates.Select(x => new FieldDTO(x.Label, x.Id.ToString())).ToArray()
+                    templates.Select(x => new FieldDTO(x.Label, x.Id.ToString())).ToArray()
                 );
 
             return availableHandlersCrate;

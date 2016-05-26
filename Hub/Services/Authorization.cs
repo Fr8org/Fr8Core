@@ -399,7 +399,7 @@ namespace Hub.Services
         {
             using (var crateStorage = _crate.GetUpdatableStorage(activityDTO))
             {
-                crateStorage.RemoveByManifestId((int)MT.StandardAuthentication);
+                crateStorage.RemoveByManifestId((int)Fr8Data.Constants.MT.StandardAuthentication);
             }
         }
 

@@ -41,7 +41,7 @@
                     <td md-cell class="column-spacer">{{ plan.description }}</td>
                     <td md-cell>{{ plan.lastUpdated | date:"MM/dd/yyyy h:mm:ss a"}}</td>
                     <td md-cell>
-                        <span class="bold font-green-haze">{{plan.planState == 2 ? 'Active' : 'Inactive' }}</span>
+                        <span class="bold font-green-haze">{{plan.planState == 2 ? 'Running' : 'Inactive' }}</span>
                     </td>
                     <td md-cell style="display: flex;">
                         <md-button class="md-icon-button md-table-fr8-button" ng-click="goToPlanPage(plan.id);">
@@ -119,7 +119,7 @@
                     <td md-cell class="column-spacer">{{ plan.description }}</td>
                     <td md-cell>{{ plan.lastUpdated | date:"MM/dd/yyyy h:mm:ss a"}}</td>
                     <td md-cell>
-                        <span class="bold">{{plan.planState == 2 ? 'Active' : 'Inactive' }}</span>
+                        <span class="bold">{{plan.planState == 2 ? 'Running' : 'Inactive' }}</span>
                     </td>
                     <td md-cell style="display: flex;">
                         <md-button class="md-icon-button md-table-fr8-button" ng-click="goToPlanPage(plan.id);">

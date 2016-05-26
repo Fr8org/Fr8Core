@@ -86,6 +86,25 @@ namespace terminalSlack.Actions
             return result;
         }
 
+        public override Task ValidateActivity(ActivityDO activityDo, ICrateStorage currActivityCrateStorage, ValidationManager validationManager)
+        {
+            var configurationControls = GetConfigurationControls(activityDo);
+            var messageField = (TextSource)GetControl(configurationControls, "Select_Message_Field", ControlTypes.TextSource);
+            var actionChannelId = ExtractControlFieldValue(activityDo, "Selected_Slack_Channel");
+
+            if (string.IsNullOrEmpty(actionChannelId))
+            {
+                validationManager.SetError("Channel or user is not specified", "Selected_Slack_Channel");
+            }
+
+            if (messageField.CanGetValue(validationManager.Payload) && string.IsNullOrWhiteSpace(messageField.GetValue(validationManager.Payload)))
+            {
+                validationManager.SetError("Can't post empty message to Slack", messageField);
+            }
+
+            return Task.FromResult(0);
+        }
+
         public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
         {
             if (CheckAuthentication(curActivityDO, authTokenDO))

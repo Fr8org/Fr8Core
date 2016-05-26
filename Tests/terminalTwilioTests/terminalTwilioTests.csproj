@@ -95,6 +95,10 @@
       <Project>{14404298-4182-4d43-8098-5a199ed2fcaa}</Project>
       <Name>terminalTwilio</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\terminalUtilities\terminalUtilities.csproj">
+      <Project>{e46b602a-287b-450f-b455-5eed20c93eb7}</Project>
+      <Name>terminalUtilities</Name>
+    </ProjectReference>
     <ProjectReference Include="..\HealthMonitorUtility\HealthMonitorUtility.csproj">
       <Project>{459fe39a-a5cc-41d8-b06e-8fae3a1a623b}</Project>
       <Name>HealthMonitorUtility</Name>

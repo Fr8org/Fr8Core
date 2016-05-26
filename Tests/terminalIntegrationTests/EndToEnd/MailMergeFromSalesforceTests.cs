@@ -20,6 +20,8 @@ using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using terminalDocuSign.Actions;
+using TerminalBase.Infrastructure;
 
 namespace terminalIntegrationTests.EndToEnd
 {
@@ -132,28 +134,21 @@ namespace terminalIntegrationTests.EndToEnd
                 tokenId = await _docuSignTestTools.AuthenticateDocuSignAndAssociateTokenWithAction(docuSignActivity.Id, GetDocuSignCredentials(), docuSignActivity.ActivityTemplate.Terminal);
                 docuSignActivity = await Configure(docuSignActivity);
             }
-            using (var storage = Crate.GetUpdatableStorage(docuSignActivity))
-            {
-                var controls = storage.FirstCrate<StandardConfigurationControlsCM>();
-                var templateSelector = controls.Content.FindByName<DropDownList>("target_docusign_template");
-                templateSelector.selectedKey = "SendEnvelopeTestTemplate";
-                templateSelector.Value = "392f63c3-cabb-4b21-b331-52dabf1c2993";
-            }
+            docuSignActivity.UpdateControls<Send_DocuSign_Envelope_v2.ActivityUi>(x => x.TemplateSelector.SelectByKey("SendEnvelopeTestTemplate"));
             //This configuration call will generate text source fields for selected template properties
             docuSignActivity = await Configure(docuSignActivity);
-            using (var storage = Crate.GetUpdatableStorage(docuSignActivity))
-            {
-                var controls = storage.FirstCrate<StandardConfigurationControlsCM>();
-                var textSource = controls.Content.FindByName<TextSource>("RolesMappingTestSigner role email");
-                textSource.ValueSource = "upstream";
-                textSource.selectedKey = "SuppliedEmail";
-                textSource.Value = "SuppliedEmail";
+            docuSignActivity.UpdateControls<Send_DocuSign_Envelope_v2.ActivityUi>(x =>
+                                                                                  {
+                                                                                      var roleEmailControl = x.RolesFields.First(y => y.Name == "TestSigner role email");
+                                                                                      roleEmailControl.ValueSource = TextSource.UpstreamValueSrouce;
+                                                                                      roleEmailControl.selectedKey = "SuppliedEmail";
+                                                                                      roleEmailControl.Value = "SuppliedEmail";
 
-                textSource = controls.Content.FindByName<TextSource>("RolesMappingTestSigner role name");
-                textSource.ValueSource = "upstream";
-                textSource.selectedKey = "SuppliedName";
-                textSource.Value = "SuppliedName";
-            }
+                                                                                      var roleNameControl = x.RolesFields.First(y => y.Name == "TestSigner role name");
+                                                                                      roleNameControl.ValueSource = TextSource.UpstreamValueSrouce;
+                                                                                      roleNameControl.selectedKey = "SuppliedName";
+                                                                                      roleNameControl.Value = "SuppliedName";
+                                                                                  });
             return new Tuple<ActivityDTO, Guid>(await Save(docuSignActivity), tokenId);
         }
 

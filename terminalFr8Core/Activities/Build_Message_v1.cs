@@ -17,7 +17,6 @@ namespace terminalFr8Core.Actions
     {
         public class ActivityUi : StandardConfigurationControlsCM
         {
-            public const string RuntimeCrateLabel = "Build Message";
             public TextBox Name { get; set; }
 
             public BuildMessageAppender Body { get; set; }
@@ -47,6 +46,8 @@ namespace terminalFr8Core.Actions
             }
         }
 
+        public const string RuntimeCrateLabel = "Message Built by \"Build Message\" Activity";
+
         public Build_Message_v1() : base(false)
         {
         }
@@ -58,15 +59,13 @@ namespace terminalFr8Core.Actions
 
         private Crate PackMessageCrate(string body = null)
         {
-            return Crate.FromContent(ActivityUi.RuntimeCrateLabel,
-                                     new StandardPayloadDataCM(new FieldDTO(ConfigurationControls.Name.Value, body)));
+            return Crate.FromContent(RuntimeCrateLabel, new StandardPayloadDataCM(new FieldDTO(ConfigurationControls.Name.Value, body)));
         }
 
         protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
         {
-            crateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ActivityUi.RuntimeCrateLabel)
-                               .AddField(ConfigurationControls.Name.Value);
-
+            crateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeCrateLabel, true)
+                          .AddField(ConfigurationControls.Name.Value);
             return Task.FromResult(0);
         }
 

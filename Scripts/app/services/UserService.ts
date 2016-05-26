@@ -11,32 +11,32 @@ module dockyard.services {
         getCurrentUser: () => interfaces.IUserDTO,
         getProfiles: () => Array<interfaces.IProfileDTO>,
         updateUserProfile: (data: { userId: string, profileId: string, userClass: string }) => any,
-        updatePassword: (data: { oldPassword: string, newPassword: string, confirmPassword: string }) => any;
+        update: (data: { oldPassword: string, newPassword: string, confirmPassword: string }) => any;
     }
 
     app.factory('UserService', [
         '$resource', ($resource: ng.resource.IResourceService): IUserService =>
-            <IUserService>$resource('/api/user?id=:id', { id: '@id' }, {
+            <IUserService>$resource('/api/users/userdata?id=:id', { id: '@id' }, {
                 getAll: {
                     method: 'GET',
                     isArray: true,
-                    url: '/api/user'
+                    url: '/api/users'
                 },
                 getCurrentUser: {
                     method: 'GET',
                     isArray: false,
-                    url: '/api/user/getCurrent'
+                    url: '/api/users/userdata'
                 },
                 getProfiles: {
                     method: 'GET',
                     isArray: true,
-                    url: '/api/user/getProfiles',
+                    url: '/api/users/getProfiles',
                     cache: true
                 },
-                updatePassword: {
+                update: {
                     method: 'POST',
                     isArray: false,
-                    url: '/api/user/updatePassword/',
+                    url: '/api/users/update/',
                     params: {
                         oldPassword: '@oldPassword',
                         newPassword: '@newPassword',
@@ -46,7 +46,7 @@ module dockyard.services {
                 updateUserProfile: {
                     method: 'POST',
                     isArray: false,
-                    url: '/api/user/updateUserProfile/',
+                    url: '/api/users/updateUserProfile/',
                     params: {
                         userId: '@userId',
                         profileId: '@profileId',
