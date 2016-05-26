@@ -1,10 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
-using Data.Interfaces.Manifests;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 
 namespace TerminalBase.Infrastructure
 {
@@ -18,8 +17,18 @@ namespace TerminalBase.Infrastructure
 
         public ValidationManager(ValidationResultsCM validationResults, ICrateStorage payload)
         {
-            _validationResults = validationResults;
+            _validationResults = validationResults ?? new ValidationResultsCM();
             Payload = payload;
+        }
+
+        public ValidationManager()
+        {
+            _validationResults = new ValidationResultsCM();
+        }
+
+        public ValidationResultsCM GetResults()
+        {
+            return _validationResults;
         }
 
         /// <summary>

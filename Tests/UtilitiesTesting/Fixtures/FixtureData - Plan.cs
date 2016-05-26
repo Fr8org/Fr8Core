@@ -7,6 +7,7 @@ using Fr8Data.Crates;
 using Fr8Data.Manifests;
 using Hub.Managers;
 using Utilities.Serializers.Json;
+using Fr8Data.Managers;
 
 namespace UtilitiesTesting.Fixtures
 {

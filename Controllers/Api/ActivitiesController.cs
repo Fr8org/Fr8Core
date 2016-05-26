@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using AutoMapper;
@@ -10,7 +7,7 @@ using Data.Interfaces;
 using Fr8Data.DataTransferObjects;
 using Hub.Infrastructure;
 using Hub.Interfaces;
-using HubWeb.Infrastructure;
+using HubWeb.Infrastructure_HubWeb;
 using Microsoft.AspNet.Identity;
 using StructureMap;
 

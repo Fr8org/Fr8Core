@@ -12,6 +12,7 @@ using Fr8Data.DataTransferObjects;
 using HubTests.Controllers.Api;
 using HubWeb.Controllers;
 using UtilitiesTesting.Fixtures;
+using Fr8Data.States;
 
 namespace HubTests.Controllers
 {

@@ -1,5 +1,4 @@
 ﻿using System.Web.Mvc;
-using HubWeb.Infrastructure;
 
 namespace HubWeb.Controllers
 {

@@ -12,12 +12,27 @@ using ServiceStack;
 using StructureMap;
 using TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
+using TerminalBase.Errors;
 using TerminalBase.Infrastructure;
 
 namespace terminalSalesforce.Actions
 {
     public class Get_Data_v1 : BaseSalesforceTerminalActivity<Get_Data_v1.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Version = "1",
+            Name = "Get_Data",
+            Label = "Get Data from Salesforce",
+            NeedsAuthentication = true,
+            Category = ActivityCategory.Receivers,
+            MinPaneWidth = 550,
+            Tags = Tags.TableDataGenerator,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public DropDownList SalesforceObjectSelector { get; set; }
@@ -61,27 +76,26 @@ namespace terminalSalesforce.Actions
         public Get_Data_v1()
         {
             _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
-            ActivityName = "Get Data from Salesforce";
         }
 
-        protected override Task Initialize(CrateSignaller crateSignaller)
+        protected override Task InitializeETA()
         {
-            ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager
+            ActivityUI.SalesforceObjectSelector.ListItems = _salesforceManager
                 .GetSalesforceObjectTypes()
                 .Select(x => new ListItem() { Key = x.Key, Value = x.Key })
                 .ToList();
-            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
             return Task.FromResult(true);
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
+        protected override async Task ConfigureETA()
         {
             //If Salesforce object is empty then we should clear filters as they are no longer applicable
-            var selectedObject = ConfigurationControls.SalesforceObjectSelector.selectedKey;
+            var selectedObject = ActivityUI.SalesforceObjectSelector.selectedKey;
             if (string.IsNullOrEmpty(selectedObject))
             {
-                CurrentActivityStorage.RemoveByLabel(QueryFilterCrateLabel);
-                CurrentActivityStorage.RemoveByLabel(SalesforceObjectFieldsCrateLabel);
+                Storage.RemoveByLabel(QueryFilterCrateLabel);
+                Storage.RemoveByLabel(SalesforceObjectFieldsCrateLabel);
                 this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
                 return;
             }
@@ -97,43 +111,43 @@ namespace terminalSalesforce.Actions
                 QueryFilterCrateLabel,
                 new FieldDescriptionsCM(selectedObjectProperties),
                 AvailabilityType.Configuration);
-            CurrentActivityStorage.ReplaceByLabel(queryFilterCrate);
+            Storage.ReplaceByLabel(queryFilterCrate);
 
 
             var objectPropertiesCrate = Crate<FieldDescriptionsCM>.FromContent(
             SalesforceObjectFieldsCrateLabel,
             new FieldDescriptionsCM(selectedObjectProperties.Select(c => new FieldDTO(c.Key, c.Key) { SourceCrateLabel = RuntimeDataCrateLabel })),
             AvailabilityType.RunTime);
-            CurrentActivityStorage.ReplaceByLabel(objectPropertiesCrate);
+            Storage.ReplaceByLabel(objectPropertiesCrate);
 
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
             //Publish information for downstream activities
-            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
         }
 
-        protected override async Task RunCurrentActivity()
+        protected override async Task RunETA()
         {
-            var salesforceObject = ConfigurationControls.SalesforceObjectSelector.selectedKey;
+            var salesforceObject = ActivityUI.SalesforceObjectSelector.selectedKey;
             if (string.IsNullOrEmpty(salesforceObject))
             {
                 throw new ActivityExecutionException(
                     "No Salesforce object is selected", 
                     ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
             }
-            var salesforceObjectFields = CurrentActivityStorage
+            var salesforceObjectFields = Storage
                 .FirstCrate<FieldDescriptionsCM>(x => x.Label == QueryFilterCrateLabel)
                 .Content
                 .Fields
                 .Select(x => x.Key);
 
-            var filterValue = ConfigurationControls.SalesforceObjectFilter.Value;
+            var filterValue = ActivityUI.SalesforceObjectFilter.Value;
             var filterDataDTO = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(filterValue);
             //If without filter, just get all selected objects
             //else prepare SOQL query to filter the objects based on the filter conditions
             var parsedCondition = string.Empty;
             if (filterDataDTO.Count > 0)
             {
-                parsedCondition = ParseConditionToText(filterDataDTO);
+                parsedCondition = ControlHelper.ParseConditionToText(filterDataDTO);
             }
 
             var resultObjects = await _salesforceManager
@@ -144,7 +158,7 @@ namespace terminalSalesforce.Actions
                     AuthorizationToken
                 );
 
-            CurrentPayloadStorage.Add(
+            Payload.Add(
                 Crate<StandardPayloadDataCM>
                     .FromContent(
                         PayloadDataCrateLabel,
@@ -153,7 +167,7 @@ namespace terminalSalesforce.Actions
                     )
             );
 
-            CurrentPayloadStorage.Add(
+            Payload.Add(
                 Crate<StandardTableDataCM>
                     .FromContent(
                         RuntimeDataCrateLabel,

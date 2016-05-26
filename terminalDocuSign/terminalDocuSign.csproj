@@ -179,6 +179,7 @@
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Activities" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -299,8 +300,13 @@
     <Compile Include="Services\DocuSignManager.cs" />
     <Compile Include="Services\DocuSignTab.cs" />
     <Compile Include="Interfaces\IDocuSignManager.cs" />
+    <Compile Include="Services\MT\MTSearchHelper.cs" />
+    <Compile Include="Services\MT\MTSearchHelper.IMtQueryProvider.cs" />
+    <Compile Include="Services\MT\MTSearchHelper.MtQueryProviderT.cs" />
+    <Compile Include="Services\MT\MTTypesHelper.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="StructureMapConfigurationcs.cs" />
+    <Compile Include="TerminalData.cs" />
     <Compile Include="Tests\Activities\Generate_DocuSign_Report_Tests.cs" />
     <Compile Include="Tests\Activities\Monitor_DocuSignTests.cs">
       <SubType>Code</SubType>
@@ -384,6 +390,10 @@
     <ProjectReference Include="..\Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Infrastructure\Fr8Infrastructure.csproj">
+      <Project>{9f4b5c92-3535-4d4c-b1e4-37beb1ae5c42}</Project>
+      <Name>Fr8Infrastructure</Name>
     </ProjectReference>
     <ProjectReference Include="..\terminalBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>

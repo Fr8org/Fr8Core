@@ -5,13 +5,13 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using HealthMonitor.Utility;
-using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.StructureMap;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
 using terminalDocuSignTests.Fixtures;
+using Fr8Data.Managers;
+using Fr8Infrastructure.Communication;
 
 namespace terminalDocuSignTests
 {
