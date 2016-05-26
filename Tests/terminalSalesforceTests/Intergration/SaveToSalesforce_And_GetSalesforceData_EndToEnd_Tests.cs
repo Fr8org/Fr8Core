@@ -15,6 +15,7 @@ using terminalSalesforce.Actions;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
 using Fr8Data.Managers;
+using TerminalBase.Helpers;
 using TerminalBase.Models;
 
 namespace terminalSalesforceTests.Intergration

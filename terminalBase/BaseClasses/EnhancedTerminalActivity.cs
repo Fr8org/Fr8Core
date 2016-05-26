@@ -107,7 +107,6 @@ namespace TerminalBase.BaseClasses
 
         public sealed override async Task Run()
         {
-            SyncConfControls();
             await RunETA();
         }
         
@@ -246,9 +245,9 @@ namespace TerminalBase.BaseClasses
             ActivityUI = CrateActivityUI();
             ActivityUI.SyncWith(ConfigurationControls);
             
-            if (ConfigurationControls.Controls != null)
+            if (ActivityUI.Controls != null)
             {
-                ConfigurationControls.RestoreDynamicControlsFrom(ConfigurationControls);
+                ActivityUI.RestoreDynamicControlsFrom(ConfigurationControls);
             }
         }
 
@@ -265,7 +264,7 @@ namespace TerminalBase.BaseClasses
 
             var configurationControlsToAdd = new StandardConfigurationControlsCM(ActivityUI.Controls);
             Storage.Add(Crate.FromContent(ConfigurationControlsLabel, configurationControlsToAdd, AvailabilityType.Configuration));
-            ConfigurationControls.SaveDynamicControlsTo(configurationControlsToAdd);
+            ActivityUI.SaveDynamicControlsTo(configurationControlsToAdd);
         }
     }
 }

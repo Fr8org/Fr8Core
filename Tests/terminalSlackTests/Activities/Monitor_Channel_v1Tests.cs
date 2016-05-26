@@ -12,6 +12,7 @@ using terminalSlack.Actions;
 using TerminalBase.BaseClasses;
 using TerminalBase.Services;
 using Fr8Data.Managers;
+using TerminalBase.Helpers;
 
 namespace terminalSlackTests.Integration
 {

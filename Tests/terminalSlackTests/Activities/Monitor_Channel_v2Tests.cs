@@ -18,6 +18,7 @@ using UtilitiesTesting;
 using TerminalBase.Models;
 using Fr8Data.Crates;
 using terminalSlack.Activities;
+using TerminalBase.Helpers;
 
 namespace terminalSlackTests.Activities
 {

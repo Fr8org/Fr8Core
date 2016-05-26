@@ -17,33 +17,34 @@ namespace TerminalBase.Helpers
         /// </summary>
         public static ActivityDTO UpdateControls<TActivityUi>(this ActivityDTO activity, Action<TActivityUi> action) where TActivityUi : StandardConfigurationControlsCM, new()
         {
-            return UpdateControls((object)activity, action) as ActivityDTO;
-        }
-
-        private static object UpdateControls<TActivityUi>(object activity, Action<TActivityUi> action) where TActivityUi : StandardConfigurationControlsCM, new()
-        {
             if (activity == null)
             {
                 throw new ArgumentNullException(nameof(activity));
             }
+
+            var crateManager = new CrateManager();
+            using (var storage = crateManager.GetUpdatableStorage(activity))
+            {
+                UpdateControls<TActivityUi>(storage, action);
+            }
+
+            return activity;
+        }
+
+        public static void UpdateControls<TActivityUi>(this ICrateStorage storage, Action<TActivityUi> action) where TActivityUi : StandardConfigurationControlsCM, new()
+        {
+            
             if (action == null)
             {
                 throw new ArgumentNullException(nameof(action));
             }
-            var activityDTO = activity as ActivityDTO;
-            var crateManager = new CrateManager();
-            using (var storage = crateManager.GetUpdatableStorage(activityDTO))
-            {
-                var controlsCrate = storage.FirstCrate<StandardConfigurationControlsCM>();
-                var activityUi = new TActivityUi().ClonePropertiesFrom(controlsCrate.Content) as TActivityUi;
-                activityUi.RestoreDynamicControlsFrom(controlsCrate.Content);
-                action(activityUi);
-                var newControls = new StandardConfigurationControlsCM(activityUi.Controls.ToArray());
-                storage.ReplaceByLabel(Crate.FromContent(controlsCrate.Label, newControls, controlsCrate.Availability));
-                activityUi.SaveDynamicControlsTo(newControls);
-
-            }
-            return activityDTO;
+            var controlsCrate = storage.FirstCrate<StandardConfigurationControlsCM>();
+            var activityUi = new TActivityUi().ClonePropertiesFrom(controlsCrate.Content) as TActivityUi;
+            activityUi.RestoreDynamicControlsFrom(controlsCrate.Content);
+            action(activityUi);
+            var newControls = new StandardConfigurationControlsCM(activityUi.Controls.ToArray());
+            storage.ReplaceByLabel(Crate.FromContent(controlsCrate.Label, newControls, controlsCrate.Availability));
+            activityUi.SaveDynamicControlsTo(newControls);
         }
 
         internal static string GetDynamicControlName(string controlName, string controlOwnerName)
@@ -51,11 +52,11 @@ namespace TerminalBase.Helpers
             return $"{controlOwnerName}_{controlName}";
         }
 
-        private static readonly Tuple<string, string> EmptyDynamicControlNameAndOwner = new Tuple<string, string>(string.Empty, string.Empty);
+        private static readonly Tuple<string, string> EmptyDynamicControlNameAndOwner = new Tuple<string, string>(String.Empty, String.Empty);
 
         internal static Tuple<string, string> GetDynamicControlNameAndOwner(string dynamicControlName)
         {
-            if (string.IsNullOrWhiteSpace(dynamicControlName))
+            if (String.IsNullOrWhiteSpace(dynamicControlName))
             {
                 return EmptyDynamicControlNameAndOwner;
             }
@@ -87,7 +88,7 @@ namespace TerminalBase.Helpers
                 foreach (var control in destination.Controls)
                 {
                     var nameAndOwner = GetDynamicControlNameAndOwner(control.Name);
-                    if (string.IsNullOrEmpty(nameAndOwner.Item2))
+                    if (String.IsNullOrEmpty(nameAndOwner.Item2))
                     {
                         continue;
                     }
@@ -143,7 +144,7 @@ namespace TerminalBase.Helpers
                 }
 
                 var controlDef = member.GetValue(source) as IControlDefinition;
-                if (!string.IsNullOrWhiteSpace(controlDef?.Name))
+                if (!String.IsNullOrWhiteSpace(controlDef?.Name))
                 {
                     for (int i = 0; i < destination.Controls.Count; i++)
                     {
@@ -155,6 +156,19 @@ namespace TerminalBase.Helpers
                     }
                 }
             }
+        }
+
+        /// <summary>
+        /// Returns a copy of AcvitityUI for the given activity
+        /// </summary>
+        public static TActivityUi GetReadonlyActivityUi<TActivityUi>(this ICrateStorage crateStorage) where TActivityUi : StandardConfigurationControlsCM, new()
+        {
+            if (crateStorage == null)
+            {
+                throw new ArgumentNullException(nameof(crateStorage));
+            }
+
+            return new TActivityUi().ClonePropertiesFrom(crateStorage.FirstCrateOrDefault<StandardConfigurationControlsCM>()?.Content) as TActivityUi;
         }
     }
 }

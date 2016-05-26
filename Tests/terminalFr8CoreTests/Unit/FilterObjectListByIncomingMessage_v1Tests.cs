@@ -16,6 +16,7 @@ using TerminalBase.Infrastructure;
 using terminalFr8Core.Actions;
 using terminalFr8Core.Activities;
 using terminalTests.Fixtures;
+using TerminalBase.Helpers;
 using UtilitiesTesting;
 using TerminalBase.Models;
 

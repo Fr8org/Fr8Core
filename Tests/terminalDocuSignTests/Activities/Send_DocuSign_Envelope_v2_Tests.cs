@@ -16,7 +16,8 @@ using terminalDocuSign.Actions;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
-using TerminalBase.Infrastructure;
+using TerminalBase.Helpers;
+using TerminalBase.Helpers;
 using TerminalBase.Models;
 
 namespace terminalDocuSignTests.Activities
@@ -167,7 +168,7 @@ namespace terminalDocuSignTests.Activities
                                                                                  });
             ObjectFactory.GetInstance<Mock<IDocuSignManager>>().Setup(x => x.SendAnEnvelopeFromTemplate(It.IsAny<DocuSignApiConfiguration>(), It.IsAny<List<FieldDTO>>(), It.IsAny<List<FieldDTO>>(), It.IsAny<string>(), It.IsAny<StandardFileDescriptionCM>()))
                          .Callback<DocuSignApiConfiguration, List<FieldDTO>, List<FieldDTO>, string, StandardFileDescriptionCM>(AssertEnvelopeParameters);
-            await activity.Run(context, new ContainerExecutionContext() {ContainerId = Guid.NewGuid(), PayloadStorage = new CrateStorage()});
+            await activity.Run(context, new ContainerExecutionContext() {ContainerId = Guid.NewGuid(), PayloadStorage = new CrateStorage(Crate.FromContent("", new OperationalStateCM()))});
             ObjectFactory.GetInstance<Mock<IDocuSignManager>>().Verify(x => x.SendAnEnvelopeFromTemplate(It.IsAny<DocuSignApiConfiguration>(), It.IsAny<List<FieldDTO>>(), It.IsAny<List<FieldDTO>>(), It.IsAny<string>(), null),
                                                                        Times.Once(),
                                                                        "Run didn't send DocuSign envelope");
@@ -180,7 +181,7 @@ namespace terminalDocuSignTests.Activities
             Assert.AreEqual("Value", fieldList.First(x => x.Key == "DropDownListName").Value, "Incorrect value for list field");
             Assert.AreEqual("Value", fieldList.First(x => x.Key == "RadioName").Value, "Incorrect value for radio field");
             Assert.AreEqual("value", fieldList.First(x => x.Key == DocuSignConstants.DocuSignRoleName).Value, "Incorrect value for text field");
-            Assert.AreEqual("true", fieldList.First(x => x.Key == "CheckBoxName"), "Incorrect value for checkbox field");
+            Assert.AreEqual("true", fieldList.First(x => x.Key == "CheckBoxName").Value, "Incorrect value for checkbox field");
         }
     }
 }

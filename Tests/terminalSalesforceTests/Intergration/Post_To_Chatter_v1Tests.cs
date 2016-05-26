@@ -11,6 +11,7 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Infrastructure.Communication;
 using Fr8Data.Managers;
+using TerminalBase.Helpers;
 using TerminalBase.Models;
 
 namespace terminalSalesforceTests.Intergration

@@ -16,6 +16,7 @@ using TerminalBase.Infrastructure;
 using UtilitiesTesting;
 using TerminalBase.Models;
 using Fr8Data.Managers;
+using TerminalBase.Helpers;
 
 namespace terminalSalesforceTests.Actions
 {

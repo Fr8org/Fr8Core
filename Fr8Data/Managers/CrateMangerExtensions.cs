@@ -54,36 +54,5 @@ namespace Fr8Data.Managers
         {
             return crateManager.IsEmptyStorage(activity.CrateStorage);
         }
- 
-        public static ICrateStorage UpdateControls<TActivityUi>(this ICrateStorage crateStorage, Action<TActivityUi> action) where TActivityUi  : StandardConfigurationControlsCM, new()
-        {
-            if (crateStorage == null)
-            {
-                throw new ArgumentNullException(nameof(crateStorage));
-            }
-            if (action == null)
-            {
-                throw new ArgumentNullException(nameof(action));
-            }
-            var crateManager = new CrateManager();
-            var controlsCrate = crateStorage.FirstCrate<StandardConfigurationControlsCM>();
-            var activityUi = new TActivityUi().ClonePropertiesFrom(controlsCrate.Content) as TActivityUi;
-            action(activityUi);
-            crateStorage.ReplaceByLabel(Crate.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
-            return crateStorage;
-        }
- 
-        /// <summary>
-        /// Returns a copy of AcvitityUI for the given activity
-        /// </summary>
-        public static TActivityUi GetReadonlyActivityUi<TActivityUi>(this ICrateStorage crateStorage) where TActivityUi : StandardConfigurationControlsCM, new()
-        {
-            if (crateStorage == null)
-            {
-                throw new ArgumentNullException(nameof(crateStorage));
-            }
-
-            return new TActivityUi().ClonePropertiesFrom(crateStorage.FirstCrateOrDefault<StandardConfigurationControlsCM>()?.Content) as TActivityUi;
-        }
     }
 }
