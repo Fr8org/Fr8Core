@@ -77,13 +77,14 @@ namespace terminalYammerTests.Integration
         }
 
         [Test]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException)
-        )]
         public async Task Post_To_Yammer_v1_Initial_Configuration_Check_Crate_Structure_NoAuth()
         {
             // Act
-            var responseActionDTO = await ConfigureInitial(false);
+            var response = await ConfigureInitial(false);
+            Assert.NotNull(response);
+            Assert.NotNull(response.CrateStorage);
+            Assert.NotNull(response.CrateStorage.Crates);
+            Assert.True(response.CrateStorage.Crates.Any(x => x.ManifestType == "Standard Authentication"));
         }
 
 

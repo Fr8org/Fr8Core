@@ -106,16 +106,18 @@ namespace terminalSalesforceTests.Intergration
 
             //perform post request to terminal and return the result
             var resultActionDto = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(terminalConfigureUrl, requestActionDTO);
-            var crateStorage = Crate.GetStorage(resultActionDto);
-            crateStorage.UpdateControls<Post_To_Chatter_v1.ActivityUi>(x =>
+            using (var crateStorage = Crate.GetUpdatableStorage(resultActionDto))
             {
-                x.UseUserOrGroupOption.Selected = true;
-                var selectedUser = x.UserOrGroupSelector.ListItems.First(y => y.Key == "Fr8 Admin");
-                x.UserOrGroupSelector.selectedKey = selectedUser.Key;
-                x.UserOrGroupSelector.Value = selectedUser.Value;
-                x.FeedTextSource.ValueSource = "specific";
-                x.FeedTextSource.TextValue = "IntegrationTestFeed";
-            });
+                crateStorage.UpdateControls<Post_To_Chatter_v1.ActivityUi>(x =>
+                {
+                    x.UseUserOrGroupOption.Selected = true;
+                    var selectedUser = x.UserOrGroupSelector.ListItems.First(y => y.Key == "Fr8 Admin");
+                    x.UserOrGroupSelector.selectedKey = selectedUser.Key;
+                    x.UserOrGroupSelector.Value = selectedUser.Value;
+                    x.FeedTextSource.ValueSource = "specific";
+                    x.FeedTextSource.TextValue = "IntegrationTestFeed";
+                });
+            }
             return resultActionDto;
         }
     }
