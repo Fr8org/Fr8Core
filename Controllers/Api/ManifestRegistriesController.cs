@@ -9,7 +9,7 @@ using Utilities;
 
 namespace HubWeb.Controllers.Api
 {
-    public class ManifestRegistryController : ApiController
+    public class ManifestRegistriesController : ApiController
     {
         private static string systemUserAccountId = ObjectFactory.GetInstance<IConfigRepository>().Get("SystemUserEmail");
         

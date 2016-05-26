@@ -6,7 +6,7 @@ module dockyard.services {
     }
 
     app.factory("ManifestRegistryService", ["$resource", ($resource: ng.resource.IResourceService): IManifestRegistryService =>
-        <IManifestRegistryService>$resource("/api/manifestregistry?id=:id", { id: "@id" }, {
+        <IManifestRegistryService>$resource("/api/manifest_registries?id=:id", { id: "@id" }, {
             checkVersionAndName: {
                 method: 'POST',
                 //params: {
