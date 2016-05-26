@@ -35,10 +35,11 @@ namespace terminalIntegrationTests.EndToEnd
             docuSignActivityConfigurator = new IntegrationTestTools_terminalDocuSign(this);
             googleActivityConfigurator = new IntegrationTestTools_terminalGoogle(this);
         }
-        /*
+
         [Test, Category("Integration.terminalGoogle")]
         public async Task Query_DocuSign_Into_Google_Sheet_End_To_End()
         {
+            /*
             var terminalGoogleTools = new terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalGoogle(this);
             var googleAuthTokenId = await terminalGoogleTools.ExtractGoogleDefaultToken();
             var defaultGoogleAuthToken = terminalGoogleTools.GetGoogleAuthToken(googleAuthTokenId);
@@ -84,6 +85,7 @@ namespace terminalIntegrationTests.EndToEnd
                 //cleanup. erase the sheet
                 await googleSheetApi.DeleteSpreadSheet(spreadsheetId, defaultGoogleAuthToken);
             }
-        }*/
+            */
+        }
     }
 }

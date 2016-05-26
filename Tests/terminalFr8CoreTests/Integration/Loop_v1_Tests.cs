@@ -22,10 +22,11 @@ namespace terminalFr8CoreTests.Integration
     public class Loop_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName => "terminalFr8Core";
-        /*
+        
         [Test]
         public async Task FollowUpConfig_ShouldUpdateLabel_WhenUpstreamCrateUpdates()
         {
+            /*
             // Arrange
             var configureUrl = GetTerminalConfigureUrl();
             var dataDTO = FixtureData.Loop_InitialConfiguration_ActivityDTO();
@@ -67,7 +68,7 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual(
                 "newLabel", 
                 chooser.CrateDescriptions[0].Label);
+                */
         }
-    }*/
     }
 }
