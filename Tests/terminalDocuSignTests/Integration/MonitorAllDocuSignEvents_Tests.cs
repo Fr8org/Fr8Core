@@ -125,7 +125,7 @@ namespace terminalDocuSignTests.Integration
             Fr8AccountDO account, TerminalDO docuSignTerminal)
         {
             Console.WriteLine($"Reauthorizing tokens for {account.EmailAddress.Address}");
-            var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
+            var tokens = await HttpGetAsync<IEnumerable<AuthenticationTokenTerminalDTO>>(
                 _baseUrl + "authentication/usertokens"
             );
 

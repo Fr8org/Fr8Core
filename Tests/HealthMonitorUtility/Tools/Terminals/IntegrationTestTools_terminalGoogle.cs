@@ -106,7 +106,7 @@ namespace terminaBaselTests.Tools.Terminals
         /// <returns></returns>
         public async Task<Guid> ExtractGoogleDefaultToken()
         {
-            var tokens = await _baseHubITest.HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
+            var tokens = await _baseHubITest.HttpGetAsync<IEnumerable<AuthenticationTokenTerminalDTO>>(
                 _baseHubITest.GetHubApiBaseUrl() + "authentication/usertokens"
             );
 

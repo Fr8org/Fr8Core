@@ -183,7 +183,6 @@ namespace HubWeb.Controllers
             return Ok();
         }
 
-        // TODO: FR-3383, make sure endpoint GET /manageauthtokens/ no longer used!
         /// <summary>
         /// Extract user's auth-tokens and parent terminals.
         /// </summary>
@@ -198,14 +197,14 @@ namespace HubWeb.Controllers
             var groupedTerminals = terminals
                 .Where(x => authTokens.Any(y => y.TerminalID == x.Id))
                 .OrderBy(x => x.Name)
-                .Select(x => new ManageAuthToken_Terminal
+                .Select(x => new AuthenticationTokenTerminalDTO
                 {
                     Id = x.Id,
                     Name = x.Name,
                     Label = x.Label,
                     AuthTokens = authTokens
                         .Where(y => y.TerminalID == x.Id && !string.IsNullOrEmpty(y.ExternalAccountId))
-                        .Select(y => new ManageAuthToken_AuthToken
+                        .Select(y => new AuthenticationTokenDTO
                         {
                             Id = y.Id,
                             ExternalAccountName = y.DisplayName,
@@ -219,7 +218,6 @@ namespace HubWeb.Controllers
             return Ok(groupedTerminals);
         }
 
-        // TODO: FR-3383, make sure endpoint POST /manageauthtokens/revoke no longer used!
         /// <summary>
         /// Revoke token.
         /// </summary>
@@ -234,7 +232,6 @@ namespace HubWeb.Controllers
             return Ok();
         }
 
-        // TODO: FR-3383, make sure endpoint POST /manageauthtokens/setdefault no longer used!
         [HttpPost]
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
@@ -246,11 +243,10 @@ namespace HubWeb.Controllers
             return Ok();
         }
 
-        // TODO: FR-3383, make sure endpoint POST /manageauthtokens/apply no longer used!
         [HttpPost]
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
-        public IHttpActionResult GrantTokens(IEnumerable<ManageAuthToken_Apply> authTokenList)
+        public IHttpActionResult GrantTokens(IEnumerable<AuthenticationTokenGrantDTO> authTokenList)
         {
             var userId = User.Identity.GetUserId();
 

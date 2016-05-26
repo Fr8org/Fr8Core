@@ -86,16 +86,16 @@ namespace terminalDocuSignTests.Integration
             //
             if (monitorDocuSignEnvelopeActivity.ActivityTemplate.NeedsAuthentication)
             {
-                var applyToken = new ManageAuthToken_Apply()
+                var applyToken = new AuthenticationTokenGrantDTO()
                 {
                     ActivityId = monitorDocuSignEnvelopeActivity.Id,
                     AuthTokenId = authTokenId,
                     IsMain = false
                 };
 
-                await HttpPostAsync<ManageAuthToken_Apply[], string>(
+                await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(
                     _baseUrl + "authentication/granttokens",
-                    new ManageAuthToken_Apply[] { applyToken }
+                    new AuthenticationTokenGrantDTO[] { applyToken }
                 );
             }
 
@@ -164,16 +164,16 @@ namespace terminalDocuSignTests.Integration
 
             if (sendEnvelopeAction.ActivityTemplate.NeedsAuthentication)
             {
-                var applyToken = new ManageAuthToken_Apply()
+                var applyToken = new AuthenticationTokenGrantDTO()
                 {
                     ActivityId = sendEnvelopeAction.Id,
                     AuthTokenId = authTokenId,
                     IsMain = false
                 };
 
-                await HttpPostAsync<ManageAuthToken_Apply[], string>(
+                await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(
                     _baseUrl + "authentication/granttokens",
-                    new ManageAuthToken_Apply[] { applyToken }
+                    new AuthenticationTokenGrantDTO[] { applyToken }
                 );
             }
 
@@ -297,7 +297,7 @@ namespace terminalDocuSignTests.Integration
             if (stAuthCrate != null)
             {
                 var terminalsAndTokens =
-                    await HttpGetAsync<ManageAuthToken_Terminal[]>(
+                    await HttpGetAsync<AuthenticationTokenTerminalDTO[]>(
                         _baseUrl + "authentication/usertokens"
                     );
 
@@ -338,16 +338,16 @@ namespace terminalDocuSignTests.Integration
 
             if (solution.ActivityTemplate.NeedsAuthentication)
             {
-                var applyToken = new ManageAuthToken_Apply()
+                var applyToken = new AuthenticationTokenGrantDTO()
                 {
                     ActivityId = solution.Id,
                     AuthTokenId = tokenGuid.Value,
                     IsMain = false
                 };
 
-                await HttpPostAsync<ManageAuthToken_Apply[], string>(
+                await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(
                     _baseUrl + "authentication/granttokens",
-                    new ManageAuthToken_Apply[] { applyToken }
+                    new AuthenticationTokenGrantDTO[] { applyToken }
                 );
             }
 

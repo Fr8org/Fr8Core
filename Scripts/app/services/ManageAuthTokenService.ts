@@ -1,8 +1,8 @@
 ﻿module dockyard.services {
     export interface IManageAuthTokenService
-        extends ng.resource.IResourceClass<interfaces.IManageAuthToken_TerminalVM> {
+        extends ng.resource.IResourceClass<interfaces.IAuthenticationTokenTerminalVM> {
 
-        list(): Array<interfaces.IManageAuthToken_TerminalVM>;
+        list(): Array<interfaces.IAuthenticationTokenTerminalVM>;
         revoke(authToken: any);
     }
 

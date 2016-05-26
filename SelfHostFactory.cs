@@ -75,8 +75,6 @@ namespace HubWeb
                     typeof(EventsController),
                     typeof(FieldController),
                     typeof(FilesController),
-                    // TODO: FR-3383, remove this.
-                    // typeof(ManageAuthTokenController),
                     typeof(ManifestsController),
                     typeof(ReportController),
                     typeof(PlanTemplatesController),

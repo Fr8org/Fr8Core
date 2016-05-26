@@ -109,13 +109,13 @@ namespace terminalDocuSignTests.Integration
                 //
                 // Asociate token with action
                 //
-                var applyToken = new ManageAuthToken_Apply()
+                var applyToken = new AuthenticationTokenGrantDTO()
                 {
                     ActivityId = solution.Id,
                     AuthTokenId = tokenGuid,
                     IsMain = true
                 };
-                await HttpPostAsync<ManageAuthToken_Apply[], string>(baseUrl + "authentication/granttokens", new ManageAuthToken_Apply[] { applyToken });
+                await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(baseUrl + "authentication/granttokens", new AuthenticationTokenGrantDTO[] { applyToken });
                 //let's give it some time to create MonitorDocusignEvents plan
                 await Task.Delay(TimeSpan.FromSeconds(15));
 

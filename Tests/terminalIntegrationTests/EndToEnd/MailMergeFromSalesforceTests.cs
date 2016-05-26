@@ -174,13 +174,13 @@ namespace terminalIntegrationTests.EndToEnd
 
         private async Task ApplyAuthTokenToSolution(ActivityDTO solution, AuthorizationTokenDO salesforceAuthToken)
         {
-            var applyToken = new ManageAuthToken_Apply()
+            var applyToken = new AuthenticationTokenGrantDTO()
             {
                 ActivityId = solution.Id,
                 AuthTokenId = salesforceAuthToken.Id,
                 IsMain = true
             };
-            await HttpPostAsync<ManageAuthToken_Apply[], string>(GetHubApiBaseUrl() + "authentication/granttokens", new[] { applyToken });
+            await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(GetHubApiBaseUrl() + "authentication/granttokens", new[] { applyToken });
         }
 
         private async Task<PlanDTO> CreatePlan()

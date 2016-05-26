@@ -2,11 +2,11 @@
 
     export interface IAuthenticationDialogScope extends ng.IScope {
         activities: Array<model.ActivityDTO>;
-        terminals: Array<model.ManageAuthToken_TerminalDTO>;
+        terminals: Array<model.AuthenticationTokenTerminalDTO>;
 
         isLoading: () => boolean;
         isAllSelected: () => boolean;
-        linkAccount: (terminal: model.ManageAuthToken_TerminalDTO) => void;
+        linkAccount: (terminal: model.AuthenticationTokenTerminalDTO) => void;
         apply: () => void;
         $close: () => void;
     }
@@ -92,7 +92,7 @@
                 return true;
             };
 
-            var _authenticateInternal = (terminal: model.ManageAuthToken_TerminalDTO) => {
+            var _authenticateInternal = (terminal: model.AuthenticationTokenTerminalDTO) => {
                 var modalScope = <any>$scope.$new(true);
                 modalScope.terminal = terminal;
                 modalScope.mode = terminal.authenticationType;
@@ -118,7 +118,7 @@
                     });
             };
 
-            var _authenticateExternal = function (terminal: model.ManageAuthToken_TerminalDTO) {
+            var _authenticateExternal = function (terminal: model.AuthenticationTokenTerminalDTO) {
                 var self = this;
                 var childWindow;
                 
@@ -163,8 +163,8 @@
             var _combineTerminals = function (
                 activities: Array<model.ActivityDTO>,
                 allTerminals: Array<model.TerminalDTO>,
-                authTokenTerminals: Array<model.ManageAuthToken_TerminalDTO>)
-                    : Array<model.ManageAuthToken_TerminalDTO> {
+                authTokenTerminals: Array<model.AuthenticationTokenTerminalDTO>)
+                    : Array<model.AuthenticationTokenTerminalDTO> {
 
                 var result = authTokenTerminals.filter((it) => {
                     for (var i = 0; i < $scope.activities.length; ++i) {
@@ -194,7 +194,7 @@
                     if ((terminal = hasTerminal(allTerminals, activities[i].activityTemplate.terminal.name))
                         && !hasTerminal(result, activities[i].activityTemplate.terminal.name)) {
 
-                        var item = new model.ManageAuthToken_TerminalDTO(
+                        var item = new model.AuthenticationTokenTerminalDTO(
                             terminal.name,
                             [],
                             terminal.authenticationType,
@@ -255,7 +255,7 @@
 
                         $http.get(urlPrefix + '/authentication/usertokens')
                             .then(function (res) {
-                                var authTokenTerminals = <Array<model.ManageAuthToken_TerminalDTO>>res.data;
+                                var authTokenTerminals = <Array<model.AuthenticationTokenTerminalDTO>>res.data;
                                 var terminals = _combineTerminals(activities, allTerminals, authTokenTerminals);
                                 $scope.terminals = terminals;
 

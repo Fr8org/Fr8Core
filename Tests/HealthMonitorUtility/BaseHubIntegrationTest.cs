@@ -110,7 +110,7 @@ namespace HealthMonitor.Utility
 
         protected async Task RevokeTokens(string terminalName)
         {
-            var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
+            var tokens = await HttpGetAsync<IEnumerable<AuthenticationTokenTerminalDTO>>(
                 _baseUrl + "authentication/usertokens"
             );
 
@@ -150,7 +150,7 @@ namespace HealthMonitor.Utility
         }
         protected async Task<Guid> ExtractTerminalDefaultToken(string terminalName)
         {
-            var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(GetHubApiBaseUrl() + "manageauthtoken/");
+            var tokens = await HttpGetAsync<IEnumerable<AuthenticationTokenTerminalDTO>>(GetHubApiBaseUrl() + "manageauthtoken/");
             Assert.NotNull(tokens, "No authorization tokens were found for the integration testing user.");
             var terminal = tokens.FirstOrDefault(x => x.Name == terminalName);
             Assert.NotNull(terminal, $"No authorization tokens were found for the {terminalName}");
