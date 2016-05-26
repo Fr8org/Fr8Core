@@ -8,8 +8,7 @@ module dockyard.directives.upstreamDataChooser {
         tableParams: any;
         selectedFieldValue: any;
         change: () => (field: model.ControlDefinitionDTO) => void;
-        setItem: (item: any) => void;
-        selectField: (field: model.FieldDTO) => void;
+        selectItem: (field: model.FieldDTO) => void;
         openModal: () => void;
         createModal: () => void;
     }
@@ -53,8 +52,9 @@ module dockyard.directives.upstreamDataChooser {
                     uiHelperService.openConfirmationModal(alertMessage);
                 });
             }
-            $scope.setItem = (item) => {
-                $scope.field.value = item;
+            $scope.selectItem = (item) => {
+                $scope.field.selectedItem = item;
+                $scope.field.value = item.key;
                 modalInstance.close($scope.field.value);
                 if ($scope.change != null && angular.isFunction($scope.change)) {
                     $scope.change()($scope.field);

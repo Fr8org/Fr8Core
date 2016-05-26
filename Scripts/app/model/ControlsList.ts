@@ -123,6 +123,7 @@
         source: FieldSource;
         selectedKey: string;
         hasRefreshButton: boolean;
+        selectedItem: FieldDTO;
         
 
         constructor() {

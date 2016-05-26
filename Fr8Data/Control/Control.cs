@@ -130,6 +130,9 @@ namespace Fr8Data.Control
         [JsonProperty("hasRefreshButton")]
         public bool HasRefreshButton { get; set; }
 
+        [JsonProperty("selectedItem")]
+        public FieldDTO SelectedItem { get; set; }
+
         public DropDownList() : base()
         {
             ListItems = new List<ListItem>();
@@ -442,6 +445,9 @@ namespace Fr8Data.Control
 
         [JsonProperty("valueSource")]
         public string ValueSource;
+
+        [JsonIgnore]
+        public FieldDTO UpstreamField => SelectedItem;
 
         public TextSource()
         {

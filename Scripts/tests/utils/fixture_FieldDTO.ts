@@ -59,7 +59,8 @@ module dockyard.tests.utils.fixtures {
             errorMessage: null,
             selectedKey: 'test3',
             isHidden: false,
-            hasRefreshButton: false
+            hasRefreshButton: false,
+            selectedItem: null
         };
 
         public static radioButtonGroupField: model.RadioButtonGroup = {
@@ -195,7 +196,8 @@ module dockyard.tests.utils.fixtures {
                 }],
             name: 'test name',
             fieldLabel: 'test label',
-            selectedKey: null
+            selectedKey: null,
+            selectedItem: null
         };
     }
 } 
