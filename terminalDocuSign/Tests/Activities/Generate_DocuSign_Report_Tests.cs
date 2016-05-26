@@ -6,14 +6,15 @@ using System.Threading.Tasks;
 using Data.Entities;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
-using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
+using Fr8Infrastructure.Interfaces;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
 using terminalDocuSign.Actions;
+using terminalDocuSign.Activities;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Infrastructure.StructureMap;
 using terminalDocuSign.Tests.Fixtures;
@@ -93,27 +94,6 @@ namespace terminalDocuSign.Tests.Actions
                 CompletedDate = folderItem.CompletedDateTime,
                 CreateDate = folderItem.CreatedDateTime
             };
-        }
-
-
-        private void ConfigureActivity(ActivityDO activity, params KeyValuePair<string, string>[] settings)
-        {
-            using (var crateStorage = _crateManager.GetUpdatableStorage(activity))
-            {
-                var filterConditions = new List<FilterConditionDTO>();
-
-                foreach (var setting in settings)
-                {
-                    filterConditions.Add(new FilterConditionDTO { Field = setting.Key, Operator = "eq", Value = setting.Value });
-                }
-
-                string initialQuery = JsonConvert.SerializeObject(filterConditions);
-
-                crateStorage.Add(Crate.FromContent("Config", new Generate_DocuSign_Report_v1.ActivityUi
-                {
-                    QueryBuilder = { Value = initialQuery }
-                }));
-            }
         }
 
 

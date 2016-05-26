@@ -55,5 +55,6 @@ namespace Hub.Interfaces
         /// <param name="dockyardAccountId"></param>
         /// <returns></returns>
         FileDO GetFile(int fileId, string dockyardAccountId);
+        FileDO GetFile(string filePath, string dockyardAccountId);
     }
 }

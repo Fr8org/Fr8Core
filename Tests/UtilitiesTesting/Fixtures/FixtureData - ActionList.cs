@@ -4,6 +4,7 @@ using Hub.Managers;
 using StructureMap;
 using Data.Entities;
 using Data.States;
+using Fr8Data.Managers;
 
 namespace UtilitiesTesting.Fixtures
 {

@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Data.Interfaces.Manifests;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Helpers;
 using Fr8Data.Manifests;
 using TerminalBase.BaseClasses;
+using TerminalBase.Helpers;
 
 namespace TerminalBase.Infrastructure
 {
@@ -21,7 +21,7 @@ namespace TerminalBase.Infrastructure
             {
                 throw new ArgumentNullException(nameof(activity));
             }
-            _activityUi = activity.ConfigurationControls;
+            _activityUi = activity.ActivityUI;
             _ownerNameByControl = new Dictionary<IControlDefinition, string>();
             FillOwnerByControl();
         }

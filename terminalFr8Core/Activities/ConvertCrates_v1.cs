@@ -3,22 +3,32 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using Hub.Managers;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
+using Fr8Data.States;
 using terminalFr8Core.Converters;
+using TerminalBase.BaseClasses;
 using Utilities;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class ConvertCrates_v1 : BaseTerminalActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "ConvertCrates",
+            Label = "Convert Crates",
+            Category = ActivityCategory.Processors,
+            Version = "1",
+            MinPaneWidth = 330,
+            Tags = Tags.Internal,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
         private class ManifestTypeMatch
         {
             public ManifestTypeMatch(MT From, MT To)
@@ -37,83 +47,6 @@ namespace terminalFr8Core.Actions
             { new ManifestTypeMatch(MT.StandardFileHandle, MT.DocuSignTemplate), new StandardFileDescriptionToDocuSignTemplateConversion() }
         };
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-        {
-            var curPayloadDTO = await GetPayload(curActivityDO, containerId);
-
-            //find from type
-            var controlsMS = GetConfigurationControls(curActivityDO);
-
-            var fromDropdown = (DropDownList)GetControl(controlsMS, "Available_From_Manifests", ControlTypes.DropDownList);
-            if (string.IsNullOrEmpty(fromDropdown.Value))
-            {
-                return Error(curPayloadDTO, "No value was selected on From Manifest Type Dropdown", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
-            }
-            var fromManifestType = Int32.Parse(fromDropdown.Value);
-
-            //find target type 
-            var toDropdown = (DropDownList)GetControl(controlsMS, "Available_To_Manifests", ControlTypes.DropDownList);
-            if (string.IsNullOrEmpty(toDropdown.Value))
-            {
-                return Error(curPayloadDTO, "No value was selected on To Manifest Type Dropdown", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
-            }
-            var toManifestType = Int32.Parse(toDropdown.Value);
-
-            var convertor = ConversionMap.FirstOrDefault(c => c.Key.From == (MT)fromManifestType && c.Key.To == (MT) toManifestType).Value;
-
-            //find user selected crate in payload
-            var payloadStorage = CrateManager.GetStorage(curPayloadDTO);
-            var userSelectedFromCrate = payloadStorage.FirstOrDefault(c => c.ManifestType.Id == fromManifestType);
-            if (userSelectedFromCrate == null)
-            {
-                return Error(curPayloadDTO, "Unable to find crate with Manifest Type : "+ fromDropdown.selectedKey, ActivityErrorCode.PAYLOAD_DATA_MISSING);
-            }
-
-            var convertedCrate = convertor.Convert(userSelectedFromCrate);
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curPayloadDTO))
-            {
-                crateStorage.Add(convertedCrate);
-            }
-
-            return Success(curPayloadDTO);
-        }
-
-        public override async Task<ActivityDO> Configure(ActivityDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
-        {
-            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authTokenDO);
-        }
-
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            //build a controls crate to render the pane
-            var configurationControlsCrate = CreateControlsCrate();
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
-                crateStorage.Add(GetAvailableFromManifests());
-            }
-
-            return curActivityDO;
-        }
-
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            var controlsMS = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
-            var manifestTypeDropdown = controlsMS.Controls.Single(x => x.Type == ControlTypes.DropDownList && x.Name == "Available_From_Manifests");
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.RemoveUsingPredicate(c => c.IsOfType<FieldDescriptionsCM>() && c.Label == "Available To Manifests");
-                if (manifestTypeDropdown.Value != null)
-                {
-                    crateStorage.Add(GetAvailableToManifests(manifestTypeDropdown.Value));
-                }
-            }
-            
-            return curActivityDO;
-        }
 
         private Crate GetAvailableToManifests(String manifestId)
         {
@@ -171,21 +104,60 @@ namespace terminalFr8Core.Actions
             return PackControlsCrate(infoText, availableFromManifests, availableToManifests);
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public ConvertCrates_v1() : base(false)
         {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
+        }
+
+        public override async Task Run()
+        {
+            //find from type
+            var fromDropdown = GetControl<DropDownList>("Available_From_Manifests");
+            if (string.IsNullOrEmpty(fromDropdown.Value))
             {
-                return ConfigurationRequestType.Initial;
+                RaiseError("No value was selected on From Manifest Type Dropdown", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                return;
+            }
+            var fromManifestType = int.Parse(fromDropdown.Value);
+            //find target type 
+            var toDropdown = GetControl<DropDownList>("Available_To_Manifests");
+            if (string.IsNullOrEmpty(toDropdown.Value))
+            {
+                RaiseError("No value was selected on To Manifest Type Dropdown", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                return;
+            }
+            var toManifestType = Int32.Parse(toDropdown.Value);
+            var convertor = ConversionMap.FirstOrDefault(c => c.Key.From == (MT)fromManifestType && c.Key.To == (MT)toManifestType).Value;
+            //find user selected crate in payload
+            var userSelectedFromCrate = Payload.FirstOrDefault(c => c.ManifestType.Id == fromManifestType);
+            if (userSelectedFromCrate == null)
+            {
+                RaiseError("Unable to find crate with Manifest Type : " + fromDropdown.selectedKey, ActivityErrorCode.PAYLOAD_DATA_MISSING);
+                return;
+            }
+            var convertedCrate = convertor.Convert(userSelectedFromCrate);
+            Payload.Add(convertedCrate);
+            Success();
+        }
+
+        public override Task Initialize()
+        {
+            //build a controls crate to render the pane
+            var configurationControlsCrate = CreateControlsCrate();
+            Storage.Add(configurationControlsCrate);
+            Storage.Add(GetAvailableFromManifests());
+            return Task.FromResult(0);
+        }
+
+        public override async Task FollowUp()
+        {
+            var manifestTypeDropdown = GetControl<DropDownList>("Available_From_Manifests");
+            Storage.RemoveUsingPredicate(c => c.IsOfType<FieldDescriptionsCM>() && c.Label == "Available To Manifests");
+            if (manifestTypeDropdown.Value != null)
+            {
+                Storage.Add(GetAvailableToManifests(manifestTypeDropdown.Value));
             }
 
-            var controlsMS = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-
-            if (controlsMS == null)
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            return ConfigurationRequestType.Followup;
+            await Task.Yield();
         }
     }
 }

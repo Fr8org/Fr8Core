@@ -138,7 +138,7 @@ namespace Data.Repositories.Security.StorageImpl.SqlBased
                           from dbo.RolePermissions rp          
                           inner join dbo.PermissionSets p on rp.PermissionSetId = p.Id                                                                  
                           inner join dbo.ObjectRolePermissions orp on rp.Id = orp.RolePermissionId                               
-                          inner join dbo.AspNetRoles anr on rp.RoleId = anr.Id   ";
+                          inner join dbo.AspNetRoles anr on rp.RoleId = anr.Id where orp.ObjectId = @objectId ";
 
                     command.Parameters.AddWithValue("@objectId", dataObjectId);
                     command.CommandText = cmd;

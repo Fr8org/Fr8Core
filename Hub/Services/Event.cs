@@ -8,14 +8,11 @@ using Data.States;
 using Data.Entities;
 using System.Linq;
 using System.Collections.Generic;
-using System.Data.Entity;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Utilities.Logging;
-using Fr8Data.Constants;
-using Newtonsoft.Json;
-using Hub.Managers;
+using Fr8Data.Managers;
 
 namespace Hub.Services
 {

@@ -8,11 +8,11 @@ using System.Text;
 using Atlassian.Jira;
 using Newtonsoft.Json;
 using StructureMap;
-using Data.Entities;
 using Fr8Data.DataTransferObjects;
-using Hub.Managers.APIManagers.Transmitters.Restful;
+using Fr8Infrastructure.Interfaces;
 using TerminalBase.Errors;
 using terminalAtlassian.Interfaces;
+using TerminalBase.Models;
 
 namespace terminalAtlassian.Services
 {
@@ -92,17 +92,17 @@ namespace terminalAtlassian.Services
             }
         }
 
-        public List<FieldDTO> GetJiraIssue(string jiraKey, AuthorizationTokenDO authorizationTokenDO)
+        public List<FieldDTO> GetJiraIssue(string jiraKey, AuthorizationToken authToken)
         {
             return InterceptJiraExceptions(() =>
             {
-                Jira jira = CreateRestClient(authorizationTokenDO.Token);
+                Jira jira = CreateRestClient(authToken.Token);
                 var issue = jira.GetIssue(jiraKey);
                 return CreateKeyValuePairList(issue);
             });
         }
 
-        public List<FieldDTO> GetProjects(AuthorizationTokenDO authToken)
+        public List<FieldDTO> GetProjects(AuthorizationToken authToken)
         {
             return InterceptJiraExceptions(() =>
             {
@@ -123,7 +123,7 @@ namespace terminalAtlassian.Services
         }
 
         public List<FieldDTO> GetIssueTypes(string projectKey,
-            AuthorizationTokenDO authToken)
+            AuthorizationToken authToken)
         {
             return InterceptJiraExceptions(() =>
             {
@@ -143,7 +143,7 @@ namespace terminalAtlassian.Services
             });
         }
 
-        public List<FieldDTO> GetPriorities(AuthorizationTokenDO authToken)
+        public List<FieldDTO> GetPriorities(AuthorizationToken authToken)
         {
             return InterceptJiraExceptions(() =>
             {
@@ -163,7 +163,7 @@ namespace terminalAtlassian.Services
             });
         }
 
-        public List<FieldDTO> GetCustomFields(AuthorizationTokenDO authToken)
+        public List<FieldDTO> GetCustomFields(AuthorizationToken authToken)
         {
             return InterceptJiraExceptions(() =>
             {
@@ -184,7 +184,7 @@ namespace terminalAtlassian.Services
             });
         }
 
-        public void CreateIssue(IssueInfo issueInfo, AuthorizationTokenDO authToken)
+        public void CreateIssue(IssueInfo issueInfo, AuthorizationToken authToken)
         {
             InterceptJiraExceptions(() =>
             {

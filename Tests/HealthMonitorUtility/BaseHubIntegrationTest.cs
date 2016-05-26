@@ -2,14 +2,14 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Threading.Tasks;
-using Hub.Security;
-using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using System.Linq;
 using NUnit.Framework;
 using StructureMap;
 using System.Net.Http;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
+using Fr8Infrastructure.Communication;
+using Fr8Infrastructure.Security;
 
 namespace HealthMonitor.Utility
 {
