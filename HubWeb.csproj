@@ -377,7 +377,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="App_Start\RemoveDuplicatesDocumentFilter.cs" />
     <Compile Include="App_Start\StartupMigration.cs" />
     <Compile Include="App_Start\SwaggerConfig.cs" />
     <Compile Include="App_Start\WebApiConfig.cs" />
