@@ -143,7 +143,17 @@ namespace Hub.Services
             {
                 return plan;
             }
-            ObjectFactory.GetInstance<ITracker>().Track(uow, userId, "Added Activity to Plan", new Segment.Model.Properties() { { "Activity Name", name } });
+            // This makes a call to our analytics
+            try
+            {
+                ObjectFactory.GetInstance<ITracker>()
+                    .Track(uow, userId, "Added Activity to Plan",
+                        new Segment.Model.Properties() { { "Activity Name", name } });
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
             return activity;
         }
 
@@ -216,7 +226,7 @@ namespace Hub.Services
                 }
                 catch (Exception e)
                 {
-                    ReportActivityInvocationError(submittedActivity, e.Message, null ,submittedActivity.Id.ToString(), EventManager.TerminalActionActivationFailed);
+                    ReportActivityInvocationError(submittedActivity, e.Message, null, submittedActivity.Id.ToString(), EventManager.TerminalActionActivationFailed);
                     throw;
                 }
             }
@@ -559,13 +569,13 @@ namespace Hub.Services
                     }
                     else
                     {
-                        ReportActivityInvocationError(submittedActivity, e.Message, null,submittedActivity.Id.ToString(), EventManager.TerminalConfigureFailed);
+                        ReportActivityInvocationError(submittedActivity, e.Message, null, submittedActivity.Id.ToString(), EventManager.TerminalConfigureFailed);
                         throw;
                     }
                 }
                 catch (Exception e)
                 {
-                    ReportActivityInvocationError(submittedActivity, e.Message, null ,submittedActivity.Id.ToString(), EventManager.TerminalConfigureFailed);
+                    ReportActivityInvocationError(submittedActivity, e.Message, null, submittedActivity.Id.ToString(), EventManager.TerminalConfigureFailed);
                     throw;
                 }
             }
@@ -616,7 +626,7 @@ namespace Hub.Services
         {
             var endpoint = _activityTemplate.GetTerminalUrl(activity.ActivityTemplateId) ?? "<no terminal url>";
 
-            var additionalData = containerId.IsNullOrEmpty() ? " no data " : " Container Id = " + containerId; 
+            var additionalData = containerId.IsNullOrEmpty() ? " no data " : " Container Id = " + containerId;
 
             reportingAction(endpoint, additionalData, error, objectId);
         }

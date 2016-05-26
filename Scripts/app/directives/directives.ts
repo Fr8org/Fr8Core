@@ -283,19 +283,18 @@ app.directive('eventAddplan', ['$timeout', '$window', function ($timeout, $windo
         restrict: 'A',
         link: function (scope, element) {
             element.on('click', function () {
-                var btn = $window.document.getElementById("Myfr8lines");
-                $window.analytics.trackLink(btn, "Clicked Add Plan Button");
+                $window.analytics.track("Clicked Add Plan Button");
             });
         }
     };
 }]);
+
 app.directive('eventRunplan', ['$timeout', '$window', function ($timeout, $window) {
     return {
         restrict: 'A',
         link: function (scope, element) {
             element.on('click', function () {
-                var runButtons = $window.document.getElementsByClassName("_analytics-run-button"); 
-                $window.analytics.trackLink(runButtons, "Clicked Run Plan Button");
+                $window.analytics.track("Clicked Run Plan Button");
             });
         }
     };
