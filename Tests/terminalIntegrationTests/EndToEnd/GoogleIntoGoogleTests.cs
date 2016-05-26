@@ -11,6 +11,7 @@ using NUnit.Framework;
 using StructureMap;
 using terminaBaselTests.Tools.Activities;
 using terminaBaselTests.Tools.Plans;
+using terminalFr8Core.Actions;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services;
 using terminalGoogle.Services.Authorization;
@@ -60,7 +61,7 @@ namespace terminalIntegrationTests.EndToEnd
                 //Configure Save_To_Google activity to save this message into new test spreadsheet
                 destinationSpreadsheetUri = await googleSheetApi.CreateSpreadsheet(destinationSpreadsheetName, defaultGoogleAuthToken);
 
-                await _googleActivityConfigurator.AddAndConfigureSaveToGoogleSheet(thePlan, 3, "Standard Payload Data", "Build Message", destinationSpreadsheetName);
+                await _googleActivityConfigurator.AddAndConfigureSaveToGoogleSheet(thePlan, 3, "Standard Payload Data", Build_Message_v1.RuntimeCrateLabel, destinationSpreadsheetName);
                 //run the plan
                 await _plansHelper.RunPlan(thePlan.Plan.Id);
 
