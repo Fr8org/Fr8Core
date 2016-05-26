@@ -32,7 +32,7 @@ namespace dockyard.directives {
                 transclude: ng.ITranscludeFunction): void => {
                 let template = `
                     <md-list-item class="md-2-line fr8-collapse-content" ng-class="{'fr8-collapse-collapsed': ctrl.isCollapsed}">
-                        <div class="md-list-item-text" layout="column"></div>
+                        <div style="overflow:auto" class="md-list-item-text" layout="column"></div>
                         <md-divider ng-hide="ctrl.isCollapsed"></md-divider>
                     </md-list-item>`;
                 scope.ctrl = ctrl;
