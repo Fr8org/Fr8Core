@@ -97,7 +97,7 @@ namespace TerminalBase.Services
         public async Task<UserDTO> GetCurrentUser(string userId)
         {
             var uri = new Uri($"{GetHubUrlWithApiVersion()}/users/userdata?id={userId}", UriKind.Absolute);
-            var curUser = await _restfulServiceClient.GetAsync<UserDTO>(uri, containerId.ToString(), await GetHMACHeader(uri, userId));
+            var curUser = await _restfulServiceClient.GetAsync<UserDTO>(uri, null, await GetHMACHeader(uri, userId));
             return curUser;
         }
 
@@ -106,7 +106,7 @@ namespace TerminalBase.Services
             var directionSuffix = direction == CrateDirection.Upstream
                 ? "upstream/"
                 : "downstream/";
-            var uri = new Uri($"{GetHubUrlWithApiVersion()}/plannodes/{directionSuffix}?id={activityDO.Id}", UriKind.Absolute);
+            var uri = new Uri($"{GetHubUrlWithApiVersion()}/plannodes/{directionSuffix}?id={activityId}", UriKind.Absolute);
             var curActivities = await _restfulServiceClient.GetAsync<List<ActivityDTO>>(uri, null, await GetHMACHeader(uri, userId));
             var curCrates = new List<Crate<TManifest>>();
 
@@ -126,7 +126,7 @@ namespace TerminalBase.Services
                 ? "upstream/"
                 : "downstream";
 
-            var uri = new Uri($"{GetHubUrlWithApiVersion()}/plannodes/{directionSuffix}?id={activityDO.Id}", UriKind.Absolute);
+            var uri = new Uri($"{GetHubUrlWithApiVersion()}/plannodes/{directionSuffix}?id={activityId}", UriKind.Absolute);
             var curActivities = await _restfulServiceClient.GetAsync<List<ActivityDTO>>(uri, null, await GetHMACHeader(uri, userId));
             var curCrates = new List<Crate>();
 
@@ -141,7 +141,7 @@ namespace TerminalBase.Services
 
         public async Task<IncomingCratesDTO> GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability, string userId)
         {
-            var url = $"{GetHubUrlWithApiVersion()}/plannodes/available_data?id={activityDO.Id}&direction={(int)direction}&availability={(int)availability}";
+            var url = $"{GetHubUrlWithApiVersion()}/plannodes/available_data?id={activityId}&direction={(int)direction}&availability={(int)availability}";
             var uri = new Uri(url, UriKind.Absolute);
             var availableData = await _restfulServiceClient.GetAsync<IncomingCratesDTO>(uri, null, await GetHMACHeader(uri, userId));
             return availableData;
@@ -261,7 +261,7 @@ namespace TerminalBase.Services
                 postUrl += "&order=" + order;
             }
 
-            var uri = new Uri(url + formattedPostUrl);
+            var uri = new Uri(url + postUrl);
             var resultActivityDTO = await _restfulServiceClient.PostAsync<ActivityDTO>(uri, null, await GetHMACHeader(uri, userId));
             return Mapper.Map<ActivityPayload>(resultActivityDTO);
         }

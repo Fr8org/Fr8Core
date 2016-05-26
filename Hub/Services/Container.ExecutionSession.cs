@@ -14,7 +14,6 @@ using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Hub.Exceptions;
 using Hub.Interfaces;
-using Hub.Managers;
 using StructureMap;
 
 namespace Hub.Services

@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 using Moq;
 using StructureMap;
 using terminalUtilities.SendGrid;
-using Hub.Managers;
 using System.Linq;
 using Fr8Data.Control;
 using Data.Interfaces;

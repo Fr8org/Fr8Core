@@ -21,7 +21,7 @@ namespace TerminalBase.Infrastructure
             {
                 throw new ArgumentNullException(nameof(activity));
             }
-            _activityUi = activity.ConfigurationControls;
+            _activityUi = activity.ActivityUI;
             _ownerNameByControl = new Dictionary<IControlDefinition, string>();
             FillOwnerByControl();
         }

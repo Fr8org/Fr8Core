@@ -19,7 +19,7 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        protected T ActivityUI { get; private set; }
+        public T ActivityUI { get; private set; }
         protected UiBuilder UiBuilder { get; private set; }
 
         /**********************************************************************************/

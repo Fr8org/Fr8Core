@@ -1,6 +1,7 @@
 ﻿using Fr8Data.Control;
 using Fr8Data.DataTransferObjects;
 using PhoneNumbers;
+using Utilities;
 
 namespace TerminalBase.Infrastructure
 {
@@ -22,7 +23,7 @@ namespace TerminalBase.Infrastructure
                 return;
             }
             var value = textSource.CanGetValue(validationManager.Payload) ? textSource.GetValue(validationManager.Payload) : string.Empty;
-            if (!value.IsValidEmailAddress())
+            if (!RegexUtilities.IsValidEmailAddress(value))
             {
                 validationManager.SetError(errorMessage ?? "Not a valid e-mail address", textSource);
             }
