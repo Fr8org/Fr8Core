@@ -10,8 +10,6 @@ module dockyard.controllers.NotifierController {
     export interface INotifierControllerScope extends ng.IScope {
         eventList: Array<Fr8InternalEvent>;
     }
-
-
     class NotifierController {
         // $inject annotation.
         // It provides $injector with information about dependencies to be injected into constructor
@@ -32,23 +30,16 @@ module dockyard.controllers.NotifierController {
             private $mdSidenav: any,
             private $scope: INotifierControllerScope) {
 
-
             UserService.getCurrentUser().$promise.then(data => {
                 $scope.eventList = [];
 
                 var channel: string = data.emailAddress;
 
                 PusherNotifierService.bindEventToChannel(channel, dockyard.services.pusherNotifierSuccessEvent, (data: any) => {
-                    /*this.$mdSidenav('right')
-                        .toggle()
-                        .then(function () {
-                        });*/
                     var event = new Fr8InternalEvent();
-                    event.type = event.type = dockyard.services.pusherNotifierSuccessEvent;
                     event.data = data;
+                    event.type = dockyard.services.pusherNotifierSuccessEvent;
                     this.$scope.eventList.splice(0,0,event);
-                    //ngToast.create(data);
-
                 });
 
                 PusherNotifierService.bindEventToChannel(channel, dockyard.services.pusherNotifierTerminalEvent, (data: any) => {
@@ -59,36 +50,20 @@ module dockyard.controllers.NotifierController {
                 });
 
                 PusherNotifierService.bindEventToChannel(channel, dockyard.services.pusherNotifierExecutionEvent, (data: any) => {
-                   /* this.$mdSidenav('right')
-                        .toggle()
-                        .then(function () {
-                        });*/
-                    //var contentTemplate = "<label class='toast-activity-info'>Executing Activity: " + data.ActivityName + "</label><label class='toast-activity-info'>For Plan: " + data.PlanName + "</label> <label class='toast-activity-info'>Container: " + data.ContainerId +"</label>";
                     var event = new Fr8InternalEvent();
                     event.type = dockyard.services.pusherNotifierExecutionEvent;
                     event.data = data;
                     this.$scope.eventList.splice(0, 0, event);
-                    //ngToast.create({
-                    //    className : "success",
-                    //    content : contentTemplate
-                    //});
                 });
 
                 PusherNotifierService.bindEventToChannel(channel, dockyard.services.pusherNotifierFailureEvent, (data: any) => {
-                    /*this.$mdSidenav('right')
-                        .toggle()   
-                        .then(function () {
-                        });*/
                     var event = new Fr8InternalEvent();
                     event.type = dockyard.services.pusherNotifierFailureEvent;
                     event.data = data;
                     this.$scope.eventList.splice(0, 0, event);
-                    //ngToast.danger(data);
                 });
             });
         }
     }
-
     app.controller('NotifierController', NotifierController);
-   
 }
