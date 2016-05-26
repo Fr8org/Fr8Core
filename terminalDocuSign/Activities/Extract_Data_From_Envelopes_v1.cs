@@ -111,8 +111,8 @@ namespace terminalDocuSign.Activities
                 secondActivityTemplate = await GetActivityTemplateByName(actionUi.FinalActionsList.Value);
             }
 
-            var firstActivity = await AddAndConfigureChildActivity(ActivityId, monitorDocusignTemplate);
-            var secondActivity = await AddAndConfigureChildActivity(ActivityId, secondActivityTemplate, "Final activity");
+            var firstActivity = await AddAndConfigureChildActivity(ActivityPayload, monitorDocusignTemplate);
+            var secondActivity = await AddAndConfigureChildActivity(ActivityPayload, secondActivityTemplate, "Final activity");
 
             return;
         }

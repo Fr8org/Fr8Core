@@ -233,7 +233,7 @@ namespace terminalDocuSign.Actions
             var selectedReceiverTemplate = await GetActivityTemplate(selectedReceiver.Id);
 
             var dataSourceActivity = await AddAndConfigureChildActivity(
-                context.SolutionActivity.Id,
+                context.SolutionActivity,
                 selectedReceiverTemplate,
                 order: 1
             );
@@ -313,7 +313,7 @@ namespace terminalDocuSign.Actions
             if (DoesActivityTemplateGenerateTableData(selectedReceiver))
             {
                 var loopAT = await GetActivityTemplate("terminalFr8Core", "Loop");
-                var loopActivity = await AddAndConfigureChildActivity(context.SolutionActivity.Id, loopAT, "Loop", "Loop", 2);
+                var loopActivity = await AddAndConfigureChildActivity(context.SolutionActivity, loopAT, "Loop", "Loop", 2);
                 var loopConfigControls = ControlHelper.GetConfigurationControls(loopActivity.CrateStorage);
                 var crateChooser = ControlHelper.GetControl<CrateChooser>(loopConfigControls, "Available_Crates");
                 var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(c => c.ManifestId == (int)MT.StandardTableData);
@@ -331,7 +331,7 @@ namespace terminalDocuSign.Actions
             }
 
             var sendDocusignEnvelopeAT = await GetActivityTemplate("terminalDocuSign", "Send_DocuSign_Envelope");
-            var sendDocuSignActivity = await AddAndConfigureChildActivity(parentActivity.Id, sendDocusignEnvelopeAT, order: activityIndex);
+            var sendDocuSignActivity = await AddAndConfigureChildActivity(parentActivity, sendDocusignEnvelopeAT, order: activityIndex);
             // Set docusign template
             ControlHelper.SetControlValue(sendDocuSignActivity,"target_docusign_template",
                 _docuSignTemplate.ListItems.FirstOrDefault(a => a.Key == _docuSignTemplate.selectedKey)

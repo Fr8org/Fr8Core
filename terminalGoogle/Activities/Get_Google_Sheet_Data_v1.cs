@@ -246,6 +246,7 @@ namespace terminalGoogle.Activities
             {
                 RaiseError("Spreadsheet is not selected",
                     ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                return;
             }
            
             var table = await GetSelectedSpreadSheet();
