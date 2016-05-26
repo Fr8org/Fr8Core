@@ -28,6 +28,7 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.DataTransferObjects.Helpers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using Utilities;
 
 namespace HubWeb.Controllers
 {
@@ -72,6 +73,7 @@ namespace HubWeb.Controllers
         public async Task<IHttpActionResult> CreateSolution(string solutionName)
         {
             var userId = User.Identity.GetUserId();
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var activityTemplate = _activityTemplate.GetQuery().FirstOrDefault(at => at.Name == solutionName);
@@ -80,10 +82,10 @@ namespace HubWeb.Controllers
                     throw new ArgumentException($"actionTemplate (solution) name {solutionName} is not found in the database.");
                 }
                 var result = await _activity.CreateAndConfigure(
-                    uow, 
-                    userId, 
-                    activityTemplate.Id, 
-                    name: activityTemplate.Label, 
+                    uow,
+                    userId,
+                    activityTemplate.Id,
+                    name: activityTemplate.Label,
                     createPlan: true);
                 return Ok(PlanMappingHelper.MapPlanToDto(uow, (PlanDO)result));
             }
@@ -227,7 +229,7 @@ namespace HubWeb.Controllers
                 var planResult = _plan.GetForUser(
                     uow,
                     _security.GetCurrentAccount(uow),
-                    new PlanQueryDTO() {Id = id}, 
+                    new PlanQueryDTO() { Id = id },
                     _security.IsCurrentUserHasRole(Roles.Admin)
                 );
 
@@ -276,13 +278,13 @@ namespace HubWeb.Controllers
         {
             return Ok("This is no longer used due to V2 Event Handling mechanism changes.");
         }
-        
+
         [HttpPost]
         [Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Deactivate(Guid planId)
         {
             await _plan.Deactivate(planId);
-           
+
             return Ok();
         }
 
@@ -306,7 +308,7 @@ namespace HubWeb.Controllers
         [HttpGet]
         public Task<IHttpActionResult> Run(Guid planId, Guid? containerId = null)
         {
-            return Run(planId, (Crate[]) null, containerId);
+            return Run(planId, (Crate[])null, containerId);
         }
 
         [Fr8ApiAuthorize("Admin", "Customer")]
@@ -331,7 +333,7 @@ namespace HubWeb.Controllers
                         User.Identity.Name);
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
-                        var planDO = _plan.GetFullPlan(uow, planId); 
+                        var planDO = _plan.GetFullPlan(uow, planId);
                         var currentPlanType = _plan.IsMonitoringPlan(uow, planDO) ? PlanType.Monitoring.ToString() : PlanType.RunOnce.ToString();
                         return BadRequest(currentPlanType);
                     }
@@ -426,7 +428,7 @@ namespace HubWeb.Controllers
                     ValidationErrors = activationResults.ValidationErrors
                 });
             }
-            
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 ContainerDO container;
@@ -443,7 +445,7 @@ namespace HubWeb.Controllers
                         // that's bad. Reset containerId to run plan with new container
                         containerId = null;
                     }
-                } 
+                }
 
                 PlanType? currentPlanType = null;
 

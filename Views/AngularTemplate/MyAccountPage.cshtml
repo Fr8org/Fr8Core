@@ -17,10 +17,8 @@
                 <md-tab label="My Plans">
                     <md-content class="md-padding">
                         <div id="Myfr8lines">
-                            <h3>My Plans <a id="btnAddNewPlan" ui-sref="planForm" class="btn green route-list-header-button">Add Plan</a></h3>
-
+                            <h3>My Plans <a ui-sref="planForm" class="btn green route-list-header-button" event-Addplan>Add Plan</a></h3>
                             @Html.Partial("_PlanList")
-
                         </div>
                     </md-content>
                 </md-tab>
@@ -45,6 +43,4 @@
 <!-- END MAIN CONTENT -->
 <script>
     analytics.page('Plan Dashboard');
-    var btnAddNewPlan = document.getElementById("btnAddNewPlan");
-    analytics.trackLink(btnAddNewPlan, "Clicked AddPlan Button");
 </script>

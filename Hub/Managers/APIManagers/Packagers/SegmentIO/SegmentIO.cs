@@ -101,5 +101,13 @@ namespace Hub.Managers.APIManagers.Packagers.SegmentIO
 
             Analytics.Client.Track(fr8AccountDO.Id, eventName, props);
         }
+        public void Track(string eventName, Segment.Model.Properties properties)
+        {
+            Analytics.Client.Track(null, eventName, properties);
+        }
+        public void Track(string userId,string eventName, Segment.Model.Properties properties)
+        {
+            Analytics.Client.Track(userId, eventName, properties);
+        }
     }
 }
