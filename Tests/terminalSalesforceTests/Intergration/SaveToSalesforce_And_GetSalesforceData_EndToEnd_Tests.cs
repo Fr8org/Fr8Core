@@ -28,7 +28,7 @@ namespace terminalSalesforceTests.Intergration
         {
             get { return "terminalSalesforce"; }
         }
-
+        /*
         [Test]
         public async Task SaveToSalesforce_And_GetSalesforceData_EndToEnd()
         {
@@ -92,7 +92,7 @@ namespace terminalSalesforceTests.Intergration
                 await CleanUp(authorizationToken, initialPlanId, newLeadId);
             }
         }
-
+        */
         private async Task<Guid> CreatePlan_SaveAndGetDataFromSalesforce(AuthorizationTokenDO authToken)
         {
             //get required activity templates

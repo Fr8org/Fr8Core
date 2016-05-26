@@ -67,7 +67,7 @@ namespace terminalSalesforceTests.Intergration
             var initialConfigActionDto = await PerformInitialConfiguration();
             var dataDTO = new Fr8DataDTO { ActivityDTO = initialConfigActionDto };
             AddOperationalStateCrate(dataDTO, new OperationalStateCM());
-
+        
             //Act
             var responseOperationalState = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(GetTerminalRunUrl(), dataDTO);
         }
@@ -94,7 +94,7 @@ namespace terminalSalesforceTests.Intergration
             Assert.IsTrue(await new SalesforceManager().Delete(SalesforceObjectType.FeedItem, 
                 newFeedIdCrate.Content.PayloadObjects[0].PayloadObject[0].Value, new AuthorizationToken { Token = authToken.Token, AdditionalAttributes = authToken.AdditionalAttributes }), "Test feed created is not deleted");
         }
-
+        
         private async Task<ActivityDTO> PerformInitialConfiguration()
         {
             //get the terminal configure URL

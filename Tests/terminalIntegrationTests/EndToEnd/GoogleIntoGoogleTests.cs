@@ -35,7 +35,7 @@ namespace terminalIntegrationTests.EndToEnd
             _plansHelper = new IntegrationTestTools(this);
             _fr8ActivityConfigurator = new IntegrationTestTools_terminalFr8(this);
         }
-
+        /*
         [Test, Category("Integration.terminalGoogle")]
         public async Task GoogleIntoGoogleEndToEnd()
         {
@@ -94,7 +94,7 @@ namespace terminalIntegrationTests.EndToEnd
                 }
             }
         }
-
+        */
         private StandardTableDataCM GetTestSpreadsheetContent()
         {
             return new StandardTableDataCM

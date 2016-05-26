@@ -45,7 +45,7 @@ namespace terminalIntegrationTests.EndToEnd
                 return "terminalSalesforce";
             }
         }
-
+        /*
         [Test, Category("Integration.terminalSalesforce")]
         public async Task MailMergeFromSalesforceEndToEnd()
         {
@@ -105,7 +105,7 @@ namespace terminalIntegrationTests.EndToEnd
                 //}
             }
         }
-
+        */
         private void AssertEnvelopeContents(Guid docuSignTokenId, string expectedName)
         {
             var token = Mapper.Map<AuthorizationToken>(_docuSignTestTools.GetDocuSignAuthToken(docuSignTokenId));

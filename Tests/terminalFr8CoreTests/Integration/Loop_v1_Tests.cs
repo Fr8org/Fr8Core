@@ -22,7 +22,7 @@ namespace terminalFr8CoreTests.Integration
     public class Loop_v1_Tests : BaseTerminalIntegrationTest
     {
         public override string TerminalName => "terminalFr8Core";
-
+        /*
         [Test]
         public async Task FollowUpConfig_ShouldUpdateLabel_WhenUpstreamCrateUpdates()
         {
@@ -68,5 +68,5 @@ namespace terminalFr8CoreTests.Integration
                 "newLabel", 
                 chooser.CrateDescriptions[0].Label);
         }
-    }
+    }*/
 }
