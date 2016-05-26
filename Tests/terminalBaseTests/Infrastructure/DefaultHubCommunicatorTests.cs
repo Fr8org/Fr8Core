@@ -36,7 +36,7 @@ namespace terminaBaselTests.Infrastructure
             CrateDirection direction = CrateDirection.Downstream;
             AvailabilityType availability = AvailabilityType.RunTime;
 
-            string resultUrl = String.Format("http://localhost:30643/api/v1/plannodes/available_data?id={0}&direction={1}&availability={2}",
+            string resultUrl = String.Format("http://localhost:30643/api/v1/plan_nodes/signals?id={0}&direction={1}&availability={2}",
                 id.ToString(),
                 ((int)direction).ToString(),
                 ((int)availability).ToString());

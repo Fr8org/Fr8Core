@@ -17,6 +17,9 @@ using Microsoft.AspNet.Identity;
 using Microsoft.Owin;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using System.Reflection;
+using System.Threading.Tasks;
+using System.Threading;
 
 namespace HubWeb
 {
@@ -86,6 +89,34 @@ namespace HubWeb
                     typeof(WarehouseController),
                     typeof(WebServicesController)
                 };
+        }
+    }
+
+    public class CustomSelector : DefaultHttpControllerSelector
+    {
+        private readonly HttpConfiguration _configuration;
+
+        public CustomSelector(HttpConfiguration configuration) : base(configuration)
+        {
+            _configuration = configuration;
+        }
+
+        public override HttpControllerDescriptor SelectController(HttpRequestMessage request)
+        {
+                var controllerName = base.GetControllerName(request);
+                if (controllerName.Contains("_"))
+                {
+                    var assembly = Assembly.GetExecutingAssembly();
+                    var types = assembly.GetTypes(); //GetExportedTypes doesn't work with dynamic assemblies
+                    var matchedTypes = types.Where(i => typeof(IHttpController).IsAssignableFrom(i)).ToList();
+                    controllerName = controllerName.Replace("_", "");
+                    var matchedController =
+                        matchedTypes.FirstOrDefault(i => i.Name.ToLower() == controllerName.ToLower() + "controller");
+
+                    return new HttpControllerDescriptor(_configuration, controllerName, matchedController);
+                }
+
+            return base.SelectController(request);
         }
     }
 

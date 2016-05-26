@@ -231,7 +231,7 @@ namespace terminalDocuSignTests.Integration
             var emailSubject = (TextSource)emailControlsCrate.Content.Controls.Single(c => c.Name == "EmailSubject");
             var emailBody = (TextSource)emailControlsCrate.Content.Controls.Single(c => c.Name == "EmailBody");
 
-            var upstreamFieldDescription = await HttpGetAsync<IncomingCratesDTO>(baseUrl + "plannodes/available_data?id=" + emailActivity.Id);
+            var upstreamFieldDescription = await HttpGetAsync<IncomingCratesDTO>(baseUrl + "plan_nodes/signals?id=" + emailActivity.Id);
 
             Assert.True(upstreamFieldDescription.AvailableCrates.SelectMany(x=>x.Fields).Any(y => y.Key == "NotificationMessage"));
             Assert.AreEqual("NotificationMessage", emailBody.Value);

@@ -145,7 +145,7 @@ namespace HealthMonitor.Utility
 
         public async Task<IncomingCratesDTO> GetRuntimeCrateDescriptionsFromUpstreamActivities(Guid curActivityId)
         {
-            var url = $"{GetHubApiBaseUrl()}/plannodes/available_data/?id={curActivityId}";
+            var url = $"{GetHubApiBaseUrl()}/plan_nodes/signals/?id={curActivityId}";
             return await HttpGetAsync<IncomingCratesDTO>(url);
         }
         protected async Task<Guid> ExtractTerminalDefaultToken(string terminalName)
