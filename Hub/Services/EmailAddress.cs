@@ -38,8 +38,7 @@ namespace Hub.Services
         
         public List<ParsedEmailAddress> ExtractFromString(String textToSearch)
         {
-            var ru = new RegexUtilities();
-            return ru.ExtractFromString(textToSearch);
+            return RegexUtilities.ExtractFromString(textToSearch);
         }
 
         public List<EmailAddressDO> GetEmailAddresses(IUnitOfWork uow, params string[] textToSearch)

@@ -12,10 +12,23 @@ using terminalSlack.Interfaces;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
-namespace terminalSlack.Actions
+namespace terminalSlack.Activities
 {
     public class Monitor_Channel_v2 : EnhancedTerminalActivity<Monitor_Channel_v2.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Monitor_Channel",
+            Label = "Monitor Slack Messages",
+            Category = ActivityCategory.Monitors,
+            Terminal = TerminalData.TerminalDTO,
+            NeedsAuthentication = true,
+            Version = "2",
+            WebService = TerminalData.WebServiceDTO,
+            MinPaneWidth = 330
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public CheckBox MonitorDirectMessagesOption { get; set; }
@@ -80,18 +93,16 @@ namespace terminalSlack.Actions
         {
             _slackIntegration = ObjectFactory.GetInstance<ISlackIntegration>();
             _slackEventManager = ObjectFactory.GetInstance<ISlackEventManager>();
-
-            ActivityName = "Monitor Slack Messages";
         }
 
-        protected override async Task Initialize(CrateSignaller crateSignaller)
+        protected override async Task InitializeETA()
         {
-            ConfigurationControls.ChannelList.ListItems = (await _slackIntegration.GetChannelList(AuthorizationToken.Token).ConfigureAwait(false))
+            ActivityUI.ChannelList.ListItems = (await _slackIntegration.GetChannelList(AuthorizationToken.Token).ConfigureAwait(false))
                 .OrderBy(x => x.Key)
                 .Select(x => new ListItem { Key = $"#{x.Key}", Value = x.Value })
                 .ToList();
-            CurrentActivityStorage.Add(CreateEventSubscriptionCrate());
-            crateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel)
+            Storage.Add(CreateEventSubscriptionCrate());
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel)
                                .AddFields(GetChannelProperties());
         }
 
@@ -112,23 +123,24 @@ namespace terminalSlack.Actions
             return CrateManager.CreateStandardEventSubscriptionsCrate(EventSubscriptionsCrateLabel, "Slack", "Slack Outgoing Message");
         }
 
-        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
+        protected override Task ConfigureETA()
         {
             //No extra configuration is required
             return Task.FromResult(0);
         }
-        
-        protected override Task Validate(ValidationManager validationManager)
+
+        protected override Task<bool> ValidateETA()
         {
             if (!IsMonitoringDirectMessages && (!IsMonitoringChannels || (!IsMonitoringAllChannels && !IsMonitoringSpecificChannels)))
             {
-                validationManager.SetError("At least one of the monitoring options must be selected", ConfigurationControls.MonitorDirectMessagesOption, ConfigurationControls.MonitorChannelsOption);
+                ValidationManager.SetError("At least one of the monitoring options must be selected", ActivityUI.MonitorDirectMessagesOption, ActivityUI.MonitorChannelsOption);
+                return Task.FromResult(false);
             }
 
-            return Task.FromResult(0);
+            return Task.FromResult(true);
         }
 
-        protected override Task RunCurrentActivity()
+        protected override Task RunETA()
         {
             var incomingMessageContents = ExtractIncomingMessageContentFromPayload();
             var hasIncomingMessage = incomingMessageContents?.Fields?.Count > 0;
@@ -157,7 +169,7 @@ namespace terminalSlack.Actions
                 var isTrackedByUser = IsMonitoringDirectMessages && (isDirect || isSentToGroup) && !isSentByCurrentUser;
                 if (isTrackedByUser || isTrackedByChannel)
                 {
-                    CurrentPayloadStorage.Add(Crate.FromContent(ResultPayloadCrateLabel, new StandardPayloadDataCM(incomingMessageContents.Fields), AvailabilityType.RunTime));
+                    Payload.Add(Crate.FromContent(ResultPayloadCrateLabel, new StandardPayloadDataCM(incomingMessageContents.Fields), AvailabilityType.RunTime));
                 }
                 else
                 {
@@ -168,20 +180,20 @@ namespace terminalSlack.Actions
             return Task.FromResult(0);
         }
 
-        protected override async Task Activate()
+        protected override async Task ActivateETA()
         {
-            await _slackEventManager.Subscribe(AuthorizationToken, CurrentActivity.RootPlanNodeId.Value).ConfigureAwait(false);
+            await _slackEventManager.Subscribe(AuthorizationToken, ActivityPayload.RootPlanNodeId.Value).ConfigureAwait(false);
         }
 
-        protected override Task Deactivate()
+        protected override Task DeactivateETA()
         {
-            _slackEventManager.Unsubscribe(CurrentActivity.RootPlanNodeId.Value);
+            _slackEventManager.Unsubscribe(ActivityPayload.RootPlanNodeId.Value);
             return Task.FromResult(0);
         }
 
         private FieldDescriptionsCM ExtractIncomingMessageContentFromPayload()
         {
-            var eventReport = CurrentPayloadStorage.CrateContentsOfType<EventReportCM>().FirstOrDefault();
+            var eventReport = Payload.CrateContentsOfType<EventReportCM>().FirstOrDefault();
             if (eventReport == null)
             {
                 return null;
@@ -191,16 +203,16 @@ namespace terminalSlack.Actions
 
         #region Control properties wrappers
 
-        private bool IsMonitoringChannels => ConfigurationControls.MonitorChannelsOption.Selected;
+        private bool IsMonitoringChannels => ActivityUI.MonitorChannelsOption.Selected;
 
-        private bool IsMonitoringDirectMessages => ConfigurationControls.MonitorDirectMessagesOption.Selected;
+        private bool IsMonitoringDirectMessages => ActivityUI.MonitorDirectMessagesOption.Selected;
 
-        private bool IsMonitoringAllChannels => ConfigurationControls.AllChannelsOption.Selected 
-                                            || (ConfigurationControls.SpecificChannelOption.Selected && string.IsNullOrEmpty(ConfigurationControls.ChannelList.Value));
+        private bool IsMonitoringAllChannels => ActivityUI.AllChannelsOption.Selected
+                                            || (ActivityUI.SpecificChannelOption.Selected && string.IsNullOrEmpty(ActivityUI.ChannelList.Value));
 
-        private bool IsMonitoringSpecificChannels => ConfigurationControls.SpecificChannelOption.Selected;
+        private bool IsMonitoringSpecificChannels => ActivityUI.SpecificChannelOption.Selected;
 
-        private string SelectedChannelId => ConfigurationControls.ChannelList.Value;
+        private string SelectedChannelId => ActivityUI.ChannelList.Value;
 
         #endregion
     }

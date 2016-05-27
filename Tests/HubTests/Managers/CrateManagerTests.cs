@@ -4,7 +4,6 @@ using Data.Entities;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using Hub.Managers;
 using Hub.StructureMap;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -12,6 +11,7 @@ using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting.Fixtures;
 using UtilitiesTesting;
+using Fr8Data.Managers;
 
 namespace HubTests.Managers
 {
@@ -47,8 +47,9 @@ namespace HubTests.Managers
         //
         //        }
 
-
-        [Test]
+/*
+        [Test, Ignore]
+        [Obsolete("AddLogMessage is not used by anywhere on code, it is just used by this test")]
         public void CanAddLogMessageToContainerDO()
         {
             // Arrange
@@ -58,7 +59,7 @@ namespace HubTests.Managers
             var curCrateDTOContents = "{\"Item\":[{\"Name\":\"LogItemDTO1\",\"PrimaryCategory\":\"Container\",\"SecondaryCategory\":\"LogItemDTO Generator\",\"Activity\":\"Add Log Message\",\"Data\":\"\"}],\"ManifestType\":13,\"ManifestId\":13,\"ManifestName\":\"Standard Logging Crate\"}";
 
             //Act
-            _crateManager.AddLogMessage(curLabel, curLogItemList, curContainerDO);
+            //_crateManager.AddLogMessage(curLabel, curLogItemList, curContainerDO.);
             var updatedCrate = _crateManager.GetStorage(curContainerDO.CrateStorage).FirstCrateOrDefault<StandardLoggingCM>(x => x.Label == curLabel);
 
             //Assert
@@ -85,7 +86,7 @@ namespace HubTests.Managers
 
             Assert.AreEqual(eq, curLogItemList.Count);
         }
-
+        */
         [Test]
         public void FromNullCrateStorageDTO_ReturnsEmptyStorage()
         {
@@ -273,8 +274,7 @@ namespace HubTests.Managers
 
             var newCrateStorageDto = GetKnownManifestsStorageDto("newValue");
             var newCrateStorage = _crateManager.FromDto(newCrateStorageDto);
-
-            using (var crateStorage = _crateManager.GetUpdatableStorage(actionDo))
+            using (var crateStorage = Hub.Managers.CrateManagerExtensions.GetUpdatableStorage( _crateManager ,actionDo))
             {
                 crateStorage.Clear();
 

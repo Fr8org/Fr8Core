@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web;
-using Data.Entities;
-using Hub.Managers.APIManagers.Transmitters.Restful;
+using Fr8Infrastructure.Interfaces;
 using terminalSlack.Interfaces;
 using terminalSlack.RtmClient;
+using TerminalBase.Models;
 using Utilities.Configuration.Azure;
 using Utilities.Logging;
 
@@ -36,7 +36,7 @@ namespace terminalSlack.Services
             _eventsUri = new Uri($"{CloudConfigurationManager.GetSetting("terminalSlack.TerminalEndpoint")}/terminals/terminalslack/events", UriKind.Absolute);
         }
 
-        public Task Subscribe(AuthorizationTokenDO token, Guid planId)
+        public Task Subscribe(AuthorizationToken token, Guid planId)
         {
             lock (_locker)
             {

@@ -2,9 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using NUnit.Framework;
-using HealthMonitor.Utility;
-using terminalAtlassian;
-using terminalAtlassianTests.Fixtures;
 using Microsoft.ApplicationInsights;
 using System.Data;
 using System.Data.SqlClient;

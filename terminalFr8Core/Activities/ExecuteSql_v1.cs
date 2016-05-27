@@ -3,61 +3,41 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using Hub.Managers;
-using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
-using TerminalSqlUtilities;
-using terminalFr8Core.Infrastructure;
-using Data.Entities;
-using Data.States;
+using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using Fr8Data.States;
+using terminalFr8Core.Infrastructure;
+using TerminalBase.BaseClasses;
+using TerminalSqlUtilities;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class ExecuteSql_v1 : BaseTerminalActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "ExecuteSql",
+            Label = "Execute Sql Query",
+            Category = ActivityCategory.Processors,
+            Version = "1",
+            Tags = Tags.Internal,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
+
         private const string DefaultDbProvider = "System.Data.SqlClient";
-
-
-        #region Configuration
-
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
-        {
-            return ConfigurationRequestType.Initial;
-        }
-
-        protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                AddLabelControl(
-
-                    crateStorage,
-                    "NoConfigLabel",
-                    "No configuration",
-                    "This activity does not require any configuration."
-                    );
-            }
-
-            return Task.FromResult(curActivityDO);
-        }
-
-        #endregion Configuration
 
         #region Execution
 
-        private QueryDTO ExtractSqlQuery(PayloadDTO payload)
+        private QueryDTO ExtractSqlQuery()
         {
-            var sqlQueryCrate = CrateManager.FromDto(payload.CrateStorage).CratesOfType<StandardQueryCM>(x => x.Label == "Sql Query").FirstOrDefault();
-
-            if (sqlQueryCrate == null) { return null; }
-
-            
-            var queryCM = sqlQueryCrate.Content;
-            if (queryCM == null || queryCM.Queries == null || queryCM.Queries.Count == 0) { return null; }
-
+            var sqlQueryCrate = Payload.CratesOfType<StandardQueryCM>(x => x.Label == "Sql Query").FirstOrDefault();
+            var queryCM = sqlQueryCrate?.Content;
+            if (queryCM?.Queries == null || queryCM.Queries.Count == 0) { return null; }
             return queryCM.Queries[0];
         }
 
@@ -130,65 +110,61 @@ namespace terminalFr8Core.Actions
             return payloadCM;
         }
 
-        private async Task<string> ExtractConnectionString(ActivityDO activityDO)
+        private async Task<string> ExtractConnectionString()
         {
-            var upstreamCrates = await GetCratesByDirection<FieldDescriptionsCM>(
-                activityDO,
-                CrateDirection.Upstream
-            );
-
-            if (upstreamCrates == null) { return null; }
-
-            var connectionStringCrate = upstreamCrates
-                .FirstOrDefault(x => x.Label == "Sql Connection String");
-
-            if (connectionStringCrate == null) { return null; }
-
-            var connectionStringCM = connectionStringCrate.Content;
-
-            if (connectionStringCM == null) { return null; }
-
-            var connectionStringFields = connectionStringCM.Fields;
+            var upstreamCrates = await GetCratesByDirection<FieldDescriptionsCM>(CrateDirection.Upstream);
+            var connectionStringCrate = upstreamCrates?.FirstOrDefault(x => x.Label == "Sql Connection String");
+            var connectionStringCM = connectionStringCrate?.Content;
+            var connectionStringFields = connectionStringCM?.Fields;
             if (connectionStringFields == null || connectionStringFields.Count == 0) { return null; }
-
             return connectionStringFields[0].Key;
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+
+        #endregion Execution
+
+        public ExecuteSql_v1() : base(false)
+        {
+        }
+
+        public override async Task Run()
         {
             var findObjectHelper = new FindObjectHelper();
-            var payload = await GetPayload(curActivityDO, containerId);
-
-            var columnTypes = await findObjectHelper.ExtractColumnTypes(this, curActivityDO);
+            var columnTypes = await findObjectHelper.ExtractColumnTypes(HubCommunicator, ActivityContext);
             if (columnTypes == null)
             {
-                return Error(payload, "No column types crate found.");
+                RaiseError("No column types crate found.");
+                return;
             }
 
-            var queryPayloadValue = ExtractSqlQuery(payload);
+            var queryPayloadValue = ExtractSqlQuery();
             if (queryPayloadValue == null)
             {
-                return Error(payload, "No Sql Query payload crate found.");
+                RaiseError("No Sql Query payload crate found.");
+                return;
             }
 
-            var connectionString = await ExtractConnectionString(curActivityDO);
+            var connectionString = await ExtractConnectionString();
 
             var query = BuildQuery(connectionString, queryPayloadValue, columnTypes);
 
             var dbProvider = DbProvider.GetDbProvider(DefaultDbProvider);
             var data = dbProvider.ExecuteQuery(query);
             var payloadCM = BuildStandardPayloadData(data, columnTypes);
-
-            var payloadCMCrate = Fr8Data.Crates.Crate.FromContent("Sql Query Result", payloadCM);
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
-            {
-                crateStorage.Add(payloadCMCrate);
-            }
-
-            return Success(payload);
+            var payloadCMCrate = Crate.FromContent("Sql Query Result", payloadCM);
+            Payload.Add(payloadCMCrate);
+            Success();
         }
 
-        #endregion Execution
+        public override async Task Initialize()
+        {
+            Storage.Add(PackControlsCrate());
+            AddLabelControl("NoConfigLabel","No configuration","This activity does not require any configuration.");
+        }
+
+        public override Task FollowUp()
+        {
+            return Task.FromResult(0);
+        }
     }
 }

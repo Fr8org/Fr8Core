@@ -7,7 +7,6 @@ using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using Hub.Managers;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -18,6 +17,8 @@ using terminalSalesforce.Infrastructure;
 using terminalSalesforceTests.Fixtures;
 using TerminalBase.Infrastructure;
 using UtilitiesTesting;
+using Fr8Data.Managers;
+using TerminalBase.Models;
 
 namespace terminalSalesforceTests.Actions
 {
@@ -31,8 +32,7 @@ namespace terminalSalesforceTests.Actions
         {
             base.SetUp();
             TerminalBootstrapper.ConfigureTest();
-            TerminalSalesforceStructureMapBootstrapper.ConfigureDependencies(TerminalSalesforceStructureMapBootstrapper.DependencyType.TEST);
-
+            ObjectFactory.Configure(x => x.AddRegistry<TerminalSalesforceStructureMapBootstrapper.TestMode>());
             PayloadDTO testPayloadDTO = new PayloadDTO(new Guid());
 
             using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(testPayloadDTO))
@@ -41,18 +41,18 @@ namespace terminalSalesforceTests.Actions
             }
 
             Mock<IHubCommunicator> hubCommunicatorMock = new Mock<IHubCommunicator>(MockBehavior.Default);
-            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
+            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<Guid>(), It.IsAny<string>()))
                 .Returns(() => Task.FromResult(testPayloadDTO));
             ObjectFactory.Container.Inject(typeof(IHubCommunicator), hubCommunicatorMock.Object);
 
             Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
             FieldDTO testField = new FieldDTO("Account", "TestAccount");
             salesforceIntegrationMock.Setup(
-                s => s.GetProperties(SalesforceObjectType.Account, It.IsAny<AuthorizationTokenDO>(), false,null))
+                s => s.GetProperties(SalesforceObjectType.Account, It.IsAny<AuthorizationToken>(), false,null))
                 .Returns(() => Task.FromResult(new List<FieldDTO> { testField }));
 
             salesforceIntegrationMock.Setup(
-                s => s.Query(SalesforceObjectType.Account, It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationTokenDO>()))
+                s => s.Query(SalesforceObjectType.Account, It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationToken>()))
                 .Returns(() => Task.FromResult(new StandardTableDataCM()));
 
             _getData_v1 = new Get_Data_v1();
@@ -62,13 +62,13 @@ namespace terminalSalesforceTests.Actions
         public async Task Configure_InitialConfig_CheckControlsCrate()
         {
             //Arrange
-            var activityDO = FixtureData.GetFileListTestActivityDO1();
+            var activityContext = await FixtureData.GetFileListTestActivityContext1();
 
             //Act
-            var result = await _getData_v1.Configure(activityDO, await FixtureData.Salesforce_AuthToken());
+            await _getData_v1.Configure(activityContext);
 
             //Assert
-            var storage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(result);
+            var storage = activityContext.ActivityPayload.CrateStorage;
             Assert.AreEqual(2, storage.Count, "Number of configuration crates not populated correctly");
             Assert.IsNotNull(storage.FirstCrateOrDefault<StandardConfigurationControlsCM>(), "Configuration controls is not present");
             Assert.IsNotNull(storage.FirstCrateOrDefault<CrateDescriptionCM>(), "There is no crate with runtime crates descriptions in activity storage");
@@ -78,18 +78,17 @@ namespace terminalSalesforceTests.Actions
         public async Task Configure_FollowUpConfig_CheckObjectFields()
         {
             // Arrange
-            var authToken = await FixtureData.Salesforce_AuthToken();
-            var activityDO = FixtureData.GetFileListTestActivityDO1();
-            activityDO = await _getData_v1.Configure(activityDO, authToken);
-            activityDO = SelectSalesforceAccount(activityDO);
+            var activityContext = await FixtureData.GetFileListTestActivityContext2();
+            await _getData_v1.Configure(activityContext);
+            SelectSalesforceAccount(activityContext);
 
             Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
 
             // Act
-            activityDO = await _getData_v1.Configure(activityDO, authToken);
+            await _getData_v1.Configure(activityContext);
 
             // Assert
-            var storage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(activityDO);
+            var storage = activityContext.ActivityPayload.CrateStorage;
             Assert.AreEqual(5, storage.Count, "Number of configuration crates not populated correctly");
 
             // Assert.IsNotNull(storage.FirstCrateOrDefault<TypedFieldsCM>(x => x.Label == Get_Data_v1.QueryFilterCrateLabel), 
@@ -99,7 +98,7 @@ namespace terminalSalesforceTests.Actions
             Assert.IsNotNull(storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == "Queryable Criteria"),
                              "There is no crate with field descriptions of selected Salesforce object in activity storage");
 
-            salesforceIntegrationMock.Verify(s => s.GetProperties(SalesforceObjectType.Account, It.IsAny<AuthorizationTokenDO>(), false,null), Times.Exactly(1));
+            salesforceIntegrationMock.Verify(s => s.GetProperties(SalesforceObjectType.Account, It.IsAny<AuthorizationToken>(), false,null), Times.Exactly(1));
         }
 
         [Test, Category("terminalSalesforceTests.Get_Data.Run")]
@@ -107,43 +106,40 @@ namespace terminalSalesforceTests.Actions
         {
             //Arrange
             var authToken = await FixtureData.Salesforce_AuthToken();
-            var activityDO = FixtureData.GetFileListTestActivityDO1();
+            var activityContext = await FixtureData.GetFileListTestActivityContext1();
+            var executionContext = new ContainerExecutionContext
+            {
+                PayloadStorage = new CrateStorage(Crate.FromContent(string.Empty, new OperationalStateCM()))
+            };
 
             //perform initial configuration
-            activityDO = await _getData_v1.Configure(activityDO, authToken);
-            activityDO = SelectSalesforceAccount(activityDO);
+            await _getData_v1.Configure(activityContext);
+            activityContext = SelectSalesforceAccount(activityContext);
             //perform follow up configuration
-            activityDO = await _getData_v1.Configure(activityDO, authToken);
+            await _getData_v1.Configure(activityContext);
 
-            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(activityDO))
-            {
-                crateStorage.CratesOfType<StandardConfigurationControlsCM>()
-                    .Single()
-                    .Content.Controls.Single(control => control.Type == ControlTypes.QueryBuilder)
-                    //.Value = JsonConvert.SerializeObject(new FilterDataDTO() {Conditions = new List<FilterConditionDTO>()});
-                    .Value = JsonConvert.SerializeObject(new List<FilterConditionDTO>());
-            }
+            activityContext.ActivityPayload.CrateStorage.CratesOfType<StandardConfigurationControlsCM>()
+                .Single()
+                .Content.Controls.Single(control => control.Type == ControlTypes.QueryBuilder)
+                //.Value = JsonConvert.SerializeObject(new FilterDataDTO() {Conditions = new List<FilterConditionDTO>()});
+                .Value = JsonConvert.SerializeObject(new List<FilterConditionDTO>());
 
             //Act
-            var resultPayload = await _getData_v1.Run(activityDO, new Guid(), authToken);
-
+            await _getData_v1.Run(activityContext, executionContext);
             //Assert
-            var stroage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(resultPayload);
+            var stroage = executionContext.PayloadStorage;
             Assert.AreEqual(3, stroage.Count, "Number of Payload crates not populated correctly");
 
             Assert.IsNotNull(stroage.CratesOfType<StandardTableDataCM>().Single(), "Not able to get the required salesforce object");
         }
 
-        private ActivityDO SelectSalesforceAccount(ActivityDO curActivityDO)
+        private ActivityContext SelectSalesforceAccount(ActivityContext activityContext)
         {
-            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(curActivityDO))
-            {
-                var controlsCrate = crateStorage.FirstCrate<StandardConfigurationControlsCM>();
-                var activityUi = new Get_Data_v1.ActivityUi().ClonePropertiesFrom(controlsCrate.Content) as Get_Data_v1.ActivityUi;
-                activityUi.SalesforceObjectSelector.selectedKey = "Account";
-                controlsCrate.Content.ClonePropertiesFrom(activityUi);
-            }
-            return curActivityDO;
+            var controlsCrate = activityContext.ActivityPayload.CrateStorage.FirstCrate<StandardConfigurationControlsCM>();
+            var activityUi = new Get_Data_v1.ActivityUi().ClonePropertiesFrom(controlsCrate.Content) as Get_Data_v1.ActivityUi;
+            activityUi.SalesforceObjectSelector.selectedKey = "Account";
+            controlsCrate.Content.ClonePropertiesFrom(activityUi);
+            return activityContext;
         }
     }
 }
