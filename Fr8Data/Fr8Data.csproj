@@ -201,6 +201,7 @@
     <Compile Include="Manifests\OperationalStateCM.CallStackConverter.cs" />
     <Compile Include="Manifests\OperationalStateCM.cs" />
     <Compile Include="Manifests\OperationalStateCM.InternalStates.cs" />
+    <Compile Include="Manifests\PlanTemplateCM.cs" />
     <Compile Include="Manifests\SalesforceEventCM.cs" />
     <Compile Include="Manifests\StandardAccountingTransactionCM.cs" />
     <Compile Include="Manifests\StandardAuthenticationCM.cs" />
@@ -227,6 +228,7 @@
     <Compile Include="States\AuthenticationType.cs" />
     <Compile Include="States\AvailabilityType.cs" />
     <Compile Include="States\CrateDirection.cs" />
+    <Compile Include="States\PlanTemplateStatus.cs" />
     <Compile Include="States\PlanVisibility.cs" />
     <Compile Include="States\TerminalStatus.cs" />
   </ItemGroup>
