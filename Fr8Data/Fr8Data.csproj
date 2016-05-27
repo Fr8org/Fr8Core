@@ -141,7 +141,7 @@
     <Compile Include="DataTransferObjects\HistoryItemDTO.cs" />
     <Compile Include="DataTransferObjects\IncomingCratesDTO.cs" />
     <Compile Include="DataTransferObjects\LogItemDTO.cs" />
-    <Compile Include="DataTransferObjects\ManageAuthTokenDTO.cs" />
+    <Compile Include="DataTransferObjects\AuthenticationTokenDTO.cs" />
     <Compile Include="DataTransferObjects\ManifestDescriptionDTO.cs" />
     <Compile Include="DataTransferObjects\ManufacturerDTO.cs" />
     <Compile Include="DataTransferObjects\MappingFieldConfigurationDTO.cs" />
