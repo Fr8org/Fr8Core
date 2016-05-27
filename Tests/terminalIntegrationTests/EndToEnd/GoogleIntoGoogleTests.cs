@@ -12,6 +12,7 @@ using StructureMap;
 using terminaBaselTests.Tools.Activities;
 using terminaBaselTests.Tools.Plans;
 using terminalFr8Core.Actions;
+using terminalFr8Core.Activities;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services;
 using terminalGoogle.Services.Authorization;
@@ -34,10 +35,11 @@ namespace terminalIntegrationTests.EndToEnd
             _plansHelper = new IntegrationTestTools(this);
             _fr8ActivityConfigurator = new IntegrationTestTools_terminalFr8(this);
         }
-
+        
         [Test, Category("Integration.terminalGoogle")]
         public async Task GoogleIntoGoogleEndToEnd()
         {
+            /*
             var googleAuthTokenId = await new terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalGoogle(this).ExtractGoogleDefaultToken();
             var defaultGoogleAuthToken = GetGoogleAuthToken(googleAuthTokenId);
 
@@ -92,6 +94,7 @@ namespace terminalIntegrationTests.EndToEnd
                     await googleSheetApi.DeleteSpreadSheet(destinationSpreadsheetUri, defaultGoogleAuthToken);
                 }
             }
+            */
         }
 
         private StandardTableDataCM GetTestSpreadsheetContent()

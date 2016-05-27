@@ -4,7 +4,6 @@ using System.Linq;
 using System.Web.Http;
 using AutoMapper;
 using Hub.Infrastructure;
-using HubWeb.Infrastructure;
 using StructureMap;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
 using InternalInterface = Hub.Interfaces;
@@ -13,6 +12,7 @@ using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
 using Fr8Data.DataTransferObjects;
+using HubWeb.Infrastructure_HubWeb;
 using Newtonsoft.Json;
 
 namespace HubWeb.Controllers

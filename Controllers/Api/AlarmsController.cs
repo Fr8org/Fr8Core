@@ -1,18 +1,16 @@
 ﻿using Hangfire;
 using Hub.Infrastructure;
 using Hub.Interfaces;
-using HubWeb.Infrastructure;
 using StructureMap;
 using System;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Fr8Data.DataTransferObjects;
+using HubWeb.Infrastructure_HubWeb;
 using log4net;
-using Utilities.Configuration;
 using Data.Interfaces;
 using System.Linq;
 using System.Net.Http;
-using System.Collections.Generic;
 
 namespace HubWeb.Controllers
 {

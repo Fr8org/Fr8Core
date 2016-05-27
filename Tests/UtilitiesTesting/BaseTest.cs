@@ -14,6 +14,7 @@ using Fr8Data.DataTransferObjects;
 using Hub.Managers;
 using Hub.StructureMap;
 using Web.ViewModels;
+using Fr8Data.Managers;
 
 namespace UtilitiesTesting
 {
@@ -25,17 +26,20 @@ namespace UtilitiesTesting
         [SetUp]
         public virtual void SetUp()
         {
+            ObjectFactory.Initialize();
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.TEST);
             MockedDBContext.WipeMockedDatabase();
             ConfigureAutoMapper();
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             CrateManager = ObjectFactory.Container.GetInstance<ICrateManager>();
-
+            ObjectFactory.Configure(x => x.AddRegistry<Fr8Infrastructure.StructureMap.StructureMapBootStrapper.TestMode>());
             
             
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>()) //Get the seeding done first
                 uow.SaveChanges();
-                
+
+            
+
         }
 
         [TearDown]

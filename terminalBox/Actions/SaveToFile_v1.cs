@@ -6,15 +6,31 @@ using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using Fr8Data.States;
 using Newtonsoft.Json;
+using StructureMap.Diagnostics;
 using terminalBox.Infrastructure;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
+using TerminalBase.Services;
 
 namespace terminalBox.Actions
 {
     public class SaveToFile_v1 : EnhancedTerminalActivity<SaveToFile_v1.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "SaveToFile",
+            Label = "SaveToFile",
+            Version = "1",
+            Category = ActivityCategory.Forwarders,
+            NeedsAuthentication = true,
+            MinPaneWidth = 300,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public CrateChooser FileChooser { get; set; }
@@ -33,30 +49,30 @@ namespace terminalBox.Actions
         {
         }
 
-        protected override async Task Initialize(CrateSignaller crateSignaller)
+        protected override async Task InitializeETA()
         {
             await Task.Yield();
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
+        protected override async Task ConfigureETA()
         {
             await Task.Yield();
         }
 
-        protected override async Task RunCurrentActivity()
+        protected override async Task RunETA()
         {
             var token = JsonConvert.DeserializeObject<BoxAuthTokenDO>(AuthorizationToken.Token);
-            var desiredCrateDescription = ConfigurationControls.FileChooser.CrateDescriptions.Single(x => x.Selected);
-            var tableCrate = CurrentPayloadStorage.CratesOfType<StandardTableDataCM>()
+            var desiredCrateDescription = ActivityUI.FileChooser.CrateDescriptions.Single(x => x.Selected);
+            var tableCrate = Payload.CratesOfType<StandardTableDataCM>()
                 .FirstOrDefault(x => x.Label == desiredCrateDescription.Label 
                 && x.ManifestType.Type == desiredCrateDescription.ManifestType);
 
             if (tableCrate == null)
             {
-                Error($"Selected crate {desiredCrateDescription.Label} doesn't contains table data");
+                RaiseError($"Selected crate {desiredCrateDescription.Label} doesn't contains table data");
                 return;
             }
-            var fileName = ConfigurationControls.Filename.Value;
+            var fileName = ActivityUI.Filename.Value;
             var service = new BoxService(token);
             string fileId;
             using (var stream = new MemoryStream())
@@ -68,16 +84,7 @@ namespace terminalBox.Actions
             }
             var downloadLink = service.GetFileLink(fileId).Result;
 
-            await HubCommunicator.NotifyUser(new TerminalNotificationDTO
-            {
-                Type = "Success",
-                ActivityName = "SaveToFile",
-                ActivityVersion = "1",
-                TerminalName = "terminalBox",
-                TerminalVersion = "1",
-                Message = "File was upload to Box. You can download it using this url: " + downloadLink,
-                Subject = "File download URL"
-            }, CurrentFr8UserId);
+            await PushUserNotification("Success", "File download URL", "File was upload to Box. You can download it using this url: " + downloadLink);
         }
 
         /// <summary>

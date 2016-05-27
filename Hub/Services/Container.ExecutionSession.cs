@@ -10,10 +10,10 @@ using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.DataTransferObjects.Helpers;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Hub.Exceptions;
 using Hub.Interfaces;
-using Hub.Managers;
 using StructureMap;
 
 namespace Hub.Services

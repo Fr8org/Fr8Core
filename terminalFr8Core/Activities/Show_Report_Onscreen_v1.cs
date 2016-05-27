@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Entities;
-using Data.States;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
@@ -14,10 +13,23 @@ using Newtonsoft.Json;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class Show_Report_Onscreen_v1 : BaseTerminalActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Show_Report_Onscreen",
+            Label = "Show Report Onscreen",
+            Version = "2",
+            Category = ActivityCategory.Processors,
+            NeedsAuthentication = false,
+            MinPaneWidth = 380,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
@@ -39,11 +51,10 @@ namespace terminalFr8Core.Actions
         }
 
 
-        private async Task<Fr8Data.Crates.Crate> FindTables(ActivityDO curActivityDO)
+        private async Task<Crate> FindTables()
         {
             var fields = new List<FieldDTO>();
-
-            foreach (var table in (await GetCratesByDirection<FieldDescriptionsCM>(curActivityDO, CrateDirection.Upstream))
+            foreach (var table in (await GetCratesByDirection<FieldDescriptionsCM>(CrateDirection.Upstream))
                                              .Select(x => x.Content)
                                              .SelectMany(x => x.Fields)
                                              .Where(x => x.Availability == AvailabilityType.RunTime && x.Value == "Table"))
@@ -51,72 +62,45 @@ namespace terminalFr8Core.Actions
                 fields.Add(new FieldDTO(table.Key, table.Key));    
             }
 
-            return Fr8Data.Crates.Crate.FromContent("Upstream Crate Label List", new FieldDescriptionsCM(fields));
+            return Crate.FromContent("Upstream Crate Label List", new FieldDescriptionsCM(fields));
         }
 
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.Add(PackControls(new ActivityUi()));
-                crateStorage.Add(await FindTables(curActivityDO));
-            }
 
-            return curActivityDO;
+        public Show_Report_Onscreen_v1() : base(false)
+        {
         }
 
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override Task Run()
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.ReplaceByLabel(await FindTables(curActivityDO));
-            }
-
-            return curActivityDO;
-        }
-
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-        {
-            var payload = await GetPayload(curActivityDO, containerId);
-
-            var configurationControls = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
-
-            if (configurationControls == null)
-            {
-                return Error(payload, "Action was not configured correctly");
-            }
-
             var actionUi = new ActivityUi();
-
-            actionUi.ClonePropertiesFrom(configurationControls);
+            actionUi.ClonePropertiesFrom(ConfigurationControls);
 
             if (!string.IsNullOrWhiteSpace(actionUi.ReportSelector.SelectedLabel))
             {
-                using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
-                {
-                    var reportTable = crateStorage.CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == actionUi.ReportSelector.SelectedLabel);
+                var reportTable = Payload.CratesOfType<StandardPayloadDataCM>().FirstOrDefault(x => x.Label == actionUi.ReportSelector.SelectedLabel);
 
-                    if (reportTable != null)
+                if (reportTable != null)
+                {
+                    Payload.Add(Crate.FromContent("Sql Query Result", new StandardPayloadDataCM
                     {
-                        crateStorage.Add(Fr8Data.Crates.Crate.FromContent("Sql Query Result", new StandardPayloadDataCM
-                        {
-                            PayloadObjects = reportTable.Content.PayloadObjects
-                        }));
-                    }
+                        PayloadObjects = reportTable.Content.PayloadObjects
+                    }));
                 }
             }
 
-            return ExecuteClientActivity(payload, "ShowTableReport");
+            ExecuteClientActivity("ShowTableReport");
+            return Task.FromResult(0);
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        public override async Task Initialize()
         {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
+            Storage.Add(PackControls(new ActivityUi()));
+            Storage.Add(await FindTables());
+        }
 
-            return ConfigurationRequestType.Followup;
+        public override async Task FollowUp()
+        {
+            Storage.ReplaceByLabel(await FindTables());
         }
     }
 }

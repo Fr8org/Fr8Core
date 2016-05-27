@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using StructureMap;
-using Data.Infrastructure;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
@@ -13,12 +12,24 @@ using Fr8Data.States;
 using TerminalBase.BaseClasses;
 using terminalAtlassian.Interfaces;
 using terminalAtlassian.Services;
-using TerminalBase.Infrastructure;
 
 namespace terminalAtlassian.Actions
 {
     public class Save_Jira_Issue_v1 : EnhancedTerminalActivity<Save_Jira_Issue_v1.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Version = "1",
+            Name = "Save_Jira_Issue",
+            Label = "Save Jira Issue",
+            NeedsAuthentication = true,
+            Category = ActivityCategory.Forwarders,
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public DropDownList AvailableProjects { get; set; }
@@ -192,9 +203,9 @@ namespace terminalAtlassian.Actions
 
         #region Configuration
 
-        protected override async Task Initialize(CrateSignaller crateSignaller)
+        protected override async Task InitializeETA()
         {
-            ConfigurationControls.AvailableProjects.ListItems = _atlassianService
+            ActivityUI.AvailableProjects.ListItems = _atlassianService
                 .GetProjects(AuthorizationToken)
                 .ToListItems()
                 .ToList();
@@ -202,12 +213,12 @@ namespace terminalAtlassian.Actions
             await Task.Yield();
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
+        protected override async Task ConfigureETA()
         {
-            ConfigurationControls.RestoreCustomFields(CurrentActivityStorage);
+            ActivityUI.RestoreCustomFields(Storage);
             var configProps = GetConfigurationProperties();
             
-            var projectKey = ConfigurationControls.AvailableProjects.Value;
+            var projectKey = ActivityUI.AvailableProjects.Value;
             if (!string.IsNullOrEmpty(projectKey))
             {
                 ToggleProjectSelectedVisibility(true);
@@ -217,7 +228,7 @@ namespace terminalAtlassian.Actions
                     FillIssueTypeDdl(projectKey);
                 }
 
-                var issueTypeKey = ConfigurationControls.AvailableIssueTypes.Value;
+                var issueTypeKey = ActivityUI.AvailableIssueTypes.Value;
                 if (!string.IsNullOrEmpty(issueTypeKey))
                 {
                     ToggleFieldsVisibility(true);
@@ -237,8 +248,8 @@ namespace terminalAtlassian.Actions
                 ToggleProjectSelectedVisibility(false);
             }
 
-            configProps.SelectedProjectKey = ConfigurationControls.AvailableProjects.Value;
-            configProps.SelectedIssueType = ConfigurationControls.AvailableIssueTypes.Value;
+            configProps.SelectedProjectKey = ActivityUI.AvailableProjects.Value;
+            configProps.SelectedIssueType = ActivityUI.AvailableIssueTypes.Value;
 
             SetConfigurationProperties(configProps);
 
@@ -247,7 +258,7 @@ namespace terminalAtlassian.Actions
 
         private ConfigurationProperties GetConfigurationProperties()
         {
-            var fd = CurrentActivityStorage
+            var fd = Storage
                 .CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == ConfigurationPropertiesLabel)
                 .FirstOrDefault();
 
@@ -268,19 +279,19 @@ namespace terminalAtlassian.Actions
                 new FieldDTO("SelectedIssueType", configProps.SelectedIssueType, AvailabilityType.Configuration)
             );
 
-            CurrentActivityStorage.ReplaceByLabel(Crate.FromContent(ConfigurationPropertiesLabel, fd, AvailabilityType.Configuration));
+            Storage.ReplaceByLabel(Crate.FromContent(ConfigurationPropertiesLabel, fd, AvailabilityType.Configuration));
         }
 
         private void ToggleProjectSelectedVisibility(bool projectSelected)
         {
-            ConfigurationControls.SelectProjectLabel.IsHidden = projectSelected;
-            ConfigurationControls.AvailableIssueTypes.IsHidden = !projectSelected;
-            ConfigurationControls.SelectIssueTypeLabel.IsHidden = !projectSelected;
+            ActivityUI.SelectProjectLabel.IsHidden = projectSelected;
+            ActivityUI.AvailableIssueTypes.IsHidden = !projectSelected;
+            ActivityUI.SelectIssueTypeLabel.IsHidden = !projectSelected;
         }
 
         private void FillIssueTypeDdl(string projectKey)
         {
-            ConfigurationControls.AvailableIssueTypes.ListItems = _atlassianService
+            ActivityUI.AvailableIssueTypes.ListItems = _atlassianService
                 .GetIssueTypes(projectKey, AuthorizationToken)
                 .ToListItems()
                 .ToList();
@@ -288,21 +299,21 @@ namespace terminalAtlassian.Actions
 
         private void ToggleFieldsVisibility(bool visible)
         {
-            ConfigurationControls.Summary.IsHidden = !visible;
-            ConfigurationControls.Description.IsHidden = !visible;
-            ConfigurationControls.AvailablePriorities.IsHidden = !visible;
-            ConfigurationControls.SelectIssueTypeLabel.IsHidden = visible;
+            ActivityUI.Summary.IsHidden = !visible;
+            ActivityUI.Description.IsHidden = !visible;
+            ActivityUI.AvailablePriorities.IsHidden = !visible;
+            ActivityUI.SelectIssueTypeLabel.IsHidden = visible;
         }
 
         private void FillFieldDdls()
         {
-            ConfigurationControls.AvailablePriorities.ListItems = _atlassianService
+            ActivityUI.AvailablePriorities.ListItems = _atlassianService
                 .GetPriorities(AuthorizationToken)
                 .ToListItems()
                 .ToList();
 
             var customFields = _atlassianService.GetCustomFields(AuthorizationToken);
-            ConfigurationControls.AppendCustomFields(customFields);
+            ActivityUI.AppendCustomFields(customFields);
         }
 
         #endregion Configuration
@@ -310,36 +321,28 @@ namespace terminalAtlassian.Actions
 
         #region Runtime
 
-        protected override async Task RunCurrentActivity()
+        protected override async Task RunETA()
         {
-            ConfigurationControls.RestoreCustomFields(CurrentActivityStorage);
+            ActivityUI.RestoreCustomFields(Storage);
 
             var issueInfo = ExtractIssueInfo();
             _atlassianService.CreateIssue(issueInfo, AuthorizationToken);
 
             var credentialsDTO = JsonConvert.DeserializeObject<CredentialsDTO>(AuthorizationToken.Token);
-
-            await PushUserNotification(new TerminalNotificationDTO
-            {
-                Type = "Success",
-                ActivityName = "Save_Jira_Issue",
-                ActivityVersion = "1",
-                TerminalName = "terminalAtlassian",
-                TerminalVersion = "1",
-                Message = "Created new jira issue: " + credentialsDTO.Domain + "/browse/" + issueInfo.Key,
-                Subject = "Jira issue created"
-            });
+            await
+                PushUserNotification("Success", "Jira issue created",
+                    "Created new jira issue: " + credentialsDTO.Domain + "/browse/" + issueInfo.Key);
         }
 
         private IssueInfo ExtractIssueInfo()
         {
-            var projectKey = ConfigurationControls.AvailableProjects.Value;
+            var projectKey = ActivityUI.AvailableProjects.Value;
             if (string.IsNullOrEmpty(projectKey))
             {
                 throw new ApplicationException("Jira Project is not selected.");
             }
 
-            var issueTypeKey = ConfigurationControls.AvailableIssueTypes.Value;
+            var issueTypeKey = ActivityUI.AvailableIssueTypes.Value;
             if (string.IsNullOrEmpty(issueTypeKey))
             {
                 throw new ApplicationException("Jira Issue Type is not selected.");
@@ -349,10 +352,10 @@ namespace terminalAtlassian.Actions
             {
                 ProjectKey = projectKey,
                 IssueTypeKey = issueTypeKey,
-                PriorityKey = ConfigurationControls.AvailablePriorities.Value,
-                Description = ConfigurationControls.Description.GetValue(CurrentPayloadStorage),
-                Summary = ConfigurationControls.Summary.GetValue(CurrentPayloadStorage),
-                CustomFields = ConfigurationControls.GetValues(CurrentPayloadStorage).ToList()
+                PriorityKey = ActivityUI.AvailablePriorities.Value,
+                Description = ActivityUI.Description.GetValue(Payload),
+                Summary = ActivityUI.Summary.GetValue(Payload),
+                CustomFields = ActivityUI.GetValues(Payload).ToList()
             };
 
             return result;

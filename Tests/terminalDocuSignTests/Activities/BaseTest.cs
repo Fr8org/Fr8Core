@@ -2,7 +2,6 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Entities;
-using Data.Interfaces.Manifests;
 using Fr8Data.Crates;
 using Hub.Managers;
 using Moq;
@@ -13,19 +12,22 @@ using terminalDocuSign.Services.New_Api;
 using TerminalBase.Infrastructure;
 using UtilitiesTesting.Fixtures;
 using TerminalBase.BaseClasses;
+using Fr8Data.Manifests;
+using Fr8Data.Managers;
+using TerminalBase.Models;
 
 namespace terminalDocuSignTests.Activities
 {
     public class BaseTest : UtilitiesTesting.BaseTest
     {
-        protected readonly AuthorizationTokenDO FakeToken = new AuthorizationTokenDO { Token = "1" };
+        protected readonly AuthorizationToken FakeToken = new AuthorizationToken { Token = "1" };
         [SetUp]
         public override void SetUp()
         {
             base.SetUp();
             var hubCommunicatorMock = new Mock<IHubCommunicator>();
-            hubCommunicatorMock.Setup(x => x.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
-                               .Returns(Task.FromResult(FixtureData.PayloadDTO2()));
+            hubCommunicatorMock.Setup(x => x.GetPayload(It.IsAny<Guid>(), It.IsAny<string>()))
+                               .Returns(Task.FromResult(FixtureData.PayloadDTO1()));
             ObjectFactory.Configure(x => x.For<Mock<IHubCommunicator>>().Use(hubCommunicatorMock));
             ObjectFactory.Configure(x => x.For<IHubCommunicator>().Use(hubCommunicatorMock.Object));
             var docuSignPlanMock = new Mock<IDocuSignPlan>();
@@ -39,26 +41,24 @@ namespace terminalDocuSignTests.Activities
             ObjectFactory.Configure(x => x.For<IDocuSignFolders>().Use(docuSignFoldersMock.Object));
         }
 
-        protected async Task<ValidationResultsCM> Validate(BaseTerminalActivity activity, ActivityDO activityDo)
+        protected async Task<ValidationResultsCM> Validate(BaseTerminalActivity activity, ActivityContext activityContext)
         {
-            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(activityDo))
+            var activityPayload = activityContext.ActivityPayload;
+            activityPayload.CrateStorage.Remove<ValidationResultsCM>();
+
+            var currentValidationResults = activityPayload.CrateStorage.CrateContentsOfType<ValidationResultsCM>().FirstOrDefault();
+
+            if (currentValidationResults == null)
             {
-                crateStorage.Remove<ValidationResultsCM>();
-
-                var currentValidationResults = crateStorage.CrateContentsOfType<ValidationResultsCM>().FirstOrDefault();
-
-                if (currentValidationResults == null)
-                {
-                    currentValidationResults = new ValidationResultsCM();
-                    crateStorage.Add(Crate.FromContent("Validation Results", currentValidationResults));
-                }
-
-                var validationManager = new ValidationManager(currentValidationResults, null);
-
-                await activity.ValidateActivity(activityDo, crateStorage, validationManager);
-
-                return currentValidationResults;
+                currentValidationResults = new ValidationResultsCM();
+                activityPayload.CrateStorage.Add(Crate.FromContent("Validation Results", currentValidationResults));
             }
+
+            //var validationManager = new ValidationManager(currentValidationResults, null);
+            //let's trigger validation by calling activate
+            await activity.Activate(activityContext);
+
+            return activityPayload.CrateStorage.CrateContentsOfType<ValidationResultsCM>().FirstOrDefault();
         }
 
         protected void AssertErrorMessage(ValidationResultsCM validationResults, string errorMessage)

@@ -30,8 +30,7 @@ namespace HubWeb.Controllers
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
                     EmailAddressDO emailAddressDO = _emailAddress.ConvertFromString(emailString, uow);
-                    var ru = new RegexUtilities();
-                    if (!(ru.IsValidEmailAddress(emailAddressDO.Address)))
+                    if (!(RegexUtilities.IsValidEmailAddress(emailAddressDO.Address)))
                         return Json("Invalid email format");
                     else
                         return Json(true);

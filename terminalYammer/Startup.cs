@@ -9,6 +9,8 @@ using TerminalBase;
 using TerminalBase.BaseClasses;
 using System.Threading.Tasks;
 using System.Web.Http.Dispatcher;
+using terminalYammer.Actions;
+using TerminalBase.Services;
 
 [assembly: OwinStartup(typeof(terminalYammer.Startup))]
 
@@ -27,6 +29,11 @@ namespace terminalYammer
         public void Configuration(IAppBuilder app)
         {
             Configuration(app, false);
+        }
+
+        protected override void RegisterActivities()
+        {
+            ActivityStore.RegisterActivity<Post_To_Yammer_v1>(Post_To_Yammer_v1.ActivityTemplateDTO);
         }
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)

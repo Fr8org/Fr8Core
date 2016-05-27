@@ -10,10 +10,12 @@ using terminalDocuSign.Services.New_Api;
 using TerminalBase.Infrastructure;
 using Utilities.Configuration.Azure;
 using terminalDocuSign.Infrastructure;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using System.Threading.Tasks;
+using AutoMapper;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
+using Fr8Infrastructure.Interfaces;
 using Hub.Managers;
 using Nito.AsyncEx;
 
@@ -21,10 +23,10 @@ namespace terminalDocuSign.Services
 {
     public class DocuSignPolling
     {
-        private IDocuSignManager _docuSignManager;
-        private IHubCommunicator _hubCommunicator;
-        private IRestfulServiceClient _restfulServiceClient;
-        private ICrateManager _crateManager;
+        private readonly IDocuSignManager _docuSignManager;
+        private readonly IHubCommunicator _hubCommunicator;
+        private readonly IRestfulServiceClient _restfulServiceClient;
+        private readonly ICrateManager _crateManager;
 
         public DocuSignPolling()
         {
@@ -43,11 +45,9 @@ namespace terminalDocuSign.Services
 
         public async Task<bool> Poll(string externalAccountId, string curFr8UserId, string pollingInterval)
         {
-            AuthorizationTokenDTO authtoken = await _hubCommunicator.GetAuthToken(externalAccountId, curFr8UserId);
+            var authtoken = await _hubCommunicator.GetAuthToken(externalAccountId, curFr8UserId);
             if (authtoken == null) return false;
-
-            var authTokenDO = new AuthorizationTokenDO() { Token = authtoken.Token };
-            var config = _docuSignManager.SetUp(authTokenDO);
+            var config = _docuSignManager.SetUp(authtoken);
             EnvelopesApi api = new EnvelopesApi((Configuration)config.Configuration);
             List<DocuSignEnvelopeCM_v2> changed_envelopes = new List<DocuSignEnvelopeCM_v2>();
 
@@ -62,7 +62,7 @@ namespace terminalDocuSign.Services
                     EnvelopeId = envelope.EnvelopeId,
                     Status = envelope.Status,
                     StatusChangedDateTime = DateTime.Parse(envelope.StatusChangedDateTime),
-                    ExternalAccountId = JToken.Parse(authTokenDO.Token)["Email"].ToString(),
+                    ExternalAccountId = JToken.Parse(authtoken.Token)["Email"].ToString(),
                 };
             }
 

@@ -20,7 +20,7 @@ namespace terminalTests.Fixtures
             return new ActivityTemplateDTO()
             {
                 Id = Guid.NewGuid(),
-                Name = "terminalActivityMock",
+                Name = "BaseTerminalActivityMock",
                 Version = "1"
             };
         }

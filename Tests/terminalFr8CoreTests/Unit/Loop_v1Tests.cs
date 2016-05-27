@@ -4,6 +4,7 @@ using Fr8Data.Manifests;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using terminalFr8Core.Actions;
+using terminalFr8Core.Activities;
 
 namespace terminalTests.Unit
 {
