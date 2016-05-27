@@ -168,6 +168,7 @@ namespace terminalDocuSign.Activities
             if (ConfigurationControls == null)
             {
                 ValidationManager.SetError(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
+                return Task.FromResult(0);
             }
 
             var templateList = GetControl<DropDownList>("target_docusign_template");

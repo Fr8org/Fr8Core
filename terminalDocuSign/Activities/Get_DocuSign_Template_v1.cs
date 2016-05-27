@@ -88,8 +88,10 @@ namespace terminalDocuSign.Activities
         {
             var templateList = GetControl<DropDownList>("Available_Templates");
 
-            ValidationManager.ValidateControlExistance(templateList);
-            ValidationManager.ValidateTemplateList(templateList);
+            if (ValidationManager.ValidateControlExistance(templateList))
+            {
+                ValidationManager.ValidateTemplateList(templateList);
+            }
 
             return Task.FromResult(0);
         }

@@ -117,22 +117,27 @@ namespace terminalDocuSign.Actions
         protected override Task Validate()
         {
             var templateList = GetControl<DropDownList>("DocuSignTemplate");
-            ValidationManager.ValidateControlExistance(templateList);
-            ValidationManager.ValidateTemplateList(templateList);
+
+            if (ValidationManager.ValidateControlExistance(templateList))
+            {
+                ValidationManager.ValidateTemplateList(templateList);
+            }
+
             var sourceConfigControl = GetControl<DropDownList>("DataSource");
 
-            ValidationManager.ValidateControlExistance(sourceConfigControl);
-
-            if (DocuSignValidationUtils.AtLeastOneItemExists(sourceConfigControl))
+            if (ValidationManager.ValidateControlExistance(sourceConfigControl))
             {
-                if (!DocuSignValidationUtils.ItemIsSelected(sourceConfigControl))
+                if (DocuSignValidationUtils.AtLeastOneItemExists(sourceConfigControl))
                 {
-                    ValidationManager.SetError("Data source is not selected", sourceConfigControl);
+                    if (!DocuSignValidationUtils.ItemIsSelected(sourceConfigControl))
+                    {
+                        ValidationManager.SetError("Data source is not selected", sourceConfigControl);
+                    }
                 }
-            }
-            else
-            {
-                ValidationManager.SetError("No data source exists", sourceConfigControl);
+                else
+                {
+                    ValidationManager.SetError("No data source exists", sourceConfigControl);
+                }
             }
 
             return Task.FromResult(0);

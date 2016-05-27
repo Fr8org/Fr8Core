@@ -73,6 +73,7 @@ namespace terminalDocuSign.Actions
             if (activityUi == null)
             {
                 ValidationManager.SetError(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
+                return Task.FromResult(0);
             }
 
             if (!AtLeastOneNotificationIsSelected(activityUi))

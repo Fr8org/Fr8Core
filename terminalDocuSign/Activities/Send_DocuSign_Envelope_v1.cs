@@ -349,6 +349,7 @@ namespace terminalDocuSign.Actions
             if (ConfigurationControls == null)
             {
                 ValidationManager.SetError(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
+                return Task.FromResult(0);
             }
 
             var templateList = ConfigurationControls.Controls.OfType<DropDownList>().FirstOrDefault();
