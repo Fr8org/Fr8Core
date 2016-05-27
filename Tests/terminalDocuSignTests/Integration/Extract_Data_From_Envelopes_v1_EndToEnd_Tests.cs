@@ -1,7 +1,6 @@
 ﻿using HealthMonitor.Utility;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using Hub.Managers;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +10,7 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using Fr8Data.Managers;
 
 namespace terminalDocuSignTests.Integration
 {

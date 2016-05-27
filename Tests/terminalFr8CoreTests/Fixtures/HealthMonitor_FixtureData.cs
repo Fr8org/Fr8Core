@@ -2,7 +2,9 @@
 using Hub.Managers;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
+using TerminalBase.Models;
 
 namespace terminalTests.Fixtures
 {
@@ -32,13 +34,14 @@ namespace terminalTests.Fixtures
             return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
-        public static PayloadDTO PayloadWithOnlyOperationalState()
+        public static ContainerExecutionContext ExecutionContextWithOnlyOperationalState()
         {
-            var result = new PayloadDTO(Guid.NewGuid());
-            using (var storage = new CrateManager().GetUpdatableStorage(result))
+            var result = new ContainerExecutionContext()
             {
-                storage.Add(Crate.FromContent("Operational State", new OperationalStateCM()));
-            }
+                ContainerId = Guid.NewGuid(),
+                PayloadStorage = new CrateStorage(Crate.FromContent("Operational State", new OperationalStateCM()))
+            };
+
             return result;
         }
 

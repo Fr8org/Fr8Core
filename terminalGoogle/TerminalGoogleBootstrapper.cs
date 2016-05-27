@@ -1,19 +1,9 @@
-﻿using System;
-using System.Web.Http;
-using Microsoft.Owin.Hosting;
-using Owin;
-using StructureMap;
-using StructureMap.Configuration.DSL;
-using Data.Infrastructure.StructureMap;
-using Data.Interfaces;
-using Hub.Interfaces;
-using Hub.Services;
+﻿using StructureMap;
 using terminalGoogle.Interfaces;
 using terminalGoogle.Services;
-using Hub.Managers;
-using StructureMap;
-using Hub.StructureMap;
 using terminalGoogle.Services.Authorization;
+using Fr8Infrastructure.StructureMap;
+using Fr8Data.Managers;
 
 namespace terminalGoogle
 {

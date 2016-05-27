@@ -6,6 +6,7 @@ using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using Fr8Data.States;
 using StructureMap;
 using terminalAtlassian.Services;
 using TerminalBase.BaseClasses;
@@ -15,6 +16,19 @@ namespace terminalAtlassian.Actions
 {
     public class Get_Jira_Issue_v1 : EnhancedTerminalActivity<Get_Jira_Issue_v1.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Version = "1",
+            Name = "Get_Jira_Issue",
+            Label = "Get Jira Issue",
+            NeedsAuthentication = true,
+            Category = ActivityCategory.Receivers,
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public TextSource IssueNumber { get; set; }
@@ -48,30 +62,29 @@ namespace terminalAtlassian.Actions
             _atlassianService = ObjectFactory.GetInstance<AtlassianService>();
         }
 
-        protected override async Task Initialize(CrateSignaller crateSignaller)
+        protected override async Task InitializeETA()
         {
             await Task.Yield();
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
+        protected override async Task ConfigureETA()
         {
-            var issueKey = ConfigurationControls.IssueNumber.GetValue(CurrentActivityStorage);
+            var issueKey = ActivityUI.IssueNumber.GetValue(Storage);
             if (!string.IsNullOrEmpty(issueKey))
             {
                 var issueFields = _atlassianService.GetJiraIssue(issueKey, AuthorizationToken);
-                CurrentActivityStorage.ReplaceByLabel(CrateJiraIssueDetailsDescriptionCrate(issueFields));
+                Storage.ReplaceByLabel(CrateJiraIssueDetailsDescriptionCrate(issueFields));
             }
-
             await Task.Yield();
         }
 
-        protected override async Task RunCurrentActivity()
+        protected override async Task RunETA()
         {
-            var issueKey = ConfigurationControls.IssueNumber.GetValue(CurrentActivityStorage);
+            var issueKey = ActivityUI.IssueNumber.GetValue(Storage);
             if (!string.IsNullOrEmpty(issueKey))
             {
                 var issueFields = _atlassianService.GetJiraIssue(issueKey, AuthorizationToken);
-                CurrentPayloadStorage.Add(CrateJiraIssueDetailsPayloadCrate(issueFields));
+                Payload.Add(CrateJiraIssueDetailsPayloadCrate(issueFields));
             }
 
             await Task.Yield();

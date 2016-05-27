@@ -2,6 +2,7 @@
 using Fr8Data.Constants;
 using Hub.Managers;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
+using Fr8Data.Managers;
 
 namespace HubTests.Services.Container
 {

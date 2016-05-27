@@ -5,6 +5,8 @@ using TerminalBase.BaseClasses;
 using System.Collections.Generic;
 using System.Web.Http.Dispatcher;
 using System;
+using terminalTwilio.Activities;
+using TerminalBase.Services;
 
 [assembly: OwinStartup(typeof(Startup))]
 
@@ -29,6 +31,11 @@ namespace terminalTwilio
             {
                 StartHosting("terminalTwilio");
             }
+        }
+
+        protected override void RegisterActivities()
+        {
+            ActivityStore.RegisterActivity<Send_Via_Twilio_v1>(Send_Via_Twilio_v1.ActivityTemplateDTO);
         }
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web.Http;
-using StructureMap;
-using Hub.StructureMap;
-using TerminalBase;
+﻿using System.Web.Http;
 using TerminalBase.BaseClasses;
 
 namespace terminalSlack

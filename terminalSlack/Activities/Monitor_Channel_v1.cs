@@ -9,7 +9,7 @@ using Fr8Data.States;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
+using System;
 
 namespace terminalSlack.Actions
 {
@@ -77,23 +77,25 @@ namespace terminalSlack.Actions
 
         private readonly ISlackIntegration _slackIntegration;
 
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Monitor_Channel",
+            Label = "Monitor Channel",
+            Category = ActivityCategory.Monitors,
+            Terminal = TerminalData.TerminalDTO,
+            NeedsAuthentication = true,
+            Version = "1",
+            WebService = TerminalData.WebServiceDTO,
+            MinPaneWidth = 330
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+        
+
         public Monitor_Channel_v1() : base(true)
         {
             _slackIntegration = new SlackIntegration();
-            ActivityName = "Monitor Channel";
         }
 
-        protected override async Task Initialize(CrateSignaller crateSignaller)
-        {
-            var oAuthToken = AuthorizationToken.Token;
-            ConfigurationControls.ChannelList.ListItems = (await _slackIntegration.GetChannelList(oAuthToken, false))
-                .OrderBy(x => x.Key)
-                .Select(x => new ListItem { Key = $"#{x.Key}", Value = x.Value })
-                .ToList();
-            CurrentActivityStorage.Add(CreateChannelPropertiesCrate());
-            CurrentActivityStorage.Add(CreateEventSubscriptionCrate());
-            crateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel);
-        }
         
         private Crate CreateChannelPropertiesCrate()
         {
@@ -121,24 +123,18 @@ namespace terminalSlack.Actions
                                                                       new string[] { "Slack Outgoing Message" });
         }
 
-        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
-        {
-            //No extra configuration is required
-            return Task.FromResult(0);
-        }
-
-        protected override Task RunCurrentActivity()
+        protected override Task RunETA()
         {
             var incomingMessageContents = ExtractIncomingMessageContentFromPayload();
             var hasIncomingMessage = incomingMessageContents?.Fields.Count > 0;
             if (hasIncomingMessage)
             {
-                var channelMatches = ConfigurationControls.AllChannelsOption.Selected
-                    || string.IsNullOrEmpty(ConfigurationControls.ChannelList.selectedKey)
-                    || ConfigurationControls.ChannelList.Value == incomingMessageContents["channel_id"];
+                var channelMatches = ActivityUI.AllChannelsOption.Selected
+                    || string.IsNullOrEmpty(ActivityUI.ChannelList.selectedKey)
+                    || ActivityUI.ChannelList.Value == incomingMessageContents["channel_id"];
                 if (channelMatches)
                 {
-                    CurrentPayloadStorage.Add(Crate.FromContent(ResultPayloadCrateLabel, new StandardPayloadDataCM(incomingMessageContents.Fields), AvailabilityType.RunTime));
+                    Payload.Add(Crate.FromContent(ResultPayloadCrateLabel, new StandardPayloadDataCM(incomingMessageContents.Fields), AvailabilityType.RunTime));
                 }
                 else
                 {
@@ -147,19 +143,37 @@ namespace terminalSlack.Actions
             }
             else
             {
-                RequestHubExecutionTermination("External event data is missing.");
+                RequestHubExecutionTermination("Plan successfully activated. It will wait and respond to specified Slack postings");
             }
             return Task.FromResult(0);
         }
 
         private FieldDescriptionsCM ExtractIncomingMessageContentFromPayload()
         {
-            var eventReport = CurrentPayloadStorage.CrateContentsOfType<EventReportCM>().FirstOrDefault();
+            var eventReport = Payload.CrateContentsOfType<EventReportCM>().FirstOrDefault();
             if (eventReport == null)
             {
                 return null;
             }
             return new FieldDescriptionsCM(eventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()));
         }
+
+        protected override async Task InitializeETA()
+        {
+            var oAuthToken = AuthorizationToken.Token;
+            ActivityUI.ChannelList.ListItems = (await _slackIntegration.GetChannelList(oAuthToken, false))
+                .OrderBy(x => x.Key)
+                .Select(x => new ListItem { Key = $"#{x.Key}", Value = x.Value })
+                .ToList();
+            Storage.Add(CreateChannelPropertiesCrate());
+            Storage.Add(CreateEventSubscriptionCrate());
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel);
+        }
+
+        protected override Task ConfigureETA()
+        {
+            return Task.FromResult(0);
+        }
+
     }
 }

@@ -113,6 +113,10 @@
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Infrastructure\Fr8Infrastructure.csproj">
+      <Project>{9f4b5c92-3535-4d4c-b1e4-37beb1ae5c42}</Project>
+      <Name>Fr8Infrastructure</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\terminalBase\TerminalBase.csproj">
       <Project>{D6A0A493-E926-439A-9CE2-E093E75132CD}</Project>
       <Name>TerminalBase</Name>

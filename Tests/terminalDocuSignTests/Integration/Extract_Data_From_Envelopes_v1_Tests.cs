@@ -7,8 +7,8 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using NUnit.Framework;
 using HealthMonitor.Utility;
-using Hub.Managers;
 using terminalDocuSignTests.Fixtures;
+using Fr8Data.Managers;
 
 namespace terminalDocuSignTests.Integration
 {

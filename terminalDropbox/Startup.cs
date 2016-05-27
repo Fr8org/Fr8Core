@@ -11,6 +11,8 @@ using TerminalBase;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using System.Web.Http.Dispatcher;
+using TerminalBase.Services;
+using terminalDropbox.Actions;
 
 [assembly: OwinStartup(typeof(terminalDropbox.Startup))]
 
@@ -28,16 +30,6 @@ namespace terminalDropbox
             ConfigureProject(selfHost, TerminalDropboxStructureMapBootstrapper.LiveConfiguration);
 
             RoutesConfig.Register(_configuration);
-            //if (selfHost)
-            //{
-            //    // Web API routes
-            //    configuration.Services.Replace(
-            //        typeof(IHttpControllerTypeResolver),
-            //        new PluginControllerTypeResolver()
-            //    );
-            //}
-
-            //DataAutoMapperBootStrapper.ConfigureAutoMapper();
 
             ConfigureFormatters();
 
@@ -57,5 +49,10 @@ namespace terminalDropbox
                     typeof(Controllers.TerminalController)
                 };
         }
+        protected override void RegisterActivities()
+        {
+            ActivityStore.RegisterActivity<Get_File_List_v1>(Get_File_List_v1.ActivityTemplateDTO);
+        }
+
     }
 }
