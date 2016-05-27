@@ -63,10 +63,12 @@ module dockyard.directives.designerHeader {
                     result.$promise.then(() => { });
                 };
 
-                $scope.runPlan = () => {
+                $scope.runPlan = () => {                   
                     // mark plan as Active
-                    $scope.plan.planState = 2;
+                    $scope.plan.planState = 2;                   
                     var promise = PlanService.runAndProcessClientAction($scope.plan.id);
+                    // emit evet to control liner-progress bar
+                    $rootScope.$broadcast(<any>designHeaderEvents.PLAN_EXECUTION_STARTED);
                     promise.then((container: model.ContainerDTO) => {
                         //if we have validation errors - reset plan state to Inactive. Plans with errors can't be activated    
                         if (container.validationErrors && container.validationErrors != null) {
@@ -118,6 +120,9 @@ module dockyard.directives.designerHeader {
                 $scope.deactivatePlan = () => {
                     var result = PlanService.deactivate({ planId: $scope.plan.id });
                     result.$promise.then((data) => {
+                        // emit evet to control liner-progress bar
+                        $rootScope.$broadcast(<any>designHeaderEvents.PLAN_EXECUTION_STOPPED);
+
                         // mark plan as inactive
                         $scope.plan.planState = 1;
                         var messageToShow = "Plan successfully deactivated";
