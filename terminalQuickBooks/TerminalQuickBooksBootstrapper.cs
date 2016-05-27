@@ -1,5 +1,5 @@
-﻿using Hub.Managers;
-using Hub.StructureMap;
+﻿using Fr8Data.Managers;
+using Fr8Infrastructure.StructureMap;
 using StructureMap;
 using terminalQuickBooks.Infrastructure;
 using terminalQuickBooks.Interfaces;

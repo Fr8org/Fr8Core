@@ -4,6 +4,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http.Filters;
+using Fr8Infrastructure.Security;
 using Hub.Infrastructure;
 using Utilities.Configuration.Azure;
 

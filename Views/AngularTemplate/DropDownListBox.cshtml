@@ -1,5 +1,6 @@
-﻿<div class="drop-down-list-box-container"  ng-class="{'col-md-11': field.hasRefreshButton}"> <!--Dropdownlistbox control main container-->
-    <ui-select ng-model="selectedItem" theme="bootstrap" search-enabled="false" on-select="setSelectedItem($item)" stop-click-propagation append-to-body="true" ng-click="toggleDropDown($select)">
+﻿<div class="drop-down-list-box-container"  ng-class="{'col-md-11': field.hasRefreshButton}"> 
+    <!--Dropdownlistbox control main container-->
+    <ui-select ng-model="selectedItem" theme="bootstrap" search-enabled="false" on-select="setSelectedItem($item)" stop-click-propagation ng-click="toggleDropDown($select)">
         <ui-select-match placeholder="Select value from the list...">{{$select.selected.key || select.selected.Key || $select.selected}}</ui-select-match>
         <ui-select-choices repeat="listItem in field.listItems">
             <span ng-bind-html="listItem.key || listItem.Key"></span>

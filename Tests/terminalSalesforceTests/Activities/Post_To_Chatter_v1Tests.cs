@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Data.Entities;
-using Data.States;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using Hub.Managers;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
@@ -17,6 +14,9 @@ using terminalSalesforce.Infrastructure;
 using terminalSalesforceTests.Fixtures;
 using TerminalBase.Infrastructure;
 using UtilitiesTesting;
+using TerminalBase.Models;
+using Fr8Data.Managers;
+using TerminalBase.Helpers;
 
 namespace terminalSalesforceTests.Actions
 {
@@ -42,20 +42,20 @@ namespace terminalSalesforceTests.Actions
 
             Mock<IHubCommunicator> hubCommunicatorMock = new Mock<IHubCommunicator>(MockBehavior.Default);
 
-            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
+            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<Guid>(), It.IsAny<string>()))
                 .Returns(() => Task.FromResult(testPayloadDTO));
 
 
-            hubCommunicatorMock.Setup(h => h.GetDesignTimeFieldsByDirection(It.IsAny<ActivityDO>(), It.IsAny<CrateDirection>(), 
+            hubCommunicatorMock.Setup(h => h.GetDesignTimeFieldsByDirection(It.IsAny<Guid>(), It.IsAny<CrateDirection>(), 
                 It.IsAny<AvailabilityType>(), It.IsAny<string>())).Returns(() => Task.FromResult(new FieldDescriptionsCM()));
 
             ObjectFactory.Container.Inject(typeof(IHubCommunicator), hubCommunicatorMock.Object);
 
             Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
-            salesforceIntegrationMock.Setup(si => si.GetUsersAndGroups(It.IsAny<AuthorizationTokenDO>())).Returns(
+            salesforceIntegrationMock.Setup(si => si.GetUsersAndGroups(It.IsAny<AuthorizationToken>())).Returns(
                 () => Task.FromResult<IList<FieldDTO>>(new List<FieldDTO> { new FieldDTO("One", "1")}));
             salesforceIntegrationMock.Setup(si => si.PostToChatter(It.IsAny<string>(), It.IsAny<string>(), 
-                It.IsAny<AuthorizationTokenDO>())).Returns(() => Task.FromResult("SomeValue"));
+                It.IsAny<AuthorizationToken>())).Returns(() => Task.FromResult("SomeValue"));
 
             postToChatter_v1 = new Post_To_Chatter_v1();
         }
@@ -64,13 +64,13 @@ namespace terminalSalesforceTests.Actions
         public async Task Configure_InitialConfig_CheckControlsCrate()
         {
             //Arrange
-            var activityDO = FixtureData.PostToChatterTestActivityDO1();
+            var activityContext = await FixtureData.GetFileListTestActivityContext2();
 
             //Act
-            var result = await postToChatter_v1.Configure(activityDO, await FixtureData.Salesforce_AuthToken());
+            await postToChatter_v1.Configure(activityContext);
 
             //Assert
-            var storage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(result);
+            var storage = activityContext.ActivityPayload.CrateStorage;
             Assert.AreEqual(2, storage.Count, "Number of configuration crates not populated correctly");
             Assert.IsNotNull(storage.FirstCrateOrDefault<StandardConfigurationControlsCM>(), "Configuration controls crate is not found in activity storage");
             Assert.IsNotNull(storage.FirstCrateOrDefault<CrateDescriptionCM>(), "Crate with runtime crates desriptions is not found in activity storage");
@@ -80,31 +80,34 @@ namespace terminalSalesforceTests.Actions
         public async Task Run_Check_PayloadDTO_ForObjectData()
         {
             //Arrange
-            var authToken = await FixtureData.Salesforce_AuthToken();
-            var activityDO = FixtureData.PostToChatterTestActivityDO1();
-            
+            var activityContext = await FixtureData.GetFileListTestActivityContext2();
+            var executionContext = new ContainerExecutionContext
+            {
+                PayloadStorage = new CrateStorage(Crate.FromContent(string.Empty, new OperationalStateCM()))
+            };
+
             //perform initial configuration
-            activityDO = await postToChatter_v1.Configure(activityDO, authToken);
-            activityDO = SetValues(activityDO);
+            await postToChatter_v1.Configure(activityContext);
+            activityContext = SetValues(activityContext);
 
             //Act
-            var resultPayload = await postToChatter_v1.Run(activityDO, new Guid(), authToken);
+            await postToChatter_v1.Run(activityContext, executionContext);
 
             //Assert
-            var storage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(resultPayload);
+            var storage = executionContext.PayloadStorage;
             Assert.IsNotNull(storage.FirstCrateOrDefault<StandardPayloadDataCM>(), "Payload doesn't contain crate with posted feed Id");
         }
 
-        private ActivityDO SetValues(ActivityDO curActivityDO)
+        private ActivityContext SetValues(ActivityContext activityContext)
         {
-            curActivityDO.UpdateControls<Post_To_Chatter_v1.ActivityUi>(x =>
+            activityContext.ActivityPayload.CrateStorage.UpdateControls<Post_To_Chatter_v1.ActivityUi>(x =>
             {
                 x.UseUserOrGroupOption.Selected = true;
                 x.UserOrGroupSelector.Value = "1";
                 x.FeedTextSource.ValueSource = "specific";
                 x.FeedTextSource.TextValue = "SomeValue";
             });
-            return curActivityDO;
+            return activityContext;
         }
     }
 }

@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Diagnostics;
 using System.Threading.Tasks;
+using AutoMapper;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -10,18 +12,17 @@ using StructureMap;
 using Hub.Managers;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Infrastructure;
+using TerminalBase.Models;
 
 namespace terminalDocuSign.Services
 {
     public class Event : terminalDocuSign.Interfaces.IEvent
     {
-        private readonly EventReporter _alertReporter;
         private readonly IDocuSignPlan _docuSignPlan;
         private readonly ICrateManager _crateManager;
 
         public Event()
         {
-            _alertReporter = ObjectFactory.GetInstance<EventReporter>();
             _docuSignPlan = ObjectFactory.GetInstance<IDocuSignPlan>();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
@@ -103,7 +104,7 @@ namespace terminalDocuSign.Services
             return curEventReport;
         }
 
-        private Tuple<string, AuthorizationTokenDTO> ConfirmAuthentication(string curExternalEventPayload)
+        private Tuple<string, AuthorizationToken> ConfirmAuthentication(string curExternalEventPayload)
         {
             var jo = (JObject)JsonConvert.DeserializeObject(curExternalEventPayload);
             var curFr8UserId = jo["fr8_user_id"].Value<string>();
@@ -119,7 +120,7 @@ namespace terminalDocuSign.Services
                 throw new ArgumentException("Fr8 User ID is not in the correct format.");
             }
 
-            return new Tuple<string, AuthorizationTokenDTO>(curFr8UserId, authToken);
+            return new Tuple<string, AuthorizationToken>(curFr8UserId, Mapper.Map<AuthorizationToken>(authToken));
         }
     }
 }

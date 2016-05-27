@@ -1,4 +1,4 @@
-﻿using Hub.StructureMap;
+﻿using Fr8Infrastructure.StructureMap;
 using StructureMap;
 using terminalUtilities.Twilio;
 

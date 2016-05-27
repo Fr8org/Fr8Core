@@ -13,8 +13,8 @@ using Data.Interfaces;
 using Data.States;
 using Hub.Infrastructure;
 using Hub.Interfaces;
-using HubWeb.Infrastructure;
 using Fr8Data.DataTransferObjects;
+using HubWeb.Infrastructure_HubWeb;
 
 namespace HubWeb.Controllers
 {
@@ -115,6 +115,40 @@ namespace HubWeb.Controllers
                     userId = _security.GetCurrentAccount(uow).Id;
                 }
                 fileDO = _fileService.GetFile(id, userId);
+            }
+            if (fileDO == null)
+            {
+                return NotFound();
+            }
+            var file = _fileService.Retrieve(fileDO);
+            return new FileActionResult(file);
+        }
+
+
+        
+        /// <summary>
+        /// Downloads user's given file
+        /// </summary>
+        /// <param name="id">id of requested file</param>
+        /// <returns>Filestream</returns>
+        [Fr8HubWebHMACAuthenticate]
+        [Fr8ApiAuthorize]
+        [ActionName("byPath")]
+        public IHttpActionResult DownloadFileByPath(string path)
+        {
+            FileDO fileDO = null;
+            if (_security.IsCurrentUserHasRole(Roles.Admin))
+            {
+                fileDO = new FileDO { CloudStorageUrl = path };
+            }
+            else
+            {
+                string userId;
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    userId = _security.GetCurrentAccount(uow).Id;
+                }
+                fileDO = _fileService.GetFile(path, userId);
             }
             if (fileDO == null)
             {

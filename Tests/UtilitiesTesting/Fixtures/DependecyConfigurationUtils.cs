@@ -4,10 +4,10 @@ using Data.Entities;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using Hub.Managers;
 using Moq;
 using StructureMap;
 using TerminalBase.Infrastructure;
+using Fr8Data.Managers;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -20,7 +20,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 storage.Add(Crate.FromContent(string.Empty, new OperationalStateCM()));
             }
-            container.GetInstance<Mock<IHubCommunicator>>().Setup(x => x.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
+            container.GetInstance<Mock<IHubCommunicator>>().Setup(x => x.GetPayload(It.IsAny<Guid>(), It.IsAny<string>()))
                      .Returns(Task.FromResult(payload));
             return container;
         }

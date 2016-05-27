@@ -1,7 +1,7 @@
-﻿using Hub.Managers.APIManagers.Transmitters.Restful;
+﻿using Fr8Data.Managers;
 using StructureMap;
 using StructureMap.Configuration.DSL;
-using TerminalBase.BaseClasses;
+using TerminalBase.Services;
 
 namespace TerminalBase.Infrastructure
 {
@@ -17,7 +17,7 @@ namespace TerminalBase.Infrastructure
 
         public static void ConfigureTest()
         {
-            ObjectFactory.Configure(x => x.AddRegistry<LiveMode>());
+            ObjectFactory.Configure(x => x.AddRegistry<TestMode>());
         }
 
         public class LiveMode : Registry
@@ -25,7 +25,19 @@ namespace TerminalBase.Infrastructure
             public LiveMode()
             {                
                 For<IHubCommunicator>().Use<DefaultHubCommunicator>();
+                For<ICrateManager>().Use<CrateManager>();
+                For<ActivityExecutor>().Use<ActivityExecutor>();
             }            
+        }
+
+        public class TestMode : Registry
+        {
+            public TestMode()
+            {
+                For<IHubCommunicator>().Use<DefaultHubCommunicator>();
+                For<ICrateManager>().Use<CrateManager>();
+                For<ActivityExecutor>().Use<ActivityExecutor>();
+            }
         }
     }
 }
