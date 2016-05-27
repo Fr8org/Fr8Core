@@ -2,6 +2,7 @@
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using TerminalBase.BaseClasses;
@@ -35,7 +36,12 @@ namespace terminalTest.Actions
             }
         }
 
-        protected override Task InitializeETA()
+        public GenerateTableActivity_v1(ICrateManager crateManager) 
+            : base(crateManager)
+        {
+        }
+
+        public override Task Initialize()
         {
             ActivityUI.Header.Value = ActivityId.ToString();
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>("Table");
@@ -43,12 +49,12 @@ namespace terminalTest.Actions
             return Task.FromResult(0);
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
             return Task.FromResult(0);
         }
 
-        protected override Task RunETA()
+        public override Task Run()
         {
             Log($"Table {ActivityPayload.Label} [{ActivityId}] started");
 
@@ -73,7 +79,7 @@ namespace terminalTest.Actions
             return Task.FromResult(0);
         }
 
-        protected override Task RunChildActivities()
+        public override Task RunChildActivities()
         {
             Log($"{ActivityPayload.Label} [{ActivityId}] ended");
 

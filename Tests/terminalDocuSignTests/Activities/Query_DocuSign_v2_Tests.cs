@@ -16,6 +16,7 @@ using UtilitiesTesting.Fixtures;
 using terminalDocuSign.Activities;
 using TerminalBase.Models;
 using Fr8Data.Managers;
+using TerminalBase.Infrastructure;
 
 namespace terminalDocuSignTests.Activities
 {
@@ -30,6 +31,7 @@ namespace terminalDocuSignTests.Activities
             var activity = ObjectFactory.Container.GetInstance<Query_DocuSign_v2>();
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage()
@@ -51,6 +53,7 @@ namespace terminalDocuSignTests.Activities
             var activity = ObjectFactory.Container.GetInstance<Query_DocuSign_v2>();
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage()
@@ -77,6 +80,7 @@ namespace terminalDocuSignTests.Activities
             var activity = ObjectFactory.Container.GetInstance<Query_DocuSign_v2>();
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage(),

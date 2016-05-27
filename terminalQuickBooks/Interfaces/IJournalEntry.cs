@@ -12,7 +12,6 @@ namespace terminalQuickBooks.Interfaces
         void Create(
             StandardAccountingTransactionDTO curStandardAccountingTransactionCM,
             AuthorizationToken authorizationToken,
-            string userId,
             IHubCommunicator hubCommunicator);
     }
 }

@@ -29,7 +29,7 @@ namespace terminaBaselTests.Infrastructure
             _restfulServiceClient.Setup(r => r.GetAsync<IncomingCratesDTO>(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()));
             ObjectFactory.Configure(cfg => cfg.For<IRestfulServiceClient>().Use(_restfulServiceClient.Object));
             IHubCommunicator _hubCommunicator = new DefaultHubCommunicator();
-            _hubCommunicator.Configure("sampleterminal");
+            _hubCommunicator.Configure("sampleterminal", null);
 
             Guid id = Guid.NewGuid();
             CrateDirection direction = CrateDirection.Downstream;
@@ -39,7 +39,7 @@ namespace terminaBaselTests.Infrastructure
                 id.ToString(),
                 ((int)direction).ToString(),
                 ((int)availability).ToString());
-            _hubCommunicator.GetAvailableData(id, direction, availability, null);
+            _hubCommunicator.GetAvailableData(id, direction, availability);
 
             _restfulServiceClient.Verify(o => o.GetAsync<IncomingCratesDTO>(It.Is<Uri>(p => p.ToString() == resultUrl), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()));
         }

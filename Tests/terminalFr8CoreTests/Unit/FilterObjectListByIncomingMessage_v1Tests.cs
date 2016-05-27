@@ -46,10 +46,11 @@ namespace terminalTests.Integration
             base.SetUp();
             var hubMock = new Mock<IHubCommunicator>();
             //hubMock.Setup(x => x.DeleteExistingChildNodesFromActivity(It.IsAny<Guid>(), It.IsAny<string>())).Verifiable();
-            hubMock.Setup(x => x.GetActivityTemplates(It.IsAny<string>(), It.IsAny<bool>()))
+            hubMock.Setup(x => x.GetActivityTemplates(It.IsAny<bool>()))
                    .Returns(Task.FromResult(ActivityTemplates));
-            hubMock.Setup(x => x.GetActivityTemplates(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<bool>()))
-                   .Returns<string, string, bool>((tags, user, getLatest) => Task.FromResult(ActivityTemplates.Where(x => x.Tags.Contains(tags)).ToList()));
+
+            hubMock.Setup(x => x.GetActivityTemplates(It.IsAny<string>(), It.IsAny<bool>()))
+                   .Returns<string, bool>((tags, getLatest) => Task.FromResult(ActivityTemplates.Where(x => x.Tags.Contains(tags)).ToList()));
             ObjectFactory.Container.Inject(hubMock);
             ObjectFactory.Container.Inject(hubMock.Object);
         }
@@ -57,9 +58,10 @@ namespace terminalTests.Integration
         [Test]
         public async Task Configure_AfterInitialConfiguration_DataSourceSelectorContainsTableDataGenerators()
         {
-            var activity = new FilterObjectListByIncomingMessage_v1();
+            var activity = New<FilterObjectListByIncomingMessage_v1>();
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage()
@@ -76,9 +78,10 @@ namespace terminalTests.Integration
         public async Task Configure_WhenDataSourceIsChanged_RemoveAndReconfigureChildActivity()
         {
             var authToken = new AuthorizationToken { Token = "1" };
-            var activity = new FilterObjectListByIncomingMessage_v1();
+            var activity = New<FilterObjectListByIncomingMessage_v1>();
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage(),
@@ -91,10 +94,8 @@ namespace terminalTests.Integration
             activityContext.ActivityPayload.CrateStorage.UpdateControls<FilterObjectListByIncomingMessage_v1.ActivityUi>(x => x.DataSourceSelector.Value = ActivityTemplates[0].Id.ToString());
             await activity.Configure(activityContext);
             var hubMock = ObjectFactory.GetInstance<Mock<IHubCommunicator>>();
-            hubMock.Verify(x => x.DeleteExistingChildNodesFromActivity(activityContext.ActivityPayload.Id, It.IsAny<string>()),
-                           Times.Exactly(1),
-                           "Child activities were not deleted after data source was selected");
-            hubMock.Verify(x => x.CreateAndConfigureActivity(ActivityTemplates[0].Id, It.IsAny<string>(), It.IsAny<string>(), 1, activityContext.ActivityPayload.Id, It.IsAny<bool>(), It.IsAny<Guid?>()),
+
+            hubMock.Verify(x => x.CreateAndConfigureActivity(ActivityTemplates[0].Id, It.IsAny<string>(), 1, activityContext.ActivityPayload.Id, It.IsAny<bool>(), It.IsAny<Guid?>()),
                            Times.Exactly(1),
                            "Child activity was not created and confgured");
         }
@@ -103,9 +104,10 @@ namespace terminalTests.Integration
         public async Task Run_WhenNoDataIsCahced_RunsChildActivitiy()
         {
             var authToken = new AuthorizationToken { Token = "1" };
-            var activity = new FilterObjectListByIncomingMessage_v1();
+            var activity = New<FilterObjectListByIncomingMessage_v1>();
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage(),
@@ -136,11 +138,12 @@ namespace terminalTests.Integration
             var containerExecutionContext = HealthMonitor_FixtureData.ExecutionContextWithOnlyOperationalState();
             containerExecutionContext.PayloadStorage.Add(Crate<FieldDescriptionsCM>.FromContent("Message is here", new FieldDescriptionsCM(new FieldDTO("Message", "This message should be checked for keywords"))));
             var authToken = new AuthorizationToken { Token = "1" };
-            var activity = new FilterObjectListByIncomingMessage_v1();
+            var activity = New<FilterObjectListByIncomingMessage_v1>();
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload
-            {
+                {
                     CrateStorage = new CrateStorage(),
                     ChildrenActivities = new List<ActivityPayload>()
                 },

@@ -126,7 +126,7 @@ namespace terminalSlackTests.Fixtures
             {
                 storage.Add(Crate.FromContent(string.Empty, new OperationalStateCM()));
             }
-            ObjectFactory.Container.GetInstance<Mock<IHubCommunicator>>().Setup(x => x.GetPayload(It.IsAny<Guid>(), It.IsAny<string>()))
+            ObjectFactory.Container.GetInstance<Mock<IHubCommunicator>>().Setup(x => x.GetPayload(It.IsAny<Guid>()))
                                .Returns(Task.FromResult(result));
         }
         public static ICrateStorage GetDirectMessageEventPayload()
@@ -149,7 +149,7 @@ namespace terminalSlackTests.Fixtures
                 eventReport.EventPayload.Add(Crate.FromContent(string.Empty, new StandardPayloadDataCM(new FieldDTO("channel_id", "C001"), new FieldDTO("user_name", "notuser"))));
                 storage.Add(Crate.FromContent(string.Empty, eventReport));
             }
-            ObjectFactory.Container.GetInstance<Mock<IHubCommunicator>>().Setup(x => x.GetPayload(It.IsAny<Guid>(), It.IsAny<string>()))
+            ObjectFactory.Container.GetInstance<Mock<IHubCommunicator>>().Setup(x => x.GetPayload(It.IsAny<Guid>()))
                                .Returns(Task.FromResult(result));
         }
     }

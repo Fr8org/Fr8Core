@@ -9,6 +9,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Managers;
@@ -38,6 +39,11 @@ namespace terminalDocuSign.Actions
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
         protected override string ActivityUserFriendlyName => "Send DocuSign Envelope";
+
+        public Send_DocuSign_Envelope_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+            : base(crateManager, docuSignManager)
+        {
+        }
 
         protected override async Task RunDS()
         {
@@ -338,16 +344,18 @@ namespace terminalDocuSign.Actions
             return docusignTemplateId != previousTemplateId;
         }
 
-        protected override Task<bool> Validate()
+        protected override Task Validate()
         {
             if (ConfigurationControls == null)
             {
                 ValidationManager.SetError(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
-                return Task.FromResult(false);
+                return Task.FromResult(0);
             }
+
             var templateList = ConfigurationControls.Controls.OfType<DropDownList>().FirstOrDefault();
             ValidationManager.ValidateTemplateList(templateList);
-            return Task.FromResult(true);
+
+            return Task.FromResult(0);
         }
 
         protected virtual async Task<Crate> CreateDocusignTemplateConfigurationControls()

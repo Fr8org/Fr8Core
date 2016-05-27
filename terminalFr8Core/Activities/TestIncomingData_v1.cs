@@ -10,10 +10,12 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Newtonsoft.Json;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
@@ -31,7 +33,8 @@ namespace terminalFr8Core.Activities
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        public TestIncomingData_v1() : base(false)
+        public TestIncomingData_v1(ICrateManager crateManager)
+            : base(false, crateManager)
         {
         }
 
@@ -209,7 +212,7 @@ namespace terminalFr8Core.Activities
 
         protected async Task<Crate> ValidateFields(List<FieldValidationDTO> requiredFieldList)
         {
-            var result = await HubCommunicator.ValidateFields(requiredFieldList, CurrentUserId);
+            var result = await HubCommunicator.ValidateFields(requiredFieldList);
             var validationErrorList = new List<FieldDTO>();
             //lets create necessary validationError crates
             for (var i = 0; i < result.Count; i++)

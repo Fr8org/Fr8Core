@@ -52,6 +52,7 @@ namespace HealthMonitor.Utility
         {
             ObjectFactory.Initialize();
             ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
+            ObjectFactory.Configure(Fr8Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
 
             // Use a common HttpClient for all REST operations within testing session 
             // to ensure the presense of the authentication cookie. 

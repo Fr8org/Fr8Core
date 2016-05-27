@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
@@ -44,7 +46,7 @@ namespace terminalFr8Core.Activities
 
         private async Task<Crate> GetUpstreamManifestTypes()
         {
-            var upstreamCrates = await GetCratesByDirection(CrateDirection.Upstream);
+            var upstreamCrates = await HubCommunicator.GetCratesByDirection(ActivityId, CrateDirection.Upstream);
             var manifestTypeOptions = upstreamCrates.GroupBy(c => c.ManifestType).Select(c => new FieldDTO(c.Key.Type, c.Key.Type));
             var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Manifest Type List", manifestTypeOptions.ToArray());
             return queryFieldsCrate;
@@ -52,7 +54,7 @@ namespace terminalFr8Core.Activities
 
         private async Task<List<FieldDTO>> GetLabelsByManifestType(string manifestType)
         {
-            var upstreamCrates = await GetCratesByDirection(CrateDirection.Upstream);
+            var upstreamCrates = await HubCommunicator.GetCratesByDirection(ActivityId, CrateDirection.Upstream);
             return CrateManager.GetLabelsByManifestType(upstreamCrates, manifestType).Select(c => new FieldDTO(c, c)).ToList();
         }
 
@@ -86,7 +88,8 @@ namespace terminalFr8Core.Activities
         }
 
 
-        public ConvertRelatedFieldsIntoTable_v1() : base(false)
+        public ConvertRelatedFieldsIntoTable_v1(ICrateManager crateManager)
+            : base(false, crateManager)
         {
         }
 
