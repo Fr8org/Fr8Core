@@ -14,6 +14,8 @@ using Moq;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
+using Fr8Infrastructure.Interfaces;
+using Fr8Infrastructure.Security;
 
 namespace HubTests.Services
 {

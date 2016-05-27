@@ -1,13 +1,9 @@
 ﻿using Moq;
 using StructureMap;
 using StructureMap.Configuration.DSL;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using terminalPapertrail.Interfaces;
 using terminalPapertrail.Services;
-using DependencyType = Hub.StructureMap.StructureMapBootStrapper.DependencyType;
+using DependencyType = Fr8Infrastructure.StructureMap.StructureMapBootStrapper.DependencyType;
 
 namespace terminalPapertrail.Tests.Infrastructure
 {

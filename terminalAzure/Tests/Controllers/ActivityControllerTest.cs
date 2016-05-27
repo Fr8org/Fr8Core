@@ -1,8 +1,8 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using NUnit.Framework;
-using Hub.Managers;
 using StructureMap;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;

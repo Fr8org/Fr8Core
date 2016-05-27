@@ -1,7 +1,6 @@
 ﻿using Data.Entities;
 using Data.Interfaces;
 using Data.States;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Services;
 using HubWeb.Controllers;
 using Moq;
@@ -16,6 +15,7 @@ using AutoMapper;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.States;
 using Hub.Interfaces;
+using Fr8Infrastructure.Interfaces;
 
 namespace HubTests.Controllers
 {

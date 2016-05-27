@@ -12,6 +12,9 @@ using Fr8Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
 using Newtonsoft.Json.Linq;
+using Fr8Data.Managers;
+using TerminalBase.Models;
+using Hub.Services;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -48,6 +51,41 @@ namespace UtilitiesTesting.Fixtures
                     Secret = Guid.NewGuid().ToString()
                 },
 
+                Version = "1"
+            };
+        }
+        public static ActivityTemplateDTO ActivityTemplate2()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = GetTestGuidById(1),
+                Name = "Send an Email",
+                Terminal = new TerminalDTO
+                {
+                    Name = "Send an Email",
+                    Label = "Send an Email",
+                    Version = "1",
+                    Endpoint = "",
+                    TerminalStatus = TerminalStatus.Active
+                },
+                Version = "1"
+            };
+        }
+
+        public static ActivityTemplateDTO ActivityTemplateDummy()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = GetTestGuidById(1),
+                Name = "Test",
+                Terminal = new TerminalDTO
+                {
+                    Name = "Test",
+                    Label = "Test",
+                    Version = "1",
+                    Endpoint = "",
+                    TerminalStatus = TerminalStatus.Active,
+                },
                 Version = "1"
             };
         }
@@ -257,6 +295,53 @@ namespace UtilitiesTesting.Fixtures
                 ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate
             };
+        }
+
+        public static ActivityContext TestActivityContext1()
+        {
+            var activityTemplateDTO = new ActivityTemplateDTO
+            {
+                Id = GetTestGuidById(1),
+                Name = "Type1",
+                Version = "1"
+            };
+            var activityPayload = new ActivityPayload
+            {
+                Id = GetTestGuidById(2),
+                Name = "Type2",
+                ActivityTemplate = activityTemplateDTO,
+                CrateStorage = new CrateStorage()
+            };
+            var activityContext = new ActivityContext
+            {
+                ActivityPayload = activityPayload,
+                AuthorizationToken = AuthToken_TerminalIntegration()
+            };
+            return activityContext;
+        }
+        public static ActivityContext TestActivityContextWithoutAuthorization()
+        {
+            var activityPayload = new ActivityPayload
+            {
+                Id = GetTestGuidById(2),
+                ActivityTemplate = ActivityTemplate2(),
+                CrateStorage = new CrateStorage()
+            };
+            var activityContext = new ActivityContext
+            {
+                ActivityPayload = activityPayload,
+            };
+            return activityContext;
+        }
+        public static ContainerExecutionContext ContainerExecutionContext1()
+        {
+            var containerExecutionContext = new ContainerExecutionContext
+            {
+                PayloadStorage = PayloadDTO2(),
+                ContainerId = TestContainer_Id_1()
+            };
+            
+            return containerExecutionContext;
         }
 
         public static ActivityDO IntegrationTestActivity()
@@ -524,14 +609,16 @@ namespace UtilitiesTesting.Fixtures
             return curAuthorizationTokenDO;
         }
 
-        public static ActivityDO TestAction257()
+        public static ActivityPayload TestAction257()
         {
-            return new ActivityDO()
+            return new ActivityPayload()
             {
                 Id = GetTestGuidById(57),
                 Ordering = 2,
                 ParentPlanNodeId = GetTestGuidById(54),
-                ActivityTemplateId = GetTestGuidById(1)
+                ActivityTemplate = ActivityTemplateDummy(),
+                CrateStorage = new CrateStorage()
+                //ActivityTemplateId = GetTestGuidById(1)
             };
 
         }       

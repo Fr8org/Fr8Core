@@ -1,18 +1,16 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
+using Data.Infrastructure;
 using Google.Apis.Auth.OAuth2;
 using Google.Apis.Auth.OAuth2.Flows;
 using Google.Apis.Auth.OAuth2.Mvc;
-using Newtonsoft.Json;
-using StructureMap;
-using Data.Infrastructure;
-using Data.Interfaces;
-using Hub.Services;
-using Utilities.Configuration.Azure;
-using terminalGoogle.DataTransferObjects;
 using Google.Apis.Auth.OAuth2.Responses;
+using Hub.Services;
+using Newtonsoft.Json;
+using terminalGoogle.DataTransferObjects;
+using Utilities.Configuration.Azure;
 
-namespace terminalGoogle.Services
+namespace terminalGoogle.Services.Authorization
 {
     class AppFlowMetadata : FlowMetadata
     {

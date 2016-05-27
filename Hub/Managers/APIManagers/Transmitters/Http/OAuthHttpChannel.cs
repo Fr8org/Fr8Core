@@ -6,7 +6,6 @@ using System.Threading;
 using System.Threading.Tasks;
 using Hub.Managers.APIManagers.Authorizers;
 using System.Collections.Generic;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 
 namespace Hub.Managers.APIManagers.Transmitters.Http
 {

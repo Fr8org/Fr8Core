@@ -13,6 +13,7 @@ using UtilitiesTesting.Fixtures;
 using Hub.StructureMap;
 using Hub.Security;
 using Microsoft.Owin.Security.DataProtection;
+using terminalFr8Core.Interfaces;
 
 namespace HubTests.Integration
 {

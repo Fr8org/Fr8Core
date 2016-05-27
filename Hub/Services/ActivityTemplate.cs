@@ -14,10 +14,6 @@ namespace Hub.Services
 {
     public class ActivityTemplate : IActivityTemplate
     {
-        public const string EmailDelivererTag = "Email Deliverer";
-
-        public const string TableDataGeneratorTag = "Table Data Generator";
-
         private readonly ITerminal _terminal;
         private readonly Dictionary<Guid, ActivityTemplateDO> _activityTemplates = new Dictionary<Guid, ActivityTemplateDO>();
         private bool _isInitialized;

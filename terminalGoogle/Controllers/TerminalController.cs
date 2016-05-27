@@ -1,11 +1,7 @@
-﻿using System.Collections.Generic;
-using System.Web.Http;
+﻿using System.Web.Http;
 using System.Web.Http.Description;
-using Data.States;
-using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using Fr8Data.States;
-using Utilities.Configuration.Azure;
+using TerminalBase.Services;
 
 namespace terminalGoogle.Controllers
 {
@@ -21,69 +17,12 @@ namespace terminalGoogle.Controllers
         [ResponseType(typeof(StandardFr8TerminalCM))]
         public IHttpActionResult DiscoverTerminals()
         {
-            var webService = new WebServiceDTO
+            StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
-                Name = "Google",
-                IconPath= "/Content/icons/web_services/google-icon-64x64.png"
+                Definition = TerminalData.TerminalDTO,
+                Activities = ActivityStore.GetAllActivities(TerminalData.TerminalDTO)
             };
-
-            var terminal = new TerminalDTO()
-            {
-                Endpoint = CloudConfigurationManager.GetSetting("terminalGoogle.TerminalEndpoint"),
-                TerminalStatus = TerminalStatus.Active,
-                Name = "terminalGoogle",
-                Label = "Google",
-                Version = "1",
-                AuthenticationType = AuthenticationType.External
-            };
-
-            var extractDataAction = new ActivityTemplateDTO
-            {
-                Name = "Get_Google_Sheet_Data",
-                Label = "Get Google Sheet Data",
-                Version = "1",
-                Category = ActivityCategory.Receivers,
-                Terminal = terminal,
-                NeedsAuthentication = true,
-                MinPaneWidth = 300,
-                WebService = webService,
-                Tags = "Table Data Generator"
-            };
-
-            var receiveGoogleForm = new ActivityTemplateDTO
-            {
-                Name = "Monitor_Form_Responses",
-                Label = "Monitor Form Responses",
-                Version = "1",
-                Category = ActivityCategory.Monitors,
-                Terminal = terminal,
-                NeedsAuthentication = true,
-                WebService = webService,
-                MinPaneWidth = 300
-            };
-
-            var saveDataAction = new ActivityTemplateDTO
-            {
-                Name = "Save_To_Google_Sheet",
-                Label = "Save To Google Sheet",
-                Version = "1",
-                Category = ActivityCategory.Forwarders,
-                Terminal = terminal,
-                NeedsAuthentication = true,
-                MinPaneWidth = 300,
-                WebService = webService
-            };
-
-            return Json(new StandardFr8TerminalCM()
-            {
-                Definition = terminal,
-                Activities = new List<ActivityTemplateDTO>
-                {
-                    extractDataAction,
-                    receiveGoogleForm,
-                    saveDataAction
-                }
-            });    
+            return Json(curStandardFr8TerminalCM);
         }
     }
 }

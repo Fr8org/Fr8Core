@@ -1,10 +1,7 @@
 ﻿using Hub.StructureMap;
 using SendGrid;
 using StructureMap;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+using terminalUtilities.Interfaces;
 using terminalUtilities.SendGrid;
 using terminalUtilities.Twilio;
 using Utilities;
