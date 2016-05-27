@@ -4,5 +4,5 @@
 	{
 		void Notify(string channelName, string eventName, object message);
         void NotifyUser(object message, string eventName, string userName);
-    }
+	}
 }

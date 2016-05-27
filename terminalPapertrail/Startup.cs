@@ -10,6 +10,8 @@ using TerminalBase;
 using TerminalBase.BaseClasses;
 using System.Web.Http.Dispatcher;
 using terminalPapertrail.Tests.Infrastructure;
+using TerminalBase.Services;
+using terminalPapertrail.Actions;
 
 [assembly: OwinStartup(typeof(terminalPapertrail.Startup))]
 
@@ -36,6 +38,10 @@ namespace terminalPapertrail
                     typeof(Controllers.ActivityController),
                     typeof(Controllers.TerminalController)
                 };
+        }
+        protected override void RegisterActivities()
+        {
+            ActivityStore.RegisterActivity<Write_To_Log_v1>(Write_To_Log_v1.ActivityTemplateDTO);
         }
     }
 }

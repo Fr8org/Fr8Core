@@ -34,6 +34,19 @@ namespace HubWeb.Controllers
             }
 		}
 
+        [HttpGet]
+        public IHttpActionResult All()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var terminals = _terminal.GetAll()
+                    .Select(Mapper.Map<TerminalDTO>)
+                    .ToList();
+
+                return Ok(terminals);
+            }
+        }
+
 		[HttpPost]
 		public IHttpActionResult Post(TerminalDTO terminalDto)
 		{

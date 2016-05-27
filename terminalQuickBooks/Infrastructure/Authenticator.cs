@@ -9,16 +9,15 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Web;
 using System.Xml;
-using Data.Entities;
 using Data.Interfaces.DataTransferObjects;
 using DevDefined.OAuth.Consumer;
 using DevDefined.OAuth.Framework;
 using DevDefined.OAuth.Storage.Basic;
 using Fr8Data.DataTransferObjects;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using StructureMap;
 using terminalQuickBooks.Interfaces;
 using Utilities.Configuration.Azure;
+using TerminalBase.Models;
 
 namespace terminalQuickBooks.Infrastructure
 {
@@ -96,7 +95,7 @@ namespace terminalQuickBooks.Infrastructure
             };
         }
 
-        public Task<AuthorizationTokenDO> RefreshAuthToken(AuthorizationTokenDO authorizationToken)
+        public Task<AuthorizationToken> RefreshAuthToken(AuthorizationToken authorizationToken)
         {
             var tokenArray = authorizationToken.Token.Split(new[] { TokenSeparator },
                 StringSplitOptions.RemoveEmptyEntries);
@@ -111,7 +110,7 @@ namespace terminalQuickBooks.Infrastructure
             var root = xmlDoc.SelectSingleNode(xpath);
             var newToken = root.SelectSingleNode("//OAuthToken");
             var newTokenSecret = root.SelectSingleNode("//OAuthTokenSecret")?.Value;
-            var authToken = new AuthorizationTokenDO
+            var authToken = new AuthorizationToken
             {
                 Token = newTokenSecret
             };
@@ -162,5 +161,6 @@ namespace terminalQuickBooks.Infrastructure
             consumerRequest = consumerRequest.SignWithToken();
             return consumerRequest.Context.GenerateOAuthParametersForHeader();
         }
+
     }
 }

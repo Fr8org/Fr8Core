@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using Data.Interfaces.Manifests;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 
 namespace TerminalBase.Infrastructure
 {
@@ -17,8 +17,18 @@ namespace TerminalBase.Infrastructure
 
         public ValidationManager(ValidationResultsCM validationResults, ICrateStorage payload)
         {
-            _validationResults = validationResults;
+            _validationResults = validationResults ?? new ValidationResultsCM();
             Payload = payload;
+        }
+
+        public ValidationManager()
+        {
+            _validationResults = new ValidationResultsCM();
+        }
+
+        public ValidationResultsCM GetResults()
+        {
+            return _validationResults;
         }
 
         /// <summary>
@@ -33,7 +43,7 @@ namespace TerminalBase.Infrastructure
 
         public void SetError(string errorMessage, params ControlDefinitionDTO[] controls)
         {
-            SetError(errorMessage, controls.Select(x => x.Name).Where(x => !string.IsNullOrWhiteSpace(x)).ToArray());
+            SetError(errorMessage, controls.Select(ResolveControlName).Where(x => !string.IsNullOrWhiteSpace(x)).ToArray());
         }
 
         public void SetError(string errorMessage)
@@ -55,6 +65,11 @@ namespace TerminalBase.Infrastructure
                 ErrorMessage = errorMessage,
                 ControlNames = controlNames != null ? new List<string>(controlNames) : null
             });
+        }
+
+        protected virtual string ResolveControlName(ControlDefinitionDTO control)
+        {
+            return control?.Name;
         }
 
         private void CheckSettings()

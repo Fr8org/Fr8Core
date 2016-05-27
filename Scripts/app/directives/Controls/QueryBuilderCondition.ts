@@ -67,9 +67,7 @@
                             );
 
                             control.listItems = listItems;
-                        }
-                        // All other field types.
-                        else {
+                        } else { // All other field types.
                             control = new model.TextBox();
                             control.value = condition.value;
                         }
@@ -94,7 +92,7 @@
                         (<any>configurationControlScope).control = createControl($scope.condition);
                         (<any>configurationControlScope).currentAction = $scope.currentAction;
 
-                        $scope.hasConfigurationControl = true; 
+                        $scope.hasConfigurationControl = true;
 
                         $compile('<configuration-control current-action="currentAction" field="control" />')
                             (configurationControlScope, (markup, scope) => {
@@ -198,8 +196,6 @@
                     if ($scope.requestUpstream) {
                         $scope.fields = [];
                     }
-
-                    // attachControl();
                 }
             ]
         };

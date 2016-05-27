@@ -10,9 +10,12 @@ using UtilitiesTesting.Fixtures;
 using TerminalBase.Infrastructure;
 using terminalFr8Core.Actions;
 using Moq;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using System.Threading.Tasks;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
+using Fr8Infrastructure.Interfaces;
+using terminalFr8Core.Activities;
+using TerminalBase.Models;
 
 namespace terminalFr8CoreTests.Unit
 {
@@ -50,37 +53,28 @@ namespace terminalFr8CoreTests.Unit
         [Test]
         public async Task Evaluate_IsValidJSONResponse_For_InitialRequest()
         {
-            ActivityDTO curActionDTO = FixtureData.TestActivityDTOSelectFr8ObjectInitial();
-            ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
-            AuthorizationTokenDO curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
-            var activity = await select_Fr8_Object_v1.Configure(curActivityDO,curAuthTokenDO);
-         
-            Assert.NotNull(activity);
-            Assert.AreEqual(2, ObjectFactory.GetInstance<ICrateManager>().GetStorage(curActivityDO.CrateStorage).Count);
+            ActivityContext activityContext = FixtureData.TestActivityContext1();
+            await select_Fr8_Object_v1.Configure(activityContext);
+            Assert.NotNull(activityContext);
+            Assert.AreEqual(2, activityContext.ActivityPayload.CrateStorage.Count);
         }
 
         [Test]
         public async Task Evaluate_IsValidJSONResponse_For_FollowupRequest_PlanSelected()
         {
-            ActivityDTO curActionDTO = FixtureData.TestActivityDTOSelectFr8ObjectFollowup("19");
-            ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
-            AuthorizationTokenDO curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
-            var activity = await select_Fr8_Object_v1.Configure(curActivityDO, curAuthTokenDO);
+            ActivityContext activityContext = FixtureData.TestActivityContext1();
+            await select_Fr8_Object_v1.Configure(activityContext);
 
-            Assert.NotNull(activity);
+            Assert.NotNull(activityContext);
            // Assert.AreEqual(2, actionDTO.CrateStorage.CrateDTO.Count);
         }
 
         [Test]
         public async Task Evaluate_IsValidJSONResponse_For_FollowupRequest_ContainerSelected()
         {
-            ActivityDTO curActionDTO = FixtureData.TestActivityDTOSelectFr8ObjectFollowup("21");
-            ActivityDO curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
-            AuthorizationTokenDO curAuthTokenDO = Mapper.Map<AuthorizationTokenDO>(curActionDTO.AuthToken);
-            var activity = await select_Fr8_Object_v1.Configure(curActivityDO, curAuthTokenDO);
-
-
-            Assert.NotNull(activity);
+            ActivityContext activityContext = FixtureData.TestActivityContext1();
+            await select_Fr8_Object_v1.Configure(activityContext);
+            Assert.NotNull(activityContext);
             //Assert.AreEqual(2, actionDTO.CrateStorage.CrateDTO.Count);
         }
     }

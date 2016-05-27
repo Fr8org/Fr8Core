@@ -1,19 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
-using System.Web.Http;
 using System.Web.Http.Dispatcher;
+using AutoMapper;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.States;
 using Microsoft.Owin;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using Owin;
-using StructureMap;
-using Data.Infrastructure.AutoMapper;
-using Hub.StructureMap;
+using terminalAzure.Activities;
 using TerminalBase;
 using TerminalBase.BaseClasses;
+using TerminalBase.Services;
+using Utilities.Configuration.Azure;
 
 [assembly: OwinStartup(typeof(terminalAzure.Startup))]
 
@@ -29,27 +26,18 @@ namespace terminalAzure
         public void Configuration(IAppBuilder app, bool selfHost)
         {
             ConfigureProject(selfHost, TerminalAzureSqlServerStructureMapRegistries.LiveConfiguration);
-            
             RoutesConfig.Register(_configuration);
-            //if (selfHost)
-            //{
-            //    // Web API routes
-            //    configuration.Services.Replace(
-            //        typeof(IHttpControllerTypeResolver),
-            //        new PluginControllerTypeResolver()
-            //    );
-            //}
-
-            //DataAutoMapperBootStrapper.ConfigureAutoMapper();
-
             ConfigureFormatters();
-
             app.UseWebApi(_configuration);
-
             if (!selfHost)
             {
                 StartHosting("terminalAzure");
             }
+        }
+
+        protected override void RegisterActivities()
+        {
+            ActivityStore.RegisterActivity<Write_To_Sql_Server_v1>(Write_To_Sql_Server_v1.ActivityTemplateDTO);
         }
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)

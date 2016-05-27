@@ -18,6 +18,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Fr8Data.Managers;
 
 namespace Hub.Services
 {
@@ -234,7 +235,7 @@ namespace Hub.Services
                 var makeADecisionNode = allNodesDictionary[tabActivity.Id];
                 using (var crateStorage = _crateManager.GetUpdatableStorage(tabActivity))
                 {
-                    var controlsCrate = crateStorage.Where(a => a.ManifestType.Id == (int)MT.StandardConfigurationControls).FirstOrDefault().Get<StandardConfigurationControlsCM>();
+                    var controlsCrate = crateStorage.Where(a => a.ManifestType.Id == (int)Fr8Data.Constants.MT.StandardConfigurationControls).FirstOrDefault().Get<StandardConfigurationControlsCM>();
                     var transitionsPanel = (ContainerTransition)controlsCrate.Controls.Where(a => a.Type == ControlTypes.ContainerTransition).FirstOrDefault();
 
                     foreach (var transition in transitionsPanel.Transitions.Where(a => a.TargetNodeId.HasValue))
@@ -310,7 +311,7 @@ namespace Hub.Services
             {
                 using (var crateStorage = _crateManager.GetUpdatableStorage(makeADecisionActivity))
                 {
-                    var controlsCrate = crateStorage.Where(a => a.ManifestType.Id == (int)MT.StandardConfigurationControls).FirstOrDefault().Get<StandardConfigurationControlsCM>();
+                    var controlsCrate = crateStorage.Where(a => a.ManifestType.Id == (int)Fr8Data.Constants.MT.StandardConfigurationControls).FirstOrDefault().Get<StandardConfigurationControlsCM>();
                     var transitionsPanel = (ContainerTransition)controlsCrate.Controls.Where(a => a.Type == ControlTypes.ContainerTransition).FirstOrDefault();
 
                     foreach (var transition in transitionsPanel.Transitions)

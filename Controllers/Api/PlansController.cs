@@ -19,15 +19,16 @@ using HubWeb.ViewModels;
 using Newtonsoft.Json;
 using Hub.Infrastructure;
 using Hub.Managers;
-using HubWeb.Infrastructure;
 using Utilities.Interfaces;
 using Data.Infrastructure;
 using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.DataTransferObjects.Helpers;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using HubWeb.Infrastructure_HubWeb;
 
 namespace HubWeb.Controllers
 {
@@ -109,7 +110,7 @@ namespace HubWeb.Controllers
                 _plan.CreateOrUpdate(uow, curPlanDO);
 
                 uow.SaveChanges();
-                var result = PlanMappingHelper.MapPlanToDto(uow, uow.PlanRepository.GetById<PlanDO>(curPlanDO.Id));
+                var result = PlanMappingHelper.MapPlanToDto(uow, _plan.GetFullPlan(uow, curPlanDO.Id));
                 return Ok(result);
             }
         }
@@ -123,7 +124,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var plan = uow.PlanRepository.GetById<PlanDO>(id);
+                var plan = _plan.GetFullPlan(uow, id);
                 var result = PlanMappingHelper.MapPlanToDto(uow, plan);
 
                 return Ok(result);
@@ -198,7 +199,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curPlanDO = uow.PlanRepository.GetById<PlanDO>(id);
+                var curPlanDO = _plan.GetFullPlan(uow, id);
                 if (curPlanDO == null)
                 {
                     throw new ApplicationException("Unable to find plan with specified id.");
@@ -331,7 +332,7 @@ namespace HubWeb.Controllers
                         User.Identity.Name);
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
-                        var planDO = uow.PlanRepository.GetById<PlanDO>(planId);
+                        var planDO = _plan.GetFullPlan(uow, planId); 
                         var currentPlanType = _plan.IsMonitoringPlan(uow, planDO) ? PlanType.Monitoring.ToString() : PlanType.RunOnce.ToString();
                         return BadRequest(currentPlanType);
                     }
@@ -391,7 +392,7 @@ namespace HubWeb.Controllers
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var plan = uow.PlanRepository.GetById<PlanDO>(planId);
+                    var plan = _plan.GetFullPlan(uow, planId); ;
                     var failedActivities = new List<string>();
 
                     foreach (var key in activationResults.ValidationErrors.Keys)
@@ -430,7 +431,7 @@ namespace HubWeb.Controllers
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 ContainerDO container;
-                var plan = uow.PlanRepository.GetById<PlanDO>(planId);
+                var plan = _plan.GetFullPlan(uow, planId); ;
 
                 // it container id was passed validate it
                 if (containerId != null)
@@ -443,7 +444,7 @@ namespace HubWeb.Controllers
                         // that's bad. Reset containerId to run plan with new container
                         containerId = null;
                     }
-                }
+                } 
 
                 PlanType? currentPlanType = null;
 
@@ -460,8 +461,8 @@ namespace HubWeb.Controllers
                             if (currentPlanType == PlanType.Monitoring)
                             {
                                 _pusherNotifier.NotifyUser($"Plan \"{plan.Name}\" activated. It will wait and respond to specified external events.",
-                                       NotificationChannel.GenericSuccess,
-                                       User.Identity.Name);
+                                    NotificationChannel.GenericSuccess,
+                                    User.Identity.Name);
 
                                 return Ok(new ContainerDTO
                                 {
@@ -488,30 +489,25 @@ namespace HubWeb.Controllers
 
                         string message = String.Format("Complete processing for Plan \"{0}\".{1}", plan.Name, responseMsg);
 
-                        _pusherNotifier.NotifyUser(message, NotificationChannel.GenericSuccess, User.Identity.Name);
+                        if (container.State != State.Failed)
+                        {
+                            _pusherNotifier.NotifyUser(message, NotificationChannel.GenericSuccess, User.Identity.Name);
+                        }
+                        else
+                        {
+                            _pusherNotifier.NotifyUser($"Failed executing plan \"{plan.Name}\"", NotificationChannel.GenericFailure, User.Identity.Name);
+                        }
+
                         EventManager.ContainerLaunched(container);
 
                         var containerDTO = Mapper.Map<ContainerDTO>(container);
                         containerDTO.CurrentPlanType = currentPlanType;
 
-                        // THIS CODE IS HERE ONLY TO SUPPORT CURRENT UI LOGIC THAT DISPLAYS PLAN LISTS.
-                        // It should be updated to show  as 'running' only:
-                        //   1. Plans that have at least one executing container
-                        //   2. Active monitoring plans
-                        if (currentPlanType == PlanType.RunOnce)
-                        {
-                            using (var planStatUpdateUow = ObjectFactory.GetInstance<IUnitOfWork>())
-                            {
-                                planStatUpdateUow.PlanRepository.GetById<PlanDO>(planId).PlanState = PlanState.Inactive;
-                                planStatUpdateUow.SaveChanges();
-                            }
-                        }
-
                         EventManager.ContainerExecutionCompleted(container);
 
                         return Ok(containerDTO);
                     }
-                    
+
                     return BadRequest();
                 }
                 catch (InvalidTokenRuntimeException exception)
@@ -541,6 +537,21 @@ namespace HubWeb.Controllers
                     var errorMessage = "An internal error has occured. Please, contact the administrator.";
                     NotifyWithErrorMessage(e, plan, User.Identity.Name, errorMessage);
                     throw;
+                }
+                finally
+                {
+                    // THIS CODE IS HERE ONLY TO SUPPORT CURRENT UI LOGIC THAT DISPLAYS PLAN LISTS.
+                    // It should be updated to show  as 'running' only:
+                    //   1. Plans that have at least one executing container
+                    //   2. Active monitoring plans
+                    if (currentPlanType == PlanType.RunOnce)
+                    {
+                        using (var planStatUpdateUow = ObjectFactory.GetInstance<IUnitOfWork>())
+                        {
+                            planStatUpdateUow.PlanRepository.GetById<PlanDO>(planId).PlanState = PlanState.Inactive;
+                            planStatUpdateUow.SaveChanges();
+                        }
+                    }
                 }
             }
         }

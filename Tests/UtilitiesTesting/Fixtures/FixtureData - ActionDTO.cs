@@ -1,6 +1,6 @@
 ﻿using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
-using Hub.Managers;
+using Fr8Data.Managers;
 using StructureMap;
 
 namespace UtilitiesTesting.Fixtures

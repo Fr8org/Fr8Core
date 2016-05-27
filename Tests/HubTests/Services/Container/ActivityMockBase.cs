@@ -6,6 +6,7 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.DataTransferObjects.Helpers;
 using Fr8Data.Manifests;
 using Hub.Managers;
+using Fr8Data.Managers;
 
 namespace HubTests.Services.Container
 {

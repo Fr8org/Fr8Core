@@ -11,19 +11,19 @@ using System.Threading.Tasks;
 using Data.Infrastructure.Security;
 using Data.Repositories.Plan;
 using Data.Infrastructure.StructureMap;
-using Data.Interfaces.Manifests;
 using Data.States;
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using Fr8Infrastructure.Communication;
 using Hub.Exceptions;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
 using Utilities;
 using Hub.Exceptions;
@@ -215,7 +215,7 @@ namespace Hub.Services
                 }
                 catch (Exception e)
                 {
-                    ReportActivityInvocationError(submittedActivity, e.Message, EventManager.TerminalActionActivationFailed);
+                    ReportActivityInvocationError(submittedActivity, e.Message, null ,submittedActivity.Id.ToString(), EventManager.TerminalActionActivationFailed);
                     throw;
                 }
             }
@@ -231,28 +231,58 @@ namespace Hub.Services
             }
         }
 
+        private async Task Delete(IUnitOfWork uow, Guid id)
+        {
+            //we are using Kludge solution for now
+            //https://maginot.atlassian.net/wiki/display/SH/Action+Deletion+and+Reordering
+
+            var curAction = uow.PlanRepository.GetById<ActivityDO>(id);
+            if (curAction == null)
+            {
+                throw new InvalidOperationException("Unknown PlanNode with id: " + id);
+            }
+
+            curAction.RemoveFromParent();
+
+            await CallActivityDeactivate(uow, curAction.Id);
+        }
+
         [AuthorizeActivity(Permission = PermissionType.DeleteObject, ParamType = typeof(Guid), TargetType = typeof(PlanNodeDO))]
         public async Task Delete(Guid id)
         {
             //we are using Kludge solution for now
             //https://maginot.atlassian.net/wiki/display/SH/Action+Deletion+and+Reordering
-
             using (await _configureLock.Lock(id))
             {
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                 {
-                    var curAction = uow.PlanRepository.GetById<ActivityDO>(id);
-                    if (curAction == null)
-                    {
-                        throw new InvalidOperationException("Unknown PlanNode with id: " + id);
-                    }
-                    
-                    curAction.RemoveFromParent();
-
-                    await CallActivityDeactivate(uow, curAction.Id);
-
+                    await Delete(uow, id);
                     uow.SaveChanges();
                 }
+            }
+        }
+
+        [AuthorizeActivity(Permission = PermissionType.DeleteObject, ParamType = typeof(Guid), TargetType = typeof(PlanNodeDO))]
+        public async Task DeleteChildNodes(Guid id)
+        {
+            //we are using Kludge solution for now
+            //https://maginot.atlassian.net/wiki/display/SH/Action+Deletion+and+Reordering
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var curAction = uow.PlanRepository.GetById<ActivityDO>(id);
+                if (curAction.ChildNodes != null)
+                {
+                    var childNodes = curAction.ChildNodes.OfType<ActivityDO>().ToList();
+                    foreach (var childNode in childNodes)
+                    {
+                        using (await _configureLock.Lock(childNode.Id))
+                        {
+                            await Delete(uow, childNode.Id);
+                        }
+                    }
+                }
+
+                uow.SaveChanges();
             }
         }
 
@@ -291,7 +321,7 @@ namespace Hub.Services
             }
             catch (Exception e)
             {
-                ReportActivityInvocationError(curActivityDO, e.Message, EventManager.TerminalRunFailed);
+                ReportActivityInvocationError(curActivityDO, e.Message, curContainerDO.Id.ToString(), curActivityDO.Id.ToString(), EventManager.TerminalRunFailed);
                 throw;
             }
         }
@@ -497,7 +527,7 @@ namespace Hub.Services
 
             var root = exisiting.GetTreeRoot() as PlanDO;
 
-            if (root?.PlanState == PlanState.Active)
+            if (root?.PlanState == PlanState.Running)
             {
                 root.PlanState = PlanState.Inactive;
             }
@@ -528,13 +558,13 @@ namespace Hub.Services
                     }
                     else
                     {
-                        ReportActivityInvocationError(submittedActivity, e.Message, EventManager.TerminalConfigureFailed);
+                        ReportActivityInvocationError(submittedActivity, e.Message, null,submittedActivity.Id.ToString(), EventManager.TerminalConfigureFailed);
                         throw;
                     }
                 }
                 catch (Exception e)
                 {
-                    ReportActivityInvocationError(submittedActivity, e.Message, EventManager.TerminalConfigureFailed);
+                    ReportActivityInvocationError(submittedActivity, e.Message, null ,submittedActivity.Id.ToString(), EventManager.TerminalConfigureFailed);
                     throw;
                 }
             }
@@ -582,10 +612,13 @@ namespace Hub.Services
             return ObjectFactory.GetInstance<ITerminalTransmitter>().CallActivityAsync<TResult>(activityName, fr8DataDTO, containerId.ToString());
         }
 
-        private void ReportActivityInvocationError(ActivityDO activity, string error, Action<string, string, string, string> reportingAction)
+        private void ReportActivityInvocationError(ActivityDO activity, string error, string containerId, string objectId, Action<string, string, string, string> reportingAction)
         {
             var endpoint = _activityTemplate.GetTerminalUrl(activity.ActivityTemplateId) ?? "<no terminal url>";
-            reportingAction(endpoint, null, error, activity.Id.ToString());
+
+            var additionalData = containerId.IsNullOrEmpty() ? " no data " : " Container Id = " + containerId; 
+
+            reportingAction(endpoint, additionalData, error, objectId);
         }
 
 

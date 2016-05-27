@@ -1,12 +1,12 @@
 ﻿using System.Collections.Generic;
 using System.Web.Http.Description;
 using System.Web.Http;
-using Data.States;
 using Utilities.Configuration.Azure;
 using Fr8Data.Constants;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using TerminalBase.Services;
 
 namespace terminalFr8Core.Controllers
 {
@@ -25,6 +25,14 @@ namespace terminalFr8Core.Controllers
 
         public IHttpActionResult DiscoverTerminals()
         {
+            StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
+            {
+                Definition = TerminalData.TerminalDTO,
+                Activities = ActivityStore.GetAllActivities(TerminalData.TerminalDTO)
+            };
+
+            return Json(curStandardFr8TerminalCM);
+            /*
             var result = new List<ActivityTemplateDTO>();
 
             var terminal = new TerminalDTO
@@ -345,13 +353,37 @@ namespace terminalFr8Core.Controllers
                 MinPaneWidth = 400
             });
 
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "Send_Email",
+                Label = "Send Email using Fr8 core account",
+                Version = "1",
+                Category = ActivityCategory.Forwarders,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                WebService = webService,
+                MinPaneWidth = 400
+            });
+
+            result.Add(new ActivityTemplateDTO
+            {
+                Name = "Send_SMS",
+                Label = "Send SMS using Fr8 core account",
+                Version = "1",
+                Category = ActivityCategory.Forwarders,
+                NeedsAuthentication = false,
+                Terminal = terminal,
+                WebService = webService,
+                MinPaneWidth = 400
+            });
+
             var curStandardFr8TerminalCM = new StandardFr8TerminalCM()
             {
                 Definition = terminal,
                 Activities = result
             };
 
-            return Json(curStandardFr8TerminalCM);
+            return Json(curStandardFr8TerminalCM);*/
         }
     }
 }

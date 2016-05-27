@@ -8,7 +8,7 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using HealthMonitor.Utility;
-using Hub.Managers;
+using Fr8Data.Managers;
 using NUnit.Framework;
 using UtilitiesTesting.Fixtures;
 
@@ -157,12 +157,12 @@ namespace terminaBaselTests.Tools.Activities
             // queryDocuSignActivity.AuthToken = await terminalDocuSignTools.GenerateAuthToken("fr8test@gmail.com", "fr8mesomething", queryDocuSignActivity.ActivityTemplate.Terminal);
             queryDocuSignActivity.AuthToken = await terminalDocuSignTools.GenerateAuthToken("freight.testing@gmail.com", "I6HmXEbCxN", queryDocuSignActivity.ActivityTemplate.Terminal);
 
-            var applyToken = new ManageAuthToken_Apply()
+            var applyToken = new AuthenticationTokenGrantDTO()
             {
                 ActivityId = queryDocuSignActivity.Id,
                 AuthTokenId = Guid.Parse(queryDocuSignActivity.AuthToken.Token),
             };
-            await _baseHubITest.HttpPostAsync<ManageAuthToken_Apply[], string>( _baseHubITest.GetHubApiBaseUrl() + "ManageAuthToken/apply", new ManageAuthToken_Apply[] { applyToken });
+            await _baseHubITest.HttpPostAsync<AuthenticationTokenGrantDTO[], string>( _baseHubITest.GetHubApiBaseUrl() + "authentication/tokens/grant", new AuthenticationTokenGrantDTO[] { applyToken });
 
             //send configure with the auth token
             queryDocuSignActivity = await _baseHubITest.HttpPostAsync<ActivityDTO, ActivityDTO>(_baseHubITest.GetHubApiBaseUrl() + "activities/save", queryDocuSignActivity);

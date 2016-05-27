@@ -1,6 +1,5 @@
 ﻿<!-- BEGIN MAIN CONTENT -->
-<div ng-controller="PlanBuilderController" class="margin-top-25" block-if="isBusy()">
-    <designer-header ng-show="current.plan" plan="current.plan" kiosk-mode="true"></designer-header>
+<div ng-controller="PlanBuilderController" style="margin-top:1px; margin-left: -15px;" block-if="isBusy()">
     <div ng-if="editingMode=='advanced'" class="col-md-12" style="border-bottom: 1px solid; margin-bottom: 10px;"></div>
     <div class="plan-loading-message" block-if="current.plan"></div>
     <div ng-repeat="pSubPlan in processedSubPlans | filter: hasAnyActivity">
@@ -14,17 +13,20 @@
                                 <div activity-resize minwidth="{{envelope.activity.activityTemplate.minPaneWidth}}" class="ap-resize">
                                     <md-toolbar class="action-header solution-action-header" dropdown transfer-click-configure-pane>
                                         <div class="md-toolbar-tools">
+                                            <!-- Icon -->
                                             <div class="action-header-icon" style="display:flex">
                                                 <img ng-src="{{envelope.activity.activityTemplate.webService.iconPath}}" ng-if="envelope.activity.activityTemplate.webService.iconPath" />
                                             </div>
-                                            <h2>
-                                                <span>{{envelope.activity.label}}</span>
-                                            </h2>
+                                            <!-- Main Title -->
+                                            <div class="col-sm-10 ellipsis">
+                                                <h2>
+                                                    {{envelope.activity.label}}
+                                                    <md-tooltip>{{envelope.activity.label}}</md-tooltip>
+                                                </h2>
+                                            </div>
                                         </div>
                                     </md-toolbar>
-                                    <div>
-                                        <pane-configure-action view="{{view}}" plan="current.plan" id="paneConfigureAction" current-action="envelope.activity" mode="mode"></pane-configure-action>
-                                    </div>
+                                    <pane-configure-action view="{{view}}" plan="current.plan" id="paneConfigureAction" current-action="envelope.activity" mode="mode"></pane-configure-action>
                                 </div>
                             </div>
                             <div ng-if="!$last" class="action-arrow-right"></div>

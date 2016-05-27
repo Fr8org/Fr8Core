@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using Data.Entities;
-using Data.States;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.States;
-using Hub.Managers.APIManagers.Transmitters.Restful;
+using Fr8Infrastructure.Interfaces;
 using Moq;
 using NUnit.Framework;
 using StructureMap;
 using TerminalBase.Infrastructure;
+using TerminalBase.Services;
 using UtilitiesTesting;
 
 namespace terminaBaselTests.Infrastructure
@@ -40,7 +39,7 @@ namespace terminaBaselTests.Infrastructure
                 id.ToString(),
                 ((int)direction).ToString(),
                 ((int)availability).ToString());
-            _hubCommunicator.GetAvailableData(new ActivityDO() {Id = id}, direction, availability, null);
+            _hubCommunicator.GetAvailableData(id, direction, availability, null);
 
             _restfulServiceClient.Verify(o => o.GetAsync<IncomingCratesDTO>(It.Is<Uri>(p => p.ToString() == resultUrl), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()));
         }
