@@ -1,12 +1,9 @@
 ﻿<div class='configuration-control-form-group'>
-
     <!--
     This fine contains a map of snippets which are rendered by Angular depending on field type
     Type check occurs with help of the ng-if directive on the outermost <div> of the snippet.
     -->
-    <!--
-        Check box template
-        -->
+    <!-- Check box template -->
     <div class='col-sm-offset-1' ng-if='field.type == "CheckBox"'>
         <div class='checkbox checkbox-primary'>
             <input type='checkbox' ng-model='field.selected' ng-click="onChange($event)" data-field-name='{{::field.name}}'
@@ -19,9 +16,7 @@
         </div>
     </div>
 
-    <!--
-        Textbox template
-        -->
+    <!-- Textbox template -->
     <div ng-if='field.type == "TextBox"'>
         <label class='control-label' ng-if="field.label">{{::field.label}}</label>
         <input type='text' ng-model='field.value' ng-model-options="{ updateOn: 'blur' }"
@@ -33,9 +28,7 @@
         </div>
     </div>
 
-    <!--
-        Textarea template
-        -->
+    <!-- Textarea template -->
     <div ng-if='field.type == "TextBoxBig"'>
         <label class='control-label' ng-if="field.label">{{::field.label}}</label>
         <textarea type='text' ng-model='field.value' ng-model-options="{ updateOn: 'default blur', debounce: { 'default': 500, 'blur': 0 } }"
@@ -43,9 +36,7 @@
                   class='form-control form-control-focus' name='pca__txt__{{::field.name | validId}}' stop-click-propagation></textarea>
     </div>
 
-    <!--
-        Filepicker template
-        -->
+    <!-- Filepicker template -->
     <div ng-if='field.type == "FilePicker"'>
         <label class='control-label'>{{::field.label}}</label>
         <file-picker field='field' change="onChange"></file-picker>
@@ -54,9 +45,7 @@
         </div>
     </div>
 
-    <!--
-        RadioButtonGroup template
-        -->
+    <!-- RadioButtonGroup template -->
     <div ng-if='field.type == "RadioButtonGroup"'>
         <label class='control-label' ng-bind-html="field.label"></label>
         <radio-button-group field='field' current-action='currentAction' change='onChange'></radio-button-group>
@@ -65,9 +54,7 @@
         </div>
     </div>
 
-    <!--
-        DownDownList template
-        -->
+    <!-- DownDownList template -->
     <div ng-if='field.type == "DropDownList"'>
         <label ng-if="field.label !== null && field.label.length > 0" class='control-label' ng-bind-html="field.label"></label>
         <drop-down-list-box current-action="currentAction" field='field' click='onClick' change='onChange' data-field-name='{{::field.name}}'></drop-down-list-box>
@@ -76,17 +63,13 @@
         </div>
     </div>
 
-    <!--
-        TextBlock template
-    -->
+    <!-- TextBlock template -->
     <div ng-if='field.type == "TextBlock"'>
         <label ng-if="field.label !== null && field.label.length > 0" class='control-label'>{{::field.label}}</label>
         <text-block field='field'></text-block>
     </div>
 
-    <!--
-        FilterPane template
-    -->
+    <!-- FilterPane template -->
     <div ng-if='field.type == "FilterPane"'>
         <filter-pane current-action='currentAction' field='field' change='onChange'></filter-pane>
         <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
@@ -94,9 +77,7 @@
         </div>
     </div>
 
-    <!--
-        QueryBuilder template
-    -->
+    <!-- QueryBuilder template -->
     <div ng-if='field.type == "QueryBuilder"'>
         <label class='control-label'>{{::field.label}}</label>
         <query-builder current-action='currentAction' field='field'></query-builder>
@@ -105,9 +86,7 @@
         </div>
     </div>
 
-    <!--
-        MappingPane template
-    -->
+    <!-- MappingPane template -->
     <div ng-if='field.type == "MappingPane"'>
         <label class='control-label'>{{::field.label}}</label>
         <mapping-pane current-action='currentAction' field='field'></mapping-pane>
@@ -116,18 +95,14 @@
         </div>
     </div>
 
-    <!--
-        Routing control group template
-    -->
+    <!-- Routing control group template -->
     <div ng-if='field.type == "Routing"'>
         <div class="container_box" ng-repeat="plan in field.plans">
             <routing-control plan="plan" />
         </div>
     </div>
 
-    <!--
-        Field List control template
-    -->
+    <!-- Field List control template -->
     <div ng-if='field.type == "FieldList"'>
         <label class="conrol-label">{{::field.label}}</label>
         <field-list field="field" change="onChange"></field-list>
@@ -136,16 +111,12 @@
         </div>
     </div>
 
-    <!--
-        Button template
-        -->
+    <!-- Button template -->
     <div ng-if='field.type == "Button"'>
         <button ng-click="field.clicked=true;onClick($event)" data-field-name='{{::field.name}}' id='pca__btn__{{::field.name | validId}}' class="{{::field.class || 'btn btn-success'}}" name='pca__btn__{{::field.name | validId}}'>{{::field.label}}</button>
     </div>
 
-    <!--
-    TextSource template
-        -->
+    <!-- TextSource template -->
     <div ng-if='field.type == "TextSource"'>
         <text-source current-action="currentAction" change="onChange" data-field-name='{{::field.name}}' field="field"></text-source>
         <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
@@ -153,9 +124,7 @@
         </div>
     </div>
 
-    <!--
-        TextArea template
-        -->
+    <!-- TextArea template -->
     <div ng-if='field.type == "TextArea"'>
         <label ng-if="field.label !== null && field.label.length > 0" class='control-label'>{{::field.label}}</label>
         <text-area field='field'></text-area>
@@ -164,16 +133,12 @@
         </div>
     </div>
 
-    <!--
-        ManagePlan template
-    -->
+    <!-- ManagePlan template -->
     <div ng-if='field.type == "ManagePlan"'>
         <manage-plan current-action='currentAction'></manage-plan>
     </div>
 
-    <!--
-        Duration template
-    -->
+    <!-- Duration template -->
     <div ng-if='field.type == "Duration"'>
         <label ng-if="field.label !== null && field.label.length > 0" class='control-label'>{{::field.label}}</label>
         <duration field="field"></duration>
@@ -182,16 +147,12 @@
         </div>
     </div>
 
-    <!--
-        RunPlan button
-    -->
+    <!-- RunPlan button -->
     <div ng-if='field.type == "RunPlanButton"'>
         <run-plan-button current-action='currentAction' field="field"></run-plan-button>
     </div>
 
-    <!--
-        UpstreamDataChooser
-    -->
+    <!-- UpstreamDataChooser -->
     <div ng-if='field.type == "UpstreamDataChooser"'>
         <upstream-data-chooser field="field" current-action='currentAction' change="onChange"></upstream-data-chooser>
         <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
@@ -199,9 +160,7 @@
         </div>
     </div>
 
-    <!--
-        UpstreamFieldChooser
-    -->
+    <!-- UpstreamFieldChooser -->
     <div ng-if='field.type === "UpstreamFieldChooser"'>
         <upstream-field-chooser field="field" current-action="currentAction"></upstream-field-chooser>
         <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
@@ -209,9 +168,7 @@
         </div>
     </div>
 
-    <!--
-        UpstreamCrateChooser
-    -->
+    <!-- UpstreamCrateChooser -->
     <div ng-if='field.type === "UpstreamCrateChooser"'>
         <upstream-crate-chooser field="field" current-action="currentAction" change="onChange"></upstream-crate-chooser>
         <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
@@ -219,9 +176,7 @@
         </div>
     </div>
 
-    <!--
-    SourceableCriteria template
-        -->
+    <!-- SourceableCriteria template -->
     <div ng-if='field.type == "SourceableCriteria"'>
         <sourceable-criteria change="onChange" data-field-name='{{::field.name}}' field="field"></sourceable-criteria>
         <div data-ng-if="field.errorMessage != null && field.errorMessage !==''" class="validationWraper">
@@ -288,7 +243,6 @@
             <span class="validation-Icon"></span><div class="validation-message">{{field.errorMessage}}</div>
         </div>
     </div>
-
 
     <!-- Add more configuration field templates below -->
 </div>

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Web.Mvc;
@@ -68,7 +69,12 @@ namespace HubWeb.Controllers
 
             if (string.IsNullOrEmpty(response.Error))
             {
-                return View(response);
+                dynamic model = new ExpandoObject();
+                model.AuthorizationTokenId = response.AuthorizationToken.Id;
+                model.TerminalId = response.AuthorizationToken.TerminalID;
+                model.TerminalName = terminal.Name;
+
+                return View(model);
             }
             else
             {

@@ -1,22 +1,19 @@
 ﻿module dockyard.model {
 
-    export class ManageAuthToken_TerminalDTO {
-        id: number;
+    export class AuthenticationTokenTerminalDTO {
         name: string;
         label: string;
         version: string;
-        authTokens: Array<ManageAuthToken_AuthTokenDTO>;
+        authTokens: Array<AuthenticationTokenDTO>;
         authenticationType: number;
         selectedAuthTokenId: number;
 
         constructor(
-            id: number,
             name: string,
-            authTokens: Array<ManageAuthToken_AuthTokenDTO>,
+            authTokens: Array<AuthenticationTokenDTO>,
             authenticationType: number,
             selectedAuthTokenId: number) {
 
-            this.id = id;
             this.name = name;
             this.authTokens = authTokens;
             this.authenticationType = authenticationType;
@@ -24,7 +21,7 @@
         }
     }
 
-    export class ManageAuthToken_AuthTokenDTO {
+    export class AuthenticationTokenDTO {
         id: number;
         externalAccountName: string;
         isMain: boolean;

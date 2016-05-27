@@ -209,7 +209,7 @@ namespace TerminalBase.Services
 
         public async Task ApplyNewToken(Guid activityId, Guid authTokenId)
         {
-            var applyToken = new ManageAuthToken_Apply()
+            var applyToken = new AuthenticationTokenGrantDTO()
             {
                 ActivityId = activityId,
                 AuthTokenId = authTokenId,
