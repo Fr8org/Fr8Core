@@ -1,17 +1,17 @@
 ﻿@model HubWeb.ViewModels.RegistrationVM
 @{
-    ViewBag.Title = "Create a new user";
+    ViewBag.Title = "Register an Account";
 }
 
 <link href="/Content/templates/metronic/assets/global/css/components.css" id="style_components" rel="stylesheet" type="text/css" />
 <link href="/Content/templates/metronic/assets/admin/layout3/css/layout.css" rel="stylesheet" type="text/css" />
-
+<link rel="shortcut icon" type="image/x-icon" href="/Content/img/favicon.ico"/>
 @Html.Partial("~/Views/DockyardAccount/_HeaderPartial.cshtml")
 <div class="container-fluid">
     <div class="row-fluid">
         <div class="modal-dialog">
             <div class="register-container">
-                <h1>Create a new user</h1><br>
+                <h1 style="text-align: center">Register an Account</h1><br>
 
                 @using (Html.BeginForm("ProcessRegistration", "DockyardAccount", FormMethod.Post, new { @class = "form-horizontal", role = "form" }))
                 {
@@ -40,19 +40,19 @@
                         </div>
                         <div class="form-group">
                             @Html.LabelFor(m => m.HasOrganization, new { @class = "col-md-3 control-label" })
-                            <div class="col-md-4">
+                            <div class="col-md-4" style="padding-top:20px">
                                 @Html.CheckBoxFor(x => x.HasOrganization)
                             </div>
                         </div>
                         <div id="register-organization-name" class="form-group" style="display: none;">
                             @Html.LabelFor(m => m.OrganizationName, new { @class = "col-md-3 control-label" })
-                            <div class="col-md-4">
+                            <div class="col-md-4" style="padding-top:12px">
                                 @Html.TextBoxFor(m => m.OrganizationName, new { @class = "form-control" })
                             </div>
                         </div>
                         <div class="form-group">
                             <div class="col-md-offset-3 col-md-9">
-                                <button type="submit" class="btn purple">Register</button>
+                                <button type="submit" class="btn green">Register</button>
                             </div>
                         </div>
                     </div>
