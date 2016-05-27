@@ -105,9 +105,9 @@ namespace TerminalBase.Services
         public async Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(Guid activityId, CrateDirection direction)
         {
             var directionSuffix = direction == CrateDirection.Upstream
-                ? "upstream/"
-                : "downstream/";
-            var uri = new Uri($"{GetHubUrlWithApiVersion()}/plannodes/{directionSuffix}?id={activityId}", UriKind.Absolute);
+                ? "upstream"
+                : "downstream";
+            var uri = new Uri($"{GetHubUrlWithApiVersion()}/plan_nodes?id={activityId}&direction={directionSuffix}", UriKind.Absolute);
             var curActivities = await _restfulServiceClient.GetAsync<List<ActivityDTO>>(uri, null, await GetHMACHeader(uri));
             var curCrates = new List<Crate<TManifest>>();
 
@@ -124,10 +124,10 @@ namespace TerminalBase.Services
         public async Task<List<Crate>> GetCratesByDirection(Guid activityId, CrateDirection direction)
         {
             var directionSuffix = direction == CrateDirection.Upstream
-                ? "upstream/"
+                ? "upstream"
                 : "downstream";
 
-            var uri = new Uri($"{GetHubUrlWithApiVersion()}/plannodes/{directionSuffix}?id={activityId}", UriKind.Absolute);
+            var uri = new Uri($"{GetHubUrlWithApiVersion()}/plan_nodes?id={activityId}&direction={directionSuffix}", UriKind.Absolute);
             var curActivities = await _restfulServiceClient.GetAsync<List<ActivityDTO>>(uri, null, await GetHMACHeader(uri));
             var curCrates = new List<Crate>();
 
@@ -142,7 +142,7 @@ namespace TerminalBase.Services
 
         public async Task<IncomingCratesDTO> GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability)
         {
-            var url = $"{GetHubUrlWithApiVersion()}/plannodes/available_data?id={activityId}&direction={(int)direction}&availability={(int)availability}";
+            var url = $"{GetHubUrlWithApiVersion()}/plan_nodes/signals?id={activityId}&direction={(int)direction}&availability={(int)availability}";
             var uri = new Uri(url, UriKind.Absolute);
             var availableData = await _restfulServiceClient.GetAsync<IncomingCratesDTO>(uri, null, await GetHMACHeader(uri));
             return availableData;
@@ -167,7 +167,7 @@ namespace TerminalBase.Services
 
         public async Task<List<ActivityTemplateDTO>> GetActivityTemplates( bool getLatestsVersionsOnly = false)
         {
-            var hubUri = new Uri($"{GetHubUrlWithApiVersion()}/plannodes/available");
+            var hubUri = new Uri($"{GetHubUrlWithApiVersion()}/activity_templates");
             var allCategories = await _restfulServiceClient.GetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(hubUri, null, await GetHMACHeader(hubUri));
             var templates = allCategories.SelectMany(x => x.Activities);
             return getLatestsVersionsOnly ? GetLatestsVersionsOnly(templates) : templates.ToList();
@@ -182,7 +182,7 @@ namespace TerminalBase.Services
 
         public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, bool getLatestsVersionsOnly = false)
         {
-            var hubUrl = $"{GetHubUrlWithApiVersion()}/plannodes/getAvailableActivitiesWithTag?tag={(string.IsNullOrEmpty(tag) ? "[all]" : tag)}";
+            var hubUrl = $"{GetHubUrlWithApiVersion()}/activity_templates?tag={(string.IsNullOrEmpty(tag) ? "[all]" : tag)}";
             var uri = new Uri(hubUrl);
             var templates = await _restfulServiceClient.GetAsync<List<ActivityTemplateDTO>>(uri, null, await GetHMACHeader(uri));
             return getLatestsVersionsOnly ? GetLatestsVersionsOnly(templates) : templates;

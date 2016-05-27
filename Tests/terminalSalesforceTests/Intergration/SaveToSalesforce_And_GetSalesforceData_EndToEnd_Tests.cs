@@ -102,7 +102,7 @@ namespace terminalSalesforceTests.Intergration
         private async Task<Guid> CreatePlan_SaveAndGetDataFromSalesforce(AuthorizationTokenDO authToken)
         {
             //get required activity templates
-            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "plannodes/available");
+            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "activity_templates");
             var atSave = activityTemplates.Single(at => at.Name.Equals("Forwarders")).Activities.Single(a => a.Name.Equals("Save_To_SalesforceDotCom"));
             var atGet = activityTemplates.Single(at => at.Name.Equals("Receivers")).Activities.Single(a => a.Name.Equals("Get_Data"));
             Assert.IsNotNull(atSave, "Save to Salesforce.com activity is not available");

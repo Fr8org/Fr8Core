@@ -96,7 +96,7 @@ namespace terminalSalesforceTests.Intergration
         private async Task<Guid> CreatePlan_GetSalesforceDataIntoSendEmail(AuthorizationTokenDO authToken)
         {
             //get required activity templates
-            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "plannodes/available");
+            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "activity_templates");
             var getData = activityTemplates.Single(at => at.Name.Equals("Receivers")).Activities.Single(a => a.Name.Equals("Get_Data"));
             var sendEmail = activityTemplates.Single(at => at.Name.Equals("Forwarders")).Activities.Single(a => a.Name.Equals("SendEmailViaSendGrid"));
             Assert.IsNotNull(getData, "Get Salesforce Data activity is not available");
