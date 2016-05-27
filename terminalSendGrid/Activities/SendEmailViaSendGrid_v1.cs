@@ -6,7 +6,6 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Managers;
 using Fr8Data.States;
-using StructureMap;
 using terminalUtilities.Infrastructure;
 using terminalUtilities.Interfaces;
 using terminalUtilities.Models;
@@ -18,9 +17,8 @@ namespace terminalSendGrid.Activities
 {
     public class SendEmailViaSendGrid_v1 : BaseTerminalActivity
     {
-        // moved the EmailPackager ObjectFactory here since the basepluginAction will be called by others and the dependency is defiend in pluginsendGrid
-        private IConfigRepository _configRepository;
-        private IEmailPackager _emailPackager;
+        private readonly IConfigRepository _configRepository;
+        private readonly IEmailPackager _emailPackager;
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -35,11 +33,11 @@ namespace terminalSendGrid.Activities
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        public SendEmailViaSendGrid_v1(ICrateManager crateManager)
-            : base(true, crateManager)
+        public SendEmailViaSendGrid_v1(ICrateManager crateManager, IConfigRepository configRepository, IEmailPackager emailPackager)
+            : base(false, crateManager)
         {
-            _configRepository = ObjectFactory.GetInstance<IConfigRepository>();
-            _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();
+            _configRepository = configRepository;
+            _emailPackager = emailPackager;
         }
 
 

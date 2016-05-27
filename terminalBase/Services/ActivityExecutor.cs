@@ -42,15 +42,25 @@ namespace TerminalBase.Services
             
             //we should remove this mode
             var activityTemplate = curDataDTO.ActivityDTO.ActivityTemplate;
+            IActivityFactory factory;
 
-            
+
             if (activityTemplate.Name.EndsWith("_TEST"))
             {
+                var originalName = activityTemplate.Name;
+
                 _hubCommunicator = new TestMonitoringHubCommunicator(curDataDTO.ExplicitData);
                 activityTemplate.Name = activityTemplate.Name.Substring(0, activityTemplate.Name.Length - "_TEST".Length);
-            }
 
-            IActivityFactory factory = ActivityStore.GetValue(curDataDTO.ActivityDTO.ActivityTemplate);
+                factory = ActivityStore.GetValue(activityTemplate);
+
+                activityTemplate.Name = originalName;
+            }
+            else
+            {
+                factory = ActivityStore.GetValue(curDataDTO.ActivityDTO.ActivityTemplate);
+            }
+            
 
             if (factory == null)
             {

@@ -153,7 +153,7 @@ namespace terminalSalesforce.Actions
                     ChildActivityIndex = 2
                 }
             };
-            var behavior = new ReconfigurationListBehavior(HubCommunicator, CurrentUserId);
+            var behavior = new ReconfigurationListBehavior();
             await behavior.ReconfigureActivities(ActivityPayload, AuthorizationToken, reconfigurationList);
         }
 

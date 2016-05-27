@@ -423,7 +423,7 @@ namespace terminalDocuSign.Activities
 
         private async Task<Crate> PackAvailableHandlers()
         {
-            var templates = await HubCommunicator.GetActivityTemplates(CurrentUserId);
+            var templates = await HubCommunicator.GetActivityTemplates();
             var taggedTemplates = templates.Where(x => x.Tags != null && x.Tags.Contains("Notifier"));
 
             var availableHandlersCrate =

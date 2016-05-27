@@ -111,7 +111,6 @@ namespace terminalQuickBooks.Services
         public void Create(
             StandardAccountingTransactionDTO curAccountingTransactionDto, 
             AuthorizationToken authToken,
-            string userId,
             IHubCommunicator hubCommunicator)
         {
             var curJournalEntry = CreateQbJournalEntry(curAccountingTransactionDto);

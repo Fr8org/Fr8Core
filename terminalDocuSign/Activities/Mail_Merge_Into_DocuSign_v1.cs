@@ -202,7 +202,7 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-            var behavior = new ReconfigurationListBehavior(HubCommunicator, CurrentUserId);
+            var behavior = new ReconfigurationListBehavior();
             await behavior.ReconfigureActivities(ActivityPayload, AuthorizationToken, reconfigList);
         }
 

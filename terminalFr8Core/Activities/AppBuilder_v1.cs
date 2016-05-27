@@ -167,7 +167,7 @@ namespace terminalFr8Core.Activities
 
         private async Task<byte[]> ProcessExcelFile(string filePath)
         {
-            var byteArray = await new ExcelUtils(HubCommunicator, CurrentUserId).GetExcelFileAsByteArray(filePath);
+            var byteArray = await new ExcelUtils().GetExcelFileAsByteArray(filePath);
             var payloadCrate = Crate.FromContent(RuntimeCrateLabelPrefix, ExcelUtils.GetExcelFile(byteArray, filePath, false), AvailabilityType.RunTime);
             Payload.Add(payloadCrate);
             return byteArray;

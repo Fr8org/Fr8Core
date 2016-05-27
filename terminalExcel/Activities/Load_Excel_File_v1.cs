@@ -84,7 +84,7 @@ namespace terminalExcel.Activities
 
         protected override async Task ConfigureETA()
         {
-            var excelUtils = new ExcelUtils(HubCommunicator, CurrentUserId);
+            var excelUtils = new ExcelUtils();
             Storage.RemoveByLabel(ColumnHeadersCrateLabel);
             //If file is not uploaded we hide file description
             if (string.IsNullOrEmpty(ActivityUI.FilePicker.Value))
@@ -171,7 +171,7 @@ namespace terminalExcel.Activities
                 return;
             }
 
-            var byteArray = await new ExcelUtils(HubCommunicator, CurrentUserId).GetExcelFileAsByteArray(ActivityUI.FilePicker.Value);
+            var byteArray = await new ExcelUtils().GetExcelFileAsByteArray(ActivityUI.FilePicker.Value);
             var tableCrates = GetExcelFileDescriptionCrates(byteArray, ActivityUI.FilePicker.Value, true, null, true);
 
             var fileDescription = new StandardFileDescriptionCM

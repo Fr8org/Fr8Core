@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Data.Interfaces;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using Fr8Infrastructure.Interfaces;
 using HealthMonitor.Utility;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -39,12 +40,12 @@ namespace terminalIntegrationTests.EndToEnd
         [Test, Category("Integration.terminalGoogle")]
         public async Task GoogleIntoGoogleEndToEnd()
         {
-            /*
+            
             var googleAuthTokenId = await new terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalGoogle(this).ExtractGoogleDefaultToken();
             var defaultGoogleAuthToken = GetGoogleAuthToken(googleAuthTokenId);
 
             //create a new plan
-            var googleSheetApi = new GoogleSheet(new GoogleIntegration());
+            var googleSheetApi = new GoogleSheet(new GoogleIntegration(ObjectFactory.GetInstance<IRestfulServiceClient>()));
             var sourceSpreadsheetUri = string.Empty;
             var destinationSpreadsheetUri = string.Empty;
             var sourceSpreadsheetName = Guid.NewGuid().ToString();
@@ -94,7 +95,7 @@ namespace terminalIntegrationTests.EndToEnd
                     await googleSheetApi.DeleteSpreadSheet(destinationSpreadsheetUri, defaultGoogleAuthToken);
                 }
             }
-            */
+            
         }
 
         private StandardTableDataCM GetTestSpreadsheetContent()

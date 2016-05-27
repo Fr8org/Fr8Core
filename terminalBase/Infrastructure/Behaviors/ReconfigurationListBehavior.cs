@@ -91,15 +91,6 @@ namespace TerminalBase.Infrastructure.Behaviors
     /// </summary>
     public class ReconfigurationListBehavior
     {
-
-        private readonly IHubCommunicator _hubCommunicator;
-        private readonly string _currentUserId;
-        public ReconfigurationListBehavior(IHubCommunicator hubCommunicator, string currentUserId)
-        {
-            _hubCommunicator = hubCommunicator;
-            _currentUserId = currentUserId;
-        }
-
         /// <summary>
         /// ReconfigurationList algorithm.
         /// </summary>

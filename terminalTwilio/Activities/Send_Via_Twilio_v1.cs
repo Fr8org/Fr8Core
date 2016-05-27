@@ -34,12 +34,12 @@ namespace terminalTwilio.Activities
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
 
-        protected ITwilioService _twilio;
+        protected ITwilioService Twilio;
 
-        public Send_Via_Twilio_v1(ICrateManager crateManager)
-            : base(true, crateManager)
+        public Send_Via_Twilio_v1(ICrateManager crateManager, ITwilioService twilioService)
+            : base(false, crateManager)
         {
-            _twilio = ObjectFactory.GetInstance<ITwilioService>();
+            Twilio = twilioService;
         }
 
         public override async Task Initialize()
@@ -74,7 +74,7 @@ namespace terminalTwilio.Activities
 
         private List<FieldDTO> GetRegisteredSenderNumbersData()
         {
-            return _twilio.GetRegisteredSenderNumbers().Select(number => new FieldDTO() { Key = number, Value = number }).ToList();
+            return Twilio.GetRegisteredSenderNumbers().Select(number => new FieldDTO() { Key = number, Value = number }).ToList();
         }
 
         public override async Task FollowUp()
@@ -100,7 +100,7 @@ namespace terminalTwilio.Activities
 
                 try
                 {
-                    curMessage = _twilio.SendSms(smsNumber, smsBody);
+                    curMessage = Twilio.SendSms(smsNumber, smsBody);
                     SendEventReport($"Twilio SMS Sent -> SMSBody: {smsBody} smsNumber: {smsNumber}");
                     var curFieldDTOList = CreateKeyValuePairList(curMessage);
                     Payload.Add(PackCrate_TwilioMessageDetails(curFieldDTOList));

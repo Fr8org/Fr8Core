@@ -50,6 +50,30 @@ namespace TerminalBase.BaseClasses
 
         protected override void InitializeInternalState()
         {
+            var terminalAuthType = MyTemplate.Terminal.AuthenticationType;
+
+            switch (terminalAuthType)
+            {
+                case AuthenticationType.Internal:
+                    AuthenticationMode = AuthenticationMode.InternalMode;
+                    break;
+
+                case AuthenticationType.External:
+                    AuthenticationMode = AuthenticationMode.ExternalMode;
+                    break;
+
+                case AuthenticationType.InternalWithDomain:
+                    AuthenticationMode = AuthenticationMode.InternalModeWithDomain;
+                    break;
+
+                case AuthenticationType.None:
+                    AuthenticationMode = AuthenticationMode.ExternalMode;
+                    break;
+
+                default:
+                    throw new Exception("Unknown authentication type: " + terminalAuthType);
+            }
+            
             CrateSignaller = new CrateSignaller(Storage, MyTemplate.Name);
             UpstreamQueryManager = new UpstreamQueryManager(ActivityContext, HubCommunicator);
         }

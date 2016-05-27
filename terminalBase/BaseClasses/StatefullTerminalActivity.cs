@@ -6,7 +6,6 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.DataTransferObjects.Helpers;
 using Fr8Data.Manifests;
-using Fr8Data.States;
 using TerminalBase.Errors;
 using TerminalBase.Infrastructure;
 using TerminalBase.Interfaces;
@@ -60,6 +59,7 @@ namespace TerminalBase.BaseClasses
         protected IHubCommunicator HubCommunicator => _activityContext.HubCommunicator;
         protected ActivityContext ActivityContext => _activityContext;
         protected bool IsRuntime => _containerExecutionContext != null;
+        protected AuthenticationMode AuthenticationMode { get; set; } = AuthenticationMode.InternalMode;
 
         /**********************************************************************************/
         // Functions
@@ -94,31 +94,10 @@ namespace TerminalBase.BaseClasses
 
         protected void AddAuthenticationCrate(bool revocation)
         {
-            var terminalAuthType = ActivityContext.ActivityPayload.ActivityTemplate.Terminal.AuthenticationType;
-
-            AuthenticationMode mode;
-            switch (terminalAuthType)
-            {
-                case AuthenticationType.Internal:
-                    mode = AuthenticationMode.InternalMode;
-                    break;
-                case AuthenticationType.External:
-                    mode = AuthenticationMode.ExternalMode;
-                    break;
-                case AuthenticationType.InternalWithDomain:
-                    mode = AuthenticationMode.InternalModeWithDomain;
-                    break;
-                case AuthenticationType.None:
-                    mode = AuthenticationMode.ExternalMode;
-                    break;
-                default:
-                    throw new ActivityExecutionException("Unknown authentication type");
-            }
-
             Storage.Remove<StandardAuthenticationCM>();
             Storage.Add(Crate.FromContent("RequiresAuthentication", new StandardAuthenticationCM
             {
-                Mode = mode,
+                Mode = AuthenticationMode,
                 Revocation = revocation
             }));
         }
@@ -135,7 +114,7 @@ namespace TerminalBase.BaseClasses
             {
                 if (!await CheckAuthentication())
                 {
-                    AddAuthenticationCrate(true);
+                    AddAuthenticationCrate(false);
                     return;
                 }
                 
@@ -290,7 +269,15 @@ namespace TerminalBase.BaseClasses
         {
             if (!await CheckAuthentication())
             {
-                ErrorInvalidToken("Authorization token is invalid");
+                if (string.IsNullOrWhiteSpace(AuthorizationToken?.Token))
+                {
+                    ErrorInvalidToken("No AuthToken provided.");
+                }
+                else
+                {
+                    ErrorInvalidToken("Authorization token is invalid");
+                }
+                
                 return;
             }
 

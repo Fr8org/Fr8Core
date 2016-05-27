@@ -35,7 +35,7 @@ namespace terminalTest.Actions
 
         protected override async Task InitializeETA()
         {
-            var templates = await HubCommunicator.GetActivityTemplates(CurrentUserId);
+            var templates = await HubCommunicator.GetActivityTemplates();
             var activityTemplate = templates.First(x => x.Name == "SimpleActivity");
 
             //var atdo = AutoMapper.Mapper.Map<ActivityTemplateDTO, ActivityTemplateDO>(activityTemplate);

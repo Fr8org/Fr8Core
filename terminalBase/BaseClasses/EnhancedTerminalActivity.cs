@@ -53,11 +53,12 @@ namespace TerminalBase.BaseClasses
 
         public T ActivityUI { get; private set; }
 
-        protected UiBuilder UiBuilder { get; private set; }
+        protected UiBuilder UiBuilder { get; }
 
         /**********************************************************************************/
         // Functions
         /**********************************************************************************/
+
         protected EnhancedTerminalActivity(bool isAuthenticationRequired, ICrateManager crateManager) 
             : base(isAuthenticationRequired, crateManager)
         {
