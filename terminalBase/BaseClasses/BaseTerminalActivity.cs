@@ -410,6 +410,26 @@ namespace TerminalBase.BaseClasses
             );
         }
 
+
+        protected void AddAdvisoryCrate(string name, string content)
+        {
+            var advisoryCrate = Storage.CratesOfType<AdvisoryMessagesCM>().FirstOrDefault();
+            var currentAdvisoryResults = advisoryCrate == null ? new AdvisoryMessagesCM() : advisoryCrate.Content;
+
+            var advisory = currentAdvisoryResults.Advisories.FirstOrDefault(x => x.Name == name);
+
+            if (advisory == null)
+            {
+                currentAdvisoryResults.Advisories.Add(new AdvisoryMessageDTO { Name = name, Content = content });
+            }
+            else
+            {
+                advisory.Content = content;
+            }
+
+            Storage.Add(Crate.FromContent("Advisories", currentAdvisoryResults));
+        }
+
         /// <summary>
         /// THIS FUNCTION SHOULD BE CALLED ONLY FROM TESTS
         /// </summary>
