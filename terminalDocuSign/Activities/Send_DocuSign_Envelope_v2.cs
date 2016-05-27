@@ -88,14 +88,14 @@ namespace terminalDocuSign.Actions
         {
             DisableValidationOnFollowup = true;
         }
-        
-        protected override Task InitializeETA()
+
+        public override Task Initialize()
         {
             LoadDocuSignTemplates();
             return Task.FromResult(0);
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             //Load DocuSign template again in case there are new templates available
             LoadDocuSignTemplates();
@@ -162,7 +162,7 @@ namespace terminalDocuSign.Actions
             Storage.ReplaceByLabel(Crate.FromContent(UserFieldsAndRolesCrateLabel, new FieldDescriptionsCM(userDefinedFields.Concat(roles)), AvailabilityType.Configuration));
         }
 
-        protected override Task ValidateETA()
+        protected override Task Validate()
         {
             if (string.IsNullOrEmpty(SelectedTemplateId))
             {
@@ -177,7 +177,7 @@ namespace terminalDocuSign.Actions
             return Task.FromResult(0);
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             var userDefinedFields = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == UserFieldsAndRolesCrateLabel);
             if (userDefinedFields == null)

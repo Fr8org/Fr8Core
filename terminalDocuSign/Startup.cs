@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web.Http.Dispatcher;
 using Data.Infrastructure.AutoMapper;
+using Fr8Infrastructure.StructureMap;
 using Microsoft.Owin;
 using Owin;
 using StructureMap;
@@ -29,6 +30,8 @@ namespace terminalDocuSign
         public void Configuration(IAppBuilder app, bool selfHost)
         {
             ConfigureProject(selfHost, TerminalDocusignStructureMapBootstrapper.LiveConfiguration);
+            ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
+
             DataAutoMapperBootStrapper.ConfigureAutoMapper();
             RoutesConfig.Register(_configuration);
             ConfigureFormatters();

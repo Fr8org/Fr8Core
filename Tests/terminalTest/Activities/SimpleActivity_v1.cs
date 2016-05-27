@@ -45,13 +45,13 @@ namespace terminalTest.Actions
         {
         }
 
-        protected override Task InitializeETA()
+        public override Task Initialize()
         {
             ActivityUI.TextBlock.Value = ActivityId.ToString();
             return Task.FromResult(0);
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             if (ActivityUI.AddChild.Clicked)
             {
@@ -61,9 +61,9 @@ namespace terminalTest.Actions
             }
         }
 
-        
 
-        protected override Task RunETA()
+
+        public override Task Run()
         {
             Log($"{ActivityPayload.Label} [{ActivityId}] started");
             return Task.FromResult(0);

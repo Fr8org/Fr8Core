@@ -102,7 +102,7 @@ namespace terminalSalesforce.Actions
             _salesforceManager = salesforceManager;
         }
 
-        protected override Task ValidateETA()
+        protected override Task Validate()
         {
             if (ActivityUI.RunMailMergeButton.Clicked)
             {
@@ -122,7 +122,7 @@ namespace terminalSalesforce.Actions
             return Task.FromResult(0);
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             if (ActivityUI.RunMailMergeButton.Clicked)
             {
@@ -278,7 +278,7 @@ namespace terminalSalesforce.Actions
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             ActivityUI.SalesforceObjectSelector.ListItems = _salesforceManager.GetSalesforceObjectTypes().Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
             var activityTemplates = await HubCommunicator.GetActivityTemplates(Tags.EmailDeliverer, true);
@@ -288,7 +288,7 @@ namespace terminalSalesforce.Actions
                                                                             .ToList();
         }
 
-        protected override Task RunETA()
+        public override Task Run()
         {
             return Task.FromResult(0);
         }

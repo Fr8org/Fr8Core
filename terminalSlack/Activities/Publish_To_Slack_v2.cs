@@ -54,7 +54,7 @@ namespace terminalSlack.Activities
         {
             _slackIntegration = new SlackIntegration();
         }
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             var usersTask = _slackIntegration.GetUserList(AuthorizationToken.Token);
             var channelsTask = _slackIntegration.GetChannelList(AuthorizationToken.Token);
@@ -69,13 +69,13 @@ namespace terminalSlack.Activities
             ActivityUI.ChannelSelector.ListItems = channelsAndUsersList;
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
             //No extra config is required
             return Task.FromResult(0);
         }
 
-        protected override Task ValidateETA()
+        protected override Task Validate()
         {
             if (string.IsNullOrEmpty(ActivityUI.ChannelSelector.Value))
             {
@@ -87,7 +87,7 @@ namespace terminalSlack.Activities
             return Task.FromResult(0);
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             var channel = ActivityUI.ChannelSelector.Value;
             var message = ActivityUI.MessageSource.GetValue(Payload);

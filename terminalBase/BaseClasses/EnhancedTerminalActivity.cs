@@ -109,46 +109,6 @@ namespace TerminalBase.BaseClasses
             SyncConfControlsBack();
             return base.AfterDeactivate(ex);
         }
-
-        /**********************************************************************************/
-
-        public sealed override async Task Initialize()
-        {
-            await InitializeETA();
-        }
-
-        /**********************************************************************************/
-
-        public sealed override async Task FollowUp()
-        {
-            await ConfigureETA();
-        }
-
-        protected sealed override async Task Validate()
-        {
-            await ValidateETA();
-        }
-        
-        /**********************************************************************************/
-
-        public sealed override async Task Activate()
-        {
-            await ActivateETA();
-        }
-
-        /**********************************************************************************/
-
-        public sealed override async Task Deactivate()
-        {
-            await DeactivateETA();
-        }
-        
-        /**********************************************************************************/
-
-        public sealed override async Task Run()
-        {
-            await RunETA();
-        }
         
         /**********************************************************************************/
 
@@ -193,32 +153,7 @@ namespace TerminalBase.BaseClasses
 
             return AssignNamesForUnnamedControls((T)defaultConstructor.Invoke(null));
         }
-
-        protected abstract Task InitializeETA();
-        protected abstract Task ConfigureETA();
-        protected abstract Task RunETA();
-
-        /**********************************************************************************/
-
-        protected virtual Task ValidateETA()
-        {
-            return Task.FromResult(0);
-        }
-
-        /**********************************************************************************/
-
-        protected virtual Task ActivateETA()
-        {
-            return Task.FromResult(0);
-        }
-
-        /**********************************************************************************/
-
-        protected virtual Task DeactivateETA()
-        {
-            return Task.FromResult(0);
-        }
-
+        
         /**********************************************************************************/
 
         private void CheckCurrentActivityStorageAvailability()

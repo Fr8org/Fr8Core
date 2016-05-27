@@ -64,12 +64,12 @@ namespace terminalAtlassian.Actions
             _atlassianService = atlassianService;
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             await Task.Yield();
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             var issueKey = ActivityUI.IssueNumber.GetValue(Storage);
             if (!string.IsNullOrEmpty(issueKey))
@@ -80,7 +80,7 @@ namespace terminalAtlassian.Actions
             await Task.Yield();
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             var issueKey = ActivityUI.IssueNumber.GetValue(Storage);
             if (!string.IsNullOrEmpty(issueKey))

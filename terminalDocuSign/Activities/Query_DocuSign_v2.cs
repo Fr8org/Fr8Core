@@ -94,7 +94,7 @@ namespace terminalDocuSign.Activities
 
         private const string RunTimeCrateLabel = "DocuSign Envelope Data";
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             var configuration = DocuSignManager.SetUp(AuthorizationToken);
             ActivityUI.FolderFilter.ListItems = DocuSignFolders.GetFolders(configuration)
@@ -108,12 +108,12 @@ namespace terminalDocuSign.Activities
                           .AddFields(GetEnvelopeProperties());
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
             return Task.FromResult(0);
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             var configuration = DocuSignManager.SetUp(AuthorizationToken);
             var settings = GetDocusignQuery();

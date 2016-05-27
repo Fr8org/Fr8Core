@@ -126,7 +126,7 @@ namespace terminalSlack.Actions
                                                                       new string[] { "Slack Outgoing Message" });
         }
 
-        protected override Task RunETA()
+        public override Task Run()
         {
             var incomingMessageContents = ExtractIncomingMessageContentFromPayload();
             var hasIncomingMessage = incomingMessageContents?.Fields.Count > 0;
@@ -161,7 +161,7 @@ namespace terminalSlack.Actions
             return new FieldDescriptionsCM(eventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()));
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             var oAuthToken = AuthorizationToken.Token;
             ActivityUI.ChannelList.ListItems = (await _slackIntegration.GetChannelList(oAuthToken, false))
@@ -173,7 +173,7 @@ namespace terminalSlack.Actions
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel);
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
             return Task.FromResult(0);
         }

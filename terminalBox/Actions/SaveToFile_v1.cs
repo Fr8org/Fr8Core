@@ -50,17 +50,17 @@ namespace terminalBox.Actions
         {
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             await Task.Yield();
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             await Task.Yield();
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             var token = JsonConvert.DeserializeObject<BoxAuthTokenDO>(AuthorizationToken.Token);
             var desiredCrateDescription = ActivityUI.FileChooser.CrateDescriptions.Single(x => x.Selected);

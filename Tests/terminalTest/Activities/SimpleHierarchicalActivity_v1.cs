@@ -33,7 +33,7 @@ namespace terminalTest.Actions
         {
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             var templates = await HubCommunicator.GetActivityTemplates();
             var activityTemplate = templates.First(x => x.Name == "SimpleActivity");
@@ -94,12 +94,12 @@ namespace terminalTest.Actions
             });
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
             return Task.FromResult(0);
         }
 
-        protected override Task RunETA()
+        public override Task Run()
         {
             Log($"{ActivityPayload.Label} started");
             return Task.FromResult(0);

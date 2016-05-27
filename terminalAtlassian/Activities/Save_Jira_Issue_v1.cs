@@ -206,7 +206,7 @@ namespace terminalAtlassian.Actions
 
         #region Configuration
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             ActivityUI.AvailableProjects.ListItems = _atlassianService
                 .GetProjects(AuthorizationToken)
@@ -216,7 +216,7 @@ namespace terminalAtlassian.Actions
             await Task.Yield();
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             ActivityUI.RestoreCustomFields(Storage);
             var configProps = GetConfigurationProperties();
@@ -324,7 +324,7 @@ namespace terminalAtlassian.Actions
 
         #region Runtime
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             ActivityUI.RestoreCustomFields(Storage);
 

@@ -122,14 +122,14 @@ namespace terminalGoogle.Activities
 
 
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             var spreadsheets = await _googleApi.GetSpreadsheets(GetGoogleAuthToken());
             ActivityUI.SpreadsheetList.ListItems = spreadsheets.Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel, true);
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             List<Crate> crates = new List<Crate>();
             Crate fieldsCrate = null;
@@ -240,7 +240,7 @@ namespace terminalGoogle.Activities
             return true;
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             if (string.IsNullOrEmpty(ActivityUI.SpreadsheetList.Value))
             {

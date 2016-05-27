@@ -99,7 +99,7 @@ namespace terminalFr8Core.Activities
             //ActivityName = "Match Incoming Text and Build Object List";
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             var activityTemplates = await HubCommunicator.GetActivityTemplates(Tags.TableDataGenerator);
             activityTemplates.Sort((x, y) => x.Name.CompareTo(y.Name));
@@ -108,7 +108,7 @@ namespace terminalFr8Core.Activities
                                                                  .ToList();
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             //Remove child activity if its not specified or add it if is not yet added
             if (string.IsNullOrEmpty(ActivityUI.DataSourceSelector.Value))
@@ -129,7 +129,7 @@ namespace terminalFr8Core.Activities
             }
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             if (IsInitialRun)
             {

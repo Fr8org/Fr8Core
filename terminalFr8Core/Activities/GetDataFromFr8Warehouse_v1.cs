@@ -90,14 +90,14 @@ namespace terminalFr8Core.Actions
         {
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             ActivityUI.AvailableObjects.ListItems = GetObjects();
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
             await Task.Yield();
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             var selectedObject = ActivityUI.AvailableObjects.Value;
             var hasSelectedObject = !string.IsNullOrEmpty(selectedObject);
@@ -122,7 +122,7 @@ namespace terminalFr8Core.Actions
             await Task.Yield();
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

@@ -179,7 +179,7 @@ namespace terminalQuickBooks.Actions
             _chartOfAccounts = chartOfAccounts;
         }
         
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             if (ActivityId == Guid.Empty)
                 throw new ArgumentException("Configuration requires the submission of an Action that has a real ActionId");
@@ -202,7 +202,7 @@ namespace terminalQuickBooks.Actions
             Storage.AddRange(await PackSources());
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
             return Task.FromResult(0);
         }
@@ -211,7 +211,7 @@ namespace terminalQuickBooks.Actions
         ///It is supposed to obtain StandardTableDataCM and user input in the form of
         /// debit line account and (optionaly) memo. The debit account is all for all transactions.
         /// </summary>
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             AccountDTO curDebitAccount = null;
             string memoText = "Unspecified";

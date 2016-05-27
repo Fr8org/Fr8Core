@@ -77,12 +77,12 @@ namespace terminalExcel.Activities
         {
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             var excelUtils = new ExcelUtils();
             Storage.RemoveByLabel(ColumnHeadersCrateLabel);
@@ -163,7 +163,7 @@ namespace terminalExcel.Activities
             return crates;
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             if (string.IsNullOrEmpty(ActivityUI.FilePicker.Value))
             {

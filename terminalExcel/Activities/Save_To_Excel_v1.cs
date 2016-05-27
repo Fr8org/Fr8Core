@@ -137,13 +137,13 @@ namespace terminalExcel.Actions
         {
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             CrateSignaller.MarkAvailableAtRuntime<StandardFileDescriptionCM>("StoredFile");
             ActivityUI.ExistingSpreadsheetsList.ListItems = await GetCurrentUsersFiles();
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             //If different existing spreadsheet is selected then we have to load worksheet list for it
             if (ActivityUI.UseExistingSpreadsheetOption.Selected && !string.IsNullOrEmpty(ActivityUI.ExistingSpreadsheetsList.Value))
@@ -212,7 +212,7 @@ namespace terminalExcel.Actions
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             if (!ActivityUI.UpstreamCrateChooser.CrateDescriptions.Any(x => x.Selected))
             {

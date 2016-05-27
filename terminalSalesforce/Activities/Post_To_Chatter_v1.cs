@@ -90,20 +90,20 @@ namespace terminalSalesforce.Actions
             _salesforceManager = salesforceManager;
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             ActivityUI.UseUserOrGroupOption.Selected = true;
             ActivityUI.UserOrGroupSelector.ListItems = (await _salesforceManager.GetUsersAndGroups(AuthorizationToken)).Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PostedFeedCrateLabel);            
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
             //No configuration is required
             return Task.FromResult(0);
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             var feedText = ActivityUI.FeedTextSource.GetValue(Payload);
             if (string.IsNullOrEmpty(feedText))

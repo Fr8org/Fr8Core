@@ -61,7 +61,7 @@ namespace terminalDropbox.Actions
             _dropboxService = dropboxService;
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             var fileNames = await _dropboxService.GetFileList(AuthorizationToken);
             ActivityUI.FileList.ListItems = fileNames
@@ -70,7 +70,7 @@ namespace terminalDropbox.Actions
             Storage.ReplaceByLabel(PackDropboxFileListCrate(fileNames));
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             var fileList = await _dropboxService.GetFileList(AuthorizationToken);
             ActivityUI.FileList.ListItems = fileList
@@ -81,7 +81,7 @@ namespace terminalDropbox.Actions
 
       
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             IList<string> fileNames;
             try

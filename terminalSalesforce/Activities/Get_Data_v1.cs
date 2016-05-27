@@ -80,7 +80,7 @@ namespace terminalSalesforce.Actions
             _salesforceManager = salesforceManager;
         }
 
-        protected override Task InitializeETA()
+        public override Task Initialize()
         {
             ActivityUI.SalesforceObjectSelector.ListItems = _salesforceManager
                 .GetSalesforceObjectTypes()
@@ -90,7 +90,7 @@ namespace terminalSalesforce.Actions
             return Task.FromResult(true);
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             //If Salesforce object is empty then we should clear filters as they are no longer applicable
             var selectedObject = ActivityUI.SalesforceObjectSelector.selectedKey;
@@ -127,7 +127,7 @@ namespace terminalSalesforce.Actions
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             var salesforceObject = ActivityUI.SalesforceObjectSelector.selectedKey;
             if (string.IsNullOrEmpty(salesforceObject))

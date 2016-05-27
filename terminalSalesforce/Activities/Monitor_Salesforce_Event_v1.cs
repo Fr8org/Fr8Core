@@ -90,13 +90,13 @@ namespace terminalSalesforce.Actions
             _salesforceManager = salesforceManager;
         }
 
-        protected override Task InitializeETA()
+        public override Task Initialize()
         {
             ActivitiesHelper.GetAvailableFields(ActivityUI.SalesforceObjectList);
             return Task.FromResult(0);
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             string curSfChosenObject = ActivityUI.SalesforceObjectList.selectedKey;
 
@@ -112,7 +112,7 @@ namespace terminalSalesforce.Actions
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(GenerateRuntimeDataLabel(), true).AddFields(selectedObjectProperties);
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             //get the event payload from the Salesforce notification event
             var sfEventPayloads = Payload.CratesOfType<EventReportCM>().ToList().SelectMany(er => er.Content.EventPayload).ToList();

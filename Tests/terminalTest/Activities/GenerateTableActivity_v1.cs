@@ -41,7 +41,7 @@ namespace terminalTest.Actions
         {
         }
 
-        protected override Task InitializeETA()
+        public override Task Initialize()
         {
             ActivityUI.Header.Value = ActivityId.ToString();
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>("Table");
@@ -49,12 +49,12 @@ namespace terminalTest.Actions
             return Task.FromResult(0);
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
             return Task.FromResult(0);
         }
 
-        protected override Task RunETA()
+        public override Task Run()
         {
             Log($"Table {ActivityPayload.Label} [{ActivityId}] started");
 

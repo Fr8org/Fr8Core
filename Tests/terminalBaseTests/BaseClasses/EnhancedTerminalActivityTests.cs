@@ -92,7 +92,7 @@ namespace terminaBaselTests.BaseClasses
             return base.GetConfigurationRequestType();
         }
 
-        protected override Task InitializeETA()
+        public override Task Initialize()
         {
             CalledMethods |= CalledMethod.Initialize;
             CheckBasicPropeties();
@@ -100,7 +100,7 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
             CalledMethods |= CalledMethod.Configure;
             CheckBasicPropeties();
@@ -108,7 +108,7 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected override Task RunETA()
+        public override Task Run()
         {
             CalledMethods |= CalledMethod.Run;
             CheckBasicPropeties();
@@ -131,7 +131,7 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected override Task ActivateETA()
+        public override Task Activate()
         {
             CalledMethods |= CalledMethod.Activate;
             CheckBasicPropeties();
@@ -139,7 +139,7 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected override Task ValidateETA()
+        protected override Task Validate()
         {
             CalledMethods |= CalledMethod.Validate;
 
@@ -154,7 +154,7 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected override Task DeactivateETA()
+        public override Task Deactivate()
         {
             CalledMethods |= CalledMethod.Deactivate;
             CheckBasicPropeties();
@@ -206,7 +206,7 @@ namespace terminaBaselTests.BaseClasses
         {
         }
 
-        protected override Task InitializeETA()
+        public override Task Initialize()
         {
             OnInitialize?.Invoke(ActivityUI);
 
@@ -217,7 +217,7 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
             OnConfigure?.Invoke(ActivityUI);
 
@@ -233,7 +233,7 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected override Task RunETA()
+        public override Task Run()
         {
             return Task.FromResult(0);
         }
@@ -296,19 +296,19 @@ namespace terminaBaselTests.BaseClasses
         {
         }
 
-        protected override Task InitializeETA()
+        public override Task Initialize()
         {
             OnInitialize?.Invoke(ActivityUI);
             return Task.FromResult(0);
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
             OnConfigure?.Invoke(ActivityUI);
             return Task.FromResult(0);
         }
 
-        protected override Task RunETA()
+        public override Task Run()
         {
             return Task.FromResult(0);
         }
@@ -336,18 +336,18 @@ namespace terminaBaselTests.BaseClasses
             : base(false, crateManager)
         {
         }
-        
-        protected override Task InitializeETA()
+
+        public override Task Initialize()
         {
             return Task.FromResult(0);
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
             return Task.FromResult(0);
         }
 
-        protected override Task RunETA()
+        public override Task Run()
         {
             return Task.FromResult(0);
         }

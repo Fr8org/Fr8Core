@@ -85,7 +85,7 @@ namespace terminalGoogle.Actions
             _googleIntegration = googleIntegration;
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             var googleAuth = GetGoogleAuthToken();
             var forms = await _googleDrive.GetGoogleForms(googleAuth);
@@ -96,7 +96,7 @@ namespace terminalGoogle.Actions
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             var googleAuth = GetGoogleAuthToken();
             var forms = await _googleDrive.GetGoogleForms(googleAuth);
@@ -123,7 +123,7 @@ namespace terminalGoogle.Actions
                 .AddField("Period of Availability");
         }
 
-        protected override async Task ActivateETA()
+        public override async Task Activate()
         {
             var googleAuth = GetGoogleAuthToken();
             //get form id
@@ -157,7 +157,7 @@ namespace terminalGoogle.Actions
             }
         }
 
-        protected override Task RunETA()
+        public override Task Run()
         {
             var selectedForm = ActivityUI.FormsList.Value;
             if (string.IsNullOrEmpty(selectedForm))

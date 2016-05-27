@@ -97,7 +97,7 @@ namespace terminalSlack.Activities
             _slackEventManager = ObjectFactory.GetInstance<ISlackEventManager>();
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             ActivityUI.ChannelList.ListItems = (await _slackIntegration.GetChannelList(AuthorizationToken.Token).ConfigureAwait(false))
                 .OrderBy(x => x.Key)
@@ -125,13 +125,13 @@ namespace terminalSlack.Activities
             return CrateManager.CreateStandardEventSubscriptionsCrate(EventSubscriptionsCrateLabel, "Slack", "Slack Outgoing Message");
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
             //No extra configuration is required
             return Task.FromResult(0);
         }
 
-        protected override Task ValidateETA()
+        protected override Task Validate()
         {
             if (!IsMonitoringDirectMessages && (!IsMonitoringChannels || (!IsMonitoringAllChannels && !IsMonitoringSpecificChannels)))
             {
@@ -141,7 +141,7 @@ namespace terminalSlack.Activities
             return Task.FromResult(0);
         }
 
-        protected override Task RunETA()
+        public override Task Run()
         {
             var incomingMessageContents = ExtractIncomingMessageContentFromPayload();
             var hasIncomingMessage = incomingMessageContents?.Fields?.Count > 0;
@@ -181,12 +181,12 @@ namespace terminalSlack.Activities
             return Task.FromResult(0);
         }
 
-        protected override async Task ActivateETA()
+        public override async Task Activate()
         {
             await _slackEventManager.Subscribe(AuthorizationToken, ActivityPayload.RootPlanNodeId.Value).ConfigureAwait(false);
         }
 
-        protected override Task DeactivateETA()
+        public override Task Deactivate()
         {
             _slackEventManager.Unsubscribe(ActivityPayload.RootPlanNodeId.Value);
             return Task.FromResult(0);

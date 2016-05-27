@@ -179,12 +179,12 @@ namespace terminalGoogle.Actions
             return JsonConvert.DeserializeObject<GoogleAuthDTO>(AuthorizationToken.Token);
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             ActivityUI.ExistingSpreadsheetsList.ListItems = (await _googleSheet.GetSpreadsheets(GetGoogleAuthToken())).Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             //If different existing spreadsheet is selected then we have to load worksheet list for it
             if (ActivityUI.UseExistingSpreadsheetOption.Selected && !string.IsNullOrEmpty(ActivityUI.ExistingSpreadsheetsList.Value))
@@ -209,7 +209,7 @@ namespace terminalGoogle.Actions
             }
         }
 
-        protected override Task ValidateETA()
+        protected override Task Validate()
         {
             ValidationManager.ValidateCrateChooserNotEmpty(ActivityUI.UpstreamCrateChooser, "upstream crate is not selected");
 
@@ -228,7 +228,7 @@ namespace terminalGoogle.Actions
             return Task.FromResult(0);
         }
         
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             var crateToProcess = FindCrateToProcess();
 

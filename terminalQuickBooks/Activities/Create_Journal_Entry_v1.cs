@@ -40,7 +40,7 @@ namespace terminalQuickBooks.Actions
             _journalEntry = journalEntry;
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             if (ActivityId == Guid.Empty)
                 throw new ArgumentException("Configuration requires the submission of an Action that has a real ActionId");
@@ -54,13 +54,13 @@ namespace terminalQuickBooks.Actions
             }
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
             // No extra configuration required
             return Task.FromResult(0);
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             //Obtain the crate of type StandardAccountingTransactionCM that holds the required information
             var curStandardAccountingTransactionCM = Payload.CratesOfType<StandardAccountingTransactionCM>().Single().Content;

@@ -41,19 +41,19 @@ namespace terminalBox.Actions
         {
         }
 
-        protected override Task InitializeETA()
+        public override Task Initialize()
         {
             ActivityUI.Header.Value = ActivityId.ToString();
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>("Table");
             return Task.FromResult(0);
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
             return Task.FromResult(0);
         }
 
-        protected override Task RunETA()
+        public override Task Run()
         {
             var tableCm = new StandardTableDataCM();
 

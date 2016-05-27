@@ -75,12 +75,12 @@ namespace terminalFr8Core.Activities
 
         private static readonly Regex FieldPlaceholdersRegex = new Regex(@"\[.*?\]");
 
-        protected override Task InitializeETA()
+        public override Task Initialize()
         {
             return Task.FromResult(0);
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeCrateLabel, true)
                                .AddField(ActivityUI.Name.Value);
@@ -88,7 +88,7 @@ namespace terminalFr8Core.Activities
             return Task.FromResult(0);
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             await Task.Factory.StartNew(RunCurrentActivityImpl);
         }

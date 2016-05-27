@@ -88,18 +88,18 @@ namespace terminalFr8Core.Activities
             _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();
         }
 
-        protected override Task InitializeETA()
+        public override Task Initialize()
         {
             return Task.FromResult(0);
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
             return Task.FromResult(0);
         }
 
         
-        protected override Task ValidateETA()
+        protected override Task Validate()
         {
             ValidationManager.ValidateTextSourceNotEmpty(ActivityUI.EmailAddress, "Email address can't be empty");
             ValidationManager.ValidateTextSourceNotEmpty(ActivityUI.EmailSubject, "Email subject can't be empty");
@@ -108,7 +108,7 @@ namespace terminalFr8Core.Activities
             return Task.FromResult(0);
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             var fromAddress = CloudConfigurationManager.GetSetting("OutboundFromAddress");
 

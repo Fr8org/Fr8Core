@@ -76,12 +76,12 @@ namespace terminalFr8Core.Activities
             _twilio = ObjectFactory.GetInstance<ITwilioService>();
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             Storage.Add(await CreateAvailableFieldsCrate());
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             Storage.RemoveByLabel("Upstream Terminal-Provided Fields");
             Storage.Add(await CreateAvailableFieldsCrate());
@@ -104,7 +104,7 @@ namespace terminalFr8Core.Activities
             return availableFieldsCrate;
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             Message curMessage;
             try

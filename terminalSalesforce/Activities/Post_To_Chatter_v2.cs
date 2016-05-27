@@ -128,7 +128,7 @@ namespace terminalSalesforce.Actions
             _salesforceManager = salesforceManager;
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             IsPostingToQueryiedChatter = true;
             AvailableChatters = _salesforceManager.GetSalesforceObjectTypes(filterByProperties: SalesforceObjectProperties.HasChatter).Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
@@ -138,7 +138,7 @@ namespace terminalSalesforce.Actions
                                                                               AvailabilityType.RunTime));
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             //If Salesforce object is empty then we should clear filters as they are no longer applicable
             if (string.IsNullOrEmpty(SelectedChatter))
@@ -172,7 +172,7 @@ namespace terminalSalesforce.Actions
         }
 
 
-        protected override Task ValidateETA()
+        protected override Task Validate()
         {
             ValidationManager.ValidateTextSourceNotEmpty(ActivityUI.FeedTextSource, "Can't post empty message to chatter");
 
@@ -184,7 +184,7 @@ namespace terminalSalesforce.Actions
             return Task.FromResult(0);
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             var feedText = FeedText;
             
