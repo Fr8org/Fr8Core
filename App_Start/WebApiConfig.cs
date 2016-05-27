@@ -14,6 +14,12 @@ namespace HubWeb
 
             // Web API routes
             RegisterAuthenticationEndPoints(config);
+
+            config.Routes.MapHttpRoute(
+                name: "DefaultApiWithAction",
+                routeTemplate: "api/v1/{controller}/{action}/{id}",
+                defaults: new { id = RouteParameter.Optional }
+                );
             config.Routes.MapHttpRoute(
                 name: "DefaultApiGet",
                 routeTemplate: "api/v1/{controller}/{id}",
@@ -38,13 +44,6 @@ namespace HubWeb
                 defaults: new { id = RouteParameter.Optional, action = "Delete" },
                 constraints: new { httpMethod = new HttpMethodConstraint(HttpMethod.Delete) }
                 );
-
-            config.Routes.MapHttpRoute(
-                name: "DefaultApiWithAction",
-                routeTemplate: "api/v1/{controller}/{action}/{id}",
-                defaults: new { id = RouteParameter.Optional }
-                );
-
             //config.Routes.MapHttpRoute(
             //    name: "DefaultApi",
             //    routeTemplate: "api/v1/{controller}/{id}",
