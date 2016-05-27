@@ -9,25 +9,26 @@ using Data.Interfaces;
 using Fr8Data.DataTransferObjects;
 using Hub.Infrastructure;
 using Hub.Interfaces;
+using Utilities.Logging;
 
 namespace HubWeb.Controllers
 {
-    [Fr8ApiAuthorize]
-    public class SubPlansController : ApiController
+    //[Fr8ApiAuthorize]
+    public class SubplansController : ApiController
     {
-        private readonly ISubPlan _subPlan;
+        private readonly ISubplan _subplan;
 
-        public SubPlansController()
+        public SubplansController()
         {
-            _subPlan = ObjectFactory.GetInstance<ISubPlan>();
+            _subplan = ObjectFactory.GetInstance<ISubplan>();
         }
 
-        [ResponseType(typeof(SubPlanDTO))]
-        public IHttpActionResult Post(SubPlanDTO subPlanDTO)
+        [ResponseType(typeof(SubplanDTO))]
+        public IHttpActionResult Post(SubplanDTO subplanDto)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (string.IsNullOrEmpty(subPlanDTO.Name))
+                if (string.IsNullOrEmpty(subplanDto.Name))
                 {
                     ModelState.AddModelError("Name", "Name cannot be null");
                 }
@@ -39,29 +40,29 @@ namespace HubWeb.Controllers
 
                 //TODO invalid mappings prevent this line from running
                 //fix invalid automapper configurations
-                //var curSubPlanDO = Mapper.Map<SubrouteDTO, SubrouteDO>(subPlanDTO);
-                var curSubPlanDO = new SubPlanDO(false)
+                //var curSubPlanDO = Mapper.Map<SubrouteDTO, SubrouteDO>(SubplanDTO);
+                var curSubPlanDO = new SubplanDO(false)
                 {
                     Id = Guid.Empty,
-                    ParentPlanNodeId = subPlanDTO.ParentId,
-                    RootPlanNodeId = subPlanDTO.PlanId,
-                    Name = subPlanDTO.Name,
-                    Runnable = subPlanDTO.Runnable
+                    ParentPlanNodeId = subplanDto.ParentId,
+                    RootPlanNodeId = subplanDto.PlanId,
+                    Name = subplanDto.Name,
+                    Runnable = subplanDto.Runnable
                 };
 
-                _subPlan.Create(uow, curSubPlanDO);
+                _subplan.Create(uow, curSubPlanDO);
                 uow.SaveChanges();
 
-                return Ok(Mapper.Map<SubPlanDO, SubPlanDTO>(curSubPlanDO));
+                return Ok(Mapper.Map<SubplanDO, SubplanDTO>(curSubPlanDO));
             }
         }
 
-        [ResponseType(typeof(SubPlanDTO))]
-        public IHttpActionResult Put(SubPlanDTO subPlanDTO)
+        [ResponseType(typeof(SubplanDTO))]
+        public IHttpActionResult Put(SubplanDTO subplanDto)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                if (string.IsNullOrEmpty(subPlanDTO.Name))
+                if (string.IsNullOrEmpty(subplanDto.Name))
                 {
                     ModelState.AddModelError("Name", "Name cannot be null");
                 }
@@ -72,17 +73,17 @@ namespace HubWeb.Controllers
                 }
                 //TODO invalid mappings prevent this line from running
                 //fix invalid automapper configurations
-                //var curSubPlanDO = Mapper.Map<SubrouteDTO, SubrouteDO>(subPlanDTO);
-                var curSubPlanDO = new SubPlanDO(false)
+                //var curSubPlanDO = Mapper.Map<SubrouteDTO, SubrouteDO>(SubplanDTO);
+                var curSubPlanDO = new SubplanDO(false)
                 {
-                    Id = subPlanDTO.SubPlanId.Value,
-                    ParentPlanNodeId = subPlanDTO.PlanId,
-                    RootPlanNodeId = subPlanDTO.PlanId,
-                    Name = subPlanDTO.Name
+                    Id = subplanDto.SubPlanId.Value,
+                    ParentPlanNodeId = subplanDto.PlanId,
+                    RootPlanNodeId = subplanDto.PlanId,
+                    Name = subplanDto.Name
                 };
-                _subPlan.Update(uow, curSubPlanDO);
+                _subplan.Update(uow, curSubPlanDO);
                 uow.SaveChanges();
-                return Ok(Mapper.Map<SubPlanDO, SubPlanDTO>(curSubPlanDO));
+                return Ok(Mapper.Map<SubplanDO, SubplanDTO>(curSubPlanDO));
             }
         }
 
@@ -91,14 +92,14 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var subPlan = uow.PlanRepository.GetById<SubPlanDO>(id);
+                var subPlan = uow.PlanRepository.GetById<SubplanDO>(id);
                 if (subPlan == null)
                 {
                     return BadRequest();
                 }
                 try
                 {
-                    await _subPlan.Delete(uow, id);
+                    await _subplan.Delete(uow, id);
                     uow.SaveChanges();
                 }
                 catch (Exception ex)
@@ -109,15 +110,27 @@ namespace HubWeb.Controllers
             }
         }
 
-        [ActionName("first_activity")]
+        [ActionName("activities")]
         [ResponseType(typeof(ActivityDTO))]
         [HttpPost]
-        public async Task<IHttpActionResult> FirstActivity(Guid id)
+        public async Task<IHttpActionResult> FirstActivity(Guid id, string filter)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var activity = _subPlan.GetFirstActivity(uow, id);
-                return Ok(Mapper.Map<ActivityDTO>(activity));
+                if (filter == "first")
+                {
+                    try
+                    {
+                        var activity = _subplan.GetFirstActivity(uow, id);
+                        return Ok(Mapper.Map<ActivityDTO>(activity));
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex.Message);
+                        return InternalServerError(ex);
+                    }
+                }
+                return Ok();
             }
         }
     }

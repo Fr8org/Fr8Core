@@ -281,7 +281,7 @@ namespace Data.Infrastructure
             modelBuilder.Entity<ExpectedResponseDO>().ToTable("ExpectedResponses");
             modelBuilder.Entity<PlanDO>().ToTable("Plans");
             modelBuilder.Entity<ActivityDO>().ToTable("Actions");
-            modelBuilder.Entity<SubPlanDO>().ToTable("SubPlans");
+            modelBuilder.Entity<SubplanDO>().ToTable("SubPlans");
             modelBuilder.Entity<EnvelopeDO>().ToTable("Envelopes");
             modelBuilder.Entity<ActivityTemplateDO>().ToTable("ActivityTemplate");
             modelBuilder.Entity<WebServiceDO>().ToTable("WebServices");

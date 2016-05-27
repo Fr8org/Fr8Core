@@ -88,7 +88,7 @@ namespace terminalFr8Core.Activities
                         case ContainerTransitions.JumpToSubplan:
                             if (!containerTransitionField.TargetNodeId.HasValue)
                             {
-                                RaiseError("Target SubPlan for transition is not specified. Please choose it in the Make a Decision activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                                RaiseError("Target Subplan for transition is not specified. Please choose it in the Make a Decision activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
                                 return;
                             }
                             JumpToSubplan(containerTransitionField.TargetNodeId.Value);

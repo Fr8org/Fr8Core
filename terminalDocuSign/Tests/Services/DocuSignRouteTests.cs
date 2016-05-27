@@ -102,7 +102,7 @@ namespace terminalDocuSign.Tests.Services
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {
-                                var subPlan = uow1.PlanRepository.GetById<SubPlanDO>(uow1.PlanRepository.GetNodesQueryUncached().OfType<SubPlanDO>().First().Id);
+                                var subPlan = uow1.PlanRepository.GetById<SubplanDO>(uow1.PlanRepository.GetNodesQueryUncached().OfType<SubplanDO>().First().Id);
                                 subPlan.ChildNodes.Add(recordDocuSignAction);
 
                                 uow1.SaveChanges();
@@ -115,7 +115,7 @@ namespace terminalDocuSign.Tests.Services
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {
-                                var subPlan = uow1.PlanRepository.GetById<SubPlanDO>(uow1.PlanRepository.GetNodesQueryUncached().OfType<SubPlanDO>().First().Id);
+                                var subPlan = uow1.PlanRepository.GetById<SubplanDO>(uow1.PlanRepository.GetNodesQueryUncached().OfType<SubplanDO>().First().Id);
                                 subPlan.ChildNodes.Add(storeMtDataAction);
 
                                 uow1.SaveChanges();
