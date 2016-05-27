@@ -388,7 +388,6 @@
     <Compile Include="Controllers\Api\NotificationsController.cs" />
     <Compile Include="Controllers\Api\AlarmsController.cs" />
     <Compile Include="Controllers\Api\AuthenticationController.cs" />
-    <Compile Include="Controllers\Api\ManageAuthTokenController.cs" />
     <Compile Include="Controllers\Api\ConfigurationController.cs" />
     <Compile Include="Controllers\Api\ManifestRegistryController.cs" />
     <Compile Include="Controllers\Api\ManifestsController.cs" />
@@ -1051,7 +1050,7 @@
     <TypeScriptCompile Include="Scripts\app\controllers\TerminalListController.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\IManageAuthToken.ts" />
     <TypeScriptCompile Include="Scripts\app\interfaces\ITerminal.ts" />
-    <TypeScriptCompile Include="Scripts\app\model\ManageAuthToken.ts" />
+    <TypeScriptCompile Include="Scripts\app\model\AuthenticationTokenDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\TerminalActionSetDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\model\TerminalDTO.ts" />
     <TypeScriptCompile Include="Scripts\app\services\ManageAuthTokenService.ts" />
