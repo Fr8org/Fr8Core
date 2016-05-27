@@ -106,8 +106,8 @@ namespace terminaBaselTests.Tools.Terminals
         /// <returns></returns>
         public async Task<Guid> ExtractGoogleDefaultToken()
         {
-            var tokens = await _baseHubITest.HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
-                _baseHubITest.GetHubApiBaseUrl() + "manageauthtoken/"
+            var tokens = await _baseHubITest.HttpGetAsync<IEnumerable<AuthenticationTokenTerminalDTO>>(
+                _baseHubITest.GetHubApiBaseUrl() + "authentication/tokens"
             );
 
             Assert.NotNull(tokens, "No authorization tokens were found for the integration testing user.");

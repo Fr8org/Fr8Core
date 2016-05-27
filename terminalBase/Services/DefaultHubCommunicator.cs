@@ -208,7 +208,7 @@ namespace TerminalBase.Services
 
         public async Task ApplyNewToken(Guid activityId, Guid authTokenId, string userId)
         {
-            var applyToken = new ManageAuthToken_Apply()
+            var applyToken = new AuthenticationTokenGrantDTO()
             {
                 ActivityId = activityId,
                 AuthTokenId = authTokenId,
