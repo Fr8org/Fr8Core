@@ -9,10 +9,12 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Managers;
 using terminalDocuSign.Activities;
+using terminalDocuSign.Services.New_Api;
 using TerminalBase.Infrastructure;
 using TerminalBase.Infrastructure.Behaviors;
 using TerminalBase.Models;
@@ -50,6 +52,12 @@ namespace terminalDocuSign.Actions
 
        
         protected override string ActivityUserFriendlyName => SolutionName;
+
+
+        public Mail_Merge_Into_DocuSign_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+            : base(crateManager, docuSignManager)
+        {
+        }
 
         /// <summary>
         /// Action processing infrastructure.
@@ -91,7 +99,7 @@ namespace terminalDocuSign.Actions
 
         private async Task<List<ListItem>> GetDataSourceListItems(string tag)
         {
-            var curActivityTemplates = await HubCommunicator.GetActivityTemplates(tag, CurrentUserId);
+            var curActivityTemplates = await HubCommunicator.GetActivityTemplates(tag);
             return curActivityTemplates.Select(at => new ListItem() { Key = at.Label, Value = at.Name }).ToList();
         }
 
@@ -250,7 +258,7 @@ namespace terminalDocuSign.Actions
                 .Single(x => x.Ordering == 1);
 
             activity.CrateStorage = new CrateStorage();
-            activity = await HubCommunicator.ConfigureActivity(activity, CurrentUserId);
+            activity = await HubCommunicator.ConfigureActivity(activity);
             return activity;
         }
 

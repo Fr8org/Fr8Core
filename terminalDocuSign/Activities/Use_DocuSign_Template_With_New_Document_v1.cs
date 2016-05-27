@@ -38,6 +38,12 @@ namespace terminalDocuSign.Activities
 
         protected override string ActivityUserFriendlyName => "Use DocuSign Template With New Document";
 
+        public Use_DocuSign_Template_With_New_Document_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+            : base(crateManager, docuSignManager)
+        {
+        }
+
+
         protected override void SendAnEnvelope(DocuSignApiConfiguration loginInfo,
             List<FieldDTO> rolesList, List<FieldDTO> fieldList, string curTemplateId)
         {
@@ -118,7 +124,7 @@ namespace terminalDocuSign.Activities
         private async Task<List<ListItem>> GetFilesCrates()
         {
             CrateDescriptionCM cratesDescription = new CrateDescriptionCM();
-            var crates = await GetCratesByDirection(CrateDirection.Upstream);
+            var crates = await UpstreamQueryManager.GetCratesByDirection(CrateDirection.Upstream);
             var file_crates = crates.Where(a => a.ManifestType.Id == (int)MT.StandardFileHandle);
             if (file_crates.Count() != 0)
                 cratesDescription.CrateDescriptions.AddRange(file_crates.Select(a => new CrateDescriptionDTO() { Label = a.Label }));

@@ -7,6 +7,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using StructureMap;
@@ -81,17 +82,13 @@ namespace terminalDocuSign.Actions
         }
 
         private const string UserFieldsAndRolesCrateLabel = "Fields and Roles";
-
-        //TODO: remove this constructor after introducing constructor injection
-        public Send_DocuSign_Envelope_v2() : this(ObjectFactory.GetInstance<IDocuSignManager>())
-        {
-        }
-
-        public Send_DocuSign_Envelope_v2(IDocuSignManager docuSignManager) : base(docuSignManager)
+        
+        public Send_DocuSign_Envelope_v2(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+            : base(crateManager, docuSignManager)
         {
             DisableValidationOnFollowup = true;
         }
-
+        
         protected override Task InitializeETA()
         {
             LoadDocuSignTemplates();

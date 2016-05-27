@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using PhoneNumbers;
@@ -35,7 +36,8 @@ namespace terminalTwilio.Activities
 
         protected ITwilioService _twilio;
 
-        public Send_Via_Twilio_v1() : base(false)
+        public Send_Via_Twilio_v1(ICrateManager crateManager)
+            : base(true, crateManager)
         {
             _twilio = ObjectFactory.GetInstance<ITwilioService>();
         }
@@ -49,7 +51,7 @@ namespace terminalTwilio.Activities
 
         private async Task<Crate> CreateAvailableFieldsCrate()
         {
-            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(ActivityId, CrateDirection.Upstream, AvailabilityType.RunTime, CurrentUserId) ?? new FieldDescriptionsCM();
+            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(ActivityId, CrateDirection.Upstream, AvailabilityType.RunTime) ?? new FieldDescriptionsCM();
 
             var availableFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(
                     "Upstream Terminal-Provided Fields",

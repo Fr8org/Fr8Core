@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalSlack.Activities
 {
@@ -36,7 +38,7 @@ namespace terminalSlack.Activities
 
         protected override Task<bool> Validate()
         {
-            var messageField = GetControl<TextSource>("Select_Message_Field", ControlTypes.TextSource);
+            var messageField = GetControl<TextSource>("Select_Message_Field");
             var actionChannelId = GetControl<DropDownList>("Selected_Slack_Channel").Value;
 
             if (string.IsNullOrEmpty(actionChannelId))
@@ -69,7 +71,7 @@ namespace terminalSlack.Activities
                 RaiseError("No selected channelId found in activity.");
             }
 
-            var messageField = GetControl<TextSource>("Select_Message_Field", ControlTypes.TextSource);
+            var messageField = GetControl<TextSource>("Select_Message_Field");
             try
             {
                 message = messageField.GetValue(Payload);
@@ -101,7 +103,8 @@ namespace terminalSlack.Activities
             Storage.Add(configurationCrate);
         }
 
-        public Publish_To_Slack_v1() : base(true)
+        public Publish_To_Slack_v1(ICrateManager crateManager)
+            : base(true, crateManager)
         {
             _slackIntegration = new SlackIntegration();
         }

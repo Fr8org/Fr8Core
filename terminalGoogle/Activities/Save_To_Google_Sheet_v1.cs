@@ -7,6 +7,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.Manifests.Helpers;
 using Fr8Data.States;
@@ -167,9 +168,10 @@ namespace terminalGoogle.Actions
             }
         }
 
-        public Save_To_Google_Sheet_v1()
+        public Save_To_Google_Sheet_v1(ICrateManager crateManager, IGoogleIntegration googleIntegration, IGoogleSheet googleSheet)
+            : base(crateManager, googleIntegration)
         {
-            _googleSheet = ObjectFactory.GetInstance<IGoogleSheet>();
+            _googleSheet = googleSheet;
         }
 
         private GoogleAuthDTO GetGoogleAuthToken()

@@ -14,6 +14,7 @@ using StructureMap;
 using terminalUtilities;
 using terminalUtilities.Excel;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalExcel.Activities
 {
@@ -71,7 +72,8 @@ namespace terminalExcel.Activities
         private const string ColumnHeadersCrateLabel = "Spreadsheet Column Headers";
         private const string ExternalObjectHandlesLabel = "External Object Handles";
 
-        public Load_Excel_File_v1() : base(false)
+        public Load_Excel_File_v1(ICrateManager crateManager)
+            : base(false, crateManager)
         {
         }
 
@@ -253,5 +255,11 @@ namespace terminalExcel.Activities
     }
 
     // For backward compatibility
-    public class Extract_Data_v1 : Load_Excel_File_v1 { }
+    public class Extract_Data_v1 : Load_Excel_File_v1
+    {
+        public Extract_Data_v1(ICrateManager crateManager) 
+            : base(crateManager)
+        {
+        }
+    }
 }

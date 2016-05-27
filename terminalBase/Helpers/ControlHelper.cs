@@ -19,12 +19,11 @@ namespace TerminalBase.Helpers
     {
         private readonly IHubCommunicator _hubCommunicator;
         private readonly ActivityContext _activityContext;
-        private readonly ICrateManager _crateManager;
-        public ControlHelper(ActivityContext activityContext, IHubCommunicator hubCommunicator, ICrateManager crateManager)
+
+        public ControlHelper(ActivityContext activityContext)
         {
-            _hubCommunicator = hubCommunicator;
+            _hubCommunicator = activityContext.HubCommunicator;
             _activityContext = activityContext;
-            _crateManager = crateManager;
         }
 
         public StandardConfigurationControlsCM GetConfigurationControls(ICrateStorage storage)
@@ -32,7 +31,7 @@ namespace TerminalBase.Helpers
             return storage.CrateContentsOfType<StandardConfigurationControlsCM>(c => c.Label == BaseTerminalActivity.ConfigurationControlsLabel).FirstOrDefault();
         }
 
-        public T GetControl<T>(StandardConfigurationControlsCM configurationControls,string name, string controlType = null) where T : ControlDefinitionDTO
+        public T GetControl<T>(StandardConfigurationControlsCM configurationControls, string name, string controlType = null) where T : ControlDefinitionDTO
         {
             Func<ControlDefinitionDTO, bool> predicate = x => x.Name == name;
             if (controlType != null)
@@ -60,7 +59,7 @@ namespace TerminalBase.Helpers
             bool requestUpstream = false,
             bool requestConfig = false)
         {
-            var crateDescriptions = await _hubCommunicator.GetCratesByDirection<CrateDescriptionCM>(_activityContext.ActivityPayload.Id, CrateDirection.Upstream, _activityContext.UserId);
+            var crateDescriptions = await _hubCommunicator.GetCratesByDirection<CrateDescriptionCM>(_activityContext.ActivityPayload.Id, CrateDirection.Upstream);
             var runTimeCrateDescriptions = crateDescriptions.Where(c => c.Availability == AvailabilityType.RunTime || c.Availability == AvailabilityType.Always).SelectMany(c => c.Content.CrateDescriptions);
             var control = new CrateChooser
             {
@@ -287,15 +286,13 @@ namespace TerminalBase.Helpers
         /// <summary>
         /// Creates StandardConfigurationControlsCM with TextSource control
         /// </summary>
-        /// <param name="storage">Crate Storage</param>
         /// <param name="label">Initial Label for the text source control</param>
         /// <param name="controlName">Name of the text source control</param>
         /// <param name="upstreamSourceLabel">Label for the upstream source</param>
         /// <param name="filterByTag">Filter for upstream source, Empty by default</param>
         /// <param name="addRequestConfigEvent">True if onChange event needs to be configured, False otherwise. True by default</param>
         /// <param name="required">True if the control is required, False otherwise. False by default</param>
-        public void AddTextSourceControl(
-            ICrateStorage storage,
+        public TextSource CreateTextSourceControl(
             string label,
             string controlName,
             string upstreamSourceLabel,
@@ -314,25 +311,7 @@ namespace TerminalBase.Helpers
             );
             textSourceControl.Required = required;
 
-            AddControl(storage, textSourceControl);
-        }
-
-        public void AddControl(ICrateStorage storage, ControlDefinitionDTO control)
-        {
-            var controlsCrate = EnsureControlsCrate(storage);
-            controlsCrate.Content?.Controls.Add(control);
-        }
-
-        public Crate<StandardConfigurationControlsCM> EnsureControlsCrate(ICrateStorage storage)
-        {
-            var controlsCrate = storage.CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-            if (controlsCrate == null)
-            {
-                controlsCrate = _crateManager.CreateStandardConfigurationControlsCrate(BaseTerminalActivity.ConfigurationControlsLabel);
-                storage.Add(controlsCrate);
-            }
-
-            return controlsCrate;
+            return textSourceControl;
         }
     }
 }

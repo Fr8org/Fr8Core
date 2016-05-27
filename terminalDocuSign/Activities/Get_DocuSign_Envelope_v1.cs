@@ -6,10 +6,12 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.States;
 using Hub.Managers;
 using Newtonsoft.Json;
 using terminalDocuSign.DataTransferObjects;
+using terminalDocuSign.Services.New_Api;
 using TerminalBase.Infrastructure;
 using Utilities;
 
@@ -31,6 +33,12 @@ namespace terminalDocuSign.Activities
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
         private const string AllFieldsCrateName = "DocuSign Envelope Fields";
+
+
+        public Get_DocuSign_Envelope_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+            : base(crateManager, docuSignManager)
+        {
+        }
 
         protected override Task InitializeDS()
         {

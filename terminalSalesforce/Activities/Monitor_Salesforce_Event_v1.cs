@@ -8,6 +8,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using ServiceStack;
@@ -83,9 +84,10 @@ namespace terminalSalesforce.Actions
 
         readonly ISalesforceManager _salesforceManager;
 
-        public Monitor_Salesforce_Event_v1()
+        public Monitor_Salesforce_Event_v1(ICrateManager crateManager, ISalesforceManager salesforceManager)
+            : base(crateManager)
         {
-            _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
+            _salesforceManager = salesforceManager;
         }
 
         protected override Task InitializeETA()

@@ -7,11 +7,13 @@ using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Helpers;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Newtonsoft.Json.Linq;
 using TerminalBase;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
@@ -69,16 +71,16 @@ namespace terminalFr8Core.Activities
 
             if (loopData.Index >= dataListSize.Value)
             {
-                SkipChildren();
+                RequestSkipChildren();
                 return;
             }
 
             Success();
         }
 
-        protected override async Task RunChildActivities()
+        public override async Task RunChildActivities()
         {
-            JumpToActivity(ActivityId);
+            RequestJumpToActivity(ActivityId);
         }
 
         protected override Task<bool> Validate()
@@ -168,7 +170,7 @@ namespace terminalFr8Core.Activities
 
         private async Task<List<string>> GetLabelsByManifestType(string manifestType)
         {
-            var upstreamCrates = await GetCratesByDirection(CrateDirection.Upstream);
+            var upstreamCrates = await HubCommunicator.GetCratesByDirection(ActivityId, CrateDirection.Upstream);
             return upstreamCrates
                     .Where(c => c.ManifestType.Type == manifestType)
                     .GroupBy(c => c.Label)
@@ -230,7 +232,8 @@ namespace terminalFr8Core.Activities
             return PackControlsCrate(crateChooser);
         }
 
-        public Loop_v1() : base(false)
+        public Loop_v1(ICrateManager crateManager)
+            : base(false, crateManager)
         {
         }
     }

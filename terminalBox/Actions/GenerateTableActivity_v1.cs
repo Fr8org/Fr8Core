@@ -2,6 +2,7 @@
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using TerminalBase.BaseClasses;
@@ -35,11 +36,11 @@ namespace terminalBox.Actions
             }
         }
 
-        public GenerateTableActivity_v1()
-            : base(false)
+        public GenerateTableActivity_v1(ICrateManager crateManager) 
+            : base(false, crateManager)
         {
         }
-        
+
         protected override Task InitializeETA()
         {
             ActivityUI.Header.Value = ActivityId.ToString();

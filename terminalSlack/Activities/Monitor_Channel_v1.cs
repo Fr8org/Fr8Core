@@ -10,6 +10,8 @@ using terminalSlack.Interfaces;
 using terminalSlack.Services;
 using TerminalBase.BaseClasses;
 using System;
+using Fr8Data.Managers;
+using TerminalBase.Infrastructure;
 
 namespace terminalSlack.Actions
 {
@@ -91,7 +93,8 @@ namespace terminalSlack.Actions
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
         
 
-        public Monitor_Channel_v1() : base(true)
+        public Monitor_Channel_v1(ICrateManager crateManager)
+            : base(true, crateManager)
         {
             _slackIntegration = new SlackIntegration();
         }
@@ -138,12 +141,12 @@ namespace terminalSlack.Actions
                 }
                 else
                 {
-                    RequestHubExecutionTermination("Incoming message doesn't belong to specified channel. No downstream activities are executed");
+                    TerminateHubExecution("Incoming message doesn't belong to specified channel. No downstream activities are executed");
                 }                
             }
             else
             {
-                RequestHubExecutionTermination("Plan successfully activated. It will wait and respond to specified Slack postings");
+                TerminateHubExecution("Plan successfully activated. It will wait and respond to specified Slack postings");
             }
             return Task.FromResult(0);
         }

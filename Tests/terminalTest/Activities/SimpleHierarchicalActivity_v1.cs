@@ -3,8 +3,10 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using TerminalBase.Infrastructure;
 using TerminalBase.Models;
 
 namespace terminalTest.Actions
@@ -25,7 +27,12 @@ namespace terminalTest.Actions
         public class ActivityUi : StandardConfigurationControlsCM
         {
         }
-        
+
+        public SimpleHierarchicalActivity_v1(ICrateManager crateManager)
+            : base(crateManager)
+        {
+        }
+
         protected override async Task InitializeETA()
         {
             var templates = await HubCommunicator.GetActivityTemplates(CurrentUserId);
@@ -99,7 +106,7 @@ namespace terminalTest.Actions
         }
 
 
-        protected override Task RunChildActivities()
+        public override Task RunChildActivities()
         {
             Log($"{ActivityPayload.Label} ended");
 

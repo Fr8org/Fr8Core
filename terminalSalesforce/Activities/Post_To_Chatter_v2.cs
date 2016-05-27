@@ -10,6 +10,7 @@ using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Helpers;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using log4net;
@@ -121,9 +122,10 @@ namespace terminalSalesforce.Actions
         private readonly ISalesforceManager _salesforceManager;
        
 
-        public Post_To_Chatter_v2()
+        public Post_To_Chatter_v2(ICrateManager crateManager, ISalesforceManager salesforceManager)
+            : base(crateManager)
         {
-            _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
+            _salesforceManager = salesforceManager;
         }
 
         protected override async Task InitializeETA()

@@ -76,7 +76,7 @@ namespace terminalSendGridTests.Unit.Activities
 
         private async Task<ActivityPayload> GetActivityResult()
         {
-            _gridActivity = new SendEmailViaSendGrid_v1();
+            _gridActivity = New<SendEmailViaSendGrid_v1>();
             var activityContext = FixtureData.TestActivityContext1();
             await _gridActivity.Configure(activityContext);
             return activityContext.ActivityPayload;
@@ -87,7 +87,7 @@ namespace terminalSendGridTests.Unit.Activities
         {
             // Arrange
             ICrateManager Crate = ObjectFactory.GetInstance<ICrateManager>();
-            _gridActivity = new SendEmailViaSendGrid_v1();
+            _gridActivity = New<SendEmailViaSendGrid_v1>();
             var activityContext = FixtureData.TestActivityContext1();
             var executionContext = FixtureData.CrateExecutionContextForSendEmailViaSendGridConfiguration;
             //updating controls

@@ -13,6 +13,8 @@ using Fr8Data.States;
 using TerminalBase.Errors;
 using Fr8Data.DataTransferObjects;
 using System;
+using Fr8Data.Managers;
+using TerminalBase.Infrastructure;
 
 namespace terminalDropbox.Actions
 {
@@ -53,9 +55,10 @@ namespace terminalDropbox.Actions
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
       
 
-        public Get_File_List_v1() : base(true)
+        public Get_File_List_v1(ICrateManager crateManager, IDropboxService dropboxService)
+            : base(true, crateManager)
         {
-            _dropboxService = ObjectFactory.GetInstance<DropboxService>();
+            _dropboxService = dropboxService;
         }
 
         protected override async Task InitializeETA()

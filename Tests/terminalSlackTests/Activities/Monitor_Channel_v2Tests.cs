@@ -49,9 +49,10 @@ namespace terminalSlackTests.Activities
         [Test]
         public async Task Initialize_Always_LoadsChannelList()
         {
-            var activity = new Monitor_Channel_v2();
+            var activity = New<Monitor_Channel_v2>();
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage()
@@ -65,9 +66,10 @@ namespace terminalSlackTests.Activities
         [Test]
         public async Task Initialize_Always_HasEventSubscriptonCrate()
         {
-            var activity = new Monitor_Channel_v2();
+            var activity = New<Monitor_Channel_v2>();
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage()
@@ -81,9 +83,10 @@ namespace terminalSlackTests.Activities
         [Test]
         public async Task Initialize_Always_ReportsRuntimeAvailableFields()
         {
-            var activity = new Monitor_Channel_v2();
+            var activity = New<Monitor_Channel_v2>();
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage()
@@ -100,9 +103,10 @@ namespace terminalSlackTests.Activities
         [Test]
         public async Task Run_WhenNoMonitorOptionIsSelected_ReturnsValidationError()
         {
-            var activity = new Monitor_Channel_v2();
+            var activity = New<Monitor_Channel_v2>();
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage()
@@ -129,9 +133,10 @@ namespace terminalSlackTests.Activities
         [Test]
         public async Task Activate_WhenConfiguredProperly_SubscribesToSlackRtmEvents()
         {
-            var activity = new Monitor_Channel_v2();
+            var activity = New<Monitor_Channel_v2>();
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 AuthorizationToken = AuthorizationToken,
                 ActivityPayload = new ActivityPayload
                 {
@@ -148,9 +153,10 @@ namespace terminalSlackTests.Activities
         [Test]
         public async Task Run_WhenPayloadHasEventAndItDoesntPassFilters_ReturnsTerminationRequest()
         {
-            var activity = new Monitor_Channel_v2();
+            var activity = New<Monitor_Channel_v2>();
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage()
@@ -163,7 +169,9 @@ namespace terminalSlackTests.Activities
             };
 
             await activity.Configure(activityContext);
-            activity.ResetState();
+
+            activity = New<Monitor_Channel_v2>();
+
             activityContext.ActivityPayload.CrateStorage.UpdateControls<Monitor_Channel_v2.ActivityUi>(x =>
                                                                           {
                                                                               x.MonitorDirectMessagesOption.Selected = true;
@@ -178,9 +186,10 @@ namespace terminalSlackTests.Activities
         [Test]
         public async Task Run_WhenPayloadHasEventAndItPassFilters_ReturnsSuccess()
         {
-            var activity = new Monitor_Channel_v2();
+            var activity = New<Monitor_Channel_v2>();
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage()

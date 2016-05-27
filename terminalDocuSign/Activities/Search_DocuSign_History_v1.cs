@@ -15,6 +15,7 @@ using Hub.Managers;
 using Newtonsoft.Json;
 using terminalDocuSign.Actions;
 using terminalDocuSign.DataTransferObjects;
+using terminalDocuSign.Services.New_Api;
 using TerminalBase.Infrastructure;
 using TerminalBase.Models;
 
@@ -87,6 +88,11 @@ namespace terminalDocuSign.Activities
 
 
         protected override string ActivityUserFriendlyName => "Search DocuSign History";
+
+        public Search_DocuSign_History_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+            : base(crateManager, docuSignManager)
+        {
+        }
 
         protected override async Task RunDS()
         {

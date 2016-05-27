@@ -7,6 +7,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using StructureMap;
@@ -77,17 +78,10 @@ namespace terminalDocuSign.Activities
         }
 
         protected readonly IDocuSignFolders DocuSignFolders;
-        //TODO: remove this constructor after introduction of constructor injection
-        public Query_DocuSign_v2() : this(ObjectFactory.GetInstance<IDocuSignManager>(), ObjectFactory.GetInstance<IDocuSignFolders>())
-        {
-        }
 
-        public Query_DocuSign_v2(IDocuSignManager docuSignManager, IDocuSignFolders docuSignFolders) : base(docuSignManager)
+        public Query_DocuSign_v2(ICrateManager crateManager, IDocuSignManager docuSignManager, IDocuSignFolders docuSignFolders)
+            : base(crateManager, docuSignManager)
         {
-            if (docuSignFolders == null)
-            {
-                throw new ArgumentNullException(nameof(docuSignFolders));
-            }
             DocuSignFolders = docuSignFolders;
         }
 

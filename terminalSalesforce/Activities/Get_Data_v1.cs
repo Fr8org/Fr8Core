@@ -5,6 +5,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Newtonsoft.Json;
@@ -73,9 +74,10 @@ namespace terminalSalesforce.Actions
 
         private readonly ISalesforceManager _salesforceManager;
 
-        public Get_Data_v1()
+        public Get_Data_v1(ICrateManager crateManager, ISalesforceManager salesforceManager)
+            : base(crateManager)
         {
-            _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
+            _salesforceManager = salesforceManager;
         }
 
         protected override Task InitializeETA()

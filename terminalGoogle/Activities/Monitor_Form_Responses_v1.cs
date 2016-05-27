@@ -6,6 +6,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Newtonsoft.Json;
@@ -76,11 +77,12 @@ namespace terminalGoogle.Actions
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        public Monitor_Form_Responses_v1()
+        public Monitor_Form_Responses_v1(ICrateManager crateManager, IGoogleIntegration googleIntegration)
+            : base(crateManager, googleIntegration)
         {
             _googleDrive = new GoogleDrive();
             _googleAppScript = new GoogleAppScript();
-            _googleIntegration = ObjectFactory.GetInstance<IGoogleIntegration>();
+            _googleIntegration = googleIntegration;
         }
 
         protected override async Task InitializeETA()
@@ -150,7 +152,7 @@ namespace terminalGoogle.Actions
                         TerminalVersion = "1",
                         Message = "You need to create fr8 trigger on current form please go to this url and run Initialize function manually. Ignore this message if you completed this step before. " + scriptUrl,
                         Subject = "Trigger creation URL"
-                    }, CurrentUserId);
+                    });
                 }
             }
         }

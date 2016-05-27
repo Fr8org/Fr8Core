@@ -131,7 +131,6 @@ namespace TerminalBase.Infrastructure.Behaviors
 
                     if (childActivityByIndex != null)
                     {
-                        await _hubCommunicator.DeleteActivity(childActivityByIndex.Id,_currentUserId);
                         solution.ChildrenActivities.Remove(childActivityByIndex);
                     }
                     await item.CreateActivityMethod(context);

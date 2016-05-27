@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using TerminalBase.BaseClasses;
@@ -37,7 +38,12 @@ namespace terminalTest.Actions
                 AddChild.Events.Add(ControlEvent.RequestConfigOnClick);
             }
         }
-        
+
+
+        public SimpleActivity_v1(ICrateManager crateManager)
+            : base(crateManager)
+        {
+        }
 
         protected override Task InitializeETA()
         {
@@ -63,7 +69,7 @@ namespace terminalTest.Actions
             return Task.FromResult(0);
         }
 
-        protected override Task RunChildActivities()
+        public override Task RunChildActivities()
         {
             Log($"{ActivityPayload.Label} [{ActivityId}] ended");
             return Task.FromResult(0);

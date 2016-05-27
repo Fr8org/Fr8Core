@@ -30,7 +30,7 @@ namespace terminalDocuSignTests.Activities
         [Test]
         public async void Run_WhenNoAuthorization_Fails()
         {
-            var activity = DocuSignActivityFixtureData.BaseDocuSignAcitvity();
+            var activity = New<BaseDocusignActivityMock>();
             var activityContext = FixtureData.TestActivityContextWithoutAuthorization();
             var executionContext = FixtureData.ContainerExecutionContext1();
             await activity.Run(activityContext, executionContext);

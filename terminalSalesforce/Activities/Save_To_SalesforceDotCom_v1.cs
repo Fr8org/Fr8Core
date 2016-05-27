@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using TerminalBase.BaseClasses;
@@ -32,16 +33,23 @@ namespace terminalSalesforce.Actions
             WebService = TerminalData.WebServiceDTO,
             Terminal = TerminalData.TerminalDTO
         };
+
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        ISalesforceManager _salesforce = new SalesforceManager();
+        readonly ISalesforceManager _salesforce = new SalesforceManager();
+        
+        public Save_To_SalesforceDotCom_v1(ICrateManager crateManager)
+            : base(true, crateManager)
+        {
+        }
+
 
         public override async Task Initialize()
         {
                 //In initial config, just create a DDLB 
                 //to let the user select which object they want to save.
             CreateInitialControls(Storage);
-            }
+        }
 
         public override async Task FollowUp()
         {
@@ -65,7 +73,7 @@ namespace terminalSalesforce.Actions
             //clear any existing TextSources. This is required when user changes the object in DDLB
             ConfigurationControls.Controls.RemoveAll(ctl => ctl is TextSource);
             chosenObjectFieldsList.ToList().ForEach(selectedObjectField =>
-            ControlHelper.AddTextSourceControl(Storage, selectedObjectField.Value, selectedObjectField.Key, string.Empty, addRequestConfigEvent:true, requestUpstream: true));
+                AddControl(ControlHelper.CreateTextSourceControl(selectedObjectField.Value, selectedObjectField.Key, string.Empty, addRequestConfigEvent: true, requestUpstream: true)));
 
             //create design time fields for the downstream activities.
             Storage.RemoveByLabelPrefix("Salesforce Object Fields - ");
@@ -197,8 +205,9 @@ namespace terminalSalesforce.Actions
             return curChosenSFObject;
         }
 
-        public Save_To_SalesforceDotCom_v1() : base(true)
+        protected override bool IsInvalidTokenException(Exception ex)
         {
+            return SalesforceAuthHelper.IsTokenInvalidation(ex);
         }
     }
 }

@@ -19,7 +19,7 @@ namespace UtilitiesTesting.Asserts
             operationalStateCM.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalStateCM.CurrentActivityResponse.Type);
             Assert.AreEqual(ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID, operationalStateCM.CurrentActivityErrorCode);
-            Assert.AreEqual("No AuthToken provided.", errorMessage.Message);
+            Assert.AreEqual("Authorization token is invalid", errorMessage.Message);
         }
 
         public static void AssertPayloadHasError(ICrateStorage storage)

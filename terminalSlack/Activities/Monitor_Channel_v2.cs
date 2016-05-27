@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using StructureMap;
@@ -89,7 +90,8 @@ namespace terminalSlack.Activities
         private readonly ISlackIntegration _slackIntegration;
         private readonly ISlackEventManager _slackEventManager;
 
-        public Monitor_Channel_v2() : base(true)
+        public Monitor_Channel_v2(ICrateManager crateManager)
+            : base(true, crateManager)
         {
             _slackIntegration = ObjectFactory.GetInstance<ISlackIntegration>();
             _slackEventManager = ObjectFactory.GetInstance<ISlackEventManager>();
@@ -147,7 +149,7 @@ namespace terminalSlack.Activities
 
             if (!hasIncomingMessage)
             {
-                RequestHubExecutionTermination("Incoming message is missing.");
+                TerminateHubExecution("Incoming message is missing.");
                 return Task.FromResult(0);
             }
 
@@ -156,7 +158,7 @@ namespace terminalSlack.Activities
 
             if (string.IsNullOrEmpty(incomingChannelId))
             {
-                RequestHubExecutionTermination("Incoming message doesn't contain information about source channel");
+                TerminateHubExecution("Incoming message doesn't contain information about source channel");
             }
             else
             {
@@ -173,7 +175,7 @@ namespace terminalSlack.Activities
                 }
                 else
                 {
-                    RequestHubExecutionTermination("Incoming message doesn't pass filter criteria. No downstream activities are executed");
+                    TerminateHubExecution("Incoming message doesn't pass filter criteria. No downstream activities are executed");
                 }
             }
 

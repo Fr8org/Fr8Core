@@ -2,6 +2,7 @@
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using TerminalBase.BaseClasses;
@@ -33,6 +34,11 @@ namespace terminalTest.Actions
                 Controls.Add(NumberOfRows = new TextBox { Label = "Number of rows", Value = "3"});
                 NumberOfRows.Events.Add(ControlEvent.RequestConfig);
             }
+        }
+
+        public GenerateTableActivity_v1(ICrateManager crateManager) 
+            : base(crateManager)
+        {
         }
 
         protected override Task InitializeETA()
@@ -73,7 +79,7 @@ namespace terminalTest.Actions
             return Task.FromResult(0);
         }
 
-        protected override Task RunChildActivities()
+        public override Task RunChildActivities()
         {
             Log($"{ActivityPayload.Label} [{ActivityId}] ended");
 

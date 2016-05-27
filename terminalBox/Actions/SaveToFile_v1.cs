@@ -5,6 +5,7 @@ using ClosedXML.Excel;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Newtonsoft.Json;
@@ -44,8 +45,8 @@ namespace terminalBox.Actions
             }
         }
 
-        public SaveToFile_v1()
-            : base(true)
+        public SaveToFile_v1(ICrateManager crateManager) 
+            : base(true, crateManager)
         {
         }
 

@@ -5,6 +5,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using StructureMap;
@@ -91,9 +92,10 @@ namespace terminalGoogle.Activities
         private readonly IGoogleSheet _googleApi;
         private readonly IGoogleIntegration _googleIntegration;
 
-        public Get_Google_Sheet_Data_v1()
+        public Get_Google_Sheet_Data_v1(ICrateManager crateManager, IGoogleIntegration googleIntegration, IGoogleSheet googleSheet)
+            :base (crateManager, googleIntegration)
         {
-            _googleApi = ObjectFactory.GetInstance<IGoogleSheet>();
+            _googleApi = googleSheet;
         }
         //This property is used to store and retrieve user-selected spreadsheet and worksheet between configuration responses 
         //to avoid extra fetch from Google

@@ -10,6 +10,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Managers;
@@ -41,6 +42,11 @@ namespace terminalDocuSign.Actions
         private const string EnvelopeRecievedEventName = "EnvelopeReceived";
 
         private const string AllFieldsCrateName = "DocuSign Envelope Fields";
+
+        public Monitor_DocuSign_Envelope_Activity_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+            : base(crateManager, docuSignManager)
+        {
+        }
 
         private void GetTemplateRecipientPickerValue(out string selectedOption, out string selectedValue, out string selectedTemplate)
         {

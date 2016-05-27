@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using TerminalBase.BaseClasses;
@@ -44,6 +45,11 @@ namespace terminalTest.Actions
             }
         }
 
+        public SimpleJumperActivity_v1(ICrateManager crateManager) 
+            : base(crateManager)
+        {
+        }
+
         protected override Task InitializeETA()
         {
             ActivityUI.TextBlock.Value = ActivityId.ToString();
@@ -78,7 +84,7 @@ namespace terminalTest.Actions
         }
 
 
-        protected override Task RunChildActivities()
+        public override Task RunChildActivities()
         {
             Log($"{ActivityPayload.Label} [{ActivityId}] ended");
 
