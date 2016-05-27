@@ -114,20 +114,15 @@ namespace terminalDocuSign.Actions
             Storage.Add(configurationCrate);
                     }
 
-        protected override Task<bool> Validate()
+        protected override Task Validate()
         {
             var templateList = GetControl<DropDownList>("DocuSignTemplate");
-            if (!ValidationManager.ValidateControlExistance(templateList))
-            {
-                return Task.FromResult(false);
-        }
+            ValidationManager.ValidateControlExistance(templateList);
             ValidationManager.ValidateTemplateList(templateList);
             var sourceConfigControl = GetControl<DropDownList>("DataSource");
 
-            if (!ValidationManager.ValidateControlExistance(sourceConfigControl))
-        {
-                return Task.FromResult(false);
-            }
+            ValidationManager.ValidateControlExistance(sourceConfigControl);
+
             if (DocuSignValidationUtils.AtLeastOneItemExists(sourceConfigControl))
             {
                 if (!DocuSignValidationUtils.ItemIsSelected(sourceConfigControl))
@@ -140,7 +135,7 @@ namespace terminalDocuSign.Actions
                 ValidationManager.SetError("No data source exists", sourceConfigControl);
             }
 
-            return Task.FromResult(true);
+            return Task.FromResult(0);
         }
 
         /// <summary>

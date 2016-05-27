@@ -102,7 +102,7 @@ namespace terminalSalesforce.Actions
             _salesforceManager = salesforceManager;
         }
 
-        protected override Task<bool> ValidateETA()
+        protected override Task ValidateETA()
         {
             if (ActivityUI.RunMailMergeButton.Clicked)
             {
@@ -119,7 +119,7 @@ namespace terminalSalesforce.Actions
                 }
             }
 
-            return Task.FromResult(true);
+            return Task.FromResult(0);
         }
 
         protected override async Task ConfigureETA()

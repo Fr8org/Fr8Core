@@ -209,25 +209,23 @@ namespace terminalGoogle.Actions
             }
         }
 
-        protected override Task<bool> ValidateETA()
+        protected override Task ValidateETA()
         {
             ValidationManager.ValidateCrateChooserNotEmpty(ActivityUI.UpstreamCrateChooser, "upstream crate is not selected");
-            var status = true;
+
             if ((ActivityUI.UseNewSpreadsheetOption.Selected && string.IsNullOrWhiteSpace(ActivityUI.NewSpreadsheetName.Value))
                 || (ActivityUI.UseExistingSpreadsheetOption.Selected && string.IsNullOrEmpty(ActivityUI.ExistingSpreadsheetsList.Value)))
             {
                 ValidationManager.SetError("Spreadsheet name is not specified", ActivityUI.SpreadsheetSelectionGroup);
-                status = false;
             }
 
             if ((ActivityUI.UseNewWorksheetOption.Selected && string.IsNullOrWhiteSpace(ActivityUI.NewWorksheetName.Value))
                 || (ActivityUI.UseExistingWorksheetOption.Selected && string.IsNullOrEmpty(ActivityUI.ExistingWorksheetsList.Value)))
             {
                 ValidationManager.SetError("Worksheet name is not specified", ActivityUI.WorksheetSelectionGroup);
-                status = false;
             }
 
-            return Task.FromResult(status);
+            return Task.FromResult(0);
         }
         
         protected override async Task RunETA()

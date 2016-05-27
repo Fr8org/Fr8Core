@@ -75,17 +75,16 @@ namespace terminalSlack.Activities
             return Task.FromResult(0);
         }
 
-        protected override Task<bool> ValidateETA()
+        protected override Task ValidateETA()
         {
             if (string.IsNullOrEmpty(ActivityUI.ChannelSelector.Value))
             {
                 ValidationManager.SetError("Channel or user is not specified", ActivityUI.ChannelSelector);
-                return Task.FromResult(false);
             }
 
             ValidationManager.ValidateTextSourceNotEmpty(ActivityUI.MessageSource, "Can't post empty message to Slack");
 
-            return Task.FromResult(true);
+            return Task.FromResult(0);
         }
 
         protected override async Task RunETA()

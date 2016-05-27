@@ -83,19 +83,19 @@ namespace terminalFr8Core.Activities
             RequestJumpToActivity(ActivityId);
         }
 
-        protected override Task<bool> Validate()
+        protected override Task Validate()
         {
             if (ConfigurationControls != null)
             {
                 var crateChooser = GetControl<CrateChooser>("Available_Crates");
+
                 if (!crateChooser.CrateDescriptions.Any(c => c.Selected))
                 {
                     ValidationManager.SetError("Please select an item from the list", crateChooser);
-                    return Task.FromResult(false);
                 }
             }
 
-            return Task.FromResult(true);
+            return Task.FromResult(0);
         }
 
         internal static int? GetDataListSize(Crate crateToProcess)

@@ -172,17 +172,16 @@ namespace terminalSalesforce.Actions
         }
 
 
-        protected override Task<bool> ValidateETA()
+        protected override Task ValidateETA()
         {
             ValidationManager.ValidateTextSourceNotEmpty(ActivityUI.FeedTextSource, "Can't post empty message to chatter");
 
             if (!IsPostingToQueryiedChatter && !IsUsingIncomingChatterId)
             {
                 ValidationManager.SetError("Chatter Id value source is not specified", ActivityUI.ChatterSelectionGroup);
-                return Task.FromResult(false);
             }
 
-            return Task.FromResult(true);
+            return Task.FromResult(0);
         }
 
         protected override async Task RunETA()

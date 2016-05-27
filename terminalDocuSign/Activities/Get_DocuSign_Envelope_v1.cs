@@ -72,7 +72,7 @@ namespace terminalDocuSign.Activities
 
         protected override string ActivityUserFriendlyName => "Get DocuSign Envelope";
 
-        protected override Task<bool> Validate()
+        protected override Task Validate()
         {
             var control = GetControl<TextSource>("EnvelopeIdSelector");
             var envelopeId = GetEnvelopeId(control);
@@ -80,10 +80,9 @@ namespace terminalDocuSign.Activities
             if (string.IsNullOrEmpty(envelopeId))
             {
                 ValidationManager.SetError("Envelope Id is not set", control);
-                return Task.FromResult(false);
             }
 
-            return Task.FromResult(true);
+            return Task.FromResult(0);
         }
 
         protected override async Task RunDS()

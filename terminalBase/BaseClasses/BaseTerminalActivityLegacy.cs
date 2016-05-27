@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Managers;
@@ -26,7 +25,7 @@ namespace TerminalBase.BaseClasses
         protected bool DisableValidationOnFollowup { get; set; }
         private PlanHelper _planHelper;
         private ControlHelper _controlHelper;
-        private BaseTerminalEvent _eventLogger;
+        private readonly BaseTerminalEvent _eventLogger;
 
 
         protected int LoopIndex => GetLoopIndex();
@@ -82,7 +81,9 @@ namespace TerminalBase.BaseClasses
         {
             ValidationManager = CreateValidationManager();
 
-            if (!await Validate())
+            await Validate();
+
+            if (ValidationManager.HasErrors)
             {
                 RaiseError("Activity was incorrectly configured. " + ValidationManager.ValidationResults);
                 return false;
@@ -140,9 +141,9 @@ namespace TerminalBase.BaseClasses
             return new ValidationManager(IsRuntime ? Payload : null);
         }
 
-        protected virtual Task<bool> Validate()
+        protected virtual Task Validate()
         {
-            return Task.FromResult(true);
+            return Task.FromResult(0);
         }
 
         protected override Task<bool> CheckAuthentication()

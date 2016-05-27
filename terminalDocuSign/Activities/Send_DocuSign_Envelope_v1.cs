@@ -344,16 +344,17 @@ namespace terminalDocuSign.Actions
             return docusignTemplateId != previousTemplateId;
         }
 
-        protected override Task<bool> Validate()
+        protected override Task Validate()
         {
             if (ConfigurationControls == null)
             {
                 ValidationManager.SetError(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
-                return Task.FromResult(false);
             }
+
             var templateList = ConfigurationControls.Controls.OfType<DropDownList>().FirstOrDefault();
             ValidationManager.ValidateTemplateList(templateList);
-            return Task.FromResult(true);
+
+            return Task.FromResult(0);
         }
 
         protected virtual async Task<Crate> CreateDocusignTemplateConfigurationControls()

@@ -124,9 +124,9 @@ namespace TerminalBase.BaseClasses
             await ConfigureETA();
         }
 
-        protected sealed override async Task<bool> Validate()
+        protected sealed override async Task Validate()
         {
-            return await ValidateETA();
+            await ValidateETA();
         }
         
         /**********************************************************************************/
@@ -200,9 +200,9 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        protected virtual Task<bool> ValidateETA()
+        protected virtual Task ValidateETA()
         {
-            return Task.FromResult(true);
+            return Task.FromResult(0);
         }
 
         /**********************************************************************************/

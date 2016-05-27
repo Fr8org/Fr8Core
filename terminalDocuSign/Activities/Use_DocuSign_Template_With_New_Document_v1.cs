@@ -163,16 +163,16 @@ namespace terminalDocuSign.Activities
             await UpdateFilesDD();
         }
 
-        protected override Task<bool> Validate()
+        protected override Task Validate()
         {
             if (ConfigurationControls == null)
             {
                 ValidationManager.SetError(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
-                return Task.FromResult(false);
             }
 
             var templateList = GetControl<DropDownList>("target_docusign_template");
             var documentsList = GetControl<DropDownList>("document_Override_DDLB");
+
             if (templateList != null)
             {
                 ValidationManager.ValidateTemplateList(templateList);
@@ -181,7 +181,8 @@ namespace terminalDocuSign.Activities
             {
                 ValidationManager.SetError(DocuSignValidationUtils.DocumentIsNotValidErrorMessage, documentsList);
             }
-            return Task.FromResult(true);
+
+            return Task.FromResult(0);
         }
     }
 }

@@ -139,7 +139,7 @@ namespace terminaBaselTests.BaseClasses
             return Task.FromResult(0);
         }
 
-        protected override Task<bool> ValidateETA()
+        protected override Task ValidateETA()
         {
             CalledMethods |= CalledMethod.Validate;
 
@@ -151,7 +151,7 @@ namespace terminaBaselTests.BaseClasses
                 ValidationManager.SetError("Error");
             }
 
-            return Task.FromResult(ValidationState);
+            return Task.FromResult(0);
         }
 
         protected override Task DeactivateETA()

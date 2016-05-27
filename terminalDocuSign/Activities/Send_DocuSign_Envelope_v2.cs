@@ -162,19 +162,19 @@ namespace terminalDocuSign.Actions
             Storage.ReplaceByLabel(Crate.FromContent(UserFieldsAndRolesCrateLabel, new FieldDescriptionsCM(userDefinedFields.Concat(roles)), AvailabilityType.Configuration));
         }
 
-        protected override Task<bool> ValidateETA()
+        protected override Task ValidateETA()
         {
-            var result = true;
             if (string.IsNullOrEmpty(SelectedTemplateId))
             {
                 ValidationManager.SetError("Template was not selected", ActivityUI.TemplateSelector);
-                result = false;
             }
+
             foreach (var roleControl in ActivityUI.RolesFields.Where(x => x.InitialLabel.Contains(DocuSignConstants.DocuSignRoleEmail)))
             {
                 ValidationManager.ValidateEmail(roleControl);
             }
-            return Task.FromResult(result);
+
+            return Task.FromResult(0);
         }
 
         protected override async Task RunETA()

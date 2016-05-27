@@ -36,7 +36,7 @@ namespace terminalSlack.Activities
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
 
-        protected override Task<bool> Validate()
+        protected override Task Validate()
         {
             var messageField = GetControl<TextSource>("Select_Message_Field");
             var actionChannelId = GetControl<DropDownList>("Selected_Slack_Channel").Value;
@@ -44,16 +44,14 @@ namespace terminalSlack.Activities
             if (string.IsNullOrEmpty(actionChannelId))
             {
                 ValidationManager.SetError("Channel or user is not specified", "Selected_Slack_Channel");
-                return Task.FromResult(false);
             }
 
             if (messageField.CanGetValue(ValidationManager.Payload) && string.IsNullOrWhiteSpace(messageField.GetValue(ValidationManager.Payload)))
             {
                 ValidationManager.SetError("Can't post empty message to Slack", messageField);
-                return Task.FromResult(false);
             }
 
-            return Task.FromResult(true);
+            return Task.FromResult(0);
         }
 
         public override async Task Run()

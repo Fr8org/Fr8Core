@@ -116,7 +116,7 @@ namespace terminalSendGrid.Activities
             return htmlText;
         }
 
-        protected override Task<bool> Validate()
+        protected override Task Validate()
         {
             var emailAddressField = GetControl<TextSource>("EmailAddress");
             var emailSubjectField = GetControl<TextSource>("EmailSubject");
@@ -124,7 +124,8 @@ namespace terminalSendGrid.Activities
             ValidationManager.ValidateTextSourceNotEmpty(emailAddressField, "Email address can't be empty");
             ValidationManager.ValidateTextSourceNotEmpty(emailSubjectField, "Email subject can't be empty");
             ValidationManager.ValidateTextSourceNotEmpty(emailBodyField, "Email body can't be empty");
-            return Task.FromResult(true);
+
+            return Task.FromResult(0);
         }
 
         public override async Task Run()

@@ -81,7 +81,7 @@ namespace terminalSalesforce.Actions
                                                                                 chosenObjectFieldsList.ToList(), AvailabilityType.Configuration));
         }
 
-        protected override Task<bool> Validate()
+        protected override Task Validate()
         {
             var chosenObject = ExtractChosenSFObject();
 
@@ -114,7 +114,7 @@ namespace terminalSalesforce.Actions
                     }
                 }
             }
-            return Task.FromResult(true);
+            return Task.FromResult(0);
         }
 
         public override async Task Run()

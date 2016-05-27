@@ -135,7 +135,7 @@ namespace terminalTwilio.Activities
             return new FieldDTO(smsNumber, smsBody);
         }
 
-        protected override Task<bool> Validate()
+        protected override Task Validate()
         {
             ValidationManager.Reset();
             if (ConfigurationControls != null)
@@ -162,7 +162,7 @@ namespace terminalTwilio.Activities
                     }
                 }
             }
-            return Task.FromResult(true);
+            return Task.FromResult(0);
         }
 
 

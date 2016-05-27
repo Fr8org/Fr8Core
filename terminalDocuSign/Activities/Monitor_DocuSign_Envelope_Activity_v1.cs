@@ -67,13 +67,12 @@ namespace terminalDocuSign.Actions
             }
         }
 
-        protected override Task<bool> Validate()
+        protected override Task Validate()
         {
             ActivityUi activityUi = ConfigurationControls;
             if (activityUi == null)
             {
                 ValidationManager.SetError(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
-                return Task.FromResult(false);
             }
 
             if (!AtLeastOneNotificationIsSelected(activityUi))
@@ -103,7 +102,7 @@ namespace terminalDocuSign.Actions
                 ValidationManager.ValidateTemplateList(activityUi.TemplateList);
             }
 
-            return Task.FromResult(true);
+            return Task.FromResult(0);
         }
 
         protected override string ActivityUserFriendlyName => "Monitor DocuSign Envelope Activity";

@@ -99,13 +99,13 @@ namespace terminalFr8Core.Activities
         }
 
         
-        protected override Task<bool> ValidateETA()
+        protected override Task ValidateETA()
         {
             ValidationManager.ValidateTextSourceNotEmpty(ActivityUI.EmailAddress, "Email address can't be empty");
             ValidationManager.ValidateTextSourceNotEmpty(ActivityUI.EmailSubject, "Email subject can't be empty");
             ValidationManager.ValidateTextSourceNotEmpty(ActivityUI.EmailBody, "Email body can't be empty");
 
-            return Task.FromResult(true);
+            return Task.FromResult(0);
         }
 
         protected override async Task RunETA()

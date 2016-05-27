@@ -84,15 +84,14 @@ namespace terminalDocuSign.Activities
             return Task.FromResult(0);
         }
 
-        protected override Task<bool> Validate()
+        protected override Task Validate()
         {
             var templateList = GetControl<DropDownList>("Available_Templates");
-            if (!ValidationManager.ValidateControlExistance(templateList))
-            {
-                return Task.FromResult(false);
-            }
+
+            ValidationManager.ValidateControlExistance(templateList);
             ValidationManager.ValidateTemplateList(templateList);
-            return Task.FromResult(true);
+
+            return Task.FromResult(0);
         }
 
         private Crate CreateControlsCrate()
