@@ -122,6 +122,13 @@ namespace terminalDocuSign.Actions
             var roles = tabsAndFields.Item1.Where(x => x.Tags.Contains(DocuSignConstants.DocuSignSignerTag, StringComparison.InvariantCultureIgnoreCase)).ToArray();
             var userDefinedFields = tabsAndFields.Item1.Where(x => x.Tags.Contains(DocuSignConstants.DocuSignTabTag));
             var envelopeData = tabsAndFields.Item2.ToLookup(x => x.Fr8DisplayType);
+
+            //check for DocuSign default template names and add advisory json
+            var hasDefaultNames = DocuSignManager.DocuSignTemplateDefaultNames(userDefinedFields);
+            if (hasDefaultNames)
+            {
+                AddAdvisoryCrate("DocuSign Template Warning", "In your selected template you have fields with default values. Those can be changes inside advanced DocuSign UI to frendlier label.");
+            }
             //Add TextSource control for every DocuSign role to activity UI
             ActivityUI.RolesFields.AddRange(roles.Select(x => UiBuilder.CreateSpecificOrUpstreamValueChooser(x.Key, x.Key, requestUpstream: true)));
             //Add TextSrouce control for every DocuSign template text field to activity UI
