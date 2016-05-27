@@ -8,6 +8,7 @@ using Data.Interfaces;
 using Data.States;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Interfaces;
@@ -295,21 +296,6 @@ namespace Hub.Services
             TraverseActivity(activity, activities.Add);
 
             activities.Reverse();
-
-            activities.ForEach(x =>
-            {
-                // TODO: it is not very smart solution. Activity service should not knon about anything except Activities
-                // But we have to support correct deletion of any activity types and any level of hierarchy
-                // May be other services should register some kind of callback to get notifed when activity is being deleted.
-                if (x is SubPlanDO)
-                {
-                    foreach (var criteria in uow.CriteriaRepository.GetQuery().Where(y => y.SubPlanId == x.Id).ToArray())
-                    {
-                        uow.CriteriaRepository.Remove(criteria);
-                    }
-                }
-            });
-
             activity.RemoveFromParent();
         }
 

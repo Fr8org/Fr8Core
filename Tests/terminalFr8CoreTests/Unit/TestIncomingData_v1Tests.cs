@@ -8,7 +8,8 @@ using NUnit.Framework;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using terminalFr8Core.Actions;
-using TerminalBase.Infrastructure;
+﻿using terminalFr8Core.Activities;
+﻿using TerminalBase.Infrastructure;
 
 namespace HubTests.Unit
 {
@@ -67,21 +68,7 @@ namespace HubTests.Unit
             ClassMethod.Invoke(typeof(TestIncomingData_v1), "Evaluate", parameters);
         }
 
-        [Test]
-        public void Evaluate_EnvelopeDataIsNull_ExpectedArgumentNullException()
-        {
-            //Arrange
-            var criteria = FixtureData.TestCriteria1();
-
-            object[] parameters = new object[] { criteria.ConditionsJSON, FixtureData.TestContainer_Id_1(), null };
-
-            //Act
-            var ex = Assert.Throws<ArgumentNullException>(() => ClassMethod.Invoke(typeof(TestIncomingData_v1), "Evaluate", parameters));
-
-            //Assert
-            Assert.AreEqual("envelopeData", ex.ParamName);
-        }
-
+  
         [Test]
         public void Filter_CriteriaIsNull_ExpectedArgumentNullException()
         {
@@ -125,22 +112,6 @@ namespace HubTests.Unit
 
         }
 
-
-        [Test]
-        public void Filter_EnvelopeDataIsNull_ExpectedArgumentNullException()
-        {
-            //Arrange
-            var criteria = FixtureData.TestCriteria1();
-
-            object[] parameters = new object[] { criteria.ConditionsJSON, FixtureData.TestContainer_Id_1(), null };
-
-            //Act
-            var ex = Assert.Throws<ArgumentNullException>(() => ClassMethod.Invoke(typeof(TestIncomingData_v1), "Filter", parameters));
-
-            //Assert
-            Assert.AreEqual("envelopeData", ex.ParamName);
-
-        }
 
         ///* One Criteria Equal Operation for string*/
         [Test]

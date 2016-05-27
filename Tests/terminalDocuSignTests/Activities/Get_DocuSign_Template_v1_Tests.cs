@@ -14,6 +14,9 @@ using terminalDocuSign.Actions;
 using terminalDocuSign.Services.New_Api;
 using terminalDocuSignTests.Fixtures;
 using UtilitiesTesting.Fixtures;
+using terminalDocuSign.Activities;
+using Fr8Data.Managers;
+using TerminalBase.Models;
 
 namespace terminalDocuSignTests.Activities
 {
@@ -26,9 +29,8 @@ namespace terminalDocuSignTests.Activities
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
             var target = new Get_DocuSign_Template_v1();
-
-            var result = await Validate(target, FixtureData.TestActivity1());
-
+            var activityContext = FixtureData.TestActivityContext1();
+            var result = await Validate(target, activityContext);
             AssertErrorMessage(result, DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
         }
 
@@ -39,9 +41,11 @@ namespace terminalDocuSignTests.Activities
             var target = new Get_DocuSign_Template_v1();
             var activityDO = FixtureData.TestActivity1();
 
-            activityDO = await target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration());
+            var activityContext = FixtureData.TestActivityContext1();
+            await target.Configure(activityContext);
 
-            var result = await Validate(target, activityDO);
+            //var activityContext = FixtureData.TestActivityContext1();
+            var result = await Validate(target, activityContext);
 
             AssertErrorMessage(result, DocuSignValidationUtils.NoTemplateExistsErrorMessage);
         }
@@ -53,9 +57,11 @@ namespace terminalDocuSignTests.Activities
             var target = new Get_DocuSign_Template_v1();
             var activityDO = FixtureData.TestActivity1();
 
-            activityDO = await target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration());
+            var activityContext = FixtureData.TestActivityContext1();
+            await target.Configure(activityContext);
 
-            var result = await Validate(target, activityDO);
+            //var activityPayload = FixtureData.TestActivityContext1().ActivityPayload;
+            var result = await Validate(target, activityContext);
 
             AssertErrorMessage(result, DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage);
         }
@@ -65,25 +71,21 @@ namespace terminalDocuSignTests.Activities
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithTemplates()));
             var target = new Get_DocuSign_Template_v1();
-            var activityDO = FixtureData.TestActivity1();
+            var activityContext = FixtureData.TestActivityContext1();
+            await target.Configure(activityContext);
 
-            activityDO = await target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration());
+            SelectTemplate(activityContext.ActivityPayload);
 
-            SelectTemplate(activityDO);
-
-            var result = await Validate(target, activityDO);
-
-            Assert.AreEqual(false, result.HasErrors);
+            //var activityPayload = FixtureData.TestActivityContext1().ActivityPayload;
+            var result = await Validate(target, activityContext);
+            Assert.AreEqual(null, result);
         }
 
-        private void SelectTemplate(ActivityDO activity)
+        private void SelectTemplate(ActivityPayload activity)
         {
-            using (var crateStorage = new CrateManager().GetUpdatableStorage(activity))
-            {
-                var configControls = crateStorage.FirstCrate<StandardConfigurationControlsCM>(c => true).Content;
-                var templateList = configControls.Controls.OfType<DropDownList>().FirstOrDefault();
-                templateList.selectedKey = "First";
-            }
+            var configControls = activity.CrateStorage.FirstCrate<StandardConfigurationControlsCM>(c => true).Content;
+            var templateList = configControls.Controls.OfType<DropDownList>().FirstOrDefault();
+            templateList.selectedKey = "First";
         }
     }
 }

@@ -14,16 +14,28 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using Hub.Services;
+using Hub.Services.MT;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using TerminalBase.Services;
-using TerminalBase.Services.MT;
 
 namespace terminalFr8Core.Actions
 {
     public class GetDataFromFr8Warehouse_v1
         : EnhancedTerminalActivity<GetDataFromFr8Warehouse_v1.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "GetDataFromFr8Warehouse",
+            Label = "Get Data From Fr8 Warehouse",
+            Category = ActivityCategory.Processors,
+            Version = "1",
+            MinPaneWidth = 550,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public DropDownList AvailableObjects { get; set; }
@@ -76,24 +88,23 @@ namespace terminalFr8Core.Actions
         {
         }
 
-        protected override async Task Initialize(CrateSignaller crateSignaller)
+        protected override async Task InitializeETA()
         {
-            ConfigurationControls.AvailableObjects.ListItems = GetObjects();
-            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
-
+            ActivityUI.AvailableObjects.ListItems = GetObjects();
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
             await Task.Yield();
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
+        protected override async Task ConfigureETA()
         {
-            var selectedObject = ConfigurationControls.AvailableObjects.Value;
+            var selectedObject = ActivityUI.AvailableObjects.Value;
             var hasSelectedObject = !string.IsNullOrEmpty(selectedObject);
             if (hasSelectedObject)
             {
                 Guid selectedObjectId;
-                if (Guid.TryParse(ConfigurationControls.AvailableObjects.Value, out selectedObjectId))
+                if (Guid.TryParse(ActivityUI.AvailableObjects.Value, out selectedObjectId))
                 {
-                    CurrentActivityStorage.ReplaceByLabel(
+                    Storage.ReplaceByLabel(
                         Crate.FromContent(
                             "Queryable Criteria",
                             new FieldDescriptionsCM(MTTypesHelper.GetFieldsByTypeId(selectedObjectId, AvailabilityType.RunTime))
@@ -102,18 +113,18 @@ namespace terminalFr8Core.Actions
                 }
             }
 
-            ConfigurationControls.QueryBuilder.IsHidden = !hasSelectedObject;
-            ConfigurationControls.SelectObjectLabel.IsHidden = hasSelectedObject;
-            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            ActivityUI.QueryBuilder.IsHidden = !hasSelectedObject;
+            ActivityUI.SelectObjectLabel.IsHidden = hasSelectedObject;
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
 
             await Task.Yield();
         }
 
-        protected override async Task RunCurrentActivity()
+        protected override async Task RunETA()
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var selectedObjectId = Guid.Parse(ConfigurationControls.AvailableObjects.Value);
+                var selectedObjectId = Guid.Parse(ActivityUI.AvailableObjects.Value);
                 var mtType = uow.MultiTenantObjectRepository.FindTypeReference(selectedObjectId);
                 if (mtType == null)
                 {
@@ -121,20 +132,20 @@ namespace terminalFr8Core.Actions
                 }
 
                 var conditions = JsonConvert.DeserializeObject<List<FilterConditionDTO>>(
-                    ConfigurationControls.QueryBuilder.Value
+                    ActivityUI.QueryBuilder.Value
                 );
-                
+
                 var manifestType = mtType.ClrType;
                 var queryBuilder = MTSearchHelper.CreateQueryProvider(manifestType);
                 var converter = CrateManifestToRowConverter(manifestType);
+
                 var foundObjects = queryBuilder
                     .Query(
                         uow,
-                        AuthorizationToken.UserID,
+                        CurrentUserId,
                         conditions
                     )
                     .ToArray();
-                
 
                 var searchResult = new StandardTableDataCM();
 
@@ -162,7 +173,7 @@ namespace terminalFr8Core.Actions
                     searchResult.Table.Add(converter(foundObject));
                 }
 
-                CurrentPayloadStorage.Add(
+                Payload.Add(
                     Crate.FromContent(
                         RunTimeCrateLabel,
                         searchResult

@@ -2,17 +2,34 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Fr8Data.Control;
+using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 using TerminalBase.BaseClasses;
+using TerminalBase.Errors;
 using TerminalBase.Infrastructure;
+using TerminalBase.Services;
 
-namespace terminalSlack.Actions
+namespace terminalSlack.Activities
 {
     public class Publish_To_Slack_v2 : EnhancedTerminalActivity<Publish_To_Slack_v2.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Publish_To_Slack",
+            Label = "Publish To Slack",
+            Tags = "Notifier",
+            Category = ActivityCategory.Forwarders,
+            Terminal = TerminalData.TerminalDTO,
+            NeedsAuthentication = true,
+            Version = "2",
+            WebService = TerminalData.WebServiceDTO,
+            MinPaneWidth = 330
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public DropDownList ChannelSelector { get; set; }
@@ -30,12 +47,12 @@ namespace terminalSlack.Actions
 
         private readonly ISlackIntegration _slackIntegration;
 
+
         public Publish_To_Slack_v2() : base(true)
         {
             _slackIntegration = new SlackIntegration();
         }
-
-        protected override async Task Initialize(CrateSignaller crateSignaller)
+        protected override async Task InitializeETA()
         {
             var usersTask = _slackIntegration.GetUserList(AuthorizationToken.Token);
             var channelsTask = _slackIntegration.GetChannelList(AuthorizationToken.Token);
@@ -47,27 +64,32 @@ namespace terminalSlack.Actions
             channelsAndUsersList.AddRange(usersTask.Result
                                                    .OrderBy(x => x.Key)
                                                    .Select(x => new ListItem { Key = $"@{x.Key}", Value = x.Value }));
-            ConfigurationControls.ChannelSelector.ListItems = channelsAndUsersList;
+            ActivityUI.ChannelSelector.ListItems = channelsAndUsersList;
         }
 
-        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
+        protected override Task ConfigureETA()
         {
             //No extra config is required
             return Task.FromResult(0);
         }
 
-        protected override async Task RunCurrentActivity()
+        protected override Task<bool> ValidateETA()
         {
-            var channel = ConfigurationControls.ChannelSelector.Value;
-            if (string.IsNullOrEmpty(channel))
+            if (string.IsNullOrEmpty(ActivityUI.ChannelSelector.Value))
             {
-                throw new ActivityExecutionException("Channel or user is not specified");
+                ValidationManager.SetError("Channel or user is not specified", ActivityUI.ChannelSelector);
+                return Task.FromResult(false);
             }
-            var message = ConfigurationControls.MessageSource.GetValue(CurrentPayloadStorage);
-            if (string.IsNullOrWhiteSpace(message))
-            {
-                throw new ActivityExecutionException("Can't post empty message to Slack");
-            }
+
+            ValidationManager.ValidateTextSourceNotEmpty(ActivityUI.MessageSource, "Can't post empty message to Slack");
+
+            return Task.FromResult(true);
+        }
+
+        protected override async Task RunETA()
+        {
+            var channel = ActivityUI.ChannelSelector.Value;
+            var message = ActivityUI.MessageSource.GetValue(Payload);
             var success = await _slackIntegration.PostMessageToChat(AuthorizationToken.Token, channel, message).ConfigureAwait(false);
             if (!success)
             {

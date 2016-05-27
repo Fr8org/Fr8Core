@@ -10,6 +10,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Managers;
@@ -17,9 +18,11 @@ using StructureMap;
 using terminalDocuSign.Interfaces;
 using TerminalBase.Infrastructure;
 using terminalDocuSign.Services.New_Api;
+using TerminalBase.Models;
 using Utilities.Configuration.Azure;
 using Utilities;
 using Utilities.Logging;
+using CrateManagerExtensions = Fr8Data.Managers.CrateManagerExtensions;
 
 namespace terminalDocuSign.Services
 {
@@ -55,21 +58,20 @@ namespace terminalDocuSign.Services
         /// 
         /// https://maginot.atlassian.net/wiki/display/DDW/Rework+of+DocuSign+connect+management
         /// </summary>
-        public async Task CreatePlan_MonitorAllDocuSignEvents(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
+        public async Task CreatePlan_MonitorAllDocuSignEvents(string curFr8UserId, AuthorizationToken authToken)
         {
             Logger.LogInfo($"Create MADSE called {curFr8UserId}");
-            string currentPlanId = await FindAndActivateExistingPlan(curFr8UserId, "MonitorAllDocuSignEvents", authTokenDTO);
+            string currentPlanId = await FindAndActivateExistingPlan(curFr8UserId, "MonitorAllDocuSignEvents", authToken);
             if (string.IsNullOrEmpty(currentPlanId))
-                await CreateAndActivateNewMADSEPlan(curFr8UserId, authTokenDTO);
+                await CreateAndActivateNewMADSEPlan(curFr8UserId, authToken);
         }
 
         //only create a connect when running on dev/production
-        public void CreateConnect(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
+        public void CreateConnect(string curFr8UserId, AuthorizationToken authToken)
         {
             Logger.LogInfo($"CreateConnect called {curFr8UserId}");
-            var authTokenDO = new AuthorizationTokenDO() { Token = authTokenDTO.Token, ExternalAccountId = authTokenDTO.ExternalAccountId };
-            var config = _docuSignManager.SetUp(authTokenDO);
-
+            var authTokenDO = new AuthorizationTokenDO() { Token = authToken.Token, ExternalAccountId = authToken.ExternalAccountId };
+            var config = _docuSignManager.SetUp(authToken);
             string terminalUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.TerminalEndpoint");
             string prodUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultProductionUrl");
             string devUrl = CloudConfigurationManager.GetSetting("terminalDocuSign.DefaultDevUrl");
@@ -134,20 +136,20 @@ namespace terminalDocuSign.Services
             }
         }
 
-        public async void CreateOrUpdatePolling(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
+        public async void CreateOrUpdatePolling(string curFr8UserId, AuthorizationToken authToken)
         {
             DocuSignPolling polling = new DocuSignPolling();
-            polling.SchedulePolling(authTokenDTO.ExternalAccountId, curFr8UserId);
+            polling.SchedulePolling(authToken.ExternalAccountId, curFr8UserId);
         }
 
 
         private bool CheckIfSaveToFr8WarehouseConfiguredWithOldManifest(PlanDTO val)
         {
-            return (_crateManager.GetStorage(val.Plan.SubPlans.ElementAt(0).Activities[1]).CrateContentsOfType<StandardConfigurationControlsCM>()
+            return (CrateManagerExtensions.GetStorage(_crateManager, val.Plan.SubPlans.ElementAt(0).Activities[1]).CrateContentsOfType<StandardConfigurationControlsCM>()
                      .First().FindByName("UpstreamCrateChooser") as UpstreamCrateChooser).SelectedCrates.Count > 1;
         }
 
-        private async Task<string> FindAndActivateExistingPlan(string curFr8UserId, string plan_name, AuthorizationTokenDTO authTokenDTO)
+        private async Task<string> FindAndActivateExistingPlan(string curFr8UserId, string plan_name, AuthorizationToken authToken)
         {
             try
             {
@@ -160,11 +162,11 @@ namespace terminalDocuSign.Services
                     var plans = existingPlans.GroupBy
                         (val =>
                         //first condition
-                        val.Plan.SubPlans.Count() > 0 &&
+                        val.Plan.SubPlans.Any() &&
                         //second condition
-                        val.Plan.SubPlans.ElementAt(0).Activities.Count() > 0 &&
+                        val.Plan.SubPlans.ElementAt(0).Activities.Any() &&
                         //third condtion
-                        _crateManager.GetStorage(val.Plan.SubPlans.ElementAt(0).Activities[0]).Where(t => t.Label == "DocuSignUserCrate").FirstOrDefault() != null &&
+                        CrateManagerExtensions.GetStorage(_crateManager, val.Plan.SubPlans.ElementAt(0).Activities[0]).FirstOrDefault(t => t.Label == "DocuSignUserCrate") != null &&
                         //fourth condition -> check if SaveToFr8Warehouse configured with old manifests
                         !(plan_name == "MonitorAllDocuSignEvents" && CheckIfSaveToFr8WarehouseConfiguredWithOldManifest(val))
 
@@ -177,21 +179,21 @@ namespace terminalDocuSign.Services
 
                         existingPlans = newPlans.Where(
                               a => a.Plan.SubPlans.Any(b =>
-                                  _crateManager.GetStorage(b.Activities[0]).Where(t => t.Label == "DocuSignUserCrate")
-                                  .FirstOrDefault().Get<StandardPayloadDataCM>().GetValues("DocuSignUserEmail").FirstOrDefault() == authTokenDTO.ExternalAccountId)).ToList();
+                                  CrateManagerExtensions.GetStorage(_crateManager, b.Activities[0])
+                                  .FirstOrDefault(t => t.Label == "DocuSignUserCrate").Get<StandardPayloadDataCM>().GetValues("DocuSignUserEmail").FirstOrDefault() == authToken.ExternalAccountId)).ToList();
 
                         if (existingPlans.Count > 1)
-                            _alertReporter.EventManager_EventMultipleMonitorAllDocuSignEventsPlansPerAccountArePresent(authTokenDTO.ExternalAccountId);
+                            _alertReporter.EventManager_EventMultipleMonitorAllDocuSignEventsPlansPerAccountArePresent(authToken.ExternalAccountId);
 
                         var existingPlan = existingPlans.FirstOrDefault();
 
                         if (existingPlan != null)
                         {
-                            var firstActivity = existingPlan.Plan.SubPlans.Where(a => a.Activities.Count > 0).FirstOrDefault().Activities[0];
+                            var firstActivity = existingPlan.Plan.SubPlans.FirstOrDefault(a => a.Activities.Count > 0).Activities[0];
 
                             if (firstActivity != null)
                             {
-                                await _hubCommunicator.ApplyNewToken(firstActivity.Id, Guid.Parse(authTokenDTO.Id), curFr8UserId);
+                                await _hubCommunicator.ApplyNewToken(firstActivity.Id, Guid.Parse(authToken.Id), curFr8UserId);
                                 await _hubCommunicator.RunPlan(existingPlan.Plan.Id, new List<CrateDTO>(),  curFr8UserId);
                                 Logger.LogInfo($"#### Existing MADSE plan activated with planId: {existingPlan.Plan.Id}", DocuSignManager.DocusignTerminalName);
                                 return existingPlan.Plan.Id.to_S();
@@ -217,13 +219,13 @@ namespace terminalDocuSign.Services
             return null;
         }
 
-        private async Task CreateAndActivateNewMADSEPlan(string curFr8UserId, AuthorizationTokenDTO authTokenDTO)
+        private async Task CreateAndActivateNewMADSEPlan(string curFr8UserId, AuthorizationToken authToken)
         {
             var emptyMonitorPlan = new PlanEmptyDTO
             {
                 Name = "MonitorAllDocuSignEvents",
                 Description = "MonitorAllDocuSignEvents",
-                PlanState = PlanState.Active,
+                PlanState = PlanState.Running,
                 Visibility = PlanVisibility.Internal
             };
 
@@ -233,7 +235,7 @@ namespace terminalDocuSign.Services
             var storeMTDataTemplate = GetActivityTemplate(activityTemplates, "SaveToFr8Warehouse");
             Debug.WriteLine($"Calling create and configure with params {recordDocusignEventsTemplate} {curFr8UserId} {monitorDocusignPlan}");
             await _hubCommunicator.CreateAndConfigureActivity(recordDocusignEventsTemplate.Id,
-                curFr8UserId, "Record DocuSign Events", 1, monitorDocusignPlan.Plan.StartingSubPlanId, false, new Guid(authTokenDTO.Id));
+                curFr8UserId, "Record DocuSign Events", 1, monitorDocusignPlan.Plan.StartingSubPlanId, false, new Guid(authToken.Id));
             var storeMTDataActivity = await _hubCommunicator.CreateAndConfigureActivity(storeMTDataTemplate.Id,
                 curFr8UserId, "Save To Fr8 Warehouse", 2, monitorDocusignPlan.Plan.StartingSubPlanId);
             SetSelectedCrates(storeMTDataActivity);
@@ -244,30 +246,27 @@ namespace terminalDocuSign.Services
             Logger.LogInfo($"#### New MADSE plan activated with planId: {monitorDocusignPlan.Plan.Id}", DocuSignManager.DocusignTerminalName);
         }
 
-        private void SetSelectedCrates(ActivityDTO storeMTDataActivity)
+        private void SetSelectedCrates(ActivityPayload storeMTDataActivity)
         {
-            using (var crateStorage = _crateManager.UpdateStorage(() => storeMTDataActivity.CrateStorage))
+            var crateStorage = storeMTDataActivity.CrateStorage;
+            var configControlCM = crateStorage
+                .CrateContentsOfType<StandardConfigurationControlsCM>()
+                .First();
+            var upstreamCrateChooser = (UpstreamCrateChooser)configControlCM.FindByName("UpstreamCrateChooser");
+            var existingDdlbSource = upstreamCrateChooser.SelectedCrates[0].ManifestType.Source;
+            var existingLabelDdlb = upstreamCrateChooser.SelectedCrates[0].Label;
+            var docusignEnvelope = new DropDownList
             {
-                var configControlCM = crateStorage
-                    .CrateContentsOfType<StandardConfigurationControlsCM>()
-                    .First();
+                selectedKey = Fr8Data.Constants.MT.DocuSignEnvelope_v2.ToString(),
+                Value = ((int)Fr8Data.Constants.MT.DocuSignEnvelope_v2).ToString(),
+                Name = "UpstreamCrateChooser_mnfst_dropdown_0",
+                Source = existingDdlbSource
+            };
 
-                var upstreamCrateChooser = (UpstreamCrateChooser)configControlCM.FindByName("UpstreamCrateChooser");
-                var existingDdlbSource = upstreamCrateChooser.SelectedCrates[0].ManifestType.Source;
-                var existingLabelDdlb = upstreamCrateChooser.SelectedCrates[0].Label;
-                var docusignEnvelope = new DropDownList
-                {
-                    selectedKey = MT.DocuSignEnvelope_v2.ToString(),
-                    Value = ((int)MT.DocuSignEnvelope_v2).ToString(),
-                    Name = "UpstreamCrateChooser_mnfst_dropdown_0",
-                    Source = existingDdlbSource
-                };
-
-                upstreamCrateChooser.SelectedCrates = new List<CrateDetails>()
-                {
-                    new CrateDetails { ManifestType = docusignEnvelope, Label = existingLabelDdlb }
-                };
-            }
+            upstreamCrateChooser.SelectedCrates = new List<CrateDetails>
+            {
+                new CrateDetails { ManifestType = docusignEnvelope, Label = existingLabelDdlb }
+            };
         }
 
         private ActivityTemplateDTO GetActivityTemplate(IEnumerable<ActivityTemplateDTO> activityList, string activityTemplateName)

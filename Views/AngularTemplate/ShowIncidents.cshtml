@@ -38,51 +38,26 @@
              <table md-row-select ng-model="selected" md-table md-progress="promise">
                  <thead md-head md-order="orderBy" md-on-reorder="getHistory">
                  <tr md-row>
-                     <th md-column md-order-by="createdDate" style="width: 10%;"><span>Created Date</span></th>
-                     <th md-column style="width: 10%;"><span>Primary Category</span></th>
-                     <th md-column style="width: 10%;"><span>Secondary Category</span></th>
+                     <th md-column md-order-by="createdDate" style="width: 10%;">Created Date</th>
+                     <th md-column style="width: 10%;">Primary Category</th>
+                     <th md-column style="width: 10%;">Secondary Category</th>
                      <th md-column style="width: 5%;">Activity</th>
-                     <th md-column style="width: 5%;">Component</th>
-                     <th md-column md-numeric style="width: 25%; max-width: 30%;">Data</th>
-                     <th md-column md-numeric style="width: 10%;">Fr8UserId</th>
+                     <th md-column style="width: 35%; text-align:center;">Data</th>
+                     <th md-column md-numeric style="width: 10%;">Fr8 User Id</th>
                      <th md-column md-numeric style="width: 10%;">Object Id</th>
-                     <th md-column md-numeric style="width: 10%;">Status</th>
-                     <th md-column md-numeric style="width: 5%;">Priority</th>
+                     <th md-column style="width: 10%;">Status</th>
                  </tr>
                  </thead>
                  <tbody md-body>
-                     <tr ng-class="{'color-row': historyItem.$isExpanded, 'high-priority-row': historyItem.isHighPriority}" md-row md-auto-select ng-repeat="historyItem in result.items" ng-click="expandItem(historyItem)">
-                         <td md-cell>{{ historyItem.createDate | date:"MM/dd/yyyy h:mm:ss a"}}</td>
+                     <tr ng-class="{'high-priority-row': historyItem.isHighPriority}" md-row md-auto-select ng-repeat="historyItem in result.items" ng-click="openModal(historyItem)">
+                         <td md-cell class="column-spacer">{{ historyItem.createDate | date:"MM/dd/yyyy h:mm:ss a"}}</td>
                          <td md-cell class="column-spacer">{{ historyItem.primaryCategory }}</td>
                          <td md-cell class="column-spacer">{{ historyItem.secondaryCategory }}</td>
                          <td md-cell class="column-spacer">{{ historyItem.activity }}</td>
-                         <td md-cell class="column-spacer">{{ historyItem.component }}</td>
-                         <td md-cell class="column-spacer" style="text-align: right;">
-                             <div ng-if="historyItem.$isExpanded">
-                                {{ historyItem.data }}    
-                             </div>
-                             <div ng-if="!historyItem.$isExpanded" style="height: 80px; vertical-align: middle;">
-                                 {{ historyItem.data.length > 50 ? (historyItem.data | limitTo: 50)+'...' : historyItem.data }}
-                             </div>
-                         </td>
-                         <td md-cell class="column-spacer">
-                             <div ng-if="historyItem.$isExpanded">
-                                 {{ historyItem.fr8UserId }}
-                             </div>
-                             <div ng-if="!historyItem.$isExpanded">
-                                 {{ historyItem.fr8UserId.length > 8 ? (historyItem.fr8UserId | limitTo: 8)+'...' : historyItem.fr8UserId }}
-                             </div>
-                         </td>
-                         <td md-cell class="column-spacer">
-                             <div ng-if="historyItem.$isExpanded">
-                                 {{ historyItem.objectId }}
-                             </div>
-                             <div ng-if="!historyItem.$isExpanded">
-                                 {{ historyItem.objectId.length > 8 ? (historyItem.objectId | limitTo: 8)+'...' : historyItem.objectId }}
-                             </div>
-                         </td>
+                         <td md-cell class="column-spacer">{{ historyItem.data.length > 200 ? (historyItem.data | limitTo: 200)+'...' : historyItem.data }}</td>
+                         <td md-cell class="column-spacer">{{ historyItem.fr8UserId.length > 8 ? (historyItem.fr8UserId | limitTo: 8)+'...' : historyItem.fr8UserId }}</td>
+                         <td md-cell class="column-spacer">{{ historyItem.objectId.length > 8 ? (historyItem.objectId | limitTo: 8)+'...' : historyItem.objectId }}</td>
                          <td md-cell class="column-spacer">{{ historyItem.status }}</td>
-                         <td md-cell class="column-spacer">{{ historyItem.priority }}</td>
                      </tr>
                  </tbody>
              </table>

@@ -11,13 +11,11 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.Manifests;
 using Data.States;
 using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Hub.Interfaces;
-using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
 using Hub.Services;
 using TerminalBase.Infrastructure;
@@ -25,6 +23,8 @@ using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Action = Hub.Services.Activity;
 using IContainer = StructureMap.IContainer;
+using Fr8Data.Managers;
+using Fr8Data.Manifests;
 
 namespace HubTests.Services
 {
@@ -116,7 +116,7 @@ namespace HubTests.Services
             {
                 var plan = new PlanDO
                 {
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     Name = "name",
                     ChildNodes = { tree }
                 };
@@ -152,7 +152,7 @@ namespace HubTests.Services
             {
                 var plan = new PlanDO
                 {
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     Name = "name",
                     ChildNodes = { tree }
                 };
@@ -198,7 +198,7 @@ namespace HubTests.Services
                 var plan = new PlanDO
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { tree }
                 };
 
@@ -302,7 +302,7 @@ namespace HubTests.Services
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { activityDo }
                 });
                 uow.SaveChanges();
@@ -328,7 +328,7 @@ namespace HubTests.Services
         {
             ActivityDO activityDO = FixtureData.TestActivity23();
 
-            using (var crateStorage = _crate.GetUpdatableStorage(activityDO))
+            using (var crateStorage = Hub.Managers.CrateManagerExtensions.GetUpdatableStorage(_crate, activityDO))
             {
                 crateStorage.AddRange(FixtureData.CrateStorageDTO());
             }
@@ -348,7 +348,7 @@ namespace HubTests.Services
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "sdfsdf",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { activityDo }
                 });
                 uow.SaveChanges();
@@ -383,7 +383,7 @@ namespace HubTests.Services
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { activityDo }
                 });
                 uow.SaveChanges();
@@ -423,7 +423,7 @@ namespace HubTests.Services
                 uow.PlanRepository.Add(new PlanDO
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { activityDo }
                 });
                 uow.SaveChanges();

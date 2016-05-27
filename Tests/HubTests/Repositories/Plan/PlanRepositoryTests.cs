@@ -13,6 +13,7 @@ using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using Fr8Data.States;
 
 namespace HubTests.Repositories.Plan
 {
@@ -124,7 +125,7 @@ namespace HubTests.Repositories.Plan
             {
                 Id = NewGuid(13),
                 Name = "Plan",
-                PlanState = PlanState.Active,
+                PlanState = PlanState.Running,
                 Description = "PlanDesc",
                 Fr8Account = new Fr8AccountDO()
                 {

@@ -8,8 +8,8 @@ using Fr8Data.DataTransferObjects.Helpers;
 using Fr8Data.Manifests;
 using HealthMonitor.Utility;
 using terminalTwilioTests.Fixture;
-using Hub.Managers;
 using NUnit.Framework;
+using Fr8Data.Managers;
 
 namespace terminalTwilioTests.Integration
 {

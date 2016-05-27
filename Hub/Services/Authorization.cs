@@ -6,14 +6,13 @@ using AutoMapper;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
-using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using Fr8Infrastructure.Interfaces;
 using Hub.Interfaces;
-using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using Newtonsoft.Json;
 using StructureMap;
 using Hub.Exceptions;
@@ -72,8 +71,8 @@ namespace Hub.Services
             if (activityTemplate.NeedsAuthentication &&
                 activityTemplate.Terminal.AuthenticationType != AuthenticationType.None)
             {
-                AuthorizationTokenDO authToken =
-                    uow.AuthorizationTokenRepository.FindTokenById(activity.AuthorizationTokenId);
+                AuthorizationTokenDO authToken;
+                TryAssignAuthToken(uow, activity.Fr8AccountId, activityTemplate.TerminalId, activity, out authToken);
 
                 // If AuthToken is not empty, fill AuthToken property for ActionDTO.
                 if (authToken != null && !string.IsNullOrEmpty(authToken.Token))
@@ -399,7 +398,7 @@ namespace Hub.Services
         {
             using (var crateStorage = _crate.GetUpdatableStorage(activityDTO))
             {
-                crateStorage.RemoveByManifestId((int)MT.StandardAuthentication);
+                crateStorage.RemoveByManifestId((int)Fr8Data.Constants.MT.StandardAuthentication);
             }
         }
 
@@ -470,57 +469,30 @@ namespace Hub.Services
         //     }
         // }
 
-        public bool ValidateAuthenticationNeeded(IUnitOfWork uow, string userId, ActivityDTO curActionDTO)
+        public bool ValidateAuthenticationNeeded(IUnitOfWork uow, string userId, ActivityDTO activityDTO)
         {
-            var activityTemplate = _activityTemplate.GetByNameAndVersion(curActionDTO.ActivityTemplate.Name, curActionDTO.ActivityTemplate.Version);
+            var activityTemplate = _activityTemplate.GetByNameAndVersion(activityDTO.ActivityTemplate.Name, activityDTO.ActivityTemplate.Version);
 
             if (activityTemplate == null)
             {
-                throw new NullReferenceException("ActivityTemplate was not found.");
+                throw new ArgumentException("ActivityTemplate was not found.");
             }
 
+            var activityDO = uow.PlanRepository.GetById<ActivityDO>(activityDTO.Id);
+            if (activityDO == null)
+            {
+                throw new ArgumentException("Current activity was not found.");
+            }
 
             if (activityTemplate.Terminal.AuthenticationType != AuthenticationType.None
                 && activityTemplate.NeedsAuthentication)
             {
-                RemoveAuthenticationCrate(curActionDTO);
+                RemoveAuthenticationCrate(activityDTO);
                 // TODO: FR-2703, remove this.
                 // RemoveAuthenticationLabel(curActionDTO);
 
-                var activityDO = uow.PlanRepository.GetById<ActivityDO>(curActionDTO.Id);
-                if (activityDO == null)
-                {
-                    throw new NullReferenceException("Current activity was not found.");
-                }
-
-                AuthorizationTokenDO authToken =
-                    uow.AuthorizationTokenRepository.FindTokenById(activityDO.AuthorizationTokenId);
-
-                // If action does not have assigned auth-token,
-                // then look for AuthToken with IsMain == true,
-                // and assign that token to action.
-                if (authToken == null)
-                {
-                    var mainAuthTokenId = uow.AuthorizationTokenRepository
-                        .GetPublicDataQuery()
-                        .Where(x => x.UserID == userId
-                                    && x.TerminalID == activityTemplate.Terminal.Id
-                                    && x.IsMain == true)
-                        .Select(x => (Guid?) x.Id)
-                        .FirstOrDefault();
-
-                    if (mainAuthTokenId.HasValue)
-                    {
-                        authToken = uow.AuthorizationTokenRepository
-                            .FindTokenById(mainAuthTokenId);
-                    }
-
-                    if (authToken != null && !string.IsNullOrEmpty(authToken.Token))
-                    {
-                        activityDO.AuthorizationTokenId = authToken.Id;
-                        uow.SaveChanges();
-                    }
-                }
+                AuthorizationTokenDO authToken;
+                TryAssignAuthToken(uow, userId, activityTemplate.TerminalId, activityDO, out authToken);
 
                 // FR-1958: remove token if could not extract secure data.
                 if (authToken != null && string.IsNullOrEmpty(authToken.Token))
@@ -533,16 +505,56 @@ namespace Hub.Services
 
                 if (authToken == null)
                 {
-                    AddAuthenticationCrate(curActionDTO, activityTemplate.Terminal.AuthenticationType);
+                    AddAuthenticationCrate(activityDTO, activityTemplate.Terminal.AuthenticationType);
                     // TODO: FR-2703, remove this.
                     // AddAuthenticationLabel(curActionDTO);
 
                     return true;
                 }
             }
-
-
             return false;
+        }
+
+        /// <summary>
+        /// Attempts to get authorization token by terminal Id and userId. If token is not
+        /// associated with the supplied activityId, an attempt to look up the main token for the specified 
+        /// terminal will be done. If the main token is found, it will be assigned to the supplied ActivityDO.
+        /// </summary>
+        /// <returns>true if token is found. false, if not.</returns>
+        public bool TryAssignAuthToken(IUnitOfWork uow, string userId, int terminalId, ActivityDO activityDO, out AuthorizationTokenDO curAuthToken)
+        {
+            curAuthToken = uow.AuthorizationTokenRepository.FindTokenById(activityDO.AuthorizationTokenId);
+
+            // If action does not have assigned auth-token,
+            // then look for AuthToken with IsMain == true,
+            // and assign that token to action.
+            if (curAuthToken == null)
+            {
+                var mainAuthTokenId = uow.AuthorizationTokenRepository
+                    .GetPublicDataQuery()
+                    .Where(x => x.UserID == userId
+                                && x.TerminalID == terminalId
+                                && x.IsMain == true)
+                    .Select(x => (Guid?)x.Id)
+                    .FirstOrDefault();
+
+                if (mainAuthTokenId.HasValue)
+                {
+                    curAuthToken = uow.AuthorizationTokenRepository
+                        .FindTokenById(mainAuthTokenId);
+                }
+
+                if (curAuthToken != null && !string.IsNullOrEmpty(curAuthToken.Token))
+                {
+                    activityDO.AuthorizationTokenId = curAuthToken.Id;
+                    uow.SaveChanges();
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            return true;
         }
 
         public void InvalidateToken(IUnitOfWork uow, string userId, ActivityDTO curActivityDto)

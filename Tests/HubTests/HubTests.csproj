@@ -239,7 +239,6 @@
     <Compile Include="Controllers\Api\ApiControllerTestBase.cs" />
     <Compile Include="Controllers\AuthenticationControllerTest.cs" />
     <Compile Include="Controllers\ContainerControllerTests.cs" />
-    <Compile Include="Controllers\CriteriaControllerTest.cs" />
     <Compile Include="Controllers\EventControllerTest.cs" />
     <Compile Include="Controllers\ManifestControllerTest.cs" />
     <Compile Include="Controllers\NotificationControllerTests.cs" />
@@ -257,7 +256,6 @@
     <Compile Include="Entities\UserTests.cs" />
     <Compile Include="ExcelUtilsTests.cs" />
     <Compile Include="Fixtures\ActivityResponseFixtureData.cs" />
-    <Compile Include="Fixtures\ContainerResponseFixtureData.cs" />
     <Compile Include="Infrastructure\DatabaseTests.cs" />
     <Compile Include="Infrastructure\Fr8HubWebHMACAuthenticateAttributeTests.cs" />
     <Compile Include="Infrastructure\MultiTenantTests.cs" />
@@ -270,7 +268,6 @@
     <Compile Include="Managers\CrateManagerTests.Fixtures.cs" />
     <Compile Include="Managers\EventReporterTests.cs" />
     <Compile Include="Managers\IncidentReporterTests.cs" />
-    <Compile Include="Managers\PlanManagerTests.cs" />
     <Compile Include="ManifestDiscoveryTests.cs" />
     <Compile Include="MockedDB\MockedDBTests.cs" />
     <Compile Include="MockedDB\MoqDemoTests.cs" />
@@ -315,6 +312,10 @@
     <Compile Include="Services\TerminalTransmitterMock.cs" />
     <Compile Include="Services\UserServiceTests.cs" />
     <Compile Include="Utilities\DateUtilityTests.cs" />
+    <Compile Include="ConfigurationOverride.cs" />
+    <Compile Include="Utilization\ActivityExecutionRateLimiterIntTests.cs" />
+    <Compile Include="Utilization\ActivityExecutionRateLimiterTests.cs" />
+    <Compile Include="Utilization\UtilizationMonitoringTests.cs" />
     <Compile Include="Wrapper\DcousingAccountTest.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -337,6 +338,10 @@
     <ProjectReference Include="..\..\Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Infrastructure\Fr8Infrastructure.csproj">
+      <Project>{9f4b5c92-3535-4d4c-b1e4-37beb1ae5c42}</Project>
+      <Name>Fr8Infrastructure</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\terminalAzure\terminalAzure.csproj">
       <Project>{d019b112-55a8-4661-aff5-329f998d9e28}</Project>

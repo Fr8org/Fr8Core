@@ -27,6 +27,8 @@ namespace Fr8Data.DataTransferObjects
 
         public ActivityDTO[] ChildrenActivities { get; set; }
 
+        public Guid? AuthTokenId { get; set; }
+
         public AuthorizationTokenDTO AuthToken { get; set; }
 
 

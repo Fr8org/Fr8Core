@@ -5,9 +5,8 @@ using System.Web.Http.Description;
 using StructureMap;
 using Fr8Data.Constants;
 using Fr8Data.DataTransferObjects;
-using Data.Interfaces.DataTransferObjects;using Hub.Infrastructure;
 using Hub.Interfaces;
-using HubWeb.Infrastructure;
+using HubWeb.Infrastructure_HubWeb;
 
 namespace HubWeb.Controllers
 {

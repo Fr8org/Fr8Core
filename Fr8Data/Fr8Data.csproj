@@ -30,6 +30,24 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Demo|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Demo\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Dev\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json, Version=7.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\fr8company\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -54,6 +72,7 @@
     <Compile Include="Constants\ManifestIdEnum.cs" />
     <Compile Include="Constants\Tags.cs" />
     <Compile Include="Control\Control.cs" />
+    <Compile Include="Control\ControlExtensions.cs" />
     <Compile Include="Crates\Crate.cs" />
     <Compile Include="Crates\CrateManifestAttribute.cs" />
     <Compile Include="Crates\CrateManifestType.cs" />
@@ -64,6 +83,7 @@
     <Compile Include="Crates\CrateStorageSerializer.DefaultSerializer.cs" />
     <Compile Include="Crates\CrateT.cs" />
     <Compile Include="Crates\DenySerializationConverter.cs" />
+    <Compile Include="Crates\Helpers\EventReportCrateFactory.cs" />
     <Compile Include="Crates\Helpers\LoggingDataCrateFactory.cs" />
     <Compile Include="Crates\ICrateStorage.cs" />
     <Compile Include="Crates\ICrateStorageSerializer.cs" />
@@ -92,15 +112,17 @@
     <Compile Include="DataTransferObjects\CrateDTO.cs" />
     <Compile Include="DataTransferObjects\CrateStorageDTO.cs" />
     <Compile Include="DataTransferObjects\CredentialsDTO.cs" />
-    <Compile Include="DataTransferObjects\CriteriaDTO.cs" />
+    <Compile Include="DataTransferObjects\EmailAddressDTO.cs" />
+    <Compile Include="DataTransferObjects\RecipientDTO.cs" />
+    <Compile Include="DataTransferObjects\EmailDTO.cs" />
     <Compile Include="DataTransferObjects\DocuSignEnvelopeDTO.cs" />
+    <Compile Include="DataTransferObjects\LoggingDataCM.cs" />
     <Compile Include="DataTransferObjects\PermissionDTO.cs" />
     <Compile Include="DataTransferObjects\PlanTemplates\ActivityDescriptionDTO.cs" />
     <Compile Include="DataTransferObjects\PlanTemplates\NodeTransitionDTO.cs" />
     <Compile Include="DataTransferObjects\PlanTemplates\PlanNodeDescriptionDTO.cs" />
     <Compile Include="DataTransferObjects\PlanTemplates\PlanTemplateDTO.cs" />
     <Compile Include="DataTransferObjects\ErrorDTO.cs" />
-    <Compile Include="DataTransferObjects\EventCM.cs" />
     <Compile Include="DataTransferObjects\EventLoggingDTO.cs" />
     <Compile Include="DataTransferObjects\ExternalAuthenticationDTO.cs" />
     <Compile Include="DataTransferObjects\ExternalAuthUrlDTO.cs" />
@@ -119,7 +141,7 @@
     <Compile Include="DataTransferObjects\HistoryItemDTO.cs" />
     <Compile Include="DataTransferObjects\IncomingCratesDTO.cs" />
     <Compile Include="DataTransferObjects\LogItemDTO.cs" />
-    <Compile Include="DataTransferObjects\ManageAuthTokenDTO.cs" />
+    <Compile Include="DataTransferObjects\AuthenticationTokenDTO.cs" />
     <Compile Include="DataTransferObjects\ManifestDescriptionDTO.cs" />
     <Compile Include="DataTransferObjects\ManufacturerDTO.cs" />
     <Compile Include="DataTransferObjects\MappingFieldConfigurationDTO.cs" />
@@ -152,6 +174,11 @@
     <Compile Include="Infrastructure\JsonNet\CreateTimeConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\TerminalActivityTemplateConverter.cs" />
     <Compile Include="Infrastructure\JsonNet\WebServiceConverter.cs" />
+    <Compile Include="Infrastructure\StringToCrateStorageDTOConverter.cs" />
+    <Compile Include="Managers\CrateManager.cs" />
+    <Compile Include="Managers\CrateManager.StorageUpdater.cs" />
+    <Compile Include="Managers\CrateMangerExtensions.cs" />
+    <Compile Include="Managers\ICrateManager.cs" />
     <Compile Include="Manifests\ChartOfAccountsCM.cs" />
     <Compile Include="Manifests\CrateDescriptionCM.cs" />
     <Compile Include="Manifests\CrateManifestTypes.cs" />
@@ -174,6 +201,7 @@
     <Compile Include="Manifests\OperationalStateCM.CallStackConverter.cs" />
     <Compile Include="Manifests\OperationalStateCM.cs" />
     <Compile Include="Manifests\OperationalStateCM.InternalStates.cs" />
+    <Compile Include="Manifests\PlanTemplateCM.cs" />
     <Compile Include="Manifests\SalesforceEventCM.cs" />
     <Compile Include="Manifests\StandardAccountingTransactionCM.cs" />
     <Compile Include="Manifests\StandardAuthenticationCM.cs" />
@@ -199,7 +227,10 @@
     <Compile Include="States\ActivityType.cs" />
     <Compile Include="States\AuthenticationType.cs" />
     <Compile Include="States\AvailabilityType.cs" />
+    <Compile Include="States\CrateDirection.cs" />
+    <Compile Include="States\PlanTemplateStatus.cs" />
     <Compile Include="States\PlanVisibility.cs" />
+    <Compile Include="States\TerminalStatus.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

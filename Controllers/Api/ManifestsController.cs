@@ -8,6 +8,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using AutoMapper;
+using Fr8Data.Managers;
 using Hub.Managers;
 
 namespace HubWeb.Controllers

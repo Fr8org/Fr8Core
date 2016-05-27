@@ -54,6 +54,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(a => a.ChildrenActivities, opts => opts.ResolveUsing(ad => ad.ChildNodes.OfType<ActivityDO>().OrderBy(da => da.Ordering)))
                 .ForMember(a => a.ActivityTemplate, opts => opts.ResolveUsing(ad => ad.ActivityTemplate))
                 .ForMember(a => a.AuthToken, opts => opts.ResolveUsing(ad => ad.AuthorizationToken))
+                .ForMember(a => a.AuthTokenId, opts => opts.ResolveUsing(ad => ad.AuthorizationTokenId))
                 .ForMember(a => a.Fr8AccountId, opts => opts.ResolveUsing(ad => ad.Fr8AccountId));
 
 
@@ -129,10 +130,7 @@ namespace Data.Infrastructure.AutoMapper
                 .ForMember(x => x.PlanId, opts => opts.ResolveUsing(x => x.RootPlanNodeId))
                 .ForMember(x => x.SubPlanId, opts => opts.ResolveUsing(x => x.Id));
 
-            Mapper.CreateMap<CriteriaDO, CriteriaDTO>()
-                .ForMember(x => x.Conditions, opts => opts.ResolveUsing(y => y.ConditionsJSON));
-            Mapper.CreateMap<CriteriaDTO, CriteriaDO>()
-                .ForMember(x => x.ConditionsJSON, opts => opts.ResolveUsing(y => y.Conditions));
+     
 
             Mapper.CreateMap<PlanDO, PlanFullDTO>().ConvertUsing<PlanDOFullConverter>();
 
