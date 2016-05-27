@@ -4,7 +4,8 @@ namespace PlanDirectory.Interfaces
 {
     public class SearchResultDTO
     {
-        public IEnumerable<PublishPlanTemplateDTO> PlanTemplates { get; set; }
+        // TODO: FR-3539, fix this.
+        // public IEnumerable<PublishPlanTemplateDTO> PlanTemplates { get; set; }
         public long TotalCount { get; set; }
     }
 }
