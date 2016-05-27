@@ -189,6 +189,7 @@ namespace HubWeb.Controllers
         [HttpGet]
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
+        [ActionName("tokens")]
         public IHttpActionResult UserTokens()
         {
             var terminals = _terminal.GetAll();
@@ -224,6 +225,7 @@ namespace HubWeb.Controllers
         [HttpPost]
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
+        [ActionName("tokens/revoke")]
         public IHttpActionResult RevokeToken(Guid id)
         {
             var accountId = User.Identity.GetUserId();
@@ -235,6 +237,7 @@ namespace HubWeb.Controllers
         [HttpPost]
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
+        [ActionName("tokens/setdefault")]
         public IHttpActionResult SetDefaultToken(Guid id)
         {
             var userId = User.Identity.GetUserId();
@@ -246,6 +249,7 @@ namespace HubWeb.Controllers
         [HttpPost]
         [Fr8ApiAuthorize]
         [Fr8HubWebHMACAuthenticate]
+        [ActionName("tokens/grant")]
         public IHttpActionResult GrantTokens(IEnumerable<AuthenticationTokenGrantDTO> authTokenList)
         {
             var userId = User.Identity.GetUserId();

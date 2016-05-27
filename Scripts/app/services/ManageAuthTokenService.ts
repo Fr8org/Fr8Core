@@ -21,12 +21,12 @@
                         list: {
                             method: 'GET',
                             isArray: true,
-                            url: '/api/authentication/usertokens'
+                            url: '/api/authentication/tokens'
                         },
 
                         revoke: {
                             method: 'POST',
-                            url: '/api/authentication/revoketoken/:id',
+                            url: '/api/authentication/tokens/revoke/:id',
                             params: {
                                 id: '@id'
                             }

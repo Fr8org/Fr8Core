@@ -115,7 +115,7 @@ namespace terminalDocuSignTests.Integration
                     AuthTokenId = tokenGuid,
                     IsMain = true
                 };
-                await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(baseUrl + "authentication/granttokens", new AuthenticationTokenGrantDTO[] { applyToken });
+                await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(baseUrl + "authentication/tokens/grant", new AuthenticationTokenGrantDTO[] { applyToken });
                 //let's give it some time to create MonitorDocusignEvents plan
                 await Task.Delay(TimeSpan.FromSeconds(15));
 

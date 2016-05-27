@@ -186,7 +186,7 @@ namespace terminalIntegrationTests.EndToEnd
                 AuthTokenId = salesforceAuthToken.Id,
                 IsMain = true
             };
-            await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(GetHubApiBaseUrl() + "authentication/granttokens", new[] { applyToken });
+            await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(GetHubApiBaseUrl() + "authentication/tokens/grant", new[] { applyToken });
         }
 
         private async Task<PlanDTO> CreatePlan()

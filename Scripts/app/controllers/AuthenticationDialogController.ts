@@ -68,7 +68,7 @@
 
                 _loading = true;
 
-                $http.post(urlPrefix + '/authentication/granttokens', data)
+                $http.post(urlPrefix + '/authentication/tokens/grant', data)
                     .then((res) => {
                         $scope.$close();
                     })
@@ -253,7 +253,7 @@
                     .then(function (res) {
                         var allTerminals = <Array<model.TerminalDTO>>res.data;
 
-                        $http.get(urlPrefix + '/authentication/usertokens')
+                        $http.get(urlPrefix + '/authentication/tokens')
                             .then(function (res) {
                                 var authTokenTerminals = <Array<model.AuthenticationTokenTerminalDTO>>res.data;
                                 var terminals = _combineTerminals(activities, allTerminals, authTokenTerminals);

@@ -149,7 +149,7 @@ namespace terminalDocuSignTests.Integration
         {
             Debug.WriteLine($"Reauthorizing tokens for {account.EmailAddress.Address}");
             var tokens = await HttpGetAsync<IEnumerable<AuthenticationTokenTerminalDTO>>(
-                _baseUrl + "authentication/usertokens"
+                _baseUrl + "authentication/tokens"
             );
 
             var docusignTokens = tokens?.FirstOrDefault(x => x.Name == "terminalDocuSign");
@@ -159,7 +159,7 @@ namespace terminalDocuSignTests.Integration
                 foreach (var token in docusignTokens.AuthTokens)
                 {
                     await HttpPostAsync<string>(
-                        _baseUrl + "authentication/revoketoken?id=" + token.Id,
+                        _baseUrl + "authentication/tokens/revoke?id=" + token.Id,
                         null
                         );
                 }
