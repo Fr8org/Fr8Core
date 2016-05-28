@@ -32,7 +32,7 @@ namespace HealthMonitorUtility.Tools.Activities
             var activityCategoryParam = (int)ActivityCategory.Receivers;
             var activityTemplates = await _baseHubITest
                 .HttpGetAsync<List<WebServiceActivitySetDTO>>(
-                _baseHubITest.GetHubApiBaseUrl() + "webservices/" + activityCategoryParam);
+                _baseHubITest.GetHubApiBaseUrl() + "webservices?id=" + activityCategoryParam);
             var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == activityName);
 
             dropboxGetFileListActivityDto.ActivityTemplate = apmActivityTemplate;

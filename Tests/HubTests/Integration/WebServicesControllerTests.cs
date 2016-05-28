@@ -65,7 +65,7 @@ namespace HubTests.Integration
             string baseUrl = GetHubApiBaseUrl();
             var webServicesActivitiesUrl = baseUrl + "WebServices";
 
-            var webServiceActivities = await HttpGetAsync<List<WebServiceActivitySetDTO>>(webServicesActivitiesUrl + "/" + activityCategoryId);
+            var webServiceActivities = await HttpGetAsync<List<WebServiceActivitySetDTO>>(webServicesActivitiesUrl + "?id=" + activityCategoryId);
 
             //Assert
             Assert.IsNotNull(webServiceActivities, "The activity sets are not retrieved from HubWeb");

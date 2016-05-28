@@ -159,7 +159,7 @@ namespace terminaBaselTests.Tools.Activities
             var googleActivityDTO = activity;
             var activityCategoryParam = (int)activityCategory;
             var activityTemplates = await _baseHubITest
-                .HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseHubITest.GetHubApiBaseUrl() + "webservices/" + activityCategoryParam);
+                .HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseHubITest.GetHubApiBaseUrl() + "webservices?id=" + activityCategoryParam);
             var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == activityName);
             googleActivityDTO.ActivityTemplate = apmActivityTemplate;
 
@@ -198,7 +198,7 @@ namespace terminaBaselTests.Tools.Activities
             var googleActivityDTO = FixtureData.Get_Google_Sheet_Data_v1_InitialConfiguration();
             var activityCategoryParam = (int)activityCategory;
             var activityTemplates = await _baseHubITest
-                .HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseHubITest.GetHubApiBaseUrl() + "webservices/" + activityCategoryParam);
+                .HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseHubITest.GetHubApiBaseUrl() + "webservices?id=" + activityCategoryParam);
             var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == activityName);
             googleActivityDTO.ActivityTemplate = apmActivityTemplate;
 

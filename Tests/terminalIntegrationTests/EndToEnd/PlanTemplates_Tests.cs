@@ -60,7 +60,7 @@ namespace terminalIntegrationTests.EndToEnd
                 foreach (var nodeDescription in templateDO.PlanNodeDescriptions)
                 {
                     var activityCategoryParam = (int)ActivityCategory.Processors;
-                    var activityTemplates = await HttpGetAsync<List<WebServiceActivitySetDTO>>(GetHubApiBaseUrl() + "webservices/" + activityCategoryParam);
+                    var activityTemplates = await HttpGetAsync<List<WebServiceActivitySetDTO>>(GetHubApiBaseUrl() + "webservices?id=" + activityCategoryParam);
                     var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name.ToLower() == nodeDescription.Name.Replace(" ", "").ToLower());
                     nodeDescription.ActivityDescription.ActivityTemplateId = apmActivityTemplate.Id;
                     Assert.NotNull(nodeDescription.ActivityDescription.ActivityTemplateId);

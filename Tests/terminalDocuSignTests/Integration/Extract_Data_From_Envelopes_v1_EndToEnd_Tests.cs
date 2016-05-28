@@ -237,7 +237,7 @@ namespace terminalDocuSignTests.Integration
 
             // Add Add Payload Manually action
             var activityCategoryParam =(int)ActivityCategory.Processors;
-            var activityTemplates = await HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseUrl + "webservices/"+ activityCategoryParam);
+            var activityTemplates = await HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseUrl + "webservices?id="+ activityCategoryParam);
             var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == "AddPayloadManually");
 
             var apmAction = new ActivityDTO()
