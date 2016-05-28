@@ -59,8 +59,8 @@ namespace terminalIntegrationTests.EndToEnd
                 //update ids for ActivityTemplate reference
                 foreach (var nodeDescription in templateDO.PlanNodeDescriptions)
                 {
-                    var activityCategoryParam = new ActivityCategory[] { ActivityCategory.Processors };
-                    var activityTemplates = await HttpPostAsync<ActivityCategory[], List<WebServiceActivitySetDTO>>(GetHubApiBaseUrl() + "webservices/activities", activityCategoryParam);
+                    var activityCategoryParam = (int)ActivityCategory.Processors;
+                    var activityTemplates = await HttpGetAsync<List<WebServiceActivitySetDTO>>(GetHubApiBaseUrl() + "webservices/" + activityCategoryParam);
                     var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name.ToLower() == nodeDescription.Name.Replace(" ", "").ToLower());
                     nodeDescription.ActivityDescription.ActivityTemplateId = apmActivityTemplate.Id;
                     Assert.NotNull(nodeDescription.ActivityDescription.ActivityTemplateId);
