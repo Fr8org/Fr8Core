@@ -1,14 +1,28 @@
 ﻿using System.Threading.Tasks;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalTest.Actions
 {
     public class GenerateTableActivity_v1 : TestActivityBase<GenerateTableActivity_v1.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "GenerateTableActivity",
+            Label = "GenerateTableActivity",
+            Category = ActivityCategory.Processors,
+            Version = "1",
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public TextBox NumberOfRows;
@@ -22,26 +36,31 @@ namespace terminalTest.Actions
             }
         }
 
-        protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        public GenerateTableActivity_v1(ICrateManager crateManager) 
+            : base(crateManager)
         {
-            ConfigurationControls.Header.Value = CurrentActivity.Id.ToString();
-            runtimeCrateManager.MarkAvailableAtRuntime<StandardTableDataCM>("Table");
+        }
+
+        public override Task Initialize()
+        {
+            ActivityUI.Header.Value = ActivityId.ToString();
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>("Table");
 
             return Task.FromResult(0);
         }
 
-        protected override Task Configure(RuntimeCrateManager runtimeCrateManager)
+        public override Task FollowUp()
         {
             return Task.FromResult(0);
         }
 
-        protected override Task RunCurrentActivity()
+        public override Task Run()
         {
-            Log($"Table {CurrentActivity.Label} [{CurrentActivity.Id}] started");
+            Log($"Table {ActivityPayload.Label} [{ActivityId}] started");
 
             var tableCm = new StandardTableDataCM();
 
-            for (int i = 0; i < int.Parse(ConfigurationControls.NumberOfRows.Value); i ++)
+            for (int i = 0; i < int.Parse(ActivityUI.NumberOfRows.Value); i ++)
             {
                 TableRowDTO row;
                 tableCm.Table.Add(row = new TableRowDTO());
@@ -55,14 +74,14 @@ namespace terminalTest.Actions
                 }
             }
 
-            CurrentPayloadStorage.Add(Crate.FromContent("Table", tableCm));
+            Payload.Add(Crate.FromContent("Table", tableCm));
 
             return Task.FromResult(0);
         }
 
-        protected override Task RunChildActivities()
+        public override Task RunChildActivities()
         {
-            Log($"{CurrentActivity.Label} [{CurrentActivity.Id}] ended");
+            Log($"{ActivityPayload.Label} [{ActivityId}] ended");
 
             return Task.FromResult(0);
         }

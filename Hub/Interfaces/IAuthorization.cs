@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 
 namespace Hub.Interfaces
 {
@@ -35,5 +35,15 @@ namespace Hub.Interfaces
         void GrantToken(Guid actionId, Guid authTokenId);
 
         void RevokeToken(string accountId, Guid authTokenId);
+
+        bool TryAssignAuthToken(IUnitOfWork uow, string userId, int terminalId, ActivityDO activityDO, out AuthorizationTokenDO curAuthToken);
+
+        /// <summary>
+        /// Updates token in database
+        /// </summary>
+        /// <param name="authTokenId">Token Id</param>
+        /// <param name="externalAccountId"></param>
+        /// <param name="token">Token content</param>
+        void RenewToken(Guid authTokenId, string externalAccountId, string token);
     }
 }

@@ -1,5 +1,5 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using FluentValidation;
+﻿using FluentValidation;
+using Fr8Data.DataTransferObjects;
 
 namespace Data.Validations
 {
@@ -9,6 +9,7 @@ namespace Data.Validations
         {
             RuleFor(incidentDO => incidentDO).NotNull().WithMessage("IncidentDO is null or empty");
             RuleFor(incidentDO => incidentDO.Name).NotEmpty().WithMessage("Name is Required");
+            RuleFor(incidentDO => incidentDO.Label).NotEmpty().WithMessage("Label is Required");
             RuleFor(incidentDO => incidentDO.Endpoint).NotEmpty().WithMessage("Endpoint is Required");
             RuleFor(incidentDO => incidentDO.Description).NotEmpty().WithMessage("Description is Required");
         }

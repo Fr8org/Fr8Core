@@ -1,173 +1,35 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Data;
 using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web;
-using Data.Control;
-using Data.Crates;
-using Data.Entities;
-using Data.Infrastructure;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
-using Hub.Managers;
-using Hub.Services;
-using Newtonsoft.Json;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
 
     public class ConvertRelatedFieldsIntoTable_v1 : BaseTerminalActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "ConvertRelatedFieldsIntoTable",
+            Label = "Convert Related Fields Into a Table",
+            Category = ActivityCategory.Processors,
+            Version = "1",
+            MinPaneWidth = 400,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         private const string FirstIntegerRegexPattern = "\\d+";
-
-        /// <summary>
-        /// Configure infrastructure.
-        /// </summary>
-        public override async Task<ActivityDO> Configure(ActivityDO curActionDataPackageDO, AuthorizationTokenDO authToken)
-        {
-            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authToken);
-        }
-
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActionDataPackageDO)
-        {
-            if (CrateManager.IsStorageEmpty(curActionDataPackageDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-            var storage = CrateManager.GetStorage(curActionDataPackageDO);
-            var hasControlsCrate = GetConfigurationControls(storage) != null;
-
-            var hasManifestTypeList = storage.CrateContentsOfType<FieldDescriptionsCM>(x => x.Label == "Upstream Manifest Type List").Any();
-
-            if (hasControlsCrate && hasManifestTypeList)
-            {
-                return ConfigurationRequestType.Followup;
-            }
-
-            return ConfigurationRequestType.Initial;
-
-        }
-
-        /// <summary>
-        /// Looks for first Create with Id == "Standard Design-Time" among all upcoming Actions.
-        /// </summary>
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            if (curActivityDO.Id != Guid.Empty)
-            {
-                //build a controls crate to render the pane
-                var configurationControlsCrate = PackCrate_ConfigurationControls();
-
-                using (var crateStorage = CrateManager.UpdateStorage(() => curActivityDO.CrateStorage))
-                {
-                    crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
-                    crateStorage.Add(await GetUpstreamManifestTypes(curActivityDO));
-                }
-            }
-            else
-            {
-                throw new ArgumentException("Configuration requires the submission of an Action that has a real ActionId");
-            }
-
-            return curActivityDO;
-        }
-
-
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            var controlsMS = GetConfigurationControls(curActivityDO);
-            var upstreamDataChooser = (UpstreamDataChooser)controlsMS.Controls.Single(x => x.Type == ControlTypes.UpstreamDataChooser && x.Name == "Upstream_data_chooser");
-            if (upstreamDataChooser.SelectedManifest != null)
-            {
-                var labelList = await GetLabelsByManifestType(curActivityDO, upstreamDataChooser.SelectedManifest);
-
-                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-                {
-                    crateStorage.RemoveByLabel("Upstream Crate Label List");
-                    crateStorage.Add(Data.Crates.Crate.FromContent("Upstream Crate Label List", new FieldDescriptionsCM() { Fields = labelList }));
-                }
-            }
-
-            return curActivityDO;
-        }
-
-        /// <summary>
-        /// Action processing infrastructure.
-        /// </summary>
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-        {
-            var curPayloadDTO = await GetPayload(curActivityDO, containerId);
-            var storage = CrateManager.GetStorage(curPayloadDTO);
-
-            var designTimeControls = GetConfigurationControls(curActivityDO);
-            var upstreamDataChooser = (UpstreamDataChooser)designTimeControls.Controls.Single(x => x.Type == ControlTypes.UpstreamDataChooser && x.Name == "Upstream_data_chooser");
-            
-            var filteredCrates = storage.Where(s => true);
-            
-            //add filtering according to upstream data chooser
-            if (upstreamDataChooser.SelectedManifest != null)
-            {
-                filteredCrates = filteredCrates.Where(s => s.ManifestType.Type == upstreamDataChooser.SelectedManifest);
-            }
-            if (upstreamDataChooser.SelectedLabel != null)
-            {
-                filteredCrates = filteredCrates.Where(s => s.Label == upstreamDataChooser.SelectedLabel);
-            }
-
-            var fieldList = CrateManager.GetFields(filteredCrates);
-
-            
-            if (upstreamDataChooser.SelectedFieldType != null)
-            {
-                //not quite sure what to do with this
-                fieldList = fieldList.Where(s => s.Tags == upstreamDataChooser.SelectedFieldType);
-            }
-
-
-            var prefixValue = GetRowPrefix(designTimeControls);
-            if (prefixValue == null)
-            {
-                return Error(curPayloadDTO/*, "This action can't run without a selected column prefix"*/);
-            }
-
-            var fieldsWithPrefix = ExtractFieldsContainingPrefix(fieldList, prefixValue);
-
-
-            //we get fields that match our conditions
-            //and convert them to TableRowDTO
-            var rows = fieldsWithPrefix
-                //select each field with their row number
-                //and remove prefix part
-                // Line4Expense is converted to lineNumber:4 field: {Key: Expense, Value: xxx}
-                .Select(f => new
-                {
-                    lineNumber = Int32.Parse(Regex.Match(f.Key, FirstIntegerRegexPattern).Value),
-                    field = new FieldDTO(f.Key.Substring(f.Key.IndexOf(Regex.Match(f.Key, FirstIntegerRegexPattern).Value, StringComparison.Ordinal)+1), f.Value)
-                })
-                //group by linenumber to prepare a table
-                .GroupBy(r => r.lineNumber)
-                .Select(r => new TableRowDTO
-                {
-                    Row = r.Select(f => new TableCellDTO
-                    {
-                        Cell = f.field
-                    }).ToList()
-                });
-
-            var tableDataCrate = CrateManager.CreateStandardTableDataCrate("AssembledTableData", false, rows.ToArray());
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curPayloadDTO))
-            {
-                crateStorage.Add(tableDataCrate);
-            }
-
-            return Success(curPayloadDTO);
-        }
 
         private IEnumerable<FieldDTO> ExtractFieldsContainingPrefix(IEnumerable<FieldDTO> fields, String prefix)
         {
@@ -177,22 +39,22 @@ namespace terminalFr8Core.Actions
             return fields.Where(f => matchRegex.IsMatch(f.Key));
         }
 
-        private string GetRowPrefix(StandardConfigurationControlsCM configurationControlsCM)
+        private string GetRowPrefix()
         {
-            return configurationControlsCM.Controls.Single(c => c.Name == "Selected_Table_Prefix").Value;            
+            return ConfigurationControls.Controls.Single(c => c.Name == "Selected_Table_Prefix").Value;            
         }
 
-        private async Task<Crate> GetUpstreamManifestTypes(ActivityDO curActivityDO)
+        private async Task<Crate> GetUpstreamManifestTypes()
         {
-            var upstreamCrates = await GetCratesByDirection(curActivityDO, CrateDirection.Upstream);
+            var upstreamCrates = await HubCommunicator.GetCratesByDirection(ActivityId, CrateDirection.Upstream);
             var manifestTypeOptions = upstreamCrates.GroupBy(c => c.ManifestType).Select(c => new FieldDTO(c.Key.Type, c.Key.Type));
             var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Manifest Type List", manifestTypeOptions.ToArray());
             return queryFieldsCrate;
         }
 
-        private async Task<List<FieldDTO>> GetLabelsByManifestType(ActivityDO curActivityDO, string manifestType)
+        private async Task<List<FieldDTO>> GetLabelsByManifestType(string manifestType)
         {
-            var upstreamCrates = await GetCratesByDirection(curActivityDO, CrateDirection.Upstream);
+            var upstreamCrates = await HubCommunicator.GetCratesByDirection(ActivityId, CrateDirection.Upstream);
             return CrateManager.GetLabelsByManifestType(upstreamCrates, manifestType).Select(c => new FieldDTO(c, c)).ToList();
         }
 
@@ -226,5 +88,92 @@ namespace terminalFr8Core.Actions
         }
 
 
+        public ConvertRelatedFieldsIntoTable_v1(ICrateManager crateManager)
+            : base(false, crateManager)
+        {
+        }
+
+        public override async Task Run()
+        {
+            var upstreamDataChooser = GetControl<UpstreamDataChooser>("Upstream_data_chooser");
+
+            var filteredCrates = Payload.Where(s => true);
+
+            //add filtering according to upstream data chooser
+            if (upstreamDataChooser.SelectedManifest != null)
+            {
+                filteredCrates = filteredCrates.Where(s => s.ManifestType.Type == upstreamDataChooser.SelectedManifest);
+            }
+            if (upstreamDataChooser.SelectedLabel != null)
+            {
+                filteredCrates = filteredCrates.Where(s => s.Label == upstreamDataChooser.SelectedLabel);
+            }
+
+            var fieldList = CrateManager.GetFields(filteredCrates);
+
+
+            if (upstreamDataChooser.SelectedFieldType != null)
+            {
+                //not quite sure what to do with this
+                fieldList = fieldList.Where(s => s.Tags == upstreamDataChooser.SelectedFieldType);
+            }
+
+
+            var prefixValue = GetRowPrefix();
+            if (prefixValue == null)
+            {
+                RaiseError(/*, "This action can't run without a selected column prefix"*/);
+                return;
+            }
+
+            var fieldsWithPrefix = ExtractFieldsContainingPrefix(fieldList, prefixValue);
+
+
+            //we get fields that match our conditions
+            //and convert them to TableRowDTO
+            var rows = fieldsWithPrefix
+                //select each field with their row number
+                //and remove prefix part
+                // Line4Expense is converted to lineNumber:4 field: {Key: Expense, Value: xxx}
+                .Select(f => new
+                {
+                    lineNumber = Int32.Parse(Regex.Match(f.Key, FirstIntegerRegexPattern).Value),
+                    field = new FieldDTO(f.Key.Substring(f.Key.IndexOf(Regex.Match(f.Key, FirstIntegerRegexPattern).Value, StringComparison.Ordinal) + 1), f.Value)
+                })
+                //group by linenumber to prepare a table
+                .GroupBy(r => r.lineNumber)
+                .Select(r => new TableRowDTO
+                {
+                    Row = r.Select(f => new TableCellDTO
+                    {
+                        Cell = f.field
+                    }).ToList()
+                });
+
+            var tableDataCrate = CrateManager.CreateStandardTableDataCrate("AssembledTableData", false, rows.ToArray());
+            Payload.Add(tableDataCrate);
+
+            Success();
+        }
+
+        public override async Task Initialize()
+        {
+            //build a controls crate to render the pane
+            var configurationControlsCrate = PackCrate_ConfigurationControls();
+            Storage.Add(configurationControlsCrate);
+            Storage.Add(await GetUpstreamManifestTypes());
+        }
+
+        public override async Task FollowUp()
+        {
+            var upstreamDataChooser = GetControl<UpstreamDataChooser>("Upstream_data_chooser");
+            if (upstreamDataChooser.SelectedManifest != null)
+            {
+                var labelList = await GetLabelsByManifestType(upstreamDataChooser.SelectedManifest);
+
+                Storage.RemoveByLabel("Upstream Crate Label List");
+                Storage.Add(Crate.FromContent("Upstream Crate Label List", new FieldDescriptionsCM() { Fields = labelList }));
+            }
+        }
     }
 }

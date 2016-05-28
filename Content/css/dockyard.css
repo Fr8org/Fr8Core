@@ -97,15 +97,18 @@
 }
 
 /* Route Builder */
-
 .designer-header {
     background: transparent;
     width: 100%;
+    padding-top:13px;
 }
 
 .designer-header-title.page-title {
-    height: 49px;
-    padding: 0 0 19px 0;
+    padding: 5px 0px 0 15px
+}
+
+.sub-panel-header .designer-header-title.page-title {
+    padding: 5px 0px 0px 0px
 }
 
 .design-header-title-editField {
@@ -125,6 +128,17 @@
     display: none;
 }
 
+.designer-header-fixed{
+    position: fixed;
+    margin-top: -25px; 
+    border-bottom: 3px solid; 
+    border-color: rgb(38, 166, 154);
+    z-index: 5;
+    background-color: #EFF3F8;
+    width:79%;
+    height:64px;
+}
+
 .designer-header-glyphicon {
     font-size: 22px;
     line-height: 24px;
@@ -132,14 +146,20 @@
     cursor: pointer;
 }
 
+.sub-plan-container {
+    padding-top:50px;
+}
+
 .route-name {
     display: inline-block;
     vertical-align: top;
+    color: #697882;
+    font-weight: 400;
 }
 
 .designer-header-status {
     float: right;
-    text-align: right;
+    margin-left:30px;
 }
 
 .designer-header-statusLabel {
@@ -157,9 +177,9 @@
     width: 80px;
 }
 
-    .switch-btn.active {
-        background-color: #428bca;
-    }
+.switch-btn.active {
+    background-color: #428bca;
+}
 
 .route-builder-container {
     height: 800px;
@@ -224,6 +244,11 @@
     float: left;
 }
 
+.action-arrow-right-jumptarget {
+    display: block;
+    margin-left: 14px;
+}
+
 .jump-target-text {
     padding-top: 15px; 
     margin-left: 60px;
@@ -240,16 +265,16 @@
     width: 16px;
 }
 
-    .action-arrow-bottom::after {
-        content: '';
-        border-right: 14px solid transparent;
-        border-left: 14px solid transparent;
-        border-top: 20px solid #58B8A9;
-        display: block;
-        bottom: -13px;
-        left: -6px;
-        position: absolute;
-    }
+.action-arrow-bottom::after {
+    content: '';
+    border-right: 14px solid transparent;
+    border-left: 14px solid transparent;
+    border-top: 20px solid #58B8A9;
+    display: block;
+    bottom: -13px;
+    left: -6px;
+    position: absolute;
+}
 
 .action {
     background-color: white;
@@ -260,28 +285,63 @@
     white-space: initial;
 }
 
-    .action .pane-configure-action {
-        min-height: 250px;
-        padding: 2%;
-    }
+.action .pane-configure-action {
+    min-height: 250px;
+    padding: 2%;
+    outline: none;
+    cursor: default;
+}
 
-    .action .ap-resize {
-        min-height: 380px;
-        overflow: hidden;
-        overflow: auto;
-    }
+.action .ap-resize {
+    min-height: 380px;
+    overflow: hidden;
+    overflow: auto;
+}
 
 div.action {
     border-radius: 10px !important;
 }
 
-.action-name {
-    text-align: center;
+@-moz-keyframes updatingFadeIn { 
+  from   { opacity:0; }
+  to { opacity:0.8; }
+}
+
+@-webkit-keyframes updatingFadeIn { 
+  from   { opacity:0; }
+  to { opacity:0.8; }
 }
 
 @keyframes updatingFadeIn { 
-  from   { opacity:0.1; }
+  from   { opacity:0; }
   to { opacity:0.8; }
+}
+
+@-moz-keyframes actionNameFadeOut { 
+  from   { opacity:0; }
+  to { opacity:1; }
+}
+
+@-webkit-keyframes actionNameFadeOut { 
+  from   { opacity:0; }
+  to { opacity:1; }
+}
+
+@keyframes actionNameFadeOut { 
+  from   { opacity:0; }
+  to { opacity:1; }
+}
+
+.action-name {
+    font-size: small;
+    right: 5px;
+    position: absolute;
+    top: 5px;
+    text-align:center;
+    -moz-animation: actionNameFadeOut 0.5s ease-in;
+    -o-animation: actionNameFadeOut 0.5s ease-in;
+    -webkit-animation: actionNameFadeOut 0.5s ease-in;
+    animation: actionNameFadeOut 0.5s ease-in;
 }
 
 .action-reconfigure-status {
@@ -292,10 +352,10 @@ div.action {
     top: 5px;
     opacity: 0.8;
     color: white;
-    -moz-animation: updatingFadeIn 1s ;
-    -o-animation: updatingFadeIn 1s ;
-    -webkit-animation: updatingFadeIn 1s ;
-    animation: updatingFadeIn 1s;
+    -moz-animation: updatingFadeIn 0.2s linear ;
+    -o-animation: updatingFadeIn 0.2s linear ;
+    -webkit-animation: updatingFadeIn 0.2s linear ;
+    animation: updatingFadeIn 0.2s linear;
 }
 
 .action-menu {
@@ -305,9 +365,9 @@ div.action {
     color: white;
 }
 
-    .action-menu:hover {
-        color: #bab7b7;
-    }
+.action-menu:hover {
+    color: #bab7b7;
+}
 
 .action-header {
     padding-top: 15px;
@@ -337,41 +397,56 @@ div.action-header {
 .action-header-icon {
     margin-right: 10px;
 }
+
 #activity-header {
    fill: rgba(255,255,255,0.87);
 }
 
-    .action-header-icon:before {
-        content: '';
-        height: 100%;
-        vertical-align: middle;
-        display: inline-block;
-    }
+.action-header-icon:before {
+    content: '';
+    height: 100%;
+    vertical-align: middle;
+    display: inline-block;
+}
 
-    .action-header-icon img {
-        /*border-radius: 8px !important;*/
-        /*width: 48px;*/
-        max-width: 72px;
-        height: 48px;
-        vertical-align: middle;
-    }
+.action-header-icon img {
+    /*border-radius: 8px !important;*/
+    /*width: 48px;*/
+    max-width: 72px;
+    height: 48px;
+    vertical-align: middle;
+}
+
+.ellipsis h2 {
+    text-overflow: ellipsis;
+    /* Required for text-overflow to do anything */
+    white-space: nowrap;
+    overflow: hidden;
+    line-height: normal;
+}
 
 .solution-action {
     min-height: 180px;
 }
 
-    .solution-action .solution-action-header {
-        background-color: #3F48CC;
-    }
+.solution-action .solution-action-header {
+    background-color: #3F48CC;
+}
 
-    .solution-action .pane-configure-action {
-        min-height: 180px;
-    }
+.solution-action .pane-configure-action {
+    min-height: 180px;
+}
 
 .action-add {
     display: inline-block;
     vertical-align: top;
     min-height: 375px;
+}
+
+.jumptarget-wrapper .action-add {
+    position: absolute;
+    top: 81px;
+    right: -66px;
 }
 
 .action-add-button, .action-category-icon {
@@ -394,11 +469,14 @@ div.action-header {
     margin-left: -128px;
     transition: all 0.2s ease-out;
     pointer-events: none;
+    z-index: 200;
 }
 
 .action-categories {
     margin-top: 144px;
     transition: all 0.2s ease-out;
+    z-index: 100;
+    background-color: #EFF3F8;
 }
 
 .action-category {
@@ -437,6 +515,9 @@ div.action-header {
     margin-top: -16px;
 }
 
+.action-add .action-category, .action-add--active .action-category {
+    outline:none;
+}
 .action-add:hover .action-category, .action-add--active .action-category {
     margin-top: 8px;
 }
@@ -565,11 +646,11 @@ div.action-header {
     height: 180px;
 }
 
-    .pane-configure-action-returnToSolution:before {
-        height: 100%;
-        display: inline-block;
-        vertical-align: middle;
-    }
+.pane-configure-action-returnToSolution:before {
+    height: 100%;
+    display: inline-block;
+    vertical-align: middle;
+}
 
 .solution-parts {
     max-height: 120px;
@@ -585,11 +666,11 @@ div.action-header {
     text-align: right;
 }
 
-    .return-to-solution-container a {
-        vertical-align: middle;
-        text-decoration: none;
-        margin-top: 10px;
-    }
+.return-to-solution-container a {
+    vertical-align: middle;
+    text-decoration: none;
+    margin-top: 10px;
+}
 
 
 .return-to-solution {
@@ -619,21 +700,21 @@ div.action-header {
     vertical-align: top;
 }
 
-    .select-action-category th {
-        background-color: #EBE9F1;
-    }
+.select-action-category th {
+    background-color: #EBE9F1;
+}
 
-    .select-action-category td,
-    .select-action-category th {
-        border: 1px solid #ddd;
-        padding: 5px;
-        width: 200px;
-    }
+.select-action-category td,
+.select-action-category th {
+    border: 1px solid #ddd;
+    padding: 5px;
+    width: 200px;
+}
 
-        .select-action-category td:hover {
-            background-color: #f9f9f9;
-            cursor: pointer;
-        }
+.select-action-category td:hover {
+    background-color: #f9f9f9;
+    cursor: pointer;
+}
 
 .select-action-list {
     border: 2px solid black;
@@ -642,92 +723,20 @@ div.action-header {
     width: 200px;
 }
 
-
 .select-action-row {
     cursor: default;
     border-bottom: 1px solid black;
     padding: 8px;
 }
 
-    .select-action-row:hover {
-        color: white;
-        background-color: black;
-    }
+.select-action-row:hover {
+    color: white;
+    background-color: black;
+}
 
 /* Filter Pane */
 .filter-pane .radio:last-of-type {
     margin-bottom: 0;
-}
-
-/* Query Builder */
-.query-builder-table {
-    margin-left: 27px;
-    margin-bottom: 5px;
-    width: calc(100% - 25px);
-}
-
-    .query-builder-table td:first-of-type,
-    .query-builder-table th:first-of-type {
-        padding-left: 0;
-    }
-
-    .query-builder-table tbody,
-    .query-builder-table thead {
-        display: block;
-    }
-
-    .query-builder-table tbody {
-        /*max-height: 296px;
-        overflow-y: auto;*/
-    }
-
-        .query-builder-table tbody tr.no-border td {
-            border-top: none;
-            padding: 0;
-        }
-
-    .query-builder-table input[type=text].invalid {
-        border: 1px solid red;
-    }
-
-    .query-builder-table div.invalid-hint {
-        font-size: 1em;
-        color: #FF0000;
-        text-align: right;
-    }
-
-.query-builder-add-button {
-    margin-left: 27px;
-}
-
-.query-builder-table .form-control {
-    padding: 0;
-    height: 25px;
-}
-
-.query-builder-delete-button {
-    cursor: pointer;
-    margin-top: 4px;
-}
-
-.query-builder-table date-picker .btn.btn-default {
-    padding: 1px 3px 2px 3px;
-    border: 1px solid #acacac;
-}
-
-ul.dropdown-menu {
-    padding: 3px 3px 10px 2px;
-}
-
-.table-delete-button {
-    width: 15px;
-    height: 15px;
-    cursor: pointer;
-    margin-top: 10px;
-}
-
-form.internal-authenticate-form {
-    padding: 10px;
 }
 
 /* Configure Action Pane */
@@ -763,13 +772,13 @@ input[type=radio]:checked ~ div.nested-controls {
     min-width: 175px !important;
 }
 
-    .ui-select-match > .ui-select-toggle > span.ui-select-placeholder {
-        overflow-x: hidden;
-        position: absolute;
-        left: 0;
-        right: 25px;
-        min-width: 150px !important;
-    }
+.ui-select-match > .ui-select-toggle > span.ui-select-placeholder {
+    overflow-x: hidden;
+    position: absolute;
+    left: 0;
+    right: 25px;
+    min-width: 150px !important;
+}
 
 /*Class to display the text block properly*/
 .TextBlockClass {
@@ -796,9 +805,9 @@ input[type=radio]:checked ~ div.nested-controls {
     display: block;
 }
 
-    .radio-button-group-content .query-builder-table .form-group {
-        margin: 0;
-    }
+.radio-button-group-content .query-builder-table .form-group {
+    margin: 0;
+}
 
 .radio-button-option-label {
     display: inline;
@@ -829,10 +838,8 @@ input[type=radio]:checked ~ label .control-label-hidden {
 
 .drop-down-list-box-container {
     height: 26px;
-    width: 100%;
     margin-bottom: 5px;
 }
-
 
 /* Fixing for the angular ui-select bug. Remove after the fix is pushed and library is updated (reference: https://github.com/angular-ui/ui-select/issues/453) */
 .ui-select-bootstrap[search-enabled=false] .ui-select-match.ng-hide {
@@ -910,12 +917,18 @@ div[dnd-list].dndDragover {
     cursor: move;
 }
 
-
 /*END OF DRAG DROP RELATED CSS */
-
-.upstreamFieldChooser {
-    table-layout: fixed;
+.upstream-field-chooser {
     word-wrap: break-word;
+    max-height:500px;
+}
+
+.upstream-field-chooser span{
+    margin-left:10px;
+}
+
+.upstream-field-chooser-modal  th[title]{
+    padding:0;
 }
 
 [ng-table-pagination] {
@@ -953,10 +966,10 @@ div[dnd-list].dndDragover {
     font-size: 1.2em;
 }
 
-    .register-guest-user a:hover {
-        color: #fff !important;
-        background: #55616f !important;
-    }
+.register-guest-user a:hover {
+    color: #fff !important;
+    background: #55616f !important;
+}
 
 .ui-select-match {
     overflow: hidden;
@@ -966,14 +979,19 @@ div[dnd-list].dndDragover {
     color: rgb(142, 163, 182);
 }
 
-    .have-account-login-guest a:hover {
-        background-color: #fff !important;
-        color: #7089a2;
-    }
+.have-account-login-guest a:hover {
+    background-color: #fff !important;
+    color: #7089a2;
+}
 
 .ng-invalid {
     border-color: red;
     outline-color: red;
+}
+
+.invalid-field {
+    border-color: red !important;
+    outline-color: red !important;
 }
 
 .ng-valid {
@@ -1018,15 +1036,15 @@ div[dnd-list].dndDragover {
     padding-bottom: 15px;
 }
 
-    .crate-node-leaf .data {
-        margin-top: -15px;
-        cursor: pointer;
-    }
+.crate-node-leaf .data {
+    margin-top: -15px;
+    cursor: pointer;
+}
 
-    .crate-node-leaf .glyphicon {
-        font-size: 15px;
-        cursor: pointer;
-    }
+.crate-node-leaf .glyphicon {
+    font-size: 15px;
+    cursor: pointer;
+}
 
 .crate-icon .glyphicon {
     font-size: 40px;
@@ -1081,11 +1099,11 @@ div.activity-list::after {
     min-width: 110px;
 }
 
-    .bdp-popover input {
-        display: inline;
-        margin-bottom: 3px;
-        width: 60px;
-    }
+.bdp-popover input {
+    display: inline;
+    margin-bottom: 3px;
+    width: 60px;
+}
 
 .bdp-block {
     display: inline-block;
@@ -1133,12 +1151,20 @@ i.activity-stream-font {
     padding-top: 5px;
 }
 
+.activity-stream{
+    right:0px;
+    position:absolute; 
+    width:100%; 
+    height:100%; 
+    z-index:10;
+}
+
 .activity-stream-flex{
     flex:1;
     margin-left:17px;
     position:relative;
     margin-bottom:15px;
-    min-width:10%;
+    min-width:13%;
     margin-right:-15px;
 }
 .activity-stream-template {
@@ -1152,11 +1178,10 @@ i.activity-stream-font {
 }
 
 .configuration-control-form-group {
-    margin-bottom: 5px;
+    margin-bottom: 10px;
 }
 
 /* Metronic Theme patch (until it's updated) */
-
 .fa-2x {
   font-size: 2em !important;}
 
@@ -1170,27 +1195,28 @@ i.activity-stream-font {
   font-size: 5em !important;}
   
 .filepicker {
-        white-space: nowrap;
-        overflow: hidden;
-    }
+    white-space: nowrap;
+    overflow: hidden;
+}
     
 .btn-upload {
     background-color: orange;
     cursor: pointer;
 }
+
 .file-info {
     display: block;
 }
 
-.expanded {
+.collapsed {
     max-height: 1000px;
-    -o-transition: all .6s ease;   
-    -webkit-transition: all .6s ease;
-	-moz-transition: all .6s ease;
-	transition: all .6s ease;
+    -o-transition: all 1.2s ease;   
+    -webkit-transition: all 1.2s ease;
+	-moz-transition: all 1.2s ease;
+	transition: all 1.2s ease;
 }
 
-.collapsed {
+.expanded {
     max-height: 0px;
     overflow: hidden;
     -o-transition: all .3s ease;   
@@ -1198,7 +1224,6 @@ i.activity-stream-font {
     -moz-transition: all .3s ease;
 	transition: all .3s ease;
 }
-
 
 .fr8-full-width {
     width: 100%;
@@ -1221,7 +1246,27 @@ i.activity-stream-font {
     background: white;
     background: rgba(150, 150, 150, 0.5);   
 }
+.fr8-borders {
+    border: 1px solid rgba(38,166,154,0.3);
+}
 
+.fr8-text-source-button {
+    text-transform: none !important;
+    text-align: left !important;
+    margin: 0;
+}
+
+.fr8-text-source-button-pressed {
+    background-color: rgba(38,166,154,0.3) !important;
+}
+
+.fr8-text-source-panel {
+    padding: 6px 0 0 0;
+}
+
+.fr8-config-pane-padding {
+    padding-left: 8px;
+}
 
 footer {
     padding-top: 20px;
@@ -1233,8 +1278,6 @@ footer p {
     font-size:12px;
     color:#687688
 }
-
-
 
 .footer {
     padding-top: 20px;
@@ -1251,4 +1294,80 @@ footer p {
 
 .md-open-menu-container {
     z-index: 1001;
+}
+
+.dataTable td {
+    word-break: break-all;
+}
+
+.md-table-fr8-button {
+    margin: 10px 2px !important;
+}
+
+.md-table-pagination .label {
+    padding: 0 24px;
+    font-size: 12px;
+    color: rgba(0,0,0,.54);
+}
+
+.column-spacer {
+    padding-top: 10px !important;
+    padding-bottom: 10px !important;
+}
+
+.material-fa-icon {
+    font-size: 22px !important;
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+.color-row {
+    background-color: #AAAAAA;
+    background-color: rgba(0,0,0,.12);
+}
+
+.high-priority-row {
+    background-color: #FF0000;
+    background-color: rgba(255,0,0,.09);
+}
+
+.delete-button {
+     width:15px;
+     margin-top:10px;
+}
+
+.plan-state-text {
+    background-color:forestgreen; 
+    border-radius:6px !important; 
+    padding:6px 6px 6px 6px; 
+    color:white;
+}
+
+.incident-description-holder p {
+    padding-left:10px;
+    margin-bottom: 15px;
+}
+
+.incident-data-holder {
+    max-height: 300px;
+    overflow: auto;
+    border-style: ridge;
+    padding-left: 10px;
+    margin-left: 15px;
+}
+
+.menu-logo {
+    height:50px;
+    padding:7px 15px 0 0;
+}
+
+md-checkbox.md-checked.green .md-icon {
+ background-color: rgb(38, 166, 154);
+}
+
+.text-block {
+    display: block; 
+    margin-top: 0px; 
+    margin-bottom: 5px;
+    font-size: 15px;
 }

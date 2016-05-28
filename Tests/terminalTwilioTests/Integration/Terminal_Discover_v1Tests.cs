@@ -1,11 +1,8 @@
-﻿using Data.Interfaces.Manifests;
+﻿using System.Linq;
 using HealthMonitor.Utility;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Fr8Data.Manifests;
 
 namespace terminalTwilioTests.Integration
 {
@@ -31,6 +28,7 @@ namespace terminalTwilioTests.Integration
             Assert.IsNotNull(terminalDiscoverResponse.Activities, "Twilio terminal actions were not loaded");
             Assert.AreEqual(1, terminalDiscoverResponse.Activities.Count, "Not all terminal twilio actions were loaded");
             Assert.AreEqual("terminalTwilio", terminalDiscoverResponse.Definition.Name, "Definition terminalTwilio not found.");
+            Assert.AreEqual("Twilio", terminalDiscoverResponse.Definition.Label, "Definition Label terminalTwilio not found.");
 
             Assert.AreEqual(terminalDiscoverResponse.Activities.Any(a => a.Name == "Send_Via_Twilio"), true, "Action " + "Send_Via_Twilio" + " was not loaded");
         }

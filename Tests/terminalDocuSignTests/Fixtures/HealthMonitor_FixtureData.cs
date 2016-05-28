@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.States;
 using NUnit.Framework;
 using HealthMonitor.Utility;
 using Newtonsoft.Json.Linq;
 using Newtonsoft.Json;
+using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSignTests.Fixtures
 {
@@ -247,7 +250,7 @@ namespace terminalDocuSignTests.Fixtures
                 Name = "Monitor_DocuSign_Envelope_Activity",
                 Version = "1",
                 Label = "Monitor DocuSign Envelope Activity",
-                Category = Data.States.ActivityCategory.Forwarders
+                Category = Fr8Data.States.ActivityCategory.Forwarders
             };
         }
 
@@ -259,7 +262,7 @@ namespace terminalDocuSignTests.Fixtures
                 Name = "Send_DocuSign_Envelope",
                 Label = "Send DocuSign Envelope",
                 Version = "1",
-                Category = Data.States.ActivityCategory.Forwarders
+                Category = Fr8Data.States.ActivityCategory.Forwarders
             };
         }
 
@@ -267,5 +270,64 @@ namespace terminalDocuSignTests.Fixtures
         {
             return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
+
+        public static ICrateStorage GetEnvelopePayload()
+        {
+            string payload = string.Format(EnvelopePayload, Guid.NewGuid());
+
+            var curDocuSignEnvelopeInfo = DocuSignEventParser.GetEnvelopeInformation(EnvelopePayload);
+            var content = DocuSignEventParser.ParseXMLintoCM(curDocuSignEnvelopeInfo);
+            return new CrateStorage(Fr8Data.Crates.Crate.FromContent("DocuSign Connect Event", content));
+        }
+        private static string EnvelopePayload = @"<?xml version=""1.0"" encoding=""UTF-8"" ?>
+            <DocuSignEnvelopeInformation xmlns = ""http://www.docusign.net/API/3.0"" xmlns:xsd=""http://www.w3.org/2001/XMLSchema"" xmlns:xsi=""http://www.w3.org/2001/XMLSchema-instance"">
+               <EnvelopeStatus>
+                  <RecipientStatuses>
+                     <RecipientStatus>
+                        <Type>CertifiedDelivery</Type>
+                        <Email>hal9000@discovery.com</Email>
+                        <UserName>HAL-9000</UserName>
+                        <RoutingOrder>1</RoutingOrder>
+                        <Sent>2015-09-29T07:38:22.653</Sent>
+                        <DeclineReason xsi:nil= ""true"" />
+                        <Status>Sent</Status>
+                        <RecipientIPAddress/>
+                        <CustomFields/>
+                        <AccountStatus>Active</AccountStatus>
+                        <RecipientId>279a1173-04cc-4902-8039-68b1992639e9</RecipientId>
+                     </RecipientStatus>
+                  </RecipientStatuses>
+                  <TimeGenerated>2015-09-29T07:38:42.7464809</TimeGenerated>
+                  <EnvelopeID>{0}</EnvelopeID>
+                  <Subject>Open the Pod bay doors, HAL</Subject>
+                  <UserName>Dave Bowman</UserName>
+                  <Email>fr8.madse.testing@gmail.com</Email>
+                  <Status>Sent</Status>
+                  <Created>2015-09-29T07:37:42.813</Created>
+                  <Sent>2015-09-29T07:38:22.7</Sent>
+                  <ACStatus>Original</ACStatus>
+                  <ACStatusDate>2015-09-29T07:37:42.813</ACStatusDate>
+                  <ACHolder>Dave Bowman</ACHolder>
+                  <ACHolderEmail>fr8.madse.testing@gmail.com</ACHolderEmail>
+                  <ACHolderLocation>DocuSign</ACHolderLocation>
+                  <SigningLocation>Online</SigningLocation>
+                  <SenderIPAddress>10.103.101.11</SenderIPAddress>
+                  <EnvelopePDFHash />
+                  <CustomFields />
+                  <AutoNavigation>true</AutoNavigation>
+                  <EnvelopeIdStamping>true</EnvelopeIdStamping>
+                  <AuthoritativeCopy>false</AuthoritativeCopy>
+                  <DocumentStatuses>
+                     <DocumentStatus>
+                        <ID>85548272</ID>
+                        <Name>image.jpg</Name>
+                        <TemplateName />
+                        <Sequence>1</Sequence>
+                     </DocumentStatus>
+                  </DocumentStatuses>
+               </EnvelopeStatus>
+            </DocuSignEnvelopeInformation>";
+
+
     }
 }

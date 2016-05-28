@@ -238,8 +238,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activities\ActivitiesHelper.cs" />
+    <Compile Include="Activities\BaseSalesforceTerminalActivity.cs" />
     <Compile Include="Activities\Mail_Merge_From_Salesforce_v1.cs" />
     <Compile Include="Activities\Monitor_Salesforce_Event_v1.cs" />
+    <Compile Include="Activities\Post_To_Chatter_v2.cs" />
     <Compile Include="Activities\Save_To_SalesforceDotCom_v1.cs" />
     <Compile Include="Activities\Post_To_Chatter_v1.cs" />
     <Compile Include="App_Start\RoutesConfig.cs" />
@@ -256,6 +258,10 @@
     <Compile Include="Infrastructure\ISalesforceManager.cs" />
     <Compile Include="Infrastructure\SalesforceEnvelopeInformation.cs" />
     <Compile Include="Infrastructure\SalesforceNotificationParser.cs" />
+    <Compile Include="Infrastructure\SalesforceObjectDescriptionAttribute.cs" />
+    <Compile Include="Infrastructure\SalesforceObjectOperations.cs" />
+    <Compile Include="Infrastructure\SalesforceObjectType.cs" />
+    <Compile Include="Infrastructure\SalesforceObjectProperties.cs" />
     <Compile Include="Properties\Settings.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
@@ -263,9 +269,11 @@
     </Compile>
     <Compile Include="SelfHostFactory.cs" />
     <Compile Include="Services\Event.cs" />
+    <Compile Include="Services\SalesforceAuthHelper.cs" />
     <Compile Include="Services\SalesforceManager.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="StructureMapConfiguration.cs" />
+    <Compile Include="TerminalData.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config">
@@ -277,6 +285,18 @@
     </Content>
     <Content Include="..\Config\log4net.terminals.config">
       <Link>log4net.terminals.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Config\log4net.terminals.Demo.config">
+      <Link>log4net.terminals.Demo.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Config\log4net.terminals.Dev.config">
+      <Link>log4net.terminals.Dev.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Config\log4net.terminals.Release.config">
+      <Link>log4net.terminals.Release.config</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <None Include="ApplicationInsights.Debug.config">
@@ -303,6 +323,9 @@
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+    <None Include="Web.Demo.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -314,13 +337,13 @@
     <Folder Include="App_Data\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Data\Data.csproj">
-      <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
-      <Name>Data</Name>
+    <ProjectReference Include="..\Fr8Data\Fr8Data.csproj">
+      <Project>{a3178d71-a2c3-45b9-8334-adcc7c313541}</Project>
+      <Name>Fr8Data</Name>
     </ProjectReference>
-    <ProjectReference Include="..\Hub\Hub.csproj">
-      <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
-      <Name>Hub</Name>
+    <ProjectReference Include="..\Infrastructure\Fr8Infrastructure.csproj">
+      <Project>{9f4b5c92-3535-4d4c-b1e4-37beb1ae5c42}</Project>
+      <Name>Fr8Infrastructure</Name>
     </ProjectReference>
     <ProjectReference Include="..\terminalBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
@@ -343,6 +366,15 @@
     </StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Dev|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Demo|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
     <OutputPath>bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
@@ -393,7 +425,7 @@
   </Target>
   -->
   <ItemGroup>
-    <Log4netConfigFiles Include="..\Config\*.terminals.*" />
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.*" />
   </ItemGroup>
   <Target Name="BeforeBuild">
     <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />

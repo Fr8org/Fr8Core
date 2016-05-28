@@ -158,7 +158,7 @@ insert into #MtProperties values ('TargetProcessNodeName', '3d3ad291-322a-4c34-b
 insert into #MtProperties values ('TargetActivityName', '3d3ad291-322a-4c34-b8b3-a227a56ac78f', '09932a02-9bac-4fd7-8384-30a5bb1cb9aa',  2)
 insert into #MtProperties values ('Explanation', '3d3ad291-322a-4c34-b8b3-a227a56ac78f', '09932a02-9bac-4fd7-8384-30a5bb1cb9aa',  3)
 insert into #MtTypes values ('02f1fe6b-7504-4613-a7bf-32922d2f65f2', 'Standard File Handle', 'Data.Interfaces.Manifests.StandardFileDescriptionCM', 0, 0, 10)
-insert into #MtProperties values ('DockyardStorageUrl', '02f1fe6b-7504-4613-a7bf-32922d2f65f2', '09932a02-9bac-4fd7-8384-30a5bb1cb9aa',  0)
+insert into #MtProperties values ('DirectUrl', '02f1fe6b-7504-4613-a7bf-32922d2f65f2', '09932a02-9bac-4fd7-8384-30a5bb1cb9aa',  0)
 insert into #MtProperties values ('Filename', '02f1fe6b-7504-4613-a7bf-32922d2f65f2', '09932a02-9bac-4fd7-8384-30a5bb1cb9aa',  1)
 insert into #MtProperties values ('Filetype', '02f1fe6b-7504-4613-a7bf-32922d2f65f2', '09932a02-9bac-4fd7-8384-30a5bb1cb9aa',  2)
 insert into #MtProperties values ('TextRepresentation', '02f1fe6b-7504-4613-a7bf-32922d2f65f2', '09932a02-9bac-4fd7-8384-30a5bb1cb9aa',  3)

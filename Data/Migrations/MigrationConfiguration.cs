@@ -5,19 +5,17 @@ using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.Web;
-using Data.Crates;
 using Data.Repositories;
 using Data.States;
 using Data.States.Templates;
 using Data.Entities;
 using Data.Infrastructure;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Newtonsoft.Json;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using StructureMap;
-//using MT_FieldService = Data.Infrastructure.MultiTenant.MT_Field;
 
 namespace Data.Migrations
 {
@@ -66,8 +64,8 @@ namespace Data.Migrations
                 AddRoles(uow);
                 AddAdmins(uow);
                 AddDockyardAccounts(uow);
-                AddProfiles(uow);
                 AddTestAccounts(uow);
+                AddDefaultProfiles(uow);
                 //Addterminals(uow);
 
                 //AddAuthorizationTokens(uow);
@@ -84,6 +82,18 @@ namespace Data.Migrations
 
                 UpdateTerminalClientVisibility(uow);
 
+                RenameActivity(uow);
+            }
+        }
+
+        private void RenameActivity(UnitOfWork uow)
+        {
+            var activities = uow.ActivityTemplateRepository.GetAll();
+            var activityToRename = activities.FirstOrDefault(x => x.Name == "TestAndBranch");
+            if (activityToRename != null)
+            {
+                activityToRename.Name = "MakeADecision";
+                activityToRename.Label = "Make a Decision";
             }
         }
 
@@ -272,10 +282,25 @@ namespace Data.Migrations
             where TConstantDO : class, IStateTemplate<TConstantsType>, new()
         {
             FieldInfo[] constants = typeof(TConstantsType).GetFields();
-            var instructionsToAdd = (from constant in constants
-                                     let name = constant.Name
-                                     let value = constant.GetValue(null)
-                                     select creatorFunc((int)value, name)).ToList();
+            List<TConstantDO> instructionsToAdd;
+            if (typeof (TConstantsType).BaseType == typeof (Enum))
+            {
+                var enumValues = Enum.GetValues(typeof(TConstantsType)).Cast<TConstantsType>().ToList();
+
+                instructionsToAdd = (from constant in enumValues
+                    let name = constant.ToString()
+                    let value = constant
+                    select creatorFunc(Convert.ToInt32(value), name)).ToList();
+            }
+            else
+            {
+                instructionsToAdd = (from constant in constants
+                                         let name = constant.Name
+                                         let value = constant.GetValue(null)
+                                         select creatorFunc((int)value, name)).ToList();
+            }
+
+
 
             //First, we find rows in the DB that don't exist in our seeding. We delete those.
             //Then, we find rows in our seeding that don't exist in the DB. We create those ones (or update the name).
@@ -362,9 +387,12 @@ namespace Data.Migrations
             CreateAdmin("alexavrutin@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("bahadir.bb@gmail.com", "123456ab", unitOfWork);
             CreateAdmin("omer@fr8.co", "123456ab", unitOfWork);
+            CreateAdmin("alp@fr8.co", "123qwe", unitOfWork);
+            CreateAdmin("emre@fr8.co", "123qwe", unitOfWork);
             CreateAdmin("mvcdeveloper@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("maki.gjuroski@gmail.com", "123qwe", unitOfWork);
             CreateAdmin("fr8system_monitor@fr8.company", "123qwe", unitOfWork);
+            CreateAdmin("teh.netaholic@gmail.com", "123qwe", unitOfWork);
 
             //CreateAdmin("eschebenyuk@gmail.com", "kate235", unitOfWork);
             //CreateAdmin("mkostyrkin@gmail.com", "mk@1234", unitOfWork);
@@ -444,13 +472,6 @@ namespace Data.Migrations
             return user;
         }
 
-        private void AddProfiles(IUnitOfWork uow)
-        {
-            var users = uow.UserRepository.GetAll().ToList();
-            foreach (var user in users)
-                uow.UserRepository.AddDefaultProfile(user);
-        }
-
         private void AddSubscription(IUnitOfWork uow, Fr8AccountDO curAccount, TerminalDO curTerminal, int curAccessLevel)
         {
             var curSub = new SubscriptionDO()
@@ -474,9 +495,9 @@ namespace Data.Migrations
             // AddTerminals(uow, "terminalDocuSign", "localhost:53234", "1", true);
             // AddTerminals(uow, "terminalExcel", "localhost:47011", "1", false);
             // AddTerminals(uow, "terminalSalesforce", "localhost:51234", "1", true);
-            AddTerminals(uow, "terminalDocuSign", "localhost:53234", "1");
-            AddTerminals(uow, "terminalExcel", "localhost:47011", "1");
-            AddTerminals(uow, "terminalSalesforce", "localhost:51234", "1");
+            AddTerminals(uow, "terminalDocuSign", "DocuSign", "localhost:53234", "1");
+            AddTerminals(uow, "terminalExcel", "Excel", "localhost:47011", "1");
+            AddTerminals(uow, "terminalSalesforce", "Salesforce", "localhost:51234", "1");
 
             uow.SaveChanges();
         }
@@ -485,8 +506,8 @@ namespace Data.Migrations
 
         // private static void AddTerminals(IUnitOfWork uow, string terminalName, string endPoint,
         //     string version, bool requiresAuthentication)
-        private static void AddTerminals(IUnitOfWork uow, string terminalName, string endPoint,
-            string version)
+        private static void AddTerminals(IUnitOfWork uow, string terminalName, string terminalLabel, 
+            string endPoint, string version)
         {
             // Check that terminal does not exist yet.
             var terminalExists = uow.TerminalRepository.GetQuery().Any(x => x.Name == terminalName);
@@ -498,6 +519,7 @@ namespace Data.Migrations
                 var terminalDO = new TerminalDO()
                 {
                     Name = terminalName,
+                    Label = terminalLabel,
                     TerminalStatus = TerminalStatus.Active,
                     Endpoint = endPoint,
                     Version = version,
@@ -533,7 +555,7 @@ namespace Data.Migrations
                 return;
 
             var curActivityTemplateDO = new ActivityTemplateDO(
-                name, version, endPoint, endPoint);
+                name, version, endPoint, endPoint, endPoint);
             uow.ActivityTemplateRepository.Add(curActivityTemplateDO);
         }
 
@@ -711,6 +733,172 @@ namespace Data.Migrations
 
             uow.SaveChanges();
         }
+
+        public static void AddDefaultProfiles(IUnitOfWork uow)
+        {
+            //create 'Fr8 Admin' Profile 
+            var fr8AdminProfile = uow.ProfileRepository.GetQuery().FirstOrDefault(x => x.Name == DefaultProfiles.Fr8Administrator);
+            if (fr8AdminProfile == null)
+            {
+                fr8AdminProfile = new ProfileDO()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = DefaultProfiles.Fr8Administrator,
+                    Protected = true,
+                    PermissionSets = new List<PermissionSetDO>()
+                };
+                uow.ProfileRepository.Add(fr8AdminProfile);
+            }
+            else
+            {
+                fr8AdminProfile.Protected = true;
+            }
+            
+            //create 'System Administrator' Profile 
+            var profile = uow.ProfileRepository.GetQuery().FirstOrDefault(x => x.Name == DefaultProfiles.SystemAdministrator);
+            if (profile == null)
+            {
+                profile = new ProfileDO()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = DefaultProfiles.SystemAdministrator,
+                    Protected = true,
+                    PermissionSets = new List<PermissionSetDO>()
+                };
+                uow.ProfileRepository.Add(profile);
+            }
+            else
+            {
+                profile.Protected = true;
+            }
+
+            //create 'Standard User' profile
+            var standardProfile = uow.ProfileRepository.GetQuery().FirstOrDefault(x => x.Name == DefaultProfiles.StandardUser);
+            if (standardProfile == null)
+            {
+                standardProfile = new ProfileDO()
+                {
+                    Id = Guid.NewGuid(),
+                    Name = DefaultProfiles.StandardUser,
+                    Protected = true
+                };
+                uow.ProfileRepository.Add(standardProfile);
+            }
+            else
+            {
+                standardProfile.Protected = true;
+            }
+
+            //presave needed here for permissionSetPermissions table inserts
+            uow.SaveChanges();
+
+            fr8AdminProfile.PermissionSets.Clear();
+            //default permissions for Plans and PlanNodes
+            fr8AdminProfile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), true, false, false, fr8AdminProfile.Id, "Fr8 Administrator Permission Set", uow));
+
+            //default permissions for ContainerDO
+            fr8AdminProfile.PermissionSets.Add(AddPermissionSet(nameof(ContainerDO), true, false, false, fr8AdminProfile.Id, "Fr8 Administrator Permission Set", uow));
+
+            //default permissions for Terminals
+            fr8AdminProfile.PermissionSets.Add(AddPermissionSet(nameof(TerminalDO), true, false, false, fr8AdminProfile.Id, "Fr8 Administrator Permission Set", uow));
+
+            //default permissions for Users
+            fr8AdminProfile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), true, false, true, fr8AdminProfile.Id, "Fr8 Administrator Permission Set", uow));
+            
+            profile.PermissionSets.Clear();
+            //default permissions for Plans and PlanNodes
+            profile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), true, false, false, profile.Id,"System Administrator Permission Set", uow));
+
+            //default permissions for ContainerDO
+            profile.PermissionSets.Add(AddPermissionSet(nameof(ContainerDO), true, false, false, profile.Id, "System Administrator Permission Set", uow));
+
+            //default permissions for Terminals
+            profile.PermissionSets.Add(AddPermissionSet(nameof(TerminalDO), true, false, false, profile.Id, "System Administrator Permission Set", uow));
+
+            //default permissions for Users
+            profile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), true, true, false, profile.Id, "System Administrator Permission Set", uow));
+
+            //add standard user to all users without profile 
+            var roles = uow.UserRepository.GetQuery().Where(x => x.ProfileId == null).ToList();
+            foreach (var item in roles)
+            {
+                item.ProfileId = profile.Id;
+            }
+
+            var adminRole = uow.AspNetRolesRepository.GetQuery().FirstOrDefault(x => x.Name == Roles.Admin);
+
+            var userRoles = uow.AspNetUserRolesRepository.GetQuery().Where(x => x.RoleId == adminRole.Id).Select(l=>l.UserId).ToList();
+            var fr8Admins = uow.UserRepository.GetQuery().Where(x=> userRoles.Contains(x.Id)).ToList();
+            foreach (var user in fr8Admins)
+            {
+                user.ProfileId = fr8AdminProfile.Id;
+            }
+            
+            standardProfile.PermissionSets.Clear();
+            //default permissions for Plans and PlanNodes
+            standardProfile.PermissionSets.Add(AddPermissionSet(nameof(PlanNodeDO), false, false, false, standardProfile.Id, "Standard User Permission Set", uow));
+
+            //default permissions for ContainerDO
+            standardProfile.PermissionSets.Add(AddPermissionSet(nameof(ContainerDO), false, false, false, standardProfile.Id, "Standard User Permission Set", uow));
+
+            //default permissions for Terminals
+            standardProfile.PermissionSets.Add(AddPermissionSet(nameof(TerminalDO), false, false, false, standardProfile.Id, "Standard User Permission Set", uow));
+
+            //default permissions for Users
+            standardProfile.PermissionSets.Add(AddPermissionSet(nameof(Fr8AccountDO), false, false, false, standardProfile.Id, "Standard User Permission Set", uow));
+        }
+
+        private static PermissionSetDO AddPermissionSet(string objectType, bool isFullSet, bool hasManageInternalUsers, bool hasManageFr8Users,
+            Guid profileId, string name, IUnitOfWork uow)
+        {
+            var permissionSet = uow.PermissionSetRepository.GetQuery().FirstOrDefault(x => x.Name == name && x.ObjectType == objectType);
+
+            if (permissionSet == null)
+            {
+                permissionSet = new PermissionSetDO()
+                {
+                    Name = name,
+                    ProfileId = profileId,
+                    ObjectType = objectType,
+                    CreateDate = DateTimeOffset.Now,
+                    LastUpdated = DateTimeOffset.Now,
+                    HasFullAccess = isFullSet
+                };
+            }
+        
+            var repo = new GenericRepository<_PermissionTypeTemplate>(uow);
+
+            permissionSet.Permissions.Clear();
+            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x=>x.Id == (int) PermissionType.CreateObject));
+            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.ReadObject));
+            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.EditObject));
+            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.DeleteObject));
+            permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.RunObject));
+            if (isFullSet)
+            {
+                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.ViewAllObjects));
+                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int) PermissionType.ModifyAllObjects));
+            }
+
+            if (hasManageFr8Users)
+            {
+                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int)PermissionType.ManageFr8Users));
+            }
+
+            if (hasManageInternalUsers)
+            {
+                permissionSet.Permissions.Add(repo.GetQuery().FirstOrDefault(x => x.Id == (int)PermissionType.ManageInternalUsers));
+            }
+
+            if (permissionSet.Id == Guid.Empty)
+            {
+                permissionSet.Id = Guid.NewGuid();
+                uow.PermissionSetRepository.Add(permissionSet);
+            }
+
+            return permissionSet;
+        }
+
     }
 }
 

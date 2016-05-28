@@ -136,6 +136,18 @@
       <HintPath>..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Nito.AsyncEx, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nito.AsyncEx.3.0.1\lib\net45\Nito.AsyncEx.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nito.AsyncEx.Concurrent, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nito.AsyncEx.3.0.1\lib\net45\Nito.AsyncEx.Concurrent.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Nito.AsyncEx.Enlightenment, Version=3.0.1.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Nito.AsyncEx.3.0.1\lib\net45\Nito.AsyncEx.Enlightenment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="nunit.framework">
       <HintPath>..\packages\NUnit.2.6.4\lib\nunit.framework.dll</HintPath>
     </Reference>
@@ -166,6 +178,8 @@
     </Reference>
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.ServiceModel.Activities" />
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -230,6 +244,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Activities\BaseDocuSignActivity.cs" />
+    <Compile Include="Activities\EnhancedDocuSignActivity.cs" />
     <Compile Include="Activities\Extract_Data_From_Envelopes_v1.cs" />
     <Compile Include="Activities\Generate_DocuSign_Report_v1.cs">
       <SubType>Code</SubType>
@@ -237,12 +252,13 @@
     <Compile Include="Activities\Get_DocuSign_Template_v1.cs" />
     <Compile Include="Activities\Mail_Merge_Into_DocuSign_v1.cs" />
     <Compile Include="Activities\Archive_DocuSign_Template_v1.cs" />
-    <Compile Include="Activities\Process_Personal_Report_v1.cs" />
+    <Compile Include="Activities\Query_DocuSign_v2.cs" />
     <Compile Include="Activities\Search_DocuSign_History_v1.cs" />
     <Compile Include="Activities\Query_DocuSign_v1.cs" />
     <Compile Include="Activities\Get_DocuSign_Envelope_v1.cs" />
     <Compile Include="Activities\Monitor_DocuSign_Envelope_Activity_v1.cs" />
     <Compile Include="Activities\Prepare_DocuSign_Events_For_Storage_v1.cs" />
+    <Compile Include="Activities\Send_DocuSign_Envelope_v2.cs" />
     <Compile Include="Activities\Track_DocuSign_Recipients_v1.cs" />
     <Compile Include="Activities\Send_DocuSign_Envelope_v1.cs" />
     <Compile Include="Activities\Use_DocuSign_Template_With_New_Document_v1.cs" />
@@ -259,24 +275,22 @@
     <Compile Include="Infrastructure\DataContracts\FolderListResponse.cs" />
     <Compile Include="Infrastructure\DataContracts\FolderSearchResults.cs" />
     <Compile Include="Infrastructure\DateTimeHelper.cs" />
-    <Compile Include="Infrastructure\DocuSignConnectParser.cs" />
+    <Compile Include="Infrastructure\DocuSignEventParser.cs" />
     <Compile Include="Infrastructure\DataContracts\DocusignFolderInfo.cs" />
-    <Compile Include="Infrastructure\DocuSignParserModels\DocumentStatus.cs" />
-    <Compile Include="Infrastructure\DocuSignParserModels\DocumentStatuses.cs" />
-    <Compile Include="Infrastructure\DocuSignParserModels\DocuSignEnvelopeInformation.cs" />
-    <Compile Include="Infrastructure\DocuSignParserModels\EnvelopeStatus.cs" />
-    <Compile Include="Infrastructure\DocuSignParserModels\RecipientStatus.cs" />
-    <Compile Include="Infrastructure\DocuSignParserModels\RecipientStatuses.cs" />
+    <Compile Include="Infrastructure\DocuSignParserModels\DocuSignConnectEventModel.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Infrastructure\DocuSignEventNames.cs" />
-    <Compile Include="Infrastructure\TerminalDataAutoMapperBootStrapper.cs" />
     <Compile Include="Infrastructure\TerminalDocuSignMapBootstrapper.cs" />
     <Compile Include="Interfaces\IDocuSignConnect.cs" />
+    <Compile Include="Interfaces\IDocuSignFolders.cs" />
     <Compile Include="Interfaces\IDocuSignPlan.cs" />
     <Compile Include="Services\DocuSignConnect.cs" />
+    <Compile Include="Services\DocuSignConstants.cs" />
     <Compile Include="Services\DocuSignFolders.cs" />
+    <Compile Include="Services\DocuSignFoldersWrapper.cs" />
+    <Compile Include="Services\DocuSignPolling.cs" />
     <Compile Include="Services\DocuSignQuery.cs" />
     <Compile Include="Services\DocuSignPlan.cs" />
     <Compile Include="Services\Event.cs" />
@@ -286,8 +300,13 @@
     <Compile Include="Services\DocuSignManager.cs" />
     <Compile Include="Services\DocuSignTab.cs" />
     <Compile Include="Interfaces\IDocuSignManager.cs" />
+    <Compile Include="Services\MT\MTSearchHelper.cs" />
+    <Compile Include="Services\MT\MTSearchHelper.IMtQueryProvider.cs" />
+    <Compile Include="Services\MT\MTSearchHelper.MtQueryProviderT.cs" />
+    <Compile Include="Services\MT\MTTypesHelper.cs" />
     <Compile Include="Startup.cs" />
     <Compile Include="StructureMapConfigurationcs.cs" />
+    <Compile Include="TerminalData.cs" />
     <Compile Include="Tests\Activities\Generate_DocuSign_Report_Tests.cs" />
     <Compile Include="Tests\Activities\Monitor_DocuSignTests.cs">
       <SubType>Code</SubType>
@@ -314,6 +333,18 @@
       <Link>log4net.terminals.config</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="..\Config\log4net.terminals.Demo.config">
+      <Link>log4net.terminals.Demo.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Config\log4net.terminals.Dev.config">
+      <Link>log4net.terminals.Dev.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\Config\log4net.terminals.Release.config">
+      <Link>log4net.terminals.Release.config</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <None Include="ApplicationInsights.Debug.config">
       <DependentUpon>ApplicationInsights.config</DependentUpon>
       <IsTransformFile>True</IsTransformFile>
@@ -333,6 +364,9 @@
     <None Include="Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
+    <None Include="Web.Demo.config">
+      <DependentUpon>Web.config</DependentUpon>
+    </None>
     <None Include="Web.Dev.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -349,9 +383,17 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\Fr8Data\Fr8Data.csproj">
+      <Project>{a3178d71-a2c3-45b9-8334-adcc7c313541}</Project>
+      <Name>Fr8Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Infrastructure\Fr8Infrastructure.csproj">
+      <Project>{9f4b5c92-3535-4d4c-b1e4-37beb1ae5c42}</Project>
+      <Name>Fr8Infrastructure</Name>
     </ProjectReference>
     <ProjectReference Include="..\terminalBase\TerminalBase.csproj">
       <Project>{d6a0a493-e926-439a-9ce2-e093e75132cd}</Project>
@@ -384,6 +426,14 @@
     <OutputPath>bin\</OutputPath>
     <DefineConstants>TRACE;DEV; DEBUG</DefineConstants>
     <Optimize>false</Optimize>
+    <DebugType>pdbonly</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Demo|AnyCPU'">
+    <OutputPath>bin\</OutputPath>
+    <DefineConstants>TRACE;DEV; DEBUG</DefineConstants>
     <DebugType>pdbonly</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <ErrorReport>prompt</ErrorReport>
@@ -431,13 +481,9 @@
   </Target>
   -->
   <ItemGroup>
-    <Log4netConfigFiles Include="..\Config\*.terminals.*"/>
+    <Log4netConfigFiles Include="..\Config\log4net.terminals.*" />
   </ItemGroup>
-
   <Target Name="BeforeBuild">
-    <Copy
-        SourceFiles="@(Log4NetConfigFiles)"
-        DestinationFolder="."
-         />
+    <Copy SourceFiles="@(Log4NetConfigFiles)" DestinationFolder="." />
   </Target>
 </Project>

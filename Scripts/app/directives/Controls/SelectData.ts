@@ -34,7 +34,7 @@ module dockyard.directives {
                 };
 
                 $scope.configure = () => {
-                    $http.get('/api/webservices/?id=' + $scope.field.activityTemplateId)
+                    $http.get('/api/activitytemplates/?id=' + $scope.field.activityTemplateId)
                         .then((res) => {
                             var activityTemplate = <model.ActivityTemplate>res.data;
 
@@ -62,6 +62,7 @@ module dockyard.directives {
                                                     externalObjectName = contents.Handles[0].Description;
                                                 }
                                             }
+
                                             $scope.field.externalObjectName = externalObjectName;
                                         });
                                 });

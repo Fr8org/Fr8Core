@@ -11,6 +11,7 @@ using System.Web.Optimization;
 using System.Web.Routing;
 using Data.Interfaces;
 using FluentValidation.WebApi;
+using Hub.Infrastructure;
 using Hub.Managers;
 using Hub.ModelBinders;
 using Hub.StructureMap;
@@ -23,7 +24,6 @@ using Segment;
 using StructureMap;
 using Utilities;
 using Logger = Utilities.Logging.Logger;
-using HubWeb.Infrastructure;
 
 namespace HubWeb
 {
@@ -60,6 +60,7 @@ namespace HubWeb
             GlobalConfiguration.Configuration.Filters.Add(new WebApiExceptionFilterAttribute());
 
             StructureMapBootStrapper.ConfigureDependencies(StructureMapBootStrapper.DependencyType.LIVE);
+            ObjectFactory.Configure(Fr8Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
             ObjectFactory.GetInstance<AutoMapperBootStrapper>().ConfigureAutoMapper();
 
             var db = ObjectFactory.GetInstance<DbContext>();
@@ -93,7 +94,8 @@ namespace HubWeb
 
             SetServerUrl();
 
-            Logger.GetLogger().Warn("Dockyard  starting...");
+            //Logger.GetLogger().Warn("Dockyard  starting...");
+            Logger.LogWarning("Dockyard  starting...");
 
             ConfigureValidationEngine();
             StartupMigration.CreateSystemUser();
@@ -121,7 +123,8 @@ namespace HubWeb
             }
 
 
-            Logger.GetLogger().Error(errorMessage, exception);
+            //Logger.GetLogger().Error(errorMessage, exception);
+            Logger.LogError($"{exception}");
         }
 
         private readonly object _initLocker = new object();
@@ -237,7 +240,8 @@ namespace HubWeb
 
         public void Application_End()
         {
-            Logger.GetLogger().Info("fr8 web shutting down...");
+            //Logger.GetLogger().Info("fr8 web shutting down...");
+            Logger.LogWarning("fr8 web shutting down...");
 
             // This will give LE background thread some time to finish sending messages to Logentries.
             var numWaits = 3;

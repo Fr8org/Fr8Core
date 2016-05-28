@@ -1,50 +1,49 @@
-﻿using System.Collections.Generic;
-using Data.Crates;
-using Data.Crates.Helpers;
-using Data.Interfaces.DataTransferObjects;
-using Hub.Managers;
-using StructureMap;
+﻿using Fr8Data.Crates.Helpers;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 
 namespace UtilitiesTesting.Fixtures
 {
     public partial class FixtureData
     {
-        public static EventCM TestEmptyEventDto()
+        public static EventReportCM TestEmptyEventDto()
         {
-            return new EventCM { EventName = string.Empty };
+            return new EventReportCM { EventNames = string.Empty };
         }
 
-        public static EventCM TestTerminalIncidentDto()
+        public static EventReportCM TestTerminalIncidentDto()
         {
 
-            var loggingDataCrate = new LoggingDataCrateFactory().Create(new LoggingDataCm
+            var loggingDataCrate = new LoggingDataCrateFactory().Create(new LoggingDataCM
                 {
                     PrimaryCategory = "Operations",
                     SecondaryCategory = "Action"
                 });
-            var eventDto = new EventCM
+            var eventDto = new EventReportCM
             {
-                EventName = "Terminal Incident",
+                EventNames = "Terminal Incident",
+                ExternalAccountId = "system1@fr8.co"
             };
 
-            eventDto.CrateStorage.Add(loggingDataCrate);
+            eventDto.EventPayload.Add(loggingDataCrate);
 
             return eventDto;
         }
 
-        public static EventCM TestTerminalEventDto()
+        public static EventReportCM TestTerminalEventDto()
         {
-            var loggingDataCrate = new LoggingDataCrateFactory().Create(new LoggingDataCm
+            var loggingDataCrate = new LoggingDataCrateFactory().Create(new LoggingDataCM
                 {
                     PrimaryCategory = "Operations",
                     SecondaryCategory = "Action"
                 });
-            var eventDto = new EventCM
+            var eventDto = new EventReportCM
             {
-                EventName = "Terminal Event",
+                EventNames = "Terminal Fact",
+                ExternalAccountId = "system1@fr8.co"
             };
 
-            eventDto.CrateStorage.Add(loggingDataCrate);
+            eventDto.EventPayload.Add(loggingDataCrate);
 
             return eventDto;
         }

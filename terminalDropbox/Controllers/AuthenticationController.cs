@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 using TerminalBase.BaseClasses;
 using terminalDropbox.Infrastructure;
 
@@ -22,8 +22,7 @@ namespace terminalDropbox.Controllers
 
         [HttpPost]
         [Route("token")]
-        public async Task<AuthorizationTokenDTO> GenerateOAuthToken(
-         ExternalAuthenticationDTO externalAuthDTO)
+        public async Task<AuthorizationTokenDTO> GenerateOAuthToken(ExternalAuthenticationDTO externalAuthDTO)
         {
             try
             {
@@ -31,7 +30,7 @@ namespace terminalDropbox.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex);
+                ReportTerminalError(curTerminal, ex,externalAuthDTO.Fr8UserId);
                 return await Task.FromResult(
                     new AuthorizationTokenDTO()
                     {

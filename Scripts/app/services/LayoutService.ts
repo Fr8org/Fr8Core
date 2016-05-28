@@ -118,6 +118,9 @@ module dockyard.services {
                 offsetLeft += (this.ACTION_WIDTH - this.ADD_ACTION_BUTTON_WIDTH) / 2;
             }
 
+            // if offsetLeft negative, return 0
+            offsetLeft = offsetLeft < 0 ? 0 : offsetLeft;
+
 
             return offsetLeft;
         }

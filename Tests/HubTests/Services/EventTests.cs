@@ -2,21 +2,22 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
-using Moq;
 using NUnit.Framework;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using Data.Interfaces.Manifests;
 using Data.Repositories.Plan;
 using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Managers;
 using Event = Hub.Services.Event;
+using Fr8Data.Managers;
 
 namespace HubTests.Services
 {
@@ -89,19 +90,14 @@ namespace HubTests.Services
             _planNodes = planNodes;
         }
 
-        public IEnumerable<TViewModel> GetAllActivities<TViewModel>()
-        {
-            return _activity.GetAllActivities<TViewModel>();
-        }
-
         public Task<ActivityDTO> SaveOrUpdateActivity(ActivityDO currentActivityDo)
         {
             return _activity.SaveOrUpdateActivity(currentActivityDo);
         }
 
-        public Task<ActivityDTO> Configure(IUnitOfWork uow, string userId, ActivityDO curActivityDO, bool saveResult = true)
+        public Task<ActivityDTO> Configure(IUnitOfWork uow, string userId, ActivityDO curActivityDO)
         {
-            return _activity.Configure(uow, userId, curActivityDO, saveResult);
+            return _activity.Configure(uow, userId, curActivityDO);
         }
 
         public ActivityDO GetById(IUnitOfWork uow, Guid id)
@@ -109,14 +105,11 @@ namespace HubTests.Services
             return _activity.GetById(uow, id);
         }
 
-        public ActivityDO MapFromDTO(ActivityDTO curActivityDTO)
-        {
-            return _activity.MapFromDTO(curActivityDTO);
-        }
+       
 
-        public Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid actionTemplateId, string label = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
+        public Task<PlanNodeDO> CreateAndConfigure(IUnitOfWork uow, string userId, Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, bool createPlan = false, Guid? authorizationTokenId = null)
         {
-            return _activity.CreateAndConfigure(uow, userId, actionTemplateId, label, order, parentNodeId, createPlan, authorizationTokenId);
+            return _activity.CreateAndConfigure(uow, userId, activityTemplateId, label, name, order, parentNodeId, createPlan, authorizationTokenId);
         }
 
         public async Task<PayloadDTO> Run(IUnitOfWork uow, ActivityDO curActivityDO, ActivityExecutionMode curActionExecutionMode, ContainerDO curContainerDO)
@@ -136,7 +129,7 @@ namespace HubTests.Services
             return _activity.Activate(curActivityDO);
         }
 
-        public Task<ActivityDTO> Deactivate(ActivityDO curActivityDO)
+        public Task Deactivate(ActivityDO curActivityDO)
         {
             return _activity.Deactivate(curActivityDO);
         }
@@ -151,9 +144,14 @@ namespace HubTests.Services
             return _activity.GetSolutionNameList(terminalName);
         }
 
-        public void Delete(Guid id)
+        public Task Delete(Guid id)
         {
-            _activity.Delete(id);
+            return _activity.Delete(id);
+        }
+
+        public Task DeleteChildNodes(Guid id)
+        {
+            return _activity.DeleteChildNodes(id);
         }
     }
 
@@ -172,8 +170,13 @@ namespace HubTests.Services
             }
         }
 
-        public List<T> GetCrateManifestsByDirection<T>(Guid activityId, CrateDirection direction,
-            AvailabilityType availability, bool includeCratesFromActivity = true) where T : Manifest
+        public List<CrateDescriptionCM> GetCrateManifestsByDirection(Guid activityId, CrateDirection direction,
+            AvailabilityType availability, bool includeCratesFromActivity = true)
+        {
+            throw new NotImplementedException();
+        }
+
+        public IncomingCratesDTO GetIncomingData(Guid activityId, CrateDirection direction, AvailabilityType availability)
         {
             throw new NotImplementedException();
         }

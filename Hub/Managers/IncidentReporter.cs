@@ -1,16 +1,13 @@
 ﻿using System;
 using Data.Entities;
-using Microsoft.SqlServer.Server;
 using StructureMap;
 using Data.Exceptions;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
+using Fr8Data.DataTransferObjects;
 using Hub.Interfaces;
 using Hub.Services;
-using Utilities;
 using Utilities.Configuration.Azure;
 using Utilities.Logging;
 
@@ -21,11 +18,9 @@ namespace Hub.Managers
         private readonly EventReporter _eventReporter;
         private readonly ITerminal _terminal;
         private readonly ISecurityServices _sercurity;
-        private readonly IActivityTemplate _activityTemplate;
 
-        public IncidentReporter(EventReporter eventReporter, ITerminal terminal, ISecurityServices securityService, IActivityTemplate activityTemplate)
+        public IncidentReporter(EventReporter eventReporter, ITerminal terminal, ISecurityServices securityService)
         {
-            _activityTemplate = activityTemplate;
             _eventReporter = eventReporter;
             _terminal = terminal;
             _sercurity = securityService;
@@ -39,25 +34,18 @@ namespace Hub.Managers
             EventManager.AlertError_EmailSendFailure += ProcessEmailSendFailure;
             EventManager.IncidentTerminalActionActivationFailed += ProcessIncidentTerminalActivityActivationFailed;
             EventManager.IncidentTerminalInternalFailureOccurred += ProcessIncidentTerminalInternalFailureOccurred;
-            //EventManager.IncidentPluginConfigureFailed += ProcessIncidentPluginConfigureFailed;
-            //AlertManager.AlertErrorSyncingCalendar += ProcessErrorSyncingCalendar;
             EventManager.AlertResponseReceived += AlertManagerOnAlertResponseReceived;
-            //AlertManager.AlertAttendeeUnresponsivenessThresholdReached += ProcessAttendeeUnresponsivenessThresholdReached;
-            //AlertManager.AlertBookingRequestCheckedOut += ProcessBRCheckedOut;
             EventManager.AlertUserRegistrationError += ReportUserRegistrationError;
-            //AlertManager.AlertBookingRequestMerged += BookingRequestMerged;
             EventManager.TerminalIncidentReported += LogTerminalIncident;
-            EventManager.UnparseableNotificationReceived += LogUnparseableNotificationIncident;
             EventManager.IncidentDocuSignFieldMissing += IncidentDocuSignFieldMissing;
             EventManager.IncidentOAuthAuthenticationFailed += OAuthAuthenticationFailed;
-            EventManager.IncidentMissingFieldInPayload += IncidentMissingFieldInPayload;
-            EventManager.ExternalEventReceived += LogExternalEventReceivedIncident;
             EventManager.KeyVaultFailure += KeyVaultFailure;
             EventManager.EventAuthTokenSilentRevoke += AuthTokenSilentRevoke;
             EventManager.EventContainerFailed += ContainerFailed;
             EventManager.EventUnexpectedError += UnexpectedError;
             EventManager.PlanActivationFailedEvent += PlanActivationFailed;
             EventManager.EventMultipleMonitorAllDocuSignEventsPlansPerAccountArePresent += EventManager_EventMultipleMonitorAllDocuSignEventsPlansPerAccountArePresent;
+            EventManager.EventTokenValidationFailed += TokenValidationFailed;
         }
 
         public void EventManager_EventMultipleMonitorAllDocuSignEventsPlansPerAccountArePresent(string external_email)
@@ -135,7 +123,7 @@ namespace Hub.Managers
 
             if (terminal != null)
             {
-                return terminal.Name;
+                return terminal.Label;
             }
 
             return authorizationToken.TerminalID.ToString();
@@ -161,7 +149,7 @@ namespace Hub.Managers
             SaveAndLogIncident(incident);
         }
 
-        private void ContainerFailed(PlanDO plan, Exception ex)
+        private void ContainerFailed(PlanDO plan, Exception ex, string containerId)
         {
             var incident = new IncidentDO
             {
@@ -169,10 +157,12 @@ namespace Hub.Managers
                 Data = string.Join(
                     Environment.NewLine,
                     "Container failure.",
-                    "Plan: " + (plan != null ? plan.Name : "unknown"),
+                    "PlanName: " + (plan != null ? plan.Name : "unknown"),
+                    "PlanId: " + (plan != null ? plan.Id.ToString() : "unknown"),
                     ex.Message,
                     ex.StackTrace ?? ""
                 ),
+                ObjectId = containerId,
                 PrimaryCategory = "Container",
                 SecondaryCategory = "Execution",
                 Component = "Hub",
@@ -182,13 +172,13 @@ namespace Hub.Managers
             SaveAndLogIncident(incident);
         }
 
-        private void ProcessIncidentTerminalActivityActivationFailed(string terminalUrl, string curActionDTO, string objectId)
+        private void ProcessIncidentTerminalActivityActivationFailed(string terminalUrl, string additionalData, string objectId)
         {
             var incident = new IncidentDO
             {
                 Fr8UserId = _sercurity.GetCurrentUser(),
-                Data = terminalUrl + "      " + curActionDTO,
-                ObjectId = objectId,
+                Data = terminalUrl + " [ " + additionalData  + " ] ",
+                ObjectId = objectId, // in this case objectId is ActivityId
                 PrimaryCategory = "Action",
                 SecondaryCategory = "Activation",
                 Activity = "Completed"
@@ -217,17 +207,17 @@ namespace Hub.Managers
 
         private void LogIncident(IncidentDO curIncident)
         {
-            _eventReporter.LogHistoryItem(curIncident, EventReporter.EventType.Error);
+            _eventReporter.LogHistoryItem(curIncident, EventType.Error);
             //_eventReporter.LogFactInformation(curIncident, curIncident.SecondaryCategory + " " + curIncident.Activity, EventReporter.EventType.Error);
         }
 
-        private void ProcessIncidentTerminalConfigureFailed(string curTerminalUrl, string curAction, string errorMessage, string objectId)
+        private void ProcessIncidentTerminalConfigureFailed(string curTerminalUrl, string additionalData, string errorMessage, string objectId)
         {
             var incident = new IncidentDO
             {
                 Fr8UserId = _sercurity.GetCurrentUser(),
-                Data = curTerminalUrl + "      " + curAction + " " + errorMessage,
-                ObjectId = objectId,
+                Data = curTerminalUrl + "[" + additionalData+" ] " + errorMessage,
+                ObjectId = objectId, // in this case objectId is ActivityId
                 PrimaryCategory = "Terminal",
                 SecondaryCategory = "Configure",
                 Component = "Hub",
@@ -236,13 +226,13 @@ namespace Hub.Managers
             SaveAndLogIncident(incident);
         }
 
-        private void ProcessIncidentTerminalInternalFailureOccurred(string curTerminalUrl, string curAction, Exception e, string objectId)
+        private void ProcessIncidentTerminalInternalFailureOccurred(string curTerminalUrl, string additionalData, Exception e, string objectId)
         {
             var incident = new IncidentDO
             {
                 Fr8UserId = _sercurity.GetCurrentUser(),
-                Data = curTerminalUrl + "      " + curAction + " " + e.Message + " \r\nStack trace: \r\n" + e.StackTrace,
-                ObjectId = objectId,
+                Data = curTerminalUrl + $"[ {additionalData} ]  Message =  [ {e} ]",
+                ObjectId = objectId, // in this case objectId is ActivityId
                 PrimaryCategory = "Terminal",
                 SecondaryCategory = "Internal",
                 Component = "Terminal",
@@ -254,13 +244,13 @@ namespace Hub.Managers
             LogIncident(incident);
         }
 
-        private void ProcessIncidentTerminalRunFailed(string curTerminalUrl, string curAction, string errorMessage, string objectId)
+        private void ProcessIncidentTerminalRunFailed(string curTerminalUrl, string additionalData, string errorMessage, string objectId)
         {
             var incident = new IncidentDO
             {
                 Fr8UserId = _sercurity.GetCurrentUser(),
-                Data = curTerminalUrl + "      " + curAction + " " + errorMessage,
-                ObjectId = objectId,
+                Data = curTerminalUrl + " [ " + additionalData+ " ] " + errorMessage,
+                ObjectId = objectId, // in this case objectId is ActivityId
                 PrimaryCategory = "Terminal",
                 SecondaryCategory = "Run",
                 Component = "Hub",
@@ -283,7 +273,7 @@ namespace Hub.Managers
             SaveAndLogIncident(incident);
         }
 
-        private void LogTerminalIncident(LoggingDataCm incidentItem)
+        private void LogTerminalIncident(LoggingDataCM incidentItem)
         {
             var currentIncident = new IncidentDO
             {
@@ -349,7 +339,8 @@ namespace Hub.Managers
                 currentIncident.ObjectId,
                 currentIncident.Fr8UserId);
 
-            Logger.GetLogger().Info(logData);
+            //Logger.GetLogger().Info(logData);
+            Logger.LogInfo(logData);
         }
 
         private void ProcessAttendeeUnresponsivenessThresholdReached(int expectedResponseId)
@@ -406,25 +397,6 @@ namespace Hub.Managers
             }
         }
 
-        //public void ProcessBRTimeout(int bookingRequestId, string bookerId)
-        //{
-
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        BookingRequestDO bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-        //        IncidentDO incidentDO = new IncidentDO();
-        //        incidentDO.PrimaryCategory = "BookingRequest";
-        //        incidentDO.SecondaryCategory = null;
-        //        incidentDO.Activity = "Timeout";
-        //        incidentDO.ObjectId = bookingRequestId.ToString();
-        //        incidentDO.CustomerId = bookingRequestDO.CustomerID;
-        //        incidentDO.BookerId = bookingRequestDO.BookerID;
-        //        uow.IncidentRepository.Add(incidentDO);
-        //        uow.SaveChanges();
-        //    }
-        //}
-
-
         private void ProcessEmailSendFailure(int emailId, string message)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -448,116 +420,6 @@ namespace Hub.Managers
             //				  "Message: {1}",
             //				  emailId, message));
         }
-        //private void ProcessErrorSyncingCalendar(IRemoteCalendarAuthDataDO authData, IRemoteCalendarLinkDO calendarLink = null)
-        //{
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        IncidentDO incidentDO = new IncidentDO();
-        //        incidentDO.PrimaryCategory = "Calendar";
-        //        incidentDO.SecondaryCategory = "Failure";
-        //        incidentDO.Activity = "Synchronization";
-        //        incidentDO.ObjectId = authData.Id.ToString();
-        //        incidentDO.CustomerId = authData.UserID;
-        //        if (calendarLink != null)
-        //        {
-        //            incidentDO.Data = string.Format("Link #{0}: {1}", calendarLink.Id, calendarLink.LastSynchronizationResult);
-        //        }
-        //        uow.IncidentRepository.Add(incidentDO);
-        //        uow.SaveChanges();
-        //    }
-
-        //    var emailBodyBuilder = new StringBuilder();
-        //    emailBodyBuilder.AppendFormat("CalendarSync failure for calendar auth data #{0} ({1}):\r\n", authData.Id,
-        //                                  authData.Provider.Name);
-        //    emailBodyBuilder.AppendFormat("Customer id: {0}\r\n", authData.UserID);
-        //    if (calendarLink != null)
-        //    {
-        //        emailBodyBuilder.AppendFormat("Calendar link id: {0}\r\n", calendarLink.Id);
-        //        emailBodyBuilder.AppendFormat("Local calendar id: {0}\r\n", calendarLink.LocalCalendarID);
-        //        emailBodyBuilder.AppendFormat("Remote calendar url: {0}\r\n", calendarLink.RemoteCalendarHref);
-        //        emailBodyBuilder.AppendFormat("{0}\r\n", calendarLink.LastSynchronizationResult);
-        //    }
-
-        //    Email email = ObjectFactory.GetInstance<Email>();
-        //   // email.SendAlertEmail("CalendarSync failure", emailBodyBuilder.ToString());
-        //}
-
-        //public void ProcessSubmittedNote(int bookingRequestId, string note)
-        //{
-        //    if (String.IsNullOrEmpty(note))
-        //        throw new ArgumentException("Empty note.", "note");
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        var curBookingRequest = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-        //        if (curBookingRequest == null)
-        //            throw new EntityNotFoundException<BookingRequestDO>(bookingRequestId);
-        //        var incidentDO = new IncidentDO
-        //            {
-        //                PrimaryCategory = "BookingRequest",
-        //                SecondaryCategory = "Note",
-        //                Activity = "Created",
-        //                BookerId = curBookingRequest.BookerID,
-        //                ObjectId = bookingRequestId.ToString(),
-        //                Data = note
-        //            };
-        //        uow.IncidentRepository.Add(incidentDO);
-        //        uow.SaveChanges();
-        //    }
-        //}
-
-        //public void ProcessBRCheckedOut(int bookingRequestId, string bookerId)
-        //{
-        //    //BookingRequest _br = new BookingRequest();
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-        //        if (bookingRequestDO == null)
-        //            throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
-        //        string status = bookingRequestDO.BookingRequestStateTemplate.Name;
-        //        IncidentDO curAction = new IncidentDO()
-        //        {
-        //            PrimaryCategory = "BookingRequest",
-        //            SecondaryCategory = null,
-        //            Activity = "Checkout",
-        //            CustomerId = bookingRequestDO.Customer.Id,
-        //            ObjectId = bookingRequestId.ToString(),
-        //            BookerId = bookerId,
-        //        };
-
-        //       // int getMinutinQueue = _br.GetTimeInQueue(uow, bookingRequestDO.Id.ToString());
-
-        //        //curAction.Data = string.Format("Time To Process: {0}", getMinutinQueue);
-
-        //        //uow.IncidentRepository.Add(curAction);
-        //        uow.SaveChanges();
-        //    }
-        //}
-
-        //private void ProcessBRMarkedProcessed(int bookingRequestId, string bookerId)
-        //{
-        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-        //    {
-        //        var bookingRequestDO = uow.BookingRequestRepository.GetByKey(bookingRequestId);
-        //        if (bookingRequestDO == null)
-        //            throw new ArgumentException(string.Format("Cannot find a Booking Request by given id:{0}", bookingRequestId), "bookingRequestId");
-        //        IncidentDO curAction = new IncidentDO()
-        //        {
-        //            PrimaryCategory = "BookingRequest",
-        //            SecondaryCategory = "BookerAction",
-        //            Activity = "MarkedAsProcessed",
-        //            CustomerId = bookingRequestDO.CustomerID,
-        //            ObjectId = bookingRequestId.ToString(),
-        //            BookerId = bookerId,
-        //        };
-
-        //       // var br = ObjectFactory.GetInstance<BookingRequest>();
-        //       // int getMinutinQueue = br.GetTimeInQueue(uow, bookingRequestDO.Id.ToString());
-
-        //       // curAction.Data = string.Format("Time To Process: {0}", getMinutinQueue);
-        //        uow.IncidentRepository.Add(curAction);
-        //        uow.SaveChanges();
-        //    }
-        //}
 
         public void ReportUserRegistrationError(Exception ex)
         {
@@ -623,27 +485,25 @@ namespace Hub.Managers
                             fieldName)
                 };
                 _uow.IncidentRepository.Add(incidentDO);
-                Logger.GetLogger().Warn(incidentDO.Data);
+                //Logger.GetLogger().Warn(incidentDO.Data);
+                Logger.LogWarning(incidentDO.Data);
                 _uow.SaveChanges();
             }
         }
 
-        public void IncidentMissingFieldInPayload(string fieldKey, ActivityDO activity, string curUserId)
+        private void TokenValidationFailed(string token, string errorMessage)
         {
-            var template = _activityTemplate.GetByKey(activity.ActivityTemplateId);
-
-            IncidentDO incidentDO = new IncidentDO
+            var incident = new IncidentDO
             {
-                PrimaryCategory = "Process Execution",
-                SecondaryCategory = "Action",
-                ObjectId = activity.Id.ToString(),
-                Activity = "Occured",
-                Fr8UserId = curUserId,
-                Data =
-                    String.Format("MissingFieldInPayload: ActionName: {0}, Field name: {1}, ActionId {2}",
-                        template?.Name, fieldKey, activity.Id)
+                Fr8UserId = _sercurity.GetCurrentUser(),
+                Data = "Token validation failed with error: " + errorMessage,
+                ObjectId = _sercurity.GetCurrentUser(),
+                PrimaryCategory = "Terminal",
+                SecondaryCategory = "Authentication",
+                Activity = "Token Validation Failed"
             };
-            LogIncident(incidentDO);
+            Logger.LogError(errorMessage);
+            SaveAndLogIncident(incident);
         }
     }
 }

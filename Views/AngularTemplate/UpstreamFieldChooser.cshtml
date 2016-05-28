@@ -1,22 +1,18 @@
-﻿<div> <!--UpstreamDataChooser main container-->
-    <label>Select Available Upstream Field:</label>
-    <table ng-table="tableParams" class="table table-condensed table-bordered table-hover upstreamFieldChooser" stop-click-propagation>
-        <colgroup>
-            <col width="50%" />
-            <col width="50%" />
-        </colgroup>
-        <tr class="ng-table-group" ng-repeat-start="group in $groups" ng-init="group.$hideRows = true">
+﻿<div modal-resizable class="modal-header upstream-field-chooser-modal">
+    <!--UpstreamDataChooser main container-->
+    <h3 class="modal-title">Select Available Upstream Field:</h3>
+    <table ng-table="tableParams" class="table table-condensed table-bordered table-hover modal-body">
+        <tr class="ng-table-group" ng-repeat-start="group in $groups" ng-init="group.$hideRows = false">
+
             <td colspan="3">
-                <a href="" ng-click="group.$hideRows = !group.$hideRows">
+                <a href="" ng-click="group.$hideRows = !group.$hideRows; expand()">
                     <span class="glyphicon" ng-class="{ 'glyphicon-chevron-right': group.$hideRows, 'glyphicon-chevron-down': !group.$hideRows }"></span>
                     <strong>{{ group.value }}</strong>
                 </a>
             </td>
         </tr>
-        <tr ng-hide="group.$hideRows" ng-repeat="row in group.data" ng-repeat-end ng-click="selectField(row)" ng-class="{ 'active': field.value === row.key }">
-            <td data-title="'Name'" groupable="'name'">{{row.key}}</td>
-            <td data-title="'Label'" groupable="'sourceCrateLabel'" ng-if="false">{{row.sourceCrateLabel}}</td>
-            <td data-title="'Manifest'">{{row.sourceCrateManifest.Type}}</td>
+        <tr ng-hide="group.$hideRows" ng-repeat="row in group.data" ng-repeat-end groupable="sourceCrateLabel" ng-click="setItem(row.key)" ng-class="{ 'active': selectedFieldValue === row.key }">
+            <td>{{row.key}}</td>
         </tr>
     </table>
-</div>
+</div> 

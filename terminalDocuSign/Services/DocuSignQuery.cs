@@ -1,10 +1,10 @@
 using System;
 using System.Collections.Generic;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 
 namespace terminalDocuSign.Services
 {
-    public class DocusignQuery
+    public class DocuSignQuery
     {
         public static readonly FieldDTO[] Statuses =
         {
@@ -29,7 +29,7 @@ namespace terminalDocuSign.Services
             new FieldDTO("Auto Responded", "autoresponded"),
         };
 
-        public DocusignQuery()
+        public DocuSignQuery()
         {
             Conditions = new List<FilterConditionDTO>();
         }

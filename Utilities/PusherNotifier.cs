@@ -35,5 +35,18 @@ namespace Utilities
         {
             _pusher?.Trigger(channelName, eventName, message);
         }
+
+        public void NotifyUser(object message, string eventName, string userName)
+        {
+            var pusherChannel = BuildChannelName(userName);
+            Notify(pusherChannel, eventName, message);
+        }
+
+        private string BuildChannelName(string email)
+        {
+            // If you change the way how channel name is constructed, be sure to change it also
+            // in the client-side code (NotifierController.ts). 
+            return "fr8pusher_" + Uri.EscapeUriString(email).Replace("%", "=");
+        }
     }
 }

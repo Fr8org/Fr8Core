@@ -1,30 +1,39 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
-using Hub.Managers;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Newtonsoft.Json;
-using StructureMap;
-using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
+using terminalDocuSign.Services.New_Api;
 using TerminalBase.Infrastructure;
 using Utilities;
 using FolderItem = DocuSign.eSign.Model.FolderItem;
-using ListItem = Data.Control.ListItem;
+using ListItem = Fr8Data.Control.ListItem;
 
-namespace terminalDocuSign.Actions
+namespace terminalDocuSign.Activities
 {
     public class Query_DocuSign_v1 : BaseDocuSignActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Query_DocuSign",
+            Label = "Query DocuSign",
+            Version = "1",
+            Category = ActivityCategory.Receivers,
+            NeedsAuthentication = true,
+            MinPaneWidth = 380,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         private const string RunTimeCrateLabel = "DocuSign Envelope Data";
 
         public class ActivityUi : StandardConfigurationControlsCM
@@ -73,77 +82,44 @@ namespace terminalDocuSign.Actions
 
         protected override string ActivityUserFriendlyName => "Query DocuSign";
 
-        protected internal override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public Query_DocuSign_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+            : base(crateManager, docuSignManager)
         {
-            var payload = await GetPayload(curActivityDO, containerId);
-            var configurationControls = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().SingleOrDefault();
+        }
 
-            if (configurationControls == null)
-            {
-                return Error(payload, "Action was not configured correctly");
-            }
-            
-            var configuration = DocuSignManager.SetUp(authTokenDO);
-
-            var settings = GetDocusignQuery(configurationControls);
+        protected override async Task RunDS()
+        {
+            var configuration = DocuSignManager.SetUp(AuthorizationToken);
+            var settings = GetDocusignQuery();
             var folderItems = DocuSignFolders.GetFolderItems(configuration, settings);
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(payload))
+            foreach (var item in folderItems)
             {
-                foreach (var item in folderItems)
-                {
-                    crateStorage.Add(Data.Crates.Crate.FromContent(RunTimeCrateLabel, MapFolderItemToDocuSignEnvelopeCM(item)));
-                }
+                Payload.Add(Crate.FromContent(RunTimeCrateLabel, MapFolderItemToDocuSignEnvelopeCM(item)));
             }
-
-            return Success(payload);
+            Success();
         }
 
-        protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override Task InitializeDS()
         {
-            if (CheckAuthentication(curActivityDO, authTokenDO))
-            {
-                return Task.FromResult(curActivityDO);
-            }
-
             var configurationCrate = PackControls(new ActivityUi());
-
-            FillFolderSource(configurationCrate, "Folder", authTokenDO);
+            FillFolderSource(configurationCrate, "Folder");
             FillStatusSource(configurationCrate, "Status");
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.Replace(AssembleCrateStorage(configurationCrate));
-                crateStorage.Add(GetAvailableRunTimeTableCrate(RunTimeCrateLabel));
-            }
-
-            return Task.FromResult(curActivityDO);
+            Storage.Clear();
+            Storage.Add(configurationCrate);
+            Storage.Add(GetAvailableRunTimeTableCrate(RunTimeCrateLabel));
+            return Task.FromResult(0);
         }
 
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task FollowUpDS()
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.RemoveByLabel("Queryable Criteria");
-                return await Task.FromResult(curActivityDO);
-            }
-        }
-
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
-        {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            return ConfigurationRequestType.Followup;
+            Storage.RemoveByLabel("Queryable Criteria");
         }
 
         #region Private Methods 
 
         private Crate GetAvailableRunTimeTableCrate(string descriptionLabel)
         {
-            var availableRunTimeCrates = Data.Crates.Crate.FromContent("Available Run Time Crates", new CrateDescriptionCM(
+            var availableRunTimeCrates = Crate.FromContent("Available Run Time Crates", new CrateDescriptionCM(
                     new CrateDescriptionDTO
                     {
                         ManifestType = MT.DocuSignEnvelope.GetEnumDisplayName(),
@@ -154,15 +130,15 @@ namespace terminalDocuSign.Actions
             return availableRunTimeCrates;
         }
 
-        private void FillFolderSource(Crate configurationCrate, string controlName, AuthorizationTokenDO authTokenDO)
+        private void FillFolderSource(Crate configurationCrate, string controlName)
         {
             var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
             var control = configurationControl.FindByNameNested<DropDownList>(controlName);
             if (control != null)
             {
-                var conf = DocuSignManager.SetUp(authTokenDO);
+                var conf = DocuSignManager.SetUp(AuthorizationToken);
                 control.ListItems = DocuSignFolders.GetFolders(conf)
-                    .Select(x => new ListItem() {Key = x.Key, Value = x.Value})
+                    .Select(x => new ListItem() { Key = x.Key, Value = x.Value })
                     .ToList();
             }
         }
@@ -173,19 +149,19 @@ namespace terminalDocuSign.Actions
             var control = configurationControl.FindByNameNested<DropDownList>(controlName);
             if (control != null)
             {
-                control.ListItems = DocusignQuery.Statuses
+                control.ListItems = DocuSignQuery.Statuses
                     .Select(x => new ListItem() { Key = x.Key, Value = x.Value })
                     .ToList();
             }
         }
 
-        private static DocusignQuery GetDocusignQuery(StandardConfigurationControlsCM configurationControls)
+        private DocuSignQuery GetDocusignQuery()
         {
             var actionUi = new ActivityUi();
 
-            actionUi.ClonePropertiesFrom(configurationControls);
+            actionUi.ClonePropertiesFrom(ConfigurationControls);
 
-            var settings = new DocusignQuery();
+            var settings = new DocuSignQuery();
 
             settings.Folder = actionUi.Folder.Value;
             settings.Status = actionUi.Status.Value;

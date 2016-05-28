@@ -1,0 +1,18 @@
+﻿.auth-dialog .field-group {
+    margin-left: 10px;
+}
+
+.auth-dialog button {
+    margin-bottom: 5px;
+}
+
+.auth-dialog .auth-link-account {
+    display: block;
+    margin-left: 10px;
+    margin-bottom: 10px;
+    color: black;
+}
+
+.auth-dialog .auth-link-account i {
+    margin-right: 2px;
+}

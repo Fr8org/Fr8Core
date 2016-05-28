@@ -1,36 +1,59 @@
 ﻿using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+using System.Threading.Tasks;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Moq;
+using Moq.Protected;
+using terminalDocuSign;
 using terminalDocuSign.Actions;
 using terminalDocuSign.Services.New_Api;
+using TerminalBase.Infrastructure;
+using terminalDocuSign.Activities;
 
 namespace terminalDocuSignTests.Fixtures
 {
+    public class BaseDocusignActivityMock : BaseDocuSignActivity
+    {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Version = "1",
+            Name = "BaseDocusignActivityMock",
+            Label = "BaseDocusignActivityMock",
+            NeedsAuthentication = true,
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+        protected override string ActivityUserFriendlyName { get; }
+
+
+        public BaseDocusignActivityMock(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+            : base(crateManager, docuSignManager)
+        {
+        }
+
+        protected override Task RunDS()
+        {
+            return Task.FromResult(0);
+        }
+
+        protected override Task InitializeDS()
+        {
+            return Task.FromResult(0);
+        }
+
+        protected override Task FollowUpDS()
+        {
+            return Task.FromResult(0);
+        }
+    }
+
     public static partial class DocuSignActivityFixtureData
     {
-        public static BaseDocuSignActivity BaseDocuSignAcitvity()
-        {
-            var result = new Mock<BaseDocuSignActivity>();
-
-            result.Setup(x => x.NeedsAuthentication(It.IsNotNull<AuthorizationTokenDO>()))
-                .Returns(false);
-
-            result.Setup(x => x.NeedsAuthentication(null))
-                .Returns(true);
-
-            return result.Object;
-        }
-
-        public static BaseDocuSignActivity FailedBaseDocuSignActivity()
-        {
-            var result = new Mock<BaseDocuSignActivity>();
-            result.Setup(x => x.ValidateActivityInternal(It.IsAny<ActivityDO>()))
-                  .Returns(new ValidationResult("Failed"));
-            return result.Object;
-        }
-
+       
         public static IDocuSignManager DocuSignManagerWithTemplates()
         {
             var result = new Mock<IDocuSignManager>();

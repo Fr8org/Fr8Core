@@ -40,6 +40,15 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Demo|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Demo\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="Newtonsoft.Json">
       <HintPath>..\..\packages\Newtonsoft.Json.7.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -75,15 +84,18 @@
     <Compile Include="BaseIntegrationTest.cs" />
     <Compile Include="BaseHubIntegrationTest.cs" />
     <Compile Include="BaseTerminalIntegrationTest.cs" />
+    <Compile Include="DatabaseProvider.cs" />
     <Compile Include="EmailAssert.cs" />
     <Compile Include="ExceptionExtension.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SkipLocalAttribute.cs" />
     <Compile Include="Tools\Activities\IntegrationTestTools_terminalDocuSign.cs" />
+    <Compile Include="Tools\Activities\IntegrationTestTools_terminalDropbox.cs" />
     <Compile Include="Tools\Activities\IntegrationTestTools_terminalFr8.cs" />
     <Compile Include="Tools\Activities\IntegrationTestTools_terminalGoogle.cs" />
     <Compile Include="Tools\Plans\IntegrationTestTools.cs" />
     <Compile Include="Tools\Terminals\IntegrationTestTools_terminalDocuSign.cs" />
+    <Compile Include="Tools\Terminals\IntegrationTestTools_terminalDropbox.cs" />
     <Compile Include="Tools\Terminals\IntegrationTestTools_terminalGoogle.cs" />
     <Compile Include="Utilities.cs" />
   </ItemGroup>
@@ -98,9 +110,17 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Fr8Data\Fr8Data.csproj">
+      <Project>{a3178d71-a2c3-45b9-8334-adcc7c313541}</Project>
+      <Name>Fr8Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Infrastructure\Fr8Infrastructure.csproj">
+      <Project>{9f4b5c92-3535-4d4c-b1e4-37beb1ae5c42}</Project>
+      <Name>Fr8Infrastructure</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\terminalBase\TerminalBase.csproj">
       <Project>{D6A0A493-E926-439A-9CE2-E093E75132CD}</Project>
@@ -117,6 +137,10 @@
     <ProjectReference Include="..\..\terminalGoogle\terminalGoogle.csproj">
       <Project>{cddccfab-28b8-446c-8585-72d2bb78f2dc}</Project>
       <Name>terminalGoogle</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Utilities\Utilities.csproj">
+      <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
+      <Name>Utilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\UtilitiesTesting\UtilitiesTesting.csproj">
       <Project>{6b855c3f-07a9-4787-9fde-29fa567c43e2}</Project>

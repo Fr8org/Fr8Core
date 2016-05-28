@@ -1,15 +1,9 @@
-﻿﻿using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-﻿using Data.Crates;
-﻿using Hub.Managers;
-﻿using StructureMap;
+﻿using System.Collections.Generic;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using StructureMap;
+using Fr8Data.Managers;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -48,7 +42,7 @@ namespace UtilitiesTesting.Fixtures
             return payload;
         }
 
-        public static PayloadDTO PayloadDTO2()
+        public static ICrateStorage PayloadDTO2()
         {
             var standardPayload = new StandardPayloadDataCM(
                 new List<FieldDTO>()
@@ -58,15 +52,16 @@ namespace UtilitiesTesting.Fixtures
             );
 
             var payload = new PayloadDTO(TestContainer_Id_49());
+            var crateManager = ObjectFactory.GetInstance<ICrateManager>();
 
-            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(payload))
+            using (var crateStorage = crateManager.GetUpdatableStorage(payload))
             {
                 crateStorage.Add(Crate.FromContent("Standard Payload Data", standardPayload));
             }
 
             AddOperationalStateCrate(payload);
 
-            return payload;
+            return crateManager.GetStorage(payload);
         }
 
     }

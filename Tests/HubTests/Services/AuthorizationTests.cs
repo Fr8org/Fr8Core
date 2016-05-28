@@ -1,23 +1,18 @@
 ﻿using System;
 using System.Linq;
-using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
 using Hub.StructureMap;
 using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting.Fixtures;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using System.Threading.Tasks;
 using Moq;
 using Hub.Services;
 using System.Collections.Generic;
 using Data.Interfaces;
+using Fr8Data.DataTransferObjects;
 using UtilitiesTesting;
+using Fr8Infrastructure.Interfaces;
 
 namespace HubTests.Services
 {

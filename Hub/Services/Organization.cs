@@ -3,10 +3,11 @@ using System.Linq;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories.Security;
-using Data.Repositories.Security.Entities;
-using Data.States;
 using Hub.Interfaces;
 using StructureMap;
+using AutoMapper;
+using Fr8Data.DataTransferObjects;
+using Hub.Managers;
 
 namespace Hub.Services
 {
@@ -20,6 +21,33 @@ namespace Hub.Services
         public static string AdminOfOrganizationRoleName(string organizationName)
         {
             return $"AdminOfOrganization_{organizationName}";
+        }
+
+        public OrganizationDTO GetOrganizationById(int id) {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var organization = uow.OrganizationRepository.GetByKey(id);
+                var model = Mapper.Map<OrganizationDTO>(organization);
+                return model;
+            }
+        }
+
+        public OrganizationDTO UpdateOrganization(OrganizationDTO dto) {
+            OrganizationDO curOrganization = null;
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                curOrganization = uow.OrganizationRepository.GetByKey(dto.Id);
+                if (curOrganization == null)
+                {
+                    throw new Exception(string.Format("Unable to find criteria by id = {0}", dto.Id));
+                }
+
+                Mapper.Map<OrganizationDTO, OrganizationDO>(dto, curOrganization);
+
+                uow.SaveChanges();
+            }
+            return Mapper.Map<OrganizationDTO>(curOrganization);
         }
 
         /// <summary>
@@ -44,29 +72,22 @@ namespace Hub.Services
             };
             uow.OrganizationRepository.Add(organization);
 
-            //create roles for new organization
-            uow.AspNetRolesRepository.Add(new AspNetRolesDO()
+            //create role for new organization and add System Administrator Profile to this role
+            var memberOfOrganizationRole = new AspNetRolesDO()
             {
-                Name = MemberOfOrganizationRoleName(organizationName)
-            });
+                Name = MemberOfOrganizationRoleName(organizationName),
+            };
+            uow.AspNetRolesRepository.Add(memberOfOrganizationRole);
 
             var adminRole = new AspNetRolesDO()
             {
-                Name = AdminOfOrganizationRoleName(organizationName)
+                Name = AdminOfOrganizationRoleName(organizationName),
             };
             uow.AspNetRolesRepository.Add(adminRole);
 
             isNewOrganization = true;
                 
             uow.SaveChanges();
-
-            //link adminRole with ManageInternalUsers Privilege, used for  add/edit users that belong to this organization
-            var securityObjectStorage = ObjectFactory.GetInstance<ISecurityObjectsStorageProvider>();
-            securityObjectStorage.InsertRolePrivilege(new RolePrivilege()
-                {
-                    Privilege = new PrivilegeDO() { Name = Privilege.ManageInternalUsers.ToString()},
-                    Role = new RoleDO() { RoleId = adminRole.Id, }
-                });
 
             return organization;
         }

@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
-using Data.Crates;
 using Data.Interfaces;
-using Data.Interfaces.Manifests;
 using Data.Repositories.MultiTenant.Ast;
 using Data.Repositories.MultiTenant.Queryable;
 using Data.Repositories.SqlBased;
+using Fr8Data.Crates;
+using Fr8Data.Manifests;
 
 namespace Data.Repositories.MultiTenant
 {
@@ -39,6 +39,11 @@ namespace Data.Repositories.MultiTenant
             return _typeStorageProvider.FindTypeReference(_connectionProvider, typeId);
         }
 
+        public MtTypeReference FindTypeReference(string alias)
+        {
+            return _typeStorageProvider.FindTypeReference(_connectionProvider, alias);
+        }
+
         private bool IsManifest(Type clrType)
         {
             CrateManifestType dummy;
@@ -58,7 +63,7 @@ namespace Data.Repositories.MultiTenant
 
         public void Add(Manifest instance, string fr8AccountId)
         {
-            if (instance == null)
+            if (instance == null || string.IsNullOrWhiteSpace(fr8AccountId))
             {
                 return;
             }

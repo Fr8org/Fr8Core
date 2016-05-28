@@ -7,11 +7,9 @@ using System.Data.Entity.Infrastructure.Annotations;
 using System.Data.Entity.SqlServer;
 using System.Linq;
 using System.Reflection;
-using Data.Entities.CTE;
 using Microsoft.AspNet.Identity.EntityFramework;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Repositories.Security;
 using Utilities;
 using Data.Utility;
 using Data.Utility.JoinClasses;
@@ -143,7 +141,6 @@ namespace Data.Infrastructure
             }
 
             FixForeignKeyIDs(adds);
-
             foreach (var createdEntity in createdEntityList)
             {
                 createdEntity.Entity.BeforeCreate();
@@ -281,11 +278,6 @@ namespace Data.Infrastructure
             modelBuilder.Entity<RemoteOAuthDataDo>().ToTable("RemoteCalendarAuthData");
             modelBuilder.Entity<AuthorizationTokenDO>().ToTable("AuthorizationTokens");
             modelBuilder.Entity<LogDO>().ToTable("Logs");
-            modelBuilder.Entity<ProfileDO>().ToTable("Profiles");
-            modelBuilder.Entity<ProfileNodeDO>().ToTable("ProfileNodes");
-            modelBuilder.Entity<ProfileItemDO>().ToTable("ProfileItems");
-            modelBuilder.Entity<ProfileNodeAncestorsCTE>().ToTable("ProfileNodeAncestorsCTEView");
-            modelBuilder.Entity<ProfileNodeDescendantsCTE>().ToTable("ProfileNodeDescendantsCTEView");
             modelBuilder.Entity<ExpectedResponseDO>().ToTable("ExpectedResponses");
             modelBuilder.Entity<PlanDO>().ToTable("Plans");
             modelBuilder.Entity<ActivityDO>().ToTable("Actions");
@@ -296,6 +288,22 @@ namespace Data.Infrastructure
             modelBuilder.Entity<TerminalSubscriptionDO>().ToTable("TerminalSubscription");
             modelBuilder.Entity<EncryptedAuthorizationData>().ToTable("EncryptedAuthorizationData");
             modelBuilder.Entity<TagDO>().ToTable("Tags");
+            modelBuilder.Entity<FileTags>().ToTable("FileTags");
+
+            modelBuilder.Entity<PermissionSetDO>().ToTable("PermissionSets")
+                .HasOptional(x=>x.Profile).WithMany(x=>x.PermissionSets).HasForeignKey(x=>x.ProfileId).WillCascadeOnDelete(false);
+            modelBuilder.Entity<PermissionSetDO>().ToTable("PermissionSets")
+                .HasMany(x => x.Permissions).WithMany()
+                .Map(c =>
+                {
+                    c.MapLeftKey("PermissionSetId");
+                    c.MapRightKey("PermissionTypeTemplateId");
+                    c.ToTable("PermissionSetPermissions");
+                });
+
+            modelBuilder.Entity<ProfileDO>().ToTable("Profiles")
+                .HasMany(x=>x.PermissionSets).WithOptional(x=>x.Profile).HasForeignKey(x=>x.ProfileId).WillCascadeOnDelete(false);
+ 
             modelBuilder.Entity<FileTags>().ToTable("FileTags");
 
             modelBuilder.Entity<EmailDO>()
@@ -342,10 +350,10 @@ namespace Data.Infrastructure
                     ts.ForeignTableName
                 });
 
-            modelBuilder.Entity<CriteriaDO>().ToTable("Criteria");
+          
             modelBuilder.Entity<FileDO>().ToTable("Files");
-            
-            
+
+
             modelBuilder.Entity<AuthorizationTokenDO>()
              .HasRequired(x => x.Terminal)
              .WithMany()
@@ -366,10 +374,15 @@ namespace Data.Infrastructure
                 .WillCascadeOnDelete(false);
 
             modelBuilder.Entity<OrganizationDO>().ToTable("Organizations")
-                .HasMany(x=>x.Fr8Accounts)
-                .WithOptional(x=>x.Organization)
-                .HasForeignKey(x=>x.OrganizationId)
+                .HasMany(x => x.Fr8Accounts)
+                .WithOptional(x => x.Organization)
+                .HasForeignKey(x => x.OrganizationId)
                 .WillCascadeOnDelete(false);
+
+            modelBuilder.Entity<ActivityDescriptionDO>().ToTable("ActivityDescriptions");
+            modelBuilder.Entity<NodeTransitionDO>().ToTable("NodeTransitions");
+            modelBuilder.Entity<PlanNodeDescriptionDO>().ToTable("PlanNodeDescriptions");
+            modelBuilder.Entity<PlanTemplateDO>().ToTable("PlanTemplates");
 
             base.OnModelCreating(modelBuilder);
         }

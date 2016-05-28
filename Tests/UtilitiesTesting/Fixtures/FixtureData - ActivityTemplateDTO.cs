@@ -1,11 +1,6 @@
 ﻿﻿using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Fr8Data.DataTransferObjects;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -90,13 +85,31 @@ namespace UtilitiesTesting.Fixtures
                 Version = "1"
             };
         }
-
+        public static ActivityTemplateDTO MonitorFormResponsesActivityTemplate()
+        {
+            return new ActivityTemplateDTO()
+            {
+                Id = Guid.NewGuid(),
+                Name = "Monitor_Form_Responses",
+                Version = "1"
+            };
+        }
         public static ActivityTemplateDTO BuildMessageActivityTemplate()
         {
             return new ActivityTemplateDTO()
             {
                 Id = Guid.NewGuid(),
                 Name = "Build_Message",
+                Version = "1"
+            };
+        }
+
+        public static ActivityTemplateDTO GetFileListActivityTemplate()
+        {
+            return new ActivityTemplateDTO
+            {
+                Id = Guid.NewGuid(),
+                Name = "Get_File_List",
                 Version = "1"
             };
         }

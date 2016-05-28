@@ -30,6 +30,13 @@
                         </div>
                     </md-content>
                 </md-tab>
+                <md-tab label="Organization" ng-if="doesOrganizationExists">
+                    <md-content class="md-padding">
+                        <div id="Myfr8lines">
+                            @Html.Partial("Organization")
+                        </div>
+                    </md-content>
+                </md-tab>
             </md-tabs>
         </md-content>
     </div>

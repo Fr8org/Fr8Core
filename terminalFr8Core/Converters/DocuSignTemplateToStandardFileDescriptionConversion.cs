@@ -1,12 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Data.Crates;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
+using Fr8Data.Crates;
+using Fr8Data.Manifests;
 using Newtonsoft.Json;
-using StructureMap;
 
 namespace terminalFr8Core.Converters
 {

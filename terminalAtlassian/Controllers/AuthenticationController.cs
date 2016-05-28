@@ -1,10 +1,10 @@
 ﻿using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
 using TerminalBase.BaseClasses;
 using Newtonsoft.Json;
 using terminalAtlassian.Services;
 using StructureMap;
 using System;
+using Fr8Data.DataTransferObjects;
 
 namespace terminalAtlassian.Controllers
 {
@@ -40,7 +40,7 @@ namespace terminalAtlassian.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex);
+                ReportTerminalError(curTerminal, ex,curCredential.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

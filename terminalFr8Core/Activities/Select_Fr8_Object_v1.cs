@@ -1,27 +1,41 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Data.Entities;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
+using Fr8Data.Manifests;
+using Fr8Data.States;
+using Fr8Infrastructure.Interfaces;
 using Hub.Managers;
 using Newtonsoft.Json;
+using StructureMap;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Utilities.Configuration.Azure;
-using Data.Entities;
-using StructureMap;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     // The generic interface inheritance.
     public class Select_Fr8_Object_v1 : BaseTerminalActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Select_Fr8_Object",
+            Label = "Select Fr8 Object",
+            Category = ActivityCategory.Processors,
+            Version = "1",
+            MinPaneWidth = 330,
+            Tags = Tags.Internal,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
@@ -49,68 +63,6 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        // configure the action will return the initial UI crate 
-        public override async Task<ActivityDO> Configure(ActivityDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
-        {
-            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authTokenDO);
-        }
-
-        protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            var crateDesignTimeFields = PackFr8ObjectCrate();
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.Clear();
-                crateStorage.Add(PackControls(new ActivityUi()));
-                crateStorage.Add(crateDesignTimeFields);
-            }
-
-            return Task.FromResult(curActivityDO);
-        }
-
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                var configurationControls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-
-                if (configurationControls != null)
-                {
-                    var actionUi = new ActivityUi();
-
-                    // Clone properties of StandardConfigurationControlsCM to handy ActionUi
-                    actionUi.ClonePropertiesFrom(configurationControls);
-
-                    if (!string.IsNullOrWhiteSpace(actionUi.Selected_Fr8_Object.Value))
-                    {
-                        var fr8ObjectCrateDTO = await GetDesignTimeFieldsCrateOfSelectedFr8Object(actionUi.Selected_Fr8_Object.Value);
-
-                        const string designTimeControlName = "Select Fr8 Object Properties";
-                        actionUi.Selected_Fr8_Object.Label = designTimeControlName;
-
-                        // Sync changes from ActionUi to StandardConfigurationControlsCM
-                        configurationControls.ClonePropertiesFrom(actionUi);
-
-                        crateStorage.RemoveByLabel(designTimeControlName);
-                        crateStorage.Add(fr8ObjectCrateDTO);
-                    }
-                }
-            }
-
-            return await Task.FromResult(curActivityDO);
-        }
-
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
-        {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            return ConfigurationRequestType.Followup;
-        }
-
         private Crate PackFr8ObjectCrate()
         {
             var fields = new List<FieldDTO> {
@@ -136,16 +88,50 @@ namespace terminalFr8Core.Actions
             var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
             var url = CloudConfigurationManager.GetSetting("CoreWebServerUrl")
                 + "api/" + CloudConfigurationManager.GetSetting("HubApiVersion") + "/manifests?id="
-                + Int32.Parse(fr8Object);
+                + int.Parse(fr8Object);
             var response = await client.GetAsync<CrateDTO>(new Uri(url));
             return CrateManager.FromDto(response);
 		}
 
-		#region Execution
-		public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-	    {
-			return Success(await GetPayload(activityDO, containerId));
-	    }
-		#endregion
-	}
+        public Select_Fr8_Object_v1(ICrateManager crateManager)
+            : base(false, crateManager)
+        {
+        }
+
+        public override Task Run()
+        {
+            Success();
+            return Task.FromResult(0);
+        }
+
+        public override Task Initialize()
+        {
+            var crateDesignTimeFields = PackFr8ObjectCrate();
+            Storage.Clear();
+            Storage.Add(PackControls(new ActivityUi()));
+            Storage.Add(crateDesignTimeFields);
+            return Task.FromResult(0);
+        }
+
+        public override async Task FollowUp()
+        {
+            var actionUi = new ActivityUi();
+            // Clone properties of StandardConfigurationControlsCM to handy ActionUi
+            actionUi.ClonePropertiesFrom(ConfigurationControls);
+
+            if (!string.IsNullOrWhiteSpace(actionUi.Selected_Fr8_Object.Value))
+            {
+                var fr8ObjectCrateDTO = await GetDesignTimeFieldsCrateOfSelectedFr8Object(actionUi.Selected_Fr8_Object.Value);
+
+                const string designTimeControlName = "Select Fr8 Object Properties";
+                actionUi.Selected_Fr8_Object.Label = designTimeControlName;
+
+                // Sync changes from ActionUi to StandardConfigurationControlsCM
+                ConfigurationControls.ClonePropertiesFrom(actionUi);
+
+                Storage.RemoveByLabel(designTimeControlName);
+                Storage.Add(fr8ObjectCrateDTO);
+            }
+        }
+    }
 }

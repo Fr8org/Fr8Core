@@ -1,7 +1,6 @@
-﻿    using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.Owin;
 using Microsoft.Owin.Hosting;
@@ -11,15 +10,15 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories;
 using Data.States;
+using Hub.Infrastructure;
+using Hub.Interfaces;
 using Hub.Managers;
-using Hub.Services;
+using Hub.Security;
 using Utilities;
 using Utilities.Configuration.Azure;
-using Utilities.Logging;
-using Hub.Interfaces;
 using Hangfire;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using System.Web;
+using Hangfire.StructureMap;
+using Hangfire.Dashboard;
 
 [assembly: OwinStartup(typeof(HubWeb.Startup))]
 
@@ -35,7 +34,8 @@ namespace HubWeb
         public async void Configuration(IAppBuilder app, bool selfHostMode)
         {
             //ConfigureDaemons();
-            ConfigureAuth(app);
+            // ConfigureAuth(app);
+            OwinInitializer.ConfigureAuth(app, "/DockyardAccount/Index");
 
 
             ConfigureHangfire(app, "DockyardDB");
@@ -49,10 +49,17 @@ namespace HubWeb
         public void ConfigureHangfire(IAppBuilder app, string connectionString)
         {
             GlobalConfiguration.Configuration
-                .UseSqlServerStorage(connectionString);
-            app.UseHangfireDashboard();
+                .UseSqlServerStorage(connectionString)
+                .UseStructureMapActivator(ObjectFactory.Container);
+            app.UseHangfireDashboard("/hangfire", new DashboardOptions
+            {
+                AuthorizationFilters = new[] { new HangFireAuthorizationFilter() },
+            });
             app.UseHangfireServer();
+            GlobalJobFilters.Filters.Add(new AutomaticRetryAttribute { Attempts = 0 });
         }
+
+
 
         //SeedDatabases
         //Ensure that critical configuration information is present in the database
@@ -161,17 +168,11 @@ namespace HubWeb
             }
 
             alertReporter.ActivityTemplatesSuccessfullyRegistered(count);
-
-            // At Startup Check If the Log Monitor Fr8 Event plan exist in the database then active it. otherwise create the new plan.
-
-            PlanManager manager = new PlanManager();
-            string sytemUserEmail = ObjectFactory.GetInstance<IConfigRepository>().Get<string>("SystemUserEmail");
-            await manager.CreatePlan_LogFr8InternalEvents(sytemUserEmail).ConfigureAwait(true);
         }
 
         public static IDisposable CreateServer(string url)
         {
             return WebApp.Start<Startup>(url: url);
         }
-            }
-        }
+    }
+}

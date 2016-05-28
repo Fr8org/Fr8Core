@@ -1,4 +1,6 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using Microsoft.AspNet.Identity.EntityFramework;
 using StructureMap;
@@ -113,6 +115,33 @@ namespace UtilitiesTesting.Fixtures
                 uow.SaveChanges();
 
                 return guestUserFr8Account;
+            }
+        }
+        public static Fr8AccountDO TestDockyardAccount7()
+        {
+            string adminUserEmail = "admin@test.com";
+            string password = "oldpassword";
+            string firstName = "Admin";
+            string lastName = "Admin";
+
+            Fr8Account _dockyardAccount = ObjectFactory.GetInstance<Fr8Account>();
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var adminRoleId = Guid.NewGuid().ToString();
+                var adminRoleDO = new AspNetRolesDO()
+                {
+                    Name = "Admin",
+                    Id = adminRoleId,
+                    CreateDate = DateTimeOffset.UtcNow,
+                    LastUpdated = DateTimeOffset.UtcNow,
+                };
+                uow.AspNetRolesRepository.Add(adminRoleDO);
+                var adminUserFr8Account = _dockyardAccount.Register(uow, adminUserEmail, firstName, lastName, password, adminRoleId);
+                uow.AspNetUserRolesRepository.RevokeRoleFromUser(Roles.Admin, adminUserFr8Account.Id);
+                var adminRole = new IdentityUserRole() { RoleId = adminRoleId, UserId = adminUserFr8Account.Id };
+                adminUserFr8Account.Roles.Add(adminRole);
+                uow.SaveChanges();
+                return adminUserFr8Account;
             }
         }
 

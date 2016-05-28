@@ -3,26 +3,22 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
-using Data.Crates;
 using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
+using Fr8Data.Manifests;
+using Fr8Infrastructure.Interfaces;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
 using terminalDocuSign.Actions;
+using terminalDocuSign.Activities;
 using terminalDocuSign.Infrastructure;
-using terminalDocuSign.Infrastructure.AutoMapper;
 using terminalDocuSign.Infrastructure.StructureMap;
-using terminalDocuSign.Interfaces;
 using terminalDocuSign.Tests.Fixtures;
 using TerminalBase.Infrastructure;
-using Utilities.Configuration.Azure;
 using UtilitiesTesting;
 
 namespace terminalDocuSign.Tests.Actions
@@ -39,7 +35,6 @@ namespace terminalDocuSign.Tests.Actions
             
             TerminalBootstrapper.ConfigureTest();
             TerminalDocuSignMapBootstrapper.ConfigureDependencies(Hub.StructureMap.StructureMapBootStrapper.DependencyType.TEST);
-            TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
             
             PayloadDTO payloadDto = new PayloadDTO(Guid.Empty);
             payloadDto.CrateStorage = new CrateStorageDTO();
@@ -99,27 +94,6 @@ namespace terminalDocuSign.Tests.Actions
                 CompletedDate = folderItem.CompletedDateTime,
                 CreateDate = folderItem.CreatedDateTime
             };
-        }
-
-
-        private void ConfigureActivity(ActivityDO activity, params KeyValuePair<string, string>[] settings)
-        {
-            using (var crateStorage = _crateManager.GetUpdatableStorage(activity))
-            {
-                var filterConditions = new List<FilterConditionDTO>();
-
-                foreach (var setting in settings)
-                {
-                    filterConditions.Add(new FilterConditionDTO { Field = setting.Key, Operator = "eq", Value = setting.Value });
-                }
-
-                string initialQuery = JsonConvert.SerializeObject(filterConditions);
-
-                crateStorage.Add(Crate.FromContent("Config", new Generate_DocuSign_Report_v1.ActivityUi
-                {
-                    QueryBuilder = { Value = initialQuery }
-                }));
-            }
         }
 
 

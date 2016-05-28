@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Globalization;
-using Data.Interfaces.Manifests;
 using terminalDocuSign.Infrastructure;
 
 namespace terminalDocuSign.Tests.Fixtures

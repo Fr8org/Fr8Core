@@ -10,7 +10,7 @@ using UtilitiesTesting;
 
 namespace HubTests.Entities
 {
-    [TestFixture,Ignore]
+    [TestFixture]
     [Category("EmailAddress")]
     public class EmailAddressTests : BaseTest
     {
@@ -26,7 +26,6 @@ namespace HubTests.Entities
         }
 
         [Test]
-        [Ignore]
         public void TestBasicEmail()
         {
             var emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
@@ -38,7 +37,6 @@ namespace HubTests.Entities
         }
 
         [Test]
-        [Ignore]
         public void TestMultipleBasicEmails()
         {
             var emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
@@ -54,7 +52,6 @@ namespace HubTests.Entities
         }
 
         [Test]
-        [Ignore]
         public void TestEmailWithName()
         {
             var emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
@@ -66,7 +63,6 @@ namespace HubTests.Entities
         }
 
         [Test]
-        [Ignore]
         public void TestEmailWithFullName()
         {
             var emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
@@ -78,7 +74,6 @@ namespace HubTests.Entities
         }
 
         [Test]
-        [Ignore]
         public void TestNameWithNumbers()
         {
             var emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
@@ -90,7 +85,6 @@ namespace HubTests.Entities
         }
 
         [Test]
-        [Ignore]
         public void TestEmailNameWithNumbers()
         {
             var emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
@@ -102,7 +96,6 @@ namespace HubTests.Entities
         }
 
         [Test]
-        [Ignore]
         public void TestDomainlNameWithNumbers()
         {
             var emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
@@ -123,7 +116,6 @@ namespace HubTests.Entities
         }
 
         [Test]
-        [Ignore]
         public void TestComplexTLD()
         {
             var emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
@@ -136,7 +128,6 @@ namespace HubTests.Entities
         }
 
         [Test]
-        [Ignore]
         public void TestEmailAddressDOCreated()
         {
             var emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
@@ -150,7 +141,6 @@ namespace HubTests.Entities
         }
 
         [Test]
-        [Ignore]
         public void TestEmailAddressDODuplicateNotCreated()
         {
             var emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
@@ -171,7 +161,6 @@ namespace HubTests.Entities
         }
 
         [Test]
-        [Ignore]
         public void TestCorruptEmailNotParsed()
         {
             var emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
@@ -183,7 +172,6 @@ namespace HubTests.Entities
         }
 
         [Test]
-        [Ignore]
         public void TestDashInDomain()
         {
             var emailAddress = ObjectFactory.GetInstance<IEmailAddress>();
@@ -197,36 +185,31 @@ namespace HubTests.Entities
         [Test]
         public void TestIllegalSurroundingCharactersInvalid()
         {
-            var ru = new RegexUtilities();
-            Assert.False(ru.IsValidEmailAddress("'rjrudman@gmail.com'"));
+            Assert.False(RegexUtilities.IsValidEmailAddress("'rjrudman@gmail.com'"));
         }
 
         [Test]
         public void TestEmailNameWithPeriod()
         {
-            var ru = new RegexUtilities();
-            Assert.True(ru.IsValidEmailAddress("rj.rudman@gmail.com"));
+            Assert.True(RegexUtilities.IsValidEmailAddress("rj.rudman@gmail.com"));
         }
 
         [Test]
         public void TestEmailNameWithDash()
         {
-            var ru = new RegexUtilities();
-            Assert.True(ru.IsValidEmailAddress("rj-rudman@gmail.com"));
+            Assert.True(RegexUtilities.IsValidEmailAddress("rj-rudman@gmail.com"));
         }
 
         [Test]
         public void TestEmailDomainWithPeriod()
         {
-            var ru = new RegexUtilities();
-            Assert.True(ru.IsValidEmailAddress("rjrudman@gmail.net.au"));
+            Assert.True(RegexUtilities.IsValidEmailAddress("rjrudman@gmail.net.au"));
         }
 
         [Test]
         public void TestEmailUnderscore()
         {
-            var ru = new RegexUtilities();
-            Assert.True(ru.IsValidEmailAddress("br_notify@kwasant.com"));
+            Assert.True(RegexUtilities.IsValidEmailAddress("br_notify@kwasant.com"));
         }
 
         [Test]

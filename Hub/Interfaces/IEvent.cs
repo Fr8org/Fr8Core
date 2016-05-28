@@ -1,10 +1,8 @@
-﻿using System.Net.Http;
-using System.Threading.Tasks;
-using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
-using Data.Crates;
+﻿using System.Threading.Tasks;
 using Data.Entities;
 using System.Collections.Generic;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
 
 namespace Hub.Interfaces
 {
@@ -16,12 +14,12 @@ namespace Hub.Interfaces
         /// <summary>
         /// Handles Terminal Incident
         /// </summary>
-        void HandleTerminalIncident(LoggingDataCm incident);
+        void HandleTerminalIncident(LoggingDataCM incident);
         
         /// <summary>
         /// Handles Terminal Event 
         /// </summary>
-        void HandleTerminalEvent(LoggingDataCm eventDataCm);
+        void HandleTerminalEvent(LoggingDataCM eventDataCm);
 
         Task ProcessInboundEvents(Crate curCrateStandardEventReport);
         Task LaunchProcess(PlanDO curPlan, Crate curEventData = null);

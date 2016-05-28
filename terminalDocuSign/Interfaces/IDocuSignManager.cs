@@ -1,16 +1,17 @@
 using System;
 using System.Collections.Generic;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
 using Newtonsoft.Json.Linq;
 using terminalDocuSign.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using TerminalBase.Models;
 
 namespace terminalDocuSign.Services.New_Api
 {
     public interface IDocuSignManager
     {
-        DocuSignApiConfiguration SetUp(AuthorizationTokenDO authTokenDO);
+        DocuSignApiConfiguration SetUp(AuthorizationToken authTokenDO);
         List<FieldDTO> GetTemplatesList(DocuSignApiConfiguration conf);
         JObject DownloadDocuSignTemplate(DocuSignApiConfiguration config, string selectedDocusignTemplateId);
         IEnumerable<FieldDTO> GetEnvelopeRecipientsAndTabs(DocuSignApiConfiguration conf, string envelopeId);

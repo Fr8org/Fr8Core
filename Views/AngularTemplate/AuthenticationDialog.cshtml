@@ -1,7 +1,7 @@
 ﻿<div class="modal-header">
     <h4 class="pull-left">Authorize Accounts</h4>
 </div>
-<div class="modal-body" block-if="isLoading()">
+<div class="auth-dialog modal-body" block-if="isLoading()">
     <div  class="fr8-auth-cover" ng-class="[{'collapsed':!isWaitingForResponse}]">
         <div class="fr8-full-width fr8-full-height" style="position: absolute; top: 40%;" >
             <div  block-if="isWaitingForResponse === true"></div>
@@ -10,32 +10,34 @@
 
     <div class="panel panel-default" ng-repeat="terminal in terminals">
         <div class="panel-heading">
-            Terminal: {{terminal.name}}
+            Terminal: {{terminal.label}}
         </div>
         <div class="panel-body">
-            <div ng-if="terminal.authTokens.length" style="margin: 5px 0 5px 0;">
-                Select authorization:
+            <p ng-if="!terminal.authTokens.length">
+                Please click on the <strong>Add Account</strong> button to enable &laquo;{{terminal.label}}&raquo; to access the external service.</p>
+
+            <div ng-if="terminal.authTokens.length">
+                <p>Use which account:</p>
+                <div class="field-group">
+                    <div ng-repeat="authToken in terminal.authTokens" class="frm-group">
+                        <label>
+                            <input type="radio" name="terminal_{{terminal.id}}"
+                                value="{{authToken.id}}"
+                                ng-model="terminal.selectedAuthTokenId" />
+                            <span ng-if="authToken.isMain">(Main) </span>
+                            <span>{{authToken.externalAccountName}}</span>
+                        </label>
+                    </div>
+                </div>
             </div>
-            <div ng-repeat="authToken in terminal.authTokens">
-                <label>
-                    <input type="radio" name="terminal_{{terminal.id}}"
-                           value="{{authToken.id}}"
-                           ng-model="terminal.selectedAuthTokenId" />
-                    <span ng-if="authToken.isMain">(Main) </span>
-                    <span>{{authToken.externalAccountName}}</span>
-                </label>
-            </div>
-            <div ng-if="!terminal.authTokens.length" style="margin: 5px 0 5px 0;">
-                Please click on the <strong>Add Authorization</strong> button to enable &laquo;{{terminal.name}}&raquo; to access the external service.
-            </div>
-            <div ng-show="terminal.authTokens.length" style="margin-top: 10px; margin-bottom: 5px;">
+            
+            <a class="auth-link-account" ng-click="linkAccount(terminal)"><i class="fa fa-plus" aria-hidden="true"></i> Add Account</a>
+            
+            <div ng-if="terminal.authTokens.length" class="frm-group">
                 <label>
                     <input type="checkbox" ng-model="terminal.isMain" />
                     <span>Use for all Activities</span>
                 </label>
-            </div>
-            <div>
-                <button class="btn btn-default" ng-click="linkAccount(terminal)">Add Authorization</button>
             </div>
         </div>
     </div>

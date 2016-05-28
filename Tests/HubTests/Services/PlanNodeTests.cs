@@ -8,8 +8,8 @@ using NUnit.Framework;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using StructureMap;
-using Data.Interfaces.Manifests;
 using Data.Interfaces;
+using Fr8Data.States;
 
 namespace HubTests.Services
 {
@@ -28,11 +28,11 @@ namespace HubTests.Services
         }
 
         [Test]
-        public void GetDesignTimeFieldsByDirection_ShouldReturnDesignTimeFieldsCrate()
+        public void GetAvailableData_ShouldReturnFields()
         {
             var plan = new PlanDO();
             plan.Name = "sdfasdfasdf";
-            plan.PlanState = PlanState.Active;
+            plan.PlanState = PlanState.Running;
             var testActionTree = FixtureData.TestActivity2Tree();
 
             plan.ChildNodes.Add(testActionTree);
@@ -42,12 +42,12 @@ namespace HubTests.Services
                 uow.PlanRepository.Add(plan);
                 uow.SaveChanges();
             }
-            
-            var fieldsCrate = _planNode.GetDesignTimeFieldsByDirection(testActionTree.ChildNodes.Last().Id, CrateDirection.Upstream, AvailabilityType.NotSet);
+
+            IPlanNode planNodeService = ObjectFactory.GetInstance<IPlanNode>();
+            var fieldsCrate = planNodeService.GetIncomingData(testActionTree.ChildNodes.Last().Id, CrateDirection.Upstream, AvailabilityType.NotSet);
             Assert.NotNull(fieldsCrate);
-            Assert.NotNull(fieldsCrate.Fields);
-            Assert.IsInstanceOfType(typeof(FieldDescriptionsCM), fieldsCrate);
-            Assert.AreEqual(66, fieldsCrate.Fields.Count());
+            Assert.NotNull(fieldsCrate.AvailableCrates.SelectMany(x=> x.Fields).ToList());
+            Assert.AreEqual(396, fieldsCrate.AvailableCrates.SelectMany(x => x.Fields).ToList().Count);
         }
 
         [Test]
@@ -64,7 +64,7 @@ namespace HubTests.Services
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { root }
                 });
 
@@ -114,7 +114,7 @@ namespace HubTests.Services
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { FixtureData.TestActivityTree() }
                 });
 
@@ -145,7 +145,7 @@ namespace HubTests.Services
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { FixtureData.TestActivityTree() }
                 });
 

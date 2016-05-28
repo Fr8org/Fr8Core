@@ -10,8 +10,10 @@
           <Binding name="Endpoint1" endpointName="terminalAzure" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalAzure.fr8.co" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-terminalAzure.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-terminalAzure.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="terminalAzure.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-terminalAzure.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalAzure.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalSlack" physicalDirectory="..\..\..\terminalSlack\azure.publish">
@@ -19,8 +21,10 @@
           <Binding name="Endpoint1" endpointName="terminalSlack" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalSlack.fr8.co" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-terminalSlack.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-terminalSlack.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="terminalSlack.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-terminalSlack.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalSlack.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalDocuSign" physicalDirectory="..\..\..\terminalDocuSign\azure.publish">
@@ -28,8 +32,10 @@
           <Binding name="Endpoint1" endpointName="terminalDocuSign" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalDocuSign.fr8.co" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-terminalDocuSign.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-terminalDocuSign.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="terminalDocuSign.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-terminalDocuSign.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalDocuSign.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalPapertrail" physicalDirectory="..\..\..\terminalPapertrail\azure.publish">
@@ -37,8 +43,10 @@
           <Binding name="Endpoint1" endpointName="terminalPapertrail" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalPapertrail.fr8.co" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-terminalPapertrail.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-terminalPapertrail.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="terminalPapertrail.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-terminalPapertrail.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalPapertrail.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalSalesforce" physicalDirectory="..\..\..\terminalSalesforce\azure.publish">
@@ -46,8 +54,10 @@
           <Binding name="Endpoint1" endpointName="terminalSalesforce" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalSalesforce.fr8.co" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-terminalSalesforce.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-terminalSalesforce.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="terminalSalesforce.fr8.co" />
-          <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-terminalSalesforce.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-termin1alSalesforce.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-termin1alSalesforce.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalFr8Core" physicalDirectory="..\..\..\terminalFr8Core\azure.publish">
@@ -55,8 +65,10 @@
           <Binding name="Endpoint1" endpointName="terminalFr8Core" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalFr8Core.fr8.co" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-terminalFr8Core.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-terminalFr8Core.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="terminalFr8Core.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-terminalFr8Core.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalFr8Core.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalSendGrid" physicalDirectory="..\..\..\terminalSendGrid\azure.publish">
@@ -64,8 +76,10 @@
           <Binding name="Endpoint1" endpointName="terminalSendGrid" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalSendGrid.fr8.co" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-terminalSendGrid.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-terminalSendGrid.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="terminalSendGrid.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-terminalSendGrid.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalSendGrid.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalTwilio" physicalDirectory="..\..\..\terminalTwilio\azure.publish">
@@ -73,8 +87,10 @@
           <Binding name="Endpoint1" endpointName="terminalTwilio" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalTwilio.fr8.co" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-terminalTwilio.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-terminalTwilio.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="terminalTwilio.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-terminalTwilio.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalTwilio.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalExcel" physicalDirectory="..\..\..\terminalExcel\azure.publish">
@@ -82,8 +98,10 @@
           <Binding name="Endpoint1" endpointName="terminalExcel" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalExcel.fr8.co" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-terminalExcel.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-terminalExcel.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="terminalExcel.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-terminalExcel.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalExcel.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalGoogle" physicalDirectory="..\..\..\terminalGoogle\azure.publish">
@@ -91,8 +109,10 @@
           <Binding name="Endpoint1" endpointName="terminalGoogle" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalGoogle.fr8.co" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-terminalGoogle.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-terminalGoogle.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="terminalGoogle.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-terminalGoogle.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalGoogle.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalDropbox" physicalDirectory="..\..\..\terminalDropbox\azure.publish">
@@ -100,8 +120,10 @@
           <Binding name="Endpoint1" endpointName="terminalDropbox" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalDropbox.fr8.co" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-terminalDropbox.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-terminalDropbox.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="terminalDropbox.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-terminalDropbox.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalDropbox.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalAtlassian" physicalDirectory="..\..\..\terminalAtlassian\azure.publish">
@@ -109,8 +131,10 @@
           <Binding name="Endpoint1" endpointName="terminalAtlassian" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalAtlassian.fr8.co" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-terminalAtlassian.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-terminalAtlassian.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="terminalAtlassian.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-terminalAtlassian.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalAtlassian.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalQuickBooks" physicalDirectory="..\..\..\terminalQuickBooks\azure.publish">
@@ -118,8 +142,10 @@
           <Binding name="Endpoint1" endpointName="terminalQuickBooks" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalQuickBooks.fr8.co" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-terminalQuickBooks.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-terminalQuickBooks.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="terminalQuickBooks.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-terminalQuickBooks.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalQuickBooks.fr8.co" />
         </Bindings>
       </Site>
       <Site name="terminalYammer" physicalDirectory="..\..\..\terminalYammer\azure.publish">
@@ -127,11 +153,23 @@
           <Binding name="Endpoint1" endpointName="terminalYammer" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="terminalYammer.fr8.co" />
           <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-terminalYammer.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-terminalYammer.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="terminalYammer.fr8.co" />
           <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-terminalYammer.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-terminalYammer.fr8.co" />
         </Bindings>
       </Site>
-    </Sites>
+      <Site name="PlanDirectory" physicalDirectory="..\..\..\Services\PlanDirectory\azure.publish">
+        <Bindings>
+          <Binding name="Endpoint1" endpointName="PlanDirectory" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="directory.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="dev-directory.fr8.co" />
+          <Binding name="Endpoint2" endpointName="server80" hostHeader="demo-directory.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="directory.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="dev-directory.fr8.co" />
+          <Binding name="Endpoint3" endpointName="server443" hostHeader="demo-directory.fr8.co" />
+        </Bindings>
+      </Site>    </Sites>
     <ConfigurationSettings>
       <Setting name="Microsoft.WindowsAzure.Plugins.Diagnostics.ConnectionString" />
       <Setting name="Fr8.ConnectionString"/>
@@ -149,7 +187,9 @@
       <Setting name="terminalSendGrid.TerminalEndpoint"/>
       <Setting name="terminalSlack.TerminalEndpoint"/>
       <Setting name="terminalTwilio.TerminalEndpoint"/>
-      <Setting name="terminalYammer.TerminalEndpoint"/>      
+      <Setting name="terminalYammer.TerminalEndpoint"/>
+      <Setting name="OutboundUserName"/>
+      <Setting name="OutboundUserPassword"/>
     </ConfigurationSettings>
     <Endpoints>
       <!-- Endpoint name must strongly match terminal name. This rule is expected 
@@ -169,8 +209,9 @@
       <InputEndpoint name="terminalGoogle" protocol="http" port="25923" />
       <InputEndpoint name="terminalDropbox" protocol="http" port="19760" />
       <InputEndpoint name="terminalAtlassian" protocol="http" port="39768" />
-      <InputEndpoint name="terminalQuickBooks" protocol="http" port="48317" />
       <InputEndpoint name="terminalYammer" protocol="http" port="39555" />
+      <InputEndpoint name="terminalQuickBooks" protocol="http" port="48317" />
+      <InputEndpoint name="PlanDirectory" protocol="http" port="64879" />
     </Endpoints>
     <Imports>
       <Import moduleName="RemoteAccess" />

@@ -1,12 +1,20 @@
-﻿using Data.States;
-using Data.States.Templates;
+﻿using Data.States.Templates;
 using System;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using Fr8Data.Helpers;
 
 namespace Data.Entities
 {
     public class AuthorizationTokenDO : BaseObject
     {
+        public static readonly IMemberAccessor[] Members;
+
+        static AuthorizationTokenDO()
+        {
+            Members = Fr8ReflectionHelper.GetMembers(typeof(AuthorizationTokenDO)).ToArray();
+        }
+
         public AuthorizationTokenDO()
         {
             Id = Guid.NewGuid();
@@ -31,6 +39,12 @@ namespace Data.Entities
         public DateTime ExpiresAt { get; set; }
 
         public String ExternalAccountId { get; set; }
+
+        public String ExternalAccountName { get; set; }
+
+        public String ExternalDomainId { get; set; }
+
+        public String ExternalDomainName { get; set; }
 
         /// <summary>
         /// State-token parameter, that is sent to exteral auth service,
@@ -59,5 +73,32 @@ namespace Data.Entities
         public String AdditionalAttributes { get; set; }
 
         public bool IsMain { get; set; }
+
+        [NotMapped]
+        public string DisplayName
+        {
+            get
+            {
+                var domain = string.IsNullOrEmpty(ExternalDomainName) ? ExternalDomainId : ExternalDomainName;
+                var account = string.IsNullOrEmpty(ExternalAccountName) ? ExternalAccountId : ExternalAccountName;
+                if (string.IsNullOrEmpty(domain))
+                {
+                    return account;
+                }
+                return $"{domain}\\{account}";
+            }
+        }
+
+        public AuthorizationTokenDO Clone()
+        {
+            var clone = new AuthorizationTokenDO();
+
+            foreach (var memberAccessor in Members.Where(x=>x.CanRead && x.CanWrite))
+            {
+                memberAccessor.SetValue(clone, memberAccessor.GetValue(this));
+            }
+
+            return clone;
+        }
     }
 }

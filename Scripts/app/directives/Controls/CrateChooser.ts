@@ -43,18 +43,11 @@ module dockyard.directives.crateChooser {
                 };
 
                 if ($scope.field.requestUpstream) {
-                    var manifestType: string = 'Crate Description';
-                    if ($scope.field.source && $scope.field.source.manifestType) {
-                        manifestType = $scope.field.source.manifestType;
-                    }
-
-                    UpstreamExtractor.extractUpstreamData($scope.currentAction.id, manifestType, 'NotSet')
-                        .then((data) => {
+                    UpstreamExtractor.getAvailableData($scope.currentAction.id, 'NotSet')
+                        .then((data: model.IncomingCratesDTO) => {
                             var descriptions = <Array<model.CrateDescriptionDTO>>[];
-                            angular.forEach(data, (it) => {
-                                angular.forEach(it.crateDescriptions, (cd) => {
-                                    descriptions.push(<model.CrateDescriptionDTO>cd);
-                                });
+                            angular.forEach(data.availableCrates, (cd) => {
+                                descriptions.push(cd);
                             });
 
                             $scope.field.crateDescriptions = descriptions;
@@ -100,7 +93,7 @@ module dockyard.directives.crateChooser {
         for (var i = 0; i < crateDescriptions.length; i++) {
             var category = findCategory(crateDescriptions[i]);
             if (category == null) {
-                category = { label: crateDescriptions[i].manifestType, isCategory: true, children: [] };
+                category = { label: crateDescriptions[i].label, isCategory: true, children: [] };
                 categories.push(category);
             }
 

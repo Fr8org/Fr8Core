@@ -1,17 +1,14 @@
 ﻿using System.Linq;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using HealthMonitor.Utility;
-using Hub.Managers;
-using Hub.StructureMap;
 using NUnit.Framework;
-using StructureMap;
 using terminalAzureTests.Fixtures;
 using UtilitiesTesting.Fixtures;
-using System.Collections.Generic;
 using System.Threading.Tasks;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.Managers;
 
 namespace terminalAzureTests.Integration
 {
@@ -76,7 +73,6 @@ namespace terminalAzureTests.Integration
 
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             AssertConfigureCrate(crateStorage);
@@ -120,7 +116,6 @@ namespace terminalAzureTests.Integration
 
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
 
@@ -172,7 +167,6 @@ namespace terminalAzureTests.Integration
 
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             //There will be no DesignTimeCrate only Configuration crate
             Assert.AreEqual(1, crateStorage.Count);
@@ -214,7 +208,7 @@ namespace terminalAzureTests.Integration
                     new FieldDTO("Field1", "test physician"),
                     new FieldDTO("Field2", "teststring")
                 ),
-               "DocuSign Envelope Data"
+               "TableData"
             );
 
             var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, fr8DataDTO);

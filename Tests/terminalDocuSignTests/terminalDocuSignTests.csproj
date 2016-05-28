@@ -40,6 +40,15 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Demo|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Demo\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AutoMapper, Version=4.0.4.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\..\packages\AutoMapper.4.0.4\lib\net45\AutoMapper.dll</HintPath>
@@ -107,11 +116,14 @@
     <Compile Include="Activities\BaseTest.cs" />
     <Compile Include="Activities\Get_DocuSign_Template_v1_Tests.cs" />
     <Compile Include="Activities\Monitor_DocuSign_Envelope_Activity_v1_Tests.cs" />
+    <Compile Include="Activities\Query_DocuSign_v2_Tests.cs" />
+    <Compile Include="Activities\Send_DocuSign_Envelope_v2_Tests.cs" />
     <Compile Include="Fixtures\DocuSignActivitiesFixtureData.cs" />
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
     <Compile Include="Integration\Extract_Data_From_Envelopes_v1_EndToEnd_Tests.cs" />
     <Compile Include="Integration\Extract_Data_From_Envelopes_v1_Tests.cs" />
     <Compile Include="Integration\Generate_DocuSign_Report_v1_EndToEnd_Tests.cs" />
+    <Compile Include="Integration\MonitorAllDocuSignEventsLocal_Tests.cs" />
     <Compile Include="Integration\MonitorAllDocuSignEvents_Tests.cs" />
     <Compile Include="Integration\Track_DocuSign_Recipients_v1_EndToEnd_Tests.cs" />
     <Compile Include="Integration\Mail_Merge_Into_DocuSign_v1_EndToEnd_Tests.cs" />
@@ -137,9 +149,17 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Fr8Data\Fr8Data.csproj">
+      <Project>{a3178d71-a2c3-45b9-8334-adcc7c313541}</Project>
+      <Name>Fr8Data</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Infrastructure\Fr8Infrastructure.csproj">
+      <Project>{9F4B5C92-3535-4D4C-B1E4-37BEB1AE5C42}</Project>
+      <Name>Fr8Infrastructure</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\terminalBase\TerminalBase.csproj">
       <Project>{D6A0A493-E926-439A-9CE2-E093E75132CD}</Project>

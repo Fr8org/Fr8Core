@@ -1,28 +1,40 @@
-﻿using Data.Control;
-using Data.Interfaces.Manifests;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using TerminalBase.BaseClasses;
 using terminalSalesforce.Infrastructure;
 using System.Threading.Tasks;
-using Data.Crates;
 using StructureMap;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
-using Hub.Services;
 using TerminalBase.Infrastructure.Behaviors;
-using Data.Entities;
-using AutoMapper;
-using Data.Interfaces;
-using Utilities.Configuration.Azure;
-using Hub.Managers;
-using Data.Constants;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
+using Fr8Data.Manifests;
+using Fr8Data.States;
+using ServiceStack;
+using TerminalBase.Infrastructure;
+using TerminalBase.Models;
+using TerminalBase.Services;
 
 namespace terminalSalesforce.Actions
 {
-    public class Mail_Merge_From_Salesforce_v1 : EnhancedTerminalActivity<Mail_Merge_From_Salesforce_v1.ActivityUi>
+    public class Mail_Merge_From_Salesforce_v1 : BaseSalesforceTerminalActivity<Mail_Merge_From_Salesforce_v1.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Version = "1",
+            Name = "Mail_Merge_From_Salesforce",
+            Label = "Mail Merge from Salesforce",
+            NeedsAuthentication = true,
+            Category = ActivityCategory.Solution,
+            MinPaneWidth = 500,
+            Tags = Tags.UsesReconfigureList,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
         private const string SolutionName = "Mail Merge From Salesforce";
         private const double SolutionVersion = 1.0;
@@ -44,19 +56,19 @@ namespace terminalSalesforce.Actions
                 SalesforceObjectSelector = new DropDownList
                 {
                     Name = nameof(SalesforceObjectSelector),
-                    Label = "Get Which Object?",
+                    Label = "Get all objects of type:",
                     Required = true,
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
                 };
                 SalesforceObjectFilter = new QueryBuilder
                 {
                     Name = nameof(SalesforceObjectFilter),
-                    Label = "Meeting Which Conditions?",
+                    Label = "That meet the following conditions:",
                     Required = true,
                     Source = new FieldSourceDTO
                     {
                         Label = QueryFilterCrateLabel,
-                        ManifestType = CrateManifestTypes.StandardQueryFields
+                        ManifestType = CrateManifestTypes.StandardDesignTimeFields
                     }
                 };
                 MailSenderActivitySelector = new DropDownList
@@ -84,36 +96,35 @@ namespace terminalSalesforce.Actions
 
         private readonly ISalesforceManager _salesforceManager;
 
-        public Mail_Merge_From_Salesforce_v1() : base(true)
+        public Mail_Merge_From_Salesforce_v1(ICrateManager crateManager, ISalesforceManager salesforceManager)
+            : base(crateManager)
         {
-            ActivityName = "Mail Merge from Salesforce";
-            _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
+            _salesforceManager = salesforceManager;
         }
 
-        protected override Task<bool> Validate()
+        protected override Task Validate()
         {
-            if (ConfigurationControls.RunMailMergeButton.Clicked)
+            if (ActivityUI.RunMailMergeButton.Clicked)
             {
-                ConfigurationControls.SalesforceObjectSelector.ErrorMessage = string.IsNullOrEmpty(ConfigurationControls.SalesforceObjectSelector.selectedKey)
-                                                                          ? "Object is not selected"
-                                                                          : string.Empty;
-                ConfigurationControls.MailSenderActivitySelector.ErrorMessage = string.IsNullOrEmpty(ConfigurationControls.MailSenderActivitySelector.selectedKey)
-                                                                                ? "Mail sender is not selected"
-                                                                                : string.Empty;
-                var isValid = string.IsNullOrEmpty(ConfigurationControls.SalesforceObjectSelector.ErrorMessage)
-                           && string.IsNullOrEmpty(ConfigurationControls.MailSenderActivitySelector.ErrorMessage);
-                if (!isValid)
+                if (string.IsNullOrEmpty(ActivityUI.SalesforceObjectSelector.selectedKey))
                 {
-                    ConfigurationControls.RunMailMergeButton.Clicked = false;
+                    ValidationManager.SetError("Object is not selected", ActivityUI.SalesforceObjectSelector);
+                    ActivityUI.RunMailMergeButton.Clicked = false;
                 }
-                return Task.FromResult(isValid);
+
+                if (string.IsNullOrEmpty(ActivityUI.MailSenderActivitySelector.selectedKey))
+                {
+                    ValidationManager.SetError("Mail sender is not selected", ActivityUI.MailSenderActivitySelector);
+                    ActivityUI.RunMailMergeButton.Clicked = false;
+                }
             }
-            return Task.FromResult(true);
+
+            return Task.FromResult(0);
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        public override async Task FollowUp()
         {
-            if (ConfigurationControls.RunMailMergeButton.Clicked)
+            if (ActivityUI.RunMailMergeButton.Clicked)
             {
                 await ConfigureChildActivities();
             }
@@ -142,75 +153,73 @@ namespace terminalSalesforce.Actions
                     ChildActivityIndex = 2
                 }
             };
-            var behavior = new ReconfigurationListBehavior(this);
-            await behavior.ReconfigureActivities(CurrentActivity, AuthorizationToken, reconfigurationList);
+            var behavior = new ReconfigurationListBehavior();
+            await behavior.ReconfigureActivities(ActivityPayload, AuthorizationToken, reconfigurationList);
         }
 
         private async Task<bool> HasProcessingActivity(ReconfigurationContext context)
         {
-            if (context.SolutionActivity.ChildNodes == null)
+            if (context.SolutionActivity.ChildrenActivities == null)
             {
                 return false;
             }
             var loopActivity = context.SolutionActivity
-                                      .ChildNodes
-                                      .OfType<ActivityDO>()
+                                      .ChildrenActivities
+                                      .OfType<ActivityPayload>()
                                       .SingleOrDefault(x => x.ActivityTemplate.Name == "Loop" && x.Ordering == 2);
-            if (loopActivity == null || loopActivity.ChildNodes.Count != 1)
+            if (loopActivity == null || loopActivity.ChildrenActivities.Count != 1)
             {
                 return false;
             }
-            var emailSenderActivity = loopActivity.ChildNodes.OfType<ActivityDO>().SingleOrDefault();
+            var emailSenderActivity = loopActivity.ChildrenActivities.OfType<ActivityPayload>().SingleOrDefault();
             if (emailSenderActivity == null)
             {
                 return false;
             }
-            if (emailSenderActivity.ActivityTemplate.Name != ConfigurationControls.MailSenderActivitySelector.selectedKey)
+            if (emailSenderActivity.ActivityTemplate.Name != ActivityUI.MailSenderActivitySelector.selectedKey)
             {
                 return false;
             }
             return true;
         }
 
-        private async Task<ActivityDO> CreateProcessingActivity(ReconfigurationContext context)
+        private async Task<ActivityPayload> CreateProcessingActivity(ReconfigurationContext context)
         {
             var loopActivity = await AddAndConfigureChildActivity(context.SolutionActivity, await GetActivityTemplate("terminalFr8Core", "Loop"), "Loop", "Loop", 2);
-            using (var crateStorage = CrateManager.GetUpdatableStorage(loopActivity))
-            {
-                var loopConfigControls = GetConfigurationControls(crateStorage);
+            var crateStorage = loopActivity.CrateStorage;
+            var loopConfigControls = ControlHelper.GetConfigurationControls(crateStorage);
                 var crateChooser = loopConfigControls.Controls.OfType<CrateChooser>().Single();
                 var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(x => x.ManifestId == (int)MT.StandardTableData);
                 if (tableDescription != null)
                 {
                     tableDescription.Selected = true;
                 }
-            }
-            var solutionActivityUi = new ActivityUi().ClonePropertiesFrom(CrateManager.GetStorage(context.SolutionActivity).FirstCrate<StandardConfigurationControlsCM>().Content) as ActivityUi;
+            var solutionActivityUi = new ActivityUi().ClonePropertiesFrom(context.SolutionActivity.CrateStorage.FirstCrate<StandardConfigurationControlsCM>().Content) as ActivityUi;
             var mailSenderActivityTemplate = await GetActivityTemplate(Guid.Parse(solutionActivityUi.MailSenderActivitySelector.Value));
             var sendEmailActivity = await AddAndConfigureChildActivity(loopActivity, mailSenderActivityTemplate, order: 1);
             return loopActivity;
         }
 
-        private Task<ActivityDO> ConfigureProcessingActivity(ReconfigurationContext context)
+        private Task<ActivityPayload> ConfigureProcessingActivity(ReconfigurationContext context)
         {
             //No extra config required
-            return Task.FromResult(context.SolutionActivity.ChildNodes.OfType<ActivityDO>().FirstOrDefault(x => x.Ordering == 2));
+            return Task.FromResult(context.SolutionActivity.ChildrenActivities.OfType<ActivityPayload>().FirstOrDefault(x => x.Ordering == 2));
         }
 
         private Task<bool> HasSalesforceDataActivity(ReconfigurationContext context)
         {
-            if (context.SolutionActivity.ChildNodes == null)
+            if (context.SolutionActivity.ChildrenActivities == null)
             {
                 return Task.FromResult(false);
             }
             var result = context.SolutionActivity
-                                .ChildNodes
-                                .OfType<ActivityDO>()
+                                .ChildrenActivities
+                                .OfType<ActivityPayload>()
                                 .Any(x => x.ActivityTemplate.Name == "Get_Data" && x.Ordering == 2);
             return Task.FromResult(result);
         }
 
-        private async Task<ActivityDO> CreateSalesforceDataActivity(ReconfigurationContext context)
+        private async Task<ActivityPayload> CreateSalesforceDataActivity(ReconfigurationContext context)
         {
             var getSalesforceDataActivityTemplate = (await HubCommunicator.GetActivityTemplates(null))
                 .First(x => x.Name == "Get_Data" && x.Terminal.Name == TerminalName && x.Version == "1");
@@ -226,31 +235,29 @@ namespace terminalSalesforce.Actions
             return await ConfigureChildActivity(context.SolutionActivity, dataSourceActivity);
         }
 
-        private async Task<ActivityDO> ConfigureSalesforceDataActivity(ReconfigurationContext context)
+        private async Task<ActivityPayload> ConfigureSalesforceDataActivity(ReconfigurationContext context)
         {
-            return context.SolutionActivity.ChildNodes.OfType<ActivityDO>().Single(x => x.Ordering == 2);
+            return context.SolutionActivity.ChildrenActivities.OfType<ActivityPayload>().Single(x => x.Ordering == 2);
         }
 
-        private void CopySolutionUiValuesToSalesforceActivity(ActivityDO solutionActivity, ActivityDO salesforceActivity)
-        {
-            using (var storage = CrateManager.GetUpdatableStorage(salesforceActivity))
+        private void CopySolutionUiValuesToSalesforceActivity(ActivityPayload solutionActivity, ActivityPayload salesforceActivity)
             {
+            var storage = salesforceActivity.CrateStorage;
                 var controlsCrate = storage.FirstCrate<StandardConfigurationControlsCM>();
                 var activityUi = new Get_Data_v1.ActivityUi().ClonePropertiesFrom(controlsCrate.Content) as Get_Data_v1.ActivityUi;
-                var solutionActivityUi = new ActivityUi().ClonePropertiesFrom(CrateManager.GetStorage(solutionActivity).FirstCrate<StandardConfigurationControlsCM>().Content) as ActivityUi;
+            var solutionActivityUi = new ActivityUi().ClonePropertiesFrom(solutionActivity.CrateStorage.FirstCrate<StandardConfigurationControlsCM>().Content) as ActivityUi;
                 activityUi.SalesforceObjectSelector.selectedKey = solutionActivityUi.SalesforceObjectSelector.selectedKey;
                 activityUi.SalesforceObjectSelector.Value = solutionActivityUi.SalesforceObjectSelector.Value;
                 activityUi.SalesforceObjectFilter.Value = solutionActivityUi.SalesforceObjectFilter.Value;
                 storage.ReplaceByLabel(Crate.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
             }
-        }
 
         private async Task ConfigureSolutionActivityUi()
         {
-            var selectedObject = ConfigurationControls.SalesforceObjectSelector.selectedKey;
+            var selectedObject = ActivityUI.SalesforceObjectSelector.selectedKey;
             if (string.IsNullOrEmpty(selectedObject))
             {
-                CurrentActivityStorage.RemoveByLabel(QueryFilterCrateLabel);
+                Storage.RemoveByLabel(QueryFilterCrateLabel);
                 this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
                 return;
             }
@@ -260,27 +267,28 @@ namespace terminalSalesforce.Actions
                 return;
             }
             //Prepare new query filters from selected object properties
-            var selectedObjectProperties = await _salesforceManager.GetFields(selectedObject, AuthorizationToken);
-            var queryFilterCrate = Crate<TypedFieldsCM>.FromContent(
+            var selectedObjectProperties = await _salesforceManager.GetProperties(selectedObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
+            var queryFilterCrate = Crate<FieldDescriptionsCM>.FromContent(
                 QueryFilterCrateLabel,
-                new TypedFieldsCM(selectedObjectProperties.OrderBy(x => x.Key)
-                                                                  .Select(x => new TypedFieldDTO(x.Key, x.Value, FieldType.String, new TextBox { Name = x.Key }))),
-                AvailabilityType.Configuration);
-            CurrentActivityStorage.ReplaceByLabel(queryFilterCrate);
+                new FieldDescriptionsCM(selectedObjectProperties),
+                AvailabilityType.Configuration
+            );
+
+            Storage.ReplaceByLabel(queryFilterCrate);
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        public override async Task Initialize()
         {
-            ConfigurationControls.SalesforceObjectSelector.ListItems = _salesforceManager.GetObjectDescriptions().Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
-            var activityTemplates = await HubCommunicator.GetActivityTemplates(ActivityTemplate.EmailDelivererTag, CurrentFr8UserId);
+            ActivityUI.SalesforceObjectSelector.ListItems = _salesforceManager.GetSalesforceObjectTypes().Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
+            var activityTemplates = await HubCommunicator.GetActivityTemplates(Tags.EmailDeliverer, true);
             activityTemplates.Sort((x, y) => x.Name.CompareTo(y.Name));
-            ConfigurationControls.MailSenderActivitySelector.ListItems = activityTemplates
+            ActivityUI.MailSenderActivitySelector.ListItems = activityTemplates
                                                                             .Select(x => new ListItem { Key = x.Label, Value = x.Id.ToString() })
                                                                             .ToList();
         }
 
-        protected override Task RunCurrentActivity()
+        public override Task Run()
         {
             return Task.FromResult(0);
         }
@@ -293,7 +301,7 @@ namespace terminalSalesforce.Actions
         /// <param name="activityDO"></param>
         /// <param name="curDocumentation"></param>
         /// <returns></returns>
-        public dynamic Documentation(ActivityDO activityDO, string curDocumentation)
+        public dynamic Documentation(ActivityPayload activityDO, string curDocumentation)
         {
             if (curDocumentation.Contains("MainPage"))
             {
@@ -305,17 +313,17 @@ namespace terminalSalesforce.Actions
             {
                 if (curDocumentation.Contains("ExplainMailMerge"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution helps you to work with email and move data from them to DocuSign service"));
+                    return Task.FromResult(GenerateDocumentationResponse(@"This solution helps you to work with email and move data from them to DocuSign service"));
                 }
                 if (curDocumentation.Contains("ExplainService"))
                 {
-                    return Task.FromResult(GenerateDocumentationRepsonse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
+                    return Task.FromResult(GenerateDocumentationResponse(@"This solution works and DocuSign service and uses Fr8 infrastructure"));
                 }
-                return Task.FromResult(GenerateErrorRepsonse("Unknown contentPath"));
+                return Task.FromResult(GenerateErrorResponse("Unknown contentPath"));
             }
             return
                 Task.FromResult(
-                    GenerateErrorRepsonse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
+                    GenerateErrorResponse("Unknown displayMechanism: we currently support MainPage and HelpMenu cases"));
         }
     }
 }

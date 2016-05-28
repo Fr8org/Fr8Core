@@ -2,6 +2,7 @@
 using Data.Repositories;
 using Data.Repositories.Plan;
 using StructureMap;
+using Data.Repositories.PlanDescriptions;
 
 namespace Data.Interfaces
 {
@@ -40,9 +41,6 @@ namespace Data.Interfaces
         //QuestionResponseRepository QuestionResponseRepository { get; }
         IAuthorizationTokenRepository AuthorizationTokenRepository { get; }
         LogRepository LogRepository { get; }
-        ProfileNodeRepository ProfileNodeRepository { get; }
-        ProfileItemRepository ProfileItemRepository { get; }
-        ProfileRepository ProfileRepository { get; }
         UserStatusRepository UserStatusRepository { get; }
         //NegotiationAnswerEmailRepository NegotiationAnswerEmailRepository { get; }
         ExpectedResponseRepository ExpectedResponseRepository { get; }
@@ -51,9 +49,15 @@ namespace Data.Interfaces
         //ActivityRepository ActivityRepository { get; }
         ActivityTemplateRepository ActivityTemplateRepository { get; }
     
-        ICriteriaRepository CriteriaRepository { get; }
+        IActivityDescriptionRepository ActivityDescriptionRepository { get; }
+        INodeTransitionRepository NodeTransitionRepository { get; }
+        IPlanTemplateRepository PlanTemplateRepository { get; }
+        IPlanNodeDescriptionsRepository PlanNodeDescriptionsRepository { get; }
 
         IFileRepository FileRepository { get; }
+        IProfileRepository ProfileRepository { get; }
+        IPermissionSetRepository PermissionSetRepository { get; }
+
         
         IPlanRepository PlanRepository { get; }
         IMultiTenantObjectRepository MultiTenantObjectRepository { get; }

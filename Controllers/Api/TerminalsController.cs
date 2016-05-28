@@ -5,8 +5,9 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.Validations;
+using Fr8Data.DataTransferObjects;
+using Hub.Infrastructure;
 using Hub.Interfaces;
 using StructureMap;
 
@@ -32,6 +33,19 @@ namespace HubWeb.Controllers
                 return Ok(models);
             }
 		}
+
+        [HttpGet]
+        public IHttpActionResult All()
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var terminals = _terminal.GetAll()
+                    .Select(Mapper.Map<TerminalDTO>)
+                    .ToList();
+
+                return Ok(terminals);
+            }
+        }
 
 		[HttpPost]
 		public IHttpActionResult Post(TerminalDTO terminalDto)

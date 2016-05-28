@@ -1,10 +1,8 @@
-﻿using Data.Interfaces.DataTransferObjects;
-using Dropbox.Api;
+﻿using Dropbox.Api;
 using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
+using Fr8Data.DataTransferObjects;
 using Utilities.Configuration.Azure;
 
 namespace terminalDropbox.Infrastructure
@@ -44,10 +42,10 @@ namespace terminalDropbox.Infrastructure
 
         public async Task<AuthorizationTokenDTO> Authenticate(ExternalAuthenticationDTO externalAuthDTO)
         {
-            string code;
-            string state;
-            ParseCodeAndState(externalAuthDTO.RequestQueryString, out code, out state);
-            OAuth2Response response = (OAuth2Response)await GetAuthToken(code);
+            string code = GetTokenValueByKey(externalAuthDTO.RequestQueryString, "code");
+            string state = GetTokenValueByKey(externalAuthDTO.RequestQueryString, "state");
+
+            OAuth2Response response = await GetAuthToken(code);
 
             if (response == null)
                 throw new ArgumentNullException("Unable to get authentication token in dropbox.");
@@ -55,7 +53,7 @@ namespace terminalDropbox.Infrastructure
             string externalId = "";
             using (var dbx = new DropboxClient(response.AccessToken))
             {
-                externalId = (await dbx.Users.GetCurrentAccountAsync()).AccountId;
+                externalId = (await dbx.Users.GetCurrentAccountAsync()).Email;
             }
 
             return new AuthorizationTokenDTO()
@@ -98,32 +96,17 @@ namespace terminalDropbox.Infrastructure
             return url.ToString();
         }
 
-        private void ParseCodeAndState(string queryString, out string code, out string state)
+        private string GetTokenValueByKey(string queryString, string tokenKey)
         {
-            if (string.IsNullOrEmpty(queryString))
-            {
+            if (String.IsNullOrEmpty(queryString))
                 throw new ApplicationException("QueryString is empty.");
-            }
-            code = null;
-            state = null;
-            var tokens = queryString.Split(new[] { '&' }, StringSplitOptions.RemoveEmptyEntries);
-            foreach (var token in tokens)
-            {
-                var nameValueTokens = token.Split(new[] { '=' }, StringSplitOptions.RemoveEmptyEntries);
-                if (nameValueTokens.Length < 2)
-                {
-                    continue;
-                }
+            if (String.IsNullOrWhiteSpace(tokenKey))
+                throw new ArgumentNullException(nameof(tokenKey));
 
-                if (nameValueTokens[0] == "code")
-                {
-                    code = nameValueTokens[1];
-                }
-                else if (nameValueTokens[0] == "state")
-                {
-                    state = nameValueTokens[1];
-                }
-            }
+            var tokenDictionary = queryString.Split('&')
+                .Select(token => token.Split('='))
+                .ToDictionary(x => x[0], x => x[1]);
+            return tokenDictionary[tokenKey];
         }
     }
 }

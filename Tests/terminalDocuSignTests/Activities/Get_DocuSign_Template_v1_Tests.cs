@@ -1,9 +1,11 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using Data.Control;
-using Data.Crates;
+using System.Threading.Tasks;
+
 using Data.Entities;
-using Data.Interfaces.Manifests;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.Manifests;
 using Hub.Managers;
 using NUnit.Framework;
 using StructureMap;
@@ -12,6 +14,9 @@ using terminalDocuSign.Actions;
 using terminalDocuSign.Services.New_Api;
 using terminalDocuSignTests.Fixtures;
 using UtilitiesTesting.Fixtures;
+using terminalDocuSign.Activities;
+using Fr8Data.Managers;
+using TerminalBase.Models;
 
 namespace terminalDocuSignTests.Activities
 {
@@ -20,58 +25,67 @@ namespace terminalDocuSignTests.Activities
     public class Get_DocuSign_Template_v1_Tests : BaseTest
     {
         [Test]
-        public void ActivityIsValid_WhenIsNotConfigured_ReturnsFalse()
+        public async Task ActivityIsValid_WhenIsNotConfigured_ReturnsFalse()
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
-            var target = new Get_DocuSign_Template_v1();
-            var result = target.ValidateActivityInternal(FixtureData.TestActivity1());
-            Assert.AreNotEqual(ValidationResult.Success, result);
-            Assert.AreEqual(DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage, result.ErrorMessage);
+            var target = New<Get_DocuSign_Template_v1>();
+            var activityContext = FixtureData.TestActivityContext1();
+            var result = await Validate(target, activityContext);
+            AssertErrorMessage(result, DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
         }
 
         [Test]
-        public void ActivityIsValid_WhenThereAreNoTemplates_ReturnsFalse()
+        public async Task ActivityIsValid_WhenThereAreNoTemplates_ReturnsFalse()
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
-            var target = new Get_DocuSign_Template_v1();
+            var target = New<Get_DocuSign_Template_v1>();
             var activityDO = FixtureData.TestActivity1();
-            activityDO = target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration()).Result;
-            var result = target.ValidateActivityInternal(activityDO);
-            Assert.AreNotEqual(ValidationResult.Success, result);
-            Assert.AreEqual(DocuSignValidationUtils.NoTemplateExistsErrorMessage, result.ErrorMessage);
+
+            var activityContext = FixtureData.TestActivityContext1();
+            await target.Configure(activityContext);
+
+            //var activityContext = FixtureData.TestActivityContext1();
+            var result = await Validate(target, activityContext);
+
+            AssertErrorMessage(result, DocuSignValidationUtils.NoTemplateExistsErrorMessage);
         }
 
         [Test]
-        public void ActivityIsValid_WhenTemplateIsNotSelected_ReturnsFalse()
+        public async Task ActivityIsValid_WhenTemplateIsNotSelected_ReturnsFalse()
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithTemplates()));
-            var target = new Get_DocuSign_Template_v1();
+            var target = New<Get_DocuSign_Template_v1>();
             var activityDO = FixtureData.TestActivity1();
-            activityDO = target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration()).Result;
-            var result = target.ValidateActivityInternal(activityDO);
-            Assert.AreNotEqual(ValidationResult.Success, result);
-            Assert.AreEqual(DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage, result.ErrorMessage);
-        }
-        [Test]
-        public void ActivityIsValid_WhenTemplatetIsSelected_ReturnsTrue()
-        {
-            ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithTemplates()));
-            var target = new Get_DocuSign_Template_v1();
-            var activityDO = FixtureData.TestActivity1();
-            activityDO = target.Configure(activityDO, FixtureData.AuthToken_TerminalIntegration()).Result;
-            SelectTemplate(activityDO);
-            var result = target.ValidateActivityInternal(activityDO);
-            Assert.AreEqual(ValidationResult.Success, result);
+
+            var activityContext = FixtureData.TestActivityContext1();
+            await target.Configure(activityContext);
+
+            //var activityPayload = FixtureData.TestActivityContext1().ActivityPayload;
+            var result = await Validate(target, activityContext);
+
+            AssertErrorMessage(result, DocuSignValidationUtils.TemplateIsNotSelectedErrorMessage);
         }
 
-        private void SelectTemplate(ActivityDO activity)
+        [Test]
+        public async Task ActivityIsValid_WhenTemplatetIsSelected_ReturnsTrue()
         {
-            using (var crateStorage = new CrateManager().GetUpdatableStorage(activity))
-            {
-                var configControls = crateStorage.FirstCrate<StandardConfigurationControlsCM>(c => true).Content;
-                var templateList = configControls.Controls.OfType<DropDownList>().FirstOrDefault();
-                templateList.selectedKey = "First";
-            }
+            ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithTemplates()));
+            var target = New<Get_DocuSign_Template_v1>();
+            var activityContext = FixtureData.TestActivityContext1();
+            await target.Configure(activityContext);
+
+            SelectTemplate(activityContext.ActivityPayload);
+
+            //var activityPayload = FixtureData.TestActivityContext1().ActivityPayload;
+            var result = await Validate(target, activityContext);
+            Assert.AreEqual(null, result);
+        }
+
+        private void SelectTemplate(ActivityPayload activity)
+        {
+            var configControls = activity.CrateStorage.FirstCrate<StandardConfigurationControlsCM>(c => true).Content;
+            var templateList = configControls.Controls.OfType<DropDownList>().FirstOrDefault();
+            templateList.selectedKey = "First";
         }
     }
 }

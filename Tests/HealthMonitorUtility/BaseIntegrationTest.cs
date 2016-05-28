@@ -2,23 +2,19 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Threading.Tasks;
-using Hub.Interfaces;
-using Hub.Security;
-using Newtonsoft.Json;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using System.Linq;
 using NUnit.Framework;
-using Data.Constants;
-using Data.Interfaces.DataTransferObjects.Helpers;
 using StructureMap;
 using System.Net.Http;
-using System.Net;
-using System.Linq;
 using Data.Interfaces;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.DataTransferObjects.Helpers;
+using Fr8Data.Managers;
+using Fr8Data.Manifests;
+using Fr8Infrastructure.Communication;
+using Fr8Infrastructure.Interfaces;
 
 namespace HealthMonitor.Utility
 {
@@ -32,6 +28,7 @@ namespace HealthMonitor.Utility
         HttpClient _httpClient;
         protected string _baseUrl;
         protected int currentTerminalVersion = 1;
+        protected string _terminalUrl;
 
         protected string TerminalSecret
         {
@@ -55,8 +52,11 @@ namespace HealthMonitor.Utility
             }
         }
 
-        protected string _terminalUrl;
-
+        public string GetTerminalEventsUrl()
+        {
+            return TerminalUrl + $"/terminals/{TerminalName}/events";
+        }
+        
         public BaseIntegrationTest()
         {
             RestfulServiceClient = new RestfulServiceClient();
@@ -147,7 +147,7 @@ namespace HealthMonitor.Utility
             operationalStateCM.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
 
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalStateCM.CurrentActivityResponse.Type);
-            Assert.AreEqual(ActivityErrorCode.NO_AUTH_TOKEN_PROVIDED, operationalStateCM.CurrentActivityErrorCode);
+            Assert.AreEqual(ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID, operationalStateCM.CurrentActivityErrorCode);
             Assert.AreEqual("No AuthToken provided.", errorMessage.Message);
         }
 

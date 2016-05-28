@@ -1,18 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Crates;
-using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Infrastructure.Interfaces;
 using HealthMonitor.Utility;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services;
+using terminalGoogle.Services.Authorization;
 
 namespace terminaBaselTests.Tools.Terminals
 {
@@ -26,7 +27,7 @@ namespace terminaBaselTests.Tools.Terminals
         }
 
         /// <summary>
-        /// For a given google account check for a spreasheet file existence amd return the content from that spreadsheet
+        /// For a given google account check for a spreasheet file existence and return the content from that spreadsheet
         /// </summary>
         /// <param name="authorizationTokenId"></param>
         /// <param name="spreadsheetName"></param>
@@ -35,7 +36,7 @@ namespace terminaBaselTests.Tools.Terminals
         {
             var defaultGoogleAuthToken = GetGoogleAuthToken(authorizationTokenId);
 
-            var googleSheetApi = new GoogleSheet(new GoogleIntegration());
+            var googleSheetApi = new GoogleSheet(new GoogleIntegration(ObjectFactory.GetInstance<IRestfulServiceClient>()));
             var googleSheets = await googleSheetApi.GetSpreadsheets(defaultGoogleAuthToken);
 
             Assert.IsNotNull(googleSheets.FirstOrDefault(x => x.Value == spreadsheetName), "Selected spreadsheet was not found into existing google files.");
@@ -67,7 +68,7 @@ namespace terminaBaselTests.Tools.Terminals
         /// <returns></returns>
         public async Task<string> CreateNewSpreadsheet(Guid authorizationTokenId, string spreadsheetName, string worksheetName, StandardTableDataCM tableData)
         {
-            var googleSheetApi = new GoogleSheet(new GoogleIntegration());
+            var googleSheetApi = new GoogleSheet(new GoogleIntegration(ObjectFactory.GetInstance<IRestfulServiceClient>()));
             var defaultGoogleAuthToken = GetGoogleAuthToken(authorizationTokenId);
             var spreadsheetId = await googleSheetApi.CreateSpreadsheet(spreadsheetName, defaultGoogleAuthToken);
 
@@ -95,7 +96,7 @@ namespace terminaBaselTests.Tools.Terminals
         /// <returns></returns>
         public async Task DeleteSpreadSheet(Guid authorizationTokenId, string spreadsheetId)
         {
-            var googleSheetApi = new GoogleSheet(new GoogleIntegration());
+            var googleSheetApi = new GoogleSheet(new GoogleIntegration(ObjectFactory.GetInstance<IRestfulServiceClient>()));
             var defaultGoogleAuthToken = GetGoogleAuthToken(authorizationTokenId);
             await googleSheetApi.DeleteSpreadSheet(spreadsheetId, defaultGoogleAuthToken);
         }
@@ -106,8 +107,8 @@ namespace terminaBaselTests.Tools.Terminals
         /// <returns></returns>
         public async Task<Guid> ExtractGoogleDefaultToken()
         {
-            var tokens = await _baseHubITest.HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
-                _baseHubITest.GetHubApiBaseUrl() + "manageauthtoken/"
+            var tokens = await _baseHubITest.HttpGetAsync<IEnumerable<AuthenticationTokenTerminalDTO>>(
+                _baseHubITest.GetHubApiBaseUrl() + "authentication/tokens"
             );
 
             Assert.NotNull(tokens, "No authorization tokens were found for the integration testing user.");
@@ -128,6 +129,8 @@ namespace terminaBaselTests.Tools.Terminals
         /// <returns></returns>
         public GoogleAuthDTO GetGoogleAuthToken(Guid authorizationTokenId)
         {
+            Debug.WriteLine($"Getting google auth token for authorizationTokenId: {authorizationTokenId}");
+            Assert.IsNotNull(authorizationTokenId, "The google authorization token is null");
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 var validToken = uow.AuthorizationTokenRepository.FindTokenById(authorizationTokenId);

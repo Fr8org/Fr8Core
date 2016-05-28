@@ -1,20 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Globalization;
-using System.Linq;
-using System.Net.Http;
-using System.Security.Cryptography;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
-using System.Web;
-using AutoMapper;
+using Fr8Data.DataTransferObjects;
+using Fr8Infrastructure.Communication;
+using Fr8Infrastructure.Interfaces;
 using StructureMap;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using Hub.Services;
 using Utilities.Logging;
 
 namespace Hub.Managers.APIManagers.Transmitters.Terminal
@@ -62,7 +53,8 @@ namespace Hub.Managers.APIManagers.Transmitters.Terminal
             var requestUri = new Uri(string.Format("activities/{0}", actionName), UriKind.Relative);
             if (terminal == null || string.IsNullOrEmpty(terminal.Endpoint))
             {
-                _logger.ErrorFormat("Terminal record not found for activityTemplate: {0}. Throwing exception.", dataDTO.ActivityDTO.ActivityTemplate.Name);
+                //_logger.ErrorFormat("Terminal record not found for activityTemplate: {0}. Throwing exception.", dataDTO.ActivityDTO.ActivityTemplate.Name);
+                Logger.LogError($"Terminal record not found for activityTemplate: {dataDTO.ActivityDTO.ActivityTemplate.Name} Throwing exception.");
                 throw new Exception("Unknown terminal or terminal endpoint");
             }
             //let's calculate absolute url, since our hmac mechanism needs it

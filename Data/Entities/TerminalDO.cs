@@ -14,7 +14,7 @@ namespace Data.Entities
     {
         public TerminalDO()
         {
-            this.AuthenticationType = States.AuthenticationType.None;            
+            this.AuthenticationType = Fr8Data.States.AuthenticationType.None;      
         }
 
         [Key]
@@ -29,6 +29,9 @@ namespace Data.Entities
 
         [Required]
         public string Version { get; set; }
+
+        [Required]
+        public string Label { get; set; }
 
         [ForeignKey("TerminalStatusTemplate")]
         public int TerminalStatus { get; set; }

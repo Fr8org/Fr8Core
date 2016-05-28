@@ -7,7 +7,6 @@ module dockyard.directives {
         name: string;
         label: string;
         fieldType: string;
-        control: model.ControlDefinitionDTO;
     }
 
     export interface IQueryOperator {
@@ -16,7 +15,7 @@ module dockyard.directives {
     }
 
     export interface IQueryCondition {
-        field: IQueryField;
+        field: model.FieldDTO;
         operator: string;
         value: string;
     }
@@ -30,11 +29,12 @@ module dockyard.directives {
     export interface IQueryBuilderScope extends ng.IScope {
         currentAction: model.ActivityDTO;
         field: any;
-        fields: Array<IQueryField>;
+        fields: Array<model.FieldDTO>;
         operators: Array<IQueryOperator>;
         defaultOperator: string;
         conditions: Array<IQueryCondition>;
         rows: Array<interfaces.ICondition>;
+        requestUpstream: boolean;
 
         addCondition: () => void;
         removeCondition: (index: number) => void;
@@ -49,6 +49,7 @@ module dockyard.directives {
                 currentAction: '=',
                 field: '=',
                 rows: '=?',
+                requestUpstream: '=?',
                 isDisabled: '=',
                 addRowText: '@'
             },
@@ -74,7 +75,7 @@ module dockyard.directives {
                         if (newValue && newValue.crateStorage) {
                             var crate = crateHelper.findByManifestTypeAndLabel(
                                 newValue.crateStorage,
-                                'Typed Fields',
+                                'Field Description',
                                 'Queryable Criteria'
                             );
                     
@@ -82,12 +83,7 @@ module dockyard.directives {
                             if (crate != null) {
                                 var crateJson = <any>(crate.contents);
                                 angular.forEach(crateJson.Fields, function (it) {
-                                    $scope.fields.push({
-                                        name: it.Name,
-                                        label: it.Label,
-                                        fieldType: it.FieldType,
-                                        control: it.Control
-                                    });
+                                    $scope.fields.push(it);
                                 });
 
                                 if ($scope.rows) {
@@ -111,15 +107,19 @@ module dockyard.directives {
 
                             var conditions: Array<IQueryCondition> = [];
 
-                            angular.forEach(serializedConditions, (cond) => {
-                                conditions.push({
-                                    field: findField(cond.field),
-                                    operator: cond.operator,
-                                    value: cond.value
+                            if (serializedConditions.length) {
+                                angular.forEach(serializedConditions, (cond) => {
+                                    conditions.push({
+                                        field: findField(cond.field),
+                                        operator: cond.operator,
+                                        value: cond.value
+                                    });
                                 });
-                            });
 
-                            $scope.conditions = conditions;
+                                $scope.conditions = conditions;
+                            } else {
+                                addEmptyCondition();
+                            }
                         }
                         else {
                             if (!$scope.conditions || !$scope.conditions.length) {
@@ -142,10 +142,10 @@ module dockyard.directives {
                         $scope.conditions.push(condition);
                     };
 
-                    var findField = (name): IQueryField => {
+                    var findField = (name): model.FieldDTO => {
                         var i;
                         for (i = 0; i < $scope.fields.length; ++i) {
-                            if ($scope.fields[i].name === name) {
+                            if ($scope.fields[i].key === name) {
                                 return $scope.fields[i];
                             }
                         }
@@ -159,7 +159,7 @@ module dockyard.directives {
                             if (!cond.field) { return; }
 
                             toBeSerialized.push({
-                                field: cond.field.name,
+                                field: cond.field.key,
                                 operator: cond.operator,
                                 value: cond.value
                             });
@@ -188,6 +188,12 @@ module dockyard.directives {
                     $scope.removeCondition = (index: number) => {
                         $scope.conditions.splice(index, 1);
                     };
+
+                    if (angular.isUndefined($scope.requestUpstream)
+                        && !angular.isUndefined($scope.field)
+                        && $scope.field.source) {
+                        $scope.requestUpstream = $scope.field.source.requestUpstream;
+                    }
                 }
             ]
         };

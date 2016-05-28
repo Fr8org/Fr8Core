@@ -17,7 +17,6 @@ namespace Data.Entities
     {
         public Fr8AccountDO()
         {
-            Profiles = new List<ProfileDO>();
             Subscriptions = new List<SubscriptionDO>();
             SecurityStamp = Guid.NewGuid().ToString();
         }
@@ -38,18 +37,22 @@ namespace Data.Entities
         public int? EmailAddressID { get; set; }
         public virtual EmailAddressDO EmailAddress { get; set; }
 
+        [ForeignKey("Profile")]
+        public Guid? ProfileId { get; set; }
+        public virtual ProfileDO Profile { get; set; }
+
         //it's important to persist the DocuSignAccountId. The rest of the DocuSignAccount data is accessed through the DocuSignAccount wrapper class
         public string DocusignAccountId { get; set; }
+        //This property helps differentiate visitors of the web pages in analytic tools
+        //This should be either 'Internal' or 'External'
+        public string Class { get; set; }
 
-        //[NotMapped]
+        //[NotMapped]`
         //public DocuSignAccount DocuSignAccount { get; set; }
 
         [Required, ForeignKey("UserStateTemplate"), DefaultValue(UserState.Active)]
         public int? State { get; set; }
         public virtual _UserStateTemplate UserStateTemplate { get; set; }
-
-        [InverseProperty("DockyardAccount")]
-        public virtual IList<ProfileDO> Profiles { get; set; }
 
         [InverseProperty("DockyardAccount")]
         public virtual IList<SubscriptionDO> Subscriptions { get; set; }

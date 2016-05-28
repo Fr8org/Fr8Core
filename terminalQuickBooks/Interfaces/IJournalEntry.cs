@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Intuit.Ipp.DataService;
+using Fr8Data.DataTransferObjects;
+using TerminalBase.Infrastructure;
+using TerminalBase.Models;
 
 namespace terminalQuickBooks.Interfaces
 {
@@ -13,6 +9,9 @@ namespace terminalQuickBooks.Interfaces
     {
         StandardAccountingTransactionDTO GetAccountingTransactionData(Intuit.Ipp.Data.JournalEntry journalEntry);
         Intuit.Ipp.Data.JournalEntry CreateQbJournalEntry(StandardAccountingTransactionDTO crate);
-        void Create(StandardAccountingTransactionDTO curStandardAccountingTransactionCm, AuthorizationTokenDO authTokenDo);
+        void Create(
+            StandardAccountingTransactionDTO curStandardAccountingTransactionCM,
+            AuthorizationToken authorizationToken,
+            IHubCommunicator hubCommunicator);
     }
 }

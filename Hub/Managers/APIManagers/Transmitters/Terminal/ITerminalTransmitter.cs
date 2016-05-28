@@ -1,9 +1,6 @@
-﻿using System.Collections.Generic;
-using System.Threading.Tasks;
-using Data.Constants;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Hub.Managers.APIManagers.Transmitters.Restful;
+﻿using System.Threading.Tasks;
+using Fr8Data.DataTransferObjects;
+using Fr8Infrastructure.Interfaces;
 
 namespace Hub.Managers.APIManagers.Transmitters.Terminal
 {

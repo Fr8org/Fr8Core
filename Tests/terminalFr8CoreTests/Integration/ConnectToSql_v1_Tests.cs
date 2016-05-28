@@ -1,17 +1,13 @@
-﻿using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+﻿using System.Linq;
 using HealthMonitor.Utility;
 using NUnit.Framework;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using terminalFr8CoreTests.Fixtures;
-using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
+using Fr8Data.Managers;
 
 namespace terminalFr8CoreTests.Integration
 {
@@ -39,7 +35,7 @@ namespace terminalFr8CoreTests.Integration
         {
             Assert.AreEqual(2, control.Controls.Count);
 
-            Assert.IsTrue(control.Controls[0] is TextBlock);
+            Assert.IsTrue(control.Controls[0] is TextBox);
             Assert.AreEqual("Connection String", control.Controls[0].Label);
             Assert.AreEqual("ConnectionString", control.Controls[0].Name);
             
@@ -109,7 +105,6 @@ namespace terminalFr8CoreTests.Integration
 
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             AssertConfigureCrate(crateStorage);
@@ -140,7 +135,6 @@ namespace terminalFr8CoreTests.Integration
 
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
 
@@ -177,7 +171,6 @@ namespace terminalFr8CoreTests.Integration
 
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
 
@@ -217,7 +210,6 @@ namespace terminalFr8CoreTests.Integration
 
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
 

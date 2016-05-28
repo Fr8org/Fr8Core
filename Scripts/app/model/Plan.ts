@@ -17,7 +17,7 @@
 
     export enum PlanState {
         Inactive = 1,
-        Active = 2
+        Running = 2
     }
 
     export enum PlanVisibility {
@@ -27,5 +27,22 @@
 
     export class PlanFullDTO {
         plan: PlanDTO
+    }
+
+    export class PlanQueryDTO {
+        id: string;
+        page: number;
+        planPerPage: number;
+        status:number;
+        category: string;
+        orderBy: string;
+        isDescending: boolean;
+        filter: string;
+    }
+
+    export class PlanResultDTO {
+        plans: Array<interfaces.IPlanVM>;
+        currentPage: number;
+        totalPlanCount: number;
     }
 }

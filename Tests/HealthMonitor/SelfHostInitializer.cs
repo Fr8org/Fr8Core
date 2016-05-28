@@ -41,8 +41,6 @@ namespace HealthMonitor
             {
                 terminals = uow.TerminalRepository.GetAll();
             }
-
-
             try
             {
                 foreach (SelfHostedAppsElement app in selfHostedApps)
@@ -101,6 +99,8 @@ namespace HealthMonitor
             "dev";
 #elif RELEASE
             "release";
+#elif DEMO
+            "demo   ";
 #else
             "debug";
 #endif

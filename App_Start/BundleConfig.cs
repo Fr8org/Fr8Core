@@ -103,6 +103,7 @@ namespace HubWeb.App_Start
             
             bundles.Add(new StyleBundle("~/bundles/css/frontpage-new")
                 .Include("~/Content/css/homecss/bootstrap.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/shared/main.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/frontcss/main_new.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/shared/navbar.css", new CssRewriteUrlTransform()));
 
@@ -134,9 +135,14 @@ namespace HubWeb.App_Start
                 .Include("~/bower_components/angular-ivh-treeview/dist/ivh-treeview.min.css", new CssRewriteUrlTransform())
                 .Include("~/bower_components/angular-ivh-treeview/dist/ivh-treeview-theme-basic.css", new CssRewriteUrlTransform())
                 .Include("~/bower_components/angular-resizable/angular-resizable.min.css", new CssRewriteUrlTransform())
+                .Include("~/bower_components/md-color-picker/dist/mdColorPicker.min.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/dockyard.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/dockyard/container-transition.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/dockyard/query-builder.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/dockyard/authentication-dialog.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/dockyard/activity-stream.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/dockyard/collapse.css", new CssRewriteUrlTransform())
+                .Include("~/bower_components/angular-material-data-table/dist/md-data-table.min.css", new CssRewriteUrlTransform())
             );
 
             bundles.Add(new ScriptBundle("~/bundles/jsunittests")
@@ -191,8 +197,10 @@ namespace HubWeb.App_Start
             bundles.Add(new StyleBundle("~/bundles/css/home")
                 .Include("~/Content/css/homecss/bootstrap.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/homecss/font-awesome.min.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/shared/main.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/homecss/main.css", new CssRewriteUrlTransform())
                 .Include("~/Content/css/shared/navbar.css", new CssRewriteUrlTransform())
+                .Include("~/Content/css/CDNRelatedStyles.css")
             );
 
             bundles.Add(new StyleBundle("~/bundles/css/homeie")
@@ -212,6 +220,9 @@ namespace HubWeb.App_Start
                 .Include("~/bower_components/angular-applicationinsights/dist/angular-applicationinsights.min.js")//not found on cdn
                 .Include("~/bower_components/angular-ivh-treeview/dist/ivh-treeview.min.js")//not found on cdn
                 .Include("~/bower_components/angular-resizable/angular-resizable.min.js")//not found on cdn
+                .Include("~/bower_components/tinycolor/dist/tinycolor-min.js")//not found on cdn
+                .Include("~/bower_components/md-color-picker/dist/mdColorPicker.min.js")//not found on cdn
+                .Include("~/bower_components/angular-material-data-table/dist/md-data-table.min.js")
             );
 
 #if RELEASE || DEV

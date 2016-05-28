@@ -18,6 +18,8 @@ namespace terminalGoogle.Interfaces
         GOAuth2RequestFactory CreateRequestFactory(GoogleAuthDTO authDTO);
         string CreateOAuth2AuthorizationUrl(string state = null);
         GoogleAuthDTO GetToken(string code);
-        Task<string> GetExternalUserId(GoogleAuthDTO authDTO);
+        GoogleAuthDTO RefreshToken(GoogleAuthDTO googleAuthDTO);
+        Task<string> GetExternalUserId(GoogleAuthDTO googleAuthDTO);
+        Task<bool> IsTokenInfoValid(GoogleAuthDTO googleAuthDTO);
     }
 }

@@ -1,0 +1,98 @@
+
+/* --------------------- */
+/* LINKS
+/* --------------------- */
+a {
+  color: #26A599;
+}
+a:hover, a:focus {
+  color: #A5DAD4;
+  text-decoration: none;
+}
+
+/* --------------------- */
+/* BUTTONS
+/* --------------------- */
+.btn {
+  -moz-border-radius: 0;
+  -webkit-border-radius: 0;
+  border-radius: 0;
+  -moz-transition-property: border-color;
+  -o-transition-property: border-color;
+  -webkit-transition-property: border-color;
+  transition-property: border-color;
+  -moz-transition-duration: 0.2s;
+  -o-transition-duration: 0.2s;
+  -webkit-transition-duration: 0.2s;
+  transition-duration: 0.2s;
+  -moz-transition-timing-function: linear;
+  -o-transition-timing-function: linear;
+  -webkit-transition-timing-function: linear;
+  transition-timing-function: linear;
+}
+.btn:active, .btn.active {
+  -moz-box-shadow: none;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+.btn-lg {
+  border-width: 6px;
+}
+
+.btn-sm {
+  border-width: 3px;
+}
+
+.btn-xs {
+  border-width: 2px;
+}
+
+.btn-info {
+  background-color: #00aeef;
+  border-color: #00aeef;
+}
+.btn-info:hover, .btn-info:focus, .btn-info:active, .btn-info.active {
+  background-color: #00aeef;
+  border-color: #009bd5;
+}
+.btn-info:active:focus, .btn-info.active:focus {
+  background-color: #009bd5;
+  border-color: #0076a3;
+}
+
+.btn-outline {
+  background-color: transparent;
+  border-color: #fff;
+  color: #fff;
+}
+.btn-outline:hover, .btn-outline:focus, .btn-outline:active, .btn-outline.active {
+  color: #fff;
+}
+
+.btn-primary {
+  background-color: #26A599;
+  border-color: #26A599;
+}
+.btn-primary:hover, .btn-primary:focus, .btn-primary:active, .btn-primary.active {
+  background-color: #26A599;
+  border-color: #A5DAD4;
+}
+.btn-primary:active:focus, .btn-primary.active:focus {
+  background-color: #A5DAD4;
+  border-color: #A5DAD4;
+}
+
+.btn-primary.disabled,
+.btn-primary[disabled] {
+  background-color: #A5DAD4;
+  border-color: #26A599;
+}
+.btn-primary.disabled:hover, .btn-primary.disabled:focus, .btn-primary.disabled:active, .btn-primary.disabled.active,
+.btn-primary[disabled]:hover,
+.btn-primary[disabled]:focus,
+.btn-primary[disabled]:active,
+.btn-primary[disabled].active {
+  background-color: #A5DAD4;
+  border-color: #26A599;
+}

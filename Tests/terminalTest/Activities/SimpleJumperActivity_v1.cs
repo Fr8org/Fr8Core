@@ -1,14 +1,29 @@
 ﻿using System;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Control;
-using Data.Interfaces.Manifests;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalTest.Actions
 {
     public class SimpleJumperActivity_v1 : TestActivityBase<SimpleJumperActivity_v1.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "SimpleJumperActivity",
+            Label = "SimpleJumperActivity",
+            Category = ActivityCategory.Processors,
+            Version = "1",
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public TextBlock TextBlock;
@@ -30,32 +45,37 @@ namespace terminalTest.Actions
             }
         }
 
-        protected override Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        public SimpleJumperActivity_v1(ICrateManager crateManager) 
+            : base(crateManager)
         {
-            ConfigurationControls.TextBlock.Value = CurrentActivity.Id.ToString();
+        }
+
+        public override Task Initialize()
+        {
+            ActivityUI.TextBlock.Value = ActivityId.ToString();
             return Task.FromResult(0);
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        public override async Task FollowUp()
         {
-            if (ConfigurationControls.AddChild.Clicked)
+            if (ActivityUI.AddChild.Clicked)
             {
-                ConfigurationControls.AddChild.Clicked = false;
-                var activityTemplate = await GetActivityTemplateByName(ConfigurationControls.ActivityToAdd.Value);
-                await AddAndConfigureChildActivity(CurrentActivity, activityTemplate, CurrentActivity.Label + "." + (CurrentActivity.ChildNodes.Count + 1), CurrentActivity.Label + "." + (CurrentActivity.ChildNodes.Count + 1));
+                ActivityUI.AddChild.Clicked = false;
+                var activityTemplate = await GetActivityTemplateByName(ActivityUI.ActivityToAdd.Value);
+                await AddAndConfigureChildActivity(ActivityId, activityTemplate, ActivityPayload.Label + "." + (ActivityPayload.ChildrenActivities.Count + 1), ActivityPayload.Label + "." + (ActivityPayload.ChildrenActivities.Count + 1));
             }
         }
 
         private void RunCore()
         {
-            SetResponse((ActivityResponse) Enum.Parse(typeof (ActivityResponse), ConfigurationControls.HowToJump.Value), null, Guid.Parse(ConfigurationControls.WhereToJump.Value));
+            SetResponse((ActivityResponse) Enum.Parse(typeof (ActivityResponse), ActivityUI.HowToJump.Value), null, Guid.Parse(ActivityUI.WhereToJump.Value));
         }
 
-        protected override Task RunCurrentActivity()
+        public override Task Run()
         {
-            Log($"{CurrentActivity.Label} [{CurrentActivity.Id}] started");
+            Log($"{ActivityPayload.Label} [{ActivityId}] started");
 
-            if (String.Equals(ConfigurationControls.WhenToJump.Value, "Run", StringComparison.InvariantCultureIgnoreCase))
+            if (String.Equals(ActivityUI.WhenToJump.Value, "Run", StringComparison.InvariantCultureIgnoreCase))
             {
                 RunCore();
             }
@@ -63,11 +83,12 @@ namespace terminalTest.Actions
             return Task.FromResult(0);
         }
 
-        protected override Task RunChildActivities()
-        {
-            Log($"{CurrentActivity.Label} [{CurrentActivity.Id}] ended");
 
-            if (String.Equals(ConfigurationControls.WhenToJump.Value, "children", StringComparison.InvariantCultureIgnoreCase))
+        public override Task RunChildActivities()
+        {
+            Log($"{ActivityPayload.Label} [{ActivityId}] ended");
+
+            if (String.Equals(ActivityUI.WhenToJump.Value, "children", StringComparison.InvariantCultureIgnoreCase))
             {
                 RunCore();
             }

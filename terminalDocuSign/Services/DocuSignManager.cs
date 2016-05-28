@@ -1,8 +1,4 @@
-﻿using Data.Control;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
+﻿using Data.Entities;
 using DocuSign.eSign.Api;
 using DocuSign.eSign.Client;
 using DocuSign.eSign.Model;
@@ -10,13 +6,18 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
-using System.Web;
 using Data.Validations;
 using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services.NewApi;
 using Utilities.Configuration.Azure;
 using System.IO;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
+using TerminalBase.Errors;
+using TerminalBase.Models;
 
 namespace terminalDocuSign.Services.New_Api
 {
@@ -28,12 +29,14 @@ namespace terminalDocuSign.Services.New_Api
 
     public class DocuSignManager : IDocuSignManager
     {
-        public DocuSignApiConfiguration SetUp(AuthorizationTokenDO authTokenDO)
+        public const string DocusignTerminalName = "terminalDocuSign";
+
+        public DocuSignApiConfiguration SetUp(AuthorizationToken authToken)
         {
             string baseUrl = string.Empty;
             string integratorKey = string.Empty;
 
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authToken.Token);
             //create configuration for future api calls
             if (docuSignAuthDTO.IsDemoAccount)
             {
@@ -54,8 +57,15 @@ namespace terminalDocuSign.Services.New_Api
             if (string.IsNullOrEmpty(docuSignAuthDTO.AccountId)) //we deal with and old token, that don't have accountId yet
             {
                 AuthenticationApi authApi = new AuthenticationApi(conf);
+                try
+                {
                 LoginInformation loginInfo = authApi.Login();
                 result.AccountId = loginInfo.LoginAccounts[0].AccountId; //it seems that althought one DocuSign account can have multiple users - only one is returned, the one that oAuth token was created for
+            }
+                catch (Exception ex)
+                {
+                    throw new AuthorizationTokenExpiredOrInvalidException();
+                }
             }
 
             return result;
@@ -137,7 +147,7 @@ namespace terminalDocuSign.Services.New_Api
             envDef.EmailSubject = "Test message from Fr8";
             envDef.Status = "created";
 
-
+            Debug.WriteLine($"sending an envelope from template {curTemplateId} to {loginInfo}");
             var templateRecepients = templatesApi.ListRecipients(loginInfo.AccountId, curTemplateId);
 
             //adding file or applying template
@@ -147,7 +157,7 @@ namespace terminalDocuSign.Services.New_Api
                 //we create it with recipients once we've processed recipient values and tabs
                 envDef.Documents = new List<Document>() { new Document()
                 { DocumentBase64 = fileHandler.TextRepresentation, FileExtension = fileHandler.Filetype,
-                    DocumentId = "1", Name = fileHandler.Filename ?? Path.GetFileName(fileHandler.DockyardStorageUrl) ?? "document" } };
+                    DocumentId = "1", Name = fileHandler.Filename ?? Path.GetFileName(fileHandler.DirectUrl) ?? "document" } };
                 recipients = templateRecepients;
             }
             else
@@ -162,12 +172,12 @@ namespace terminalDocuSign.Services.New_Api
             //updating recipients
             foreach (var recepient in recipients.Signers)
             {
-                var corresponding_template_recipient = templateRecepients.Signers.Where(a => a.RoutingOrder == recepient.RoutingOrder).FirstOrDefault();
-                var related_fields = rolesList.Where(a => a.Tags.Contains("recipientId:" + corresponding_template_recipient.RecipientId));
-                string new_email = related_fields.Where(a => a.Key.Contains("role email")).FirstOrDefault().Value;
-                string new_name = related_fields.Where(a => a.Key.Contains("role name")).FirstOrDefault().Value;
-                recepient.Name = string.IsNullOrEmpty(new_name) ? recepient.Name : new_name;
-                recepient.Email = string.IsNullOrEmpty(new_email) ? recepient.Email : new_email;
+                var correspondingTemplateRecipient = templateRecepients.Signers.FirstOrDefault(a => a.RoutingOrder == recepient.RoutingOrder);
+                var relatedFields = rolesList.Where(a => a.Tags.Contains("recipientId:" + correspondingTemplateRecipient?.RecipientId)).ToArray();
+                var newEmail = relatedFields.FirstOrDefault(a => a.Key.Contains(DocuSignConstants.DocuSignRoleEmail))?.Value;
+                var newName = relatedFields.FirstOrDefault(a => a.Key.Contains(DocuSignConstants.DocuSignRoleName))?.Value;
+                recepient.Name = string.IsNullOrEmpty(newName) ? recepient.Name : newName;
+                recepient.Email = string.IsNullOrEmpty(newEmail) ? recepient.Email : newEmail;
 
                 if (!recepient.Email.IsValidEmailAddress())
                 {
@@ -175,9 +185,9 @@ namespace terminalDocuSign.Services.New_Api
                 }
 
                 //updating tabs
-                var tabs = override_document ? templatesApi.ListTabs(loginInfo.AccountId, curTemplateId, corresponding_template_recipient.RecipientId, new Tabs()) : envelopesApi.ListTabs(loginInfo.AccountId, envelopeSummary.EnvelopeId, recepient.RecipientId);
+                var tabs = override_document ? templatesApi.ListTabs(loginInfo.AccountId, curTemplateId, correspondingTemplateRecipient.RecipientId, new Tabs()) : envelopesApi.ListTabs(loginInfo.AccountId, envelopeSummary.EnvelopeId, recepient.RecipientId);
 
-                JObject jobj = DocuSignTab.ApplyValuesToTabs(fieldList, corresponding_template_recipient, tabs);
+                JObject jobj = DocuSignTab.ApplyValuesToTabs(fieldList, correspondingTemplateRecipient, tabs);
                 recepient.Tabs = jobj.ToObject<Tabs>();
             }
 
@@ -224,6 +234,8 @@ namespace terminalDocuSign.Services.New_Api
 
         private static IEnumerable<FieldDTO> GetRecipientsAndTabs(DocuSignApiConfiguration conf, object api, string id)
         {
+            try
+            {
             var result = new List<FieldDTO>();
             var recipients = GetRecipients(conf, api, id);
             result.AddRange(MapRecipientsToFieldDTO(recipients));
@@ -233,6 +245,11 @@ namespace terminalDocuSign.Services.New_Api
             }
 
             return result;
+        }
+            catch (Exception ex)
+            {
+                throw new AuthorizationTokenExpiredOrInvalidException();
+            }
         }
 
         private static Recipients GetRecipients(DocuSignApiConfiguration conf, object api, string id)

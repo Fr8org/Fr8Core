@@ -1,22 +1,16 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.Remoting.Metadata.W3cXsd2001;
-using System.Security.Claims;
-using System.Security.Principal;
 using System.Web.Http.Results;
 using NUnit.Framework;
 using StructureMap;
-using StructureMap.AutoMocking;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Fr8Data.DataTransferObjects;
 using HubTests.Controllers.Api;
-using Hub.Interfaces;
 using HubWeb.Controllers;
-using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
 
@@ -38,17 +32,17 @@ namespace HubTests.Controllers
             _testUserAccount = FixtureData.TestDockyardAccount5();
             _containerService = ObjectFactory.GetInstance<Hub.Interfaces.IContainer>();
 
-            using (var unitOfWork = ObjectFactory.GetInstance<IUnitOfWork>())
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 //uow.UserRepository.Add(_testUserAccount);
                 var plan = FixtureData.TestPlan4();
-                unitOfWork.UserRepository.Add(plan.Fr8Account);
+                uow.UserRepository.Add(plan.Fr8Account);
                 // This will Add a user as well as a plan for creating Containers
-                unitOfWork.PlanRepository.Add(plan);
-                unitOfWork.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, _testUserAccount.Id);
-                unitOfWork.SaveChanges();
+                uow.PlanRepository.Add(plan);
+                uow.AspNetUserRolesRepository.AssignRoleToUser(Roles.Admin, _testUserAccount.Id);
+                uow.SaveChanges();
 
-                ObjectFactory.GetInstance<ISecurityServices>().Login(unitOfWork, _testUserAccount);
+                ObjectFactory.GetInstance<ISecurityServices>().Login(uow, _testUserAccount);
             }
         }
 
@@ -77,12 +71,6 @@ namespace HubTests.Controllers
         public void ContainerController_ShouldHaveFr8ApiAuthorizeOnGetPayloadMethod()
         {
             ShouldHaveFr8ApiAuthorizeOnFunction(typeof(ContainersController), "GetPayload");
-        }
-
-        [Test]
-        public void ContainerController_ShouldHaveFr8ApiAuthorizeOnGetIdsByNameMethod()
-        {
-            ShouldHaveFr8ApiAuthorizeOnFunction(typeof(ContainersController), "GetIdsByName");
         }
 
         [Test]

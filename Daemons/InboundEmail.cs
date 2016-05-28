@@ -172,7 +172,8 @@ namespace Daemons
                         }
                         catch (Exception e)
                         {
-                            Logger.GetLogger().Warn("Unable to delete a test message", e);
+                            //Logger.GetLogger().Warn("Unable to delete a test message", e);
+                            Logger.LogWarning($"Unable to delete a test message. Exception = {e}");
                         }
                     }
                 }
@@ -194,7 +195,8 @@ namespace Daemons
         {
             deleteMessage = false;
             var logString = "Processing message with subject '" + messageInfo.Subject + "'";
-            Logger.GetLogger().Info(logString);
+            //Logger.GetLogger().Info(logString);
+            Logger.LogInfo(logString);
             LogEvent(logString);
 
             lock (_testSubjects)

@@ -1,18 +1,15 @@
 ﻿using System;
-using Data.Interfaces.DataTransferObjects;
-using Data.Entities;
-using Data.Crates;
-using Data.Control;
-using Data.Interfaces.Manifests;
 using System.Collections.Generic;
-using Hub.Managers;
 using System.Linq;
-using System.Runtime.InteropServices;
-using terminalGoogle.Actions;
-using terminalGoogle.DataTransferObjects;
-using terminalGoogleTests.Integration;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
+using Fr8Data.Manifests;
+using Fr8Data.States;
+using terminalGoogle.Activities;
 
-namespace terminalGoogleTests.Unit
+namespace terminalGoogleTests.Integration
 {
     public class HealthMonitor_FixtureData
     {
@@ -28,7 +25,7 @@ namespace terminalGoogleTests.Unit
         {
             return new AuthorizationTokenDTO()
             {
-                Token = @"{""AccessToken"":""ya29.PwJez2aHwjGxsxcho6TfaFseWjPbi1ThgINsgiawOKLlzyIgFJHkRdq76YrnuiGT3jhr"",""RefreshToken"":""1/HVhoZXzxFrPyC0JVlbEIF_VOBDm_IhrKoLKnt6QpyFRIgOrJDtdun6zK6XiATCKT"",""Expires"":""2015-12-03T11:12:43.0496208+08:00""}"
+                Token = @"{""AccessToken"":""ya29.CjHXAnhqySXYWbq-JE3Nqpq18L_LGYw3xx_T-lD6jeQd6C2mMoKzQhTWRWFSkPcX-pH_"",""RefreshToken"":""1/ZmUihiXxjwiVd-kQe46hDXKB95VaHM5yP-6bfrS-EUUMEudVrK5jSpoR30zcRFq6"",""Expires"":""2017-11-28T13:29:12.653075+05:00""}"
             };
         }
 
@@ -36,23 +33,8 @@ namespace terminalGoogleTests.Unit
         {
             return new AuthorizationTokenDTO()
             {
-                Token = @"{""AccessToken"":""ya29..vgKE_04Ry1xJ-farOLQrnF29vwpxpxlOl1LA4v7XFZfy5IhHBSFygN_qpACY80ii2g"",""RefreshToken"":""1/H43YmerKPRmMoiUk1wlCvJfTRRFMiXonIXUY3ulebRE"",""Expires"":""2017-11-28T13:29:12.653075+05:00""}"
+                Token = @"{""AccessToken"":""ya29.CjHXAnhqySXYWbq-JE3Nqpq18L_LGYw3xx_T-lD6jeQd6C2mMoKzQhTWRWFSkPcX-pH_"",""RefreshToken"":""1/ZmUihiXxjwiVd-kQe46hDXKB95VaHM5yP-6bfrS-EUUMEudVrK5jSpoR30zcRFq6"",""Expires"":""2017-11-28T13:29:12.653075+05:00""}"
             };
-        }
-
-        public static GoogleAuthDTO NewGoogle_AuthToken_As_GoogleAuthDTO()
-        {
-            return new GoogleAuthDTO
-            {
-                AccessToken = "ya29.sAIlmsk843IiMs54TCbaN6XitYsrFa00XcuKvtV75lWuKIWSglzWv_F1MCLHWyuNRg",
-                Expires = new DateTime(2017, 03, 19, 0, 0, 0),
-                RefreshToken = "1/3DJhIxl_HceJmyZaWwI_O9MRdHyDGCtWo-69dZRbgBQ"
-            };
-        }
-
-        protected Crate PackControls(StandardConfigurationControlsCM page)
-        {
-            return PackControlsCrate(page.Controls.ToArray());
         }
 
         protected Crate<StandardConfigurationControlsCM> PackControlsCrate(params ControlDefinitionDTO[] controlsList)
@@ -62,10 +44,8 @@ namespace terminalGoogleTests.Unit
 
         private Crate PackCrate_GoogleForms()
         {
-            Crate crate;
-
             var curFields = new List<FieldDTO>() { new FieldDTO() { Key = "Survey Form", Value = "1z7mIQdHeFIpxBm92sIFB52B7SwyEO3IT5LiUcmojzn8" } }.ToArray();
-            crate = CrateManager.CreateDesignTimeFieldsCrate("Available Forms", curFields);
+            Crate crate = CrateManager.CreateDesignTimeFieldsCrate("Available Forms", curFields);
 
             return crate;
         }
@@ -89,7 +69,11 @@ namespace terminalGoogleTests.Unit
             {
                 Id = Guid.NewGuid(),
                 Name = "Monitor_Form_Responses_TEST",
-                Version = "1"
+                Version = "1",
+                Terminal = new TerminalDTO()
+                {
+                    AuthenticationType = AuthenticationType.External
+                }
             };
         }
 
@@ -112,14 +96,31 @@ namespace terminalGoogleTests.Unit
             var controls = PackControlsCrate(fieldSelectTemplate);
             return controls;
         }
-
-        public void ActivateCrateStorage(ActivityDTO curActivityDO)
+        private Crate PackCrate_ConfigurationControlsWithNoListItems()
         {
-            var configurationControlsCrate = PackCrate_ConfigurationControls();
+            var fieldSelectTemplate = new DropDownList()
+            {
+                Label = "Select Google Form",
+                Name = "Selected_Google_Form",
+                Required = true,
+                Source = new FieldSourceDTO
+                {
+                    Label = "Available Forms",
+                    ManifestType = CrateManifestTypes.StandardDesignTimeFields
+                }
+            };
+
+            var controls = PackControlsCrate(fieldSelectTemplate);
+            return controls;
+        }
+
+        public void ActivateCrateStorage(ActivityDTO curActivityDTO, Crate curCrate)
+        {
+            var configurationControlsCrate = curCrate;
             var crateDesignTimeFields = PackCrate_GoogleForms();
             var eventCrate = CreateEventSubscriptionCrate();
 
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDTO))
             {
                 crateStorage.Add(configurationControlsCrate);
                 crateStorage.Add(crateDesignTimeFields);
@@ -135,7 +136,7 @@ namespace terminalGoogleTests.Unit
             {
                 Id = Guid.NewGuid(),
                 Label = "Monitor Form Responses",
-                AuthToken = Google_AuthToken(),
+                AuthToken = Google_AuthToken1(),
                 ActivityTemplate = activityTemplate
             };
             return new Fr8DataDTO { ActivityDTO = activityDTO };
@@ -149,18 +150,33 @@ namespace terminalGoogleTests.Unit
             {
                 Id = Guid.NewGuid(),
                 Label = "Monitor Form Responses",
-                AuthToken = Google_AuthToken(),
+                AuthToken = Google_AuthToken1(),
                 ActivityTemplate = activityTemplate,
                 ParentPlanNodeId = Guid.NewGuid()
             };
 
-            ActivateCrateStorage(activity);
+            ActivateCrateStorage(activity, PackCrate_ConfigurationControls());
             return new Fr8DataDTO { ActivityDTO = activity };
         }
+        public Fr8DataDTO Monitor_Form_Responses_v1_Followup_Fr8DataDTO()
+        {
+            var activityTemplate = Monitor_Form_Responses_v1_ActivityTemplate();
 
+            var activity = new ActivityDTO()
+            {
+                Id = Guid.NewGuid(),
+                Label = "Monitor Form Responses",
+                AuthToken = Google_AuthToken1(),
+                ActivityTemplate = activityTemplate,
+                ParentPlanNodeId = Guid.NewGuid()
+            };
+
+            ActivateCrateStorage(activity, PackCrate_ConfigurationControlsWithNoListItems());
+            return new Fr8DataDTO { ActivityDTO = activity };
+        }
         private ICrateStorage WrapPayloadDataCrate(List<FieldDTO> payloadFields)
         {
-            return new CrateStorage(Data.Crates.Crate.FromContent("Payload Data", new StandardPayloadDataCM(payloadFields)));
+            return new CrateStorage(Fr8Data.Crates.Crate.FromContent("Payload Data", new StandardPayloadDataCM(payloadFields)));
         }
 
         private Crate PayloadRaw()
@@ -207,9 +223,10 @@ namespace terminalGoogleTests.Unit
             {
                 Id = Guid.NewGuid(),
                 Label = "Monitor Form Responses",
-                AuthToken = Google_AuthToken(),
+                AuthToken = Google_AuthToken1(),
                 ActivityTemplate = activityTemplate
             };
+            ActivateCrateStorage(activity, PackCrate_ConfigurationControls());
             using (var crateStorage = CrateManager.GetUpdatableStorage(activity))
             {
                 crateStorage.Add(PayloadRaw());
@@ -228,6 +245,7 @@ namespace terminalGoogleTests.Unit
                 AuthToken = Google_AuthToken(),
                 ActivityTemplate = activityTemplate
             };
+            ActivateCrateStorage(activity, PackCrate_ConfigurationControls());
             using (var crateStorage = CrateManager.GetUpdatableStorage(activity))
             {
                 crateStorage.Add(PayloadEmptyRaw());
@@ -241,7 +259,11 @@ namespace terminalGoogleTests.Unit
             {
                 Id = Guid.NewGuid(),
                 Name = "Get_Google_Sheet_Data_TEST",
-                Version = "1"
+                Version = "1",
+                Terminal = new TerminalDTO()
+                {
+                    AuthenticationType = 1
+                }
             };
         }
         public static Fr8DataDTO Get_Google_Sheet_Data_v1_InitialConfiguration_Fr8DataDTO()
@@ -281,24 +303,37 @@ namespace terminalGoogleTests.Unit
 
             var curFields = new List<FieldDTO>()
             {
-                new FieldDTO() { Key = "Column_Only", Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1o0cle_rnfVtmeLqDDeF40dRWKL6FSCuQz5E84pcCpTs" },
-                new FieldDTO() { Key = "Row_Only", Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1pzbssu5vuCqv5LMTdIQ7SCqVFaQR0_d7MnB7oGonzf0"},
-                new FieldDTO() {Key = "Row_And_Column", Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1zG93EWaycPyCdM9OJf03C2knK9Neu09OutAl2p7NZbw"},
-                new FieldDTO(){Key="Empty_First_Row", Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1Nzf_s2OyZTxG8ppxzvypH6s1ePvUT_ALPffZchuM14o"}
+                new FieldDTO
+                {
+                    Key = "Column_Only",
+                    Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1o0cle_rnfVtmeLqDDeF40dRWKL6FSCuQz5E84pcCpTs"
+                },
+                new FieldDTO
+                {
+                    Key = "Row_Only",
+                    Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1pzbssu5vuCqv5LMTdIQ7SCqVFaQR0_d7MnB7oGonzf0"
+                },
+                new FieldDTO
+                {
+                    Key = "Row_And_Column",
+                    Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1zG93EWaycPyCdM9OJf03C2knK9Neu09OutAl2p7NZbw"
+                },
+                new FieldDTO
+                {
+                    Key="Empty_First_Row",
+                    Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1Nzf_s2OyZTxG8ppxzvypH6s1ePvUT_ALPffZchuM14o"
+                },
+                new FieldDTO
+                {
+                    Key="OneRow_WithHeader",
+                    Value = @"https://spreadsheets.google.com/feeds/spreadsheets/private/full/1XES9LEK6WmSp5adZ8F-_cfoE7EeLMgPr6NhRPyGaSfM"
+                }
             }.ToArray();
             crate = CrateManager.CreateDesignTimeFieldsCrate("Select a Google Spreadsheet", curFields);
 
             return crate;
         }
-        public StandardFileDescriptionCM GetUpstreamCrate()
-        {
-            return new StandardFileDescriptionCM
-            {
-                DockyardStorageUrl = "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1o0cle_rnfVtmeLqDDeF40dRWKL6FSCuQz5E84pcCpTs",
-                Filename = "Column_Only",
-                Filetype = "Google_Spreadsheet"
-            };
-        }
+
         private Crate Get_Google_Sheet_Data_v1_PackCrate_ConfigurationControls(Tuple<string, string> spreadsheetTuple)
         {
             var activityUi = new Get_Google_Sheet_Data_v1.ActivityUi();
@@ -323,13 +358,15 @@ namespace terminalGoogleTests.Unit
             switch (spreadsheet)
             {
                 case "Row_And_Column":
-                    return new Tuple<string, string>("Row_And_Column", "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1zG93EWaycPyCdM9OJf03C2knK9Neu09OutAl2p7NZbw");
+                    return new Tuple<string, string>("Row_And_Column", "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1RgskCZyY_lKj5DsweJvut5wDVHVXcmxj90LPxUuwivA");
                 case "Row_Only":
-                    return new Tuple<string, string>("Row_Only", "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1pzbssu5vuCqv5LMTdIQ7SCqVFaQR0_d7MnB7oGonzf0");
+                    return new Tuple<string, string>("Row_Only", "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1KjUeDKo-1TmI8w5pjXWhy_uBZb3mEtVW1fSF_ytrHJI");
                 case "Column_Only":
-                    return new Tuple<string, string>("Column_Only", "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1o0cle_rnfVtmeLqDDeF40dRWKL6FSCuQz5E84pcCpTs");
+                    return new Tuple<string, string>("Column_Only", "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1K4SbUWSd5TYrF2Uk5P9n1bxuBse1dquFqrPiUsWOvqI");
                 case "Empty_First_Row":
                     return new Tuple<string, string>("Empty_First_Row", "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1Nzf_s2OyZTxG8ppxzvypH6s1ePvUT_ALPffZchuM14o");
+                case "OneRow_WithHeader":
+                    return new Tuple<string, string>("OneRow_WithHeader", "https://spreadsheets.google.com/feeds/spreadsheets/private/full/1XES9LEK6WmSp5adZ8F-_cfoE7EeLMgPr6NhRPyGaSfM");
                 default:
                     return null;
             }

@@ -1,23 +1,23 @@
 ﻿using System;
+using System.Reflection;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Salesforce.Force;
 using terminalSalesforce.Infrastructure;
-using Data.Entities;
-using Hub.Managers;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Salesforce.Common.Models;
 using Salesforce.Common;
 using Salesforce.Chatter;
 using Newtonsoft.Json.Linq;
 using Salesforce.Chatter.Models;
 using StructureMap;
-using Data.States;
-using System.Linq.Expressions;
+using TerminalBase.Models;
 
 namespace terminalSalesforce.Services
 {
@@ -32,126 +32,118 @@ namespace terminalSalesforce.Services
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
         
-        public async Task<string> CreateObject(IDictionary<string, object> salesforceObject, string salesforceObjectName, AuthorizationTokenDO authTokenDO)
+        public async Task<string> Create(SalesforceObjectType type, IDictionary<string, object> @object, AuthorizationToken authToken)
         {
-            var result = await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.CreateAsync(salesforceObjectName, salesforceObject), authTokenDO);
+            var result = await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.CreateAsync(type.ToString(), @object), authToken);
             return result?.Id ?? string.Empty;
         }
 
-        /// <summary>
-        /// Gets Fields of the given Salesforce Object Name
-        /// </summary>
-        public async Task<IList<FieldDTO>> GetFields(string salesforceObjectName, AuthorizationTokenDO authTokenDO, bool onlyUpdatableFields = false)
+        public async Task<StandardTableDataCM> Query(SalesforceObjectType type, IEnumerable<string> propertiesToRetrieve, string filter, AuthorizationToken authToken)
         {
-            var responce = (JObject)await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.DescribeAsync<object>(salesforceObjectName), authTokenDO);
+            var whatToSelect = (propertiesToRetrieve ?? new string[0]).ToArray();
+            var selectQuery = $"SELECT {(whatToSelect.Length == 0 ? "*" : string.Join(", ", whatToSelect))} FROM {type}";
+            if (!string.IsNullOrEmpty(filter))
+            {
+                selectQuery += " WHERE " + filter;
+            }
+            var result = await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.QueryAsync<object>(selectQuery), authToken);
+            var table = ParseQueryResult(result);
+            table.FirstRowHeaders = true;
+            var headerRow = whatToSelect.Length > 0
+                                ? whatToSelect.Select(x => new FieldDTO(x, x)).Select(x => new TableCellDTO { Cell = x }).ToList()
+                                : (await GetProperties(type, authToken)).Select(x => new TableCellDTO { Cell = x }).ToList();
+            table.Table.Insert(0, new TableRowDTO { Row = headerRow });
+            return table;
+        }
+
+        public async Task<List<FieldDTO>> GetProperties(SalesforceObjectType type, AuthorizationToken authToken, bool updatableOnly = false, string label = null)
+        {
+            var responce = (JObject)await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.DescribeAsync<object>(type.ToString()), authToken);
             var objectFields = new List<FieldDTO>();
             JToken resultFields;
             if (responce.TryGetValue("fields", out resultFields) && resultFields is JArray)
             {
-                if (onlyUpdatableFields)
+                if (updatableOnly)
                 {
                     resultFields = new JArray(resultFields.Where(fieldDescription => (fieldDescription.Value<bool>("updateable") == true)));
                 }
 
-                var fields = resultFields.Select(fieldDescription =>
-                                    /*
-                                    Select Fields as FieldDTOs with                                    
+                var fields = resultFields
+                    .Select(fieldDescription =>
+                        /*
+                        Select Fields as FieldDTOs with                                    
 
-                                    Key -> Field Name
-                                    Value -> Field Lable
-                                    AvailabilityType -> Run Time
-                                    FieldType -> Field Type
+                        Key -> Field Name
+                        Value -> Field Lable
+                        AvailabilityType -> Run Time
+                        FieldType -> Field Type
 
-                                    IsRequired -> The Field is required when ALL the below conditions are true.
-                                      nillable            = false, Meaning, the field must have a valid value. The field's value should not be NULL or NILL or Empty
-                                      defaultedOnCreate   = false, Meaning, Salesforce itself does not assign default value for this field when object is created (ex. ID)
-                                      updateable          = true,  Meaning, The filed's value must be updatable by the user. 
-                                                                            User must be able to set or modify the value of this field.
-                                    */
-                                    new FieldDTO(fieldDescription.Value<string>("name"), fieldDescription.Value<string>("label"), Data.States.AvailabilityType.RunTime)
-                                    {
-                                        FieldType = fieldDescription.Value<string>("type"),
+                        IsRequired -> The Field is required when ALL the below conditions are true.
+                            nillable            = false, Meaning, the field must have a valid value. The field's value should not be NULL or NILL or Empty
+                            defaultedOnCreate   = false, Meaning, Salesforce itself does not assign default value for this field when object is created (ex. ID)
+                            updateable          = true,  Meaning, The filed's value must be updatable by the user. 
+                                                                User must be able to set or modify the value of this field.
+                        */
+                        new FieldDTO(fieldDescription.Value<string>("name"), fieldDescription.Value<string>("label"), AvailabilityType.RunTime)
+                        {
+                            FieldType = ExtractFieldType(fieldDescription.Value<string>("type")),
 
-                                        IsRequired = fieldDescription.Value<bool>("nillable") == false &&
-                                                     fieldDescription.Value<bool>("defaultedOnCreate") == false &&
-                                                     fieldDescription.Value<bool>("updateable") == true,
-                                        Availability = AvailabilityType.RunTime
-
-                                    }).OrderBy(field => field.Key);
+                            IsRequired = fieldDescription.Value<bool>("nillable") == false &&
+                                            fieldDescription.Value<bool>("defaultedOnCreate") == false &&
+                                            fieldDescription.Value<bool>("updateable") == true,
+                            Availability = AvailabilityType.RunTime,
+                            Data = ExtractFieldData(fieldDescription.ToObject<JObject>()),
+                            SourceCrateLabel = label
+                        }
+                    )
+                    .OrderBy(field => field.Key);
 
                 objectFields.AddRange(fields);
             }
             return objectFields;
         }
 
-        public async Task<StandardTableDataCM> QueryObjects(string salesforceObjectName, IEnumerable<string> fields, string conditionQuery, AuthorizationTokenDO authTokenDO)
+        private string ExtractFieldType(string salesforceFieldType)
         {
-            var selectQuery = string.Format("select {0} from {1}", string.Join(", ", fields), salesforceObjectName);
-            if (!string.IsNullOrEmpty(conditionQuery))
+            switch (salesforceFieldType)
             {
-                selectQuery += " where " + conditionQuery;
+                case "picklist":
+                    return FieldType.PickList;
+
+                default:
+                    return FieldType.String;
             }
-            var result = await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.QueryAsync<object>(selectQuery), authTokenDO);
-            var table = ParseQueryResult(result);
-            table.FirstRowHeaders = true;
-            table.Table.Insert(0, new TableRowDTO { Row = fields.Select(x => new FieldDTO { Key = x, Value = x }).Select(x => new TableCellDTO { Cell = x }).ToList() });
-            return table;
         }
 
-        /// <summary>
-        /// Gets all avaialble chatter persons and chatter objects in the form of FieldDTO
-        /// FieldDTO's Key as ObjectName and Value as ObjectId
-        /// </summary>
-        public async Task<IList<FieldDTO>> GetUsersAndGroups(AuthorizationTokenDO authTokenDO)
+        private Dictionary<string, JToken> ExtractFieldData(JObject obj)
         {
-            var chatterObjectSelectPredicate = new Dictionary<string, Func<JToken, FieldDTO>>();
-            chatterObjectSelectPredicate.Add("groups", x => new FieldDTO(x.Value<string>("name"), x.Value<string>("id"), AvailabilityType.Configuration));
-            chatterObjectSelectPredicate.Add("users", x => new FieldDTO(x.Value<string>("displayName"), x.Value<string>("id"), AvailabilityType.Configuration));
-            var chatterNamesList = new List<FieldDTO>();
-            //get chatter groups and persons
-            var chatterObjects = (JObject)await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.GetGroupsAsync<object>(), authTokenDO);
-            chatterObjects.Merge((JObject)await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.GetUsersAsync<object>(), authTokenDO));
-            foreach (var predicatePair in chatterObjectSelectPredicate)
+            JToken pickListValuesToken;
+            if (obj.TryGetValue("picklistValues", out pickListValuesToken)
+                && pickListValuesToken is JArray)
             {
-                JToken requiredChatterObjects;
-                if (chatterObjects.TryGetValue(predicatePair.Key, out requiredChatterObjects) && requiredChatterObjects is JArray)
-                {
-                    chatterNamesList.AddRange(requiredChatterObjects.Select(a => predicatePair.Value(a)));
-                }
+                var pickListValues = (JArray)pickListValuesToken;
+                var fields = pickListValues
+                    .Select(x => new JObject(
+                        new JProperty("key", x.Value<string>("label")),
+                        new JProperty("value", x.Value<string>("value"))
+                    ));
+
+                var dataDict = new Dictionary<string, JToken>();
+                dataDict.Add(FieldDTO.Data_AllowableValues, new JArray(fields));
+
+                return dataDict;
             }
-            return chatterNamesList;
-        }
 
-        public async Task<string> PostFeedTextToChatterObject(string feedText, string parentObjectId, AuthorizationTokenDO authTokenDO)
-        {
-            var currentChatterUser = await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.MeAsync<UserDetail>(), authTokenDO);
-            //set the message segment with the given feed text
-            var messageSegment = new MessageSegmentInput
-            {
-                Text = feedText,
-                Type = "Text"
-            };
-            //prepare the body
-            var body = new MessageBodyInput { MessageSegments = new List<MessageSegmentInput> { messageSegment } };
-            //prepare feed item input by setting the given parent object id
-            var feedItemInput = new FeedItemInput()
-            {
-                Attachment = null,
-                Body = body,
-                SubjectId = parentObjectId,
-                FeedElementType = "FeedItem"
-            };
-            var feedItem = await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.PostFeedItemAsync<FeedItem>(feedItemInput, currentChatterUser.id), authTokenDO);
-            return feedItem?.Id ?? string.Empty;
+            return null;
         }
-
-        public T CreateSalesforceDTO<T>(ActivityDO curActivity, PayloadDTO curPayload) where T : new()
+        
+        public T CreateSalesforceDTO<T>(ActivityPayload curActivity, PayloadDTO curPayload) where T : new()
         {
             var requiredType = typeof(T);
             var requiredObject = (T)Activator.CreateInstance(requiredType);
             var requiredProperties = requiredType.GetProperties().Where(p => !p.Name.Equals("Id"));
 
-            var designTimeCrateStorage = _crateManager.GetStorage(curActivity.CrateStorage);
+            var designTimeCrateStorage = curActivity.CrateStorage;
             var runTimeCrateStorage = _crateManager.FromDto(curPayload.CrateStorage);
             var controls = designTimeCrateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
 
@@ -193,8 +185,43 @@ namespace terminalSalesforce.Services
 
             return requiredObject;
         }
+        public async Task<string> PostToChatter(string message, string parentObjectId, AuthorizationToken authToken)
+        {
+            var currentChatterUser = await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.MeAsync<UserDetail>(), authToken);
+            //set the message segment with the given feed text
+            var messageSegment = new MessageSegmentInput
+            {
+                Text = message,
+                Type = "Text"
+            };
+            //prepare the body
+            var body = new MessageBodyInput { MessageSegments = new List<MessageSegmentInput> { messageSegment } };
+            //prepare feed item input by setting the given parent object id
+            var feedItemInput = new FeedItemInput()
+            {
+                Attachment = null,
+                Body = body,
+                SubjectId = parentObjectId,
+                FeedElementType = "FeedItem"
+            };
+            var feedItem = await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.PostFeedItemAsync<FeedItem>(feedItemInput, currentChatterUser.id), authToken);
+            return feedItem?.Id ?? string.Empty;
+        }
 
-        public IEnumerable<FieldDTO> GetObjectDescriptions()
+        public IEnumerable<FieldDTO> GetSalesforceObjectTypes(SalesforceObjectOperations filterByOperations = SalesforceObjectOperations.None, SalesforceObjectProperties filterByProperties = SalesforceObjectProperties.None)
+        {
+            var salesforceTypes = Enum.GetValues(typeof(SalesforceObjectType));
+            foreach (var salesforceType in salesforceTypes)
+            {
+                var sourceValues = salesforceType.GetType().GetField(salesforceType.ToString()).GetCustomAttributes<SalesforceObjectDescriptionAttribute>().FirstOrDefault();
+                if (sourceValues.AvailableProperties.HasFlag(filterByProperties) && sourceValues.AvailableOperations.HasFlag(filterByOperations))
+                {
+                    yield return new FieldDTO(salesforceType.ToString(), salesforceType.ToString());
+                }
+            }
+        }
+
+        public IEnumerable<FieldDTO> GetObjectProperties()
         {
             return objectDescriptions ?? (objectDescriptions = new FieldDTO[]
                                                 {
@@ -203,17 +230,39 @@ namespace terminalSalesforce.Services
                                                     new FieldDTO("Contact", "Contact", AvailabilityType.Configuration),
                                                     new FieldDTO("Contract", "Contract", AvailabilityType.Configuration),
                                                     new FieldDTO("Document", "Document", AvailabilityType.Configuration),
+                                                    new FieldDTO("Group", "Group", AvailabilityType.Configuration),
                                                     new FieldDTO("Lead", "Lead", AvailabilityType.Configuration),
                                                     new FieldDTO("Opportunity", "Opportunity", AvailabilityType.Configuration),
                                                     new FieldDTO("Order", "Order", AvailabilityType.Configuration),
                                                     new FieldDTO("Product2", "Product2", AvailabilityType.Configuration),
                                                     new FieldDTO("Solution", "Solution", AvailabilityType.Configuration),
+                                                    new FieldDTO("User", "User", AvailabilityType.Configuration)
                                                 });
         }
 
-        public async Task<bool> DeleteObject(string salesforceObjectName, string objectId, AuthorizationTokenDO authTokenDO)
+        public async Task<bool> Delete(SalesforceObjectType objectType, string objectId, AuthorizationToken authToken)
         {
-            return await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.DeleteAsync(salesforceObjectName, objectId), authTokenDO);
+            return await ExecuteClientOperationWithTokenRefresh(CreateForceClient, x => x.DeleteAsync(objectType.ToString(), objectId), authToken);
+        }
+        [Obsolete("Use Task<StandardTableDataCM> Query(SalesforceObjectType, IEnumerable<string>, string, AuthorizationTokenDO) instead")]
+        public async Task<IList<FieldDTO>> GetUsersAndGroups(AuthorizationToken authToken)
+        {
+            var chatterObjectSelectPredicate = new Dictionary<string, Func<JToken, FieldDTO>>();
+            chatterObjectSelectPredicate.Add("groups", x => new FieldDTO(x.Value<string>("name"), x.Value<string>("id"), AvailabilityType.Configuration));
+            chatterObjectSelectPredicate.Add("users", x => new FieldDTO(x.Value<string>("displayName"), x.Value<string>("id"), AvailabilityType.Configuration));
+            var chatterNamesList = new List<FieldDTO>();
+            //get chatter groups and persons
+            var chatterObjects = (JObject)await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.GetGroupsAsync<object>(), authToken);
+            chatterObjects.Merge((JObject)await ExecuteClientOperationWithTokenRefresh(CreateChatterClient, x => x.GetUsersAsync<object>(), authToken));
+            foreach (var predicatePair in chatterObjectSelectPredicate)
+            {
+                JToken requiredChatterObjects;
+                if (chatterObjects.TryGetValue(predicatePair.Key, out requiredChatterObjects) && requiredChatterObjects is JArray)
+                {
+                    chatterNamesList.AddRange(requiredChatterObjects.Select(a => predicatePair.Value(a)));
+                }
+            }
+            return chatterNamesList;
         }
 
         #region Implemetation details
@@ -239,11 +288,12 @@ namespace terminalSalesforce.Services
             };
         }
 
-        private async Task<TResult> ExecuteClientOperationWithTokenRefresh<TClient, TResult>(Func<AuthorizationTokenDO, bool, Task<TClient>> clientProvider,
-                                                                                             Func<TClient, Task<TResult>> operation,
-                                                                                             AuthorizationTokenDO authTokenDO)
+        private async Task<TResult> ExecuteClientOperationWithTokenRefresh<TClient, TResult>(
+            Func<AuthorizationToken, bool, Task<TClient>> clientProvider,
+            Func<TClient, Task<TResult>> operation,
+            AuthorizationToken authToken)
         {
-            var client = await clientProvider(authTokenDO, false);
+            var client = await clientProvider(authToken, false);
             var retried = false;
             Execution:
             try
@@ -255,7 +305,7 @@ namespace terminalSalesforce.Services
                 if (ex.Message.Equals("Session expired or invalid") && !retried)
                 {
                     retried = true;
-                    client = await clientProvider(authTokenDO, true);
+                    client = await clientProvider(authToken, true);
                     goto Execution;
                 }
                 else
@@ -265,23 +315,23 @@ namespace terminalSalesforce.Services
             }
         }
 
-        private async Task<ForceClient> CreateForceClient(AuthorizationTokenDO authTokenDO, bool isRefreshTokenRequired = false)
+        private async Task<ForceClient> CreateForceClient(AuthorizationToken authToken, bool isRefreshTokenRequired = false)
         {
-            authTokenDO = isRefreshTokenRequired ? await _authentication.RefreshAccessToken(authTokenDO) : authTokenDO;
-            var salesforceToken = ToSalesforceToken(authTokenDO);
+            authToken = isRefreshTokenRequired ? await _authentication.RefreshAccessToken(authToken) : authToken;
+            var salesforceToken = ToSalesforceToken(authToken);
             return new ForceClient(salesforceToken.InstanceUrl, salesforceToken.Token, salesforceToken.ApiVersion);
         }
 
-        private async Task<ChatterClient> CreateChatterClient(AuthorizationTokenDO authTokenDO, bool isRefreshTokenRequired = false)
+        private async Task<ChatterClient> CreateChatterClient(AuthorizationToken authToken, bool isRefreshTokenRequired = false)
         {
-            authTokenDO = isRefreshTokenRequired ? await _authentication.RefreshAccessToken(authTokenDO) : authTokenDO;
-            var salesforceToken = ToSalesforceToken(authTokenDO);
+            authToken = isRefreshTokenRequired ? await _authentication.RefreshAccessToken(authToken) : authToken;
+            var salesforceToken = ToSalesforceToken(authToken);
             return new ChatterClient(salesforceToken.InstanceUrl, salesforceToken.Token, salesforceToken.ApiVersion);
         }
 
         private IEnumerable<FieldDTO> objectDescriptions;
 
-        private SalesforceAuthToken ToSalesforceToken(AuthorizationTokenDO ourToken)
+        private SalesforceAuthToken ToSalesforceToken(AuthorizationToken ourToken)
         {
             var startIndexOfInstanceUrl = ourToken.AdditionalAttributes.IndexOf("instance_url");
             var startIndexOfApiVersion = ourToken.AdditionalAttributes.IndexOf("api_version");

@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 using HealthMonitor.Utility;
-using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
 using StructureMap;
-using terminalGoogle.DataTransferObjects;
 
 namespace terminaBaselTests.Tools.Terminals
 {
@@ -71,13 +66,13 @@ namespace terminaBaselTests.Tools.Terminals
             //
             // Asociate token with action
             //
-            var applyToken = new ManageAuthToken_Apply()
+            var applyToken = new AuthenticationTokenGrantDTO()
             {
                 ActivityId = activityId,
                 AuthTokenId = tokenGuid,
                 IsMain = true
             };
-            await _baseHubITest.HttpPostAsync<ManageAuthToken_Apply[], string>(_baseHubITest.GetHubApiBaseUrl() + "ManageAuthToken/apply", new[] { applyToken });
+            await _baseHubITest.HttpPostAsync<AuthenticationTokenGrantDTO[], string>(_baseHubITest.GetHubApiBaseUrl() + "authentication/tokens/grant", new[] { applyToken });
 
             return tokenGuid;
         }

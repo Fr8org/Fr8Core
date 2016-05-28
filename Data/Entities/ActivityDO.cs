@@ -2,24 +2,34 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Reflection;
+using Data.States;
+using Fr8Data.Constants;
 
 namespace Data.Entities
 {
     public class ActivityDO : PlanNodeDO
 	{
+        //Yes, we don't want to add this property to TrackingProperties or clone its value in CopyProperties.
+        public byte[] EncryptedCrateStorage { get; set; }
+
         public string CrateStorage { get; set; }
+
         public string Label { get; set; }
+        public string Name { get; set; }
 
         [ForeignKey("ActivityTemplate")]
         public Guid ActivityTemplateId { get; set; }
 
         public virtual ActivityTemplateDO ActivityTemplate { get; set; }
+
         public string currentView { get; set; }
 
         [ForeignKey("AuthorizationToken")]
         public Guid? AuthorizationTokenId { get; set; }
 
         public virtual AuthorizationTokenDO AuthorizationToken { get; set; }
+
+        public ActivationState ActivationState { get; set; }
 
         protected override PlanNodeDO CreateNewInstance()
         {
@@ -29,10 +39,11 @@ namespace Data.Entities
 
         private static readonly PropertyInfo[] TrackingProperties = 
         {
-            typeof(ActivityDO).GetProperty("CrateStorage"),
-            typeof(ActivityDO).GetProperty("Label"),
-            typeof(ActivityDO).GetProperty("ActivityTemplateId"),
-            typeof(ActivityDO).GetProperty("AuthorizationTokenId"),
+            typeof(ActivityDO).GetProperty(nameof(CrateStorage)),
+            typeof(ActivityDO).GetProperty(nameof(Label)),
+            typeof(ActivityDO).GetProperty(nameof(ActivityTemplateId)),
+            typeof(ActivityDO).GetProperty(nameof(AuthorizationTokenId)),
+            typeof(ActivityDO).GetProperty(nameof(ActivationState)),
         };
 
         protected override IEnumerable<PropertyInfo> GetTrackingProperties()
@@ -54,27 +65,12 @@ namespace Data.Entities
 
             base.CopyProperties(source);
             Label = activity.Label;
+            Name = activity.Name;
             CrateStorage = activity.CrateStorage;
             AuthorizationTokenId = activity.AuthorizationTokenId;
             ActivityTemplateId = activity.ActivityTemplateId;
             currentView = activity.currentView;
+            ActivationState = activity.ActivationState;
         }
-
-        //        public CrateStorageDTO CrateStorageDTO()
-        //        {
-        //            return JsonConvert.DeserializeObject<CrateStorageDTO>(this.CrateStorage);
-        //        }
-        //
-        //        public void UpdateCrateStorageDTO(List<CrateDTO> curCratesDTO)
-        //        {
-        //            CrateStorageDTO crateStorageDTO = new CrateStorageDTO();
-        //
-        //            if(!String.IsNullOrEmpty(CrateStorage))//if crateStorage is not empty deserialize it
-        //                crateStorageDTO = CrateStorageDTO();
-        //
-        //            crateStorageDTO.CrateDTO.AddRange(curCratesDTO);
-        //
-        //            this.CrateStorage = JsonConvert.SerializeObject(crateStorageDTO);
-        //        }
     }
 }

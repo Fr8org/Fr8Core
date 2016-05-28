@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
+using Data.Entities;
 
 namespace Data.Entities
 {
@@ -9,19 +8,16 @@ namespace Data.Entities
     {
         public ProfileDO()
         {
-            ProfileNodes = new List<ProfileNodeDO>();
+            PermissionSets = new List<PermissionSetDO>();
         }
 
-        [Key]
-        public int Id { get; set; }
+        public Guid Id { get; set; }
+        public string Name { get; set; }
 
-        public String Name { get; set; }
-
-        [ForeignKey("DockyardAccount")]
-        public String DockyardAccountID { get; set; }
-        public virtual Fr8AccountDO DockyardAccount { get; set; }
-
-        [InverseProperty("Profile")]
-        public virtual IList<ProfileNodeDO> ProfileNodes { get; set; }
+        /// <summary>
+        /// Profile that has Protected flag as true is a part of standard core profiles
+        /// </summary>
+        public bool Protected { get; set; }
+        public ICollection<PermissionSetDO> PermissionSets { get; set; } 
     }
 }

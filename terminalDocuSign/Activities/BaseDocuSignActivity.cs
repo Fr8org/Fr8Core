@@ -1,98 +1,84 @@
-﻿using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
-using TerminalBase.BaseClasses;
-using terminalDocuSign.Infrastructure;
-using Hub.Managers;
-using Data.States;
-using terminalDocuSign.Services.New_Api;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using StructureMap;
+using terminalDocuSign.Services.New_Api;
+using TerminalBase.BaseClasses;
+using TerminalBase.Errors;
+using TerminalBase.Infrastructure;
 
-namespace terminalDocuSign.Actions
+namespace terminalDocuSign.Activities
 {
     public abstract class BaseDocuSignActivity : BaseTerminalActivity
     {
         protected IDocuSignManager DocuSignManager;
 
-        protected ICrateManager Crate;
 
-        public BaseDocuSignActivity()
+        protected BaseDocuSignActivity(ICrateManager crateManager, IDocuSignManager docuSignManager)
+            : base(true, crateManager)
         {
-            Crate = ObjectFactory.GetInstance<ICrateManager>();
-            DocuSignManager = ObjectFactory.GetInstance<IDocuSignManager>();
+            DocuSignManager = docuSignManager;
         }
 
-        public override async Task<ActivityDO> Configure(ActivityDO activityDO, AuthorizationTokenDO authTokenDO)
+        public override async Task Initialize()
+        {
+            await Configure(InitializeDS);
+        }
+
+        public override async Task FollowUp()
+        {
+            await Configure(FollowUpDS);
+        }
+
+        public async Task Configure(Func<Task> configFunc)
         {
             try
             {
-                return await ProcessConfigurationRequest(activityDO, ConfigurationEvaluator, authTokenDO);
+                await configFunc();
             }
             catch (Exception ex)
             {
                 if (!string.IsNullOrEmpty(ex.Message) && ex.Message.Contains("AUTHORIZATION_INVALID_TOKEN"))
                 {
-                    AddAuthenticationCrate(activityDO, true);
-                    return activityDO;
+                    AddAuthenticationCrate(true);
+                    return;
                 }
 
                 throw;
             }
         }
 
-        protected List<FieldDTO> CreateDocuSignEventFields()
+        protected List<FieldDTO> CreateDocuSignEventFields(DocuSignEnvelopeCM_v2 envelope, string label = null)
         {
+            string curRecipientEmail = "";
+            string curRecipientUserName = "";
+
+            if (envelope != null)
+            {
+                var current_recipient = envelope.GetCurrentRecipient();
+                curRecipientEmail = current_recipient.Email;
+                curRecipientUserName = current_recipient.Name;
+            }
+
             return new List<FieldDTO>{
-                new FieldDTO("RecipientEmail", AvailabilityType.RunTime) { Tags = "EmailAddress" },
-                new FieldDTO("RecipientUserName", AvailabilityType.RunTime) { Tags = "UserName" },
-                new FieldDTO("DocumentName", AvailabilityType.RunTime),
-                new FieldDTO("TemplateName", AvailabilityType.RunTime),
-                new FieldDTO("Status", AvailabilityType.RunTime),
-                new FieldDTO("CreateDate") { Tags = "Date" },
-                new FieldDTO("SentDate", AvailabilityType.RunTime) { Tags = "Date" },
-                new FieldDTO("DeliveredDate", AvailabilityType.RunTime) { Tags = "Date" },
-                new FieldDTO("CompletedDate", AvailabilityType.RunTime) { Tags = "Date" },
-                new FieldDTO("HolderEmail", AvailabilityType.RunTime) { Tags = "EmailAddress" },
-                new FieldDTO("Subject", AvailabilityType.RunTime),
-                new FieldDTO("EnvelopeId", AvailabilityType.RunTime),
+                new FieldDTO("CurrentRecipientEmail", curRecipientEmail, AvailabilityType.RunTime) { Tags = "EmailAddress",SourceCrateLabel = label },
+                new FieldDTO("CurrentRecipientUserName", curRecipientUserName, AvailabilityType.RunTime) { Tags = "UserName", SourceCrateLabel = label },
+                new FieldDTO("Status", envelope?.Status,  AvailabilityType.RunTime) { SourceCrateLabel = label},
+                new FieldDTO("CreateDate",  envelope?.CreateDate?.ToString()) { Tags = "Date",SourceCrateLabel = label },
+                new FieldDTO("SentDate", envelope?.SentDate?.ToString(), AvailabilityType.RunTime) { Tags = "Date", SourceCrateLabel = label },
+                new FieldDTO("Subject", envelope?.Subject, AvailabilityType.RunTime) { SourceCrateLabel = label},
+                new FieldDTO("EnvelopeId", envelope?.EnvelopeId, AvailabilityType.RunTime) { SourceCrateLabel = label},
             };
         }
 
-        protected string GetValueForEventKey(PayloadDTO curPayloadDTO, string curKey)
-        {
-            var eventReportMS = CrateManager.GetStorage(curPayloadDTO).CrateContentsOfType<EventReportCM>().FirstOrDefault();
-
-            if (eventReportMS == null)
-            {
-                return null;
-            }
-
-            var crate = eventReportMS.EventPayload.CratesOfType<StandardPayloadDataCM>().First();
-
-            if (crate == null)
-            {
-                return null;
-            }
-
-            var fields = crate.Content.AllValues().ToArray();
-            if (fields == null || fields.Length == 0) return null;
-
-            var envelopeIdField = fields.SingleOrDefault(f => f.Key == curKey);
-            if (envelopeIdField == null) return null;
-
-            return envelopeIdField.Value;
-        }
-
-        public static DropDownList CreateDocuSignTemplatePicker(
-            bool addOnChangeEvent,
+        public static DropDownList CreateDocuSignTemplatePicker(bool addOnChangeEvent,
             string name = "Selected_DocuSign_Template",
             string label = "Select DocuSign Template")
         {
@@ -115,92 +101,81 @@ namespace terminalDocuSign.Actions
             return control;
         }
 
-        public IEnumerable<FieldDTO> GetTemplateUserDefinedFields(AuthorizationTokenDO authTokenDO, string templateId, string envelopeId = null)
+        public IEnumerable<FieldDTO> GetTemplateUserDefinedFields(string templateId, string envelopeId = null)
         {
             if (String.IsNullOrEmpty(templateId))
             {
                 throw new ArgumentNullException(nameof(templateId));
             }
-            var conf = DocuSignManager.SetUp(authTokenDO);
+            var conf = DocuSignManager.SetUp(AuthorizationToken);
             return DocuSignManager.GetTemplateRecipientsAndTabs(conf, templateId);
         }
 
-        public IEnumerable<FieldDTO> GetEnvelopeUserDefinedFields(AuthorizationTokenDO authTokenDO, string templateId, string envelopeId = null)
+        public IEnumerable<FieldDTO> GetEnvelopeData(string templateId, string envelopeId = null)
         {
             if (String.IsNullOrEmpty(templateId))
             {
                 throw new ArgumentNullException(nameof(templateId));
             }
-            var conf = DocuSignManager.SetUp(authTokenDO);
+            var conf = DocuSignManager.SetUp(AuthorizationToken);
             return DocuSignManager.GetEnvelopeRecipientsAndTabs(conf, templateId);
         }
 
-        public void AddOrUpdateUserDefinedFields(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO, IUpdatableCrateStorage updater, string templateId, string envelopeId = null, List<FieldDTO> allFields = null)
+        public void AddOrUpdateUserDefinedFields(string templateId, string envelopeId = null, List<FieldDTO> allFields = null)
         {
-            updater.RemoveByLabel("DocuSignTemplateUserDefinedFields");
+            Storage.RemoveByLabel("DocuSignTemplateUserDefinedFields");
             if (!String.IsNullOrEmpty(templateId))
             {
-                var conf = DocuSignManager.SetUp(authTokenDO);
+                var conf = DocuSignManager.SetUp(AuthorizationToken);
                 var userDefinedFields = DocuSignManager.GetTemplateRecipientsAndTabs(conf, templateId);
                 if (allFields != null)
                 {
                     allFields.AddRange(userDefinedFields);
                 }
-                updater.Add(Crate.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", AvailabilityType.RunTime, userDefinedFields.ToArray()));
+                Storage.Add(CrateManager.CreateDesignTimeFieldsCrate("DocuSignTemplateUserDefinedFields", AvailabilityType.RunTime, userDefinedFields.ToArray()));
             }
         }
 
-        public void FillDocuSignTemplateSource(Crate configurationCrate, string controlName, AuthorizationTokenDO authToken)
+        public void FillDocuSignTemplateSource(Crate configurationCrate, string controlName)
         {
             var configurationControl = configurationCrate.Get<StandardConfigurationControlsCM>();
             var control = configurationControl.FindByNameNested<DropDownList>(controlName);
             if (control != null)
             {
-                var conf = DocuSignManager.SetUp(authToken);
+                var conf = DocuSignManager.SetUp(AuthorizationToken);
                 var templates = DocuSignManager.GetTemplatesList(conf);
                 control.ListItems = templates.Select(x => new ListItem() { Key = x.Key, Value = x.Value }).ToList();
             }
-        }
-
-        public virtual async System.Threading.Tasks.Task<Data.Entities.ActivityDO> Activate(Data.Entities.ActivityDO curActivityDO, Data.Entities.AuthorizationTokenDO authTokenDO)
-        {
-            return await base.Activate(curActivityDO, authTokenDO);
-        }
-
-        protected override async Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
-        {
-            var result = ValidateActivityInternal(curActivityDO);
-            if (result == ValidationResult.Success)
-            {
-                return await Task.FromResult<ICrateStorage>(null);
-            }
-            return await Task.FromResult(new CrateStorage(Crate<FieldDescriptionsCM>.FromContent("Validation Errors",
-                                                                                                 new FieldDescriptionsCM(new FieldDTO("Error Message", result.ErrorMessage)))));
-        }
-
-        protected internal virtual ValidationResult ValidateActivityInternal(ActivityDO curActivityDO)
-        {
-            return ValidationResult.Success;
-        }
-
-        public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-        {
-            var payloadCrates = await GetPayload(activityDO, containerId);
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(payloadCrates);
             }
 
-            var result = ValidateActivityInternal(activityDO);
-            if (result != ValidationResult.Success)
+        public override async Task Run()
             {
-                return Error(payloadCrates, $"Could not run {ActivityUserFriendlyName} because of the below issues:{Environment.NewLine}{result.ErrorMessage}", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+            try
+            {
+                await RunDS();
+                Success();
             }
-            return await RunInternal(activityDO, containerId, authTokenDO);
+            catch (AuthorizationTokenExpiredOrInvalidException ex)
+            {
+                RaiseInvalidTokenError(ex.Message);
+            }
+            catch (DocuSign.eSign.Client.ApiException ex)
+            {
+                if (ex.ErrorCode == 401)
+                {
+                    RaiseInvalidTokenError();
+                }
+                else
+                {
+                    throw;
+                }
+            }
         }
 
         protected abstract string ActivityUserFriendlyName { get; }
 
-        protected internal abstract Task<PayloadDTO> RunInternal(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO);
+        protected abstract Task RunDS();
+        protected abstract Task InitializeDS();
+        protected abstract Task FollowUpDS();
     }
 }

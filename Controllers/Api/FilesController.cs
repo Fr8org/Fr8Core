@@ -1,26 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Net;
 using System.Net.Http;
-using System.Net.Http.Formatting;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Http;
-using HubWeb.Infrastructure;
-using Microsoft.AspNet.Identity;
+using System.Web.Http.Description;
+using AutoMapper;
 using StructureMap;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Hub.Interfaces;
-using System.Web.Http.Description;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using AutoMapper;
-
+using Hub.Infrastructure;
+using Hub.Interfaces;
+using Fr8Data.DataTransferObjects;
+using HubWeb.Infrastructure_HubWeb;
 
 namespace HubWeb.Controllers
 {
@@ -40,8 +34,6 @@ namespace HubWeb.Controllers
             _tagService = ObjectFactory.GetInstance<ITag>();
         }
 
-        [HttpPost]
-        [ActionName("files")]
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Post()
@@ -108,8 +100,7 @@ namespace HubWeb.Controllers
         /// <returns>Filestream</returns>
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
-        [HttpGet]
-        public IHttpActionResult Download(int id)
+        public IHttpActionResult Get(int id)
         {
             FileDO fileDO = null;
             if (_security.IsCurrentUserHasRole(Roles.Admin))
@@ -133,10 +124,45 @@ namespace HubWeb.Controllers
             return new FileActionResult(file);
         }
 
+
+        
+        /// <summary>
+        /// Downloads user's given file
+        /// </summary>
+        /// <param name="id">id of requested file</param>
+        /// <returns>Filestream</returns>
+        [Fr8HubWebHMACAuthenticate]
+        [Fr8ApiAuthorize]
+        [ActionName("byPath")]
+        public IHttpActionResult DownloadFileByPath(string path)
+        {
+            FileDO fileDO = null;
+            if (_security.IsCurrentUserHasRole(Roles.Admin))
+            {
+                fileDO = new FileDO { CloudStorageUrl = path };
+            }
+            else
+            {
+                string userId;
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    userId = _security.GetCurrentAccount(uow).Id;
+                }
+                fileDO = _fileService.GetFile(path, userId);
+            }
+            if (fileDO == null)
+            {
+                return NotFound();
+            }
+            var file = _fileService.Retrieve(fileDO);
+            return new FileActionResult(file);
+        }
+
         /// <summary>
         /// Gets all files current user stored on Fr8
         /// </summary>
         /// <returns>List of FileDTO</returns>
+        [HttpGet]
         [Fr8HubWebHMACAuthenticate]
         [Fr8ApiAuthorize]
         public IHttpActionResult Get()

@@ -1,102 +1,82 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Control;
-using Data.Crates;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
+using Fr8Data.Manifests;
 using TerminalBase.BaseClasses;
+using StructureMap;
+using terminalQuickBooks.Interfaces;
 using TerminalBase.Infrastructure;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
-using Hub.Managers;
-using JournalEntry = terminalQuickBooks.Services.JournalEntry;
+using Fr8Data.States;
 
 namespace terminalQuickBooks.Actions
 {
-    public class Create_Journal_Entry_v1 : BaseTerminalActivity
+    public class Create_Journal_Entry_v1 : BaseQuickbooksTerminalActivity<Create_Journal_Entry_v1.ActivityUi>
     {
-        private JournalEntry _journalEntry;
-        public Create_Journal_Entry_v1()
+        public class ActivityUi : StandardConfigurationControlsCM { }
+
+        private readonly IJournalEntry _journalEntry;
+
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            _journalEntry = new JournalEntry();
+            Version = "1",
+            Name = "Create_Journal_Entry",
+            Label = "Create Journal Entry",
+            Category = ActivityCategory.Forwarders,
+            Terminal = TerminalData.TerminalDTO,
+            NeedsAuthentication = true,
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
+
+        public Create_Journal_Entry_v1(ICrateManager crateManager, IJournalEntry journalEntry)
+            : base(crateManager)
+        {
+            _journalEntry = journalEntry;
         }
 
-        public async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override async Task Initialize()
         {
-            if (CheckAuthentication(curActivityDO, authTokenDO))
-            {
-                return curActivityDO;
-            }
+            if (ActivityId == Guid.Empty)
+                throw new ArgumentException("Configuration requires the submission of an Action that has a real ActionId");
 
-            return await ProcessConfigurationRequest(curActivityDO, dto => ConfigurationRequestType.Initial, authTokenDO);
+            //get StandardAccountingTransactionCM
+            var upstreamCrates = await HubCommunicator.GetCratesByDirection<StandardAccountingTransactionCM>(ActivityId, CrateDirection.Upstream);
+            TextBlock textBlock;
+            if (upstreamCrates.Count > 0)
+            {
+                Storage.Add(upstreamCrates.First());
+            }
         }
 
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override Task FollowUp()
         {
-            if (curActivityDO.Id != Guid.Empty)
-            {
-                //get StandardAccountingTransactionCM
-                var upstream = await GetCratesByDirection<StandardAccountingTransactionCM>(curActivityDO, CrateDirection.Upstream);
-                //In order to Create Journal Entry an upstream action needs to provide a StandardAccountingTransactionCM.
-                TextBlock textBlock;
-                if (upstream.Count != 0)
-                {
-                    textBlock = GenerateTextBlock("Create a Journal Entry",
-                        "This Action doesn't require any configuration.",
-                        "well well-lg");
-                    using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-                    {
-                        crateStorage.Add(upstream[0]);
-                    }
-                }
-                else
-                {
-                    textBlock = GenerateTextBlock("Create a Journal Entry",
-                        "When this Action runs, it will be expecting to find a Crate of Standard Accounting Transactions. Right now, it doesn't detect any Upstream Actions that produce that kind of Crate. Please add an activity upstream (to the left) of this action that does so.",
-                        "alert alert-warning");
-                }
-                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-                {
-                    crateStorage.Clear();
-                    crateStorage.Add(PackControlsCrate(textBlock));
-                }
-            }
-            else
-            {
-                throw new ArgumentException(
-                    "Configuration requires the submission of an Action that has a real ActionId");
-            }
-            return curActivityDO;
+            // No extra configuration required
+            return Task.FromResult(0);
         }
-        //It is assumed that Action is the child of the Loop action.
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+
+        public override async Task Run()
         {
-            var payloadCrates = await GetPayload(curActivityDO, containerId);
-            
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(payloadCrates);
-            }
-            
             //Obtain the crate of type StandardAccountingTransactionCM that holds the required information
-            var curStandardAccountingTransactionCM = CrateManager.GetByManifest<StandardAccountingTransactionCM>(payloadCrates);
+            var curStandardAccountingTransactionCM = Payload.CratesOfType<StandardAccountingTransactionCM>().Single().Content;
             //Obtain the crate of type OperationalStateCM to extract the correct StandardAccountingTransactionDTO
-            var curOperationalStateCM = CrateManager.GetOperationalState(payloadCrates);
+            var curOperationalStateCM = Payload.CratesOfType<OperationalStateCM>().Single().Content;
             //Get the LoopId that is equal to the Action.Id for to obtain the correct StandardAccountingTransactionDTO
             //Validate fields of the StandardAccountingTransactionCM crate
             StandardAccountingTransactionCM.Validate(curStandardAccountingTransactionCM);
             //Get the list of the StandardAccountingTransactionDTO
             var curTransactionList = curStandardAccountingTransactionCM.AccountingTransactions;
-            //Get the current index of Accounting Transactions
-            var currentIndexOfTransactions = GetLoopIndex(curOperationalStateCM);
             //Take StandardAccountingTransactionDTO from curTransactionList using core function GetCurrentElement
-            var curStandardAccountingTransactionDTO = (StandardAccountingTransactionDTO)GetCurrentElement(curTransactionList, currentIndexOfTransactions);
+            var curStandardAccountingTransactionDTO = curTransactionList[LoopIndex];
             //Check that all required fields exists in the StandardAccountingTransactionDTO object
             StandardAccountingTransactionCM.ValidateAccountingTransation(curStandardAccountingTransactionDTO);
             //Use service to create Journal Entry Object
-            _journalEntry.Create(curStandardAccountingTransactionDTO, authTokenDO);
-            return payloadCrates;
-        }     
+            _journalEntry.Create(curStandardAccountingTransactionDTO, AuthorizationToken, HubCommunicator);
+        }
     }
 }

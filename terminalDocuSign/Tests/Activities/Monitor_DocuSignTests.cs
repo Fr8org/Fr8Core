@@ -1,21 +1,9 @@
-﻿using System.Linq;
-using System.Threading.Tasks;
-using AutoMapper;
-using Data.Crates;
+﻿using System.Threading.Tasks;
+using Fr8Data.DataTransferObjects;
 using NUnit.Framework;
-using Newtonsoft.Json;
-using StructureMap;
-using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
 using TerminalBase.Infrastructure;
 using terminalDocuSign.Actions;
-using terminalDocuSign.Tests.Fixtures;
 using terminalDocuSign.Infrastructure.StructureMap;
-using terminalDocuSign.Infrastructure.AutoMapper;
-using Utilities.Configuration.Azure;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 
@@ -33,9 +21,8 @@ namespace terminalDocuSign.Tests.Actions
             TerminalBootstrapper.ConfigureTest();
 
             TerminalDocuSignMapBootstrapper.ConfigureDependencies(Hub.StructureMap.StructureMapBootStrapper.DependencyType.TEST);
-            TerminalDataAutoMapperBootStrapper.ConfigureAutoMapper();
 
-            _monitor_DocuSign = new Monitor_DocuSign_Envelope_Activity_v1();
+            _monitor_DocuSign = New<Monitor_DocuSign_Envelope_Activity_v1>();
         }
 
         [Test]
@@ -106,7 +93,7 @@ namespace terminalDocuSign.Tests.Actions
             object[] parameters = new object[] { curPayloadDTO, "EnvelopeId" };
 
             //Act
-            var result = (string)ClassMethod.Invoke(typeof(Monitor_DocuSign_Envelope_Activity_v1), "GetValueForKey", parameters);
+            var result = (string)Invoke<Monitor_DocuSign_Envelope_Activity_v1>("GetValueForKey", parameters);
 
             //Assert
             Assert.AreEqual("EnvelopeIdValue", result);

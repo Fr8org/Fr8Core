@@ -7,6 +7,7 @@ using Data.Entities;
 using Data.Interfaces;
 using Data.States;
 using Data.States.Templates;
+using Fr8Data.States;
 using StructureMap;
 
 namespace Data.Entities
@@ -44,7 +45,7 @@ namespace Data.Entities
         /*<param name="baseEndPoint">New TerminalDO base end point</param>*/
         /// <param name="Endpoint">New TerminalDO end point</param>
         public ActivityTemplateDO(string name, string version,
-            string terminalName, string endPoint, string label = "", string description = "") : this()
+            string terminalName, string terminalLabel, string endPoint, string label = "", string description = "") : this()
         {
 
             this.Name = name;
@@ -55,6 +56,7 @@ namespace Data.Entities
             this.Terminal = new TerminalDO()
             {
                 Name = terminalName,
+                Label = terminalLabel,
                 TerminalStatus = TerminalStatus.Active,
                 Endpoint = endPoint
             };

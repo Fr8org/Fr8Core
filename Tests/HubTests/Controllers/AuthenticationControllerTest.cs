@@ -1,8 +1,6 @@
 ﻿using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Services;
 using HubWeb.Controllers;
 using Moq;
@@ -10,14 +8,14 @@ using NUnit.Framework;
 using StructureMap;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using HubTests.Controllers.Api;
-using Hub.Interfaces;
-using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using AutoMapper;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.States;
+using Hub.Interfaces;
+using Fr8Infrastructure.Interfaces;
 
 namespace HubTests.Controllers
 {
@@ -55,6 +53,7 @@ namespace HubTests.Controllers
                 var terminalDO = new TerminalDO()
                 {
                     Name = "terminalTest",
+                    Label = "Test",
                     Version = "1",
                     TerminalStatus = 1,
                     Endpoint = "localhost:39504",
@@ -116,7 +115,7 @@ namespace HubTests.Controllers
 
             var activityTemplateDO = new ActivityTemplateDO("test_name", "test_label", "1", "test_description", tokenDO.TerminalID);
             activityTemplateDO.Id = FixtureData.GetTestGuidById(1);
-            activityTemplateDO.Terminal = tokenDO.Terminal;
+            activityTemplateDO.Terminal = ObjectFactory.GetInstance<ITerminal>().GetByKey(tokenDO.TerminalID);
             activityTemplateDO.Terminal.AuthenticationType = AuthenticationType.Internal;
 
             var activityDO = FixtureData.TestActivity1();
@@ -128,7 +127,7 @@ namespace HubTests.Controllers
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { activityDO }
                 });
 

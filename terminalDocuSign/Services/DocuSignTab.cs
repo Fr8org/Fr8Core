@@ -1,15 +1,21 @@
-﻿using Data.Control;
-using Data.Interfaces.DataTransferObjects;
-using DocuSign.eSign.Model;
+﻿using DocuSign.eSign.Model;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
+using Fr8Data.Control;
+using Fr8Data.DataTransferObjects;
 using terminalDocuSign.DataTransferObjects;
+using Utilities;
 
 namespace terminalDocuSign.Services.NewApi
 {
+
+    //IMPORTANT:
+    //
+    // if you bring changes to the logic, responsible for processing json int DocuSignTabDTO, 
+    // make sure you don't break consistency between the way DocuSignEnvelopeCM_v2 is populated by Connect events and by polling
+    //
     public static class DocuSignTab
     {
         public static IEnumerable<DocuSignTabDTO> ExtractTabs(JObject tabs, string roleName)
@@ -87,7 +93,7 @@ namespace terminalDocuSign.Services.NewApi
             {
                 string tab_type = item.Name;
                 var fields = fieldList.Where(a => a.Tags.Contains(tab_type) && a.Tags.Contains("recipientId:" + corresponding_template_recipient.RecipientId));
-                foreach (JObject tab in item.Value)
+                foreach (JObject tab in item.Value) 
                 {
                     FieldDTO corresponding_field = null;
                     switch (tab_type)
@@ -96,10 +102,9 @@ namespace terminalDocuSign.Services.NewApi
                             corresponding_field = fields.Where(a => a.Key.Contains(tab.Property("groupName").Value.ToString())).FirstOrDefault();
                             if (corresponding_field == null)
                                 break;
-                            tab["radios"].Where(a => a["value"].ToString() == corresponding_field.Value).FirstOrDefault()["selected"] = "true";
-                            foreach (var radioItem in tab["radios"].Where(a => a["value"].ToString() != corresponding_field.Value).ToList())
+                            foreach (var radioItem in tab["radios"])
                             {
-                                radioItem["selected"] = "false";
+                                radioItem["selected"] = radioItem["value"].ToString() == corresponding_field.Value ? "true" : "false";
                             }
                             break;
 
@@ -107,13 +112,11 @@ namespace terminalDocuSign.Services.NewApi
                             corresponding_field = fields.Where(a => a.Key.Contains(tab.Property("tabLabel").Value.ToString())).FirstOrDefault();
                             if (corresponding_field == null)
                                 break;
-                            tab["listItems"].Where(a => a["value"].ToString() == corresponding_field.Value.Trim()).FirstOrDefault()["selected"] = "true";
-                            foreach (var listItem in tab["listItems"].Where(a => a["value"].ToString() != corresponding_field.Value.Trim()))
+                            var trimmedValue = corresponding_field.Value?.Trim();
+                            foreach (var listItem in tab["listItems"])
                             {
-                                //set all other to false
-                                listItem["selected"] = "false";
+                                listItem["selected"] = listItem["value"].ToString() == trimmedValue ? "true" : "false";
                             }
-                            //["selected"] = "true";
                             tab["value"] = corresponding_field.Value;
                             break;
                         case "checkboxTabs":
@@ -146,9 +149,11 @@ namespace terminalDocuSign.Services.NewApi
                 Name = string.Format("{0}({1})", tab["tabLabel"], roleName),
                 TabId = tab["tabId"],
                 Value = value,
-                Type = GetFieldType(tabName),
+                Fr8DisplayType = GetFieldType(tabName),
+                Type = tabName.Replace("Tabs", "").UppercaseFirst(), // "textTabs" -> "Text"
                 RoleName = roleName,
-                TabName = tabName
+                TabName = tabName,
+                TabLabel = tab["tabLabel"]
             };
         }
 
@@ -189,7 +194,7 @@ namespace terminalDocuSign.Services.NewApi
                         RecipientId = grpTab["recipientId"],
                         Name = string.Format("{0}({1})", grpTab["groupName"], roleName),
                         TabId = grpTab["tabId"],
-                        Type = ControlTypes.RadioButtonGroup,
+                        Fr8DisplayType = ControlTypes.RadioButtonGroup,
                         RoleName = roleName,
                         TabName = tabName
                     };
@@ -225,7 +230,7 @@ namespace terminalDocuSign.Services.NewApi
                         RecipientId = grpTab["recipientId"],
                         Name = string.Format("{0}({1})", grpTab["tabLabel"], roleName),
                         TabId = grpTab["tabId"],
-                        Type = ControlTypes.DropDownList,
+                        Fr8DisplayType = ControlTypes.DropDownList,
                         Value = grpTab["value"],
                         RoleName = roleName,
                         TabName = tabName

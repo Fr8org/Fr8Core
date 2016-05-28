@@ -1,9 +1,9 @@
-﻿using Hub.StructureMap;
-using SendGrid;
+﻿using SendGrid;
 using StructureMap;
 using Utilities;
-using terminalSendGrid.Infrastructure;
-using terminalSendGrid.Services;
+using Fr8Infrastructure.StructureMap;
+using terminalUtilities.Interfaces;
+using terminalUtilities.SendGrid;
 
 namespace terminalSendGrid
 {

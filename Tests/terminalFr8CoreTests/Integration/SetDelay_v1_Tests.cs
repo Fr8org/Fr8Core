@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using Data.Constants;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using HealthMonitor.Utility;
-using Hub.Managers;
+using Fr8Data.Managers;
 using NUnit.Framework;
 
 namespace terminalFr8CoreTests.Integration
@@ -37,7 +35,6 @@ namespace terminalFr8CoreTests.Integration
 
 			Assert.NotNull(responseActionDTO);
 			Assert.NotNull(responseActionDTO.CrateStorage);
-			Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
 			var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
 
@@ -70,7 +67,6 @@ namespace terminalFr8CoreTests.Integration
 
 			Assert.NotNull(responseActionDTO);
 			Assert.NotNull(responseActionDTO.CrateStorage);
-			Assert.NotNull(responseActionDTO.CrateStorage.Crates);
 
 			var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
 

@@ -1,9 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using Data.Interfaces.Manifests;
+using Fr8Data.Manifests;
 using HealthMonitor.Utility;
 using NUnit.Framework;
 
@@ -12,8 +9,7 @@ namespace terminalFr8CoreTests.Integration
     [Explicit]
     public class Terminal_Discover_v1Tests : BaseTerminalIntegrationTest
     {
-        private const int Fr8CoreActivityCount = 25;
-
+        private const int Fr8CoreActivityCount = 28;
         private const string TestIncomingDataName = "TestIncomingData";
         private const string MapFieldsName = "MapFields";
         private const string AddPayloadManuallyName = "AddPayloadManually";
@@ -35,9 +31,12 @@ namespace terminalFr8CoreTests.Integration
         private const string GetFileFromFr8Store = "GetFileFromFr8Store";
         private const string BuildMessage = "Build_Message";
         private const string SearchFr8Warehouse = "SearchFr8Warehouse";
-        private const string TestAndBranch = "TestAndBranch";
+        private const string MakeADecision = "MakeADecision";
         private const string ExtractTableField = "ExtractTableField";
-        private const string CollectData = "CollectData";
+        private const string AppBuilder = "AppBuilder";
+        private const string GetDataFromFr8Warehouse = "GetDataFromFr8Warehouse";
+        private const string SendEmailViaSendGrid = "Send_Email";
+        private const string SendSMSViaTwilio = "Send_SMS";
 
 
         public override string TerminalName
@@ -75,9 +74,12 @@ namespace terminalFr8CoreTests.Integration
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == GetFileFromFr8Store));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == BuildMessage));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SearchFr8Warehouse));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == TestAndBranch));
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == MakeADecision));
             Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == ExtractTableField));
-            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == CollectData));
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == AppBuilder));
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == GetDataFromFr8Warehouse));
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SendEmailViaSendGrid));
+            Assert.AreEqual(true, terminalDiscoverResponse.Activities.Any(a => a.Name == SendSMSViaTwilio));
         }
     }
 }

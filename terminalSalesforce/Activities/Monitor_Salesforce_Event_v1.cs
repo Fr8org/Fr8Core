@@ -1,23 +1,36 @@
-﻿
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.Manifests;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using TerminalBase.BaseClasses;
-using System;
 using System.Threading.Tasks;
 using terminalSalesforce.Infrastructure;
 using StructureMap;
 using System.Linq;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
-using Data.Constants;
-using System.Globalization;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
+using Fr8Data.Manifests;
+using Fr8Data.States;
+using ServiceStack;
+using TerminalBase.Infrastructure;
 
 namespace terminalSalesforce.Actions
 {
-    public class Monitor_Salesforce_Event_v1 : EnhancedTerminalActivity<Monitor_Salesforce_Event_v1.ActivityUi>
+    public class Monitor_Salesforce_Event_v1 : BaseSalesforceTerminalActivity<Monitor_Salesforce_Event_v1.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Version = "1",
+            Name = "Monitor_Salesforce_Event",
+            Label = "Monitor Salesforce Events",
+            NeedsAuthentication = true,
+            Category = ActivityCategory.Monitors,
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         private const string CreatedEventname = "Created";
         private const string UpdatedEventname = "Updated";
 
@@ -35,7 +48,7 @@ namespace terminalSalesforce.Actions
             {
                 SalesforceObjectList = new DropDownList
                 {
-                    Label = "Which object do you want to save to Salesforce.com?",
+                    Label = "Which object do you want to monitor?",
                     Name = nameof(SalesforceObjectList),
                     Required = true,
                     Events = new List<ControlEvent> { ControlEvent.RequestConfig }
@@ -69,59 +82,50 @@ namespace terminalSalesforce.Actions
             }
         }
 
-        ISalesforceManager _salesforceManager;
+        readonly ISalesforceManager _salesforceManager;
 
-        public Monitor_Salesforce_Event_v1() : base(true)
+        public Monitor_Salesforce_Event_v1(ICrateManager crateManager, ISalesforceManager salesforceManager)
+            : base(crateManager)
         {
-            _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
+            _salesforceManager = salesforceManager;
         }
 
-        protected override async Task Initialize(RuntimeCrateManager runtimeCrateManager)
+        public override Task Initialize()
         {
-            ActivitiesHelper.GetAvailableFields(ConfigurationControls.SalesforceObjectList);
+            ActivitiesHelper.GetAvailableFields(ActivityUI.SalesforceObjectList);
+            return Task.FromResult(0);
         }
 
-        protected override async Task Configure(RuntimeCrateManager runtimeCrateManager)
+        public override async Task FollowUp()
         {
-            string curSfChosenObject = ConfigurationControls.SalesforceObjectList.selectedKey;
+            string curSfChosenObject = ActivityUI.SalesforceObjectList.selectedKey;
 
             if(string.IsNullOrEmpty(curSfChosenObject))
             {
                 return;
             }
-
-            var eventSubscriptionCrate = PackEventSubscriptionsCrate(ConfigurationControls);
-            CurrentActivityStorage.ReplaceByLabel(eventSubscriptionCrate);
-
-            CurrentActivityStorage.ReplaceByLabel(
-                CrateManager.CreateDesignTimeFieldsCrate("Monitor Salesforce Fields", CreateSfMonitorDesignTimeFields().ToList(), AvailabilityType.RunTime));
-
-            var eventCrate = CrateManager.CreateManifestDescriptionCrate(
-                                            "Available Run-Time Objects",
-                                            MT.SalesforceEvent.ToString(),
-                                            ((int)MT.SalesforceEvent).ToString(CultureInfo.InvariantCulture),
-                                            AvailabilityType.RunTime);
-            CurrentActivityStorage.ReplaceByLabel(eventCrate);
+            var eventSubscriptionCrate = PackEventSubscriptionsCrate();
+            Storage.ReplaceByLabel(eventSubscriptionCrate);
+            CrateSignaller.ClearAvailableCrates();
+            CrateSignaller.MarkAvailableAtRuntime<SalesforceEventCM>("Salesforce Event");
+            var selectedObjectProperties = await _salesforceManager.GetProperties(curSfChosenObject.ToEnum<SalesforceObjectType>(), AuthorizationToken);
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(GenerateRuntimeDataLabel(), true).AddFields(selectedObjectProperties);
         }
 
-        protected override async Task RunCurrentActivity()
+        public override async Task Run()
         {
             //get the event payload from the Salesforce notification event
-            var sfEventPayloads = CurrentPayloadStorage.CratesOfType<EventReportCM>().ToList().SelectMany(er => er.Content.EventPayload).ToList();
-
-            //if the payload does not contain Salesforce Event Notificaiton Payload, then it means,
-            //user initially runs this plan. Just acknowledge that the plan is activated successfully and it monitors the Salesforce events
-            if (sfEventPayloads == null || 
-                sfEventPayloads.Count == 0 || 
+            var sfEventPayloads = Payload.CratesOfType<EventReportCM>().ToList().SelectMany(er => er.Content.EventPayload).ToList();
+            
+            if (sfEventPayloads.Count == 0 || 
                 !sfEventPayloads.Any(payload => payload.Label.Equals("Salesforce Event Notification Payload")))
             {
-                await Activate(CurrentActivity, AuthorizationToken);
-                RequestHubExecutionTermination("Plan successfully activated. It will wait and respond to specified Salesforce Event messages.");
+                RequestHubExecutionTermination("External event data is missing");
                 return;
             }
 
             //if payload contains Salesforce Notification, get it from the payload storage
-            var curEventReport = CurrentPayloadStorage.CratesOfType<EventReportCM>().Single(er => er.Content.Manufacturer.Equals("Salesforce")).Content;
+            var curEventReport = Payload.CratesOfType<EventReportCM>().Single(er => er.Content.Manufacturer.Equals("Salesforce")).Content;
             var curEventPayloads = curEventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().Single().PayloadObjects;
 
             //for each payload,
@@ -143,44 +147,67 @@ namespace terminalSalesforce.Actions
                 };
 
                 //store the SalesforceEventCM into the current payload
-                CurrentPayloadStorage.ReplaceByLabel(
-                    Crate.FromContent("Salesforce Event", sfEvent, AvailabilityType.RunTime));
+                Payload.ReplaceByLabel(Crate.FromContent("Salesforce Event", sfEvent));
             });
+
+            var runtimeCrateLabel = GenerateRuntimeDataLabel();
+
+            var salesforceObjectFields = Storage.FirstCrate<CrateDescriptionCM>().Content.CrateDescriptions.First(x => x.Label == runtimeCrateLabel).Fields.Select(x => x.Key).ToArray();
+
+            //for each Salesforce event notification
+            var sfEventsList = Payload.CrateContentsOfType<SalesforceEventCM>().ToList();
+            foreach (var sfEvent in sfEventsList)
+            {
+                //get the object fields as Standard Table Data
+                var resultObjects = await _salesforceManager.Query(
+                                                sfEvent.ObjectType.ToEnum<SalesforceObjectType>(),
+                                                salesforceObjectFields, 
+                                                $"ID = '{sfEvent.ObjectId}'", 
+                                                AuthorizationToken);
+
+                Payload.Add(Crate<StandardTableDataCM>.FromContent(runtimeCrateLabel, resultObjects));
+            }
         }
 
-        private Crate PackEventSubscriptionsCrate(ActivityUi curSfActivityUi)
+        private string GenerateRuntimeDataLabel()
         {
-            var curSfChosenObject = curSfActivityUi.SalesforceObjectList.selectedKey;
+            var curSfChosenObject = ActivityUI.SalesforceObjectList.selectedKey;
 
             var eventSubscriptions = new List<string>();
             
-            if (curSfActivityUi.Created.Selected)
+            if (ActivityUI.Created.Selected)
             {
-                eventSubscriptions.Add(string.Format("{0}{1}", curSfChosenObject, CreatedEventname));
+                eventSubscriptions.Add(CreatedEventname);
             }
-            if (curSfActivityUi.Updated.Selected)
+            if (ActivityUI.Updated.Selected)
             {
-                eventSubscriptions.Add(string.Format("{0}{1}", curSfChosenObject, UpdatedEventname));
+                eventSubscriptions.Add(UpdatedEventname);
+            }
+
+            var modifiers = string.Join("/", eventSubscriptions);
+
+            return $"{curSfChosenObject} {modifiers} on Salesforce.com";
+        }
+
+        private Crate PackEventSubscriptionsCrate()
+        {
+            var curSfChosenObject = ActivityUI.SalesforceObjectList.selectedKey;
+
+            var eventSubscriptions = new List<string>();
+
+            if (ActivityUI.Created.Selected)
+            {
+                eventSubscriptions.Add($"{curSfChosenObject}{CreatedEventname}");
+            }
+            if (ActivityUI.Updated.Selected)
+            {
+                eventSubscriptions.Add($"{curSfChosenObject}{UpdatedEventname}");
             }
 
             return CrateManager.CreateStandardEventSubscriptionsCrate(
                 "Standard Event Subscriptions",
                 "Salesforce",
                 eventSubscriptions.ToArray());
-        }
-
-        private List<FieldDTO> CreateSfMonitorDesignTimeFields()
-        {
-            var monitorEventFields = new List<FieldDTO> {
-
-                new FieldDTO("ObjectType", "ObjectType", AvailabilityType.RunTime),
-                new FieldDTO("ObjectId", "ObjectId", AvailabilityType.RunTime),
-                new FieldDTO("CreatedDate", "CreatedDate", AvailabilityType.RunTime),
-                new FieldDTO("LastModifiedDate", "LastModifiedDate", AvailabilityType.RunTime),
-                new FieldDTO("OccuredEvent", "OccuredEvent", AvailabilityType.RunTime)
-            };
-
-            return monitorEventFields;
         }
     }
 }

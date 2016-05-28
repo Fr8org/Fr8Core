@@ -1,66 +1,125 @@
-﻿using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Hub.Managers;
-using Newtonsoft.Json;
-using StructureMap;
-using System;
+﻿using StructureMap;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using terminalDropbox.Interfaces;
 using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 using terminalDropbox.Services;
+using System.IO;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.Manifests;
+using Fr8Data.States;
+using TerminalBase.Errors;
+using Fr8Data.DataTransferObjects;
+using System;
+using Fr8Data.Managers;
+using TerminalBase.Infrastructure;
 
 namespace terminalDropbox.Actions
 {
-    public class Get_File_List_v1 : BaseTerminalActivity
+    public class Get_File_List_v1 : EnhancedTerminalActivity<Get_File_List_v1.ActivityUi>
     {
-        private readonly DropboxService _dropboxService;
-        protected ICrateManager _crateManager;
-
-        public Get_File_List_v1()
+        public class ActivityUi : StandardConfigurationControlsCM
         {
-            _dropboxService = ObjectFactory.GetInstance<DropboxService>();
-            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
+            public DropDownList FileList { get; set; }
+
+            public ActivityUi()
+            {
+                FileList = new DropDownList
+                {
+                    Label = "Select a file",
+                    Name = nameof(FileList),
+                    Required = true,
+                    Events = new List<ControlEvent> { ControlEvent.RequestConfig }
+                };
+                Controls.Add(FileList);
+            }
         }
 
-        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        private const string RuntimeCrateLabel = "Dropbox file list";
+
+        private readonly IDropboxService _dropboxService;
+
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            if (CheckAuthentication(curActivityDO, authTokenDO))
+            Version = "1",
+            Name = "Get_File_List",
+            Label = "Get File List",
+            Terminal = TerminalData.TerminalDTO,
+            NeedsAuthentication = true,
+            Category = ActivityCategory.Receivers,
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+      
+
+        public Get_File_List_v1(ICrateManager crateManager, IDropboxService dropboxService)
+            : base(true, crateManager)
+        {
+            _dropboxService = dropboxService;
+        }
+
+        public override async Task Initialize()
+        {
+            var fileNames = await _dropboxService.GetFileList(AuthorizationToken);
+            ActivityUI.FileList.ListItems = fileNames
+                .Select(filePath => new ListItem { Key = Path.GetFileName(filePath), Value = Path.GetFileName(filePath) }).ToList();
+            CrateSignaller.MarkAvailableAtRuntime<StandardFileListCM>(RuntimeCrateLabel);
+            Storage.ReplaceByLabel(PackDropboxFileListCrate(fileNames));
+        }
+
+        public override async Task FollowUp()
+        {
+            var fileList = await _dropboxService.GetFileList(AuthorizationToken);
+            ActivityUI.FileList.ListItems = fileList
+                .Select(filePath => new ListItem { Key = Path.GetFileName(filePath), Value = Path.GetFileName(filePath) }).ToList();
+            CrateSignaller.MarkAvailableAtRuntime<StandardFileListCM>(RuntimeCrateLabel);
+            Storage.ReplaceByLabel(PackDropboxFileListCrate(fileList));
+        }
+
+      
+
+        public override async Task Run()
+        {
+            IList<string> fileNames;
+            try
             {
-                return curActivityDO;
+                fileNames = await _dropboxService.GetFileList(AuthorizationToken);
+            }
+            catch (Dropbox.Api.AuthException)
+            {
+                throw new AuthorizationTokenExpiredOrInvalidException();
+            }
+            var dropboxFileList = PackDropboxFileListCrate(fileNames);
+            Payload.Add(dropboxFileList);
+        }
+
+        private Crate<StandardFileListCM> PackDropboxFileListCrate(IEnumerable<string> fileList)
+        {
+            var descriptionList = new List<StandardFileDescriptionCM>();
+            foreach (var filePath in fileList)
+            {
+                var fileDesc = new StandardFileDescriptionCM()
+                {
+                    Filename = Path.GetFileName(filePath),
+                    Filetype = Path.GetExtension(filePath)
+                };
+                var fileSharedUrl = _dropboxService.GetFileSharedUrl(AuthorizationToken, filePath);
+
+                fileDesc.DirectUrl = fileSharedUrl;
+                descriptionList.Add(fileDesc);
             }
 
-            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
-        }
+            return Crate<StandardFileListCM>.FromContent(
+                RuntimeCrateLabel,
+                new StandardFileListCM
+                {
+                    FileList = descriptionList
+                },
+                AvailabilityType.Always);
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-        {
-            var payloadCrates = await GetPayload(curActivityDO, containerId);
-
-            if (NeedsAuthentication(authTokenDO))
-            {
-                return NeedsAuthenticationError(payloadCrates);
-            }
-
-            var fileNames = await _dropboxService.GetFileList(authTokenDO);
-
-            using (var crateStorage = _crateManager.GetUpdatableStorage(payloadCrates))
-            {
-                crateStorage.Add(PackCrate_DropboxFileList(fileNames));
-            }
-
-            return Success(payloadCrates);
-        }
-
-        private Crate PackCrate_DropboxFileList(List<string> fileNames)
-        {
-            return Data.Crates.Crate.FromJson("Dropbox File List", JsonConvert.SerializeObject(fileNames));
-        }
-
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
-        {
-            return ConfigurationRequestType.Initial;
         }
     }
 }

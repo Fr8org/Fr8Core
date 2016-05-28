@@ -1,25 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using Data.Entities;
-using Data.Interfaces.Manifests;
-using terminalQuickBooks.Infrastructure;
+using Fr8Data.Manifests;
+using StructureMap;
 using terminalQuickBooks.Interfaces;
+using TerminalBase.Infrastructure;
+using TerminalBase.Models;
 
 namespace terminalQuickBooks.Services
 {
     public class ChartOfAccounts: IChartOfAccounts
     {
+
         /// <summary>
         /// Obtains list of accounts from Quick
         /// </summary>
         /// <param name="authTokenDO"></param>
+        /// <param name="userId"/>
         /// <returns>List of Accounts of Intuit type</returns>
-        public List<Intuit.Ipp.Data.Account> GetAccountList(AuthorizationTokenDO authTokenDO)
+        public List<Intuit.Ipp.Data.Account> GetAccountList(AuthorizationToken authToken,  IHubCommunicator hubCommunicator)
         {
-            var _qbConnectivity = new Connectivity();
-            var curDataService = _qbConnectivity.GetDataService(authTokenDO);
+            var _serviceWorker = ObjectFactory.GetInstance<IServiceWorker>();
+            var curDataService = _serviceWorker.GetDataService(authToken,  hubCommunicator);
             var curAccountList = curDataService.FindAll(new Intuit.Ipp.Data.Account()).ToList();
             return curAccountList;
         }
@@ -27,10 +29,11 @@ namespace terminalQuickBooks.Services
         /// Returns a list of QuickBooksAccounts, simplified version of Intuit Account class
         /// </summary>
         /// <param name="authTokenDO"></param>
+        /// <param name="userId"/>
         /// <returns></returns>
-        public ChartOfAccountsCM GetChartOfAccounts(AuthorizationTokenDO authTokenDO)
+        public ChartOfAccountsCM GetChartOfAccounts(AuthorizationToken authToken,  IHubCommunicator hubCommunicator)
         {
-            var listOfAccounts = GetAccountList(authTokenDO);
+            var listOfAccounts = GetAccountList(authToken, hubCommunicator);
             if (listOfAccounts.Count == 0)
             {
                 throw new Exception("No Accounts found in the QuickBooks account");

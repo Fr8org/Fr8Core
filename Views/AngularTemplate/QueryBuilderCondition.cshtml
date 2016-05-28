@@ -1,15 +1,21 @@
 ﻿<tr>
     <td>
         <div class="configuration-control-form-group">
-            <select class="form-control" ng-options="f as f.name for f in fields" ng-model="condition.field" ng-change="fieldSelected(condition)">
-                <option value="">Select a Field</option>
-            </select>
+            <ui-select ng-model="condition.field" theme="bootstrap" search-enabled="false" on-select="fieldSelected(condition)" stop-click-propagation ng-click="toggleDropDown($select)">
+                <ui-select-match placeholder="Select value from the list...">{{$select.selected.key}}</ui-select-match>
+                <ui-select-choices repeat="f in fields">
+                    <span ng-bind-html="f.key"></span>
+                </ui-select-choices>
+            </ui-select>
         </div>
     </td>
     <td>
         <div class="configuration-control-form-group">
-            <select class="form-control" ng-options="op.value as op.text for op in operators"
-                    ng-model="condition.operator" ng-disabled="!condition.field">
+            <select 
+                class="form-control"
+                ng-options="op.value as op.text for op in operators"
+                ng-model="condition.operator"
+                ng-disabled="!condition.field">
             </select>
         </div>
     </td>
@@ -20,9 +26,7 @@
         </div>
     </td>
     <td>
-        <span class="delete-btn"
-                ng-show="!isSingle"
-                ng-click="onRemoveCondition()">
+        <span class="delete-btn" ng-show="!isSingle" ng-click="onRemoveCondition()">
             <i class="fa fa-times"></i>
         </span>
     </td>

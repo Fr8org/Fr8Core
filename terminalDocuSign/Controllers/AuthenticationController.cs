@@ -1,20 +1,13 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using System.Web.Http;
 using Newtonsoft.Json;
-using Data.Interfaces.DataTransferObjects;
-using StructureMap;
 using TerminalBase.BaseClasses;
-using terminalDocuSign.Interfaces;
 using Utilities.Configuration.Azure;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using terminalDocuSign.Services.New_Api;
 using DocuSign.eSign.Client;
 using DocuSign.eSign.Model;
 using DocuSign.eSign.Api;
+using Fr8Data.DataTransferObjects;
 using terminalDocuSign.DataTransferObjects;
 
 namespace terminalDocuSign.Controllers
@@ -68,7 +61,7 @@ namespace terminalDocuSign.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex);
+                ReportTerminalError(curTerminal, ex,curCredentials.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {
@@ -94,7 +87,7 @@ namespace terminalDocuSign.Controllers
             }
 
             //Here we make a call to API with X-DocuSign-Authentication to retrieve both oAuth token and AccountID
-            string integratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey");
+            string integratorKey = CloudConfigurationManager.GetSetting("DocuSignIntegratorKey" + (curCredentials.IsDemoAccount ? "_DEMO" : ""));
             ApiClient apiClient = new ApiClient(endpoint);
             string authHeader = "{\"Username\":\"" + curCredentials.Username + "\", \"Password\":\"" + curCredentials.Password + "\", \"IntegratorKey\":\"" + integratorKey + "\"}";
             Configuration conf = new Configuration(apiClient);

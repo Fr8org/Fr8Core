@@ -1,17 +1,15 @@
 ﻿using System;
+using System.Dynamic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
 using System.Web.Mvc;
-using Microsoft.AspNet.Identity;
 using StructureMap;
 using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Hub.Interfaces;
-using Hub.Services;
 using HubWeb.ViewModels;
 using Data.Infrastructure;
+using Data.Infrastructure.StructureMap;
+using Fr8Data.DataTransferObjects;
 
 namespace HubWeb.Controllers
 {
@@ -20,12 +18,14 @@ namespace HubWeb.Controllers
         private readonly IActivity _activity;
         private readonly IAuthorization _authorization;
         private readonly ITerminal _terminal;
+        private readonly ISecurityServices _security;
 
         public AuthenticationCallbackController()
         {
             _terminal = ObjectFactory.GetInstance<ITerminal>();
             _activity = ObjectFactory.GetInstance<IActivity>();
             _authorization = ObjectFactory.GetInstance<IAuthorization>();
+            _security = ObjectFactory.GetInstance<ISecurityServices>();
         }
 
         [HttpGet]
@@ -50,17 +50,31 @@ namespace HubWeb.Controllers
             {
                 throw new ApplicationException("Could not find terminal.");
             }
-            
+            string userId=null;
+
+            // It is unlikely that ASP cookies/headers/other stuff that is used to track current session will be send within auth callback from external service
+            // We need a smarter approach
+            /*using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                userId = _security.GetCurrentAccount(uow).Id;
+            }*/
+
             var externalAuthenticationDTO = new ExternalAuthenticationDTO()
             {
-                RequestQueryString = requestQueryString
+                RequestQueryString = requestQueryString,
+                Fr8UserId = userId
             };
 
             var response = await _authorization.GetOAuthToken(terminal, externalAuthenticationDTO);
 
             if (string.IsNullOrEmpty(response.Error))
             {
-                return View(response);
+                dynamic model = new ExpandoObject();
+                model.AuthorizationTokenId = response.AuthorizationToken.Id;
+                model.TerminalId = response.AuthorizationToken.TerminalID;
+                model.TerminalName = terminal.Name;
+
+                return View(model);
             }
             else
             {

@@ -30,6 +30,7 @@ module dockyard.controllers {
         addAction(group: model.ActionGroup): void;
         deleteAction: (action: model.ActivityDTO) => void;
         reConfigureAction: (action: model.ActivityDTO) => void;
+        openAddLabelModal: (action: model.ActivityDTO) => void;
         isReConfiguring: boolean;
         chooseAuthToken: (action: model.ActivityDTO) => void;
         selectAction(action): void;
@@ -106,6 +107,7 @@ module dockyard.controllers {
             this.LayoutService.resetLayout();
 
             this.$scope.isPlanBuilderScope = true;
+            this.$scope.isReConfiguring = false;
 
             this.$scope.current = new model.PlanBuilderState();
             this.$scope.actionGroups = [];
@@ -145,6 +147,22 @@ module dockyard.controllers {
                 actionsArray.push(action);
                 this.reConfigure(actionsArray);
             };
+
+            $scope.openAddLabelModal = (action: model.ActivityDTO) => { 
+
+                var modalInstance = $modal.open({
+                    animation: true,
+                    templateUrl: '/AngularTemplate/ActivityLabelModal',
+                    controller: 'ActivityLabelModalController',
+                    resolve: {
+                        label: () => action.label
+                    }
+                })
+                modalInstance.result.then(function (label: string) {
+                    action.label = label;
+                    ActionService.save(action);
+                });
+            }
             this.$scope.chooseAuthToken = (action: model.ActivityDTO) => {
                 this.chooseAuthToken(action);
             };
@@ -154,6 +172,14 @@ module dockyard.controllers {
                     this.selectAction(action, null);
 
             }
+
+            $scope.$watch(function () {
+                return $(".resizable").width();
+            }, function (newVal, oldVal) {
+                if (newVal !== oldVal) {
+                    $(".designer-header-fixed").width(newVal);
+                }
+            })
 
             //Group: which group action is dropped to
             //actionId: id of dropped action
@@ -204,28 +230,6 @@ module dockyard.controllers {
                 });
 
             };
-
-
-            var currentState: number;
-            $scope.$watch('current.plan.planState', () => {
-                if ($scope.current.plan) {
-                    if (currentState === undefined) currentState = $scope.current.plan.planState;
-
-                    if (currentState !== $scope.current.plan.planState) {
-                        if ($scope.current.plan.planState === model.PlanState.Inactive) {
-                            PlanService.deactivate({ planId: $scope.current.plan.id });
-                        } else if ($scope.current.plan.planState === model.PlanState.Active) {
-                            PlanService.activate(<any>{ planId: $scope.current.plan.id, planBuilderActivate: true })
-                                .$promise.then((result) => {
-                                    if (result != null && result.status === "validation_error") {
-                                        this.renderActions(result.activitiesCollection);
-                                        $scope.current.plan.planState = model.PlanState.Inactive;
-                                    }
-                                });
-                        }
-                    }
-                }
-            });
 
             this.processState($state);
         }
@@ -383,7 +387,7 @@ module dockyard.controllers {
 
         
         private createNewSolution(solutionName: string) {
-            var plan = this.ActionService.createSolution({
+            var plan = this.PlanService.createSolution({
                 solutionName: solutionName
             });
             plan.$promise.then((curPlan: interfaces.IPlanFullDTO) => {
@@ -417,13 +421,11 @@ module dockyard.controllers {
         private setupMessageProcessing() {
             //Process Configure Action Pane events
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionUpdated],
-                (event: ng.IAngularEvent, eventArgs: pca.ActionUpdatedEventArgs) => this.PaneConfigureAction_ActionUpdated(eventArgs));
+                (event: ng.IAngularEvent, eventArgs: model.ActivityDTO) => this.PaneConfigureAction_ActionUpdated(eventArgs));
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ActionRemoved],
                 (event: ng.IAngularEvent, eventArgs: pca.ActionRemovedEventArgs) => this.PaneConfigureAction_ActionRemoved(eventArgs));
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_ChildActionsReconfiguration],
                 (event: ng.IAngularEvent, childActionReconfigEventArgs: pca.ChildActionReconfigurationEventArgs) => this.PaneConfigureAction_ChildActionsReconfiguration(childActionReconfigEventArgs));
-
-
             this.$scope.$on(pca.MessageType[pca.MessageType.PaneConfigureAction_DownStreamReconfiguration],
                 (event: ng.IAngularEvent, eventArgs: pca.DownStreamReConfigureEventArgs) => this.PaneConfigureAction_ReConfigureDownStreamActivities(eventArgs));
 
@@ -541,11 +543,10 @@ module dockyard.controllers {
         }
 
         private chooseAuthToken(action: model.ActivityDTO) {
-
             var self = this;
 
-            var modalScope = <any>self.$scope.$new(true);
-            modalScope.actionIds = [action.id];
+            var modalScope = <IAuthenticationDialogScope>self.$scope.$new(true);
+            modalScope.activities = [action];
 
             self.$modal.open({
                 animation: true,
@@ -553,10 +554,13 @@ module dockyard.controllers {
                 controller: 'AuthenticationDialogController',
                 scope: modalScope
             })
-                .result
-                .then(() => {
-
-                });
+            .result
+            .then(() => {
+                self.$scope.$broadcast(
+                    dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthCompleted],
+                    new dockyard.directives.paneConfigureAction.AuthenticationCompletedEventArgs(<interfaces.IActivityDTO>({ id: action.id }))
+                );
+            });
         }
 
         private deleteAction(action: model.ActivityDTO) {
@@ -591,7 +595,7 @@ module dockyard.controllers {
             var parentId = eventArgs.group.parentId;
             var action = new model.ActivityDTO(this.$scope.planId, parentId, id);
 
-            action.label = activityTemplate.label;
+            action.name = activityTemplate.label;
             // Add action to Workflow Designer.
             this.$scope.current.activities = action.toActionVM();
             this.$scope.current.activities.activityTemplate = activityTemplate;
@@ -706,10 +710,13 @@ module dockyard.controllers {
 
         /*
             Handles message 'ConfigureActionPane_ActionUpdated'
+            TODO : we should update entire activity
         */
-        private PaneConfigureAction_ActionUpdated(eventArgs: pca.ActionUpdatedEventArgs) {
-
-        }
+        private PaneConfigureAction_ActionUpdated(updatedAction: model.ActivityDTO) {
+            var action = this.findActionById(updatedAction.id);
+            action.name = updatedAction.name;
+            action.label = updatedAction.label;
+        }   
 
         /*
             Handles message 'SelectActionPane_ActionTypeSelected'
@@ -805,14 +812,21 @@ module dockyard.controllers {
                 if (this.$scope.curAggReloadingActions.indexOf(results[index].id) === -1) {
                     this.$scope.curAggReloadingActions.push(results[index].id);
                 } else {
-                    var positionToRemove = this.$scope.curAggReloadingActions.indexOf(results[index].id);
-                    this.$scope.curAggReloadingActions.splice(positionToRemove, 1);
-                    return;
+                    //var positionToRemove = this.$scope.curAggReloadingActions.indexOf(results[index].id);
+                    //this.$scope.curAggReloadingActions.splice(positionToRemove, 1);
+                    continue;
+                    //return;
                 }
             }
             
-            // scann all actions to find actions with tag AgressiveReload in ActivityTemplate
+            // scan all actions to find actions with tag AgressiveReload in ActivityTemplate
             this.reConfigure(results);
+
+            // Reconfigure also child activities of the activity which initiated reconfiguration. 
+            if (callConfigureResponseEventArgs.action && callConfigureResponseEventArgs.action.childrenActivities.length > 0) {
+                this.reConfigure(<model.ActivityDTO[]>callConfigureResponseEventArgs.action.childrenActivities);
+            }
+
 
             //wait UI to finish rendering
             this.$timeout(() => {
@@ -852,18 +866,36 @@ module dockyard.controllers {
         private getAgressiveReloadingActions(
             actionGroups: Array<model.ActionGroup>,
             currentAction: interfaces.IActivityDTO) {
-
+                         
             var results: Array<model.ActivityDTO> = [];
-            actionGroups.forEach(group => {
-                group.envelopes.filter(envelope => {
-                    return envelope.activity.activityTemplate.tags !== null && envelope.activity.activityTemplate.tags.indexOf('AggressiveReload') !== -1;
-                }).forEach(env => {
-                    results.push(env.activity);
-                });
+            var currentGroupArray = actionGroups.filter(group => _.any<model.ActivityEnvelope>(group.envelopes, envelope => envelope.activity.id == currentAction.id));
+            if (currentGroupArray.length == 0) {
+                return [];
+            }
+            var currentGroup = currentGroupArray[0]; // max one item is possible.
+            currentGroup.envelopes.filter(envelope => 
+                 /* envelope.activity.activityTemplate.tags !== null 
+                && envelope.activity.activityTemplate.tags.indexOf('AggressiveReload') !== -1 && */
+                envelope.activity.ordering > currentAction.ordering
+            ).forEach(env => {
+                results.push(env.activity);
             });
 
             return results;
         }
     }
     app.controller('PlanBuilderController', PlanBuilderController);
+    app.controller('ActivityLabelModalController', ['$scope', '$modalInstance','label', ($scope: any, $modalInstance: any, label: string): void => {
+
+        $scope.label = label;
+
+        $scope.submitForm = () => {
+            $modalInstance.close($scope.label);
+        };
+
+        $scope.cancel = () => {
+            $modalInstance.dismiss();
+        };
+
+    }]);
 }

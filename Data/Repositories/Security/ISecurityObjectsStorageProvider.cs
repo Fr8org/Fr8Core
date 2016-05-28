@@ -1,18 +1,24 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Security;
+using Data.Entities;
+using Data.Interfaces.DataTransferObjects;
 using Data.Repositories.Security.Entities;
 using Data.States;
+using Fr8Data.DataTransferObjects;
 
 namespace Data.Repositories.Security
 {
     public interface ISecurityObjectsStorageProvider
     {
-        int InsertRolePrivilege(RolePrivilege rolePrivilege);
-        int UpdateRolePrivilege(RolePrivilege rolePrivilege);
-        int InsertObjectRolePrivilege(string dataObjectId, Guid rolePrivilegeId, string dataObjectType, string propertyName = null);
-        int RemoveObjectRolePrivilege(string dataObjectId, Guid rolePrivilegeId, string propertyName = null);
-        ObjectRolePrivilegesDO GetRolePrivilegesForSecuredObject(string dataObjectId);
-        List<RolePrivilege> GetRolePrivilegesForFr8Account(Guid fr8AccountId);
-        void SetDefaultObjectSecurity(string dataObjectId, string dataObjectType);
+        int InsertRolePermission(RolePermission rolePermission);
+        int UpdateRolePermission(RolePermission rolePermission);
+        int InsertObjectRolePermission(string currentUserId, string dataObjectId, Guid rolePermissionId, string dataObjectType, string propertyName = null);
+        int RemoveObjectRolePermission(string dataObjectId, Guid rolePermissionId, string propertyName = null);
+        ObjectRolePermissionsWrapper GetRecordBasedPermissionSetForObject(string dataObjectId);
+        List<PermissionDTO> GetAllPermissionsForUser(Guid profileId);
+        List<int> GetObjectBasedPermissionSetForObject(string dataObjectId, string dataObjectType, Guid profileId);
+        void SetDefaultObjectSecurity(string currentUserId, string dataObjectId, string dataObjectType, Guid rolePermissionId, int? organizationId);
+        RolePermission GetRolePermission(string roleName, Guid permissionSetId);
     }
 }

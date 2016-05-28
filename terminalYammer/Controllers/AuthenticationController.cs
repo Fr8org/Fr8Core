@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 using TerminalBase.BaseClasses;
 using terminalYammer.Interfaces;
 using terminalYammer.Services;
@@ -66,7 +66,7 @@ namespace terminalYammer.Controllers
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex);
+                ReportTerminalError(curTerminal, ex,externalAuthDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

@@ -13,6 +13,7 @@ using NUnit.Framework;
 using StructureMap;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
+using Fr8Data.States;
 
 namespace HubTests.Repositories.Plan
 {
@@ -124,7 +125,7 @@ namespace HubTests.Repositories.Plan
             {
                 Id = NewGuid(13),
                 Name = "Plan",
-                PlanState = PlanState.Active,
+                PlanState = PlanState.Running,
                 Description = "PlanDesc",
                 Fr8Account = new Fr8AccountDO()
                 {
@@ -173,6 +174,7 @@ namespace HubTests.Repositories.Plan
                                 ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                 RootPlanNodeId = NewGuid(13),
                                 Id = NewGuid(2),
+                                CrateStorage = "stroage " + NewGuid(2),
                                 Fr8Account = new Fr8AccountDO()
                                 {
                                     Id = "acoountId",
@@ -188,6 +190,7 @@ namespace HubTests.Repositories.Plan
                                     Id = FixtureData.GetTestGuidById(1),
                                     Name = "New template",
                                 },
+                                CrateStorage = "stroage " + NewGuid(3),
                                 ActivityTemplateId = FixtureData.GetTestGuidById(1),
                                 RootPlanNodeId = NewGuid(13),
                                 Id = NewGuid(3),
@@ -204,12 +207,35 @@ namespace HubTests.Repositories.Plan
             };
         }
 
-        private static bool AreEquals(PlanNodeDO a, PlanNodeDO b)
+        private static void  AssertEquals(PlanNodeDO expected, PlanNodeDO actual)
         {
-            var snapShotA = new PlanSnapshot(a, false);
-            var snapShotB = new PlanSnapshot(b, false);
+            var snapShotA = new PlanSnapshot(expected, false);
+            var snapShotB = new PlanSnapshot(actual, false);
 
-            return !snapShotB.Compare(snapShotA).HasChanges;
+            var changes = snapShotB.Compare(snapShotA);
+
+            if (changes.HasChanges)
+            {
+                foreach (var changedObject in changes.Update)
+                {
+                    foreach (var prop in changedObject.ChangedProperties)
+                    {
+                        var expectedValue = prop.GetValue(expected.GetDescendants().First(x => x.Id == changedObject.Node.Id), null);
+                        var actualValue = prop.GetValue(changedObject.Node, null);
+                        Assert.Fail($"Plans are different. Property {prop.Name} of plan node {changedObject.Node.Id} is expected to has value '{expectedValue}' but has value '{actualValue}'");
+                    }
+                }
+
+                foreach (var planNodeDo in changes.Insert)
+                {
+                    Assert.Fail($"Plans are different. It is not expected to see node {planNodeDo.Id}");
+                }
+
+                foreach (var planNodeDo in changes.Delete)
+                {
+                    Assert.Fail($"Plans are different. Missing node {planNodeDo.Id}");
+                }
+            }
         }
 
         private void ValidateChanges(List<Guid> expected, List<PlanNodeDO> actual)
@@ -318,8 +344,8 @@ namespace HubTests.Repositories.Plan
 
             var loadedPlan = provider.LoadPlan(Guid.Empty);
 
-            Assert.IsTrue(AreEquals(plan, loadedPlan));
-            Assert.IsTrue(AreEquals(repository.GetById<PlanDO>(NewGuid(13)), plan));
+            AssertEquals(plan, loadedPlan);
+            AssertEquals(plan, repository.GetById<PlanDO>(NewGuid(13)));
         }
 
 
@@ -340,7 +366,7 @@ namespace HubTests.Repositories.Plan
 
             var loadedPlan = provider.LoadPlan(Guid.Empty);
 
-            Assert.IsTrue(AreEquals(refPlan, loadedPlan));
+            AssertEquals(refPlan, loadedPlan);
         }
 
         [Test]
@@ -368,6 +394,7 @@ namespace HubTests.Repositories.Plan
                     Id = 1,
                     TerminalStatus = TerminalStatus.Active,
                     Name = "terminal",
+                    Label = "term",
                     Version = "1"
 
                 });
@@ -381,6 +408,7 @@ namespace HubTests.Repositories.Plan
                 uow.TerminalRepository.Add(new TerminalDO
                 {
                     Name = "asdfasdf",
+                    Label = "asdf",
                     Version = "1",
                     Id = 1,
                     TerminalStatus = 1
@@ -396,7 +424,7 @@ namespace HubTests.Repositories.Plan
             using (var uow = container.GetInstance<IUnitOfWork>())
             {
                 var loadedPlan = uow.PlanRepository.GetById<PlanDO>(NewGuid(13));
-                Assert.IsTrue(AreEquals(plan, loadedPlan));
+                AssertEquals(plan, loadedPlan);
             }
         }
 
@@ -414,8 +442,8 @@ namespace HubTests.Repositories.Plan
 
             repository = new PlanRepository(new PlanStorage(cache, provider));
 
-            Assert.AreEqual("newName", repository.GetById<ActivityDO>(NewGuid(2)).Label);
-            Assert.AreEqual("newName3", repository.GetById<ActivityDO>(NewGuid(3)).Label);
+            Assert.AreEqual("newName", repository.GetById<ActivityDO>(NewGuid(2)).Label, "Labels are different");
+            Assert.AreEqual("newName3", repository.GetById<ActivityDO>(NewGuid(3)).Label, "Labels are different");
         }
 
     }

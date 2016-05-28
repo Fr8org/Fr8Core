@@ -1,19 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Threading.Tasks;
-using Hub.Interfaces;
-using Hub.Security;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
+using Fr8Data.Manifests;
+using Fr8Infrastructure.Interfaces;
+using Fr8Infrastructure.Security;
 using Newtonsoft.Json;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using System.Linq;
-using NUnit.Framework;
-using Data.Constants;
-using Data.Interfaces.DataTransferObjects.Helpers;
 using StructureMap;
 
 namespace HealthMonitor.Utility
@@ -24,7 +18,6 @@ namespace HealthMonitor.Utility
 
         public BaseTerminalIntegrationTest()
         {
-            ObjectFactory.Initialize();
             ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
             HMACService = new Fr8HMACService();
         }

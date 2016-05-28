@@ -1,11 +1,7 @@
 ﻿using System;
-using System.Collections.Generic;
-using Newtonsoft.Json;
-using StructureMap;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
-using Hub.Interfaces;
+using Fr8Data.States;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -16,6 +12,7 @@ namespace UtilitiesTesting.Fixtures
             return new TerminalDO
             {
                 Name = "terminalAzureSqlServer",
+                Label = "AzureSqlServer",
                 Endpoint = "terminalAzureSqlServer",
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
@@ -28,6 +25,7 @@ namespace UtilitiesTesting.Fixtures
             return new TerminalDO
             {
                 Name = "AzureSqlServer",
+                Label = "AzureSqlServer",
                 Endpoint = "AzureSqlServer",
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
@@ -40,6 +38,7 @@ namespace UtilitiesTesting.Fixtures
             return new TerminalDO
             {
                 Name = "http://localhost:46281/",
+                Label = "http://localhost:46281/",
                 Endpoint = "http://localhost:46281/",
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
@@ -52,6 +51,7 @@ namespace UtilitiesTesting.Fixtures
             return new TerminalDO
             {
                 Name = "AzureSqlServer",
+                Label = "AzureSqlServer",
                 Endpoint = "AzureSqlServer",
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
@@ -64,6 +64,7 @@ namespace UtilitiesTesting.Fixtures
             return new TerminalDO
             {
                 Name = "DocuSign",
+                Label = "DocuSign",
                 Endpoint = "localhost",
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
@@ -77,6 +78,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "DocuSign",
+                Label = "DocuSign",
                 Endpoint = "http://localhost",
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",
@@ -90,6 +92,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 Id = 1,
                 Name = "terminalDocuSign",
+                Label = "DocuSign",
                 Endpoint = "localhost",
                 TerminalStatus = TerminalStatus.Active,
                 Version = "1",

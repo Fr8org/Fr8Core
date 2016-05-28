@@ -14,11 +14,11 @@ namespace Data.Entities
     {
         private static readonly PropertyInfo[] TrackingProperties =
         {
-            typeof (PlanNodeDO).GetProperty("ParentPlanNodeId"),
-            typeof (PlanNodeDO).GetProperty("Fr8AccountId"),
-            typeof (PlanNodeDO).GetProperty("Ordering"),
-            typeof (PlanNodeDO).GetProperty("LastUpdated"),
-            typeof (PlanNodeDO).GetProperty("Runnable")
+            typeof (PlanNodeDO).GetProperty(nameof(ParentPlanNodeId)),
+            typeof (PlanNodeDO).GetProperty(nameof(Fr8AccountId)),
+            typeof (PlanNodeDO).GetProperty(nameof(Ordering)),
+            typeof (PlanNodeDO).GetProperty(nameof(LastUpdated)),
+            typeof (PlanNodeDO).GetProperty(nameof(Runnable))
         };
 
         [Key]
@@ -125,7 +125,7 @@ namespace Data.Entities
             base.AfterCreate();
 
             var securityService = ObjectFactory.GetInstance<ISecurityServices>();
-            securityService.SetDefaultObjectSecurity(Id, GetType().Name);
+            securityService.SetDefaultObjectSecurity(Id, nameof(PlanNodeDO));
         }
 
         public List<PlanNodeDO> GetDescendantsOrdered()

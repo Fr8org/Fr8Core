@@ -2,15 +2,17 @@
 using System.Collections.Generic;
 using System.Linq;
 using AutoMapper;
-using Data.Crates;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Interfaces;
 using Hub.Managers;
-using Data.Interfaces.Manifests;
 
 namespace Hub.Services
 {
@@ -20,6 +22,8 @@ namespace Hub.Services
 
         private readonly ICrateManager _crate;
         private readonly IActivityTemplate _activityTemplate;
+        private const string ValidationErrorsLabel = "Validation Errors";
+
         #endregion
 
         public PlanNode()
@@ -72,18 +76,28 @@ namespace Hub.Services
             }
         }
 
-        public List<T> GetCrateManifestsByDirection<T>(
+        public IncomingCratesDTO GetIncomingData(Guid activityId, CrateDirection direction, AvailabilityType availability)
+        {
+            var crates = GetCrateManifestsByDirection(activityId, direction, AvailabilityType.NotSet);
+            var availableData = new IncomingCratesDTO();
+            availableData.AvailableCrates.AddRange(crates.SelectMany(x => x.CrateDescriptions).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
+
+            return availableData;
+        }
+        
+        public List<CrateDescriptionCM> GetCrateManifestsByDirection(
             Guid activityId,
             CrateDirection direction,
             AvailabilityType availability,
             bool includeCratesFromActivity = true
-                ) where T : Data.Interfaces.Manifests.Manifest
+                ) 
         {
-            Func<Crate<T>, bool> cratePredicate;
+            Func<Crate<CrateDescriptionCM>, bool> cratePredicate;
 
             if (availability == AvailabilityType.NotSet)
             {
-                cratePredicate = f => true;
+                //validation errors don't need to be present as available data, so remove Validation Errors
+                cratePredicate = f => f.Label != ValidationErrorsLabel && f.Availability != AvailabilityType.Configuration;
             }
             else
             {
@@ -100,34 +114,57 @@ namespace Hub.Services
                 {
                     activities = activities.Where(x => x.Id != activityId);
                 }
+                // else
+                // {
+                //     if (!activities.Any(x => x.Id == activityId))
+                //     {
+                //         var activitiesToAdd = activities.ToList();
+                //         activitiesToAdd.Insert(0, activityDO);
+                //         activities = activitiesToAdd;
+                //     }
+                // }
 
+                List<FieldDescriptionsCM> fields = new List<FieldDescriptionsCM>();
                 var result = activities
-                    .SelectMany(x => _crate.GetStorage(x).CratesOfType<T>().Where(cratePredicate))
-                    .Select(x => x.Content)
+                    .SelectMany(x =>
+                    {
+                        fields.AddRange(
+                            _crate.GetStorage(x)
+                                .CratesOfType<FieldDescriptionsCM>()
+                                .Where(f => f.Label != ValidationErrorsLabel && f.Availability != AvailabilityType.Configuration)
+                                .Select(y=>y.Content)
+                                .ToList()
+                        );
+                        return _crate.GetStorage(x).CratesOfType<CrateDescriptionCM>().Where(cratePredicate);
+                    })
+                    .Select(x =>
+                    {
+                        if (x.Content.CrateDescriptions.Count > 0)
+                        {
+                            x.Content.CrateDescriptions[0].Fields.AddRange(fields.SelectMany(f => f.Fields).Where(f => availability == AvailabilityType.NotSet || (f.Availability & availability) != 0));
+                            foreach (var field in x.Content.CrateDescriptions[0].Fields)
+                            {
+                                if (field.SourceCrateLabel == null)
+                                {
+                                    if (x.Content.CrateDescriptions[0].Label == null)
+                                    {
+                                        field.SourceCrateLabel = x.Content.CrateDescriptions[0].ProducedBy;
+                                    }
+                                    else
+                                    {
+                                        field.SourceCrateLabel = x.Content.CrateDescriptions[0].Label;
+                                    }
+                                }
+                            }
+                        }
+                        return x.Content;
+                    })
                     .ToList();
-
+                            
                 return result;
             }
         }
-
-        public FieldDescriptionsCM GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability)
-        {
-            Func<FieldDTO, bool> fieldPredicate;
-
-            if (availability == AvailabilityType.NotSet)
-            {
-                fieldPredicate = f => true;
-            }
-            else
-            {
-                fieldPredicate = f => (f.Availability & availability) != 0;
-            }
-
-            var manifests = GetCrateManifestsByDirection<FieldDescriptionsCM>(activityId, direction, availability);
-          
-            return new FieldDescriptionsCM(manifests.SelectMany(x => x.Fields).Where(fieldPredicate));
-        }
-
+        
         private List<PlanNodeDO> GetActivitiesByDirection(IUnitOfWork uow, CrateDirection direction, PlanNodeDO curActivityDO)
         {
             switch (direction)
@@ -259,21 +296,6 @@ namespace Hub.Services
             TraverseActivity(activity, activities.Add);
 
             activities.Reverse();
-
-            activities.ForEach(x =>
-            {
-                // TODO: it is not very smart solution. Activity service should not knon about anything except Activities
-                // But we have to support correct deletion of any activity types and any level of hierarchy
-                // May be other services should register some kind of callback to get notifed when activity is being deleted.
-                if (x is SubPlanDO)
-                {
-                    foreach (var criteria in uow.CriteriaRepository.GetQuery().Where(y => y.SubPlanId == x.Id).ToArray())
-                    {
-                        uow.CriteriaRepository.Remove(criteria);
-                    }
-                }
-            });
-
             activity.RemoveFromParent();
         }
 
@@ -326,7 +348,7 @@ namespace Hub.Services
             IEnumerable<ActivityTemplateDTO> curActivityTemplates;
             curActivityTemplates = _activityTemplate
                 .GetAll()
-                .Where(at => at.Category == Data.States.ActivityCategory.Solution
+                .Where(at => at.Category == ActivityCategory.Solution
                     && at.ActivityTemplateState == Data.States.ActivityTemplateState.Active)
                 .OrderBy(t => t.Category)
                 .Select(Mapper.Map<ActivityTemplateDTO>)

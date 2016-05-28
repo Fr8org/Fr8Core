@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Web.Http.Description;
 using System.Web.Http;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using Utilities.Configuration.Azure;
-using Data.Interfaces.Manifests;
 
 namespace terminalSlack.Controllers
 {
@@ -27,6 +25,7 @@ namespace terminalSlack.Controllers
                 Endpoint = CloudConfigurationManager.GetSetting("terminalSlack.TerminalEndpoint"),
                 TerminalStatus = TerminalStatus.Active,
                 Name = "terminalSlack",
+                Label = "Slack",
                 Version = "1",
                 AuthenticationType = AuthenticationType.External
             };
@@ -36,39 +35,56 @@ namespace terminalSlack.Controllers
                 Name = "Slack",
                 IconPath = "/Content/icons/web_services/slack-icon-64x64.png"
             };
-
-            var monitorChannelAction = new ActivityTemplateDTO
+            var result = new List<ActivityTemplateDTO>
             {
-                Name = "Monitor_Channel",
-                Label = "Monitor Channel",
-                Category = ActivityCategory.Monitors,
-                Terminal = terminal,
-                NeedsAuthentication = true,
-                Version = "1",
-                WebService = webService,
-                MinPaneWidth = 330
+                new ActivityTemplateDTO
+                {
+                    Name = "Monitor_Channel",
+                    Label = "Monitor Channel",
+                    Category = ActivityCategory.Monitors,
+                    Terminal = terminal,
+                    NeedsAuthentication = true,
+                    Version = "1",
+                    WebService = webService,
+                    MinPaneWidth = 330
+                },
+                new ActivityTemplateDTO
+                {
+                    Name = "Monitor_Channel",
+                    Label = "Monitor Slack Messages",
+                    Category = ActivityCategory.Monitors,
+                    Terminal = terminal,
+                    NeedsAuthentication = true,
+                    Version = "2",
+                    WebService = webService,
+                    MinPaneWidth = 330
+                },
+                new ActivityTemplateDTO
+                {
+                    Name = "Publish_To_Slack",
+                    Label = "Publish To Slack",
+                    Tags = "Notifier",
+                    Category = ActivityCategory.Forwarders,
+                    Terminal = terminal,
+                    NeedsAuthentication = true,
+                    Version = "1",
+                    WebService = webService,
+                    MinPaneWidth = 330
+                },
+                new ActivityTemplateDTO
+                {
+                    Name = "Publish_To_Slack",
+                    Label = "Publish To Slack",
+                    Tags = "Notifier",
+                    Category = ActivityCategory.Forwarders,
+                    Terminal = terminal,
+                    NeedsAuthentication = true,
+                    Version = "2",
+                    WebService = webService,
+                    MinPaneWidth = 330
+                }
             };
-
-            var publishToSlackAction = new ActivityTemplateDTO
-            {
-                Name = "Publish_To_Slack",
-                Label = "Publish To Slack",
-                Tags = "Notifier",
-                Category = ActivityCategory.Forwarders,
-                Terminal = terminal,
-                NeedsAuthentication = true,
-                Version = "1",
-                WebService = webService,
-                MinPaneWidth = 330
-            };
-
-            var result = new List<ActivityTemplateDTO>()
-            {
-                monitorChannelAction,
-                publishToSlackAction
-            };
-
-            StandardFr8TerminalCM curStandardFr8TerminalCM = new StandardFr8TerminalCM()
+            var curStandardFr8TerminalCM = new StandardFr8TerminalCM
             {
                 Definition = terminal,
                 Activities = result

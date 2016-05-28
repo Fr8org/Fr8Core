@@ -1,18 +1,21 @@
-﻿
-using Data.Entities;
+﻿using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.States;
 using Salesforce.Common;
 using StructureMap;
 using System;
 using System.Threading.Tasks;
-using terminalSalesforce.Infrastructure;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Moq;
+using TerminalBase.Infrastructure;
+using Fr8Data.Managers;
 
 namespace terminalSalesforceTests.Fixtures
 {
     public static class HealthMonitor_FixtureData
     {
+        private static readonly CrateManager CrateManager = new CrateManager();
         public static async Task<AuthorizationTokenDTO> Salesforce_AuthToken()
         {
             var auth = new AuthenticationClient();
@@ -27,6 +30,16 @@ namespace terminalSalesforceTests.Fixtures
                 Token = auth.AccessToken,
                 AdditionalAttributes = string.Format("refresh_token=;instance_url={0};api_version={1}", auth.InstanceUrl, auth.ApiVersion)
             };                                                                                                                            
+        }
+        public static void ConfigureHubToReturnEmptyPayload()
+        {
+            var result = new PayloadDTO(Guid.Empty);
+            using (var storage = CrateManager.GetUpdatableStorage(result))
+            {
+                storage.Add(Crate.FromContent(string.Empty, new OperationalStateCM()));
+            }
+            ObjectFactory.Container.GetInstance<Mock<IHubCommunicator>>().Setup(x => x.GetPayload(It.IsAny<Guid>()))
+                               .Returns(Task.FromResult(result));
         }
 
         public static async Task<AuthorizationTokenDO> CreateSalesforceAuthToken()
@@ -43,7 +56,7 @@ namespace terminalSalesforceTests.Fixtures
                 {
                     Token = tokenDTO.Token,
                     TerminalID = terminalId,
-                    UserDO = userDO,
+                    UserID = userDO.Id,
                     AdditionalAttributes = tokenDTO.AdditionalAttributes,
                     ExpiresAt = DateTime.Today.AddMonths(1)
                 };
@@ -53,39 +66,6 @@ namespace terminalSalesforceTests.Fixtures
 
                 return tokenDO;
             }
-        }
-
-        public static ActivityTemplateDTO Create_Account_v1_ActivityTemplate()
-        {
-            return new ActivityTemplateDTO()
-            {
-                Version = "1",
-                Name = "Create_Account_TEST",
-                Label = "Create Account",
-                NeedsAuthentication = true
-            };
-        }
-
-        public static ActivityTemplateDTO Create_Contact_v1_ActivityTemplate()
-        {
-            return new ActivityTemplateDTO()
-            {
-                Version = "1",
-                Name = "Create_Contact_TEST",
-                Label = "Create Contact",
-                NeedsAuthentication = true
-            };
-        }
-
-        public static ActivityTemplateDTO Create_Lead_v1_ActivityTemplate()
-        {
-            return new ActivityTemplateDTO()
-            {
-                Version = "1",
-                Name = "Create_Lead_TEST",
-                Label = "Create Lead",
-                NeedsAuthentication = true
-            };
         }
 
         public static ActivityTemplateDTO Get_Data_v1_ActivityTemplate()
@@ -108,50 +88,6 @@ namespace terminalSalesforceTests.Fixtures
                 Label = "Post To Chatter",
                 NeedsAuthentication = true
             };
-        }
-
-        public static Fr8DataDTO Create_Account_v1_InitialConfiguration_Fr8DataDTO()
-        {
-            var activityTemplate = Create_Account_v1_ActivityTemplate();
-
-            var activityDTO = new ActivityDTO()
-            {
-                Id = Guid.NewGuid(),
-                Label = "Create Account",
-                AuthToken = Salesforce_AuthToken().Result,
-                ActivityTemplate = activityTemplate
-            };
-
-            return new Fr8DataDTO { ActivityDTO = activityDTO };
-        }
-
-        public static Fr8DataDTO Create_Contact_v1_InitialConfiguration_Fr8DataDTO()
-        {
-            var activityTemplate = Create_Contact_v1_ActivityTemplate();
-
-            var activityDTO = new ActivityDTO()
-            {
-                Id = Guid.NewGuid(),
-                Label = "Create Contact",
-                AuthToken = Salesforce_AuthToken().Result,
-                ActivityTemplate = activityTemplate
-            };
-
-            return new Fr8DataDTO { ActivityDTO = activityDTO };
-        }
-
-        public static Fr8DataDTO Create_Lead_v1_InitialConfiguration_Fr8DataDTO()
-        {
-            var activityTemplate = Create_Lead_v1_ActivityTemplate();
-
-            var activityDTO = new ActivityDTO()
-            {
-                Id = Guid.NewGuid(),
-                Label = "Create Lead",
-                AuthToken = Salesforce_AuthToken().Result,
-                ActivityTemplate = activityTemplate
-            };
-            return new Fr8DataDTO { ActivityDTO = activityDTO };
         }
 
         public static Fr8DataDTO Get_Data_v1_InitialConfiguration_ActivityDTO()

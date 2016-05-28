@@ -40,6 +40,15 @@
     <ErrorReport>prompt</ErrorReport>
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Demo|AnyCPU'">
+    <DebugSymbols>true</DebugSymbols>
+    <OutputPath>bin\Demo\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugType>full</DebugType>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <ErrorReport>prompt</ErrorReport>
+    <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="AutoMapper, Version=4.0.4.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <HintPath>..\packages\AutoMapper.4.0.4\lib\net45\AutoMapper.dll</HintPath>
@@ -123,6 +132,7 @@
     <Compile Include="JsonPackager.cs" />
     <Compile Include="JsonSettings.cs" />
     <Compile Include="Logging\Logger.cs" />
+    <Compile Include="Logging\RemoteSyslogAppender.cs" />
     <Compile Include="MappingEngineExtensions.cs" />
     <Compile Include="MemoryCache.cs" />
     <Compile Include="MiscUtils.cs" />
@@ -140,6 +150,7 @@
     </Compile>
     <Compile Include="Serializers\Json\JsonSerializer.cs" />
     <Compile Include="Server.cs" />
+    <Compile Include="StopwordsRemover.cs" />
     <Compile Include="TypeSafeEnum.cs" />
     <Compile Include="UAParser\UAParser.cs" />
   </ItemGroup>

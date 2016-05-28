@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
-using Data.Constants;
-using Data.Crates;
 using Moq;
 using Newtonsoft.Json;
 using NUnit.Framework;
@@ -13,16 +11,20 @@ using Data.Entities;
 using Data.Infrastructure;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
 using Data.States;
+using Fr8Data.Constants;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
 using Hub.Interfaces;
-using Hub.Managers;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
 using Hub.Services;
 using TerminalBase.Infrastructure;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Action = Hub.Services.Activity;
+using IContainer = StructureMap.IContainer;
+using Fr8Data.Managers;
+using Fr8Data.Manifests;
 
 namespace HubTests.Services
 {
@@ -101,9 +103,7 @@ namespace HubTests.Services
 
             Assert.AreEqual(origActivityDO.Ordering, activityDO.Ordering);
 
-            ISubPlan subPlan = new SubPlan();
-            //Delete
-            await subPlan.DeleteActivity(null, activityDO.Id, true);
+            await activity.Delete(activityDO.Id);
         }
 
         [Test]
@@ -116,7 +116,7 @@ namespace HubTests.Services
             {
                 var plan = new PlanDO
                 {
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     Name = "name",
                     ChildNodes = { tree }
                 };
@@ -152,7 +152,7 @@ namespace HubTests.Services
             {
                 var plan = new PlanDO
                 {
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     Name = "name",
                     ChildNodes = { tree }
                 };
@@ -198,7 +198,7 @@ namespace HubTests.Services
                 var plan = new PlanDO
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { tree }
                 };
 
@@ -302,7 +302,7 @@ namespace HubTests.Services
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { activityDo }
                 });
                 uow.SaveChanges();
@@ -328,7 +328,7 @@ namespace HubTests.Services
         {
             ActivityDO activityDO = FixtureData.TestActivity23();
 
-            using (var crateStorage = _crate.GetUpdatableStorage(activityDO))
+            using (var crateStorage = Hub.Managers.CrateManagerExtensions.GetUpdatableStorage(_crate, activityDO))
             {
                 crateStorage.AddRange(FixtureData.CrateStorageDTO());
             }
@@ -348,7 +348,7 @@ namespace HubTests.Services
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "sdfsdf",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { activityDo }
                 });
                 uow.SaveChanges();
@@ -383,7 +383,7 @@ namespace HubTests.Services
                 uow.PlanRepository.Add(new PlanDO()
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { activityDo }
                 });
                 uow.SaveChanges();
@@ -423,7 +423,7 @@ namespace HubTests.Services
                 uow.PlanRepository.Add(new PlanDO
                 {
                     Name = "name",
-                    PlanState = PlanState.Active,
+                    PlanState = PlanState.Running,
                     ChildNodes = { activityDo }
                 });
                 uow.SaveChanges();
@@ -442,6 +442,133 @@ namespace HubTests.Services
             Assert.IsTrue(_eventReceived, "Unable to receive event about activity start");
         }
 
+        private ActivityDO ActivationTestsSetup(IContainer container, Dictionary<string, int> callCount)
+        {
+            var terminalTransmitterMock = new TerminalTransmitterMock();
+
+            terminalTransmitterMock.CallActivityBody = (action, dto) =>
+            {
+                int count;
+
+                if (callCount.TryGetValue(action, out count))
+                {
+                    callCount[action] = count + 1;
+                }
+                else
+                {
+                    callCount[action] = 1;
+                }
+
+                return dto.ActivityDTO;
+            };
+
+            ActivityDO activityDo = FixtureData.TestActivityStateInProcess();
+            activityDo.CrateStorage = JsonConvert.SerializeObject(new ActivityDTO());
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.ActivityTemplateRepository.Add(activityDo.ActivityTemplate);
+                uow.PlanRepository.Add(new PlanDO()
+                {
+                    Name = "sdfsdf",
+                    PlanState = PlanState.Inactive,
+                    ChildNodes = { activityDo }
+                });
+                uow.SaveChanges();
+            }
+
+            container.Inject(typeof(ITerminalTransmitter), terminalTransmitterMock);
+
+            return activityDo;
+        }
+
+        [Test]
+        public async Task ActivationIsCalledOnce()
+        {
+            var container = ObjectFactory.Container;
+            
+            var callCount = new Dictionary<string, int>();
+
+            callCount["activate"] = 0;
+
+            var activityDo = ActivationTestsSetup(container, callCount);
+            
+            await container.GetInstance<IActivity>().Activate(activityDo);
+            await container.GetInstance<IActivity>().Activate(activityDo);
+            await container.GetInstance<IActivity>().Activate(activityDo);
+
+            Assert.AreEqual(1, callCount["activate"], "Activation of deactivated activity should be called once");
+        }
+        
+        [Test]
+        public async Task ActivityDoesntChangeStateOnValidationErrors()
+        {
+            var container = ObjectFactory.Container;
+
+            var callCount = new Dictionary<string, int>();
+
+            callCount["activate"] = 0;
+
+            var activityDo = ActivationTestsSetup(container, callCount);
+            var terminalTransmitterMock = new TerminalTransmitterMock();
+
+            terminalTransmitterMock.CallActivityBody = (action, dto) =>
+            {
+                if (action == "activate")
+                {
+                    using (var updatableStorage = _crate.GetUpdatableStorage(dto.ActivityDTO))
+                    {
+                        updatableStorage.Add(Crate.FromContent("Validation Errors", new ValidationResultsCM
+                        {
+                            ValidationErrors =
+                            {
+                                new ValidationResultDTO
+                                {
+                                    ErrorMessage = "Generic error"
+                                }
+                            }
+                        }));
+                    }
+                }
+
+                return dto.ActivityDTO;
+            };
+
+            container.Inject(typeof(ITerminalTransmitter), terminalTransmitterMock);
+
+            await container.GetInstance<IActivity>().Activate(activityDo);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                Assert.AreEqual(ActivationState.Deactivated, uow.PlanRepository.GetById<ActivityDO>(activityDo.Id).ActivationState, "Activity with validation errors should stay deactivated");
+            }
+        }
+
+        [Test]
+        public async Task DeactivationIsCalledOnce()
+        {
+            var container = ObjectFactory.Container;
+            var callCount = new Dictionary<string, int>();
+
+            callCount["deactivate"] = 0;
+
+            var activityDo = ActivationTestsSetup(container, callCount);
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                uow.PlanRepository.GetById<ActivityDO>(activityDo.Id).ActivationState = ActivationState.Activated;
+                uow.SaveChanges();
+            }
+
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                await container.GetInstance<IActivity>().Configure(uow, "user", activityDo);
+                await container.GetInstance<IActivity>().Configure(uow, "user", activityDo);
+                await container.GetInstance<IActivity>().Configure(uow, "user", activityDo);
+            }
+
+            Assert.AreEqual(1, callCount["deactivate"], "Deactivation of activated activity should be called once");
+        }
 
         private void EventManager_EventActivityStarted(ActivityDO activity, ContainerDO container)
         {

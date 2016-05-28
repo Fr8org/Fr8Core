@@ -1,21 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json.Schema;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using NUnit.Framework;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Hub.Managers;
 using StructureMap;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using Utilities.Configuration.Azure;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
-using terminalAzure.Controllers;
 using terminalAzure.Tests.Fixtures;
 
 namespace terminalAzure.Tests.Controllers

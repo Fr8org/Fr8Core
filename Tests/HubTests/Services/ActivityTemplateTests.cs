@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.WebSockets;
-using System.Runtime.InteropServices;
 using Data.Entities;
 using Data.Interfaces;
-using Data.States;
+using Fr8Data.States;
 using Hub.Interfaces;
 using Hub.Services;
 using NUnit.Framework;
@@ -70,6 +68,7 @@ namespace HubTests.Services
                    a.Endpoint == b.Endpoint &&
                    (skipId || a.Id == b.Id) &&
                    a.Name == b.Name &&
+                   a.Label == b.Label &&
                    a.PublicIdentifier == b.PublicIdentifier &&
                    a.Secret == b.Secret &&
                    a.TerminalStatus == b.TerminalStatus &&
@@ -120,6 +119,7 @@ namespace HubTests.Services
                 Endpoint = prefix + "ep" + id,
                 Description = prefix + "desc" + id,
                 Name = "name" + id,
+                Label = prefix + "Label" + id,
                 Version = prefix + "Ver" + id,
                 TerminalStatus = 1,
             };
@@ -301,7 +301,7 @@ namespace HubTests.Services
 
             AreEqual(template, storedTemplate, true);
 
-            CheckIfInSyncWithDd(service, 20);
+            CheckIfInSyncWithDd(service, 21);
         }
 
         private void CheckIfInSyncWithDd(ActivityTemplate activityTemplateService, int count)

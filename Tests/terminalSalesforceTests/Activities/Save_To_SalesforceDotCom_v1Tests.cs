@@ -1,24 +1,24 @@
-﻿
-using Data.Control;
-using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
-using Moq;
-using NUnit.Framework;
-using StructureMap;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using TerminalBase.Infrastructure;
+using Data.Entities;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Moq;
+using NUnit.Framework;
+using StructureMap;
 using terminalSalesforce;
 using terminalSalesforce.Actions;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
 using terminalSalesforceTests.Fixtures;
+using TerminalBase.Infrastructure;
 using UtilitiesTesting;
+using Fr8Data.Managers;
+using TerminalBase.Models;
 
 namespace terminalSalesforceTests.Actions
 {
@@ -36,28 +36,28 @@ namespace terminalSalesforceTests.Actions
             TerminalSalesforceStructureMapBootstrapper.ConfigureDependencies(TerminalSalesforceStructureMapBootstrapper.DependencyType.TEST);
 
             PayloadDTO testPayloadDTO = new PayloadDTO(new Guid());
-
-            using (var crateStorage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(testPayloadDTO))
+            ObjectFactory.Configure(x => x.For<ICrateManager>().Use(CrateManager));
+            using (var crateStorage = CrateManager.GetUpdatableStorage(testPayloadDTO))
             {
                 crateStorage.Add(Crate.FromContent("Operational Status", new OperationalStateCM()));
             }
 
             Mock<IHubCommunicator> hubCommunicatorMock = new Mock<IHubCommunicator>(MockBehavior.Default);
-            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<ActivityDO>(), It.IsAny<Guid>(), It.IsAny<string>()))
+            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<Guid>()))
                 .Returns(() => Task.FromResult(testPayloadDTO));
             ObjectFactory.Container.Inject(typeof(IHubCommunicator), hubCommunicatorMock.Object);
 
             Mock<ISalesforceManager> salesforceIntegrationMock = Mock.Get(ObjectFactory.GetInstance<ISalesforceManager>());
             FieldDTO testField = new FieldDTO("Account", "TestAccount");
             salesforceIntegrationMock.Setup(
-                s => s.GetFields("Account", It.IsAny<AuthorizationTokenDO>(), false))
-                .Returns(() => Task.FromResult((IList<FieldDTO>)new List<FieldDTO> { testField }));
+                s => s.GetProperties(SalesforceObjectType.Account, It.IsAny<AuthorizationToken>(), false, null))
+                .Returns(() => Task.FromResult(new List<FieldDTO> { testField }));
 
             salesforceIntegrationMock.Setup(
-                s => s.QueryObjects("Account", It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationTokenDO>()))
+                s => s.Query(SalesforceObjectType.Account, It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationToken>()))
                 .Returns(() => Task.FromResult(new StandardTableDataCM()));
 
-            _saveToSFDotCom_v1 = new Save_To_SalesforceDotCom_v1();
+            _saveToSFDotCom_v1 = New<Save_To_SalesforceDotCom_v1>();
         }
 
         [Test, Category("terminalSalesforceTests.Save_To_SalesforceDotCom.Configure")]
@@ -67,7 +67,7 @@ namespace terminalSalesforceTests.Actions
             var result = await PerformInitialConfig();
 
             //Assert
-            AssertConfigControls(ObjectFactory.GetInstance<ICrateManager>().GetStorage(result));
+            AssertConfigControls(result.ActivityPayload.CrateStorage);
         }
 
         [Test, Category("terminalSalesforceTests.Save_To_SalesforceDotCom.Configure")]
@@ -77,10 +77,10 @@ namespace terminalSalesforceTests.Actions
             var result = await PerformInitialConfig();
 
             //Act
-            result = await _saveToSFDotCom_v1.Configure(result, await FixtureData.Salesforce_AuthToken());
+            await _saveToSFDotCom_v1.Configure(result);
 
             //Assert
-            var storage = ObjectFactory.GetInstance<ICrateManager>().GetStorage(result);
+            var storage = result.ActivityPayload.CrateStorage;
             Assert.IsNotNull(storage, "Follow up config storage is null in Save to SF.com activity");
 
             var listOfControls = storage.CrateContentsOfType<StandardConfigurationControlsCM>().Single().Controls;
@@ -94,18 +94,31 @@ namespace terminalSalesforceTests.Actions
             //Arrange
             //perform initial and follow up config
             var result = await PerformInitialConfig();
-            var authToken = await FixtureData.Salesforce_AuthToken();
-            result = await _saveToSFDotCom_v1.Configure(result, authToken);
-
+            await _saveToSFDotCom_v1.Configure(result);
             //Act
-            result = await _saveToSFDotCom_v1.Activate(result, authToken);
+            await _saveToSFDotCom_v1.Activate(result);
+
+            var crateStorage = result.ActivityPayload.CrateStorage;
 
             //Asser
-            var listOfRequiredControls = ObjectFactory.GetInstance<ICrateManager>().GetStorage(result)
+            var listOfRequiredControls = crateStorage
                                             .CratesOfType<StandardConfigurationControlsCM>().Single().Content
                                             .Controls.Where(c => c.Name.Equals("LastName") || c.Name.Equals("Company"));
             Assert.IsTrue(listOfRequiredControls.Count() == 2, "There are no required controls in Save to SF Activate");
-            Assert.IsFalse(listOfRequiredControls.Any(c => string.IsNullOrEmpty(c.ErrorMessage)), "There are some required controls error message is not set");
+
+            var validationCm = crateStorage.CrateContentsOfType<ValidationResultsCM>().FirstOrDefault();
+
+            Assert.IsNotNull(validationCm, "Validation results crate was not found");
+
+            foreach (var control in listOfRequiredControls)
+            {
+                var ctrl = control;
+
+                if (!validationCm.ValidationErrors.Any(x => x.ControlNames.Any(y => y == ctrl.Name)))
+                {
+                    Assert.Fail($"Control {control.Name} has no associated errors.");
+                }
+            }
         }
 
         [Test, Category("terminalSalesforceTests.Save_To_SalesforceDotCom.Activate")]
@@ -114,59 +127,54 @@ namespace terminalSalesforceTests.Actions
             //Arrange
             //perform initial and follow up config, activate
             var result = await PerformInitialConfig();
+            var executionContext = new ContainerExecutionContext {
+                PayloadStorage = new CrateStorage(Crate.FromContent(string.Empty, new OperationalStateCM()))
+            };
 
-            var authToken = await FixtureData.Salesforce_AuthToken();
-            result = await _saveToSFDotCom_v1.Configure(result, authToken);
-            result = await _saveToSFDotCom_v1.Activate(result, authToken);
+            var authorizationToken = await FixtureData.Salesforce_AuthToken();
+            await _saveToSFDotCom_v1.Configure(result);
+            await _saveToSFDotCom_v1.Activate(result);
 
             //make last name as Unit and Company Name as Test
-            using (var storage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(result))
-            {
-                var requiredControls = ObjectFactory.GetInstance<ICrateManager>().GetStorage(result)
-                                            .CratesOfType<StandardConfigurationControlsCM>().Single().Content
-                                            .Controls;
+            var requiredControls = result.ActivityPayload.CrateStorage
+                                        .CratesOfType<StandardConfigurationControlsCM>().Single().Content
+                                        .Controls;
 
-                var lastNameControl = (TextSource)requiredControls.Single(c => c.Name.Equals("LastName"));
-                lastNameControl.ValueSource = "specific";
-                lastNameControl.TextValue = "Unit";
+            var lastNameControl = (TextSource)requiredControls.Single(c => c.Name.Equals("LastName"));
+            lastNameControl.ValueSource = "specific";
+            lastNameControl.TextValue = "Unit";
 
-                var companyControl = (TextSource)requiredControls.Single(c => c.Name.Equals("Company"));
-                lastNameControl.ValueSource = "specific";
-                lastNameControl.TextValue = "Text";
-            }
+            var companyControl = (TextSource)requiredControls.Single(c => c.Name.Equals("Company"));
+            companyControl.ValueSource = "specific";
+            companyControl.TextValue = "Text";
 
             //Act
-            var payload = await _saveToSFDotCom_v1.Run(result, new Guid(), authToken);
-
+            await _saveToSFDotCom_v1.Run(result, executionContext);
+            var payload = executionContext.PayloadStorage;
             //Assert
-            var newlyCreatedLead = ObjectFactory.GetInstance<ICrateManager>()
-                                    .GetStorage(payload).CratesOfType<StandardPayloadDataCM>()
+            var newlyCreatedLead = payload.CratesOfType<StandardPayloadDataCM>()
                                     .Single().Content.PayloadObjects[0].PayloadObject;
 
             Assert.IsNotNull(newlyCreatedLead, "Lead is not saved successfully in Save to SF.com");
             Assert.IsTrue(newlyCreatedLead.Count == 1, "Lead is not saved successfully in Save to SF.com");
             Assert.IsTrue(!string.IsNullOrEmpty(newlyCreatedLead[0].Value), "Lead is not saved successfully in Save to SF.com");
 
-            var isDeleted = await new SalesforceManager().DeleteObject("Lead", newlyCreatedLead[0].Value, authToken);
+            var isDeleted = await new SalesforceManager().Delete(SalesforceObjectType.Lead, newlyCreatedLead[0].Value, authorizationToken);
             Assert.IsTrue(isDeleted, "The newly created lead is not deleted upon completion");
         }
 
-        private async Task<ActivityDO> PerformInitialConfig()
+        private async Task<ActivityContext> PerformInitialConfig()
         {
-            var activityDO = FixtureData.SaveToSalesforceTestActivityDO1();
-
+            var activityContext = await FixtureData.SaveToSalesforceTestActivityContext();
             //Act
-            var result = await _saveToSFDotCom_v1.Configure(activityDO, await FixtureData.Salesforce_AuthToken());
+            await _saveToSFDotCom_v1.Configure(activityContext);
 
-            AssertConfigControls(ObjectFactory.GetInstance<ICrateManager>().GetStorage(result));
+            AssertConfigControls(activityContext.ActivityPayload.CrateStorage);
 
-            using (var storage = ObjectFactory.GetInstance<ICrateManager>().GetUpdatableStorage(result))
-            {
-                var ddlb = (DropDownList)storage.CratesOfType<StandardConfigurationControlsCM>().Single().Content.Controls[0];
-                ddlb.selectedKey = "Lead";
-            }
+            var ddlb = (DropDownList)activityContext.ActivityPayload.CrateStorage.CratesOfType<StandardConfigurationControlsCM>().Single().Content.Controls[0];
+            ddlb.selectedKey = "Lead";
 
-            return result;
+            return activityContext;
         }
 
         private void AssertConfigControls(ICrateStorage storage)

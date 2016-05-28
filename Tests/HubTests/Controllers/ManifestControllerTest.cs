@@ -1,23 +1,17 @@
-﻿using Hub.Interfaces;
-using Data.Entities;
+﻿using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
-using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Http.Results;
-using Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Hub.Managers;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using HubWeb.Controllers;
+using Fr8Data.Managers;
 
 namespace HubTests.Controllers
 {
@@ -324,7 +318,7 @@ namespace HubTests.Controllers
             var fieldsList = Deserialize(actionResult);
             ////Assert
             Assert.NotNull(fieldsList);
-            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("DockyardStorageUrl")), "DockyardStorageUrl Not Found");
+            Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("DirectUrl")), "DirectUrl Not Found");
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Filename")), "Filename Not Found");
             Assert.IsTrue(fieldsList.Fields.Any(f => f.Key.Equals("Filetype")), "Filetype Not Found");
         }

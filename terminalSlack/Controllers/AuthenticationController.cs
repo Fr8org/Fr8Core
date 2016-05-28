@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 using TerminalBase.BaseClasses;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
@@ -39,8 +39,7 @@ namespace terminalSlack.Controllers
 
         [HttpPost]
         [Route("token")]
-        public async Task<AuthorizationTokenDTO> GenerateOAuthToken(
-            ExternalAuthenticationDTO externalAuthDTO)
+        public async Task<AuthorizationTokenDTO> GenerateOAuthToken(ExternalAuthenticationDTO externalAuthDTO)
         {
             try
             {
@@ -55,18 +54,21 @@ namespace terminalSlack.Controllers
                 }
 
                 var oauthToken = await _slackIntegration.GetOAuthToken(code);
-                var userId = await _slackIntegration.GetUserId(oauthToken);
+                var userInfo = await _slackIntegration.GetUserInfo(oauthToken);
 
-                return new AuthorizationTokenDTO()
+                return new AuthorizationTokenDTO
                 {
                     Token = oauthToken,
-                    ExternalAccountId = userId,
-                    ExternalStateToken = state
+                    ExternalAccountId = userInfo.UserId,
+                    ExternalAccountName = userInfo.UserName,
+                    ExternalDomainId = userInfo.TeamId,
+                    ExternalDomainName = userInfo.TeamName,
+                    ExternalStateToken = state,
                 };
             }
             catch (Exception ex)
             {
-                ReportTerminalError(curTerminal, ex);
+                ReportTerminalError(curTerminal, ex,externalAuthDTO.Fr8UserId);
 
                 return new AuthorizationTokenDTO()
                 {

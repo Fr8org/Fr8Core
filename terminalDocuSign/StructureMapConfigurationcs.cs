@@ -1,5 +1,6 @@
 ﻿using Hub.StructureMap;
 using StructureMap;
+using StructureMap.Configuration.DSL;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
@@ -27,7 +28,7 @@ namespace terminalDocuSign
             }
         }
 
-        public class LiveMode : StructureMapBootStrapper.LiveMode
+        public class LiveMode : Registry
         {
             public LiveMode()
             {

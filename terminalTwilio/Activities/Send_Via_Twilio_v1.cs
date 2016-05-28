@@ -1,69 +1,72 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using System.Linq;
-using System.Web.UI.WebControls;
-using Data.Control;
+using System.Threading.Tasks;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
+using Fr8Data.Manifests;
+using Fr8Data.States;
+using PhoneNumbers;
 using StructureMap;
-using Data.Crates;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.Infrastructure;
-using Hub.Managers;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using terminalTwilio.Services;
 using Twilio;
-using PhoneNumbers;
+using terminalUtilities.Twilio;
 
-namespace terminalTwilio.Actions
+
+namespace terminalTwilio.Activities
 {
     public class Send_Via_Twilio_v1 : BaseTerminalActivity
     {
-        protected ITwilioService _twilio;
-
-        public Send_Via_Twilio_v1()
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            _twilio = ObjectFactory.GetInstance<ITwilioService>();
+            Name = "Send_Via_Twilio",
+            Label = "Send SMS",
+            Tags = "Twillio,Notifier",
+            Category = ActivityCategory.Forwarders,
+            Version = "1",
+            MinPaneWidth = 330,
+            Terminal = TerminalData.TerminalDTO,
+            WebService = TerminalData.WebServiceDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
+
+        protected ITwilioService Twilio;
+
+        public Send_Via_Twilio_v1(ICrateManager crateManager, ITwilioService twilioService)
+            : base(false, crateManager)
+        {
+            Twilio = twilioService;
         }
 
-        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override async Task Initialize()
         {
-            return await ProcessConfigurationRequest(curActivityDO, EvaluateReceivedRequest, authTokenDO);
+            Storage.Clear();
+            Storage.Add(PackCrate_ConfigurationControls());
+            Storage.Add(await CreateAvailableFieldsCrate());
         }
 
-        /// <summary>
-        /// this entire function gets passed as a delegate to the main processing code in the base class
-        /// currently many actions have two stages of configuration, and this method determines which stage should be applied
-        /// </summary>
-        private ConfigurationRequestType EvaluateReceivedRequest(ActivityDO curActivityDO)
+        private async Task<Crate> CreateAvailableFieldsCrate()
         {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
+            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(ActivityId, CrateDirection.Upstream, AvailabilityType.RunTime) ?? new FieldDescriptionsCM();
 
-            return ConfigurationRequestType.Followup;
-        }
+            var availableFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(
+                    "Upstream Terminal-Provided Fields",
+                    curUpstreamFields.Fields,
+                    AvailabilityType.Configuration);
 
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.Clear();
-                crateStorage.Add(PackCrate_ConfigurationControls());
-                crateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO));
-            }
-            return await Task.FromResult(curActivityDO);
+            return availableFieldsCrate;
         }
 
         private Crate PackCrate_ConfigurationControls()
         {
             var fieldsDTO = new List<ControlDefinitionDTO>()
             {
-                CreateSpecificOrUpstreamValueChooser("SMS Number", "SMS_Number", "Upstream Terminal-Provided Fields"),
-                CreateSpecificOrUpstreamValueChooser("SMS Body", "SMS_Body", "Upstream Terminal-Provided Fields")
+                ControlHelper.CreateSpecificOrUpstreamValueChooser("SMS Number", "SMS_Number", "Upstream Terminal-Provided Fields", "", true),
+                ControlHelper.CreateSpecificOrUpstreamValueChooser("SMS Body", "SMS_Body", "Upstream Terminal-Provided Fields", "", true)
             };
 
             return CrateManager.CreateStandardConfigurationControlsCrate("Configuration_Controls", fieldsDTO.ToArray());
@@ -71,59 +74,53 @@ namespace terminalTwilio.Actions
 
         private List<FieldDTO> GetRegisteredSenderNumbersData()
         {
-            return _twilio.GetRegisteredSenderNumbers().Select(number => new FieldDTO() { Key = number, Value = number }).ToList();
+            return Twilio.GetRegisteredSenderNumbers().Select(number => new FieldDTO() { Key = number, Value = number }).ToList();
         }
 
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override async Task FollowUp()
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.RemoveByLabel("Upstream Terminal-Provided Fields");
-                crateStorage.Add(await CreateAvailableFieldsCrate(curActivityDO));
+            Storage.RemoveByLabel("Upstream Terminal-Provided Fields");
+            Storage.Add(await CreateAvailableFieldsCrate());
             }
-            return curActivityDO;
-        }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public override async Task Run()
         {
             Message curMessage;
-            var payloadCrates = await GetPayload(curActivityDO, containerId);
-            var controlsCrate = CrateManager.GetStorage(curActivityDO).CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-            if (controlsCrate == null)
+            if (ConfigurationControls == null)
             {
-                PackCrate_WarningMessage(curActivityDO, "No StandardConfigurationControlsCM crate provided", "No Controls");
-                return Error(payloadCrates, "No StandardConfigurationControlsCM crate provided");
+                PackCrate_WarningMessage("No StandardConfigurationControlsCM crate provided", "No Controls");
+                RaiseError("No StandardConfigurationControlsCM crate provided");
+                return;
             }
             try
             {
-                FieldDTO smsFieldDTO = ParseSMSNumberAndMsg(controlsCrate, payloadCrates);
+                FieldDTO smsFieldDTO = ParseSMSNumberAndMsg();
                 string smsNumber = smsFieldDTO.Key;
-                string smsBody = smsFieldDTO.Value + " - https://fr8.co/c/"+containerId;
+                string smsBody = smsFieldDTO.Value + "\nThis message was generated by Fr8. http://www.fr8.co";
 
                 try
                 {
-                    curMessage = _twilio.SendSms(smsNumber, smsBody);
-                    EventManager.TwilioSMSSent(smsNumber, smsBody);
+                    curMessage = Twilio.SendSms(smsNumber, smsBody);
+                    SendEventReport($"Twilio SMS Sent -> SMSBody: {smsBody} smsNumber: {smsNumber}");
                     var curFieldDTOList = CreateKeyValuePairList(curMessage);
-                    using (var crateStorage = CrateManager.GetUpdatableStorage(payloadCrates))
-                    {
-                        crateStorage.Add(PackCrate_TwilioMessageDetails(curFieldDTOList));
-                    }
+                    Payload.Add(PackCrate_TwilioMessageDetails(curFieldDTOList));
                 }
                 catch (Exception ex)
                 {
-                    EventManager.TwilioSMSSendFailure(smsNumber, smsBody, ex.Message);
-                    PackCrate_WarningMessage(curActivityDO, ex.Message, "Twilio Service Failure");
-                    return Error(payloadCrates, "Twilio Service Failure");
+                    SendEventReport($"TwilioSMSSendFailure -> SMSBody: {smsBody} smsNumber: {smsNumber}, Exception {ex.Message}");
+                    PackCrate_WarningMessage(ex.Message, "Twilio Service Failure");
+                    RaiseError("Twilio Service Failure");
+                    return;
                 }
             }
             catch (ArgumentException appEx)
             {
-                PackCrate_WarningMessage(curActivityDO, appEx.Message, "SMS Number");
-                return Error(payloadCrates, appEx.Message);
+                PackCrate_WarningMessage(appEx.Message, "SMS Number");
+                RaiseError(appEx.Message);
+                return;
             }
-            
-            return Success(payloadCrates);
+
+            Success();
         }
 
         /// <summary>
@@ -131,86 +128,43 @@ namespace terminalTwilio.Actions
         /// </summary>
         /// <param name="crateDTO"></param>
         /// <returns>Key = SMS Number; Value = SMS Body</returns>
-        public FieldDTO ParseSMSNumberAndMsg(Crate crateDTO, PayloadDTO payloadCrates)
+        private FieldDTO ParseSMSNumberAndMsg()
         {
-            var standardControls = crateDTO.Get<StandardConfigurationControlsCM>();
-            if (standardControls == null)
-            {
-                throw new ArgumentException("CrateDTO is not a standard UI control");
-            }
-            var payloadCrateStorage = CrateManager.GetStorage(payloadCrates);
-            var smsNumber = GetSMSNumber((TextSource)standardControls.Controls[0], payloadCrateStorage);
-            var smsBody = GetSMSBody((TextSource)standardControls.Controls[1], payloadCrateStorage);
-
+            var smsNumber = GetSMSNumber((TextSource)ConfigurationControls.Controls[0], Payload);
+            var smsBody = GetSMSBody((TextSource)ConfigurationControls.Controls[1], Payload);
             return new FieldDTO(smsNumber, smsBody);
         }
 
-        protected override async Task<ICrateStorage> ValidateActivity(ActivityDO curActivityDO)
+        protected override Task Validate()
         {
-            var errors = new List<string>();
-
-            var isValid = ValidateSMSNumberAndBody(curActivityDO, errors);
-
-            if (!isValid)
+            ValidationManager.Reset();
+            if (ConfigurationControls != null)
             {
+                var numberControl = (TextSource)ConfigurationControls.Controls[0];
+                var bodyControl = (TextSource)ConfigurationControls.Controls[1];
 
-                return await Task.FromResult(new CrateStorage(Crate<FieldDescriptionsCM>.FromContent("Validation Errors",
-                    new FieldDescriptionsCM(new FieldDTO("Error Message",string.Join(", ", errors))))));
-            }
-
-            return null;
-        }
-
-        private bool  ValidateSMSNumberAndBody(ActivityDO curActivityDO, List<string> errors)
-        {
-            bool hasError = false;
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.RemoveByLabel("Validation Errors");
-
-                var configControl = GetConfigurationControls(crateStorage);
-                if (configControl != null)
+                if (numberControl != null)
                 {
-                    var numberControl = (TextSource)configControl.Controls[0];
-                    var bodyControl = (TextSource)configControl.Controls[1];
-
-                    if (numberControl != null)
+                    if (numberControl.HasValue)
                     {
-                        var smsNumber = numberControl.TextValue;
-
-                        string errorMessage;
-                        var isValid = ValidateSMSNumber(smsNumber, out errorMessage);
-
-                        if (!isValid)
+                        if (numberControl.HasSpecificValue)
                         {
-                            errors.Add(errorMessage);
-                            numberControl.ErrorMessage = errorMessage;
-                            hasError = true;
-                        }
-                        else
-                        {
-                            numberControl.ErrorMessage = null;
+                            ValidationManager.ValidatePhoneNumber(GeneralisePhoneNumber(numberControl.TextValue), numberControl);
                         }
                     }
-                    if (bodyControl != null)
+                    else ValidationManager.SetError("No SMS Number Provided", numberControl);
+                }
+                if (bodyControl != null)
+                {
+                    if (!bodyControl.HasValue)
                     {
-                        if (bodyControl.TextValue == null && bodyControl.Value == null)
-                        {
-                            bodyControl.ErrorMessage = "SMS body can not be null.";
-                            errors.Add(bodyControl.ErrorMessage);
-                            hasError = true;
-                        }
-                        else
-                        {
-                            bodyControl.ErrorMessage = null;
-                        }
+                        ValidationManager.SetError("SMS body can not be null.", bodyControl);
                     }
                 }
             }
-
-            return !hasError;
+            return Task.FromResult(0);
         }
+
 
         private string GetSMSNumber(TextSource control, ICrateStorage payloadCrates)
         {
@@ -220,8 +174,8 @@ namespace terminalTwilio.Actions
                 throw new ApplicationException("TextSource control was expected but not found.");
             }
             smsNumber = control.GetValue(payloadCrates).Trim();
-            if (smsNumber.Length == 10 && !smsNumber.Contains("+"))
-                smsNumber = "+1" + smsNumber;
+
+            smsNumber = GeneralisePhoneNumber(smsNumber);
 
             return smsNumber;
         }
@@ -240,7 +194,6 @@ namespace terminalTwilio.Actions
                 throw new ArgumentException("SMS body can not be null.");
             }
 
-            smsBody = "Fr8 Alert: " + smsBody + " For more info, visit http://fr8.co/sms";
 
             return smsBody;
         }
@@ -256,50 +209,23 @@ namespace terminalTwilio.Actions
         }
         private Crate PackCrate_TwilioMessageDetails(List<FieldDTO> curTwilioMessage)
         {
-            return Data.Crates.Crate.FromContent("Message Data", new StandardPayloadDataCM(curTwilioMessage));
+            return Fr8Data.Crates.Crate.FromContent("Message Data", new StandardPayloadDataCM(curTwilioMessage));
         }
 
-        private void PackCrate_WarningMessage(ActivityDO activityDO, string warningMessage, string warningLabel)
-        {
-            var textBlock = GenerateTextBlock(warningLabel, warningMessage, "alert alert-warning");
-            using (var crateStorage = CrateManager.GetUpdatableStorage(activityDO))
+        private void PackCrate_WarningMessage(string warningMessage, string warningLabel)
             {
-                crateStorage.Clear();
-                crateStorage.Add(PackControlsCrate(textBlock));
-            }
+            var textBlock = ControlHelper.GenerateTextBlock(warningLabel, warningMessage, "alert alert-warning");
+            Storage.Clear();
+            Storage.Add(PackControlsCrate(textBlock));
         }
 
-        private bool ValidateSMSNumber(string smsNumber, out string errorMessage)
+        private string GeneralisePhoneNumber(string smsNumber)
         {
-            try
-            {
-                if (String.IsNullOrEmpty(smsNumber))
-                {
-                    errorMessage = "No SMS Number Provided";
-                    return false;
-                }
-
-                smsNumber = smsNumber.Trim();
-                if (smsNumber.Length == 10 && !smsNumber.Contains("+"))
-                    smsNumber = "+1" + smsNumber;
-
-                PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
-                bool isAlphaNumber = phoneUtil.IsAlphaNumber(smsNumber);
-                PhoneNumber phoneNumber = phoneUtil.Parse(smsNumber, "");
-                if (isAlphaNumber || !phoneUtil.IsValidNumber(phoneNumber))
-                {
-                    errorMessage = "SMS Number Is Invalid";
-                    return false;
-                }
-            }
-            catch (NumberParseException npe)
-            {
-                errorMessage = "Failed to parse SMS number: " + npe.Message;
-                return false;
-            }
-
-            errorMessage = string.Empty;
-            return true;
+            PhoneNumberUtil phoneUtil = PhoneNumberUtil.GetInstance();
+            smsNumber = new string(smsNumber.Where(s => char.IsDigit(s) || s == '+' || (phoneUtil.IsAlphaNumber(smsNumber) && char.IsLetter(s))).ToArray());
+            if (smsNumber.Length == 10 && !smsNumber.Contains("+"))
+                smsNumber = "+1" + smsNumber; //we assume that default region is USA
+            return smsNumber;
         }
     }
 }

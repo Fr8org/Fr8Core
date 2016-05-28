@@ -1,5 +1,6 @@
 ﻿using Data.Entities;
 using Data.Interfaces;
+using Fr8Data.DataTransferObjects;
 
 namespace Hub.Interfaces
 {
@@ -13,5 +14,8 @@ namespace Hub.Interfaces
         /// <param name="isNewOrganization"></param>
         /// <returns></returns>
         OrganizationDO GetOrCreateOrganization(IUnitOfWork uow, string organizationName, out bool isNewOrganization);
+        OrganizationDTO GetOrganizationById(int id);
+        OrganizationDTO UpdateOrganization(OrganizationDTO organization);
+
     }
 }

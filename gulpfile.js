@@ -1,10 +1,12 @@
-    var gulp = require('gulp');
+﻿var gulp = require('gulp');
 var bower = require('gulp-bower');
 var concat = require('gulp-concat');
 var path = require('path');
 var child_process = require('child_process');
 var sourcemaps = require('gulp-sourcemaps');
 var templateCache = require('gulp-angular-templatecache');
+var argv = require('yargs').argv;
+var gutil = require('gulp-util');
 
 gulp.task('bower', function (done) {
     return bower({ layout: "byComponent" });
@@ -17,6 +19,7 @@ gulp.task('concattemplates', function () {
         '!Views/AngularTemplate/PlanList.cshtml',
         '!Views/AngularTemplate/MyAccountPage.cshtml',
         '!Views/AngularTemplate/Header.cshtml',
+        '!Views/AngularTemplate/MiniHeader.cshtml',
         '!Views/AngularTemplate/ChangePassword.cshtml',
         '!Views/AngularTemplate/AccountList.cshtml'])
         .pipe(templateCache('templateCache.js', {
@@ -46,16 +49,18 @@ gulp.task('compile_js', function () {
         'Scripts/app/model/Plan.js',
         'Scripts/app/model/PlanBuilderState.js',
         'Scripts/app/model/User.js',
+        'Scripts/app/model/Profile.js',
         'Scripts/app/model/ContainerDTO.js',
         'Scripts/app/model/ActionGroup.js',
         'Scripts/app/model/WebServiceDTO.js',
         'Scripts/app/model/WebServiceActionSetDTO.js',
         'Scripts/app/model/TerminalDTO.js',
         'Scripts/app/model/TerminalActionSetDTO.js',
-        'Scripts/app/model/ManageAuthToken.js',
+        'Scripts/app/model/AuthenticationTokenDTO.js',
         'Scripts/app/model/SolutionDTO.js',
         'Scripts/app/model/AlertDTO.js',
         'Scripts/app/model/SubordinateSubplan.js',
+        'Scripts/app/model/HistoryDTO.js',
         'Scripts/app/services/CrateHelper.js',
         'Scripts/app/services/AuthService.js',
         'Scripts/app/services/ConfigureTrackerService.js',
@@ -63,6 +68,8 @@ gulp.task('compile_js', function () {
         'Scripts/app/services/StringService.js',
         'Scripts/app/services/LocalIdentityGenerator.js',
         'Scripts/app/services/ReportService.js',
+        'Scripts/app/services/OrganizationService.js',
+        'Scripts/app/services/FileService.js',
         'Scripts/app/services/ManageFileService.js',
         'Scripts/app/services/FileDetailsService.js',
         'Scripts/app/services/ContainerService.js',
@@ -98,7 +105,6 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/TextArea.js',
         'Scripts/app/directives/Controls/TextArea.js',
         'Scripts/app/directives/Controls/FilterPane.js',
-        'Scripts/app/directives/QueryBuilderWidget.js',
         'Scripts/app/directives/Controls/MappingPane.js',
         'Scripts/app/directives/Controls/ManagePlan.js',
         'Scripts/app/directives/Controls/RunPlanButton.js',
@@ -121,10 +127,14 @@ gulp.task('compile_js', function () {
         'Scripts/app/directives/Controls/ControlList.js',
         'Scripts/app/directives/Controls/SelectData.js',
         'Scripts/app/directives/Controls/ExternalObjectChooser.js',
+        'Scripts/app/directives/Controls/BuildMessageAppender.js',
         'Scripts/app/directives/LongAjaxCursor.js',
         'Scripts/app/directives/Validators/ManifestDescriptionValidators.js',
         'Scripts/app/directives/ActionPicker.js',
         'Scripts/app/directives/ActivityResize.js',
+        'Scripts/app/directives/collapse/collapse.directive.js',
+        'Scripts/app/directives/collapse/collapse.module.js',
+        'Scripts/app/directives/ModalResizable.js',
         'Scripts/app/filters/ActionNameFormatter.js',
         'Scripts/app/filters/DateTimeFormatter.js',
         'Scripts/app/controllers/PlanBuilderController.js',
@@ -149,6 +159,8 @@ gulp.task('compile_js', function () {
         'Scripts/app/controllers/TerminalFormController.js',
         'Scripts/app/controllers/SolutionListController.js',
         'Scripts/app/controllers/NotifierController.js',
+        'Scripts/app/controllers/OrganizationController.js',
+        'Scripts/app/controllers/KioskModeOrganizationHeaderController.js',
         'Scripts/app/controllers/PlanActionsDialogController.js',
         'Scripts/app/controllers/FindObjectsController.js',
         'Scripts/app/controllers/FindObjectsResultsController.js',
@@ -391,15 +403,20 @@ function getProtractorBinary(binaryName){
 }
 
 gulp.task('update-web-driver', function(done){
-    child_process.spawnSync(getProtractorBinary('webdriver-manager'), ['update'], {
+    return child_process.spawnSync(getProtractorBinary('webdriver-manager'), ['update'], {
         stdio: 'inherit'
     });
 });
 
 gulp.task('protractor-run', function (done) {
-    child_process.spawnSync(getProtractorBinary('protractor'),  ['Scripts\\tests\\e2e\\conf.js'] ,{
+    gutil.log('Using base url: ' + argv.baseUrl);
+    var result = child_process.spawnSync(getProtractorBinary('protractor'),  ['--baseUrl='+argv.baseUrl, 'Scripts\\tests\\e2e\\conf.js'] ,{
         stdio: 'inherit'
     });
+
+    if (result.status !== 0) {
+        process.exit(1);
+    }
 });
 gulp.task('default', ['bower', 'concattemplates', 'cdnizer-js', 'cdnizer-css']);
 

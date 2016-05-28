@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Web.Http;
-using Data.Interfaces.DataTransferObjects;
-using AutoMapper;
-using Data.Entities;
-using Newtonsoft.Json;
-using System.Reflection;
 using TerminalBase.BaseClasses;
 using System.Threading.Tasks;
+using Fr8Data.DataTransferObjects;
 using TerminalBase.Infrastructure;
+using TerminalBase.Services;
+using StructureMap;
 
 namespace terminalSendGrid.Controllers
 {
@@ -15,13 +13,19 @@ namespace terminalSendGrid.Controllers
     public class ActivityController : BaseTerminalController
     {
         private const string curTerminal = "terminalSendGrid";
+        private readonly ActivityExecutor _activityExecutor;
+        public ActivityController()
+        {
+            _activityExecutor = ObjectFactory.GetInstance<ActivityExecutor>();
+        }
 
         [HttpPost]
         [fr8TerminalHMACAuthenticate(curTerminal)]
         [Authorize]
         public Task<object> Execute([FromUri] String actionType, [FromBody] Fr8DataDTO curDataDTO)
         {
-            return HandleFr8Request(curTerminal, actionType, curDataDTO);
+            return _activityExecutor.HandleFr8Request(curTerminal, actionType, curDataDTO);
         }
     }
+    
 }

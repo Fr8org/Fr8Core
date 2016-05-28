@@ -2,25 +2,14 @@
 using System.Collections.Generic;
 using System.Configuration;
 using System.Threading.Tasks;
-using Hub.Interfaces;
-using Hub.Security;
-using Newtonsoft.Json;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using System.Linq;
 using NUnit.Framework;
-using Data.Constants;
-using Data.Interfaces.DataTransferObjects.Helpers;
 using StructureMap;
 using System.Net.Http;
-using System.Net;
-using System.Linq;
-using Data.Entities;
-using Data.Interfaces;
-using Data.States;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
+using Fr8Infrastructure.Communication;
+using Fr8Infrastructure.Security;
 
 namespace HealthMonitor.Utility
 {
@@ -63,6 +52,7 @@ namespace HealthMonitor.Utility
         {
             ObjectFactory.Initialize();
             ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
+            ObjectFactory.Configure(Fr8Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
 
             // Use a common HttpClient for all REST operations within testing session 
             // to ensure the presense of the authentication cookie. 
@@ -121,8 +111,8 @@ namespace HealthMonitor.Utility
 
         protected async Task RevokeTokens(string terminalName)
         {
-            var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
-                _baseUrl + "manageauthtoken/"
+            var tokens = await HttpGetAsync<IEnumerable<AuthenticationTokenTerminalDTO>>(
+                _baseUrl + "authentication/tokens"
             );
 
             if (tokens != null)
@@ -133,7 +123,7 @@ namespace HealthMonitor.Utility
                     foreach (var token in docusignTokens.AuthTokens)
                     {
                         await HttpPostAsync<string>(
-                            _baseUrl + "manageauthtoken/revoke?id=" + token.Id.ToString(),
+                            _baseUrl + "authentication/tokens/revoke?id=" + token.Id.ToString(),
                             null
                         );
                     }
@@ -154,21 +144,14 @@ namespace HealthMonitor.Utility
                 + string.Format("authentication/login?username={0}&password={1}", Uri.EscapeDataString(email), Uri.EscapeDataString(password)), null);
         }
 
-        public async Task<List<CrateDescriptionDTO>> GetRuntimeCrateDescriptionsFromUpstreamActivities(Guid curActivityId)
+        public async Task<IncomingCratesDTO> GetRuntimeCrateDescriptionsFromUpstreamActivities(Guid curActivityId)
         {
-            var url = $"{GetHubApiBaseUrl()}/plannodes/upstream_actions/?id={curActivityId}";
-            var upstreamActivities = await HttpGetAsync<List<ActivityDTO>>(url);
-            var result = new List<CrateDescriptionDTO>();
-            foreach (var activity in upstreamActivities)
-            {
-                var storage = Crate.FromDto(activity.CrateStorage);
-                result.AddRange(storage.CratesOfType<CrateDescriptionCM>().SelectMany(x => x.Content.CrateDescriptions));
-            }
-            return result;
+            var url = $"{GetHubApiBaseUrl()}/plan_nodes/signals/?id={curActivityId}";
+            return await HttpGetAsync<IncomingCratesDTO>(url);
         }
         protected async Task<Guid> ExtractTerminalDefaultToken(string terminalName)
         {
-            var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(GetHubApiBaseUrl() + "manageauthtoken/");
+            var tokens = await HttpGetAsync<IEnumerable<AuthenticationTokenTerminalDTO>>(GetHubApiBaseUrl() + "manageauthtoken/");
             Assert.NotNull(tokens, "No authorization tokens were found for the integration testing user.");
             var terminal = tokens.FirstOrDefault(x => x.Name == terminalName);
             Assert.NotNull(terminal, $"No authorization tokens were found for the {terminalName}");

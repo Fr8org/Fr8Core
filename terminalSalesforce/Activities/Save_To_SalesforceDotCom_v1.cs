@@ -2,19 +2,18 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using System.Web;
-using Data.Entities;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using terminalSalesforce.Infrastructure;
 using terminalSalesforce.Services;
-using Hub.Managers;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.Manifests;
-using Data.States;
-using Data.Interfaces.DataTransferObjects;
-using Newtonsoft.Json;
+using ServiceStack;
+using Salesforce.Common;
 
 namespace terminalSalesforce.Actions
 {
@@ -23,150 +22,153 @@ namespace terminalSalesforce.Actions
     /// </summary>
     public class Save_To_SalesforceDotCom_v1 : BaseTerminalActivity
     {
-        ISalesforceManager _salesforce = new SalesforceManager();
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Version = "1",
+            Name = "Save_To_SalesforceDotCom",
+            Label = "Save to Salesforce.Com",
+            NeedsAuthentication = true,
+            Category = ActivityCategory.Forwarders,
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
 
-        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {   
-            if (CheckAuthentication(curActivityDO, authTokenDO))
-            {
-                return curActivityDO;
-            }
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
+        readonly ISalesforceManager _salesforce = new SalesforceManager();
+        
+        public Save_To_SalesforceDotCom_v1(ICrateManager crateManager)
+            : base(true, crateManager)
+        {
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
-        {
-            //if storage is empty, return initial config
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
 
-            return ConfigurationRequestType.Followup;
-        }
-
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override async Task Initialize()
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
                 //In initial config, just create a DDLB 
                 //to let the user select which object they want to save.
-                CreateInitialControls(crateStorage);
-            }
-
-            return await Task.FromResult(curActivityDO);
+            CreateInitialControls(Storage);
         }
 
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override async Task FollowUp()
         {
             //In Follow Up config, Get Fields of the user selected object(ex., Lead) and populate Text Source controls
             //to let the user to specify the values.
 
             //if user did not select any object, retur the activity as it is
-            string chosenObject = ExtractChosenSFObject(curActivityDO);
+            string chosenObject = ExtractChosenSFObject();
             if (string.IsNullOrEmpty(chosenObject))
             {
-                return await Task.FromResult(curActivityDO);
+                return;
             }
 
-            if(CrateManager.GetStorage(curActivityDO).CratesOfType<FieldDescriptionsCM>().Any(x => x.Label.EndsWith(" - " + chosenObject)))
+            if (Storage.CratesOfType<FieldDescriptionsCM>().Any(x => x.Label.EndsWith(" - " + chosenObject)))
             {
-                return await Task.FromResult(curActivityDO);
+                return;
             }
-                
 
-            var chosenObjectFieldsList = await _salesforce.GetFields(chosenObject, authTokenDO, true);
+            var chosenObjectFieldsList = await _salesforce.GetProperties(chosenObject.ToEnum<SalesforceObjectType>(), AuthorizationToken, true);
 
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                //clear any existing TextSources. This is required when user changes the object in DDLB
-                GetConfigurationControls(crateStorage).Controls.RemoveAll(ctl => ctl is TextSource);
-                chosenObjectFieldsList.ToList().ForEach(selectedObjectField => 
-                    AddTextSourceControl(crateStorage, selectedObjectField.Value, selectedObjectField.Key, string.Empty, requestUpstream: true));
+            //clear any existing TextSources. This is required when user changes the object in DDLB
+            ConfigurationControls.Controls.RemoveAll(ctl => ctl is TextSource);
+            chosenObjectFieldsList.ToList().ForEach(selectedObjectField =>
+                AddControl(ControlHelper.CreateTextSourceControl(selectedObjectField.Value, selectedObjectField.Key, string.Empty, addRequestConfigEvent: true, requestUpstream: true)));
 
-                //create design time fields for the downstream activities.
-                crateStorage.RemoveByLabelPrefix("Salesforce Object Fields - ");
-                crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate("Salesforce Object Fields - " + chosenObject, 
+            //create design time fields for the downstream activities.
+            Storage.RemoveByLabelPrefix("Salesforce Object Fields - ");
+            Storage.Add(CrateManager.CreateDesignTimeFieldsCrate("Salesforce Object Fields - " + chosenObject,
                                                                                 chosenObjectFieldsList.ToList(), AvailabilityType.Configuration));
-            }
-
-            return await Task.FromResult(curActivityDO);
         }
 
-        public override async Task<ActivityDO> Activate(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override Task Validate()
         {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            var chosenObject = ExtractChosenSFObject();
+
+            //get Fields which are reqired
+            var requiredFieldsList = GetRequiredFields("Salesforce Object Fields - " + chosenObject);
+
+            //get TextSources that represent the above required fields
+            var requiredFieldControlsList = ConfigurationControls
+                                                .Controls.OfType<TextSource>()
+                                                .Where(c => requiredFieldsList.Any(f => f.Key.Equals(c.Name)));
+
+            //for each required field's control, check its value source
+            requiredFieldControlsList.ToList().ForEach(c =>
             {
-                //In Activate, we validate whether the user specified values for the Required controls
-
-                var chosenObject = ExtractChosenSFObject(curActivityDO);
-
-                //get Fields which are reqired
-                var requiredFieldsList = GetRequiredFields(curActivityDO, "Salesforce Object Fields - " + chosenObject);
-
-                //get TextSources that represent the above required fields
-                var requiredFieldControlsList = GetConfigurationControls(crateStorage)
-                                                    .Controls.OfType<TextSource>()
-                                                    .Where(c => requiredFieldsList.Any(f => f.Key.Equals(c.Name)));
-                
-                //for each required field's control, check its value source
-                requiredFieldControlsList.ToList().ForEach(c =>
+                if (!c.HasValue || (c.CanGetValue(ValidationManager.Payload) && string.IsNullOrWhiteSpace(c.GetValue(ValidationManager.Payload))))
                 {
-                    if (string.IsNullOrEmpty(c.ValueSource))
-                    {
-                        c.ErrorMessage = string.Format("{0} must be provided for creating {1}", c.Label, chosenObject);
+                    ValidationManager.SetError($"{c.Label} must be provided for creating {chosenObject}", c);
+                }
+            });
+
+            var controls = ConfigurationControls.Controls.Where(c => c.Name.Contains("Phone") || c.Name == "Fax");
+            foreach (var control in controls)
+            {
+                var ctrl = (TextSource)control;
+                if (ctrl != null)
+                {
+                    if (ctrl.TextValue != null)
+                    {                        
+                        ValidationManager.ValidatePhoneNumber(ctrl.TextValue, ctrl);
                     }
-                });
+                }
             }
-            return await Task.FromResult(curActivityDO);
+            return Task.FromResult(0);
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
-        {
-            var payloadCrates = await GetPayload(curActivityDO, containerId);
-
-            if (NeedsAuthentication(authTokenDO))
+        public override async Task Run()
             {
-                return NeedsAuthenticationError(payloadCrates);
-            }
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
+            using (var validationScope = new RuntimeValidationScope(this, Payload))
             {
-                var chosenObject = ExtractChosenSFObject(curActivityDO);
+                await Validate();
+                if (validationScope.HasErrors)
+                {
+                    // errors will be written during validationScope disposal
+                    return;
+                }
+
+                var chosenObject = ExtractChosenSFObject();
 
                 //get all fields
-                var fieldsList = crateStorage.CrateContentsOfType<FieldDescriptionsCM>(c => c.Label.Equals("Salesforce Object Fields - " + chosenObject))
-                                             .SelectMany(f => f.Fields);
+                var fieldsList = Storage.CrateContentsOfType<FieldDescriptionsCM>(c => c.Label.Equals("Salesforce Object Fields - " + chosenObject))
+                    .SelectMany(f => f.Fields);
 
                 //get all text sources
-                var fieldControlsList = GetConfigurationControls(crateStorage).Controls.OfType<TextSource>();
-                
-                var payloadStorage = CrateManager.FromDto(payloadCrates.CrateStorage);
+                var fieldControlsList = ConfigurationControls.Controls.OfType<TextSource>();
 
                 //get <Field> <Value> key value pair for the non empty field
-                var jsonInputObject = ActivitiesHelper.GenerateSalesforceObjectDictionary(fieldsList, fieldControlsList, payloadStorage);
+                var jsonInputObject = ActivitiesHelper.GenerateSalesforceObjectDictionary(fieldsList, fieldControlsList, Payload);
 
-                var result = await _salesforce.CreateObject(jsonInputObject, chosenObject, authTokenDO);
+                string result;
+
+                try
+                {
+                    result = await _salesforce.Create(chosenObject.ToEnum<SalesforceObjectType>(), jsonInputObject, AuthorizationToken);
+                }
+                catch (TerminalBase.Errors.AuthorizationTokenExpiredOrInvalidException ex)
+                {
+                    RaiseInvalidTokenError();
+                    return;
+                }
 
                 if (!string.IsNullOrEmpty(result))
                 {
-                    using (var paylodCrateStroage = CrateManager.GetUpdatableStorage(payloadCrates))
-                    {
-                        var contactIdFields = new List<FieldDTO> { new FieldDTO(chosenObject + "ID", result) };
-                        paylodCrateStroage.Add(Crate.FromContent(chosenObject + " is saved in Salesforce.com", new StandardPayloadDataCM(contactIdFields)));
-                        return Success(payloadCrates);
-                    }
+                    var contactIdFields = new List<FieldDTO> { new FieldDTO(chosenObject + "ID", result) };
+                    Payload.Add(Crate.FromContent(chosenObject + " is saved in Salesforce.com", new StandardPayloadDataCM(contactIdFields)));
+                    Success();
+                    return;
                 }
 
-                return Error(payloadCrates, "Saving " + chosenObject + " to Salesforce.com is failed.");
+                RaiseError("Saving " + chosenObject + " to Salesforce.com is failed.");
+                return;
             }
         }
-
+    
         /// <summary>
         /// Creates Initial config controls
         /// </summary>
-        private void CreateInitialControls(IUpdatableCrateStorage crateStorage)
+        private void CreateInitialControls(ICrateStorage crateStorage)
         {
             AddSFObjectChooserControl(crateStorage);
         }
@@ -174,10 +176,9 @@ namespace terminalSalesforce.Actions
         /// <summary>
         /// Clears the storage and adds StandardConfigurationControlsCM crate with only DDLB control named sfObjectType
         /// </summary>
-        private void AddSFObjectChooserControl(IUpdatableCrateStorage crateStorage)
+        private void AddSFObjectChooserControl(ICrateStorage crateStorage)
         {
             crateStorage.Clear();
-
             //DDLB for What Salesforce Object to be considered
             var whatKindOfData = new DropDownList
             {
@@ -198,12 +199,15 @@ namespace terminalSalesforce.Actions
         /// </summary>
         /// <param name="curActivityDO"></param>
         /// <returns></returns>
-        private string ExtractChosenSFObject(ActivityDO curActivityDO)
+        private string ExtractChosenSFObject()
         {
-            var configControls = GetConfigurationControls(curActivityDO);
-            var curChosenSFObject = configControls.Controls.OfType<DropDownList>().Single(c => c.Name.Equals("sfObjectType")).selectedKey;
-
+            var curChosenSFObject = GetControl<DropDownList>("sfObjectType").selectedKey;
             return curChosenSFObject;
+        }
+
+        protected override bool IsInvalidTokenException(Exception ex)
+        {
+            return SalesforceAuthHelper.IsTokenInvalidation(ex);
         }
     }
 }

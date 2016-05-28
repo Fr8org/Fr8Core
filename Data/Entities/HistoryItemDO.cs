@@ -38,29 +38,21 @@ namespace Data.Entities
                     customerAddress = acct.EmailAddress.Address;
                 }
 
-                string dataHeader;
+                string dataHeader="";
                 if (!string.IsNullOrEmpty(customerAddress))
                 {
                     dataHeader = string.Format(
-                        "{0} ID: {1}, EmailAddress: {2} ",
+                        "EmailAddress: {1} ",
                         PrimaryCategory,
-                        ObjectId,
                         customerAddress
                     );    
-                }
-                else
-                {
-                    dataHeader = string.Format(
-                        "{0} ID: {1} ",
-                        PrimaryCategory,
-                        ObjectId
-                    );
                 }
 
                 Data = dataHeader + "\r\n" + Data;
 
                 if (configRepo.Get("LogLevel", String.Empty) == "Verbose")
-                    Logger.GetLogger().Info(Data);
+                    //Logger.GetLogger().Info(Data);
+                    Logger.LogInfo(Data);
             }
         }
     }

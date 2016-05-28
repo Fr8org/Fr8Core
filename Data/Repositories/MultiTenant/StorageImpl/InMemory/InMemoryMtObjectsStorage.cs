@@ -2,8 +2,10 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Data.Infrastructure.StructureMap;
 using Data.Repositories.MultiTenant.Ast;
 using Data.Repositories.SqlBased;
+using Data.States;
 
 namespace Data.Repositories.MultiTenant.InMemory
 {

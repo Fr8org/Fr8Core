@@ -1,15 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
-using Data.Control;
-using Data.Crates;
-using Newtonsoft.Json;
 using StructureMap;
 using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Interfaces;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using Hub.Managers;
-using Hub.Services;
+using Fr8Data.Managers;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -35,7 +33,7 @@ namespace UtilitiesTesting.Fixtures
 
         public static ControlDefinitionDTO TestConnectionString2()
         {
-            return new TextBlock()
+            return new TextBox()
             {
                 Name = "Connection_String",
                 Value = @"Server = tcp:s79ifqsqga.database.windows.net,1433; Database = demodb_health_test; User ID = IntegrationTest@s79ifqsqga; Password = thmxsGv2Jqo; Trusted_Connection = False; Encrypt = True; Connection Timeout = 30; "

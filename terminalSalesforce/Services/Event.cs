@@ -1,26 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
-using StructureMap;
 using terminalSalesforce.Infrastructure;
 using TerminalBase.BaseClasses;
 using System.Linq;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 
 namespace terminalSalesforce.Services
 {
     public class Event : IEvent
     {
        
-        private BaseTerminalController _baseTerminalController = new BaseTerminalController();
-       
-
-        public Event()
-        {        
-        }
+        private readonly BaseTerminalController _baseTerminalController = new BaseTerminalController();
+      
 
         public Task<Crate> ProcessEvent(string curExternalEventPayload)
         {
@@ -45,23 +39,23 @@ namespace terminalSalesforce.Services
                     Manufacturer = "Salesforce",
                 };
 
-                return Task.FromResult(Crate.FromContent("Standard Event Report", eventReportContent));
+                return Task.FromResult((Crate)Crate.FromContent("Standard Event Report", eventReportContent));
             }
             catch (Exception e)
             {
                 _baseTerminalController.ReportTerminalError("terminalSalesforce", e);
-                throw new Exception(string.Format("Error while processing. \r\n{0}", curExternalEventPayload));
+                throw new Exception($"Error while processing. \r\n{curExternalEventPayload}");
             }
         }
 
         private string GetEventNames(Envelope curEventEnvelope)
         {
-            List<string> result = new List<string>();
-
-            result = curEventEnvelope.Body.Notifications.NotificationList.ToList().Select(notification =>
+            if (curEventEnvelope?.Body?.Notifications == null)
             {
-                return ExtractOccuredEvent(notification);
-            }).ToList();
+                return string.Empty;
+            }
+
+            var result = curEventEnvelope.Body.Notifications.NotificationList.ToList().Select(ExtractOccuredEvent).ToArray();
 
             return string.Join(",", result);
         }

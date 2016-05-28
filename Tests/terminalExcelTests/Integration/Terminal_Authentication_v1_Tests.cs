@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using Data.Interfaces.DataTransferObjects;
+using Fr8Data.DataTransferObjects;
 using HealthMonitor.Utility;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
+using Fr8Infrastructure.Communication;
 
 namespace terminalExcelTests.Integration
 {

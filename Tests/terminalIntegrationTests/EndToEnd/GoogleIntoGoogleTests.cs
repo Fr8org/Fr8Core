@@ -3,16 +3,20 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Infrastructure.Interfaces;
 using HealthMonitor.Utility;
 using Newtonsoft.Json;
 using NUnit.Framework;
 using StructureMap;
 using terminaBaselTests.Tools.Activities;
 using terminaBaselTests.Tools.Plans;
+using terminalFr8Core.Actions;
+using terminalFr8Core.Activities;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services;
+using terminalGoogle.Services.Authorization;
 
 namespace terminalIntegrationTests.EndToEnd
 {
@@ -32,15 +36,16 @@ namespace terminalIntegrationTests.EndToEnd
             _plansHelper = new IntegrationTestTools(this);
             _fr8ActivityConfigurator = new IntegrationTestTools_terminalFr8(this);
         }
-
+        
         [Test, Category("Integration.terminalGoogle")]
         public async Task GoogleIntoGoogleEndToEnd()
         {
+            
             var googleAuthTokenId = await new terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalGoogle(this).ExtractGoogleDefaultToken();
             var defaultGoogleAuthToken = GetGoogleAuthToken(googleAuthTokenId);
 
             //create a new plan
-            var googleSheetApi = new GoogleSheet(new GoogleIntegration());
+            var googleSheetApi = new GoogleSheet(new GoogleIntegration(ObjectFactory.GetInstance<IRestfulServiceClient>()));
             var sourceSpreadsheetUri = string.Empty;
             var destinationSpreadsheetUri = string.Empty;
             var sourceSpreadsheetName = Guid.NewGuid().ToString();
@@ -59,7 +64,7 @@ namespace terminalIntegrationTests.EndToEnd
                 //Configure Save_To_Google activity to save this message into new test spreadsheet
                 destinationSpreadsheetUri = await googleSheetApi.CreateSpreadsheet(destinationSpreadsheetName, defaultGoogleAuthToken);
 
-                await _googleActivityConfigurator.AddAndConfigureSaveToGoogleSheet(thePlan, 3, "Field Description", "Build Message", destinationSpreadsheetName);
+                await _googleActivityConfigurator.AddAndConfigureSaveToGoogleSheet(thePlan, 3, "Standard Payload Data", Build_Message_v1.RuntimeCrateLabel, destinationSpreadsheetName);
                 //run the plan
                 await _plansHelper.RunPlan(thePlan.Plan.Id);
 
@@ -90,6 +95,7 @@ namespace terminalIntegrationTests.EndToEnd
                     await googleSheetApi.DeleteSpreadSheet(destinationSpreadsheetUri, defaultGoogleAuthToken);
                 }
             }
+            
         }
 
         private StandardTableDataCM GetTestSpreadsheetContent()
@@ -127,12 +133,11 @@ namespace terminalIntegrationTests.EndToEnd
             {
                 var validToken = uow.AuthorizationTokenRepository.FindTokenById(authorizationTokenId);
 
-                Assert.IsNotNull(validToken, "Reading default google token from AuthorizationTokenRepository failed. Please provide default account for authenticating terminalGoogle.");
+                Assert.IsNotNull(validToken, "Reading default google token from AuthorizationTokenRepository failed. " +
+                                             "Please provide default account for authenticating terminalGoogle.");
 
                 return JsonConvert.DeserializeObject<GoogleAuthDTO>((validToken).Token);
             }
         }
-
-
     }
 }

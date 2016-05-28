@@ -1,15 +1,15 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
-using Data.Constants;
+using Fr8Data.Constants;
+using Fr8Data.Control;
+using Fr8Data.Crates;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.DataTransferObjects.Helpers;
+using Fr8Data.Manifests;
 using HealthMonitor.Utility;
 using terminalTwilioTests.Fixture;
-using Data.Control;
-using Data.Crates;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.DataTransferObjects.Helpers;
-using Data.Interfaces.Manifests;
-using Hub.Managers;
 using NUnit.Framework;
+using Fr8Data.Managers;
 
 namespace terminalTwilioTests.Integration
 {
@@ -43,7 +43,6 @@ namespace terminalTwilioTests.Integration
             //Assert
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             Assert.NotNull(controls.Controls[0] is TextSource);
@@ -117,7 +116,6 @@ namespace terminalTwilioTests.Integration
             //After Configure Test
             Assert.NotNull(responseActionDTO);
             Assert.NotNull(responseActionDTO.CrateStorage);
-            Assert.NotNull(responseActionDTO.CrateStorage.Crates);
             var crateStorage = Crate.FromDto(responseActionDTO.CrateStorage);
             var controls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
             Assert.NotNull(controls.Controls[0] is TextSource);

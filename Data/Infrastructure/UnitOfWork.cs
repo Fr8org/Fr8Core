@@ -8,6 +8,7 @@ using Data.Interfaces;
 using Data.Repositories;
 using Data.Repositories.MultiTenant;
 using Data.Repositories.Plan;
+using Data.Repositories.PlanDescriptions;
 using StructureMap;
 
 namespace Data.Infrastructure
@@ -73,7 +74,12 @@ namespace Data.Infrastructure
             }
         }
         
+        private IProfileRepository _profileRepository;
+        public IProfileRepository ProfileRepository => _profileRepository ?? (_profileRepository = new ProfileRepository(this));
 
+        private IPermissionSetRepository _permissionSetRepository;
+        public IPermissionSetRepository PermissionSetRepository => _permissionSetRepository ?? (_permissionSetRepository = new PermissionSetRepository(this));
+        
         private SlipRepository _SlipRepository;
 
         public SlipRepository SlipRepository
@@ -381,36 +387,6 @@ namespace Data.Infrastructure
             }
         }
 
-        private ProfileNodeRepository _profileNodeRepository;
-
-        public ProfileNodeRepository ProfileNodeRepository
-        {
-            get
-            {
-                return _profileNodeRepository ?? (_profileNodeRepository = new ProfileNodeRepository(this));
-            }
-        }
-
-        private ProfileItemRepository _profileItemRepository;
-
-        public ProfileItemRepository ProfileItemRepository
-        {
-            get
-            {
-                return _profileItemRepository ?? (_profileItemRepository = new ProfileItemRepository(this));
-            }
-        }
-
-        private ProfileRepository _profileRepository;
-
-        public ProfileRepository ProfileRepository
-        {
-            get
-            {
-                return _profileRepository ?? (_profileRepository = new ProfileRepository(this));
-            }
-        }
-
         private ExpectedResponseRepository _expectedResponseRepository;
         public ExpectedResponseRepository ExpectedResponseRepository
         {
@@ -457,16 +433,6 @@ namespace Data.Infrastructure
             }
         }
 
-
-        private CriteriaRepository _criteriaRepository;
-
-        public ICriteriaRepository CriteriaRepository
-        {
-            get
-            {
-                return _criteriaRepository ?? (_criteriaRepository = new CriteriaRepository(this));
-            }
-        }
 
         private FileRepository _fileRepository;
 
@@ -563,6 +529,43 @@ namespace Data.Infrastructure
             }
         }
 
+        private ActivityDescriptionRepository _activityDescriptionRepository;
+        public IActivityDescriptionRepository ActivityDescriptionRepository
+        {
+            get
+            {
+                return _activityDescriptionRepository ?? (_activityDescriptionRepository = new ActivityDescriptionRepository(this));
+            }
+        }
+
+        private NodeTransitionRepository _nodeTransitionRepository;
+        public INodeTransitionRepository NodeTransitionRepository
+
+        {
+            get
+            {
+                return _nodeTransitionRepository ?? (_nodeTransitionRepository = new NodeTransitionRepository(this));
+            }
+        }
+
+        private PlanTemplateRepository _planTemplateRepository;
+        public IPlanTemplateRepository PlanTemplateRepository
+        {
+            get
+            {
+                return _planTemplateRepository ?? (_planTemplateRepository = new PlanTemplateRepository(this));
+            }
+        }
+
+        private PlanNodeDescriptionsRepository _planNodeDescriptionsRepository;
+        public IPlanNodeDescriptionsRepository PlanNodeDescriptionsRepository
+        {
+            get
+            {
+                return _planNodeDescriptionsRepository ?? (_planNodeDescriptionsRepository = new PlanNodeDescriptionsRepository(this));
+            }
+        }
+
         public void Save()
         {
             _context.SaveChanges();
@@ -610,14 +613,14 @@ namespace Data.Infrastructure
                 }
             }
             catch
-            {}
+            { }
 
             _context.DetectChanges();
             var addedEntities = _context.AddedEntities;
             var modifiedEntities = _context.ModifiedEntities;
             var deletedEntities = _context.DeletedEntities;
 
-            UpateRepository(addedEntities, modifiedEntities, deletedEntities, AuthorizationTokenRepository);
+            ((AuthorizationTokenRepositoryBase)AuthorizationTokenRepository).SaveChanges();
 
             try
             {
@@ -639,22 +642,6 @@ namespace Data.Infrastructure
             OnEntitiesAdded(new EntitiesStateEventArgs(this, addedEntities));
             OnEntitiesModified(new EntitiesStateEventArgs(this, modifiedEntities));
             OnEntitiesDeleted(new EntitiesStateEventArgs(this, deletedEntities));
-        }
-
-        private void UpateRepository(Object[] addedEntities, Object[] modifiedEntities, Object[] deletedEntities,  object repository)
-        {
-            var trackingChanges = repository as ITrackingChangesRepository;
-
-            if (trackingChanges != null)
-            {
-                var entityType = trackingChanges.EntityType;
-
-                trackingChanges.TrackAdds(addedEntities.Where(x => entityType.IsInstanceOfType(x)));
-                trackingChanges.TrackDeletes(deletedEntities.Where(x => entityType.IsInstanceOfType(x)));
-                trackingChanges.TrackUpdates(modifiedEntities.Where(x => entityType.IsInstanceOfType(x)));
-                
-                trackingChanges.SaveChanges();
-            }
         }
 
         public bool IsEntityModified<TEntity>(TEntity entity) 

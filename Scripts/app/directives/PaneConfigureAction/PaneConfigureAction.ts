@@ -16,7 +16,9 @@ module dockyard.directives.paneConfigureAction {
         PaneConfigureAction_ExecutePlan,
         PaneConfigureAction_ConfigureFocusElement,
         PaneConfigureAction_AuthCompleted,
-        PaneConfigureAction_DownStreamReconfiguration
+        PaneConfigureAction_DownStreamReconfiguration,
+        PaneConfigureAction_UpdateValidationMessages,
+        PaneConfigureAction_ResetValidationMessages,
     }
 
     export class ActionReconfigureEventArgs {
@@ -92,6 +94,19 @@ module dockyard.directives.paneConfigureAction {
 
         constructor(id: string) {
             this.id = id;
+        }
+    }
+
+    export class ResetValidationMessagesEventArgs {
+    }
+
+    export class UpdateValidationMessagesEventArgs {
+        public id: string;
+        public validationResults: model.ValidationResults;
+
+        constructor(id: string, validationResults: model.ValidationResults) {
+            this.id = id;
+            this.validationResults = validationResults;
         }
     }
 
@@ -207,6 +222,17 @@ module dockyard.directives.paneConfigureAction {
                 }
             });
 
+            $scope.$on(MessageType[MessageType.PaneConfigureAction_ResetValidationMessages], (event: ng.IAngularEvent, e: ResetValidationMessagesEventArgs) => {
+                this.ignoreConfigurationChange = true;
+               crateHelper.resetValidationErrors($scope.currentAction.configurationControls.fields);
+            });
+
+            $scope.$on(MessageType[MessageType.PaneConfigureAction_UpdateValidationMessages], (event: ng.IAngularEvent, e: UpdateValidationMessagesEventArgs) => {
+                if (e.id === $scope.currentAction.id) {
+                    crateHelper.setValidationErrors($scope.currentAction.configurationControls.fields, e.validationResults);
+                }
+            });
+
             $scope.$on(MessageType[MessageType.PaneConfigureAction_ReloadAction], (event: ng.IAngularEvent, reloadActionEventArgs: ReloadActionEventArgs) => {
                 this.reloadAction(reloadActionEventArgs);
             });
@@ -241,7 +267,7 @@ module dockyard.directives.paneConfigureAction {
             );
 
             // Get configuration settings template from the server if the current action does not contain those       
-            //TODO check this     
+            // TODO check this     
             if ($scope.currentAction.activityTemplate != null) {
                 if ($scope.currentAction.crateStorage == null || !$scope.currentAction.crateStorage.crates.length) {
                     $scope.loadConfiguration();
@@ -261,7 +287,7 @@ module dockyard.directives.paneConfigureAction {
                 return;
             }
             this.$scope.currentAction = <interfaces.IActionVM>reloadActionEventArgs.action;
-            this.$scope.processConfiguration();
+            this.$scope.loadConfiguration();
             if (this.$scope.currentAction.childrenActivities && this.$scope.currentAction.childrenActivities.length > 0) {
 
                 if (this.$scope.reconfigureChildrenActions) {
@@ -297,26 +323,7 @@ module dockyard.directives.paneConfigureAction {
             }
 
             private onConfigurationChanged(newValue: model.ControlsList, oldValue: model.ControlsList) {
-                if (!newValue || !newValue.fields) {
-                    return;
-                }
 
-                if (this.ignoreConfigurationChange) {
-                    this.ignoreConfigurationChange = false;
-                    return;
-                }
-
-                for (var i = 0; i < newValue.fields.length; i++) {
-                    if (!this.controlValuesChanged(newValue.fields[i], oldValue.fields[i])) {
-                        continue;
-                    }
-
-                    if (this.hasRequestConfigHandler(newValue.fields[i])) {
-                        // Don't need to save separately; requestConfig event handler will initiate reconfiguration
-                        // which will also save the action
-                        return;
-                    }
-                }
 
                 if (this.crateHelper.hasControlListCrate(this.$scope.currentAction.crateStorage)) {
                     this.crateHelper.mergeControlListCrate(
@@ -327,7 +334,6 @@ module dockyard.directives.paneConfigureAction {
                 }
 
                 this.$scope.currentAction.crateStorage.crateDTO = this.$scope.currentAction.crateStorage.crates; //backend expects crates on CrateDTO field
-
                 this.ActionService.save({ id: this.$scope.currentAction.id }, this.$scope.currentAction, null, null)
                     .$promise
                     .then(() => {
@@ -458,6 +464,9 @@ module dockyard.directives.paneConfigureAction {
                         }
 
                         var oldAction = this.$scope.currentAction;
+                        if (oldAction.label !== res.label) {
+                            this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ActionUpdated], res);
+                        }
                         if (res.childrenActivities && res.childrenActivities.length > 0 && (!oldAction.childrenActivities || oldAction.childrenActivities.length < 1)) {
                             // If the directive is used for configuring solutions,
                             // the SolutionController would listen to this event 
@@ -479,7 +488,7 @@ module dockyard.directives.paneConfigureAction {
                                 //in case of reconfiguring the solution check the child actions again
 
                                 //not needed in case of Loop action
-                                if (this.$scope.currentAction.label !== "Loop") {
+                                if (this.$scope.currentAction.name !== "Loop") {
                                     this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ChildActionsDetected]);
                                 }
                             }
@@ -531,6 +540,36 @@ module dockyard.directives.paneConfigureAction {
                 this.LayoutService.setJumpTargets(this.$scope.currentAction, targets);
             }
 
+        timeoutPromise = null;
+
+        private configControlChangeBuffer(newValue: model.ControlsList, oldValue: model.ControlsList) {
+            if (!newValue || !newValue.fields) {
+                return;
+            }
+
+            if (this.ignoreConfigurationChange) {
+                this.ignoreConfigurationChange = false;
+                return;
+            }
+
+            for (var i = 0; i < newValue.fields.length; i++) {
+                if (!this.controlValuesChanged(newValue.fields[i], oldValue.fields[i])) {
+                    continue;
+                }
+
+                if (this.hasRequestConfigHandler(newValue.fields[i])) {
+                    // Don't need to save separately; requestConfig event handler will initiate reconfiguration
+                    // which will also save the action
+                    return;
+                }
+            }
+
+            this.$timeout.cancel(this.timeoutPromise);  //does nothing, if timeout alrdy done
+            this.timeoutPromise = this.$timeout(() => {   //Set timeout to prevent sending more than one save requests for changes lasts less than 1 sec.
+                this.$scope.onConfigurationChanged(newValue, oldValue);
+            }, 1000);
+        }
+
             private processConfiguration() {
                 var that = this;
                 // Check if authentication is required.
@@ -541,7 +580,7 @@ module dockyard.directives.paneConfigureAction {
                     this.$scope.currentAction.configurationControls = new model.ControlsList();
                     // startAuthentication($scope.currentAction.id);
                     if (!(<any>authCrate.contents).Revocation) {
-                        this.AuthService.enqueue(this.$scope.currentAction.id);
+                        this.AuthService.enqueue(this.$scope.currentAction);
 
                         var errorText = 'Please provide credentials to access your desired account.';
                         var control = new model.TextBlock(errorText, '');
@@ -561,7 +600,7 @@ module dockyard.directives.paneConfigureAction {
 
                         var button = new model.Button('Try authenticate again');
                         button.name = 'AuthUnsuccessfulButton';
-                        button.events = [ onClickEvent ];
+                    button.events = [onClickEvent];
 
                         this.$scope.currentAction.configurationControls.fields = [label, button];
                         this.ignoreConfigurationChange = true;
@@ -587,43 +626,21 @@ module dockyard.directives.paneConfigureAction {
                 if (hasConditionalBranching) {
                     this.LayoutService.setSiblingStatus(this.$scope.currentAction, false);
                 }
-
-
                 // Before setting up watcher on configuration change, make sure that the first invokation of the handler 
                 // is ignored: watcher always triggers after having been set up, and we don't want to handle that 
                 // useless call.
                 this.ignoreConfigurationChange = true;
 
+            
+
                 this.$timeout(() => { // let the control list create, we don't want false change notification during creation process
                     this.$scope.configurationWatchUnregisterer = this.$scope.$watch<model.ControlsList>(
-                        (scope: IPaneConfigureActionScope) => this.$scope.currentAction.configurationControls,
-                        <any>angular.bind(that, this.$scope.onConfigurationChanged),
+                    () => this.$scope.currentAction.configurationControls,
+                    <any>angular.bind(that, this.configControlChangeBuffer),
                         true);
                 }, 1000);
-            }
 
-            // TODO: FR-2703, remove.
-            // private startAuthentication(actionId: string) {
-            //     var modalScope = <any>this.$scope.$new(true);
-            //     modalScope.actionIds = [actionId];
-            // 
-            //     this.$modal.open({
-            //             animation: true,
-            //             templateUrl: '/AngularTemplate/AuthenticationDialog',
-            //             controller: 'AuthenticationDialogController',
-            //             scope: modalScope
-            //         })
-            //         .result
-            //         .then(() => this.loadConfiguration())
-            //         .catch((result) => {
-            //             var errorText = 'Authentication unsuccessful. Click to try again.';
-            //             var control = new model.TextBlock(errorText, 'well well-lg alert-danger');
-            //             control.name = 'AuthUnsuccessfulLabel';
-            // 
-            //             this.$scope.currentAction.configurationControls = new model.ControlsList();
-            //             this.$scope.currentAction.configurationControls.fields = [control];
-            //         });
-            // }
+        }
 
             private setSolutionMode() {
                 this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_SetSolutionMode]);

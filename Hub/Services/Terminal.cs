@@ -6,12 +6,11 @@ using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entities;
 using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.States;
 using Data.Utility;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Infrastructure.Interfaces;
 using Hub.Interfaces;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using StructureMap;
 using Utilities.Configuration.Azure;
 
@@ -41,14 +40,14 @@ namespace Hub.Services
             public override bool Equals(object obj)
             {
                 if (ReferenceEquals(null, obj)) return false;
-                return obj is TerminalKey && Equals((TerminalKey) obj);
+                return obj is TerminalKey && Equals((TerminalKey)obj);
             }
 
             public override int GetHashCode()
             {
                 unchecked
                 {
-                    return ((_terminalName != null ? _terminalName.GetHashCode() : 0)*397) ^ (_terminalVersion != null ? _terminalVersion.GetHashCode() : 0);
+                    return ((_terminalName != null ? _terminalName.GetHashCode() : 0) * 397) ^ (_terminalVersion != null ? _terminalVersion.GetHashCode() : 0);
                 }
             }
         }
@@ -82,20 +81,21 @@ namespace Hub.Services
             {new TerminalKey("terminalYammer", "1"), new TerminalIdSecretMatch("f2b999be-be3f-42b5-b0d5-611d0606723b", "d14aaa44-22a1-4d2c-b14b-be559c8941b5")},
             {new TerminalKey("terminalAtlassian", "1"), new TerminalIdSecretMatch("d770ec3c-975b-4ca8-910e-a55ac43af383", "f747e49c-63a8-4a1b-8347-dd2e436c3b36")},
             {new TerminalKey("terminalTest", "1"), new TerminalIdSecretMatch("BFA77F6B-969D-4976-B752-930EEB11A4A3", "F4497516-0134-4523-B93C-EB15EE4D0697")},
+            {new TerminalKey("terminalBox", "1"), new TerminalIdSecretMatch("1293c430-818d-4326-896b-dd5c512ca1a4","2eb36a7b-6365-4d8f-ad73-a44cdd1d1ebb")},
         };
-        
-        private readonly Dictionary<int, TerminalDO>  _terminals = new Dictionary<int, TerminalDO>();
+
+        private readonly Dictionary<int, TerminalDO> _terminals = new Dictionary<int, TerminalDO>();
         private bool _isInitialized;
 
         public bool IsATandTCacheDisabled
         {
-            get; 
+            get;
             private set;
         }
-        
+
         public Terminal()
         {
-            IsATandTCacheDisabled = string.Equals(CloudConfigurationManager.GetSetting("DisableATandTCache"),  "true", StringComparison.InvariantCultureIgnoreCase);
+            IsATandTCacheDisabled = string.Equals(CloudConfigurationManager.GetSetting("DisableATandTCache"), "true", StringComparison.InvariantCultureIgnoreCase);
         }
 
         private void Initialize()
@@ -122,7 +122,7 @@ namespace Hub.Services
                 _isInitialized = true;
             }
         }
-        
+
         private bool UpdateTerminalSecret(TerminalDO terminal)
         {
             TerminalIdSecretMatch secret;
@@ -145,7 +145,7 @@ namespace Hub.Services
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 bool needSaveChanges = false;
-                
+
                 foreach (var existingTerminal in uow.TerminalRepository.GetAll())
                 {
                     needSaveChanges |= UpdateTerminalSecret(existingTerminal);
@@ -243,7 +243,7 @@ namespace Hub.Services
         private TerminalDO Clone(TerminalDO source)
         {
             var newTerminal = new TerminalDO();
-            
+
             CopyPropertiesHelper.CopyProperties(source, newTerminal, false);
 
             return newTerminal;
@@ -258,7 +258,7 @@ namespace Hub.Services
                 return _terminals.Values.ToArray();
             }
         }
-        
+
         public async Task<IList<ActivityTemplateDO>> GetAvailableActivities(string uri)
         {
             Initialize();
@@ -267,7 +267,7 @@ namespace Hub.Services
             var standardFr8TerminalCM = await restClient.GetAsync<StandardFr8TerminalCM>(new Uri(uri, UriKind.Absolute));
             return standardFr8TerminalCM.Activities.Select(Mapper.Map<ActivityTemplateDO>).ToList();
         }
-        
+
         public async Task<TerminalDO> GetTerminalByPublicIdentifier(string terminalId)
         {
             Initialize();
@@ -288,7 +288,7 @@ namespace Hub.Services
                     .FirstOrDefaultAsync(s => s.Terminal.PublicIdentifier == terminalId && s.UserDO.Id == userId);
                 return subscription != null;
             }
-            
+
         }
 
         public async Task<List<SolutionPageDTO>> GetSolutionDocumentations(string terminalName)
@@ -307,7 +307,7 @@ namespace Hub.Services
                 if (solutionPageDTO != null)
                 {
                     solutionPages.Add(solutionPageDTO);
-                }
+    }
             }
             return solutionPages;
         }

@@ -2,17 +2,16 @@
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Data.Entities;
-using Newtonsoft.Json;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
 using Data.States;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
+using Fr8Data.States;
 using TerminalSqlUtilities;
 using TerminalBase.BaseClasses;
-using Utilities.Configuration.Azure;
+using TerminalBase.Infrastructure;
+using TerminalBase.Models;
 
 namespace terminalFr8Core.Infrastructure
 {
@@ -21,12 +20,9 @@ namespace terminalFr8Core.Infrastructure
         private const string DefaultDbProvider = "System.Data.SqlClient";
 
         public async Task<Dictionary<string, DbType>> ExtractColumnTypes(
-            BaseTerminalActivity activity, ActivityDO activityDO)
+            IHubCommunicator hubCommunicator, ActivityContext activityContext)
         {
-            var upstreamCrates = await activity.GetCratesByDirection<FieldDescriptionsCM>(
-                activityDO,
-                CrateDirection.Upstream
-            );
+            var upstreamCrates = await hubCommunicator.GetCratesByDirection<FieldDescriptionsCM>(activityContext.ActivityPayload.Id, CrateDirection.Upstream);
 
             if (upstreamCrates == null) { return null; }
 

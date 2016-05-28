@@ -1,65 +1,44 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Web.Http;
+﻿using System.Web.Http;
 using StructureMap;
-using Data.Entities;
-using Data.Interfaces;
+using Hub.Infrastructure;
 using Hub.Interfaces;
-using Hub.Managers;
-using Hub.Services;
-using Utilities;
-using Utilities.Logging;
-using Data.Interfaces.DataTransferObjects;
-using System.Linq;
-using AutoMapper;
+using Data.Interfaces;
+using Fr8Data.DataTransferObjects;
 
 namespace HubWeb.Controllers
-{    
+{
     [Fr8ApiAuthorize]
     public class ReportController : ApiController
     {
-        private IReport _report;        
+        private readonly IReport _report;
 
         public ReportController()
         {
             _report = ObjectFactory.GetInstance<IReport>();
-            
         }
 
-        //[Route("api/report/getallfacts")]
-        public IHttpActionResult GetAllFacts()
+        [Fr8ApiAuthorize]
+        [ActionName("getIncidentsByQuery")]
+        [HttpGet]
+        public IHttpActionResult GetIncidentsByQuery([FromUri] HistoryQueryDTO historyQueryDTO)
         {
-            IEnumerable<FactDTO> factDTOList = null;
-            try
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    factDTOList = _report.GetAllFacts(uow).Select(f => Mapper.Map<FactDTO>(f));
-                }
+                var result = _report.GetIncidents(uow, historyQueryDTO);
+                return Ok(result);
             }
-            catch (Exception e)
-            {
-                Logger.GetLogger().Error("Error checking for activity template ", e);
-            }
-            return Ok(factDTOList);
         }
 
-        //[Route("api/report/getallincidents")]
-        public IHttpActionResult GetALLIncidents()
+        [Fr8ApiAuthorize]
+        [ActionName("getFactsByQuery")]
+        [HttpGet]
+        public IHttpActionResult GetFactsByQuery([FromUri] HistoryQueryDTO historyQueryDTO)
         {
-            List<IncidentDO> incidentList = null;
-            try
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                {
-                    incidentList = _report.GetAllIncidents(uow);                   
-                }
+                var result = _report.GetFacts(uow, historyQueryDTO);
+                return Ok(result);
             }
-            catch (Exception e)
-            {
-                Logger.GetLogger().Error("Error checking for activity template ", e);
-            }
-            return Ok(incidentList);
         }
-	}
+    }
 }

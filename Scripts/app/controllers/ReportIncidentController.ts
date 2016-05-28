@@ -2,96 +2,101 @@
     'use strict';
 
     export interface IReportIncidentListScope extends ng.IScope {
-        GetFacts: () => void;
-        dtOptionsBuilder: any;
-        dtColumnDefs: any;
-        incidentRecords: Array<model.IncidentDTO>;
-        isSelectedRow: (row: model.IncidentDTO) => boolean;
-        selectRow: (row: model.IncidentDTO) => void;
-        shrinkData: (str: string) => string;
+        filter: any;
+        query: model.HistoryQueryDTO;
+        promise: ng.IPromise<model.HistoryResultDTO<model.IncidentDTO>>;
+        result: model.HistoryResultDTO<model.IncidentDTO>;
+        getHistory: () => void;
+        removeFilter: () => void;
+        openModal: (historyItem: model.HistoryItemDTO) => void;
+        orderBy: string;
+        selected: any;
     }
 
     class ReportIncidentController {
 
         public static $inject = [
-            '$rootScope',
             '$scope',
-            'ReportIncidentService',
             '$modal',
-            '$compile',
-            '$q',
-            'DTOptionsBuilder',
-            'DTColumnDefBuilder'
+            'ReportService'
         ];
 
-        constructor(
-            private $rootScope: interfaces.IAppRootScope,
-            private $scope: IReportIncidentListScope,
-            private ReportIncidentService: services.IReportIncidentService,
-            private $modal,
-            private $compile: ng.ICompileService,
-            private $q: ng.IQService,
-            private DTOptionsBuilder,
-            private DTColumnDefBuilder) {           
-            ReportIncidentService.query().$promise.then(incidentRecords => {
-                $scope.incidentRecords = incidentRecords;
+        constructor(private $scope: IReportIncidentListScope, private $modal: any, private ReportService: services.IReportService) {
+
+            $scope.selected = [];
+
+            $scope.query = new model.HistoryQueryDTO();
+            $scope.query.itemPerPage = 10;
+            $scope.query.page = 1;
+            $scope.orderBy = "-createdDate";
+            $scope.query.isCurrentUser = true;
+            
+
+            $scope.filter = {
+                options: {
+                    debounce: 500
+                }
+            };
+
+            $scope.getHistory = <() => void>angular.bind(this, this.getHistory);
+            $scope.removeFilter = <() => void>angular.bind(this, this.removeFilter);
+            $scope.openModal = <(historyItem: model.HistoryItemDTO) => void>angular.bind(this, this.openModal);
+
+            $scope.$watch('query.filter', (newValue, oldValue) => {
+                var bookmark: number = 1;
+                if (!oldValue) {
+                    bookmark = $scope.query.page;
+                }
+                if (newValue !== oldValue) {
+                    $scope.query.page = 1;
+                }
+                if (!newValue) {
+                    $scope.query.page = bookmark;
+                }
+
+                this.getHistory();
             });
+        }
 
-            var _selectedRow: model.IncidentDTO = null;
+        private openModal(historyItem: model.HistoryItemDTO) {
+            var modalInstance = this.$modal.open({
+                animation: true,
+                templateUrl: '/AngularTemplate/ReportIncidentModal',
+                controller: 'ReportIncidentModalController',
+                size: 'lg',
+                resolve: {
+                    historyItem: () => historyItem
+            }
+            });
+        }
 
-            $scope.dtOptionsBuilder = DTOptionsBuilder.newOptions().withPaginationType('full_numbers').withDisplayLength(10)
-                .withOption('order', [[0, 'desc'], [6, 'desc']]);
-            $scope.dtColumnDefs = this.getColumnDefs();
+        private removeFilter() {
+            this.$scope.query.filter = null;
+            this.$scope.filter.showFilter = false;
+            this.getHistory();
+        }
 
-            $scope.selectRow = function (row: model.IncidentDTO) {
-                if (_selectedRow === row) {
-                    _selectedRow = null;
-                }
-                else {
-                    _selectedRow = row;
-                }
-            };
-
-            $scope.isSelectedRow = function (row: model.IncidentDTO) {
-                return _selectedRow === row;
-            };
-
-            $scope.shrinkData = function (str: string) {
-                var result = '';
-                if (str) {
-                    var lines = str.split('\n');
-                    var i;
-
-                    for (i = 0; i < Math.min(5, lines.length); ++i) {
-                        if (result) {
-                            result += '\n';
-                        }
-
-                        result += lines[i];
-                    }
-                }
-
-                if (result.length > 400) {
-                    result = result.substr(0, 400);
-                }
-
-                return result;
-            };
-        };
-
-        private getColumnDefs() {
-            return [
-                this.DTColumnDefBuilder.newColumnDef(0)
-                    .renderWith(function (data, type, full, meta) {
-                        if (data != null || data != undefined) {
-                            var dateValue = new Date(data);
-                            var date = dateValue.toLocaleDateString() + ' ' + dateValue.toLocaleTimeString();
-                            return date;
-                        }
-                    }),
-            ];
-        }       
+        private getHistory() {
+            if (this.$scope.orderBy && this.$scope.orderBy.charAt(0) === '-') {
+                this.$scope.query.isDescending = true;
+            } else {
+                this.$scope.query.isDescending = false;
+            }
+            this.$scope.promise = this.ReportService.getIncidentsByQuery(this.$scope.query).$promise;
+            this.$scope.promise.then((data: model.HistoryResultDTO<model.IncidentDTO>) => {
+                this.$scope.result = data;
+            });
+        }     
     }
 
     app.controller('ReportIncidentController', ReportIncidentController);
+
+    app.controller('ReportIncidentModalController', ['$scope', '$modalInstance', 'historyItem', ($scope: any, $modalInstance: any, historyItem: interfaces.IHistoryItemDTO): void => {
+
+        $scope.historyItem = historyItem;
+
+        $scope.cancel = () => {
+            $modalInstance.dismiss();
+        };
+    }]);
 }

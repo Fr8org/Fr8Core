@@ -1,29 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Configuration;
-using System.Diagnostics;
-using System.Linq;
-using AutoMapper;
-using Moq;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
+﻿using AutoMapper;
 using NUnit.Framework;
 using StructureMap;
-using Data.Crates;
-using Data.Entities;
-using Data.Interfaces;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
-using Data.Repositories;
-using Hub.Interfaces;
-using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
-using Utilities;
+using Fr8Data.DataTransferObjects;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using terminalExcel.Actions;
-using terminalExcel.Fixtures;
 using TerminalBase.Infrastructure;
+using TerminalBase.Interfaces;
+using Fr8Data.Managers;
+using terminalExcel.Activities;
 
 namespace terminalExcel.PluginExcelTests
 {
@@ -45,7 +30,7 @@ namespace terminalExcel.PluginExcelTests
             base.SetUp();
             TerminalBootstrapper.ConfigureTest();
 
-            _fixtureData = new FixtureData(ObjectFactory.GetInstance<IUnitOfWork>());
+            //_fixtureData = new FixtureData(ObjectFactory.GetInstance<IUnitOfWork>());
             _activity = ObjectFactory.GetInstance<IActivity>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
         }
@@ -61,10 +46,10 @@ namespace terminalExcel.PluginExcelTests
         {
             
             var curActionDTO = new ActivityDTO();
-            var curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
-            var result = new Load_Excel_File_v1().ConfigurationEvaluator(curActivityDO);
+            //var curActivityDO = Mapper.Map<ActivityDO>(curActionDTO);
+            //var result = new Load_Excel_File_v1().ConfigurationEvaluator(curActivityDO);
 
-            Assert.AreEqual(result, TerminalBase.Infrastructure.ConfigurationRequestType.Initial);
+            //Assert.AreEqual(result, TerminalBase.Infrastructure.ConfigurationRequestType.Initial);
         }
 
         //[Test]
