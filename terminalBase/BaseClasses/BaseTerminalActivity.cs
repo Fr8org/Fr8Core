@@ -44,26 +44,6 @@ namespace TerminalBase.BaseClasses
             throw new ApplicationException(exceptionMessage);
         }
 
-
-        protected void AddAdvisoryCrate(string name, string content)
-        {
-            var advisoryCrate = Storage.CratesOfType<AdvisoryMessagesCM>().FirstOrDefault();
-            var currentAdvisoryResults = advisoryCrate == null ? new AdvisoryMessagesCM() : advisoryCrate.Content;
-
-            var advisory = currentAdvisoryResults.Advisories.FirstOrDefault(x => x.Name == name);
-
-            if (advisory == null)
-            {
-                currentAdvisoryResults.Advisories.Add(new AdvisoryMessageDTO { Name = name, Content = content });
-            }
-            else
-            {
-                advisory.Content = content;
-            }
-
-            Storage.Add(Crate.FromContent("Advisories", currentAdvisoryResults));
-        }
-
         protected async Task<Crate<FieldDescriptionsCM>> MergeUpstreamFields(string label)
         {
             var curUpstreamFields = (await HubCommunicator.GetDesignTimeFieldsByDirection(ActivityContext.ActivityPayload.Id, CrateDirection.Upstream, AvailabilityType.Always)).Fields.ToArray();
