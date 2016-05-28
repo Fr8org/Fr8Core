@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace Fr8Data.DataTransferObjects
 {
-    public class ManageAuthToken_Terminal
+    public class AuthenticationTokenTerminalDTO
     {
         [JsonProperty("id")]
         public int Id { get; set; }
@@ -22,10 +22,10 @@ namespace Fr8Data.DataTransferObjects
         public int AuthenticationType { get; set; }
 
         [JsonProperty("authTokens")]
-        public List<ManageAuthToken_AuthToken> AuthTokens { get; set; }
+        public List<AuthenticationTokenDTO> AuthTokens { get; set; }
     }
 
-    public class ManageAuthToken_AuthToken
+    public class AuthenticationTokenDTO
     {
         [JsonProperty("id")]
         public Guid Id { get; set; }
@@ -40,16 +40,7 @@ namespace Fr8Data.DataTransferObjects
         public bool IsSelected { get; set; }
     }
 
-    public class ManageAuthToken_Terminal_Activity
-    {
-        [JsonProperty("actionId")]
-        public Guid ActivityId { get; set; }
-
-        [JsonProperty("terminal")]
-        public ManageAuthToken_Terminal Terminal { get; set; }
-    }
-
-    public class ManageAuthToken_Apply
+    public class AuthenticationTokenGrantDTO
     {
         [JsonProperty("actionId")]
         public Guid ActivityId { get; set; }

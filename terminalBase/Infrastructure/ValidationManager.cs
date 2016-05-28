@@ -12,23 +12,13 @@ namespace TerminalBase.Infrastructure
         private readonly ValidationResultsCM _validationResults;
 
         public bool HasErrors => _validationResults?.ValidationErrors?.Count > 0;
-
+        public ValidationResultsCM ValidationResults => _validationResults;
         public ICrateStorage Payload { get; }
 
-        public ValidationManager(ValidationResultsCM validationResults, ICrateStorage payload)
-        {
-            _validationResults = validationResults ?? new ValidationResultsCM();
-            Payload = payload;
-        }
-
-        public ValidationManager()
+        public ValidationManager(ICrateStorage payload)
         {
             _validationResults = new ValidationResultsCM();
-        }
-
-        public ValidationResultsCM GetResults()
-        {
-            return _validationResults;
+            Payload = payload;
         }
 
         /// <summary>

@@ -15,6 +15,7 @@ using Newtonsoft.Json.Linq;
 using Fr8Data.Managers;
 using TerminalBase.Models;
 using Hub.Services;
+using TerminalBase.Infrastructure;
 
 namespace UtilitiesTesting.Fixtures
 {
@@ -314,6 +315,7 @@ namespace UtilitiesTesting.Fixtures
             };
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = activityPayload,
                 AuthorizationToken = AuthToken_TerminalIntegration()
             };
@@ -329,6 +331,7 @@ namespace UtilitiesTesting.Fixtures
             };
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = activityPayload,
             };
             return activityContext;

@@ -5,6 +5,7 @@ using ClosedXML.Excel;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Newtonsoft.Json;
@@ -44,22 +45,22 @@ namespace terminalBox.Actions
             }
         }
 
-        public SaveToFile_v1()
-            : base(true)
+        public SaveToFile_v1(ICrateManager crateManager) 
+            : base(true, crateManager)
         {
         }
 
-        protected override async Task InitializeETA()
-        {
-            await Task.Yield();
-        }
-
-        protected override async Task ConfigureETA()
+        public override async Task Initialize()
         {
             await Task.Yield();
         }
 
-        protected override async Task RunETA()
+        public override async Task FollowUp()
+        {
+            await Task.Yield();
+        }
+
+        public override async Task Run()
         {
             var token = JsonConvert.DeserializeObject<BoxAuthTokenDO>(AuthorizationToken.Token);
             var desiredCrateDescription = ActivityUI.FileChooser.CrateDescriptions.Single(x => x.Selected);

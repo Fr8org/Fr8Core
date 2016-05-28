@@ -6,28 +6,27 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.DataTransferObjects.Helpers;
 using Fr8Data.Manifests;
-using Fr8Data.States;
 using TerminalBase.Errors;
 using TerminalBase.Infrastructure;
 using TerminalBase.Interfaces;
 using TerminalBase.Models;
-using TerminalBase.Services;
 
 namespace TerminalBase.BaseClasses
 {
+    // Almost minimal activity implementation
     public abstract class StatefullTerminalActivity : IActivity
     {
         /**********************************************************************************/
         // Declarations
         /**********************************************************************************/
-        
+
         private OperationalStateCM _operationalState;
         private ActivityContext _activityContext;
         private ContainerExecutionContext _containerExecutionContext;
 
         /**********************************************************************************/
 
-        protected ICrateStorage CurrentPayloadStorage
+        protected ICrateStorage Payload
         {
             get
             {
@@ -45,34 +44,35 @@ namespace TerminalBase.BaseClasses
             }
         }
 
-        protected ICrateStorage CurrentActivityStorage => _activityContext.ActivityPayload.CrateStorage;
-        protected ActivityPayload CurrentActivity => _activityContext.ActivityPayload;
+        protected ContainerExecutionContext ExecutionContext
+        {
+            get
+            {
+                CheckRunTime("Execution context is not available at the design time");
+                return _containerExecutionContext;
+            }
+        }
+
+        protected ICrateStorage Storage => _activityContext.ActivityPayload.CrateStorage;
+        protected ActivityPayload ActivityPayload => _activityContext.ActivityPayload;
         protected AuthorizationToken AuthorizationToken => _activityContext.AuthorizationToken;
-        protected UpstreamQueryManager UpstreamQueryManager { get; private set; }
-        protected ContainerExecutionContext ExecutionContext => _containerExecutionContext;
-        protected IHubCommunicator HubCommunicator { get; }
-        protected ActivityContext ConfigurationContext => _activityContext;
+        protected IHubCommunicator HubCommunicator => _activityContext.HubCommunicator;
+        protected ActivityContext ActivityContext => _activityContext;
+        protected bool IsRuntime => _containerExecutionContext != null;
+        protected AuthenticationMode AuthenticationMode { get; set; } = AuthenticationMode.InternalMode;
 
         /**********************************************************************************/
         // Functions
         /**********************************************************************************/
-
-        protected StatefullTerminalActivity(IHubCommunicator hubCommunicator)
-        {
-            HubCommunicator = hubCommunicator;
-        }
-
-        /**********************************************************************************/
-
+        
         private void InitializeInternalState(ActivityContext activityContext, ContainerExecutionContext containerExecutionContext)
         {
             _activityContext = activityContext;
             _containerExecutionContext = containerExecutionContext;
-            UpstreamQueryManager = new UpstreamQueryManager(activityContext, HubCommunicator);
 
             if (_containerExecutionContext != null)
             {
-                _operationalState = CurrentPayloadStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
+                _operationalState = Payload.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
 
                 if (_operationalState == null)
                 {
@@ -94,31 +94,10 @@ namespace TerminalBase.BaseClasses
 
         protected void AddAuthenticationCrate(bool revocation)
         {
-            var terminalAuthType = ConfigurationContext.ActivityPayload.ActivityTemplate.Terminal.AuthenticationType;
-
-            AuthenticationMode mode;
-            switch (terminalAuthType)
+            Storage.Remove<StandardAuthenticationCM>();
+            Storage.Add(Crate.FromContent("RequiresAuthentication", new StandardAuthenticationCM
             {
-                case AuthenticationType.Internal:
-                    mode = AuthenticationMode.InternalMode;
-                    break;
-                case AuthenticationType.External:
-                    mode = AuthenticationMode.ExternalMode;
-                    break;
-                case AuthenticationType.InternalWithDomain:
-                    mode = AuthenticationMode.InternalModeWithDomain;
-                    break;
-                case AuthenticationType.None:
-                    mode = AuthenticationMode.ExternalMode;
-                    break;
-                default:
-                    throw new ActivityExecutionException("Unknown authentication type");
-            }
-
-            CurrentActivityStorage.Remove<StandardAuthenticationCM>();
-            CurrentActivityStorage.Add(Crate.FromContent("RequiresAuthentication", new StandardAuthenticationCM
-            {
-                Mode = mode,
+                Mode = AuthenticationMode,
                 Revocation = revocation
             }));
         }
@@ -127,16 +106,22 @@ namespace TerminalBase.BaseClasses
 
         public async Task Configure(ActivityContext activityContext)
         {
+            InitializeInternalState(activityContext, null);
+            var configurationType = GetConfigurationRequestType();
+            bool afterConfigureFails = false;
+
             try
             {
-                InitializeInternalState(activityContext, null);
-
                 if (!await CheckAuthentication())
                 {
-                    AddAuthenticationCrate(true);
+                    AddAuthenticationCrate(false);
+                    return;
                 }
-
-                var configurationType = GetConfigurationRequestType();
+                
+                if (!await BeforeConfigure(configurationType))
+                {
+                    return;
+                }
 
                 switch (configurationType)
                 {
@@ -145,16 +130,36 @@ namespace TerminalBase.BaseClasses
                         break;
 
                     case ConfigurationRequestType.Followup:
-                        await Configure();
+                        await FollowUp();
                         break;
 
                     default:
                         throw new ArgumentOutOfRangeException($"Unsupported configuration type: {configurationType}");
                 }
+                try
+                {
+                    await AfterConfigure(configurationType, null);
+                }
+                catch
+                {
+                    afterConfigureFails = true;
+                    throw;
+                }
             }
             catch (AuthorizationTokenExpiredOrInvalidException)
             {
                 AddAuthenticationCrate(true);
+            }
+            catch (Exception ex)
+            {
+                if (IsInvalidTokenException(ex))
+                {
+                    AddAuthenticationCrate(true);
+                }
+                else if (!afterConfigureFails)
+                {
+                    await AfterConfigure(configurationType, ex);
+                }
             }
         }
 
@@ -162,36 +167,82 @@ namespace TerminalBase.BaseClasses
 
         private void CheckRunTime(string message = "Not available at the design time")
         {
-            if (_containerExecutionContext == null)
+            if (!IsRuntime)
             {
                 throw new InvalidOperationException(message);
             }
         }
-        
-        /**********************************************************************************/
-        
-        public Task Activate(ActivityContext activityContext)
-        {
-            InitializeInternalState(activityContext, null);
-            return Activate();
-        }
 
         /**********************************************************************************/
 
-        public Task Deactivate(ActivityContext activityContext)
+        public async Task Activate(ActivityContext activityContext)
         {
             InitializeInternalState(activityContext, null);
-            return Deactivate();
+
+            if (!await BeforeActivate())
+            {
+                return;
+            }
+
+            bool afterActivateFails = false;
+
+            try
+            {
+                await Activate();
+
+                try
+                {
+                    await AfterActivate(null);
+                }
+                catch
+                {
+                    afterActivateFails = true;
+                    throw;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (!afterActivateFails)
+                {
+                    await AfterActivate(ex);
+                }
+            }
         }
 
-        public Task<SolutionPageDTO> GetDocumentation(ActivityContext activityContext, string documentationType)
-        {
-            throw new NotImplementedException();
-        }
+        /**********************************************************************************/
 
-        public void SetHubCommunicator(IHubCommunicator hubCommunicator)
+        public async Task Deactivate(ActivityContext activityContext)
         {
-            throw new NotImplementedException();
+            InitializeInternalState(activityContext, null);
+
+            if (!await BeforeDeactivate())
+            {
+                return;
+            }
+
+            bool afterDeactivateFails = false;
+
+            try
+            {
+                await Deactivate();
+
+                try
+                {
+                    await AfterDeactivate(null);
+                }
+                catch
+                {
+                    afterDeactivateFails = true;
+                    throw;
+                }
+            }
+            catch (Exception ex)
+            {
+                if (!afterDeactivateFails)
+                {
+                    await AfterDeactivate(ex);
+                }
+            }
         }
 
         /**********************************************************************************/
@@ -200,7 +251,7 @@ namespace TerminalBase.BaseClasses
         {
             InitializeInternalState(activityContext, containerExecutionContext);
 
-            return Run(RunCurrentActivity);
+            return Run(Run);
         }
 
         /**********************************************************************************/
@@ -218,15 +269,38 @@ namespace TerminalBase.BaseClasses
         {
             if (!await CheckAuthentication())
             {
-                ErrorInvalidToken("Authorization token is invalid");
+                if (string.IsNullOrWhiteSpace(AuthorizationToken?.Token))
+                {
+                    ErrorInvalidToken("No AuthToken provided.");
+                }
+                else
+                {
+                    ErrorInvalidToken("Authorization token is invalid");
+                }
+                
                 return;
             }
-           
+
+            bool afterRunFails = false;
+
             try
             {
                 OperationalState.CurrentActivityResponse = null;
 
-                await runMode();
+                if (await BeforeRun())
+                {
+                    await runMode();
+
+                    try
+                    {
+                        await AfterRun(null);
+                    }
+                    catch
+                    {
+                        afterRunFails = true;
+                        throw;
+                    }
+                }
 
                 if (OperationalState.CurrentActivityResponse == null)
                 {
@@ -235,19 +309,55 @@ namespace TerminalBase.BaseClasses
             }
             catch (AuthorizationTokenExpiredOrInvalidException ex)
             {
+                if (!afterRunFails)
+                {
+                    await AfterRun(ex);
+                }
+
                 ErrorInvalidToken(ex.Message);
             }
             catch (ActivityExecutionException ex)
             {
+                if (!afterRunFails)
+                {
+                    await AfterRun(ex);
+                }
+
                 Error(ex.Message, ex.ErrorCode);
             }
             catch (AggregateException ex)
             {
+                if (!afterRunFails)
+                {
+                    await AfterRun(ex);
+                }
+
+                foreach (var innerException in ex.InnerExceptions)
+                {
+                    if (IsInvalidTokenException(innerException))
+                    {
+                        ErrorInvalidToken(ex.Message);
+                        return;
+                    }
+                }
+
                 Error(ex.Flatten().Message);
             }
             catch (Exception ex)
             {
-                Error(ex.Message);
+                if (!afterRunFails)
+                {
+                    await AfterRun(ex);
+                }
+
+                if (IsInvalidTokenException(ex))
+                {
+                    ErrorInvalidToken(ex.Message);
+                }
+                else
+                {
+                    Error(ex.Message);
+                }
             }
         }
 
@@ -255,14 +365,14 @@ namespace TerminalBase.BaseClasses
 
         protected virtual ConfigurationRequestType GetConfigurationRequestType()
         {
-            return CurrentActivityStorage.Count == 0 ? ConfigurationRequestType.Initial : ConfigurationRequestType.Followup;
+            return Storage.Count == 0 ? ConfigurationRequestType.Initial : ConfigurationRequestType.Followup;
         }
 
         /**********************************************************************************/
 
-        protected abstract Task Initialize();
-        protected abstract Task Configure();
-        protected abstract Task RunCurrentActivity();
+        public abstract Task Initialize();
+        public abstract Task FollowUp();
+        public abstract Task Run();
 
         /**********************************************************************************/
 
@@ -272,30 +382,93 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        protected virtual Task RunChildActivities()
+        public virtual Task RunChildActivities()
         {
             return Task.FromResult(0);
         }
 
         /**********************************************************************************/
 
-        protected virtual Task Activate()
+        public virtual Task Activate()
         {
             return Task.FromResult(0);
         }
 
         /**********************************************************************************/
 
-        protected virtual Task Deactivate()
+        public virtual Task Deactivate()
         {
             return Task.FromResult(0);
         }
-        
+
+        /**********************************************************************************/
+
+        protected virtual Task AfterRun(Exception ex)
+        {
+            return Task.FromResult(0);
+        }
+
+        /**********************************************************************************/
+
+        protected virtual Task<bool> BeforeRun()
+        {
+            return Task.FromResult(true);
+        }
+
+        /**********************************************************************************/
+
+        protected virtual Task AfterDeactivate(Exception ex)
+        {
+            return Task.FromResult(0);
+        }
+
+        /**********************************************************************************/
+
+        protected virtual Task<bool> BeforeDeactivate()
+        {
+            return Task.FromResult(true);
+        }
+
+        /**********************************************************************************/
+
+        protected virtual Task AfterActivate(Exception ex)
+        {
+            return Task.FromResult(0);
+        }
+
+        /**********************************************************************************/
+
+        protected virtual Task<bool> BeforeActivate()
+        {
+            return Task.FromResult(false);
+        }
+
+        /**********************************************************************************/
+
+        protected virtual Task AfterConfigure(ConfigurationRequestType configurationRequestType, Exception ex)
+        {
+            return Task.FromResult(0);
+        }
+
+        /**********************************************************************************/
+
+        protected virtual Task<bool> BeforeConfigure(ConfigurationRequestType configurationRequestType)
+        {
+            return Task.FromResult(true);
+        }
+
+        /**********************************************************************************/
+
+        protected virtual bool IsInvalidTokenException(Exception ex)
+        {
+            return false;
+        }
+
         /**********************************************************************************/
         /// <summary>
         /// Creates a suspend request for hub execution
         /// </summary>
-        protected void RequestHubExecutionSuspension(string message = null)
+        protected void SuspendHubExecution(string message = null)
         {
             SetResponse(ActivityResponse.RequestSuspend, message);
         }
@@ -305,9 +478,19 @@ namespace TerminalBase.BaseClasses
         /// Creates a terminate request for hub execution
         /// after that we could stop throwing exceptions on actions
         /// </summary>
-        protected void RequestHubExecutionTermination(string message = null)
+        protected void TerminateHubExecution(string message = null)
         {
             SetResponse(ActivityResponse.RequestTerminate, message);
+        }
+
+        /**********************************************************************************/
+        /// <summary>
+        /// Creates a terminate request for hub execution
+        /// after that we could stop throwing exceptions on actions
+        /// </summary>
+        protected void RequestHubExecutionTermination(string message = null)
+        {
+            TerminateHubExecution(message);
         }
 
         /**********************************************************************************/
@@ -321,7 +504,7 @@ namespace TerminalBase.BaseClasses
 
         /**********************************************************************************/
 
-        protected void RequestClientActivityExecution(string clientActionName)
+        protected void ExecuteClientActivity(string clientActionName)
         {
             SetResponse(ActivityResponse.ExecuteClientActivity);
             OperationalState.CurrentClientActivityName = clientActionName;
@@ -374,7 +557,7 @@ namespace TerminalBase.BaseClasses
         /// Jumps to another plan
         /// </summary>
         /// <returns></returns>
-        protected void RequestLaunchAdditionalPlan(Guid targetPlanId)
+        protected void LaunchPlan(Guid targetPlanId)
         {
             SetResponse(ActivityResponse.LaunchAdditionalPlan);
             OperationalState.CurrentActivityResponse.AddResponseMessageDTO(new ResponseMessageDTO() { Details = targetPlanId });
@@ -414,7 +597,78 @@ namespace TerminalBase.BaseClasses
             OperationalState.CurrentActivityErrorCode = errorCode;
             OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(instructionsToUser, ErrorType.Authentication, errorCode.ToString(), null, null, null));
         }
-        
+
+        /**********************************************************************************/
+        /// <summary>
+        /// returns error to hub
+        /// </summary>
+        /// <param name="errorMessage"></param>
+        /// <param name="errorCode"></param>
+        /// <param name="currentActivity">Activity where the error occured</param>
+        /// <param name="currentTerminal">Terminal where the error occured</param>
+        /// <returns></returns>
+        protected void RaiseError(string errorMessage = null, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
+        {
+            RaiseError(errorMessage, ErrorType.Generic, errorCode, currentActivity, currentTerminal);
+        }
+
+        /**********************************************************************************/
+        /// <summary>
+        /// returns error to hub
+        /// </summary>
+        /// <param name="errorCode"></param>
+        /// <param name="currentActivity">Activity where the error occured</param>
+        /// <param name="currentTerminal">Terminal where the error occured</param>
+        /// <param name="errorMessage"></param>
+        /// <param name="errorType"></param>
+        /// <returns></returns>
+        protected void RaiseError(string errorMessage, ErrorType errorType, ActivityErrorCode? errorCode = null, string currentActivity = null, string currentTerminal = null)
+        {
+            OperationalState.CurrentActivityErrorCode = errorCode;
+            OperationalState.CurrentActivityResponse = ActivityResponseDTO.Create(ActivityResponse.Error);
+            OperationalState.CurrentActivityResponse.AddErrorDTO(ErrorDTO.Create(errorMessage, errorType, errorCode.ToString(), null, currentActivity, currentTerminal));
+        }
+
+        /**********************************************************************************/
+        /// <summary>
+        /// Returns Needs authentication error to hub
+        /// </summary>
+        /// <returns></returns>
+        protected void RaiseNeedsAuthenticationError()
+        {
+            RaiseError("No AuthToken provided.", ErrorType.Authentication, ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID);
+        }
+
+        /**********************************************************************************/
+        /// <summary>
+        /// Returns authentication error to hub
+        /// </summary>
+        /// <returns></returns>
+        protected void RaiseInvalidTokenError(string instructionsToUser = null)
+        {
+            RaiseError(instructionsToUser, ErrorType.Authentication, ActivityErrorCode.AUTH_TOKEN_NOT_PROVIDED_OR_INVALID);
+        }
+
+        /**********************************************************************************/
+
+        protected virtual Task<SolutionPageDTO> GetDocumentation(string documentationType)
+        {
+            return Task.FromResult(new SolutionPageDTO
+            {
+                Name = "No Documentation found",
+                Body = "Please override the GetDocumentation method in the Activity class"
+            });
+        }
+
+        /**********************************************************************************/
+
+        public async Task<SolutionPageDTO> GetDocumentation(ActivityContext activityContext, string documentationType)
+        {
+            InitializeInternalState(activityContext, null);
+
+            return await GetDocumentation(documentationType);
+        }
+
         /**********************************************************************************/
     }
 }

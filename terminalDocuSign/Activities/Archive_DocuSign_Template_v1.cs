@@ -8,9 +8,11 @@ using Data.Entities;
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Hub.Managers;
 using terminalDocuSign.Actions;
+using terminalDocuSign.Services.New_Api;
 using TerminalBase.Infrastructure;
 using TerminalBase.Models;
 using Utilities;
@@ -48,7 +50,11 @@ namespace terminalDocuSign.Activities
                 });
             }
         }
-        
+
+        public Archive_DocuSign_Template_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+            : base(crateManager, docuSignManager)
+        {
+        }
 
         protected override Task InitializeDS()
         {
@@ -61,13 +67,13 @@ namespace terminalDocuSign.Activities
 
         protected override async Task FollowUpDS()
         {
-            var selectedTemplateField = GetControl<DropDownList>("Available_Templates", ControlTypes.DropDownList);
+            var selectedTemplateField = GetControl<DropDownList>("Available_Templates");
             if (string.IsNullOrEmpty(selectedTemplateField.Value))
             {
                 return;
             }
 
-            var destinationFileNameField = GetControl<TextBox>("File_Name", ControlTypes.TextBox);
+            var destinationFileNameField = GetControl<TextBox>("File_Name");
             if (string.IsNullOrEmpty(destinationFileNameField.Value))
             {
                 return;
@@ -83,7 +89,7 @@ namespace terminalDocuSign.Activities
 
             SetSelectedTemplate(getDocuSignTemplateActivity, selectedTemplateField);
             SetFromConversion(convertCratesActivity);
-            convertCratesActivity = await HubCommunicator.ConfigureActivity(convertCratesActivity, CurrentUserId);
+            convertCratesActivity = await HubCommunicator.ConfigureActivity(convertCratesActivity);
             SetToConversion(convertCratesActivity);
             SetFileDetails(storeFileActivity, destinationFileNameField.Value);
             //add child nodes here
@@ -95,15 +101,15 @@ namespace terminalDocuSign.Activities
         private async Task<ActivityPayload> CreateGetDocuSignTemplateActivity(ActivityTemplateDTO template, ActivityPayload parentAction)
         {
             var authTokenId = Guid.Parse(AuthorizationToken.Id);
-            return await HubCommunicator.CreateAndConfigureActivity(template.Id, CurrentUserId, "Get Docusign Template", 1, parentAction.Id, false, authTokenId);
+            return await HubCommunicator.CreateAndConfigureActivity(template.Id, "Get Docusign Template", 1, parentAction.Id, false, authTokenId);
         }
         private async Task<ActivityPayload> CreateConvertCratesActivity(ActivityTemplateDTO template, ActivityPayload parentAction)
         {
-            return await HubCommunicator.CreateAndConfigureActivity(template.Id, CurrentUserId, "Convert Crates", 2, parentAction.Id);
+            return await HubCommunicator.CreateAndConfigureActivity(template.Id,  "Convert Crates", 2, parentAction.Id);
         }
         private async Task<ActivityPayload> CreateStoreFileActivity(ActivityTemplateDTO template, ActivityPayload parentAction)
         {
-            return await HubCommunicator.CreateAndConfigureActivity(template.Id, CurrentUserId, "Store File", 3, parentAction.Id);
+            return await HubCommunicator.CreateAndConfigureActivity(template.Id,  "Store File", 3, parentAction.Id);
         }
 
         private void SetFileDetails(ActivityPayload storeFileActivity, string fileName)

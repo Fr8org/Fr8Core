@@ -20,7 +20,7 @@ namespace UtilitiesTesting.Fixtures
             {
                 storage.Add(Crate.FromContent(string.Empty, new OperationalStateCM()));
             }
-            container.GetInstance<Mock<IHubCommunicator>>().Setup(x => x.GetPayload(It.IsAny<Guid>(), It.IsAny<string>()))
+            container.GetInstance<Mock<IHubCommunicator>>().Setup(x => x.GetPayload(It.IsAny<Guid>()))
                      .Returns(Task.FromResult(payload));
             return container;
         }

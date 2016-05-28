@@ -22,11 +22,7 @@ namespace terminalFr8Core.Infrastructure
         public async Task<Dictionary<string, DbType>> ExtractColumnTypes(
             IHubCommunicator hubCommunicator, ActivityContext activityContext)
         {
-            var upstreamCrates = await hubCommunicator.GetCratesByDirection<FieldDescriptionsCM>(
-                activityContext.ActivityPayload.Id,
-                CrateDirection.Upstream,
-                activityContext.UserId
-            );
+            var upstreamCrates = await hubCommunicator.GetCratesByDirection<FieldDescriptionsCM>(activityContext.ActivityPayload.Id, CrateDirection.Upstream);
 
             if (upstreamCrates == null) { return null; }
 

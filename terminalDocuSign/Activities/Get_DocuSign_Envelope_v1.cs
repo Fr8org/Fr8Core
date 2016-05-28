@@ -6,10 +6,12 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.States;
 using Hub.Managers;
 using Newtonsoft.Json;
 using terminalDocuSign.DataTransferObjects;
+using terminalDocuSign.Services.New_Api;
 using TerminalBase.Infrastructure;
 using Utilities;
 
@@ -31,6 +33,12 @@ namespace terminalDocuSign.Activities
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
         private const string AllFieldsCrateName = "DocuSign Envelope Fields";
+
+
+        public Get_DocuSign_Envelope_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+            : base(crateManager, docuSignManager)
+        {
+        }
 
         protected override Task InitializeDS()
         {
@@ -64,7 +72,7 @@ namespace terminalDocuSign.Activities
 
         protected override string ActivityUserFriendlyName => "Get DocuSign Envelope";
 
-        protected override Task<bool> Validate()
+        protected override Task Validate()
         {
             var control = GetControl<TextSource>("EnvelopeIdSelector");
             var envelopeId = GetEnvelopeId(control);
@@ -72,10 +80,9 @@ namespace terminalDocuSign.Activities
             if (string.IsNullOrEmpty(envelopeId))
             {
                 ValidationManager.SetError("Envelope Id is not set", control);
-                return Task.FromResult(false);
             }
 
-            return Task.FromResult(true);
+            return Task.FromResult(0);
         }
 
         protected override async Task RunDS()

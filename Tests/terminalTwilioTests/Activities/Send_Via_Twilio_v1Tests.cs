@@ -63,15 +63,14 @@ namespace terminalTwilioTests.Activities
             hubCommunicator.Setup(hc => hc.GetDesignTimeFieldsByDirection(
                                                 It.IsAny<Guid>(), 
                                                 CrateDirection.Upstream, 
-                                                It.IsAny<AvailabilityType>(), 
-                                                It.IsAny<string>())).Returns(Task.FromResult(FixtureData.TestFields()));
+                                                It.IsAny<AvailabilityType>())).Returns(Task.FromResult(FixtureData.TestFields()));
             ObjectFactory.Configure(cfg => cfg.For<IHubCommunicator>().Use(hubCommunicator.Object));
         }
 
         [Test]
         public async void Configure_ReturnsCrateDTO()
         {
-            _twilioActivity = new Send_Via_Twilio_v1();
+            _twilioActivity = New<Send_Via_Twilio_v1>();
             var curActivityContext = FixtureData.ConfigureTwilioActivity();
             await _twilioActivity.Configure(curActivityContext);
             var controlsCrate = curActivityContext.ActivityPayload.CrateStorage.FirstOrDefault();
@@ -81,7 +80,7 @@ namespace terminalTwilioTests.Activities
         [Test]
         public async void Configure_ReturnsCrateDTOStandardConfigurationControlsMS()
         {
-            _twilioActivity = new Send_Via_Twilio_v1();
+            _twilioActivity = New<Send_Via_Twilio_v1>();
             var curActivityContext = FixtureData.ConfigureTwilioActivity();
             await _twilioActivity.Configure(curActivityContext);
             var controlsCrate = curActivityContext.ActivityPayload.CrateStorage.CratesOfType<StandardConfigurationControlsCM>().FirstOrDefault();
@@ -91,7 +90,7 @@ namespace terminalTwilioTests.Activities
         [Test]
         public async void Configure_ReturnsSMSAndSMSBodyFields()
         {
-            _twilioActivity = new Send_Via_Twilio_v1();
+            _twilioActivity = New<Send_Via_Twilio_v1>();
             var curActivityContext = FixtureData.ConfigureTwilioActivity();
             //ActionDTO curActionDTO = Mapper.Map<ActionDTO>(action);
             await _twilioActivity.Configure(curActivityContext);

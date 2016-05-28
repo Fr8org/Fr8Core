@@ -377,6 +377,9 @@ namespace Hub.Security
             var viewAllData = permissionSet.FirstOrDefault(x => x == (int)PermissionType.ViewAllObjects);
             if (viewAllData != 0 && permissionType == PermissionType.ReadObject) return true;
             if (modifyAllData != 0) return true;
+
+            //double check for profiles
+            if (fr8AccountId == GetCurrentUser()) return true;
             
             return false;
         }

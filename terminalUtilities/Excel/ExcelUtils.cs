@@ -20,14 +20,10 @@ namespace terminalUtilities.Excel
 {
     public class ExcelUtils
     {
-        private IHubCommunicator _hubCommunicator;
-        private string _userId;
         private readonly IRestfulServiceClient _restfulServiceClient;
-        public ExcelUtils(IHubCommunicator hubCommunicator, string userId)
+        public ExcelUtils()
         {
             _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
-            _hubCommunicator = hubCommunicator;
-            _userId = userId;
         }
 
         public static void ConvertToCsv(string pathToExcel, string pathToCsv)

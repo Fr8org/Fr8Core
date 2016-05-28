@@ -2,18 +2,21 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalTest.Actions
 {
     public abstract class TestActivityBase<T> : EnhancedTerminalActivity<T>
         where T: StandardConfigurationControlsCM
     {
-        protected TestActivityBase() 
-            : base(false)
+        protected TestActivityBase(ICrateManager crateManager) 
+            : base(false, crateManager)
         {
         }
+        
 
         /// <summary>
         /// DON'T USE THIS FUNCTION THIS IS JUST FOR BACKWARD COMPABILITY !!
@@ -23,7 +26,7 @@ namespace terminalTest.Actions
         [Obsolete("This function is for backward comatibility only. Please use Task<ActivityTemplateDTO> GetActivityTemplate(string, string, string, string)")]
         protected async Task<ActivityTemplateDTO> GetActivityTemplateByName(string activityTemplateName)
         {
-            var allActivityTemplates = _activityTemplateCache ?? (_activityTemplateCache = await HubCommunicator.GetActivityTemplates(CurrentUserId));
+            var allActivityTemplates = await HubCommunicator.GetActivityTemplates();
             var foundActivity = allActivityTemplates.FirstOrDefault(a => a.Name == activityTemplateName);
 
             if (foundActivity == null)

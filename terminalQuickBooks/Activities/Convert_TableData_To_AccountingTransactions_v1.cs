@@ -7,6 +7,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
@@ -20,9 +21,6 @@ namespace terminalQuickBooks.Actions
     public class Convert_TableData_To_AccountingTransactions_v1 :
         BaseQuickbooksTerminalActivity<Convert_TableData_To_AccountingTransactions_v1.ActivityUi>
     {
-        private const string DebitCredit = "DebitCredit";
-        private const string Memo = "Memo";
-
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public TextBlock TableRowTextBlock { get; set; }
@@ -159,8 +157,7 @@ namespace terminalQuickBooks.Actions
         private const string ButtonGroupNamePrefix = "Line";
         private readonly IChartOfAccounts _chartOfAccounts;
         private ChartOfAccountsCM ChartOfAccountsCrate;
-        private string MemoText;
-        private AccountDTO DebitAccount;
+        
 
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -175,12 +172,14 @@ namespace terminalQuickBooks.Actions
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        public Convert_TableData_To_AccountingTransactions_v1()
-        {
-            _chartOfAccounts = ObjectFactory.GetInstance<IChartOfAccounts>();
-        }
 
-        protected override async Task InitializeETA()
+        public Convert_TableData_To_AccountingTransactions_v1(ICrateManager crateManager, IChartOfAccounts chartOfAccounts) 
+            : base(crateManager)
+        {
+            _chartOfAccounts = chartOfAccounts;
+        }
+        
+        public override async Task Initialize()
         {
             if (ActivityId == Guid.Empty)
                 throw new ArgumentException("Configuration requires the submission of an Action that has a real ActionId");
@@ -191,7 +190,7 @@ namespace terminalQuickBooks.Actions
                 ChartOfAccountsCrate = chartOfAccountsCmCrates.First();
 
             //Get StandardTableDataCM crate using desing time
-            var tableDataCrate = await GetCratesByDirection<StandardTableDataCM>(CrateDirection.Upstream);
+            var tableDataCrate = await HubCommunicator.GetCratesByDirection<StandardTableDataCM>(ActivityId, CrateDirection.Upstream);
 
             if (tableDataCrate.Count != 0 || tableDataCrate.Any(x => x.Label == UpsteamCrateLabel || x.Label == HealthMonitorPrefix + UpsteamCrateLabel))
             {
@@ -203,10 +202,8 @@ namespace terminalQuickBooks.Actions
             Storage.AddRange(await PackSources());
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
-            MemoText = ActivityUI.Memo.Value;
-            DebitAccount = GetDebitAccount(Storage);
             return Task.FromResult(0);
         }
 
@@ -214,13 +211,13 @@ namespace terminalQuickBooks.Actions
         ///It is supposed to obtain StandardTableDataCM and user input in the form of
         /// debit line account and (optionaly) memo. The debit account is all for all transactions.
         /// </summary>
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             AccountDTO curDebitAccount = null;
             string memoText = "Unspecified";
             // Obtain the crate of type StandardTableDataCM and label "DocuSignTableDataMappedToQuickbooks" that holds 
             // the required information in the tabular format
-            var curStandardTableDataCM = GetCratesByDirection<StandardTableDataCM>(CrateDirection.Upstream)
+            var curStandardTableDataCM = HubCommunicator.GetCratesByDirection<StandardTableDataCM>(ActivityId, CrateDirection.Upstream)
                 .Result.Single(x => x.Label == UpsteamCrateLabel || x.Label == HealthMonitorPrefix + UpsteamCrateLabel)
                 .Content;
             //Validate the header row format
@@ -232,12 +229,12 @@ namespace terminalQuickBooks.Actions
                 var crate = Storage.CrateContentsOfType<ChartOfAccountsCM>();
                 ChartOfAccountsCrate = crate != null
                     ? crate.Single()
-                    : _chartOfAccounts.GetChartOfAccounts(AuthorizationToken, CurrentUserId, HubCommunicator);
+                    : _chartOfAccounts.GetChartOfAccounts(AuthorizationToken, HubCommunicator);
                 curDebitAccount = GetDebitAccount(Storage);
-                memoText = GetMemoText(Storage);
+                memoText = ActivityUI.Memo.Value;
                 //Check that the required input is provided by the user
                 //Namely: debit/credit type
-                ValidateControls(Storage);
+                ValidateControls();
             }
             StandardAccountingTransactionCM curStandardAccouningTransactionCM;
             if (curDebitAccount != null)
@@ -262,7 +259,7 @@ namespace terminalQuickBooks.Actions
             ChartOfAccountsCM chartOfAccounts;
             //Check if private variable is null
             if (ChartOfAccountsCrate == null)
-                chartOfAccounts = _chartOfAccounts.GetChartOfAccounts(AuthorizationToken, CurrentUserId, HubCommunicator);
+                chartOfAccounts = _chartOfAccounts.GetChartOfAccounts(AuthorizationToken, HubCommunicator);
             else
                 chartOfAccounts = ChartOfAccountsCrate;
             sources.Add(
@@ -275,27 +272,15 @@ namespace terminalQuickBooks.Actions
             return sources;
         }
 
-        private void ValidateControls(ICrateStorage storage)
+        private void ValidateControls()
         {
-            var curDebitCreditButtonGroup = GetControl<RadioButtonGroup>(DebitCredit, ControlTypes.RadioButtonGroup);
+            var curDebitCreditButtonGroup = ActivityUI.DebitCredit;
             //Check that the Debit/Credit type is selected
             if (!curDebitCreditButtonGroup.Radios[0].Selected && !curDebitCreditButtonGroup.Radios[1].Selected)
                 throw new Exception("No debit/credit type of the first account is provided");
         }
 
-        /// <summary>
-        /// This method should update controls data
-        /// This action should be called from Crate.GetUpdatableStorage(curActivityDO)
-        /// 1) Decide which line is debit depending on the value of the
-        /// ButtonGroup with the Name "Debit/Credit", update the debitLineAccount values
-        /// 2) Extract Memo from the TextBlock with Name "Transaction_Memo"
-        /// </summary>
-        private string GetMemoText(ICrateStorage storage)
-        {
-            var curMemoControl = GetControl<TextBox>(Memo, ControlTypes.TextBox);
-            return curMemoControl.Value;
-        }
-
+        
         /// <summary>
         /// This method has two purposes:
         /// 1)It extracts the Name or Name & Id from the control crate;
@@ -307,7 +292,7 @@ namespace terminalQuickBooks.Actions
         {
             var debitAccount = new AccountDTO();
             var accountsCrate = storage.CrateContentsOfType<ChartOfAccountsCM>().Single();
-            var curDebitCreditButtonGroup = GetControl<RadioButtonGroup>(DebitCredit, ControlTypes.RadioButtonGroup);
+            var curDebitCreditButtonGroup = ActivityUI.DebitCredit;
             //Depending on which button is selected (Debit or Credit) pass 1 or 2 to update the debitLineAccount private object
             debitAccount = ExtractAccountFromControl(curDebitCreditButtonGroup.Radios[0].Selected ? 1 : 2);
             if (debitAccount.Id == null)
@@ -328,7 +313,7 @@ namespace terminalQuickBooks.Actions
             //Prepare a QuickBooks account to return
             var curQBAccount = new AccountDTO();
             //Obtain a ButtonGroup control with defined name
-            var curButtonGroup = GetControl<RadioButtonGroup>(ButtonGroupNamePrefix + lineNumber, ControlTypes.RadioButtonGroup);
+            var curButtonGroup = lineNumber == 1 ? ActivityUI.Line1 : ActivityUI.Line2;
             //If text block is selected as input type
             if (curButtonGroup.Radios[0].Selected)
             {

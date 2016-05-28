@@ -6,8 +6,10 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
@@ -35,6 +37,12 @@ namespace terminalFr8Core.Activities
 #endif
 
         private const int MinAllowedElapsedTimeInSeconds = 12;
+
+
+        public MakeADecision_v1(ICrateManager crateManager) 
+            : base(crateManager)
+        {
+        }
 
         public override async Task RunTests()
         {
@@ -75,7 +83,7 @@ namespace terminalFr8Core.Activities
                                 RaiseError("Target Activity for transition is not specified. Please choose it in the Make a Decision activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
                                 return;
                             }
-                            JumpToActivity(containerTransitionField.TargetNodeId.Value);
+                            RequestJumpToActivity(containerTransitionField.TargetNodeId.Value);
                             return;
                         case ContainerTransitions.LaunchAdditionalPlan:
                             if (!containerTransitionField.TargetNodeId.HasValue)
@@ -83,7 +91,7 @@ namespace terminalFr8Core.Activities
                                 RaiseError("Target Additional Plan for transition is not specified. Please choose it in the Make a Decision activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
                                 return;
                             }
-                            LaunchAdditionalPlan(containerTransitionField.TargetNodeId.Value);
+                            LaunchPlan(containerTransitionField.TargetNodeId.Value);
                             return;
                         case ContainerTransitions.JumpToSubplan:
                             if (!containerTransitionField.TargetNodeId.HasValue)
@@ -91,7 +99,7 @@ namespace terminalFr8Core.Activities
                                 RaiseError("Target Subplan for transition is not specified. Please choose it in the Make a Decision activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
                                 return;
                             }
-                            JumpToSubplan(containerTransitionField.TargetNodeId.Value);
+                            RequestJumpToSubplan(containerTransitionField.TargetNodeId.Value);
                             return;
                         case ContainerTransitions.ProceedToNextActivity:
                             Success();
