@@ -7,11 +7,13 @@ using StructureMap;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using TerminalBase.BaseClasses;
 using terminalAtlassian.Interfaces;
 using terminalAtlassian.Services;
+using TerminalBase.Infrastructure;
 
 namespace terminalAtlassian.Actions
 {
@@ -196,14 +198,15 @@ namespace terminalAtlassian.Actions
         private const string ConfigurationPropertiesLabel = "ConfigurationProperties";
         private readonly AtlassianService _atlassianService;
 
-        public Save_Jira_Issue_v1() : base(true)
+        public Save_Jira_Issue_v1(ICrateManager crateManager, AtlassianService atlassianService)
+            : base(true, crateManager)
         {
-            _atlassianService = ObjectFactory.GetInstance<AtlassianService>();
+            _atlassianService = atlassianService;
         }
 
         #region Configuration
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             ActivityUI.AvailableProjects.ListItems = _atlassianService
                 .GetProjects(AuthorizationToken)
@@ -213,7 +216,7 @@ namespace terminalAtlassian.Actions
             await Task.Yield();
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             ActivityUI.RestoreCustomFields(Storage);
             var configProps = GetConfigurationProperties();
@@ -321,7 +324,7 @@ namespace terminalAtlassian.Actions
 
         #region Runtime
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             ActivityUI.RestoreCustomFields(Storage);
 

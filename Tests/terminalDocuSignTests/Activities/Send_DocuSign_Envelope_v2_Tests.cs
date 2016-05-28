@@ -17,6 +17,7 @@ using terminalDocuSign.DataTransferObjects;
 using terminalDocuSign.Services;
 using terminalDocuSign.Services.New_Api;
 using TerminalBase.Helpers;
+using TerminalBase.Infrastructure;
 using TerminalBase.Models;
 
 namespace terminalDocuSignTests.Activities
@@ -65,6 +66,7 @@ namespace terminalDocuSignTests.Activities
             var activity = ObjectFactory.GetInstance<Send_DocuSign_Envelope_v2>();
             var context = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload { CrateStorage = new CrateStorage()},
                 AuthorizationToken = FakeToken
             };
@@ -78,6 +80,7 @@ namespace terminalDocuSignTests.Activities
             var activity = ObjectFactory.GetInstance<Send_DocuSign_Envelope_v2>();
             var context = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload { CrateStorage = new CrateStorage() },
                 AuthorizationToken = FakeToken
             };
@@ -92,6 +95,7 @@ namespace terminalDocuSignTests.Activities
             var activity = ObjectFactory.GetInstance<Send_DocuSign_Envelope_v2>();
             var context = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload { CrateStorage = new CrateStorage() },
                 AuthorizationToken = FakeToken
             };
@@ -112,6 +116,7 @@ namespace terminalDocuSignTests.Activities
             var activity = ObjectFactory.GetInstance<Send_DocuSign_Envelope_v2>();
             var context = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload { CrateStorage = new CrateStorage() },
                 AuthorizationToken = FakeToken
             };
@@ -130,6 +135,7 @@ namespace terminalDocuSignTests.Activities
             var activity = ObjectFactory.GetInstance<Send_DocuSign_Envelope_v2>();
             var context = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload { CrateStorage = new CrateStorage() },
                 AuthorizationToken = FakeToken
             };
@@ -150,6 +156,7 @@ namespace terminalDocuSignTests.Activities
             var activity = ObjectFactory.GetInstance<Send_DocuSign_Envelope_v2>();
             var context = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload { CrateStorage = new CrateStorage() },
                 AuthorizationToken = FakeToken
             };

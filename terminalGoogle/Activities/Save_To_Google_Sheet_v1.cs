@@ -7,6 +7,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.Manifests.Helpers;
 using Fr8Data.States;
@@ -167,9 +168,10 @@ namespace terminalGoogle.Actions
             }
         }
 
-        public Save_To_Google_Sheet_v1()
+        public Save_To_Google_Sheet_v1(ICrateManager crateManager, IGoogleIntegration googleIntegration, IGoogleSheet googleSheet)
+            : base(crateManager, googleIntegration)
         {
-            _googleSheet = ObjectFactory.GetInstance<IGoogleSheet>();
+            _googleSheet = googleSheet;
         }
 
         private GoogleAuthDTO GetGoogleAuthToken()
@@ -177,12 +179,12 @@ namespace terminalGoogle.Actions
             return JsonConvert.DeserializeObject<GoogleAuthDTO>(AuthorizationToken.Token);
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             ActivityUI.ExistingSpreadsheetsList.ListItems = (await _googleSheet.GetSpreadsheets(GetGoogleAuthToken())).Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             //If different existing spreadsheet is selected then we have to load worksheet list for it
             if (ActivityUI.UseExistingSpreadsheetOption.Selected && !string.IsNullOrEmpty(ActivityUI.ExistingSpreadsheetsList.Value))
@@ -207,28 +209,26 @@ namespace terminalGoogle.Actions
             }
         }
 
-        protected override Task<bool> ValidateETA()
+        protected override Task Validate()
         {
             ValidationManager.ValidateCrateChooserNotEmpty(ActivityUI.UpstreamCrateChooser, "upstream crate is not selected");
-            var status = true;
+
             if ((ActivityUI.UseNewSpreadsheetOption.Selected && string.IsNullOrWhiteSpace(ActivityUI.NewSpreadsheetName.Value))
                 || (ActivityUI.UseExistingSpreadsheetOption.Selected && string.IsNullOrEmpty(ActivityUI.ExistingSpreadsheetsList.Value)))
             {
                 ValidationManager.SetError("Spreadsheet name is not specified", ActivityUI.SpreadsheetSelectionGroup);
-                status = false;
             }
 
             if ((ActivityUI.UseNewWorksheetOption.Selected && string.IsNullOrWhiteSpace(ActivityUI.NewWorksheetName.Value))
                 || (ActivityUI.UseExistingWorksheetOption.Selected && string.IsNullOrEmpty(ActivityUI.ExistingWorksheetsList.Value)))
             {
                 ValidationManager.SetError("Worksheet name is not specified", ActivityUI.WorksheetSelectionGroup);
-                status = false;
             }
 
-            return Task.FromResult(status);
+            return Task.FromResult(0);
         }
         
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             var crateToProcess = FindCrateToProcess();
 

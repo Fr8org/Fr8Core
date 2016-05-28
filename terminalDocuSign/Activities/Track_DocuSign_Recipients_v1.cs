@@ -10,10 +10,13 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Newtonsoft.Json;
 using terminalDocuSign.Services.MT;
+using terminalDocuSign.Services.New_Api;
+using TerminalBase.Infrastructure;
 using TerminalBase.Models;
 
 namespace terminalDocuSign.Activities
@@ -124,6 +127,11 @@ namespace terminalDocuSign.Activities
             }
         }
 
+        public Track_DocuSign_Recipients_v1(ICrateManager crateManager, IDocuSignManager docuSignManager)
+            : base(crateManager, docuSignManager)
+        {
+        }
+
         protected override async Task InitializeDS()
         {
             Storage.Clear();
@@ -161,7 +169,7 @@ namespace terminalDocuSign.Activities
             if (ActivityPayload.ChildrenActivities.Any())
             {
                 hasChildren = true;
-                await DeleteChildActivities(ActivityPayload);
+                ActivityPayload.ChildrenActivities.Clear();
             }
 
             var monitorDocusignAT = await GetActivityTemplate("terminalDocuSign", "Monitor_DocuSign_Envelope_Activity");
@@ -212,7 +220,7 @@ namespace terminalDocuSign.Activities
                 ControlHelper.SetControlValue(buildMessageActivity, "Body", MessageBody);
                 ControlHelper.SetControlValue(buildMessageActivity, "Name", "NotificationMessage");
 
-                buildMessageActivity = await HubCommunicator.ConfigureActivity(buildMessageActivity, CurrentUserId);
+                buildMessageActivity = await HubCommunicator.ConfigureActivity(buildMessageActivity);
             }
 
             if (!hasChildren)
@@ -220,20 +228,20 @@ namespace terminalDocuSign.Activities
                 var notifierAT = await GetActivityTemplate(Guid.Parse(howToBeNotifiedDdl.Value));
                 var notifierActivity = await AddAndConfigureChildActivity((Guid)ActivityPayload.ParentPlanNodeId, notifierAT, howToBeNotifiedDdl.selectedKey, howToBeNotifiedDdl.selectedKey, 3);
                 SetNotifierActivityBody(notifierActivity);
-                await HubCommunicator.ConfigureActivity(notifierActivity, CurrentUserId);
+                await HubCommunicator.ConfigureActivity(notifierActivity);
             }
 
             ControlHelper.SetControlValue(monitorDocuSignAction, "EnvelopeSent", "true");
             //let's make followup configuration for monitorDocuSignEventAction
             //followup call places EventSubscription crate in storage
-            var configureMonitorDocusignTask = HubCommunicator.ConfigureActivity(monitorDocuSignAction, CurrentUserId);
+            var configureMonitorDocusignTask = HubCommunicator.ConfigureActivity(monitorDocuSignAction);
 
 
             var durationControl = (Duration)ConfigurationControls.FindByName("TimePeriod");
             ControlHelper.SetControlValue(setDelayAction, "Delay_Duration", durationControl.Value);
             await SetQueryFr8WarehouseActivityFields(queryFr8WarehouseAction, specificRecipientOption.Controls[0].Value);
             //let's make a followup configuration to fill criteria fields
-            var configureQueryMTTask = HubCommunicator.ConfigureActivity(queryFr8WarehouseAction, CurrentUserId);
+            var configureQueryMTTask = HubCommunicator.ConfigureActivity(queryFr8WarehouseAction);
             var recipientEventStatus = (DropDownList)ConfigurationControls.FindByName("RecipientEvent");
             SetFilterUsingRunTimeActivityFields(filterAction, recipientEventStatus.Value);
 
@@ -415,7 +423,7 @@ namespace terminalDocuSign.Activities
 
         private async Task<Crate> PackAvailableHandlers()
         {
-            var templates = await HubCommunicator.GetActivityTemplates(CurrentUserId);
+            var templates = await HubCommunicator.GetActivityTemplates();
             var taggedTemplates = templates.Where(x => x.Tags != null && x.Tags.Contains("Notifier"));
 
             var availableHandlersCrate =
@@ -431,7 +439,7 @@ namespace terminalDocuSign.Activities
 
         protected override async Task RunDS()
         {
-            var configControls = (await HubCommunicator.GetCratesByDirection<StandardConfigurationControlsCM>(ActivityId, CrateDirection.Downstream, CurrentUserId)).SelectMany(c => c.Content.Controls);
+            var configControls = (await HubCommunicator.GetCratesByDirection<StandardConfigurationControlsCM>(ActivityId, CrateDirection.Downstream)).SelectMany(c => c.Content.Controls);
             var delayValue = (Duration)configControls.Single(c => c.Name == "Delay_Duration" && c.Type == ControlTypes.Duration);
             var runTimePayloadData = new List<FieldDTO>();
             var delayTimeString = delayValue.Days + " days, " + delayValue.Hours + " hours and " + delayValue.Minutes + " minutes";

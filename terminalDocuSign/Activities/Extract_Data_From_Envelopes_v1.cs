@@ -6,9 +6,12 @@ using Data.Entities;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Newtonsoft.Json;
+using terminalDocuSign.Services.New_Api;
+using TerminalBase.Infrastructure;
 
 namespace terminalDocuSign.Activities
 {
@@ -65,6 +68,11 @@ namespace terminalDocuSign.Activities
             }
         }
 
+        public Extract_Data_From_Envelopes_v1(ICrateManager crateManager, IDocuSignManager docuSignManager)
+            : base(crateManager, docuSignManager)
+        {
+        }
+
         protected override async Task InitializeDS()
         {
             var configurationCrate = PackControls(new ActivityUi());
@@ -75,7 +83,7 @@ namespace terminalDocuSign.Activities
 
         protected async Task<ActivityTemplateDTO> GetActivityTemplateByName(string activityTemplateName)
         {
-            var allActivityTemplates = _activityTemplateCache ?? (_activityTemplateCache = await HubCommunicator.GetActivityTemplates(CurrentUserId));
+            var allActivityTemplates = await HubCommunicator.GetActivityTemplates();
             var foundActivity = allActivityTemplates.FirstOrDefault(a => a.Name == activityTemplateName);
 
             if (foundActivity == null)
@@ -170,7 +178,7 @@ namespace terminalDocuSign.Activities
 
         private async Task<List<ListItem>> GetFinalActionListItems()
         {
-            var templates = await HubCommunicator.GetActivityTemplates(ActivityCategory.Forwarders, CurrentUserId, true);
+            var templates = await HubCommunicator.GetActivityTemplates(ActivityCategory.Forwarders, true);
             return templates.OrderBy(x => x.Label).Select(x => new ListItem { Key = x.Label, Value = x.Id.ToString() }).ToList();
         }
         #endregion

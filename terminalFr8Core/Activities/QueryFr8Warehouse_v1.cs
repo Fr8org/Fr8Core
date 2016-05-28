@@ -11,6 +11,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Services;
@@ -18,6 +19,7 @@ using Hub.Services.MT;
 using Newtonsoft.Json;
 using StructureMap;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 
 namespace terminalFr8Core.Activities
@@ -148,7 +150,7 @@ namespace terminalFr8Core.Activities
             {
                 return null;
             }
-            var upstreamQueryCrate = (await GetCratesByDirection<StandardQueryCM>(CrateDirection.Upstream))
+            var upstreamQueryCrate = (await HubCommunicator.GetCratesByDirection<StandardQueryCM>(ActivityId, CrateDirection.Upstream))
                 .FirstOrDefault(x => x.Label == upstreamQueryCrateLabel);
 
             return upstreamQueryCrate?.Content;
@@ -264,7 +266,7 @@ namespace terminalFr8Core.Activities
 
         private async Task<List<ListItem>> GetExtractUpstreamQueryList()
         {
-            var upstreamCrates = await GetCratesByDirection<StandardQueryCM>(CrateDirection.Upstream);
+            var upstreamCrates = await HubCommunicator.GetCratesByDirection<StandardQueryCM>(ActivityId, CrateDirection.Upstream);
             return upstreamCrates
                  .Select(x => new ListItem() { Key = x.Label, Value = x.Label })
                  .ToList();
@@ -272,7 +274,8 @@ namespace terminalFr8Core.Activities
 
         #endregion
 
-        public QueryFr8Warehouse_v1() : base(false)
+        public QueryFr8Warehouse_v1(ICrateManager crateManager)
+            : base(false, crateManager)
         {
         }
 

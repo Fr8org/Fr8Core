@@ -1,10 +1,9 @@
 ﻿using System;
-using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using TerminalBase.Helpers;
@@ -13,180 +12,11 @@ using TerminalBase.Services;
 
 namespace TerminalBase.BaseClasses
 {
-    public abstract class EnhancedTerminalActivity<T> : BaseTerminalActivity
+    public abstract class EnhancedTerminalActivity<T> : BaseTerminalActivityLegacy
        where T : StandardConfigurationControlsCM
     {
-
         /**********************************************************************************/
-
-        public T ActivityUI { get; private set; }
-        protected UiBuilder UiBuilder { get; private set; }
-
-        /**********************************************************************************/
-        // Functions
-        /**********************************************************************************/
-        protected EnhancedTerminalActivity(bool isAuthenticationRequired) : base(isAuthenticationRequired)
-        {
-            UiBuilder = new UiBuilder();
-        }
-
-        /**********************************************************************************/
-
-        public sealed override async Task Initialize()
-        {
-            ActivityUI = CrateActivityUI();
-            Storage.Clear();
-            Storage.Add(Crate.FromContent(ConfigurationControlsLabel, ActivityUI, AvailabilityType.Configuration));
-            await InitializeETA();
-            SyncConfControlsBack();
-        }
-
-        /**********************************************************************************/
-
-        public sealed override async Task FollowUp()
-        {
-            try
-            {
-                await ConfigureETA();
-            }
-            finally
-            { 
-                SyncConfControlsBack();
-            }
-        }
-
-        protected sealed override async Task<bool> Validate()
-        {
-            return await ValidateETA();
-        }
-
-        protected override async Task ValidateAndRun()
-        {
-            SyncConfControls();
-            await base.ValidateAndRun();
-        }
-
-        protected override async Task ValidateAndFollowUp()
-        {
-            SyncConfControls();
-            await base.ValidateAndFollowUp();
-        }
-
-        /**********************************************************************************/
-
-        protected sealed override async Task Activate()
-        {
-            SyncConfControls();
-            try
-            { 
-                await ActivateETA();
-            }
-            finally
-            {
-                SyncConfControlsBack();
-            }
-        }
-
-        /**********************************************************************************/
-
-        protected sealed override async Task Deactivate()
-        {
-            SyncConfControls();
-            try
-            {
-                await DeactivateETA();
-            }
-            finally
-            {
-                SyncConfControlsBack();
-            }
-        }
-
-
-        /**********************************************************************************/
-
-        public sealed override async Task Run()
-        {
-            await RunETA();
-        }
         
-        /**********************************************************************************/
-
-        protected T AssignNamesForUnnamedControls(T configurationControls)
-        {
-            int controlId = 0;
-            var controls = configurationControls.EnumerateControlsDefinitions();
-
-            foreach (var controlDefinition in controls)
-            {
-                if (string.IsNullOrWhiteSpace(controlDefinition.Name))
-                {
-                    controlDefinition.Name = controlDefinition.GetType().Name + controlId++;
-                }
-            }
-
-            return configurationControls;
-        }
-
-        protected override ValidationManager GetValidationManager()
-        {
-            var payload = ExecutionContext?.PayloadStorage;
-           return new EnhancedValidationManager<T>(null, this, payload);
-        }
-
-        /**********************************************************************************/
-
-        protected virtual T CrateActivityUI()
-        {
-            var uiBuilderConstructor = typeof(T).GetConstructor(new[] { typeof(UiBuilder) });
-
-            if (uiBuilderConstructor != null)
-            {
-                return AssignNamesForUnnamedControls((T)uiBuilderConstructor.Invoke(new object[] { UiBuilder }));
-            }
-
-            var defaultConstructor = typeof(T).GetConstructor(new Type[0]);
-
-            if (defaultConstructor == null)
-            {
-                throw new InvalidOperationException($"Unable to find default constructor or constructor accepting UiBuilder for type {typeof(T).FullName}");
-            }
-
-            return AssignNamesForUnnamedControls((T)defaultConstructor.Invoke(null));
-        }
-
-        protected abstract Task InitializeETA();
-        protected abstract Task ConfigureETA();
-        protected abstract Task RunETA();
-
-
-        /**********************************************************************************/
-
-
-
-        /**********************************************************************************/
-
-        protected virtual Task<bool> ValidateETA()
-        {
-            return Task.FromResult(true);
-        }
-
-        /**********************************************************************************/
-
-        protected virtual Task ActivateETA()
-        {
-            return Task.FromResult(0);
-        }
-
-        /**********************************************************************************/
-
-        protected virtual Task DeactivateETA()
-        {
-            return Task.FromResult(0);
-        }
-
-        /**********************************************************************************/
-
         private const string ConfigurationValuesCrateLabel = "Configuration Values";
         /// <summary>
         /// Get or sets value of configuration field with the given key stored in current activity storage
@@ -221,6 +51,111 @@ namespace TerminalBase.BaseClasses
             }
         }
 
+        public T ActivityUI { get; private set; }
+
+        protected UiBuilder UiBuilder { get; }
+
+        /**********************************************************************************/
+        // Functions
+        /**********************************************************************************/
+
+        protected EnhancedTerminalActivity(bool isAuthenticationRequired, ICrateManager crateManager) 
+            : base(isAuthenticationRequired, crateManager)
+        {
+            UiBuilder = new UiBuilder();
+        }
+
+        /**********************************************************************************/
+
+        protected override void InitializeInternalState()
+        {
+            base.InitializeInternalState();
+            SyncConfControls(false);
+        }
+
+        /**********************************************************************************/
+
+        protected override async Task<bool> BeforeConfigure(ConfigurationRequestType configurationRequestType)
+        {
+            if (configurationRequestType == ConfigurationRequestType.Initial)
+            {
+                Storage.Clear();
+                Storage.Add(Crate.FromContent(ConfigurationControlsLabel, ActivityUI, AvailabilityType.Configuration));
+            }
+
+            return await base.BeforeConfigure(configurationRequestType);
+        }
+
+        /**********************************************************************************/
+
+        protected override Task AfterConfigure(ConfigurationRequestType configurationRequestType, Exception ex)
+        {
+            SyncConfControlsBack();
+            return base.AfterConfigure(configurationRequestType, ex);
+        }
+
+        /**********************************************************************************/
+
+        protected override Task AfterActivate(Exception ex)
+        {
+            SyncConfControlsBack();
+            return base.AfterActivate(ex);
+        }
+
+        /**********************************************************************************/
+
+        protected override Task AfterDeactivate(Exception ex)
+        {
+            SyncConfControlsBack();
+            return base.AfterDeactivate(ex);
+        }
+        
+        /**********************************************************************************/
+
+        protected T AssignNamesForUnnamedControls(T configurationControls)
+        {
+            int controlId = 0;
+            var controls = configurationControls.EnumerateControlsDefinitions();
+
+            foreach (var controlDefinition in controls)
+            {
+                if (string.IsNullOrWhiteSpace(controlDefinition.Name))
+                {
+                    controlDefinition.Name = controlDefinition.GetType().Name + controlId++;
+                }
+            }
+
+            return configurationControls;
+        }
+
+        protected override ValidationManager CreateValidationManager()
+        {
+           return new EnhancedValidationManager<T>(this, IsRuntime ? Payload : null);
+        }
+
+        /**********************************************************************************/
+
+        protected virtual T CrateActivityUI()
+        {
+            var uiBuilderConstructor = typeof(T).GetConstructor(new[] { typeof(UiBuilder) });
+
+            if (uiBuilderConstructor != null)
+            {
+                return AssignNamesForUnnamedControls((T)uiBuilderConstructor.Invoke(new object[] { UiBuilder }));
+            }
+
+            var defaultConstructor = typeof(T).GetConstructor(new Type[0]);
+
+            if (defaultConstructor == null)
+            {
+                throw new InvalidOperationException($"Unable to find default constructor or constructor accepting UiBuilder for type {typeof(T).FullName}");
+            }
+
+            return AssignNamesForUnnamedControls((T)defaultConstructor.Invoke(null));
+        }
+        
+        /**********************************************************************************/
+
         private void CheckCurrentActivityStorageAvailability()
         {
             if (Storage == null)
@@ -235,19 +170,26 @@ namespace TerminalBase.BaseClasses
         // But when we deserialize activity's crate storage we get StandardConfigurationControlsCM. So we need a way to 'convert' StandardConfigurationControlsCM
         // from crate storage to ActivityUI.
         // SyncConfControls takes properties of controls in StandardConfigurationControlsCM from activity's storage and copies them into ActivityUi.
-        private void SyncConfControls()
+        private void SyncConfControls(bool throwException)
         {
-            if (ConfigurationControls == null)
+            var configurationControls = Storage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+            ActivityUI = CrateActivityUI();
+
+            if (configurationControls == null)
             {
-                throw new InvalidOperationException("Configuration controls crate is missing");
+                if (throwException)
+                {
+                    throw new InvalidOperationException("Configuration controls crate is missing");
+                }
+
+                return;
             }
 
-            ActivityUI = CrateActivityUI();
-            ActivityUI.SyncWith(ConfigurationControls);
-            
+            ActivityUI.SyncWith(configurationControls);
+
             if (ActivityUI.Controls != null)
             {
-                ActivityUI.RestoreDynamicControlsFrom(ConfigurationControls);
+                ActivityUI.RestoreDynamicControlsFrom(configurationControls);
             }
         }
 

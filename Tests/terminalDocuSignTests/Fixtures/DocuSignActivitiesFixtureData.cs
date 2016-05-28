@@ -3,6 +3,7 @@ using System.Threading.Tasks;
 using Data.Entities;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Moq;
 using Moq.Protected;
 using terminalDocuSign;
@@ -27,6 +28,13 @@ namespace terminalDocuSignTests.Fixtures
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
         protected override string ActivityUserFriendlyName { get; }
+
+
+        public BaseDocusignActivityMock(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+            : base(crateManager, docuSignManager)
+        {
+        }
+
         protected override Task RunDS()
         {
             return Task.FromResult(0);
@@ -45,42 +53,7 @@ namespace terminalDocuSignTests.Fixtures
 
     public static partial class DocuSignActivityFixtureData
     {
-        public static BaseDocusignActivityMock BaseDocuSignAcitvity()
-        {
-            return new BaseDocusignActivityMock();
-            /*
-            var result = new Mock<BaseDocusignActivityMock>();
-
-            result.Setup(x => x.NeedsAuthentication())
-                .Returns(false);
-
-            result.Setup(x => x.NeedsAuthentication())
-                .Returns(true);
-
-            return result.Object;*/
-        }
-
-        public static BaseDocusignActivityMock FailedBaseDocuSignActivity()
-        {
-            /*
-            var result = new Mock<BaseDocusignActivityMock>();
-            result.Setup(x => x.Validate())
-                .Returns(() =>
-                {
-                    ValidationManager.SetError("Error");
-                    return Task.FromResult(0);
-                });
-
-            result.Protected().Setup<Task>("Validate").Returns(() =>
-            {
-                result.Object.ValidationManager.SetError("Error");
-                return Task.FromResult(0);
-            });
-
-            return result.Object;*/
-            return new BaseDocusignActivityMock();
-        }
-
+       
         public static IDocuSignManager DocuSignManagerWithTemplates()
         {
             var result = new Mock<IDocuSignManager>();

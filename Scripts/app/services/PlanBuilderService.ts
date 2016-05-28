@@ -265,12 +265,12 @@ module dockyard.services {
     ]);
 
     app.factory('ActionTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActionService =>
-        <IActionService>$resource('/api/actiontemplates/', null,
+        <IActionService>$resource('/api/activity_templates/', null,
             {
                 'available': {
                     method: 'GET',
                     isArray: true,
-                    url: '/api/plannodes/getAvailableActivitiesWithTag',
+                    url: '/api/activity_templates?tag=:tag',
                     params: {
                         tag: '@tag'
                     }
@@ -364,11 +364,11 @@ module dockyard.services {
     ]);
 
     app.factory('ActivityTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActivityTemplateService =>
-        <IActivityTemplateService>$resource('/api/activityTemplates/:id', { id: '@id' },
+        <IActivityTemplateService>$resource('/api/activity_templates/:id', { id: '@id' },
             {
                 'getAvailableActivities': {
                     method: 'GET',
-                    url: '/api/plannodes/available/',
+                    url: '/api/activity_templates',
                     isArray: true
                 }
             })

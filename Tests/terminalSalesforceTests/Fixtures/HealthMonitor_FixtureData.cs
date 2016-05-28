@@ -38,7 +38,7 @@ namespace terminalSalesforceTests.Fixtures
             {
                 storage.Add(Crate.FromContent(string.Empty, new OperationalStateCM()));
             }
-            ObjectFactory.Container.GetInstance<Mock<IHubCommunicator>>().Setup(x => x.GetPayload(It.IsAny<Guid>(), It.IsAny<string>()))
+            ObjectFactory.Container.GetInstance<Mock<IHubCommunicator>>().Setup(x => x.GetPayload(It.IsAny<Guid>()))
                                .Returns(Task.FromResult(result));
         }
 

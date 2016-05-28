@@ -9,15 +9,6 @@ namespace terminalFr8Core.Controllers
     [RoutePrefix("terminals/terminalFr8Core")]
     public class EventController : ApiController
     {
-
-        private IEvent _event;
-        private BaseTerminalEvent _baseTerminalEvent;
-
-        public EventController()
-        {
-            _baseTerminalEvent = new BaseTerminalEvent();
-        }
-
         [HttpPost]
         [Route("events")]
         public async Task<IHttpActionResult> ProcessIncomingNotification()

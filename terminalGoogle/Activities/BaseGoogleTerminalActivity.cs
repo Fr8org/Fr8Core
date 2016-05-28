@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Newtonsoft.Json;
 using StructureMap;
@@ -18,13 +19,14 @@ namespace terminalGoogle.Actions
     {
         private readonly IGoogleIntegration _googleIntegration;
 
-        protected BaseGoogleTerminalActivity() : base(true)
+        protected BaseGoogleTerminalActivity(ICrateManager crateManager, IGoogleIntegration googleIntegration)
+            : base(true, crateManager)
         {
-            _googleIntegration = ObjectFactory.GetInstance<IGoogleIntegration>();
+            _googleIntegration = googleIntegration;
 
         }
 
-        protected override bool IsTokenInvalidation(Exception ex)
+        protected override bool IsInvalidTokenException(Exception ex)
         {
             return GoogleAuthHelper.IsTokenInvalidation(ex);
         }
@@ -62,7 +64,7 @@ namespace terminalGoogle.Actions
                         Token = JsonConvert.SerializeObject(newToken)
                     };
                     AuthorizationToken.Token = tokenDTO.Token;
-                    HubCommunicator.RenewToken(tokenDTO, CurrentUserId);
+                    HubCommunicator.RenewToken(tokenDTO);
                     return false;
                 }
                 catch (Exception exception)

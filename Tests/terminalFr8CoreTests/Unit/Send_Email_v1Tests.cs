@@ -45,8 +45,8 @@ namespace terminalTests.Unit
             var userDTO = new UserDTO { FirstName = "First Name", LastName = "Last Name" };
 
             var hubCommunicatorMock = new Mock<IHubCommunicator>();
-            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<Guid>(), It.IsAny<string>())).Returns(Task.FromResult(payload));
-            hubCommunicatorMock.Setup(h => h.GetCurrentUser(It.IsAny<string>())).Returns(Task.FromResult(userDTO));
+            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<Guid>())).Returns(Task.FromResult(payload));
+            hubCommunicatorMock.Setup(h => h.GetCurrentUser()).Returns(Task.FromResult(userDTO));
             ObjectFactory.Container.Inject(hubCommunicatorMock);
             ObjectFactory.Container.Inject(hubCommunicatorMock.Object);
 
@@ -59,11 +59,12 @@ namespace terminalTests.Unit
         public async Task Initialize_CheckConfigControls()
         {
             //Arrage
-            _sendEmailActivity = new Send_Email_v1();
+            _sendEmailActivity = New<Send_Email_v1>();
 
             //Act
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage()
@@ -81,9 +82,10 @@ namespace terminalTests.Unit
         public async Task FollowUp_WithControlValues_CheckControlsValuesRetained()
         {
             //Arrage
-            _sendEmailActivity = new Send_Email_v1();
+            _sendEmailActivity = New<Send_Email_v1>();
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage()
@@ -110,9 +112,10 @@ namespace terminalTests.Unit
         public async Task Run_CheckSendCalledOnlyOnce()
         {
             //Arrage
-            _sendEmailActivity = new Send_Email_v1();
+            _sendEmailActivity = New<Send_Email_v1>();
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage()

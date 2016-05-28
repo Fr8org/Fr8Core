@@ -7,6 +7,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using StructureMap;
@@ -81,24 +82,20 @@ namespace terminalDocuSign.Actions
         }
 
         private const string UserFieldsAndRolesCrateLabel = "Fields and Roles";
-
-        //TODO: remove this constructor after introducing constructor injection
-        public Send_DocuSign_Envelope_v2() : this(ObjectFactory.GetInstance<IDocuSignManager>())
-        {
-        }
-
-        public Send_DocuSign_Envelope_v2(IDocuSignManager docuSignManager) : base(docuSignManager)
+        
+        public Send_DocuSign_Envelope_v2(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+            : base(crateManager, docuSignManager)
         {
             DisableValidationOnFollowup = true;
         }
 
-        protected override Task InitializeETA()
+        public override Task Initialize()
         {
             LoadDocuSignTemplates();
             return Task.FromResult(0);
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             //Load DocuSign template again in case there are new templates available
             LoadDocuSignTemplates();
@@ -172,22 +169,22 @@ namespace terminalDocuSign.Actions
             Storage.ReplaceByLabel(Crate.FromContent(UserFieldsAndRolesCrateLabel, new FieldDescriptionsCM(userDefinedFields.Concat(roles)), AvailabilityType.Configuration));
         }
 
-        protected override Task<bool> ValidateETA()
+        protected override Task Validate()
         {
-            var result = true;
             if (string.IsNullOrEmpty(SelectedTemplateId))
             {
                 ValidationManager.SetError("Template was not selected", ActivityUI.TemplateSelector);
-                result = false;
             }
+
             foreach (var roleControl in ActivityUI.RolesFields.Where(x => x.InitialLabel.Contains(DocuSignConstants.DocuSignRoleEmail)))
             {
                 ValidationManager.ValidateEmail(roleControl);
             }
-            return Task.FromResult(result);
+
+            return Task.FromResult(0);
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             var userDefinedFields = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == UserFieldsAndRolesCrateLabel);
             if (userDefinedFields == null)
