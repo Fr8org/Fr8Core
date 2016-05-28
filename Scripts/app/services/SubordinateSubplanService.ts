@@ -3,7 +3,7 @@
 module dockyard.services {
 
     import pwd = dockyard.directives.paneWorkflowDesigner;
-    
+
     // --------------------------------------------------------------------------------
     // Interface for SubordinateSubplanService.
     // --------------------------------------------------------------------------------
@@ -70,7 +70,7 @@ module dockyard.services {
             parentPlan: model.PlanDTO,
             parentActivity: model.ActivityDTO,
             existingSubPlanId: string,
-            activityTemplate: model.ActivityTemplate) : ng.IPromise<model.SubordinateSubplan> {
+            activityTemplate: model.ActivityTemplate): ng.IPromise<model.SubordinateSubplan> {
 
             // Call Hub API to create subplan.
             var createSubPlan = (plan: model.PlanDTO, activity: model.ActivityDTO,
@@ -124,7 +124,7 @@ module dockyard.services {
             var displayConfigureActivityModal = (
                 plan: model.PlanDTO,
                 activity: model.ActivityDTO
-            ) : ng.IPromise<any> => {
+            ): ng.IPromise<any> => {
                 // We have to use PlanBuilder's scope in order to avoid parent activity reconfiguration.
                 // Search for PlanBuilder's scope up in the scope hierarchy.
                 var pbScope = <ng.IScope>$scope;
@@ -198,7 +198,7 @@ module dockyard.services {
         }
     }
 
-    
+
     // --------------------------------------------------------------------------------
     // SelectActivityController controller.
     // Controller for handling SelectActivity modal.
@@ -211,7 +211,7 @@ module dockyard.services {
             var _reloadData = () => {
                 $scope.webServiceActivities = [];
 
-                $http.post('/api/webservices/activities', null)
+                $http.get('/api/webservices?id=0')
                     .then((res) => {
                         var webServiceActivities = <Array<model.WebServiceActionSetDTO>>res.data;
                         angular.forEach(webServiceActivities, (webServiceActivity) => {
@@ -250,7 +250,7 @@ module dockyard.services {
         }
     ];
 
-    
+
     // --------------------------------------------------------------------------------
     // ISelectActivityControllerScope interface.
     // Scope for SelectActivityController controller.

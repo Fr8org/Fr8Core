@@ -25,11 +25,11 @@ namespace HubWeb.Controllers
         }
 
         [HttpGet]
-        public IHttpActionResult Get(int id = 0)
+        public IHttpActionResult Get(int id = -1)
         {
-            if (id > 0)
+            if (id >= 0)
             {
-                var category = (ActivityCategory) id;
+                var category = (ActivityCategory)id;
                 List<WebServiceActivitySetDTO> webServiceList;
 
                 using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -43,7 +43,7 @@ namespace HubWeb.Controllers
 
                     var activityTemplate = _activityTemplate.GetQuery()
                         .Where(x => x.ActivityTemplateState == ActivityTemplateState.Active)
-                        .Where(x => category == x.Category)
+                        .Where(x => id == 0 || category == x.Category)
                         .Where(x => x.Tags == null || !x.Tags.Contains(Tags.Internal));
 
                     if (!fr8Account.IsCurrentUserInAdminRole())
