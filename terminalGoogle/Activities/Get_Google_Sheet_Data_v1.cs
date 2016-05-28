@@ -1,25 +1,38 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using Newtonsoft.Json;
 using StructureMap;
-using terminalGoogle.DataTransferObjects;
+using terminalGoogle.Actions;
 using terminalGoogle.Interfaces;
 using terminalUtilities;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
-namespace terminalGoogle.Actions
+namespace terminalGoogle.Activities
 {
     public class Get_Google_Sheet_Data_v1 : BaseGoogleTerminalActivity<Get_Google_Sheet_Data_v1.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Get_Google_Sheet_Data",
+            Label = "Get Google Sheet Data",
+            Version = "1",
+            Category = ActivityCategory.Receivers,
+            Terminal = TerminalData.TerminalDTO,
+            NeedsAuthentication = true,
+            MinPaneWidth = 300,
+            WebService = TerminalData.WebServiceDTO,
+            Tags = "Table Data Generator"
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
             public DropDownList SpreadsheetList { get; set; }
@@ -79,9 +92,10 @@ namespace terminalGoogle.Actions
         private readonly IGoogleSheet _googleApi;
         private readonly IGoogleIntegration _googleIntegration;
 
-        public Get_Google_Sheet_Data_v1()
+        public Get_Google_Sheet_Data_v1(ICrateManager crateManager, IGoogleIntegration googleIntegration, IGoogleSheet googleSheet)
+            :base (crateManager, googleIntegration)
         {
-            _googleApi = ObjectFactory.GetInstance<IGoogleSheet>();
+            _googleApi = googleSheet;
         }
         //This property is used to store and retrieve user-selected spreadsheet and worksheet between configuration responses 
         //to avoid extra fetch from Google
@@ -89,7 +103,7 @@ namespace terminalGoogle.Actions
         {
             get
             {
-                var storedValues = CurrentActivityStorage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == ConfigurationCrateLabel)?.Content;
+                var storedValues = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == ConfigurationCrateLabel)?.Content;
                 return storedValues?.Fields.First();
 
             }
@@ -97,90 +111,86 @@ namespace terminalGoogle.Actions
             {
                 if (value == null)
                 {
-                    CurrentActivityStorage.RemoveByLabel(ConfigurationCrateLabel);
+                    Storage.RemoveByLabel(ConfigurationCrateLabel);
                     return;
                 }
                 value.Availability = AvailabilityType.Configuration;
                 var newValues = Crate.FromContent(ConfigurationCrateLabel, new FieldDescriptionsCM(value), AvailabilityType.Configuration);
-                CurrentActivityStorage.ReplaceByLabel(newValues);
+                Storage.ReplaceByLabel(newValues);
             }
         }
 
-        private GoogleAuthDTO GetGoogleAuthToken(AuthorizationTokenDO authTokenDO = null)
-        {
-            return JsonConvert.DeserializeObject<GoogleAuthDTO>((authTokenDO ?? AuthorizationToken).Token);
-        }
 
-        protected override async Task Initialize(CrateSignaller crateSignaller)
+
+        public override async Task Initialize()
         {
             var spreadsheets = await _googleApi.GetSpreadsheets(GetGoogleAuthToken());
-            ConfigurationControls.SpreadsheetList.ListItems = spreadsheets.Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
-
-            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel, true);
+            ActivityUI.SpreadsheetList.ListItems = spreadsheets.Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel, true);
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
+        public override async Task FollowUp()
         {
             List<Crate> crates = new List<Crate>();
             Crate fieldsCrate = null;
             var googleAuth = GetGoogleAuthToken();
             var spreadsheets = await _googleApi.GetSpreadsheets(googleAuth);
-            ConfigurationControls.SpreadsheetList.ListItems = spreadsheets
+            ActivityUI.SpreadsheetList.ListItems = spreadsheets
                 .Select(x => new ListItem { Key = x.Value, Value = x.Key })
                 .ToList();
 
-            var selectedSpreadsheet = ConfigurationControls.SpreadsheetList.selectedKey;
+            var selectedSpreadsheet = ActivityUI.SpreadsheetList.selectedKey;
             if (!string.IsNullOrEmpty(selectedSpreadsheet))
             {
-                if (ConfigurationControls.SpreadsheetList.ListItems.All(x => x.Key != selectedSpreadsheet))
+                if (ActivityUI.SpreadsheetList.ListItems.All(x => x.Key != selectedSpreadsheet))
                 {
-                    ConfigurationControls.SpreadsheetList.selectedKey = null;
-                    ConfigurationControls.SpreadsheetList.Value = null;
+                    ActivityUI.SpreadsheetList.selectedKey = null;
+                    ActivityUI.SpreadsheetList.Value = null;
                 }
             }
 
-            CurrentActivityStorage.RemoveByLabel(ColumnHeadersCrateLabel);
+            Storage.RemoveByLabel(ColumnHeadersCrateLabel);
             //If spreadsheet selection is cleared we hide worksheet DDLB
-            if (string.IsNullOrEmpty(ConfigurationControls.SpreadsheetList.selectedKey))
+            if (string.IsNullOrEmpty(ActivityUI.SpreadsheetList.selectedKey))
             {
-                ConfigurationControls.HideWorksheetList();
+                ActivityUI.HideWorksheetList();
                 SelectedSpreadsheet = null;
             }
             else
             {
                 var previousValues = SelectedSpreadsheet;
                 //Spreadsheet was changed - populate the list of worksheets and select first one
-                if (previousValues == null || previousValues.Key != ConfigurationControls.SpreadsheetList.Value)
+                if (previousValues == null || previousValues.Key != ActivityUI.SpreadsheetList.Value)
                 {
-                    var worksheets = await _googleApi.GetWorksheets(ConfigurationControls.SpreadsheetList.Value, googleAuth);
+                    var worksheets = await _googleApi.GetWorksheets(ActivityUI.SpreadsheetList.Value, googleAuth);
                     //We show worksheet list only if there is more than one worksheet
                     if (worksheets.Count > 1)
                     {
-                        ConfigurationControls.ShowWorksheetList();
-                        ConfigurationControls.WorksheetList.ListItems = worksheets.Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
-                        var firstWorksheet = ConfigurationControls.WorksheetList.ListItems.First();
-                        ConfigurationControls.WorksheetList.SelectByKey(firstWorksheet.Key);
+                        ActivityUI.ShowWorksheetList();
+                        ActivityUI.WorksheetList.ListItems = worksheets.Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
+                        var firstWorksheet = ActivityUI.WorksheetList.ListItems.First();
+                        ActivityUI.WorksheetList.SelectByKey(firstWorksheet.Key);
                     }
                     else
                     {
-                        ConfigurationControls.HideWorksheetList();
+                        ActivityUI.HideWorksheetList();
                     }
                 }
                 //Retrieving worksheet headers to make them avaialble for downstream activities
-                var selectedSpreasheetWorksheet = new FieldDTO(ConfigurationControls.SpreadsheetList.Value,
-                                                               ConfigurationControls.WorksheetList.IsHidden
+                var selectedSpreasheetWorksheet = new FieldDTO(ActivityUI.SpreadsheetList.Value,
+                                                               ActivityUI.WorksheetList.IsHidden
                                                                    ? string.Empty
-                                                                   : ConfigurationControls.WorksheetList.Value);
+                                                                   : ActivityUI.WorksheetList.Value);
                 var columnHeaders = await _googleApi.GetWorksheetHeaders(selectedSpreasheetWorksheet.Key, selectedSpreasheetWorksheet.Value, googleAuth);
                 var columnHeadersCrate = Crate.FromContent(ColumnHeadersCrateLabel,
                                                            new FieldDescriptionsCM(columnHeaders.Select(x => new FieldDTO(x.Key, x.Key, AvailabilityType.Always) { SourceCrateLabel = RunTimeCrateLabel})),
                                                            AvailabilityType.Always);
-                CurrentActivityStorage.ReplaceByLabel(columnHeadersCrate);
+                Storage.ReplaceByLabel(columnHeadersCrate);
                 SelectedSpreadsheet = selectedSpreasheetWorksheet;
 
                 var table = await GetSelectedSpreadSheet();
                 var hasHeaderRow = TryAddHeaderRow(table);
-                CurrentActivityStorage.ReplaceByLabel(Crate.FromContent(RunTimeCrateLabel,new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
+                Storage.ReplaceByLabel(Crate.FromContent(RunTimeCrateLabel,new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
 
                 if (table?.Count() > 0)
                 {
@@ -189,26 +199,26 @@ namespace terminalGoogle.Actions
 
                 if (fieldsCrate != null)
                 {
-                    CurrentActivityStorage.ReplaceByLabel(fieldsCrate);
+                    Storage.ReplaceByLabel(fieldsCrate);
                 }
                 else
                 {
-                    CurrentActivityStorage.RemoveByLabel(TabularUtilities.ExtractedFieldsCrateLabel);
+                    Storage.RemoveByLabel(TabularUtilities.ExtractedFieldsCrateLabel);
                 }
             }
-            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel, true);
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel, true);
         }
 
         private async Task<List<TableRowDTO>> GetSelectedSpreadSheet()
         {
-            var selectedSpreadsheet = ConfigurationControls.SpreadsheetList.Value;
+            var selectedSpreadsheet = ActivityUI.SpreadsheetList.Value;
             if (string.IsNullOrEmpty(selectedSpreadsheet))
             {
                 return new List<TableRowDTO>();
             }
-            var selectedWorksheet = ConfigurationControls.WorksheetList == null
+            var selectedWorksheet = ActivityUI.WorksheetList == null
                 ? string.Empty
-                : ConfigurationControls.WorksheetList.Value;
+                : ActivityUI.WorksheetList.Value;
             return (await _googleApi.GetData(selectedSpreadsheet, selectedWorksheet, GetGoogleAuthToken())).ToList();
         }
 
@@ -230,22 +240,23 @@ namespace terminalGoogle.Actions
             return true;
         }
 
-        protected override async Task RunCurrentActivity()
+        public override async Task Run()
         {
-            if (string.IsNullOrEmpty(ConfigurationControls.SpreadsheetList.Value))
+            if (string.IsNullOrEmpty(ActivityUI.SpreadsheetList.Value))
             {
-                throw new ActivityExecutionException("Spreadsheet is not selected",
+                RaiseError("Spreadsheet is not selected",
                     ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                return;
             }
            
             var table = await GetSelectedSpreadSheet();
             var hasHeaderRow = TryAddHeaderRow(table);
-            CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
+            Payload.Add(Crate.FromContent(RunTimeCrateLabel, new StandardTableDataCM { Table = table, FirstRowHeaders = hasHeaderRow }));
 
             var fieldsCrate = TabularUtilities.PrepareFieldsForOneRowTable(hasHeaderRow, true, table, null); // assumes that hasHeaderRow is always true
             if (fieldsCrate != null)
             {
-                CurrentPayloadStorage.ReplaceByLabel(fieldsCrate);
+                Payload.ReplaceByLabel(fieldsCrate);
             }
         }
     }

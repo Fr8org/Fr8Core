@@ -22,7 +22,9 @@
             <div class="top-menu">
                 <ul class="nav navbar-nav pull-right">
                     <!-- BEGIN USER LOGIN DROPDOWN -->
-                    @using Data.States                @using HubWeb.Infrastructure                @using Microsoft.AspNet.Identity
+                    @using Data.States
+@using HubWeb.Infrastructure_HubWeb
+                    @using Microsoft.AspNet.Identity
                     @if (Request.IsAuthenticated) {
                         <li class="dropdown dropdown-user dropdown-dark">
                             <a href="javascript:;" class="dropdown-toggle" dropdown-menu-hover data-toggle="dropdown" data-close-others="true">

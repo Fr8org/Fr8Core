@@ -19,16 +19,17 @@ using HubWeb.ViewModels;
 using Newtonsoft.Json;
 using Hub.Infrastructure;
 using Hub.Managers;
-using HubWeb.Infrastructure;
 using Utilities.Interfaces;
 using Data.Infrastructure;
 using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.DataTransferObjects.Helpers;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Utilities;
+using HubWeb.Infrastructure_HubWeb;
 
 namespace HubWeb.Controllers
 {
@@ -82,10 +83,10 @@ namespace HubWeb.Controllers
                     throw new ArgumentException($"actionTemplate (solution) name {solutionName} is not found in the database.");
                 }
                 var result = await _activity.CreateAndConfigure(
-                    uow,
-                    userId,
-                    activityTemplate.Id,
-                    name: activityTemplate.Label,
+                    uow, 
+                    userId, 
+                    activityTemplate.Id, 
+                    name: activityTemplate.Label, 
                     createPlan: true);
                 return Ok(PlanMappingHelper.MapPlanToDto(uow, (PlanDO)result));
             }
@@ -278,13 +279,13 @@ namespace HubWeb.Controllers
         {
             return Ok("This is no longer used due to V2 Event Handling mechanism changes.");
         }
-
+        
         [HttpPost]
         [Fr8ApiAuthorize]
         public async Task<IHttpActionResult> Deactivate(Guid planId)
         {
             await _plan.Deactivate(planId);
-
+           
             return Ok();
         }
 
@@ -333,7 +334,7 @@ namespace HubWeb.Controllers
                         User.Identity.Name);
                     using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
                     {
-                        var planDO = _plan.GetFullPlan(uow, planId);
+                        var planDO = _plan.GetFullPlan(uow, planId); 
                         var currentPlanType = _plan.IsMonitoringPlan(uow, planDO) ? PlanType.Monitoring.ToString() : PlanType.RunOnce.ToString();
                         return BadRequest(currentPlanType);
                     }
@@ -428,7 +429,7 @@ namespace HubWeb.Controllers
                     ValidationErrors = activationResults.ValidationErrors
                 });
             }
-
+            
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
                 ContainerDO container;
@@ -445,7 +446,7 @@ namespace HubWeb.Controllers
                         // that's bad. Reset containerId to run plan with new container
                         containerId = null;
                     }
-                }
+                } 
 
                 PlanType? currentPlanType = null;
 

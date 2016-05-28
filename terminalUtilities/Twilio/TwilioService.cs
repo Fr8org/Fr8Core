@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using Hub.ExternalServices;
 using Twilio;
 using Utilities.Configuration.Azure;
 
@@ -20,7 +19,7 @@ namespace terminalUtilities.Twilio
 
         private readonly String _twilioFromNumber;
         private readonly TwilioRestClient _internalClient;
-        private readonly ServiceManager<TwilioService> _serviceManager;
+        //private readonly ServiceManager<TwilioService> _serviceManager;
 
         /**********************************************************************************/
         // Functions
@@ -43,7 +42,7 @@ namespace terminalUtilities.Twilio
                 throw new ArgumentNullException(FromNumberWebConfigName, @"Value must be set in web.config");
 
 
-            _serviceManager = new ServiceManager<TwilioService>("Twilio Service", "SMS");
+            //_serviceManager = new ServiceManager<TwilioService>("Twilio Service", "SMS");
             _internalClient = new TwilioRestClient(accountSid, accountAuthKey);
         }
 
@@ -86,17 +85,17 @@ namespace terminalUtilities.Twilio
 
         public Message SendMessage(string from, string to, string body)
         {
-            _serviceManager.LogEvent("Sending an sms...");
+            //_serviceManager.LogEvent("Sending an sms...");
             
             try
             {
                 var message = _internalClient.SendMessage(from, to, body);
-                _serviceManager.LogSucessful("Sms sent.");
+                //_serviceManager.LogSucessful("Sms sent.");
                 return message;
             }
             catch (Exception ex)
             {
-                _serviceManager.LogFail(ex, "Failed to send an sms.");
+                //_serviceManager.LogFail(ex, "Failed to send an sms.");
                 throw new Exception(ex.Message);
             }
         }

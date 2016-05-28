@@ -117,16 +117,16 @@ namespace terminalDocuSignTests.Integration
 
                 var tokenGuid = Guid.Parse(token["authTokenId"].Value<string>());
 
-                var applyToken = new ManageAuthToken_Apply()
+                var applyToken = new AuthenticationTokenGrantDTO()
                 {
                     ActivityId = solution.Id,
                     AuthTokenId = tokenGuid,
                     IsMain = true
                 };
 
-                await HttpPostAsync<ManageAuthToken_Apply[], string>(
+                await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(
                     _baseUrl + "ManageAuthToken/apply",
-                    new ManageAuthToken_Apply[]
+                    new AuthenticationTokenGrantDTO[]
                     {
                         applyToken
                     }

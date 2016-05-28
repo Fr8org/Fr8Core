@@ -1,11 +1,10 @@
-﻿using StructureMap;
-using Hub.Interfaces;
-using Hub.Services;
-using Hub.StructureMap;
-using Hub.Managers;
+﻿using Fr8Data.Managers;
+using Fr8Infrastructure.StructureMap;
+using StructureMap;
 using terminalAtlassian.Services;
 using terminalAtlassian.Interfaces;
 using TerminalBase.Infrastructure;
+using TerminalBase.Services;
 
 namespace terminalAtlassian
 {
@@ -34,10 +33,7 @@ namespace terminalAtlassian
         {
             public LiveMode()
             {
-                For<IActivity>().Use<Hub.Services.Activity>().Singleton();
-                For<ITerminal>().Use<Terminal>().Singleton();
                 For<ICrateManager>().Use<CrateManager>();
-                For<IPlanNode>().Use<PlanNode>();
                 For<IAtlassianService>().Use<AtlassianService>();
                 For<IHubCommunicator>().Use<DefaultHubCommunicator>();
             }

@@ -1,30 +1,23 @@
 ﻿using System;
-using System.Threading.Tasks;
-using Data.Entities;
-using Data.Interfaces.DataTransferObjects;
-using Data.Interfaces.Manifests;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
-using Newtonsoft.Json;
 using terminalQuickBooks.Infrastructure;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalQuickBooks.Actions
 {
     public abstract class BaseQuickbooksTerminalActivity<T> : EnhancedTerminalActivity<T>
         where T : StandardConfigurationControlsCM
     {
-        public BaseQuickbooksTerminalActivity() : base(true)
+        protected BaseQuickbooksTerminalActivity(ICrateManager crateManager)
+            : base(true, crateManager)
         {
         }
 
-        protected override bool IsTokenInvalidation(Exception ex)
+        protected override bool IsInvalidTokenException(Exception ex)
         {
             return ex is TerminalQuickbooksTokenExpiredException;
-        }
-
-        public AuthorizationTokenDO GetQuickbooksAuthToken()
-        {
-            return AuthorizationToken;
         }
     }
 }

@@ -4,9 +4,9 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using HealthMonitor.Utility;
-using Hub.Managers;
 using NUnit.Framework;
 using terminalSlackTests.Fixtures;
+using Fr8Data.Managers;
 
 namespace terminalSlackTests.Integration
 {

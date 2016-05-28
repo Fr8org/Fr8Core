@@ -1,18 +1,18 @@
 ﻿using System.Linq;
 using System.Threading.Tasks;
+using Fr8Data.Crates;
 using HealthMonitor.Utility;
-using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
 using terminalSalesforceTests.Fixtures;
 using terminalSalesforce.Actions;
 using terminalSalesforce.Services;
 using terminalSalesforce.Infrastructure;
-using Data.Entities;
-using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using TerminalBase.Infrastructure;
+using Fr8Infrastructure.Communication;
+using Fr8Data.Managers;
+using TerminalBase.Helpers;
+using TerminalBase.Models;
 
 namespace terminalSalesforceTests.Intergration
 {
@@ -39,10 +39,7 @@ namespace terminalSalesforceTests.Intergration
         }
 
         [Test, Category("intergration.terminalSalesforce")]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException)
-        )]
-        public async Task Post_To_Chatter_Initial_Configuration_Without_AuthToken_Exception_Thrown()
+        public async Task Post_To_Chatter_Initial_Configuration_Without_AuthToken_Should_Fail()
         {
             //Arrange
             string terminalConfigureUrl = GetTerminalConfigureUrl();
@@ -53,7 +50,11 @@ namespace terminalSalesforceTests.Intergration
 
             //Act
             //perform post request to terminal and return the result
-            await HttpPostAsync<Fr8DataDTO, ActivityDTO>(terminalConfigureUrl, dataDTO);
+            var response = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(terminalConfigureUrl, dataDTO);
+            Assert.NotNull(response);
+            Assert.NotNull(response.CrateStorage);
+            Assert.NotNull(response.CrateStorage.Crates);
+            Assert.True(response.CrateStorage.Crates.Any(x => x.ManifestType == "Standard Authentication"));
         }
 
         [Test, Category("intergration.terminalSalesforce"), Ignore]
@@ -66,7 +67,7 @@ namespace terminalSalesforceTests.Intergration
             var initialConfigActionDto = await PerformInitialConfiguration();
             var dataDTO = new Fr8DataDTO { ActivityDTO = initialConfigActionDto };
             AddOperationalStateCrate(dataDTO, new OperationalStateCM());
-
+        
             //Act
             var responseOperationalState = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(GetTerminalRunUrl(), dataDTO);
         }
@@ -91,9 +92,9 @@ namespace terminalSalesforceTests.Intergration
                                          .SingleOrDefault();
             Assert.IsNotNull(newFeedIdCrate, "Feed is not created");
             Assert.IsTrue(await new SalesforceManager().Delete(SalesforceObjectType.FeedItem, 
-                newFeedIdCrate.Content.PayloadObjects[0].PayloadObject[0].Value, new AuthorizationTokenDO { Token = authToken.Token, AdditionalAttributes = authToken.AdditionalAttributes }), "Test feed created is not deleted");
+                newFeedIdCrate.Content.PayloadObjects[0].PayloadObject[0].Value, new AuthorizationToken { Token = authToken.Token, AdditionalAttributes = authToken.AdditionalAttributes }), "Test feed created is not deleted");
         }
-
+        
         private async Task<ActivityDTO> PerformInitialConfiguration()
         {
             //get the terminal configure URL
@@ -104,7 +105,9 @@ namespace terminalSalesforceTests.Intergration
 
             //perform post request to terminal and return the result
             var resultActionDto = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(terminalConfigureUrl, requestActionDTO);
-            resultActionDto.UpdateControls<Post_To_Chatter_v1.ActivityUi>(x =>
+            using (var crateStorage = Crate.GetUpdatableStorage(resultActionDto))
+            {
+                crateStorage.UpdateControls<Post_To_Chatter_v1.ActivityUi>(x =>
             {
                 x.UseUserOrGroupOption.Selected = true;
                 var selectedUser = x.UserOrGroupSelector.ListItems.First(y => y.Key == "Fr8 Admin");
@@ -113,6 +116,7 @@ namespace terminalSalesforceTests.Intergration
                 x.FeedTextSource.ValueSource = "specific";
                 x.FeedTextSource.TextValue = "IntegrationTestFeed";
             });
+            }
             return resultActionDto;
         }
     }

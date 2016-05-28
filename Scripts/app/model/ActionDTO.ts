@@ -5,6 +5,7 @@
         id: string;
         label: string;
         name: string;
+        authTokenId: string;
         crateStorage: model.CrateStorage;
         configurationControls: model.ControlsList;
         activityTemplate: ActivityTemplate;

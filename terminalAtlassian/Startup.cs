@@ -11,6 +11,8 @@ using TerminalBase.BaseClasses;
 using System.Web.Http;
 using TerminalBase.Infrastructure;
 using System.Web.Http.Dispatcher;
+using terminalAtlassian.Actions;
+using TerminalBase.Services;
 
 [assembly: OwinStartup(typeof(terminalAtlassian.Startup))]
 
@@ -35,6 +37,12 @@ namespace terminalAtlassian
             {
                 StartHosting("terminalAtlassian");
             }
+        }
+
+        protected override void RegisterActivities()
+        {
+            ActivityStore.RegisterActivity<Get_Jira_Issue_v1>(Get_Jira_Issue_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Save_Jira_Issue_v1>(Save_Jira_Issue_v1.ActivityTemplateDTO);
         }
 
         public override ICollection<Type> GetControllerTypes(IAssembliesResolver assembliesResolver)

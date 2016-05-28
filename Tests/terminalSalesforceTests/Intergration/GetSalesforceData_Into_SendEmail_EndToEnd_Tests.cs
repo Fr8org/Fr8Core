@@ -4,7 +4,6 @@ using NUnit.Framework;
 using System.Threading.Tasks;
 using System.Linq;
 using System.Collections.Generic;
-using Hub.Managers;
 using Newtonsoft.Json;
 using System.Diagnostics;
 using terminalSalesforce.Actions;
@@ -13,6 +12,7 @@ using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
+using Fr8Data.Managers;
 
 namespace terminalSalesforceTests.Intergration
 {
@@ -96,7 +96,7 @@ namespace terminalSalesforceTests.Intergration
         private async Task<Guid> CreatePlan_GetSalesforceDataIntoSendEmail(AuthorizationTokenDO authToken)
         {
             //get required activity templates
-            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "plannodes/available");
+            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "activity_templates");
             var getData = activityTemplates.Single(at => at.Name.Equals("Receivers")).Activities.Single(a => a.Name.Equals("Get_Data"));
             var sendEmail = activityTemplates.Single(at => at.Name.Equals("Forwarders")).Activities.Single(a => a.Name.Equals("SendEmailViaSendGrid"));
             Assert.IsNotNull(getData, "Get Salesforce Data activity is not available");

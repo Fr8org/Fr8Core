@@ -1,10 +1,10 @@
-﻿using Data.Entities;
-using Dropbox.Api;
+﻿using Dropbox.Api;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using TerminalBase.Models;
 using terminalDropbox.Interfaces;
 
 namespace terminalDropbox.Services
@@ -21,9 +21,9 @@ namespace terminalDropbox.Services
         /// </summary>
         /// <param name="authorizationTokenDO"></param>
         /// <returns></returns>
-        public async Task<List<string>> GetFileList(AuthorizationTokenDO authorizationTokenDO)
+        public async Task<List<string>> GetFileList(AuthorizationToken authorizationToken)
         {
-            var client = new DropboxClient(authorizationTokenDO.Token, CreateDropboxClientConfig(UserAgent));
+            var client = new DropboxClient(authorizationToken.Token, CreateDropboxClientConfig(UserAgent));
 
             var result = await client.Files.ListFolderAsync(Path);
 
@@ -36,9 +36,9 @@ namespace terminalDropbox.Services
         /// <param name="authorizationTokenDO"></param>
         /// <param name="path">Path to file</param>
         /// <returns></returns>
-        public string GetFileSharedUrl(AuthorizationTokenDO authorizationTokenDO, string path)
+        public string GetFileSharedUrl(AuthorizationToken authorizationToken, string path)
         {
-            var client = new DropboxClient(authorizationTokenDO.Token, CreateDropboxClientConfig(UserAgent));
+            var client = new DropboxClient(authorizationToken.Token, CreateDropboxClientConfig(UserAgent));
 
             // Trying to get file links
             var links = client.Sharing.ListSharedLinksAsync(path).Result.Links;

@@ -1,17 +1,17 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
-using Hub.Managers;
 using StructureMap;
 using terminalPapertrail.Interfaces;
 using TerminalBase.BaseClasses;
-using TerminalBase.Infrastructure;
 using Utilities.Configuration.Azure;
+using Fr8Data.States;
+using TerminalBase.Infrastructure;
 
 namespace terminalPapertrail.Actions
 {
@@ -22,27 +22,25 @@ namespace terminalPapertrail.Actions
     {
         private IPapertrailLogger _papertrailLogger;
 
-        public Write_To_Log_v1()
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Version = "1",
+            Name = "Write_To_Log",
+            Label = "Write To Log",
+            Category = ActivityCategory.Forwarders,
+            Terminal = TerminalData.TerminalDTO,
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
+        public Write_To_Log_v1(ICrateManager crateManager)
+            : base(false, crateManager)
         {
             _papertrailLogger = ObjectFactory.GetInstance<IPapertrailLogger>();
         }
 
-        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO = null)
-        {
-            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authTokenDO);
-        }
-
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
-        {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            return ConfigurationRequestType.Followup;
-        }
-
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO = null)
+        public override async Task Initialize()
         {
             var targetUrlTextBlock = new TextBox
             {
@@ -54,37 +52,30 @@ namespace terminalPapertrail.Actions
 
             var curControlsCrate = PackControlsCrate(targetUrlTextBlock);
 
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.Replace(new CrateStorage(curControlsCrate));
-            }
-
-            return await Task.FromResult(curActivityDO);
+            Storage.Add(curControlsCrate);
         }
 
-        public async Task<PayloadDTO> Run(ActivityDO activityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public override async Task Run()
         {
-            //get process payload
-            var curProcessPayload = await GetPayload(activityDO, containerId);
-
             //get the Papertrail URL value fromt configuration control
             string curPapertrailUrl;
             int curPapertrailPort;
 
             try
             {
-                GetPapertrailTargetUrlAndPort(activityDO, out curPapertrailUrl, out curPapertrailPort);
+                GetPapertrailTargetUrlAndPort(out curPapertrailUrl, out curPapertrailPort);
             }
             catch (ArgumentException e)
             {
-                return Error(curProcessPayload, e.Message);
+                RaiseError(e.Message);
+                return;
             }
 
             //if there are valid URL and Port number
             if (!string.IsNullOrEmpty(curPapertrailUrl) && curPapertrailPort > 0)
             {
                 //get log message
-                var curLogMessages = CrateManager.GetStorage(curProcessPayload).CrateContentsOfType<StandardLoggingCM>().Single();
+                var curLogMessages = Payload.CrateContentsOfType<StandardLoggingCM>().Single();
 
                 curLogMessages.Item.Where(logMessage => !logMessage.IsLogged).ToList().ForEach(logMessage =>
                 {
@@ -92,21 +83,24 @@ namespace terminalPapertrail.Actions
                     logMessage.IsLogged = true;
                 });
 
-                using (var crateStorage = CrateManager.GetUpdatableStorage(curProcessPayload))
-                {
-                    crateStorage.RemoveByLabel("Log Messages");
-                    crateStorage.Add(Fr8Data.Crates.Crate.FromContent("Log Messages", curLogMessages));
-                }
-            }
-
-            return Success(curProcessPayload);
+                Payload.RemoveByLabel("Log Messages");
+                Payload.Add(Fr8Data.Crates.Crate.FromContent("Log Messages", curLogMessages));
+             }
+             Success();
         }
 
-        private void GetPapertrailTargetUrlAndPort(ActivityDO curActivityDO, out string papertrialTargetUrl, out int papertrailTargetPort)
+
+
+        public override Task FollowUp()
+        {
+            return Task.FromResult(0);
+        }
+
+        private void GetPapertrailTargetUrlAndPort(out string papertrialTargetUrl, out int papertrailTargetPort)
         {
             //get the configuration control of the given action
             var curActionConfigControls =
-                CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().Single();
+                Storage.CrateContentsOfType<StandardConfigurationControlsCM>().Single();
 
             //the URL is given in "URL:PortNumber" format. Parse the input value to get the URL and port number
             var targetUrlValue = curActionConfigControls.FindByName("TargetUrlTextBox").Value.Split(new char[] { ':' });

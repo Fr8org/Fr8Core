@@ -1,14 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using System.Web;
 using Microsoft.Owin;
-using Newtonsoft.Json;
 using Owin;
-using TerminalBase;
 using TerminalBase.BaseClasses;
 using System.Web.Http.Dispatcher;
+using terminalSendGrid.Activities;
+using TerminalBase.Services;
 
 [assembly: OwinStartup("SendGridStartup", typeof(terminalSendGrid.Startup))]
 namespace terminalSendGrid
@@ -40,6 +37,10 @@ namespace terminalSendGrid
                     typeof(Controllers.ActivityController),
                     typeof(Controllers.TerminalController)
                 };
+        }
+        protected override void RegisterActivities()
+        {
+            ActivityStore.RegisterActivity<SendEmailViaSendGrid_v1>(SendEmailViaSendGrid_v1.ActivityTemplateDTO);
         }
     }
 }

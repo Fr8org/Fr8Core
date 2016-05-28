@@ -1,22 +1,38 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using TerminalBase.BaseClasses;
 using System.Text.RegularExpressions;
+using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class Build_Message_v1 : EnhancedTerminalActivity<Build_Message_v1.ActivityUi>
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Build_Message",
+            Label = "Build a Message",
+            Category = ActivityCategory.Processors,
+            Version = "1",
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
+        public const string RuntimeCrateLabel = "Message Built by \"Build Message\" Activity";
+
         public class ActivityUi : StandardConfigurationControlsCM
         {
+            
             public TextBox Name { get; set; }
 
             public BuildMessageAppender Body { get; set; }
@@ -46,32 +62,33 @@ namespace terminalFr8Core.Actions
             }
         }
 
-        public const string RuntimeCrateLabel = "Message Built by \"Build Message\" Activity";
-
-        public Build_Message_v1() : base(false)
+        public Build_Message_v1(ICrateManager crateManager)
+            : base(false, crateManager)
         {
-        }
-
-        protected override Task Initialize(CrateSignaller crateSignaller)
-        {
-            return Task.FromResult(0);
         }
 
         private Crate PackMessageCrate(string body = null)
         {
-            return Crate.FromContent(RuntimeCrateLabel, new StandardPayloadDataCM(new FieldDTO(ConfigurationControls.Name.Value, body)));
-        }
-
-        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
-        {
-            crateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeCrateLabel, true)
-                          .AddField(ConfigurationControls.Name.Value);
-            return Task.FromResult(0);
+            return Crate.FromContent(RuntimeCrateLabel,
+                                     new StandardPayloadDataCM(new FieldDTO(ActivityUI.Name.Value, body)));
         }
 
         private static readonly Regex FieldPlaceholdersRegex = new Regex(@"\[.*?\]");
 
-        protected override async Task RunCurrentActivity()
+        public override Task Initialize()
+        {
+            return Task.FromResult(0);
+        }
+
+        public override Task FollowUp()
+        {
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeCrateLabel, true)
+                               .AddField(ActivityUI.Name.Value);
+
+            return Task.FromResult(0);
+        }
+
+        public override async Task Run()
         {
             await Task.Factory.StartNew(RunCurrentActivityImpl);
         }
@@ -79,7 +96,7 @@ namespace terminalFr8Core.Actions
         private void RunCurrentActivityImpl()
         {
             var availableFields = ExtractAvaialbleFieldsFromPayload();
-            var message = ConfigurationControls.Body.Value;
+            var message = ActivityUI.Body.Value;
             if (availableFields.Count > 0 && !string.IsNullOrEmpty(message))
             {
                 var messageBodyBuilder = new StringBuilder(message);
@@ -95,16 +112,16 @@ namespace terminalFr8Core.Actions
                 }
                 message = messageBodyBuilder.ToString();
             }
-            CurrentPayloadStorage.Add(PackMessageCrate(message));
+            Payload.Add(PackMessageCrate(message));
         }
 
         private List<FieldDTO> ExtractAvaialbleFieldsFromPayload()
         {
             var result = new List<FieldDTO>();
 
-            result.AddRange(CurrentPayloadStorage.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.AllValues()));
+            result.AddRange(Payload.CratesOfType<StandardPayloadDataCM>().SelectMany(x => x.Content.AllValues()));
 
-            foreach (var tableCrate in CurrentPayloadStorage.CratesOfType<StandardTableDataCM>().Select(x => x.Content))
+            foreach (var tableCrate in Payload.CratesOfType<StandardTableDataCM>().Select(x => x.Content))
             {
                 //We should take first row of data only if there is at least one data row. We never take header row if it exists
                 var rowToTake = tableCrate.FirstRowHeaders
@@ -122,5 +139,7 @@ namespace terminalFr8Core.Actions
             }
             return result;
         }
+
+
     }
 }

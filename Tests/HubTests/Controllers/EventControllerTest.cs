@@ -7,13 +7,13 @@ using Data.Entities;
 using Data.Interfaces;
 using Hub.Managers;
 using HubWeb.Controllers;
-using Utilities.Serializers.Json;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using System.Threading.Tasks;
 using System;
 using Fr8Data.DataTransferObjects;
-using Hub.Crates.Helpers;
+using Fr8Data.Crates.Helpers;
+using Fr8Data.Managers;
 
 namespace HubTests.Controllers
 {

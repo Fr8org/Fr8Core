@@ -4,19 +4,39 @@ using System.Linq;
 using System.Threading.Tasks;
 using AutoMapper;
 using Data.Entities;
+using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
+using Fr8Data.States;
 using Hub.Managers;
 using Newtonsoft.Json;
+using terminalDocuSign.Actions;
 using terminalDocuSign.DataTransferObjects;
+using terminalDocuSign.Services.New_Api;
 using TerminalBase.Infrastructure;
+using TerminalBase.Models;
 
-namespace terminalDocuSign.Actions
+namespace terminalDocuSign.Activities
 {
     public class Search_DocuSign_History_v1  : BaseDocuSignActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Search_DocuSign_History",
+            Label = "Search DocuSign History",
+            Version = "1",
+            Category = ActivityCategory.Receivers,
+            NeedsAuthentication = true,
+            MinPaneWidth = 380,
+            Tags = Tags.Internal,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         internal class ActivityUi : StandardConfigurationControlsCM
         {
             [JsonIgnore]
@@ -69,63 +89,40 @@ namespace terminalDocuSign.Actions
 
         protected override string ActivityUserFriendlyName => "Search DocuSign History";
 
-        protected internal override async Task<PayloadDTO> RunInternal(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public Search_DocuSign_History_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+            : base(crateManager, docuSignManager)
         {
-            return Success(await GetPayload(curActivityDO, containerId));
+        }
+
+        protected override async Task RunDS()
+        {
+            Success();
         }
         
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task InitializeDS()
         {
-            if (CheckAuthentication(curActivityDO, authTokenDO))
-            {
-                return curActivityDO;
-            }
-
             var actionUi = new ActivityUi();
-            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(authTokenDO.Token);           
+            var docuSignAuthDTO = JsonConvert.DeserializeObject<DocuSignAuthTokenDTO>(AuthorizationToken.Token);           
             var configurationCrate = PackControls(actionUi);
             //commented out by FR-2400
             //_docuSignManager.FillFolderSource(configurationCrate, "Folder", docuSignAuthDTO);
             //_docuSignManager.FillStatusSource(configurationCrate, "Status");
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.Add(configurationCrate);
-            }
-
-            await ConfigureNestedActivities(curActivityDO, actionUi);
-            
-            return curActivityDO;
+            Storage.Add(configurationCrate);
+            await ConfigureNestedActivities(actionUi);
         }
 
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        protected override async Task FollowUpDS()
         {
-            if (CheckAuthentication(curActivityDO, authTokenDO))
+            if (ConfigurationControls == null)
             {
-                return curActivityDO;
+                return;
             }
-
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                var configurationControls = crateStorage.CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-
-                if (configurationControls == null)
-                {
-                    crateStorage.DiscardChanges();
-                    return curActivityDO;
-                }
-
-                var actionUi = new ActivityUi();
-               
-                actionUi.ClonePropertiesFrom(configurationControls);
-
-                await ConfigureNestedActivities(curActivityDO, actionUi);
-                
-                return curActivityDO;
-            }
+            var actionUi = new ActivityUi();
+            actionUi.ClonePropertiesFrom(ConfigurationControls);
+            await ConfigureNestedActivities(actionUi);
         }
 
-        private async Task ConfigureNestedActivities(ActivityDO curActivityDO, ActivityUi actionUi)
+        private async Task ConfigureNestedActivities(ActivityUi actionUi)
         {
             var config = new Query_DocuSign_v1.ActivityUi
             {
@@ -134,57 +131,43 @@ namespace terminalDocuSign.Actions
                 SearchText = {Value = actionUi.SearchText.Value}
             };
             
-            var template = (await FindTemplates(curActivityDO, x => x.Name == "Query_DocuSign")).FirstOrDefault();
+            var template = (await FindTemplates(x => x.Name == "Query_DocuSign")).FirstOrDefault();
 
             if (template == null)
             {
                 throw new Exception("Can't find activity template: Query_DocuSign");
             }
 
-            var storage = new CrateStorage(Fr8Data.Crates.Crate.FromContent("Config", config));
-
-            storage.Add(PackControlsCrate(new TextArea
+            var storage = new CrateStorage(Crate.FromContent("Config", config))
             {
-                IsReadOnly = true,
-                Label = "",
-                Value = "<p>This activity is managed by the parent activity</p>"
-            }));
-
-            var activity = curActivityDO.ChildNodes.OfType<ActivityDO>().FirstOrDefault();
+                PackControlsCrate(new TextArea
+                {
+                    IsReadOnly = true,
+                    Label = "",
+                    Value = "<p>This activity is managed by the parent activity</p>"
+                })
+            };
+            var activity = ActivityPayload.ChildrenActivities.OfType<ActivityPayload>().FirstOrDefault();
 
             if (activity == null)
             {
-                activity = new ActivityDO
+                activity = new ActivityPayload
                 {
                     ActivityTemplate = template,
-                    CreateDate = DateTime.UtcNow,
                     Name = template.Label,
                     Ordering = 1,
-                    ActivityTemplateId = template.Id,
                 };
 
-                curActivityDO.ChildNodes.Add(activity);
+                ActivityPayload.ChildrenActivities.Add(activity);
             }
+            activity.CrateStorage = storage;
 
-            activity.CrateStorage = JsonConvert.SerializeObject(CrateManager.ToDto(storage));
         }
 
-        private async Task<IEnumerable<ActivityTemplateDO>> FindTemplates(ActivityDO activityDO, Predicate<ActivityTemplateDO> query)
+        private async Task<IEnumerable<ActivityTemplateDTO>> FindTemplates(Predicate<ActivityTemplateDTO> query)
         {
-            var templates = await HubCommunicator.GetActivityTemplates(CurrentFr8UserId, true);
-            return templates.Select(x => Mapper.Map<ActivityTemplateDO>(x)).Where(x => query(x));
+            var templates = await HubCommunicator.GetActivityTemplates(true);
+            return templates.Where(x => query(x));
         }
-
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
-        {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            return ConfigurationRequestType.Followup;
-        }
-
-     
     }
 }
