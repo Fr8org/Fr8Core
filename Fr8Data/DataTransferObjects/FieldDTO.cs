@@ -39,8 +39,9 @@ namespace Fr8Data.DataTransferObjects
 
         [JsonProperty("sourceCrateLabel", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public string SourceCrateLabel { get; set; }
-        [JsonProperty("sourceActivityId", DefaultValueHandling = DefaultValueHandling.Ignore)]
-        public Guid SourceActivityId { get; set; }
+
+        [JsonProperty("sourceActivityId", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
+        public string SourceActivityId { get; set; }
 
         [JsonProperty("data", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public Dictionary<string, JToken> Data { get; set; }
