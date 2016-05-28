@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Search;
 using Microsoft.Azure.Search.Models;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
@@ -62,6 +63,23 @@ namespace PlanDirectory.Infrastructure
             await Task.Yield();
         }
 
+        public Task<PublishPlanTemplateDTO> Get(string fr8AccountId, Guid planId)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var planTemplateCM = uow.MultiTenantObjectRepository
+                    .Query<PlanTemplateCM>(fr8AccountId, x => x.ParentPlanId == planId)
+                    .FirstOrDefault();
+
+                if (planTemplateCM == null)
+                {
+                    return Task.FromResult<PublishPlanTemplateDTO>(null);
+                }
+
+                return Task.FromResult(CreatePlanTemplateDTO(planTemplateCM));
+            }
+        }
+
         private PlanTemplateCM CreatePlanTemplateCM(PublishPlanTemplateDTO dto,
             PlanTemplateCM existing, Fr8AccountDO account)
         {
@@ -73,6 +91,17 @@ namespace PlanDirectory.Infrastructure
                 Version = existing?.Version ?? 1,
                 OwnerId = account.Id,
                 OwnerName = account.UserName
+            };
+        }
+
+        private PublishPlanTemplateDTO CreatePlanTemplateDTO(PlanTemplateCM planTemplate)
+        {
+            return new PublishPlanTemplateDTO()
+            {
+                Name = planTemplate.Name,
+                Description = planTemplate.Description,
+                ParentPlanId = planTemplate.ParentPlanId,
+                PlanContents = JsonConvert.DeserializeObject<JToken>(planTemplate.PlanContents)
             };
         }
 
