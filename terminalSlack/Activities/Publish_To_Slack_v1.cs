@@ -6,11 +6,13 @@ using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using terminalSlack.Interfaces;
 using terminalSlack.Services;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalSlack.Activities
 {
@@ -34,24 +36,22 @@ namespace terminalSlack.Activities
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
 
-        protected override Task<bool> Validate()
+        protected override Task Validate()
         {
-            var messageField = GetControl<TextSource>("Select_Message_Field", ControlTypes.TextSource);
+            var messageField = GetControl<TextSource>("Select_Message_Field");
             var actionChannelId = GetControl<DropDownList>("Selected_Slack_Channel").Value;
 
             if (string.IsNullOrEmpty(actionChannelId))
             {
                 ValidationManager.SetError("Channel or user is not specified", "Selected_Slack_Channel");
-                return Task.FromResult(false);
             }
 
             if (messageField.CanGetValue(ValidationManager.Payload) && string.IsNullOrWhiteSpace(messageField.GetValue(ValidationManager.Payload)))
             {
                 ValidationManager.SetError("Can't post empty message to Slack", messageField);
-                return Task.FromResult(false);
             }
 
-            return Task.FromResult(true);
+            return Task.FromResult(0);
         }
 
         public override async Task Run()
@@ -69,7 +69,7 @@ namespace terminalSlack.Activities
                 RaiseError("No selected channelId found in activity.");
             }
 
-            var messageField = GetControl<TextSource>("Select_Message_Field", ControlTypes.TextSource);
+            var messageField = GetControl<TextSource>("Select_Message_Field");
             try
             {
                 message = messageField.GetValue(Payload);
@@ -101,7 +101,8 @@ namespace terminalSlack.Activities
             Storage.Add(configurationCrate);
         }
 
-        public Publish_To_Slack_v1() : base(true)
+        public Publish_To_Slack_v1(ICrateManager crateManager)
+            : base(true, crateManager)
         {
             _slackIntegration = new SlackIntegration();
         }

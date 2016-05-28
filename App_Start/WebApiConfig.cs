@@ -3,6 +3,7 @@ using System.Web.Http.ExceptionHandling;
 using HubWeb.ExceptionHandling;
 using System.Web.Http.Routing;
 using System.Net.Http;
+using System.Web.Http.Dispatcher;
 
 namespace HubWeb
 {
@@ -11,7 +12,7 @@ namespace HubWeb
 		public static void Register(HttpConfiguration config)
 		{
             // Web API configuration and services
-
+            config.Services.Replace(typeof(IHttpControllerSelector), new CustomSelector(config));
             // Web API routes
             RegisterAuthenticationEndPoints(config);
 

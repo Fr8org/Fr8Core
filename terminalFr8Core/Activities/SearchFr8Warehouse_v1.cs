@@ -8,6 +8,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Services.MT;
@@ -99,11 +100,12 @@ namespace terminalFr8Core.Activities
             }
         }
 
-        public SearchFr8Warehouse_v1() : base(false)
+        public SearchFr8Warehouse_v1(ICrateManager crateManager)
+            : base(false, crateManager)
         {
         }
 
-        protected override Task RunChildActivities()
+        public override Task RunChildActivities()
         {
             var queryMTResult = Payload
                 .CrateContentsOfType<StandardPayloadDataCM>(x => x.Label == "Found MT Objects")
@@ -209,12 +211,15 @@ namespace terminalFr8Core.Activities
         private bool ValidateSolutionInputs(string fr8Object)
         {
             var fr8ObjectDropDown = GetControl<DropDownList>("Select Fr8 Warehouse Object");
-            var validationResult = Storage.GetOrAdd(() => Crate.FromContent("Validation Result", new ValidationResultsCM()));
-            var validationManager = new ValidationManager(validationResult, Payload);
+
+            Storage.Remove<ValidationResultsCM>();
+            
+            var validationManager = new ValidationManager(Payload);
 
             if (string.IsNullOrWhiteSpace(fr8Object))
             {
                 validationManager.SetError("Please select the Fr8 Object", fr8ObjectDropDown);
+                Storage.Add(Crate.FromContent("Validation Result", validationManager.ValidationResults));
                 return false;
             }
 

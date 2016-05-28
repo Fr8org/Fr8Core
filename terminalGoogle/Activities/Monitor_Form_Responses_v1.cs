@@ -6,6 +6,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Newtonsoft.Json;
@@ -76,14 +77,15 @@ namespace terminalGoogle.Actions
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        public Monitor_Form_Responses_v1()
+        public Monitor_Form_Responses_v1(ICrateManager crateManager, IGoogleIntegration googleIntegration)
+            : base(crateManager, googleIntegration)
         {
             _googleDrive = new GoogleDrive();
             _googleAppScript = new GoogleAppScript();
-            _googleIntegration = ObjectFactory.GetInstance<IGoogleIntegration>();
+            _googleIntegration = googleIntegration;
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             var googleAuth = GetGoogleAuthToken();
             var forms = await _googleDrive.GetGoogleForms(googleAuth);
@@ -94,7 +96,7 @@ namespace terminalGoogle.Actions
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             var googleAuth = GetGoogleAuthToken();
             var forms = await _googleDrive.GetGoogleForms(googleAuth);
@@ -121,7 +123,7 @@ namespace terminalGoogle.Actions
                 .AddField("Period of Availability");
         }
 
-        protected override async Task ActivateETA()
+        public override async Task Activate()
         {
             var googleAuth = GetGoogleAuthToken();
             //get form id
@@ -150,12 +152,12 @@ namespace terminalGoogle.Actions
                         TerminalVersion = "1",
                         Message = "You need to create fr8 trigger on current form please go to this url and run Initialize function manually. Ignore this message if you completed this step before. " + scriptUrl,
                         Subject = "Trigger creation URL"
-                    }, CurrentUserId);
+                    });
                 }
             }
         }
 
-        protected override Task RunETA()
+        public override Task Run()
         {
             var selectedForm = ActivityUI.FormsList.Value;
             if (string.IsNullOrEmpty(selectedForm))

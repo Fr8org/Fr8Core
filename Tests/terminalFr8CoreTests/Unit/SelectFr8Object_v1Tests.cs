@@ -33,7 +33,7 @@ namespace terminalFr8CoreTests.Unit
             TerminalBootstrapper.ConfigureTest();
 
             _coreServer = Fixtures.FixtureData.CreateCoreServer_ActivitiesController();
-            select_Fr8_Object_v1 = new Select_Fr8_Object_v1();
+            select_Fr8_Object_v1 = New<Select_Fr8_Object_v1>();
             Mock<IRestfulServiceClient> restClientMock = new Mock<IRestfulServiceClient>(MockBehavior.Default);
             restClientMock.Setup(restClient => restClient.GetAsync<CrateDTO>(It.IsAny<Uri>(), It.IsAny<string>(), It.IsAny<Dictionary<string, string>>()))
                 .Returns(Task.FromResult(FixtureData.TestEmptyCrateDTO()));

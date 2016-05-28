@@ -5,6 +5,8 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Newtonsoft.Json;
+using StructureMap;
+using TerminalBase.Infrastructure;
 using TerminalBase.Models;
 
 namespace terminalTwilio.Tests.Fixtures
@@ -28,6 +30,7 @@ namespace terminalTwilio.Tests.Fixtures
             };
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = activityPayload,
                 AuthorizationToken = AuthTokenDOTest1()
             };

@@ -5,12 +5,14 @@ using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Newtonsoft.Json;
 using terminalYammer.Interfaces;
 using terminalYammer.Services;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalYammer.Actions
 {
@@ -73,7 +75,8 @@ namespace terminalYammer.Actions
             }
         }
 
-        public Post_To_Yammer_v1() : base(true)
+        public Post_To_Yammer_v1(ICrateManager crateManager)
+            : base(true, crateManager)
         {
             _yammer = new Yammer();
         }
@@ -136,7 +139,7 @@ namespace terminalYammer.Actions
             groupMessage.GroupID = controls.Groups.Value;
 
             //Quick fix FR-2719
-            var messageField = GetControl<TextSource>("Message", ControlTypes.TextSource);
+            var messageField = GetControl<TextSource>("Message");
             groupMessage.Message = messageField.GetValue(payload);
             return groupMessage;
         }
@@ -144,7 +147,7 @@ namespace terminalYammer.Actions
         private async Task<Crate> CreateAvailableFieldsCrate()
         {
             var curUpstreamFields =
-                (await GetCratesByDirection<FieldDescriptionsCM>(CrateDirection.Upstream))
+                (await HubCommunicator.GetCratesByDirection<FieldDescriptionsCM>(ActivityId, CrateDirection.Upstream))
 
                 .Where(x => x.Label != "Available Groups")
                 .SelectMany(x => x.Content.Fields)

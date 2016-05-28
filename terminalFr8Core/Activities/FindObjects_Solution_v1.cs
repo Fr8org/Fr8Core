@@ -7,11 +7,13 @@ using Data.Entities;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Newtonsoft.Json;
 using terminalFr8Core.Infrastructure;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 using TerminalBase.Models;
 
 namespace terminalFr8Core.Activities
@@ -38,7 +40,8 @@ namespace terminalFr8Core.Activities
         private const string SolutionBody = @"<p>This is the FindObjects Solution.</p>";
         public FindObjectHelper FindObjectHelper { get; set; }
 
-        public FindObjects_Solution_v1() : base(false)
+        public FindObjects_Solution_v1(ICrateManager crateManager)
+            : base(false, crateManager)
         {
             FindObjectHelper = new FindObjectHelper();
         }
