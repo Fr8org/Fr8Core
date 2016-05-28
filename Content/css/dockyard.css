@@ -1229,10 +1229,23 @@ i.activity-stream-font {
     width: 100%;
 }
 
+.fr8-full-height {
+    height: 100%;    
+}
+
 .fr8-float-right {
     float: right;
 }
 
+.fr8-auth-cover {
+    position: absolute;
+    top: 0;
+    left: 0 ;
+    height: 100%;
+    width: 100%;
+    background: white;
+    background: rgba(150, 150, 150, 0.5);   
+}
 .fr8-borders {
     border: 1px solid rgba(38,166,154,0.3);
 }
