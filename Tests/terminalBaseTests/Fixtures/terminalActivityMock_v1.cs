@@ -5,6 +5,8 @@ using TerminalBase.BaseClasses;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
+using TerminalBase.Infrastructure;
 
 namespace terminalBaseTests.Actions
 {
@@ -24,13 +26,13 @@ namespace terminalBaseTests.Actions
             //return base.FollowupConfigurationResponse(curActivityDO, authTokenDO);
         }
 
-        protected override Task Activate()
+        public override Task Activate()
         {
             AddCrateMethodInvoked("Activate");
             return base.Activate();
         }
 
-        protected override Task Deactivate()
+        public override Task Deactivate()
         {
             AddCrateMethodInvoked("Deactivate");
             return base.Deactivate();
@@ -77,7 +79,8 @@ namespace terminalBaseTests.Actions
             return PackControlsCrate(fieldFilterPane);
         }
 
-        public terminalActivityMock_v1() : base(false)
+        public terminalActivityMock_v1(ICrateManager crateManager) 
+            : base(false, crateManager)
         {
         }
     }

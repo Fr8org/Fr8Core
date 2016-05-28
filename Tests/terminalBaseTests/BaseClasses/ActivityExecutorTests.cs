@@ -38,7 +38,7 @@ namespace terminalBaseTests.BaseClasses
             var crateStorage = new CrateStorage(Crate.FromContent("", new OperationalStateCM()));
             var crateDTO = CrateManager.ToDto(crateStorage);
             var hubCommunicatorMock = new Mock<IHubCommunicator>();
-            hubCommunicatorMock.Setup(x => x.GetPayload(It.IsAny<Guid>(), It.IsAny<string>()))
+            hubCommunicatorMock.Setup(x => x.GetPayload(It.IsAny<Guid>()))
                 .ReturnsAsync(new PayloadDTO(Guid.NewGuid())
                 {
                      CrateStorage = crateDTO

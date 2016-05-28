@@ -43,7 +43,7 @@ namespace terminalSalesforceTests.Actions
             }
 
             Mock<IHubCommunicator> hubCommunicatorMock = new Mock<IHubCommunicator>(MockBehavior.Default);
-            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<Guid>(), It.IsAny<string>()))
+            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<Guid>()))
                 .Returns(() => Task.FromResult(testPayloadDTO));
             ObjectFactory.Container.Inject(typeof(IHubCommunicator), hubCommunicatorMock.Object);
 
@@ -57,7 +57,7 @@ namespace terminalSalesforceTests.Actions
                 s => s.Query(SalesforceObjectType.Account, It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationToken>()))
                 .Returns(() => Task.FromResult(new StandardTableDataCM()));
 
-            _saveToSFDotCom_v1 = new Save_To_SalesforceDotCom_v1();
+            _saveToSFDotCom_v1 = New<Save_To_SalesforceDotCom_v1>();
         }
 
         [Test, Category("terminalSalesforceTests.Save_To_SalesforceDotCom.Configure")]

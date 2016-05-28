@@ -3,6 +3,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using terminalSlack.Interfaces;
@@ -48,11 +49,12 @@ namespace terminalSlack.Activities
         private readonly ISlackIntegration _slackIntegration;
 
 
-        public Publish_To_Slack_v2() : base(true)
+        public Publish_To_Slack_v2(ICrateManager crateManager)
+            : base(true, crateManager)
         {
             _slackIntegration = new SlackIntegration();
         }
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             var usersTask = _slackIntegration.GetUserList(AuthorizationToken.Token);
             var channelsTask = _slackIntegration.GetChannelList(AuthorizationToken.Token);
@@ -67,26 +69,25 @@ namespace terminalSlack.Activities
             ActivityUI.ChannelSelector.ListItems = channelsAndUsersList;
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
             //No extra config is required
             return Task.FromResult(0);
         }
 
-        protected override Task<bool> ValidateETA()
+        protected override Task Validate()
         {
             if (string.IsNullOrEmpty(ActivityUI.ChannelSelector.Value))
             {
                 ValidationManager.SetError("Channel or user is not specified", ActivityUI.ChannelSelector);
-                return Task.FromResult(false);
             }
 
             ValidationManager.ValidateTextSourceNotEmpty(ActivityUI.MessageSource, "Can't post empty message to Slack");
 
-            return Task.FromResult(true);
+            return Task.FromResult(0);
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             var channel = ActivityUI.ChannelSelector.Value;
             var message = ActivityUI.MessageSource.GetValue(Payload);

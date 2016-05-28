@@ -188,11 +188,6 @@ namespace terminalPapertrailTests.Integration
         /// Should throw expcetion
         /// </summary>
         [Test]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Sequence contains no elements""}",
-            MatchType = MessageMatch.Contains
-            )]
         public async Task Write_To_Log_Run_WithoutLogMessageInUpstreamActivity_ShouldThrowException()
         {
             //Arrange
@@ -204,6 +199,11 @@ namespace terminalPapertrailTests.Integration
             AddOperationalStateCrate(dataDTO, new OperationalStateCM());
             //Act
             var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
+
+            var storage = Crate.GetStorage(responsePayloadDTO.CrateStorage);
+            var opState = storage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
+            ErrorDTO error = opState.CurrentActivityResponse.TryParseErrorDTO(out error) ? error : null;
+            Assert.IsTrue(error.Message.Contains("Sequence contains no elements"), $"Invalid error message: {error.Message}");
         }
 
         private void AssertCrateTypes(ICrateStorage crateStorage)

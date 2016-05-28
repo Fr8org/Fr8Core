@@ -17,10 +17,9 @@ using Microsoft.AspNet.Identity;
 using Microsoft.Owin;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
-using System.Web.Http.Routing;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Threading;
-using System.Reflection;
 
 namespace HubWeb
 {
@@ -92,16 +91,6 @@ namespace HubWeb
         }
     }
 
-
-    public class RouteSpecificHandler : DelegatingHandler
-    {
-        protected override Task<HttpResponseMessage> SendAsync(HttpRequestMessage request, CancellationToken cancellationToken)
-        {
-            request.Properties["UseCustomSelector"] = true;
-            return base.SendAsync(request, cancellationToken);
-        }
-    }
-
     public class CustomSelector : DefaultHttpControllerSelector
     {
         private readonly HttpConfiguration _configuration;
@@ -113,22 +102,19 @@ namespace HubWeb
 
         public override HttpControllerDescriptor SelectController(HttpRequestMessage request)
         {
-            //if (request.Properties.ContainsKey("UseCustomSelector") &&
-            //    request.Properties["UseCustomSelector"] as bool? == true)
-            //{
                 var controllerName = base.GetControllerName(request);
                 if (controllerName.Contains("_"))
                 {
-                    var assembly = Assembly.GetExecutingAssembly();
-                    var types = assembly.GetTypes(); //GetExportedTypes doesn't work with dynamic assemblies
-                    var matchedTypes = types.Where(i => typeof(IHttpController).IsAssignableFrom(i)).ToList();
+
+                IAssembliesResolver assembliesResolver = _configuration.Services.GetAssembliesResolver();
+                IHttpControllerTypeResolver httpControllerTypeResolver = this._configuration.Services.GetHttpControllerTypeResolver();
+                ICollection<Type> controllerTypes = httpControllerTypeResolver.GetControllerTypes(assembliesResolver);
                     controllerName = controllerName.Replace("_", "");
                     var matchedController =
-                        matchedTypes.FirstOrDefault(i => i.Name.ToLower() == controllerName.ToLower() + "controller");
+                        controllerTypes.FirstOrDefault(i => i.Name.ToLower() == controllerName.ToLower() + "controller");
 
                     return new HttpControllerDescriptor(_configuration, controllerName, matchedController);
                 }
-            //}
 
             return base.SelectController(request);
         }

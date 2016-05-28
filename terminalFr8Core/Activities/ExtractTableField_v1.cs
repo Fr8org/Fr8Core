@@ -5,9 +5,11 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
@@ -203,7 +205,8 @@ namespace terminalFr8Core.Activities
             return PackControlsCrate(crateChooser, controlList);
         }
 
-        public ExtractTableField_v1() : base(false)
+        public ExtractTableField_v1(ICrateManager crateManager)
+            : base(false, crateManager)
         {
         }
 
@@ -287,7 +290,7 @@ namespace terminalFr8Core.Activities
             }
 
             //let's get upstream crates to find this one
-            var upstreamTableCrates = await GetCratesByDirection<StandardTableDataCM>(CrateDirection.Upstream);
+            var upstreamTableCrates = await HubCommunicator.GetCratesByDirection<StandardTableDataCM>(ActivityId, CrateDirection.Upstream);
             var selectedCrate = upstreamTableCrates.FirstOrDefault(c => c.ManifestType.Type == selectedCrateDescription.ManifestType && c.Label == selectedCrateDescription.Label);
 
             if (selectedCrate == null)
