@@ -34,11 +34,9 @@ or this:
 **Note 1**: In order to use "&" in .conifg file you have to replace it with "&amp;"
 **Note 2**: Make sure, that  redirect_uri is HTTP encoded
 
-| | |
-|-|-|
-| Encoded: | http://localhost:30643/AuthenticationCallback/ProcessSuccessfulOAuthResponse?terminalName=terminalSlack%26terminalVersion=1 |
-| Not encoded: | http://localhost:30643/AuthenticationCallback/ProcessSuccessfulOAuthResponse?terminalName=terminalSlack&terminalVersion=1 |
 
+Encoded: ` http://localhost:30643/AuthenticationCallback/ProcessSuccessfulOAuthResponse?terminalName=terminalSlack%26terminalVersion=1 `
+Not encoded: ` http://localhost:30643/AuthenticationCallback/ProcessSuccessfulOAuthResponse?terminalName=terminalSlack&terminalVersion=1 `
 ###Configuring initial oAuth url
 To pass **initialOAuthUrl** to Fr8 your Terminal has to have AuthenticationController
 Following code in AuthenticationController passes initialOAuthUrl to Fr8
@@ -93,4 +91,4 @@ If you've done everything right - you will get the oAuth token
 
 
 ###WebService
-After you are done with Authentication you have to configure the [WebService](../TerminalDeveloping-AddingAWebService.md) 
+After you are done with Authentication you have to configure the [WebService](TerminalDeveloping-AddingAWebService.md) 
