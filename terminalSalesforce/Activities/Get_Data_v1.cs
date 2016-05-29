@@ -68,6 +68,7 @@ namespace terminalSalesforce.Actions
         public const string QueryFilterCrateLabel = "Queryable Criteria";
 
         public const string RuntimeDataCrateLabel = "Table from Salesforce Get Data";
+
         public const string PayloadDataCrateLabel = "Payload from Salesforce Get Data";
 
         public const string SalesforceObjectFieldsCrateLabel = "Salesforce Object Fields";
@@ -124,7 +125,10 @@ namespace terminalSalesforce.Actions
 
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
             //Publish information for downstream activities
-            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel)
+                          .AddFields(selectedObjectProperties);
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PayloadDataCrateLabel)
+                          .AddFields(selectedObjectProperties);
         }
 
         public override async Task Run()

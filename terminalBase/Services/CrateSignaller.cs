@@ -41,11 +41,12 @@ namespace TerminalBase.Services
 
             public FieldConfigurator AddField(FieldDTO field)
             {
+                field = field.Clone();
                 field.SourceCrateLabel = _label;
                 field.SourceCrateManifest = _manifestType;
                 field.SourceActivityId = _sourceActivityId.ToString();
+                field.Availability = AvailabilityType.RunTime;
                 _fields.Add(field);
-
                 return this;
             }
 
