@@ -36,6 +36,7 @@ using Data.Repositories.Utilization;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Managers;
 using Hub.Security.ObjectDecorators;
+using Hub.Services.Timers;
 
 namespace Hub.StructureMap
 {
@@ -125,6 +126,7 @@ namespace Hub.StructureMap
                 For<IUtilizationMonitoringService>().Use<UtilizationMonitoringService>().Singleton();
                 For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
+                For<ITimer>().Use<Win32Timer>();
             }
         }
 
@@ -195,6 +197,7 @@ namespace Hub.StructureMap
                 For<IPlanTemplates>().Use<PlanTemplates>();
                 For<IUtilizationMonitoringService>().Use<UtilizationMonitoringService>().Singleton();
                 For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
+                For<ITimer>().Use<Win32Timer>();
             }
         }
 

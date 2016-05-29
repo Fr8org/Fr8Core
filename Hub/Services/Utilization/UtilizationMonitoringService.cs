@@ -16,12 +16,12 @@ namespace Hub.Services
 
         private readonly IUtilizationDataProvider _utilizationDataProvider;
         private readonly Dictionary<string, ActivityExecutionRate> _activityExecutionReports = new Dictionary<string, ActivityExecutionRate>();
-        private readonly Timer _reportTimer;
+        private readonly ITimer _reportTimer;
         private readonly int _reportAggregationUnit;
 
         public int AggregationUnitDuration => _reportAggregationUnit;
 
-        public UtilizationMonitoringService(IUtilizationDataProvider utilizationDataProvider)
+        public UtilizationMonitoringService(IUtilizationDataProvider utilizationDataProvider, ITimer timer)
         {
             var aggregationUnitStr = CloudConfigurationManager.GetSetting("UtilizationReportAggregationUnit");
             
@@ -33,7 +33,9 @@ namespace Hub.Services
             _reportAggregationUnit = Math.Max(MinimalReportAggregationUnitDuration, _reportAggregationUnit);
 
             _utilizationDataProvider = utilizationDataProvider;
-            _reportTimer = new Timer(OnReportTimerTick, this, _reportAggregationUnit * 1000, _reportAggregationUnit * 1000);
+
+            _reportTimer = timer;
+            timer.Configure(OnReportTimerTick, this, _reportAggregationUnit * 1000, _reportAggregationUnit * 1000);
         }
 
         // this method is static to allow GC of UtilizationMonitoringService instance.
