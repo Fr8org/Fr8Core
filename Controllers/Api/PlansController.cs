@@ -284,52 +284,26 @@ namespace HubWeb.Controllers
             }
         }
 
-        // method for plan execution continuation from URL
+        // Method for plan execution or continuation without payload specified
         [Fr8ApiAuthorize("Admin", "Customer")]
         [HttpGet]
         public Task<IHttpActionResult> Run(Guid planId, Guid? containerId = null)
         {
-            return Run(planId, (Crate[]) null, containerId);
+            return Run(planId, null, containerId);
         }
 
-        [Fr8ApiAuthorize("Admin", "Customer")]
-        [HttpPost]
-        public async Task<IHttpActionResult> Run(Guid planId, [FromBody]PayloadVM model, Guid? containerId = null)
-        {
-            //RUN
-            Crate[] curPayload = null;
-
-            // there is no reason to check for payload if we have continerId passed because this indicates execution continuation scenario.
-            if (model != null && containerId == null)
-            {
-                try
-                {
-                    var curCrateDto = JsonConvert.DeserializeObject<CrateDTO>(model.Payload);
-                    curPayload = new[] { _crate.FromDto(curCrateDto) };
-                }
-                catch
-                {
-                    _pusherNotifier.NotifyUser("Your payload is invalid. Make sure that it represents a valid crate object JSON.",
-                        NotificationChannel.GenericFailure,
-                        User.Identity.Name);
-                    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-                    {
-                        var planDO = _plan.GetFullPlan(uow, planId); 
-                        var currentPlanType = _plan.IsMonitoringPlan(uow, planDO) ? PlanType.Monitoring.ToString() : PlanType.RunOnce.ToString();
-                        return BadRequest(currentPlanType);
-                    }
-                }
-            }
-
-            return await Run(planId, curPayload, containerId);
-        }
-
+        // Method for plan execution  with payload
         [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
         [Fr8HubWebHMACAuthenticate]
         [HttpPost]
-        public Task<IHttpActionResult> RunWithPayload(Guid planId, [FromBody]List<CrateDTO> payload)
+        public Task<IHttpActionResult> Run(Guid planId, [FromBody]CrateDTO[] payload)
         {
-            var crates = payload.Select(c => _crate.FromDto(c)).ToArray();
+            Crate[] crates = null;
+
+            if (payload != null)
+            {
+                crates = payload.Select(c => _crate.FromDto(c)).ToArray();
+            }
 
             return Run(planId, crates, null);
         }
@@ -365,7 +339,7 @@ namespace HubWeb.Controllers
                        User.Identity.Name);
             }
         }
-
+        
         private async Task<IHttpActionResult> Run(Guid planId, Crate[] payload, Guid? containerId)
         {
             var activationResults = await _plan.Activate(planId, false);
