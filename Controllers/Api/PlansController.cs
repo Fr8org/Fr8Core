@@ -37,7 +37,7 @@ namespace HubWeb.Controllers
     public class PlansController : ApiController
     {
 
-        private readonly Hub.Interfaces.IPlan _plan;
+        private readonly IPlan _plan;
 
         private readonly IActivityTemplate _activityTemplate;
         private readonly IActivity _activity;
@@ -45,10 +45,12 @@ namespace HubWeb.Controllers
         private readonly ISecurityServices _security;
         private readonly ICrateManager _crate;
         private readonly IPusherNotifier _pusherNotifier;
+        private readonly IContainerService _container;
 
         public PlansController()
         {
             _plan = ObjectFactory.GetInstance<IPlan>();
+            _container = ObjectFactory.GetInstance<IContainerService>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
             _findObjectsPlan = ObjectFactory.GetInstance<IFindObjectsPlan>();
             _crate = ObjectFactory.GetInstance<ICrateManager>();
@@ -190,26 +192,6 @@ namespace HubWeb.Controllers
 
             }
 
-        }
-
-        [Fr8ApiAuthorize]
-        //[Route("copy")]
-        [HttpPost]
-        public IHttpActionResult Copy(Guid id, string name)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var curPlanDO = _plan.GetFullPlan(uow, id);
-                if (curPlanDO == null)
-                {
-                    throw new ApplicationException("Unable to find plan with specified id.");
-                }
-
-                var plan = _plan.Copy(uow, curPlanDO, name);
-                uow.SaveChanges();
-
-                return Ok(new { id = plan.Id });
-            }
         }
 
         // GET api/<controller>
@@ -430,7 +412,7 @@ namespace HubWeb.Controllers
             
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                ContainerDO container;
+                ContainerDO container = null;
                 var plan = _plan.GetFullPlan(uow, planId); ;
 
                 // it container id was passed validate it
@@ -471,39 +453,35 @@ namespace HubWeb.Controllers
                                 });
                             }
 
-                            container = await _plan.Run(plan.Id, payload);
                             _pusherNotifier.NotifyUser($"Launching a new Container for Plan \"{plan.Name}\"",
                                 NotificationChannel.GenericSuccess,
                                 User.Identity.Name);
+
+                            container = await _plan.Run(uow, plan, payload);
                         }
                         else
                         {
-                            container = await _plan.Continue(containerId.Value);
                             _pusherNotifier.NotifyUser($"Continue execution of the supsended Plan \"{plan.Name}\"",
                                 NotificationChannel.GenericSuccess,
                                 User.Identity.Name);
+
+                            await _container.Continue(uow, container);
                         }
 
                         var response = _crate.GetContentType<OperationalStateCM>(container.CrateStorage);
                         var responseMsg = GetResponseMessage(response);
 
-                        string message = String.Format("Complete processing for Plan \"{0}\".{1}", plan.Name, responseMsg);
-
                         if (container.State != State.Failed)
                         {
-                            _pusherNotifier.NotifyUser(message, NotificationChannel.GenericSuccess, User.Identity.Name);
+                            _pusherNotifier.NotifyUser($"Complete processing for Plan \"{plan.Name}\".{responseMsg}", NotificationChannel.GenericSuccess, User.Identity.Name);
                         }
                         else
                         {
                             _pusherNotifier.NotifyUser($"Failed executing plan \"{plan.Name}\"", NotificationChannel.GenericFailure, User.Identity.Name);
                         }
 
-                        EventManager.ContainerLaunched(container);
-
                         var containerDTO = Mapper.Map<ContainerDTO>(container);
                         containerDTO.CurrentPlanType = currentPlanType;
-
-                        EventManager.ContainerExecutionCompleted(container);
 
                         return Ok(containerDTO);
                     }

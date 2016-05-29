@@ -156,8 +156,10 @@ namespace Hub.Services
 
             Logger.LogInfo($"Upon receiving event for account '{eventReportMS.ExternalAccountId}' {subscribingPlans.Count} of {initialPlansList.Count} will be notified");
             //When there's a match, it means that it's time to launch a new Process based on this Plan, 
-            //so make the existing call to Plan#LaunchProcess.
-            _plan.Enqueue(subscribingPlans.Where(p => p.PlanState != PlanState.Inactive).ToList(),  curCrateStandardEventReport);
+            foreach (var plan in subscribingPlans.Where(p => p.PlanState != PlanState.Inactive))
+            {
+                _plan.Enqueue(plan.Id, curCrateStandardEventReport);
+            }
         }
 
         public Task LaunchProcess(PlanDO curPlan, Crate curEventData = null)

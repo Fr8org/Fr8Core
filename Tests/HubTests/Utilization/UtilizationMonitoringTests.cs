@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Threading.Tasks;
 using Data.Entities;
+using Data.Infrastructure;
 using Data.Interfaces;
 using Data.Repositories.Utilization;
 using Data.States;
@@ -117,10 +118,11 @@ namespace HubTests.Utilization
                 uow.SaveChanges();
             }
 
+            PlanDO plan;
+
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                PlanDO plan;
-
+                
                 uow.PlanRepository.Add(plan = new PlanDO
                 {
                     Name = "TestPlan",
@@ -172,11 +174,10 @@ namespace HubTests.Utilization
 
                 uow.SaveChanges();
 
-                await Plan.Run(plan.Id, null);
-                await Task.Delay(2000);
+                await Plan.Run(uow, plan, null);
+                await Task.Delay(3000);
 
                 _provider.AssertRates(userAcct.Id, 4);
-
             }
         }
     }

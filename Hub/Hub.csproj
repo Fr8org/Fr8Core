@@ -314,7 +314,7 @@
     <Compile Include="Interfaces\IFile.cs" />
     <Compile Include="Interfaces\INotification.cs" />
     <Compile Include="Interfaces\IEmailAddress.cs" />
-    <Compile Include="Interfaces\IContainer.cs" />
+    <Compile Include="Interfaces\IContainerService.cs" />
     <Compile Include="Interfaces\ISubPlan.cs" />
     <Compile Include="Interfaces\IReport.cs" />
     <Compile Include="Interfaces\ISMSMessage.cs" />
@@ -366,7 +366,7 @@
     <Compile Include="Security\DockyardUserStore.cs" />
     <Compile Include="Security\ObjectDecorators\PlanSecurityDecorator.cs" />
     <Compile Include="Security\SecurityServices.cs" />
-    <Compile Include="Services\Container.ExecutionSession.cs" />
+    <Compile Include="Services\ContainerService.ExecutionSession.cs" />
     <Compile Include="Services\Fact.cs" />
     <Compile Include="Services\Field.cs" />
     <Compile Include="Services\FindObjectsPlan.cs" />
@@ -391,7 +391,7 @@
     <Compile Include="Services\Terminal.cs" />
     <Compile Include="Services\File.cs" />
     <Compile Include="Services\Notification.cs" />
-    <Compile Include="Services\Container.cs" />
+    <Compile Include="Services\ContainerService.cs" />
     <Compile Include="Services\SubPlan.cs" />
     <Compile Include="Services\Plan.cs" />
     <Compile Include="Services\Report.cs" />

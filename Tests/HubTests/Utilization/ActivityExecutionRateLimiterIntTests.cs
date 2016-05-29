@@ -107,7 +107,7 @@ namespace HubTests.Utilization
 
                 uow.SaveChanges();
 
-                await Plan.Run(plan.Id, null);
+                await Plan.Run(uow, plan, null);
 
                 AssertExecutionSequence(new[]
                 {

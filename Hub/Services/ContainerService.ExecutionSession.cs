@@ -18,7 +18,7 @@ using StructureMap;
 
 namespace Hub.Services
 {
-    partial class Container
+    partial class ContainerService
     {
         // class handling execution of the particular plan
         private class ExecutionSession
