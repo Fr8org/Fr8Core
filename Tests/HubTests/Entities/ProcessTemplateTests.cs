@@ -24,14 +24,14 @@ namespace HubTests.Entities
 
                 plan.ChildNodes.Add(subPlan);
                 uow.PlanRepository.Add(plan);
-                plan.StartingSubPlan = subPlan;
+                plan.StartingSubplan = subPlan;
 
                 uow.SaveChanges();
 
                 var result = uow.PlanRepository.GetById<PlanDO>(plan.Id);//.SingleOrDefault(pt => pt.StartingSubPlanId == subPlan.Id);
 
-                Assert.AreEqual(subPlan.Id, result.StartingSubPlan.Id);
-                Assert.AreEqual(subPlan.Name, result.StartingSubPlan.Name);
+                Assert.AreEqual(subPlan.Id, result.StartingSubplan.Id);
+                Assert.AreEqual(subPlan.Name, result.StartingSubplan.Name);
             }
         }
 

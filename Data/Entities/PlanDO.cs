@@ -46,7 +46,7 @@ namespace Data.Entities
         {
             get
             {
-                var startingSubPlan = ChildNodes.OfType<SubPlanDO>()
+                var startingSubPlan = ChildNodes.OfType<SubplanDO>()
                     .SingleOrDefault(pnt => pnt.StartingSubPlan == true);
                 if (null != startingSubPlan)
                 {
@@ -61,7 +61,7 @@ namespace Data.Entities
         }
 
         [NotMapped]
-        public SubPlanDO StartingSubPlan
+        public SubplanDO StartingSubplan
         {
             get
             {
@@ -100,11 +100,11 @@ namespace Data.Entities
         public string Category { get; set; }
 
         [NotMapped]
-        public IEnumerable<SubPlanDO> SubPlans
+        public IEnumerable<SubplanDO> SubPlans
         {
             get
             {
-                return ChildNodes.OfType<SubPlanDO>();
+                return ChildNodes.OfType<SubplanDO>();
             }
         }
 

@@ -25,9 +25,9 @@ namespace Data.Repositories.Plan
                 {
                     Plans.Remove((PlanDO) planNodeDo);
                 }
-                else if (planNodeDo is SubPlanDO)
+                else if (planNodeDo is SubplanDO)
                 {
-                    SubPlans.Remove((SubPlanDO) planNodeDo);
+                    SubPlans.Remove((SubplanDO) planNodeDo);
                 }
             }
 
@@ -46,9 +46,9 @@ namespace Data.Repositories.Plan
                 {
                     Plans.Add((PlanDO)entity);
                 }
-                else if (entity is SubPlanDO)
+                else if (entity is SubplanDO)
                 {
-                    SubPlans.Add((SubPlanDO)entity);
+                    SubPlans.Add((SubplanDO)entity);
                 }
                 else
                 {
@@ -70,7 +70,7 @@ namespace Data.Repositories.Plan
                 {
                     entity = Plans.GetByKey(planNodeDo.Id);
                 }
-                else if (planNodeDo is SubPlanDO)
+                else if (planNodeDo is SubplanDO)
                 {
                     entity = SubPlans.GetByKey(planNodeDo.Id);
                 }

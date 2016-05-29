@@ -113,7 +113,7 @@ namespace HubTests.Security
 
             //Assert.AreEqual(origActivityDO.Id, activityDO.Id);
 
-            //ISubPlan subPlan = new SubPlan();
+            //ISubplan subPlan = new Subplan();
             ////Delete
             //await subPlan.DeleteActivity(null, activityDO.Id, true);
 
