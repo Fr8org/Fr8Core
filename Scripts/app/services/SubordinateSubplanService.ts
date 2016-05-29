@@ -211,7 +211,7 @@ module dockyard.services {
             var _reloadData = () => {
                 $scope.webServiceActivities = [];
 
-                $http.post('/api/webservices/activities', null)
+                $http.get('/api/webservices?id=0')
                     .then((res) => {
                         var webServiceActivities = <Array<model.WebServiceActionSetDTO>>res.data;
                         angular.forEach(webServiceActivities, (webServiceActivity) => {
