@@ -53,6 +53,7 @@ namespace terminalSlack.Activities
             : base(true, crateManager)
         {
             _slackIntegration = new SlackIntegration();
+            DisableValidationOnFollowup = true;
         }
         public override async Task Initialize()
         {
