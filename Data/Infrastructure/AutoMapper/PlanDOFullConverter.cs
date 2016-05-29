@@ -25,10 +25,10 @@ namespace Data.Infrastructure.AutoMapper
                 return null;
             }
 
-            var subPlanDTOList = uow.PlanRepository.GetById<PlanDO>(plan.Id).ChildNodes.OfType<SubPlanDO>()
+            var subPlanDTOList = uow.PlanRepository.GetById<PlanDO>(plan.Id).ChildNodes.OfType<SubplanDO>()
                 .Select(x =>
                 {
-                    var pntDTO = Mapper.Map<FullSubPlanDTO>(x);
+                    var pntDTO = Mapper.Map<FullSubplanDto>(x);
                     pntDTO.Activities = x.ChildNodes.OfType<ActivityDO>().Select(Mapper.Map<ActivityDTO>).ToList();
                     return pntDTO;
                 }).ToList();

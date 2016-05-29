@@ -184,7 +184,7 @@ module dockyard.services {
                     });
             }
             else {
-                this.$http.post('/api/subplans/first_activity?id=' + existingSubPlanId, null)
+                this.$http.post('/api/subplans/activities?id=' + existingSubPlanId + "&filter=first", null)
                     .then((res: ng.IHttpPromiseCallbackArg<model.ActivityDTO>) => {
                         var activity = res.data;
                         displayConfigureActivityModal(parentPlan, activity)
