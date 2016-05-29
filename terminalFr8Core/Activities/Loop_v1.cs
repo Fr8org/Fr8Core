@@ -168,15 +168,6 @@ namespace terminalFr8Core.Activities
             SelectTheOnlyCrate(ConfigurationControls);
         }
 
-        private async Task<List<string>> GetLabelsByManifestType(string manifestType)
-        {
-            var upstreamCrates = await HubCommunicator.GetCratesByDirection(ActivityId, CrateDirection.Upstream);
-            return upstreamCrates
-                    .Where(c => c.ManifestType.Type == manifestType)
-                    .GroupBy(c => c.Label)
-                    .Select(c => c.Key).ToList();
-        }
-
         public override async Task FollowUp()
         {
             var crateChooser = GetControl<CrateChooser>("Available_Crates");
@@ -185,9 +176,6 @@ namespace terminalFr8Core.Activities
                 var selected = crateChooser.CrateDescriptions.FirstOrDefault(x => x.Selected);
                 if (selected != null)
                 {
-                    var labelList = await GetLabelsByManifestType(selected.ManifestType);
-
-                    UpdateCrateDescriptionLabel(labelList.FirstOrDefault());
                     SelectTheOnlyCrate(ConfigurationControls);
                 }
                 else
@@ -198,18 +186,8 @@ namespace terminalFr8Core.Activities
                     SelectTheOnlyCrate(ConfigurationControls);
                 }
             }
-
-            return;
         }
-
-        public void UpdateCrateDescriptionLabel(string label)
-        {
-            var updatableCrateChooser = Storage.FirstCrate<StandardConfigurationControlsCM>()
-                                .Content.Controls.OfType<CrateChooser>()
-                                .Single();
-            updatableCrateChooser.CrateDescriptions.FirstOrDefault(x => x.Selected).Label =
-                label;
-        }
+        
 
         private void SelectTheOnlyCrate(StandardConfigurationControlsCM controls)
         {

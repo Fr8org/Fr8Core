@@ -11,6 +11,7 @@ module dockyard.directives.upstreamDataChooser {
         selectItem: (field: model.FieldDTO) => void;
         openModal: () => void;
         createModal: () => void;
+        getGroupValue: (item: model.FieldDTO) => string;
     }
 
     export class UpstreamFieldChooserController {
@@ -60,6 +61,12 @@ module dockyard.directives.upstreamDataChooser {
                     $scope.change()($scope.field);
                 }
             };
+            $scope.getGroupValue = (item) => {
+                if (item.sourceActivityId == null) {
+                    return item.sourceCrateLabel;
+                }
+                return item.sourceCrateLabel + " (Id - " + item.sourceActivityId + ")";
+            };
 
             var getUpstreamFields = () => {
                 return UpstreamExtractor
@@ -68,19 +75,7 @@ module dockyard.directives.upstreamDataChooser {
                         var listItems: Array<model.DropDownListItem> = [];
 
                         angular.forEach(data.availableCrates, crate => {
-                            angular.forEach(crate.fields, it => {
-                                var i, j;
-                                var found = false;
-                                for (i = 0; i < listItems.length; ++i) {
-                                    if (listItems[i].key === it.key) {
-                                        found = true;
-                                        break;
-                                    }
-                                }
-                                if (!found) {
-                                    listItems.push(<model.DropDownListItem>it);
-                                }
-                            });
+                            angular.forEach(crate.fields, it => { listItems.push(<model.DropDownListItem>it); });
                             listItems.sort((x, y) => {
                                 if (x.key < y.key) {
                                     return -1;
@@ -105,7 +100,7 @@ module dockyard.directives.upstreamDataChooser {
                         }
                         else {
                             $scope.field.listItems = listItems;
-                            $scope.tableParams = new NgTableParams({ count: $scope.field.listItems.length }, { data: $scope.field.listItems, counts: [], groupBy: 'sourceCrateLabel' });
+                            $scope.tableParams = new NgTableParams({ count: $scope.field.listItems.length }, { data: $scope.field.listItems, counts: [], groupBy: $scope.getGroupValue });
                         }
                     });
             };

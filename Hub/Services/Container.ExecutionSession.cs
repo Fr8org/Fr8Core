@@ -511,7 +511,7 @@ namespace Hub.Services
             // But once again, implementation details of the activities mentioned about requires us to grand some limited access to the stack frames: we allow activity to store some
             // custom data "binded" to the its own stack frame. But we still don't allow activity to rearrage stack frames, otherwise Hub will lose control over the execution.
             // The following methods exists to enfore described constrainsts: it allow to change  custom data, but do not allow rearranging the stack frames.
-            // FR-3560 we also want to mark creates with the Id of activity that produced it and we don't want activities to break it
+            // FR-3560 we also want to mark crates with the Id of activity that produced it and we don't want activities to break it
             private void SyncPayload(ICrateStorage activityPayloadStorage, IUpdatableCrateStorage containerStorage, string currentActivityId)
             {
                 if (activityPayloadStorage == null)

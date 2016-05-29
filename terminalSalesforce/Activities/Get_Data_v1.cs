@@ -71,8 +71,6 @@ namespace terminalSalesforce.Actions
 
         public const string PayloadDataCrateLabel = "Payload from Salesforce Get Data";
 
-        public const string SalesforceObjectFieldsCrateLabel = "Salesforce Object Fields";
-
         private readonly ISalesforceManager _salesforceManager;
 
         public Get_Data_v1(ICrateManager crateManager, ISalesforceManager salesforceManager)
@@ -87,7 +85,8 @@ namespace terminalSalesforce.Actions
                 .GetSalesforceObjectTypes()
                 .Select(x => new ListItem() { Key = x.Key, Value = x.Key })
                 .ToList();
-            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel);
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel, true);
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PayloadDataCrateLabel, true);
             return Task.FromResult(true);
         }
 
@@ -98,7 +97,6 @@ namespace terminalSalesforce.Actions
             if (string.IsNullOrEmpty(selectedObject))
             {
                 Storage.RemoveByLabel(QueryFilterCrateLabel);
-                Storage.RemoveByLabel(SalesforceObjectFieldsCrateLabel);
                 this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
                 return;
             }
@@ -116,18 +114,11 @@ namespace terminalSalesforce.Actions
                 AvailabilityType.Configuration);
             Storage.ReplaceByLabel(queryFilterCrate);
 
-
-            var objectPropertiesCrate = Crate<FieldDescriptionsCM>.FromContent(
-            SalesforceObjectFieldsCrateLabel,
-            new FieldDescriptionsCM(selectedObjectProperties.Select(c => new FieldDTO(c.Key, c.Key) { SourceCrateLabel = RuntimeDataCrateLabel })),
-            AvailabilityType.RunTime);
-            Storage.ReplaceByLabel(objectPropertiesCrate);
-
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
             //Publish information for downstream activities
-            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel)
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RuntimeDataCrateLabel, true)
                           .AddFields(selectedObjectProperties);
-            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PayloadDataCrateLabel)
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(PayloadDataCrateLabel, true)
                           .AddFields(selectedObjectProperties);
         }
 
