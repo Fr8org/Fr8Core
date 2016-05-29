@@ -36,7 +36,7 @@ namespace HubTests.Controllers
                     Id = FixtureData.GetTestGuidById(0),
                     ChildNodes =
                     {
-                        new SubPlanDO(true)
+                        new SubplanDO(true)
                         {
                             Id = FixtureData.GetTestGuidById(1),
                             ChildNodes =
@@ -67,7 +67,7 @@ namespace HubTests.Controllers
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(3)] = new SuspenderActivityMock(CrateManager);
 
                 plan.PlanState = PlanState.Running;
-                plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
+                plan.StartingSubplan = (SubplanDO)plan.ChildNodes[0];
                 var userAcct = FixtureData.TestUser1();
                 uow.UserRepository.Add(userAcct);
                 plan.Fr8Account = userAcct;
@@ -110,7 +110,7 @@ namespace HubTests.Controllers
             rrMock.Setup(x => x.GetById<PlanDO>(It.IsAny<Guid>())).Returns(new PlanDO()
             {
                 Fr8Account = FixtureData.TestDockyardAccount1(),
-                StartingSubPlan = new SubPlanDO()
+                StartingSubplan = new SubplanDO()
             });
 
             Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
@@ -122,7 +122,7 @@ namespace HubTests.Controllers
             planMock.Setup(x=> x.GetFullPlan(uowMock.Object, (It.IsAny<Guid>()))).Returns(new PlanDO()
             {
                 Fr8Account = FixtureData.TestDockyardAccount1(),
-                StartingSubPlan = new SubPlanDO()
+                StartingSubplan = new SubplanDO()
             });
 
             Mock<IPusherNotifier> pusherMock = new Mock<IPusherNotifier>();
@@ -150,7 +150,7 @@ namespace HubTests.Controllers
             Mock<IPlanRepository> rrMock = new Mock<IPlanRepository>();
             rrMock.Setup(x => x.GetById<PlanDO>(It.IsAny<Guid>())).Returns(new PlanDO()
             {
-                StartingSubPlan = new SubPlanDO()
+                StartingSubplan = new SubplanDO()
             });
 
             Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
@@ -185,7 +185,7 @@ namespace HubTests.Controllers
             rrMock.Setup(x => x.GetById<PlanDO>(It.IsAny<Guid>())).Returns(new PlanDO()
             {
                 Fr8Account = FixtureData.TestDockyardAccount1(),
-                StartingSubPlan = new SubPlanDO()
+                StartingSubplan = new SubplanDO()
             });
 
             Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
@@ -197,7 +197,7 @@ namespace HubTests.Controllers
             planMock.Setup(x => x.GetFullPlan(uowMock.Object, (It.IsAny<Guid>()))).Returns(new PlanDO()
             {
                 Fr8Account = FixtureData.TestDockyardAccount1(),
-                StartingSubPlan = new SubPlanDO()
+                StartingSubplan = new SubplanDO()
             });
 
             Mock<IPusherNotifier> pusherMock = new Mock<IPusherNotifier>();

@@ -101,7 +101,7 @@ namespace Hub.StructureMap
                 For<IActivity>().Use<Activity>().Singleton().DecorateWith(z => dynamicProxy.CreateInterfaceProxyWithTarget(z, new AuthorizeActivityInterceptor(ObjectFactory.GetInstance<ISecurityServices>())));
                 For<IPlanNode>().Use<PlanNode>();
                 For<ISubscription>().Use<Subscription>();
-                For<ISubPlan>().Use<SubPlan>();
+                For<ISubplan>().Use<Subplan>();
                 For<IField>().Use<Field>();
                 //For<IDocuSignTemplate>().Use<DocuSignTemplate>();
                 For<IEvent>().Use<Hub.Services.Event>();
@@ -160,7 +160,7 @@ namespace Hub.StructureMap
 
                 For<IPlan>().Use<Hub.Services.Plan>();
 
-                For<ISubPlan>().Use<SubPlan>();
+                For<ISubplan>().Use<Subplan>();
                 For<IField>().Use<Field>();
                 //var mockProcess = new Mock<IProcessService>();
                 //mockProcess.Setup(e => e.HandleDocusignNotification(It.IsAny<String>(), It.IsAny<String>()));

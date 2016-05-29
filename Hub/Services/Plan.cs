@@ -109,7 +109,7 @@ namespace Hub.Services
 
         public bool IsMonitoringPlan(IUnitOfWork uow, PlanDO plan)
         {
-            var initialActivity = plan.StartingSubPlan.GetDescendantsOrdered()
+            var initialActivity = plan.StartingSubplan.GetDescendantsOrdered()
                 .OfType<ActivityDO>()
                 .FirstOrDefault(x => uow.ActivityTemplateRepository.GetByKey(x.ActivityTemplateId).Category != ActivityCategory.Solution);
 
@@ -162,7 +162,7 @@ namespace Hub.Services
                 submittedPlan.PlanState = PlanState.Inactive;
                 submittedPlan.Fr8Account = _security.GetCurrentAccount(uow);
 
-                submittedPlan.ChildNodes.Add(new SubPlanDO(true)
+                submittedPlan.ChildNodes.Add(new SubplanDO(true)
                 {
                     Id = Guid.NewGuid(),
                     Name = "Starting Subplan"

@@ -43,7 +43,7 @@ namespace HubTests.Services
                     Id = FixtureData.GetTestGuidById(0),
                     ChildNodes =
                     {
-                        new SubPlanDO(true)
+                        new SubplanDO(true)
                         {
                             Id = FixtureData.GetTestGuidById(1),
                             ChildNodes =
@@ -78,7 +78,7 @@ namespace HubTests.Services
                 });
 
                 plan.PlanState = PlanState.Running;
-                plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
+                plan.StartingSubplan = (SubplanDO)plan.ChildNodes[0];
 
                 var userAcct = FixtureData.TestUser1();
                 uow.UserRepository.Add(userAcct);
@@ -112,7 +112,7 @@ namespace HubTests.Services
                     Id = FixtureData.GetTestGuidById(0),
                     ChildNodes =
                     {
-                        new SubPlanDO(true)
+                        new SubplanDO(true)
                         {
                             Id = FixtureData.GetTestGuidById(1),
                             ChildNodes =
@@ -125,7 +125,7 @@ namespace HubTests.Services
                                 },
                             }
                         },
-                        new SubPlanDO(false)
+                        new SubplanDO(false)
                         {
                             Id = FixtureData.GetTestGuidById(3),
                             ChildNodes =
@@ -142,7 +142,7 @@ namespace HubTests.Services
                 });
 
                 plan.PlanState = PlanState.Running;
-                plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
+                plan.StartingSubplan = (SubplanDO)plan.ChildNodes[0];
 
                 var userAcct = FixtureData.TestUser1();
                 uow.UserRepository.Add(userAcct);
@@ -172,7 +172,7 @@ namespace HubTests.Services
                     Id = FixtureData.GetTestGuidById(0),
                     ChildNodes =
                     {
-                        new SubPlanDO(true)
+                        new SubplanDO(true)
                         {
                             Id = FixtureData.GetTestGuidById(1),
                             ChildNodes =
@@ -258,7 +258,7 @@ namespace HubTests.Services
                 });
 
                 plan.PlanState = PlanState.Running;
-                plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
+                plan.StartingSubplan = (SubplanDO)plan.ChildNodes[0];
 
                 var userAcct = FixtureData.TestUser1();
                 uow.UserRepository.Add(userAcct);
@@ -301,7 +301,7 @@ namespace HubTests.Services
                     Id = FixtureData.GetTestGuidById(0),
                     ChildNodes =
                     {
-                        new SubPlanDO(true)
+                        new SubplanDO(true)
                         {
                             Id = FixtureData.GetTestGuidById(1),
                             ChildNodes =
@@ -387,7 +387,7 @@ namespace HubTests.Services
                 });
 
                 plan.PlanState = PlanState.Running;
-                plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
+                plan.StartingSubplan = (SubplanDO)plan.ChildNodes[0];
 
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(4)] = new SuspenderActivityMock(CrateManager);
 
@@ -448,7 +448,7 @@ namespace HubTests.Services
                     Id = FixtureData.GetTestGuidById(0),
                     ChildNodes =
                     {
-                        new SubPlanDO(true)
+                        new SubplanDO(true)
                         {
                             Id = FixtureData.GetTestGuidById(1),
                             ChildNodes =
@@ -485,7 +485,7 @@ namespace HubTests.Services
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(3)] = new JumperActivityMock(CrateManager, FixtureData.GetTestGuidById(5));
 
                 plan.PlanState = PlanState.Running;
-                plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
+                plan.StartingSubplan = (SubplanDO)plan.ChildNodes[0];
 
                 var userAcct = FixtureData.TestUser1();
                 uow.UserRepository.Add(userAcct);
@@ -518,7 +518,7 @@ namespace HubTests.Services
                     Id = FixtureData.GetTestGuidById(0),
                     ChildNodes =
                     {
-                        new SubPlanDO(true)
+                        new SubplanDO(true)
                         {
                             Id = FixtureData.GetTestGuidById(1),
                             ChildNodes =
@@ -567,7 +567,7 @@ namespace HubTests.Services
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(3)] = new JumperActivityMock(CrateManager, FixtureData.GetTestGuidById(5));
 
                 plan.PlanState = PlanState.Running;
-                plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
+                plan.StartingSubplan = (SubplanDO)plan.ChildNodes[0];
 
                 var userAcct = FixtureData.TestUser1();
                 uow.UserRepository.Add(userAcct);
@@ -599,7 +599,7 @@ namespace HubTests.Services
                     Id = FixtureData.GetTestGuidById(0),
                     ChildNodes =
                     {
-                        new SubPlanDO(true)
+                        new SubplanDO(true)
                         {
                             Id = FixtureData.GetTestGuidById(1),
                             ChildNodes =
@@ -624,7 +624,7 @@ namespace HubTests.Services
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(2)] = new JumpToSelfActivityMock(CrateManager);
 
                 plan.PlanState = PlanState.Running;
-                plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
+                plan.StartingSubplan = (SubplanDO)plan.ChildNodes[0];
 
                 var userAcct = FixtureData.TestUser1();
                 uow.UserRepository.Add(userAcct);
@@ -656,7 +656,7 @@ namespace HubTests.Services
                     Id = FixtureData.GetTestGuidById(0),
                     ChildNodes =
                     {
-                        new SubPlanDO(true)
+                        new SubplanDO(true)
                         {
                             Id = FixtureData.GetTestGuidById(1),
                             ChildNodes =
@@ -675,7 +675,7 @@ namespace HubTests.Services
                                 },
                             }
                         },
-                        new SubPlanDO(false)
+                        new SubplanDO(false)
                         {
                             Id = FixtureData.GetTestGuidById(4),
                             ChildNodes =
@@ -699,7 +699,7 @@ namespace HubTests.Services
                 });
 
                 plan.PlanState = PlanState.Running;
-                plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
+                plan.StartingSubplan = (SubplanDO)plan.ChildNodes[0];
 
                 var userAcct = FixtureData.TestUser1();
                 uow.UserRepository.Add(userAcct);
@@ -733,7 +733,7 @@ namespace HubTests.Services
                     Id = FixtureData.GetTestGuidById(0),
                     ChildNodes =
                     {
-                        new SubPlanDO(true)
+                        new SubplanDO(true)
                         {
                             Id = FixtureData.GetTestGuidById(1),
                             ChildNodes =
@@ -752,7 +752,7 @@ namespace HubTests.Services
                                 },
                             }
                         },
-                        new SubPlanDO(false)
+                        new SubplanDO(false)
                         {
                             Id = FixtureData.GetTestGuidById(4),
                             ChildNodes =
@@ -776,7 +776,7 @@ namespace HubTests.Services
                 });
 
                 plan.PlanState = PlanState.Running;
-                plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
+                plan.StartingSubplan = (SubplanDO)plan.ChildNodes[0];
 
                 var userAcct = FixtureData.TestUser1();
                 uow.UserRepository.Add(userAcct);
@@ -811,7 +811,7 @@ namespace HubTests.Services
                     Id = FixtureData.GetTestGuidById(0),
                     ChildNodes =
                     {
-                        new SubPlanDO(true)
+                        new SubplanDO(true)
                         {
                             Id = FixtureData.GetTestGuidById(1),
                             ChildNodes =
@@ -841,7 +841,7 @@ namespace HubTests.Services
                 });
 
                 plan.PlanState = PlanState.Running;
-                plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
+                plan.StartingSubplan = (SubplanDO)plan.ChildNodes[0];
 
                 var userAcct = FixtureData.TestUser1();
                 uow.UserRepository.Add(userAcct);
@@ -887,7 +887,7 @@ namespace HubTests.Services
                     Id = FixtureData.GetTestGuidById(0),
                     ChildNodes =
                     {
-                        new SubPlanDO(true)
+                        new SubplanDO(true)
                         {
                             Id = FixtureData.GetTestGuidById(1),
                             ChildNodes =
@@ -917,7 +917,7 @@ namespace HubTests.Services
 
                             }
                         },
-                        new SubPlanDO(false)
+                        new SubplanDO(false)
                         {
                             Id = FixtureData.GetTestGuidById(5),
                             ChildNodes =
@@ -943,7 +943,7 @@ namespace HubTests.Services
                 });
 
                 plan.PlanState = PlanState.Running;
-                plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
+                plan.StartingSubplan = (SubplanDO)plan.ChildNodes[0];
 
                 var userAcct = FixtureData.TestUser1();
                 uow.UserRepository.Add(userAcct);
