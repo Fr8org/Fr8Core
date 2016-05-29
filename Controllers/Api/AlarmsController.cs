@@ -11,6 +11,7 @@ using log4net;
 using Data.Interfaces;
 using System.Linq;
 using System.Net.Http;
+using System.Web.Http.Validation.Providers;
 
 namespace HubWeb.Controllers
 {
@@ -35,9 +36,18 @@ namespace HubWeb.Controllers
         {
             try
             {
-                var plan = ObjectFactory.GetInstance<IPlan>();
-                var continueTask = plan.Continue(alarmDTO.ContainerId);
-                Task.WaitAll(continueTask);
+                var containerService = ObjectFactory.GetInstance<IContainerService>();
+                using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+                {
+                    var container = uow.ContainerRepository.GetByKey(alarmDTO.ContainerId);
+                    if (container == null)
+                    {
+                        throw new Exception($"Container {alarmDTO.ContainerId} was not found.");
+                    }
+
+                    var continueTask = containerService.Continue(uow, container);
+                    Task.WaitAll(continueTask);
+                }
             }
             catch (Exception ex)
             {

@@ -15,6 +15,8 @@ namespace HubTests.Utilization
     [Category("UtilizationMonitoring")]
     public class ActivityExecutionRateLimiterIntTests : ContainerExecutionTestBase
     {
+        private readonly ManualyTriggeredTimerService _timerService = new ManualyTriggeredTimerService();
+
         private class RateLimiterMock : IActivityExecutionRateLimitingService, IUtilizationMonitoringService
         {
             private int _activitiesExecuted;
@@ -38,6 +40,13 @@ namespace HubTests.Utilization
 
             ObjectFactory.Container.Inject(typeof(IActivityExecutionRateLimitingService), service);
             ObjectFactory.Container.Inject(typeof(IUtilizationMonitoringService), service);
+            ObjectFactory.Container.Inject<ITimer>(_timerService);
+        }
+
+        public override void TearDown()
+        {
+            _timerService.Clear();
+            base.TearDown();
         }
 
         [Test]
@@ -107,7 +116,7 @@ namespace HubTests.Utilization
 
                 uow.SaveChanges();
 
-                await Plan.Run(plan.Id, null);
+                await Plan.Run(uow, plan, null);
 
                 AssertExecutionSequence(new[]
                 {

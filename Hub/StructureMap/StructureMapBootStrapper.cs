@@ -36,6 +36,7 @@ using Data.Repositories.Utilization;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Managers;
 using Hub.Security.ObjectDecorators;
+using Hub.Services.Timers;
 
 namespace Hub.StructureMap
 {
@@ -95,7 +96,7 @@ namespace Hub.StructureMap
                 For<ITerminalTransmitter>().Use<TerminalTransmitter>();
 
                 For<IPlan>().Use<Hub.Services.Plan>().DecorateWith((context, service) => new PlanSecurityDecorator(service, ObjectFactory.GetInstance<ISecurityServices>()));
-                For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
+                For<InternalInterfaces.IContainerService>().Use<InternalClass.ContainerService>();
                 For<InternalInterfaces.IFact>().Use<InternalClass.Fact>();
                 var dynamicProxy = new ProxyGenerator();
                 For<IActivity>().Use<Activity>().Singleton().DecorateWith(z => dynamicProxy.CreateInterfaceProxyWithTarget(z, new AuthorizeActivityInterceptor(ObjectFactory.GetInstance<ISecurityServices>())));
@@ -125,6 +126,7 @@ namespace Hub.StructureMap
                 For<IUtilizationMonitoringService>().Use<UtilizationMonitoringService>().Singleton();
                 For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
                 For<MediaTypeFormatter>().Use<JsonMediaTypeFormatter>();
+                For<ITimer>().Use<Win32Timer>();
             }
         }
 
@@ -151,7 +153,7 @@ namespace Hub.StructureMap
 
                 var mockSegment = new Mock<ITracker>();
                 For<ITracker>().Use(mockSegment.Object);
-                For<InternalInterfaces.IContainer>().Use<InternalClass.Container>();
+                For<InternalInterfaces.IContainerService>().Use<InternalClass.ContainerService>();
                 For<InternalInterfaces.IFact>().Use<InternalClass.Fact>();
 
                 For<ISubscription>().Use<Subscription>();
@@ -195,6 +197,7 @@ namespace Hub.StructureMap
                 For<IPlanTemplates>().Use<PlanTemplates>();
                 For<IUtilizationMonitoringService>().Use<UtilizationMonitoringService>().Singleton();
                 For<IActivityExecutionRateLimitingService>().Use<ActivityExecutionRateLimitingService>().Singleton();
+                For<ITimer>().Use<Win32Timer>();
             }
         }
 

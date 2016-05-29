@@ -31,7 +31,7 @@ namespace HubWeb.Controllers
         public async Task<ActionResult> ClonePlan(Guid id)
         {
             //let's clone the plan and redirect user to that cloned plan url
-            var clonedPlan = await _plan.Clone(id);
+            var clonedPlan = _plan.Clone(id);
             var baseUri = Request.Url.GetLeftPart(UriPartial.Authority);
             var clonedPlanUrl = baseUri + "/dashboard/plans/" + clonedPlan.Id + "/builder?viewMode=kiosk&view=Collection";
             return Redirect(clonedPlanUrl);
