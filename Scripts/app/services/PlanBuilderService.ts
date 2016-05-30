@@ -132,10 +132,10 @@ module dockyard.services {
                         }
                     },
                     
-                    'create': {
-                        method: 'POST',
-                        url: '/api/plans/create'
-                    },
+                    //'create': {
+                    //    method: 'POST',
+                    //    url: '/api/plans/create'
+                    //},
                     'createSolution': {
                         method: 'POST',
                         url: '/api/plans/createSolution',

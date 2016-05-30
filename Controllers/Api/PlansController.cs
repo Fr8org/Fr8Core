@@ -59,17 +59,17 @@ namespace HubWeb.Controllers
             _activity = ObjectFactory.GetInstance<IActivity>();
         }
 
-        [HttpPost]
-        [Fr8HubWebHMACAuthenticate]
-        public async Task<IHttpActionResult> Create(Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, Guid? authorizationTokenId = null)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var userId = User.Identity.GetUserId();
-                var result = await _activity.CreateAndConfigure(uow, userId, activityTemplateId, label, name, order, parentNodeId, true, authorizationTokenId) as PlanDO;
-                return Ok(Mapper.Map<PlanDTO>(result));
-            }
-        }
+        //[HttpPost]
+        //[Fr8HubWebHMACAuthenticate]
+        //public async Task<IHttpActionResult> Create(Guid activityTemplateId, string label = null, string name = null, int? order = null, Guid? parentNodeId = null, Guid? authorizationTokenId = null)
+        //{
+        //    using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+        //    {
+        //        var userId = User.Identity.GetUserId();
+        //        var result = await _activity.CreateAndConfigure(uow, userId, activityTemplateId, label, name, order, parentNodeId, true, authorizationTokenId) as PlanDO;
+        //        return Ok(Mapper.Map<PlanDTO>(result));
+        //    }
+        //}
 
         [HttpPost]
         public async Task<IHttpActionResult> CreateSolution(string solutionName)
@@ -117,36 +117,7 @@ namespace HubWeb.Controllers
             }
         }
 
-        [Fr8ApiAuthorize]
-        //[Route("full/{id:guid}")]
-        [ActionName("full")]
-        [ResponseType(typeof(PlanDTO))]
-        [HttpGet]
-        public IHttpActionResult GetFullPlan(Guid id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var plan = _plan.GetFullPlan(uow, id);
-                var result = PlanMappingHelper.MapPlanToDto(uow, plan);
-
-                return Ok(result);
-            };
-        }
-
-        //[Route("getByAction/{id:guid}")]
-        [Fr8HubWebHMACAuthenticate]
-        [ResponseType(typeof(PlanDTO))]
-        [HttpGet]
-        public IHttpActionResult GetByActivity(Guid id)
-        {
-            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
-            {
-                var plan = _plan.GetPlanByActivityId(uow, id);
-                var result = PlanMappingHelper.MapPlanToDto(uow, plan);
-
-                return Ok(result);
-            };
-        }
+        
 
         [Fr8ApiAuthorize]
         [ActionName("getByQuery")]
@@ -176,6 +147,37 @@ namespace HubWeb.Controllers
 
                 return Ok(planResult);
             }
+        }
+
+        [Fr8ApiAuthorize]
+        //[Route("full/{id:guid}")]
+        [ActionName("full")]
+        [ResponseType(typeof(PlanDTO))]
+        [HttpGet]
+        public IHttpActionResult GetFullPlan(Guid id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var plan = _plan.GetFullPlan(uow, id);
+                var result = PlanMappingHelper.MapPlanToDto(uow, plan);
+
+                return Ok(result);
+            };
+        }
+
+        //[Route("getByAction/{id:guid}")]
+        [Fr8HubWebHMACAuthenticate]
+        [ResponseType(typeof(PlanDTO))]
+        [HttpGet]
+        public IHttpActionResult GetByActivity(Guid id)
+        {
+            using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var plan = _plan.GetPlanByActivityId(uow, id);
+                var result = PlanMappingHelper.MapPlanToDto(uow, plan);
+
+                return Ok(result);
+            };
         }
 
         [Fr8ApiAuthorize]
@@ -232,15 +234,6 @@ namespace HubWeb.Controllers
             return Ok();
         }
 
-        [HttpPost]
-        [ActionName("activity")]
-        [Fr8ApiAuthorize]
-        public IHttpActionResult PutActivity(ActivityDTO activityDto)
-        {
-            //A stub until the functionaltiy is ready
-            return Ok();
-        }
-
 
         [HttpDelete]
         [Fr8HubWebHMACAuthenticate]
@@ -252,13 +245,6 @@ namespace HubWeb.Controllers
             return Ok(id);
         }
 
-
-        [ActionName("triggersettings"), ResponseType(typeof(List<ExternalEventDTO>))]
-        [Fr8ApiAuthorize]
-        public IHttpActionResult GetTriggerSettings()
-        {
-            return Ok("This is no longer used due to V2 Event Handling mechanism changes.");
-        }
         
         [HttpPost]
         [Fr8ApiAuthorize]
