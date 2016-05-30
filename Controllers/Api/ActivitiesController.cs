@@ -45,9 +45,9 @@ namespace HubWeb.Controllers
             {
                 var userId = User.Identity.GetUserId();
                 var result = await _activity.CreateAndConfigure(uow, userId, activityTemplateId, label, name, order, parentNodeId, false, authorizationTokenId) as ActivityDO;
-                    return Ok(Mapper.Map<ActivityDTO>(result));
-                }
-                }
+                return Ok(Mapper.Map<ActivityDTO>(result));
+            }
+        }
 
 
         //WARNING. there's lots of potential for confusion between this POST method and the GET method following it.

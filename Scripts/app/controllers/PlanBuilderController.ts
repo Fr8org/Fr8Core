@@ -41,11 +41,11 @@ module dockyard.controllers {
         solutionName: string;
         curAggReloadingActions: Array<string>;
         addSubPlan: () => void;
-        openMenu: ($mdOpenMenu: any , ev: any) => void;
+        openMenu: ($mdOpenMenu: any, ev: any) => void;
         view: string;
         viewMode: string;
         hasAnyActivity: (pSubPlan: any) => boolean;
-}
+    }
 
 
     //Setup aliases
@@ -78,7 +78,8 @@ module dockyard.controllers {
             'AuthService',
             'ConfigureTrackerService',
             'SubPlanService',
-            '$stateParams'
+            '$stateParams',
+            '$window'
         ];
 
         private _longRunningActionsCounter: number;
@@ -101,7 +102,8 @@ module dockyard.controllers {
             private AuthService: services.AuthService,
             private ConfigureTrackerService: services.ConfigureTrackerService,
             private SubPlanService: services.ISubPlanService,
-            private $stateParams: ng.ui.IStateParamsService
+            private $stateParams: ng.ui.IStateParamsService,
+            private $window: ng.IWindowService
         ) {
 
             this.LayoutService.resetLayout();
@@ -118,7 +120,7 @@ module dockyard.controllers {
 
             this.$scope.view = $stateParams['view'];
             this.$scope.viewMode = $stateParams['viewMode'];
-            
+
             this.$scope.addAction = (group: model.ActionGroup) => {
                 this.addAction(group);
             }
@@ -148,7 +150,7 @@ module dockyard.controllers {
                 this.reConfigure(actionsArray);
             };
 
-            $scope.openAddLabelModal = (action: model.ActivityDTO) => { 
+            $scope.openAddLabelModal = (action: model.ActivityDTO) => {
 
                 var modalInstance = $modal.open({
                     animation: true,
@@ -169,7 +171,7 @@ module dockyard.controllers {
 
             this.$scope.selectAction = (action: model.ActivityDTO) => {
                 if (!this.$scope.current.activities || this.$scope.current.activities.id !== action.id)
-                    this.selectAction(action, null);
+                    this.selectAction(action, null, $window);
 
             }
 
@@ -190,7 +192,7 @@ module dockyard.controllers {
                 if (realAction === null) {
                     return;
                 }
-                
+
                 //let's remove this action from it's old parent
                 var downstreamActions: model.ActivityDTO[] = this.findAndRemoveAction(realAction);
 
@@ -207,7 +209,7 @@ module dockyard.controllers {
                     if (realAction.ordering <= index) {
                         index -= 1;
                     }
-                } 
+                }
 
                 //now we should inject it to proper position and get downstream actions
                 downstreamActions = downstreamActions.concat(this.insertActionToParent(realAction, index));
@@ -222,7 +224,7 @@ module dockyard.controllers {
                 //there might be duplicate actions in our downstreamactions array
                 //let's eliminate them
                 var uniqueDownstreamActions = _.uniq(downstreamActions, (action: model.ActivityDTO) => action.id);
-                
+
                 //let's wait for UI to finish it's rendering
                 this.$timeout(() => {
                     //reconfigure those actions
@@ -304,7 +306,7 @@ module dockyard.controllers {
             //lets call reconfigure on downstream actions
             return <model.ActivityDTO[]>newList.slice(index + 1, newList.length);
         }
-        
+
         //removes specified action from it's parent and returns downstream actions
         private findAndRemoveAction(action: model.ActivityDTO): model.ActivityDTO[] {
             var currentParent = this.findActionById(action.parentPlanNodeId);
@@ -385,7 +387,7 @@ module dockyard.controllers {
             this.loadPlan($state.params.viewMode);
         }
 
-        
+
         private createNewSolution(solutionName: string) {
             var plan = this.PlanService.createSolution({
                 solutionName: solutionName
@@ -412,7 +414,7 @@ module dockyard.controllers {
                 this.setAdvancedEditingMode();
             }
             this.renderPlan(<interfaces.IPlanVM>curPlan.plan);
-            this.$state.go('planBuilder', { id: curPlan.plan.id,  viewMode: mode });
+            this.$state.go('planBuilder', { id: curPlan.plan.id, viewMode: mode });
         }
 
         /*
@@ -554,13 +556,13 @@ module dockyard.controllers {
                 controller: 'AuthenticationDialogController',
                 scope: modalScope
             })
-            .result
-            .then(() => {
-                self.$scope.$broadcast(
-                    dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthCompleted],
-                    new dockyard.directives.paneConfigureAction.AuthenticationCompletedEventArgs(<interfaces.IActivityDTO>({ id: action.id }))
-                );
-            });
+                .result
+                .then(() => {
+                    self.$scope.$broadcast(
+                        dockyard.directives.paneConfigureAction.MessageType[dockyard.directives.paneConfigureAction.MessageType.PaneConfigureAction_AuthCompleted],
+                        new dockyard.directives.paneConfigureAction.AuthenticationCompletedEventArgs(<interfaces.IActivityDTO>({ id: action.id }))
+                    );
+                });
         }
 
         private deleteAction(action: model.ActivityDTO) {
@@ -599,7 +601,7 @@ module dockyard.controllers {
             // Add action to Workflow Designer.
             this.$scope.current.activities = action.toActionVM();
             this.$scope.current.activities.activityTemplate = activityTemplate;
-            this.selectAction(action, eventArgs.group);
+            this.selectAction(action, eventArgs.group, this.$window);
         }
 
         private allowsChildren(action: model.ActivityDTO) {
@@ -608,7 +610,6 @@ module dockyard.controllers {
 
         private addActionToUI(action: model.ActivityDTO, group: model.ActionGroup) {
             this.$scope.current.activities = action;
-
             var parentAction = this.findActionById(action.parentPlanNodeId);
             if (parentAction != null) {
                 parentAction.childrenActivities.push(action);
@@ -638,7 +639,9 @@ module dockyard.controllers {
             Handles message 'WorkflowDesignerPane_ActionSelected'. 
             This message is sent when user is selecting an existing action or after addng a new action. 
         */
-        private selectAction(action: model.ActivityDTO, group: model.ActionGroup) {
+        private selectAction(action: model.ActivityDTO, group: model.ActionGroup, $window) {
+            //this performs a call to Segment service for analytics
+            $window.analytics.track("Added Activity To Plan", { "Activity Name": action.name });
 
             console.log("Activity selected: " + action.id);
             var originalId,
@@ -674,7 +677,7 @@ module dockyard.controllers {
 
                     //Whether user selected a new action or just clicked on the current one
                     var actionChanged = action.id != originalId;
-                
+
                     // Determine if we need to load action from the db or we can just use 
                     // the one returned from the above saveCurrent operation.
                     canBypassActionLoading = idChangedFromTempToPermanent || !actionChanged;
@@ -716,7 +719,7 @@ module dockyard.controllers {
             var action = this.findActionById(updatedAction.id);
             action.name = updatedAction.name;
             action.label = updatedAction.label;
-        }   
+        }
 
         /*
             Handles message 'SelectActionPane_ActionTypeSelected'
@@ -796,7 +799,7 @@ module dockyard.controllers {
 
         // This should handle everything that should be done when a configure call response arrives from server.
         private PaneConfigureAction_ConfigureCallResponse(callConfigureResponseEventArgs: pca.CallConfigureResponseEventArgs) {
-            
+
             //let's wait for last configure call before starting on aggresive actions
             if (this.ConfigureTrackerService.hasPendingConfigureCalls()) {
                 return;
@@ -818,7 +821,7 @@ module dockyard.controllers {
                     //return;
                 }
             }
-            
+
             // scan all actions to find actions with tag AgressiveReload in ActivityTemplate
             this.reConfigure(results);
 
@@ -866,16 +869,16 @@ module dockyard.controllers {
         private getAgressiveReloadingActions(
             actionGroups: Array<model.ActionGroup>,
             currentAction: interfaces.IActivityDTO) {
-                         
+
             var results: Array<model.ActivityDTO> = [];
             var currentGroupArray = actionGroups.filter(group => _.any<model.ActivityEnvelope>(group.envelopes, envelope => envelope.activity.id == currentAction.id));
             if (currentGroupArray.length == 0) {
                 return [];
             }
             var currentGroup = currentGroupArray[0]; // max one item is possible.
-            currentGroup.envelopes.filter(envelope => 
-                 /* envelope.activity.activityTemplate.tags !== null 
-                && envelope.activity.activityTemplate.tags.indexOf('AggressiveReload') !== -1 && */
+            currentGroup.envelopes.filter(envelope =>
+                /* envelope.activity.activityTemplate.tags !== null 
+               && envelope.activity.activityTemplate.tags.indexOf('AggressiveReload') !== -1 && */
                 envelope.activity.ordering > currentAction.ordering
             ).forEach(env => {
                 results.push(env.activity);
@@ -885,7 +888,7 @@ module dockyard.controllers {
         }
     }
     app.controller('PlanBuilderController', PlanBuilderController);
-    app.controller('ActivityLabelModalController', ['$scope', '$modalInstance','label', ($scope: any, $modalInstance: any, label: string): void => {
+    app.controller('ActivityLabelModalController', ['$scope', '$modalInstance', 'label', ($scope: any, $modalInstance: any, label: string): void => {
 
         $scope.label = label;
 

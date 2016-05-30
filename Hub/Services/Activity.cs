@@ -143,17 +143,7 @@ namespace Hub.Services
             {
                 return plan;
             }
-            // This makes a call to our analytics
-            try
-            {
-                ObjectFactory.GetInstance<ITracker>()
-                    .Track(uow, userId, "Added Activity to Plan",
-                        new Segment.Model.Properties() { { "Activity Name", name } });
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
+
             return activity;
         }
 
