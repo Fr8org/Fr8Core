@@ -120,9 +120,10 @@ namespace HubWeb.Controllers
         
 
         [Fr8ApiAuthorize]
-        [ActionName("getByQuery")]
+        [ActionName("query")]
         [HttpGet]
-        public IHttpActionResult GetByQuery([FromUri] PlanQueryDTO planQuery)
+        //formerly  GetByQuery
+        public IHttpActionResult Query([FromUri] PlanQueryDTO planQuery)
         {
             //i want to leave md-data-tables related logic inside controller
             //that is why this operation is done here - our backend service shouldn't know anything
@@ -147,6 +148,15 @@ namespace HubWeb.Controllers
 
                 return Ok(planResult);
             }
+        }
+
+
+        class PlansGetParams
+        {
+            public Guid id { get; set; }
+            public Guid activity_id { get; set; }
+            public bool include_children { get; set; } = false;
+            public string name { get; set; }
         }
 
         [Fr8ApiAuthorize]
