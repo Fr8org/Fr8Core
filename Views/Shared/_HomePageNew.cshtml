@@ -12,10 +12,15 @@
 <!--Google Analytics code block. should probably be moved to a common js file -->
 <script>
     (function (i, s, o, g, r, a, m) {
-        i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
+        i['GoogleAnalyticsObject'] = r;
+        i[r] = i[r] || function () {
             (i[r].q = i[r].q || []).push(arguments)
-        }, i[r].l = 1 * new Date(); a = s.createElement(o),
-            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+        }, i[r].l = 1 * new Date();
+        a = s.createElement(o),
+            m = s.getElementsByTagName(o)[0];
+        a.async = 1;
+        a.src = g;
+        m.parentNode.insertBefore(a, m)
     })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
     ga('create', 'UA-52048536-1', 'kwasant.com');
@@ -49,12 +54,11 @@
     @Styles.Render("~/bundles/css/frontpage-new")
 
     <!--[if lt IE 9]>
-    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <script src="~/Content/js/respond.min.js"></script>
+        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+        <script src="~/Content/js/respond.min.js"></script>
     <![endif]-->
 
     <script type="text/javascript">
-
         @{
             var userID = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser();
             if (String.IsNullOrWhiteSpace(userID))
@@ -113,7 +117,7 @@
 </head>
 <body>
     <!--[if lt IE 7]>
-    <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
+        <p class="browsehappy">You are using an <strong>outdated</strong> browser. Please <a href="http://browsehappy.com/">upgrade your browser</a> to improve your experience.</p>
     <![endif]-->
     <div id="fullpage">
         <div id="wrap">
@@ -148,3 +152,10 @@
     @Scripts.Render("~/bundles/js/analytics")
 </body>
 </html>
+<script type="text/javascript">
+    window.analytics = window.analytics || [], window.analytics.methods = ["identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off", "trackLink", "trackForm", "trackClick", "trackSubmit"], window.analytics.factory = function (t) { return function () { var a = Array.prototype.slice.call(arguments); return a.unshift(t), window.analytics.push(a), window.analytics } }; for (var i = 0; i < window.analytics.methods.length; i++) { var key = window.analytics.methods[i]; window.analytics[key] = window.analytics.factory(key) } window.analytics.load = function (t) { if (!document.getElementById("analytics-js")) { var a = document.createElement("script"); a.type = "text/javascript", a.id = "analytics-js", a.async = !0, a.src = ("https:" === document.location.protocol ? "https://" : "http://") + "cdn.segment.io/analytics.js/v1/" + t + "/analytics.min.js"; var n = document.getElementsByTagName("script")[0]; n.parentNode.insertBefore(a, n) } }, window.analytics.SNIPPET_VERSION = "2.0.9",
+window.analytics.load('@(new ConfigRepository().Get("SegmentWriteKey"))');
+    window.analytics.page('Home');
+    var solutions = document.getElementsByClassName('seg-solution');
+    window.analytics.trackLink(solutions, "Loaded Solution");
+</script>
