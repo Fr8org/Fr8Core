@@ -1,15 +1,24 @@
 ﻿<div class="modal-header">
-    <h3 class="modal-title">I'm a modal!</h3>
+    @*baden baden - you can don't repeat twice :)*@
+    <h3 class="modal-title">{{plan.plan.name}}</h3>
 </div>
 <div class="modal-body">
-    <ul>
-        <li ng-repeat="item in items">
-            <a href="#" ng-click="$event.preventDefault(); selected.item = item">{{ item }}</a>
-        </li>
-    </ul>
-    Selected: <b>{{ selected.item }}</b>
+    <textarea class="form-control" name="planDescription" cols="" rows="">{{plan.plan.description}}</textarea>
 </div>
 <div class="modal-footer">
-    <button class="btn btn-primary" type="button" ng-click="ok()">OK</button>
+    <button class="btn btn-primary" type="button" ng-click="publish()">Publish plan template</button>
+    <a id="downloadJson" download='{{plan.plan.name}}.json' href="{{href}}" class="btn btn-primary" type='application/json'>Download as JSON file</a>
     <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
 </div>
+@*<div class="hidden" id="planJson">{{plan | json}}</div>
+
+<script>
+    // bed... very bed practice
+    //function download() {
+    //    var json = document.getElementById('planJson').innerText;
+    //    var data = new Blob([json]);
+    //    var a = document.getElementById('downloadJson');
+    //    a.href = URL.createObjectURL(data);
+    //}
+    
+</script>*@

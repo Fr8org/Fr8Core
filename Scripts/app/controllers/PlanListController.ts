@@ -262,15 +262,19 @@ module dockyard.controllers {
         }
 
         private createTemplate(plan: interfaces.IPlanVM) {
-            debugger;
+
+            let planFull = this.PlanService.getFull({id:plan.id});
             let modalInstance = this.$modal.open({
                 animation: true,
                 templateUrl: '/AngularTemplate/PlanTemplateModal',
                 controller: 'PlanTemplateModalController',
                 resolve: {
-                    
+                    plan: () => {
+                        return planFull;
+                    }
                 }
-            });
+            });    
+            
         }
 
         private goToPlanPage(planId) {
