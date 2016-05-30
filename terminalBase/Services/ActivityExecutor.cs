@@ -73,6 +73,8 @@ namespace TerminalBase.Services
 
             activityContext.HubCommunicator = _hubCommunicator;
 
+            ContainerExecutionContext executionContext;
+
             switch (curActionPath.ToLower())
             {
                 case "configure":
@@ -88,9 +90,13 @@ namespace TerminalBase.Services
                     return SerializeResponse(activityContext);
 
                 case "run":
-                case "executechildactivities":
-                    var executionContext = await CreateContainerExecutionContext(curDataDTO);
+                    executionContext = await CreateContainerExecutionContext(curDataDTO);
                     await activity.Run(activityContext, executionContext);
+                    return SerializeResponse(executionContext);
+
+                case "executechildactivities":
+                    executionContext = await CreateContainerExecutionContext(curDataDTO);
+                    await activity.RunChildActivities(activityContext, executionContext);
                     return SerializeResponse(executionContext);
 
                 case "documentation":
