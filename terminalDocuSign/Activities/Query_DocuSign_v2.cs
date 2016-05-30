@@ -104,7 +104,7 @@ namespace terminalDocuSign.Activities
             ActivityUI.StatusFilter.ListItems = DocuSignQuery.Statuses
                                                                         .Select(x => new ListItem { Key = x.Key, Value = x.Value })
                                                                         .ToList();
-            CrateSignaller.MarkAvailableAtRuntime<DocuSignEnvelopeCM_v3>(RunTimeCrateLabel)
+            CrateSignaller.MarkAvailableAtRuntime<DocuSignEnvelopeCM_v3>(RunTimeCrateLabel, true)
                           .AddFields(GetEnvelopeProperties());
         }
 

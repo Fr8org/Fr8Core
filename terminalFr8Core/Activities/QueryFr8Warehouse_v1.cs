@@ -305,7 +305,7 @@ namespace terminalFr8Core.Activities
             {
                 var filterPane = (FilterPane)queryPicker.Radios[1].Controls[1];
                 var availableObjects = (DropDownList)queryPicker.Radios[1].Controls[0];
-                var criteria = JsonConvert.DeserializeObject<FilterDataDTO>(filterPane.Value);
+                var criteria = filterPane.Value == null ? null : JsonConvert.DeserializeObject<FilterDataDTO>(filterPane.Value);
 
                 if (availableObjects.Value == null)
                 {
@@ -319,7 +319,7 @@ namespace terminalFr8Core.Activities
                     selectedObjectId = objectId;
                 }
 
-                conditions = (criteria.ExecutionType == FilterExecutionType.WithoutFilter)
+                conditions = criteria == null || criteria.ExecutionType == FilterExecutionType.WithoutFilter
                     ? new List<FilterConditionDTO>()
                     : criteria.Conditions;
             }

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using Fr8Data.Crates;
 using Fr8Data.States;
 using Newtonsoft.Json;
@@ -38,6 +39,9 @@ namespace Fr8Data.DataTransferObjects
 
         [JsonProperty("sourceCrateLabel", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public string SourceCrateLabel { get; set; }
+
+        [JsonProperty("sourceActivityId", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
+        public string SourceActivityId { get; set; }
 
         [JsonProperty("data", DefaultValueHandling = DefaultValueHandling.Ignore, NullValueHandling = NullValueHandling.Ignore)]
         public Dictionary<string, JToken> Data { get; set; }
@@ -79,11 +83,11 @@ namespace Fr8Data.DataTransferObjects
                 Value = Value,
                 Tags = Tags,
                 Label = Label,
-                Data = new Dictionary<string, JToken>(Data),
+                Data = Data == null ? null : new Dictionary<string, JToken>(Data),
                 Availability = Availability,
                 SourceCrateManifest = SourceCrateManifest,
-                SourceCrateLabel = SourceCrateLabel
-                
+                SourceCrateLabel = SourceCrateLabel,
+                SourceActivityId = SourceActivityId
             };
         }
 

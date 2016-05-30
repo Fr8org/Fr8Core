@@ -73,7 +73,7 @@ namespace TerminalBase.BaseClasses
                     throw new Exception("Unknown authentication type: " + terminalAuthType);
             }
             
-            CrateSignaller = new CrateSignaller(Storage, MyTemplate.Name);
+            CrateSignaller = new CrateSignaller(Storage, MyTemplate.Name, ActivityId);
             UpstreamQueryManager = new UpstreamQueryManager(ActivityContext, HubCommunicator);
         }
 
