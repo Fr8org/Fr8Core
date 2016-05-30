@@ -72,7 +72,9 @@ namespace TerminalBase.Services
             _hubCommunicator.Configure(curTerminal, activityContext.UserId);
 
             activityContext.HubCommunicator = _hubCommunicator;
+
             ContainerExecutionContext executionContext;
+
             switch (curActionPath.ToLower())
             {
                 case "configure":

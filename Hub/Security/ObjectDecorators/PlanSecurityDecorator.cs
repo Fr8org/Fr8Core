@@ -37,7 +37,7 @@ namespace Hub.Security.ObjectDecorators
             }
         }
 
-        public Task<PlanDO> Clone(Guid planId)
+        public PlanDO Clone(Guid planId)
         {
             if (_securityServices.AuthorizeActivity(PermissionType.ReadObject, planId.ToString(), nameof(PlanNodeDO)))
             {
@@ -49,47 +49,11 @@ namespace Hub.Security.ObjectDecorators
             }
         }
 
-        public Task<ContainerDO> Continue(Guid containerId)
-        {
-            if (_securityServices.AuthorizeActivity(PermissionType.EditObject, containerId.ToString(), nameof(PlanNodeDO)))
-            {
-                return _target.Continue(containerId);
-            }
-            else
-            {
-                throw new HttpException(403, "You are not authorized to perform this activity!");
-            }
-        }
-
         public bool IsMonitoringPlan(IUnitOfWork uow, PlanDO planDo)
         {
             return _target.IsMonitoringPlan(uow, planDo);
         }
-
-        public PlanDO Copy(IUnitOfWork uow, PlanDO curPlanDO, string name)
-        {
-            if (_securityServices.AuthorizeActivity(PermissionType.ReadObject, curPlanDO.Id.ToString(), nameof(PlanNodeDO)))
-            {
-                return _target.Copy(uow, curPlanDO, name);
-            }
-            else
-            {
-                throw new HttpException(403, "You are not authorized to perform this activity!");
-            }
-        }
-
-        public ContainerDO Create(IUnitOfWork uow, Guid planId, params Crate[] curPayload)
-        {
-            if (_securityServices.AuthorizeActivity(PermissionType.EditObject, planId.ToString(), nameof(PlanNodeDO)))
-            {
-                return _target.Create(uow, planId, curPayload);
-            }
-            else
-            {
-                throw new HttpException(403, "You are not authorized to perform this activity!");
-            }
-        }
-
+        
         public PlanDO Create(IUnitOfWork uow, string name, string category = "")
         {
             return _target.Create(uow, name, category);
@@ -133,12 +97,7 @@ namespace Hub.Security.ObjectDecorators
                 throw new HttpException(403, "You are not authorized to perform this activity!");
             }
         }
-
-        public void Enqueue(IEnumerable<PlanDO> curPlans, params Crate[] curEventReport)
-        {
-            _target.Enqueue(curPlans, curEventReport);
-        }
-
+        
         public void Enqueue(Guid curPlanId, params Crate[] curEventReport)
         {
             if (_securityServices.AuthorizeActivity(PermissionType.EditObject, curPlanId.ToString(), nameof(PlanNodeDO)))
@@ -183,11 +142,11 @@ namespace Hub.Security.ObjectDecorators
             return _target.MatchEvents(curPlans, curEventReport);
         }
 
-        public Task<ContainerDO> Run(Guid planId, params Crate[] curPayload)
+        public Task<ContainerDO> Run(IUnitOfWork uow, PlanDO plan, params Crate[] curPayload)
         {
-            if (_securityServices.AuthorizeActivity(PermissionType.RunObject, planId.ToString(), nameof(PlanNodeDO)))
+            if (_securityServices.AuthorizeActivity(PermissionType.RunObject, plan.Id.ToString(), nameof(PlanNodeDO)))
             {
-                return _target.Run(planId, curPayload);
+                return _target.Run(uow, plan, curPayload);
             }
 
             throw new HttpException(403, "You are not authorized to perform this activity!");

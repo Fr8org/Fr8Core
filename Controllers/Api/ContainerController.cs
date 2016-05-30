@@ -6,12 +6,12 @@ using AutoMapper;
 using Hub.Infrastructure;
 using StructureMap;
 // This alias is used to avoid ambiguity between StructureMap.IContainer and Core.Interfaces.IContainer
-using InternalInterface = Hub.Interfaces;
 using Data.Entities;
 using Data.Infrastructure.StructureMap;
 using Data.Interfaces;
 using Data.States;
 using Fr8Data.DataTransferObjects;
+using Hub.Interfaces;
 using HubWeb.Infrastructure_HubWeb;
 using Newtonsoft.Json;
 
@@ -22,12 +22,12 @@ namespace HubWeb.Controllers
     // [Fr8ApiAuthorize]
     public class ContainersController : ApiController
     {
-        private readonly InternalInterface.IContainer _container;
+        private readonly IContainerService _containerService;
         private readonly ISecurityServices _security;
 
         public ContainersController()
         {
-            _container = ObjectFactory.GetInstance<InternalInterface.IContainer>();
+            _containerService = ObjectFactory.GetInstance<IContainerService>();
             _security = ObjectFactory.GetInstance<ISecurityServices>();
         }
 
@@ -61,7 +61,7 @@ namespace HubWeb.Controllers
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                IList<ContainerDO> curContainer = _container
+                IList<ContainerDO> curContainer = _containerService
                     .GetByFr8Account(
                         uow,
                         _security.GetCurrentAccount(uow),

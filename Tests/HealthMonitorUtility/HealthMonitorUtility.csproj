@@ -83,6 +83,7 @@
   <ItemGroup>
     <Compile Include="BaseIntegrationTest.cs" />
     <Compile Include="BaseHubIntegrationTest.cs" />
+    <Compile Include="BasePlanDirectoryIntegrationTest.cs" />
     <Compile Include="BaseTerminalIntegrationTest.cs" />
     <Compile Include="DatabaseProvider.cs" />
     <Compile Include="EmailAssert.cs" />

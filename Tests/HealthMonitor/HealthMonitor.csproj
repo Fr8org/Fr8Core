@@ -304,6 +304,10 @@
       <Project>{990241ea-6cf0-4026-b57c-a9031463c7c0}</Project>
       <Name>Data</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\Services\PlanDirectory\PlanDirectory.csproj">
+      <Project>{2b78433b-ba79-470b-bef6-dba5c1904865}</Project>
+      <Name>PlanDirectory</Name>
+    </ProjectReference>
     <ProjectReference Include="..\..\Utilities\Utilities.csproj">
       <Project>{d6c86cff-37c0-49be-9f77-4f876ce6a793}</Project>
       <Name>Utilities</Name>
