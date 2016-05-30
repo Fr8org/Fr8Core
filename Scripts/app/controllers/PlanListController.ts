@@ -20,6 +20,8 @@ module dockyard.controllers {
         updatePlansLastUpdated: (id: any, date: any) => void;
         doesOrganizationExists: boolean;
 
+        createTemplate: (plan: interfaces.IPlanVM)=>void;
+
         filter: any;
 
         inActiveQuery: model.PlanQueryDTO;
@@ -104,6 +106,8 @@ module dockyard.controllers {
             $scope.getActivePlans = <() => void>angular.bind(this, this.getActivePlans);
             $scope.removeInactiveFilter = <() => void>angular.bind(this, this.removeInactiveFilter);
             $scope.removeActiveFilter = <() => void>angular.bind(this, this.removeActiveFilter);
+
+            $scope.createTemplate = <(plan: interfaces.IPlanVM)=> void>angular.bind(this,this.createTemplate);
 
             $scope.$watch('inActiveQuery.filter', (newValue, oldValue) => {
                 var bookmark: number = 1;
@@ -255,6 +259,18 @@ module dockyard.controllers {
                         }
                     });
             }
+        }
+
+        private createTemplate(plan: interfaces.IPlanVM) {
+            debugger;
+            let modalInstance = this.$modal.open({
+                animation: true,
+                templateUrl: '/AngularTemplate/PlanTemplateModal',
+                controller: 'PlanTemplateModalController',
+                resolve: {
+                    
+                }
+            });
         }
 
         private goToPlanPage(planId) {

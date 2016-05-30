@@ -44,12 +44,18 @@
                         <span class="bold font-green-haze">{{plan.planState == 2 ? 'Running' : 'Inactive' }}</span>
                     </td>
                     <td md-cell style="display: flex;">
+                        <md-button class="md-icon-button md-table-fr8-button" ng-click="createTemplate(plan)">
+                            <md-icon md-font-icon="fa-code" class="fa fa-lg"></md-icon>
+                            <md-tooltip md-direction="top">
+                                Create template
+                            </md-tooltip>
+                        </md-button>            
                         <md-button class="md-icon-button md-table-fr8-button" ng-click="goToPlanPage(plan.id);">
                             <md-icon md-font-icon="fa-edit" class="fa fa-lg"></md-icon>
                             <md-tooltip md-direction="top">
                                 Edit
                             </md-tooltip>
-                        </md-button>            
+                        </md-button>
                         <md-button class="md-icon-button md-table-fr8-button" ng-click="deletePlan(plan.id,plan.planState);">
                             <md-icon md-font-icon="fa-trash" class="fa fa-lg"></md-icon>
                             <md-tooltip md-direction="top">
@@ -122,6 +128,12 @@
                         <span class="bold">{{plan.planState == 2 ? 'Running' : 'Inactive' }}</span>
                     </td>
                     <td md-cell style="display: flex;">
+                        <md-button class="md-icon-button md-table-fr8-button" ng-click="createTemplate(plan)">
+                            <md-icon md-font-icon="fa-code" class="fa fa-lg"></md-icon>
+                            <md-tooltip md-direction="top">
+                                Create template
+                            </md-tooltip>
+                        </md-button>  
                         <md-button class="md-icon-button md-table-fr8-button" ng-click="goToPlanPage(plan.id);">
                             <md-icon md-font-icon="fa-edit" class="fa fa-lg"></md-icon>
                             <md-tooltip md-direction="top">
