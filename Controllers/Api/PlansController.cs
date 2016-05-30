@@ -25,6 +25,7 @@ using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.DataTransferObjects.Helpers;
+using Fr8Data.DataTransferObjects.RequestParameters;
 using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
@@ -151,12 +152,15 @@ namespace HubWeb.Controllers
         }
 
 
-        class PlansGetParams
+        
+
+        [Fr8ApiAuthorize]
+        [Fr8HubWebHMACAuthenticate]
+        [HttpGet]
+        public IHttpActionResult Get([FromUri] PlansGetParams parameters)
         {
-            public Guid id { get; set; }
-            public Guid activity_id { get; set; }
-            public bool include_children { get; set; } = false;
-            public string name { get; set; }
+
+            return Get(parameters.id);
         }
 
         [Fr8ApiAuthorize]
@@ -214,8 +218,9 @@ namespace HubWeb.Controllers
         /// </summary>
         /// <param name="id"></param>
         /// <returns></returns>
-        [Fr8ApiAuthorize]
-        public IHttpActionResult Get(Guid? id = null)
+        //[Fr8ApiAuthorize]
+        [NonAction]
+        private IHttpActionResult Get(Guid? id = null)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
