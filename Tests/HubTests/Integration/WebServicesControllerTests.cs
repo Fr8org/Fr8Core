@@ -37,7 +37,7 @@ namespace HubTests.Integration
             Assert.IsNotNull(webServices, "Web Services are not retrieved from HubWeb");
             Assert.IsTrue(webServices.Count > 0, "There are no web services in HubWeb");
             Assert.IsTrue(webServices.Any(ws => ws.Name.Equals("IntegrationTestWebService")), "The newly created web service is missing in HubWeb");
-            
+
 
             CleanUpDatabase();
         }
@@ -59,13 +59,13 @@ namespace HubTests.Integration
         public async Task GetActivities_ShouldGetOneMonitorActivity()
         {
             //Arrange
-            ActivityCategory[] activityCategories = new ActivityCategory[] { ActivityCategory.Monitors };
+            int activityCategoryId = (int)ActivityCategory.Monitors;
 
             //Act
             string baseUrl = GetHubApiBaseUrl();
-            var webServicesActivitiesUrl = baseUrl + "WebServices/activities";
+            var webServicesActivitiesUrl = baseUrl + "WebServices";
 
-            var webServiceActivities = await HttpPostAsync<ActivityCategory[], List<WebServiceActivitySetDTO>>(webServicesActivitiesUrl, activityCategories);
+            var webServiceActivities = await HttpGetAsync<List<WebServiceActivitySetDTO>>(webServicesActivitiesUrl + "?id=" + activityCategoryId);
 
             //Assert
             Assert.IsNotNull(webServiceActivities, "The activity sets are not retrieved from HubWeb");

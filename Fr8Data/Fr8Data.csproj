@@ -118,6 +118,7 @@
     <Compile Include="DataTransferObjects\EmailDTO.cs" />
     <Compile Include="DataTransferObjects\DocuSignEnvelopeDTO.cs" />
     <Compile Include="DataTransferObjects\LoggingDataCM.cs" />
+    <Compile Include="DataTransferObjects\ManifestRegistryParams .cs" />
     <Compile Include="DataTransferObjects\PermissionDTO.cs" />
     <Compile Include="DataTransferObjects\PlanTemplates\ActivityDescriptionDTO.cs" />
     <Compile Include="DataTransferObjects\PlanTemplates\NodeTransitionDTO.cs" />

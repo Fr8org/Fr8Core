@@ -10,7 +10,7 @@ using TerminalBase.Services;
 namespace terminalAtlassian.Controllers
 {
     [RoutePrefix("activities")]
-    public class ActivityController: BaseTerminalController
+    public class ActivityController: ApiController
     {
         private const string curTerminal = "terminalAtlassian";
         private readonly ActivityExecutor _activityExecutor;

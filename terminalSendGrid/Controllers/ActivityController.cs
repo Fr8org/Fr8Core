@@ -10,7 +10,7 @@ using StructureMap;
 namespace terminalSendGrid.Controllers
 {
     [RoutePrefix("activities")]
-    public class ActivityController : BaseTerminalController
+    public class ActivityController : ApiController
     {
         private const string curTerminal = "terminalSendGrid";
         private readonly ActivityExecutor _activityExecutor;

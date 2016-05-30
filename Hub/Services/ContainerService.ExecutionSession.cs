@@ -18,7 +18,7 @@ using StructureMap;
 
 namespace Hub.Services
 {
-    partial class Container
+    partial class ContainerService
     {
         // class handling execution of the particular plan
         private class ExecutionSession
@@ -89,9 +89,9 @@ namespace Hub.Services
                     nodeName = "Activity: " + ((ActivityDO) node).Name;
                 }
 
-                if (node is SubPlanDO)
+                if (node is SubplanDO)
                 {
-                    nodeName = "Subplan: " + ((SubPlanDO) node).Name;
+                    nodeName = "Subplan: " + ((SubplanDO) node).Name;
                 }
 
                 var frame = new OperationalStateCM.StackFrame
