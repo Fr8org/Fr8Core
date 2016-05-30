@@ -299,3 +299,23 @@ app.directive('eventRunplan', ['$timeout', '$window', function ($timeout, $windo
         }
     };
 }]);
+
+app.directive('eventAuthDialog', ['$timeout', '$window', function ($timeout, $window) {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            $window.analytics.track("Auth Dialog Opened");
+        }
+    };
+}]);
+app.directive('eventOk', ['$timeout', '$window', function ($timeout, $window) {
+    return {
+        restrict: 'A',
+        link: function (scope, element) {
+            element.on('click', function () {
+                $window.analytics.track('Auth Dialog Ok');
+            });
+        }
+    };
+}]);
+

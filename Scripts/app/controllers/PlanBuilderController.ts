@@ -641,7 +641,7 @@ module dockyard.controllers {
         */
         private selectAction(action: model.ActivityDTO, group: model.ActionGroup, $window) {
             //this performs a call to Segment service for analytics
-            $window.analytics.track("Added Activity To Plan", { "Activity Name": action.name });
+            $window['analytics'].track("Added Activity To Plan", { "Activity Name": action.name });
 
             console.log("Activity selected: " + action.id);
             var originalId,
