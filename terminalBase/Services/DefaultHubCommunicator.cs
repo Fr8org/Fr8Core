@@ -276,7 +276,7 @@ namespace TerminalBase.Services
 
         public async Task RunPlan(Guid planId, List<CrateDTO> payload)
         {
-            var url = $"{GetHubUrlWithApiVersion()}/plans/runwithpayload?planId=" + planId;
+            var url = $"{GetHubUrlWithApiVersion()}/plans/run?planId=" + planId;
             var uri = new Uri(url);
             await _restfulServiceClient.PostAsync<List<CrateDTO>>(uri, payload, null, await GetHMACHeader(uri, payload));
         }

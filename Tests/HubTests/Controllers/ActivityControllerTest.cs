@@ -96,7 +96,7 @@ namespace HubTests.Controllers
         [Test]
         public async Task ActivityController_Save_WithActionNotExisting_NewActionShouldBeCreated()
         {
-            SubPlanDO subPlan;
+            SubplanDO subplan;
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -104,18 +104,18 @@ namespace HubTests.Controllers
 
                 uow.PlanRepository.Add(plan);
 
-                subPlan = FixtureData.TestSubPlanDO1();
-                plan.ChildNodes.Add(subPlan);
+                subplan = FixtureData.TestSubPlanDO1();
+                plan.ChildNodes.Add(subplan);
 
                 //Arrange
                 //Add one test action
                 var activity = FixtureData.TestActivity1();
-                subPlan.ChildNodes.Add(activity);
+                subplan.ChildNodes.Add(activity);
                 uow.SaveChanges();
             }
             //Act
             var actualAction = CreateActivityWithId(FixtureData.GetTestGuidById(2));
-            actualAction.ParentPlanNodeId = subPlan.Id;
+            actualAction.ParentPlanNodeId = subplan.Id;
 
             var controller = new ActivitiesController();
             var result = (OkNegotiatedContentResult<ActivityDTO>)await controller.Save(actualAction);

@@ -36,9 +36,9 @@ namespace terminalIntegrationTests.Fixtures
             return curPlanDO;
         }
 
-        public static SubPlanDO TestSubPlanHealthDemo(Guid parentNodeId)
+        public static SubplanDO TestSubPlanHealthDemo(Guid parentNodeId)
         {
-            var SubPlanDO = new SubPlanDO
+            var SubPlanDO = new SubplanDO
             {
                 Id = Guid.NewGuid(),
                 ParentPlanNodeId = parentNodeId,

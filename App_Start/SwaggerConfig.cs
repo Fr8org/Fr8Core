@@ -161,7 +161,7 @@ namespace HubWeb
                         // the Swagger 2.0 spec. - https://github.com/swagger-api/swagger-spec/blob/master/versions/2.0.md
                         // before using this option.
                         //
-                        //c.DocumentFilter<ApplyDocumentVendorExtensions>();
+                        c.DocumentFilter<RemoveDuplicatesDocumentFilter>();
 
                         //Removing duplicates filter
                         c.DocumentFilter<RemoveDuplicatesDocumentFilter>();

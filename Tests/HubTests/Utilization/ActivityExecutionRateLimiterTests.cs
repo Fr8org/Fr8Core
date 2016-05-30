@@ -1,13 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
 using Data.Repositories.Utilization;
 using Hub.Interfaces;
-using Hub.Services;
-using Moq;
 using NUnit.Framework;
 using StructureMap;
 using Utilities.Configuration.Azure;
@@ -21,6 +17,8 @@ namespace HubTests.Utilization
     [Category("UtilizationMonitoring")]
     public class ActivityExecutionRateLimiterTests : BaseTest
     {
+        private readonly ManualyTriggeredTimerService _timerService = new ManualyTriggeredTimerService();
+
         public class UtilizationDataProviderMock : MockedUtilizationDataProvider
         {
             private OverheatingUsersUpdateResults _readyResults;
@@ -90,6 +88,13 @@ namespace HubTests.Utilization
                                                                   .Set("UtilizationSateRenewInterval", "1"));
 
             ObjectFactory.Container.Inject(typeof(IUtilizationDataProvider), _provider);
+            ObjectFactory.Container.Inject<ITimer>(_timerService);
+        }
+
+        public override void TearDown()
+        {
+            _timerService.Clear();
+            base.TearDown();
         }
 
         [Test]
@@ -110,7 +115,7 @@ namespace HubTests.Utilization
         }
 
         [Test]
-        public async Task CanUpdateOverheatingStatus()
+        public void CanUpdateOverheatingStatus()
         {
             _provider.SetOverheatingUsers("1", "2", "3");
 
@@ -118,7 +123,7 @@ namespace HubTests.Utilization
 
             _provider.SetOverheatingResults(new OverheatingUsersUpdateResults(new [] {"4", "5"}, new [] { "1", "2" }));
 
-            await Task.Delay(2000);
+            _timerService.Tick();
 
             Assert.IsTrue(rateLimiter.CheckActivityExecutionRate("1"), "User \"1\" should not be banned");
             Assert.IsTrue(rateLimiter.CheckActivityExecutionRate("2"), "User \"2\" should not be banned");
@@ -130,7 +135,7 @@ namespace HubTests.Utilization
         }
 
         [Test]
-        public async Task CanNotifyUser()
+        public void CanNotifyUser()
         {
             Fr8AccountDO user1;
             Fr8AccountDO user2;
@@ -160,7 +165,7 @@ namespace HubTests.Utilization
 
             _provider.SetOverheatingResults(new OverheatingUsersUpdateResults(new [] { user2.Id }, new [] { user1.Id }));
 
-            await Task.Delay(2000);
+            _timerService.Tick();
 
             Assert.AreEqual(1, pusherMock.Notifications.Count, "Invalid number of push notifications");
             Assert.IsTrue(pusherMock.Notifications[0].Contains("You are running more Activities than your capacity right now."), "Unexpected notification message");

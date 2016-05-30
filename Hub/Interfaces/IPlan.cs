@@ -27,13 +27,8 @@ namespace Hub.Interfaces
         List<PlanDO> MatchEvents(List<PlanDO> curPlans, EventReportCM curEventReport);
         bool IsMonitoringPlan(IUnitOfWork uow, PlanDO planDo);
 
-        PlanDO Copy(IUnitOfWork uow, PlanDO curPlanDO, string name);
-
         void Enqueue(Guid curPlanId, params Crate[] curEventReport);
-        void Enqueue(IEnumerable<PlanDO> curPlans, params Crate[] curEventReport);
-        ContainerDO Create(IUnitOfWork uow, Guid planId, params Crate[] curPayload);
-        Task<ContainerDO> Run(Guid planId, Crate[] curPayload);
-        Task<ContainerDO> Continue(Guid containerId);
-        Task<PlanDO> Clone(Guid planId);
+        Task<ContainerDO> Run(IUnitOfWork uow, PlanDO plan, Crate[] curPayload);
+        PlanDO Clone(Guid planId);
     }
 }

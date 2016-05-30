@@ -128,7 +128,7 @@ namespace terminalFr8CoreTests.Integration
 			Assert.AreEqual("String", fr8PlansCrateFields[5].Value);
 
 			Assert.AreEqual("SubPlans", fr8PlansCrateFields[6].Key);
-			Assert.AreEqual("System.Collections.Generic.List`1[[Data.Interfaces.DataTransferObjects.SubPlanDTO, Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]", fr8PlansCrateFields[6].Value);
+			Assert.AreEqual("System.Collections.Generic.List`1[[Data.Interfaces.DataTransferObjects.SubplanDTO, Data, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null]]", fr8PlansCrateFields[6].Value);
 
 			Assert.AreEqual("ManifestType", fr8PlansCrateFields[7].Key);
 			Assert.AreEqual("CrateManifestType", fr8PlansCrateFields[7].Value);
@@ -224,7 +224,7 @@ namespace terminalFr8CoreTests.Integration
 				Name = "Some name",
 				Ordering = 1,
 				PlanState = "Some state",
-				SubPlans = new List<SubPlanDTO>()
+				SubPlans = new List<SubplanDTO>()
 			});
             AddOperationalStateCrate(dataDTO, new OperationalStateCM());
             
