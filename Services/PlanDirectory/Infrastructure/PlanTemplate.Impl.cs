@@ -110,7 +110,7 @@ namespace PlanDirectory.Infrastructure
             };
         }
 
-        // TODO: FR-3539, fix this.
+        // Commented out untill Azure Search Index activity is implemented.
         // public async Task<SearchResultDTO> Search(SearchRequestDTO request)
         // {
         //     using (var searchClient = CreateAzureSearchClient())
@@ -142,8 +142,7 @@ namespace PlanDirectory.Infrastructure
         //         }
         //     }
         // }
-
-        // TODO: FR-3539, remove this.
+        // 
         // public async Task Publish(PublishPlanTemplateDTO planTemplate)
         // {
         //     using (var searchClient = CreateAzureSearchClient())
@@ -161,26 +160,6 @@ namespace PlanDirectory.Infrastructure
         //             );
         // 
         //             var indexResult = await indexClient.Documents.IndexAsync(batch);
-        //         }
-        //     }
-        // }
-
-        // TODO: FR-3539, remove this.
-        // public async Task Unpublish(PublishPlanTemplateDTO planTemplate)
-        // {
-        //     using (var searchClient = CreateAzureSearchClient())
-        //     {
-        //         using (var indexClient = searchClient.Indexes.GetClient(PlanTemplateIndexName))
-        //         {
-        //             var document = ConvertToSearchDocument(planTemplate);
-        // 
-        //             var batch = IndexBatch.New(
-        //                 new IndexAction[]
-        //                 {
-        //                     IndexAction.Delete(document)
-        //                 }
-        //             );
-        //             await indexClient.Documents.IndexAsync(batch);
         //         }
         //     }
         // }
@@ -222,31 +201,6 @@ namespace PlanDirectory.Infrastructure
 
             return definition;
         }
-
-        // private Document ConvertToSearchDocument(PublishPlanTemplateDTO dto)
-        // {
-        //     var document = new Document()
-        //     {
-        //         { "planTemplateId", dto.PlanTemplateId.ToString() },
-        //         { "name", dto.Name },
-        //         { "description", dto.Description }
-        //     };
-        // 
-        //     return document;
-        // }
-
-        // TODO: FR-3539, fix this.
-        // private PublishPlanTemplateDTO ConvertSearchDocumentToDto(Document doc)
-        // {
-        //     var dto = new PublishPlanTemplateDTO()
-        //     {
-        //         PlanTemplateId = Int32.Parse((string)doc["planTemplateId"]),
-        //         Name = (string)doc["name"],
-        //         Description = (string)doc["description"]
-        //     };
-        // 
-        //     return dto;
-        // }
 
         private async Task EnsurePlanTemplateIndexExists(SearchServiceClient searchClient)
         {

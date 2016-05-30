@@ -45,6 +45,7 @@ namespace PlanDirectory.Controllers
         public IHttpActionResult Search(
             string text, int? pageStart = null, int? pageSize = null)
         {
+            // Commented out untill Azure Search Index activity is implemented.
             // var searchRequest = new SearchRequestDTO()
             // {
             //     Text = text,
@@ -56,45 +57,5 @@ namespace PlanDirectory.Controllers
 
             return Ok(new PublishPlanTemplateDTO[] { });
         }
-
-        // TODO: FR-3539: remove this.
-        // [HttpPost]
-        // [Fr8ApiAuthorize]
-        // [PlanDirectoryHMACAuthenticate]
-        // public async Task<IHttpActionResult> Publish(PublishPlanTemplateDTO planTemplate)
-        // {
-        //     await _planTemplate.Publish(planTemplate);
-        //     return Ok();
-        // }
-        // 
-        // [HttpPost]
-        // [Fr8ApiAuthorize]
-        // [PlanDirectoryHMACAuthenticate]
-        // public async Task<IHttpActionResult> Unpublish(PublishPlanTemplateDTO planTemplate)
-        // {
-        //     await _planTemplate.Unpublish(planTemplate);
-        //     return Ok();
-        // }
-        // 
-        // [HttpPost]
-        // public async Task<IHttpActionResult> Search(
-        //     string text, int? pageStart = null, int? pageSize = null)
-        // {
-        //     var searchRequest = new SearchRequestDTO()
-        //     {
-        //         Text = text,
-        //         PageStart = pageStart.GetValueOrDefault(),
-        //         PageSize = pageSize.GetValueOrDefault()
-        //     };
-        // 
-        //     var searchResult = await _planTemplate.Search(searchRequest);
-        //     return Ok(searchResult);
-        // }
-        // 
-        // [HttpPost]
-        // public IHttpActionResult CreatePlan(CreatePlanDTO dto)
-        // {
-        //     return Ok();
-        // }
     }
 }
