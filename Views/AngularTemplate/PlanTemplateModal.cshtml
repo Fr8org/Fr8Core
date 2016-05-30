@@ -7,7 +7,7 @@
 </div>
 <div class="modal-footer">
     <button class="btn btn-primary" type="button" ng-click="publish()">Publish plan template</button>
-    <a id="downloadJson" download='{{plan.plan.name}}.json' href="{{href}}" class="btn btn-primary" type='application/json'>Download as JSON file</a>
+    <a id="downloadJson" download='{{plan.plan.name}}.json' href="{{href}}" ng-click="download($event)" class="btn btn-primary" type='application/json'>Download as JSON file</a>
     <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
 </div>
 @*<div class="hidden" id="planJson">{{plan | json}}</div>

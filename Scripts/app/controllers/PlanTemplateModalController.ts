@@ -8,6 +8,7 @@ module dockyard.controllers {
         href: string;
 
         publish: ()=> void;
+        download: ($event: Event) => void;
         cancel: () => void;
     }
 
@@ -35,16 +36,23 @@ module dockyard.controllers {
         
         $scope.plan = plan;
 
+
         $scope.publish = () => { };
+        $scope.download = ($event:Event) => {
+
+            let json = $filter('json')(plan);
+            let data = new Blob([json]);
+            $scope.href = URL.createObjectURL(data);
+
+            $event.stopPropagation = null;
+            $event.preventDefault = null;
+            $event.cancelBubble = false;
+            $event.returnValue = true;
+
+            $modalInstance.dismiss();
+        };
+
         $scope.cancel = () => { $modalInstance.dismiss(); }
-
-        debugger;
-
-        //if network olatency to high plan will be empty!
-        
-        let json = $filter('json')($scope.plan);
-        let data = new Blob([json]);
-        $scope.href = URL.createObjectURL(data);
 
        }
     }
