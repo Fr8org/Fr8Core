@@ -39,7 +39,7 @@ namespace terminalIntegrationTests.EndToEnd
         [Test, Category("Integration.terminalGoogle")]
         public async Task Query_DocuSign_Into_Google_Sheet_End_To_End()
         {
-            /*
+           
             var terminalGoogleTools = new terminaBaselTests.Tools.Terminals.IntegrationTestTools_terminalGoogle(this);
             var googleAuthTokenId = await terminalGoogleTools.ExtractGoogleDefaultToken();
             var defaultGoogleAuthToken = terminalGoogleTools.GetGoogleAuthToken(googleAuthTokenId);
@@ -52,7 +52,7 @@ namespace terminalIntegrationTests.EndToEnd
 
             //configure a save_to google activity
             var newSpeadsheetName = Guid.NewGuid().ToString();
-            var googleSheetApi = new GoogleSheet(new GoogleIntegration());
+            var googleSheetApi = new GoogleSheet(new GoogleIntegration(ObjectFactory.GetInstance<IRestfulServiceClient>()));
             var spreadsheetId = await googleSheetApi.CreateSpreadsheet(newSpeadsheetName, defaultGoogleAuthToken);
 
             await googleActivityConfigurator.AddAndConfigureSaveToGoogleSheet(thePlan, 2, "Docusign Envelope", "DocuSign Envelope Data", newSpeadsheetName);
@@ -85,7 +85,7 @@ namespace terminalIntegrationTests.EndToEnd
                 //cleanup. erase the sheet
                 await googleSheetApi.DeleteSpreadSheet(spreadsheetId, defaultGoogleAuthToken);
             }
-            */
+            
         }
     }
 }

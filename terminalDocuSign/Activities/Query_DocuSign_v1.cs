@@ -5,11 +5,14 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Newtonsoft.Json;
 using terminalDocuSign.Infrastructure;
 using terminalDocuSign.Services;
+using terminalDocuSign.Services.New_Api;
+using TerminalBase.Infrastructure;
 using Utilities;
 using FolderItem = DocuSign.eSign.Model.FolderItem;
 using ListItem = Fr8Data.Control.ListItem;
@@ -78,6 +81,11 @@ namespace terminalDocuSign.Activities
         }
 
         protected override string ActivityUserFriendlyName => "Query DocuSign";
+
+        public Query_DocuSign_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+            : base(crateManager, docuSignManager)
+        {
+        }
 
         protected override async Task RunDS()
         {

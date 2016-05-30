@@ -39,7 +39,7 @@ namespace TerminalBase.Infrastructure
 
             _eventReportCrateFactory = new EventReportCrateFactory();
             _loggingDataCrateFactory = new LoggingDataCrateFactory();
-            _crateManager = ObjectFactory.GetInstance<CrateManager>();
+            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 
 

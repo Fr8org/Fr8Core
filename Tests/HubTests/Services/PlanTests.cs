@@ -34,9 +34,9 @@ namespace HubTests.Services
                 var result = uow.PlanRepository.GetById<PlanDO>(curPlanDO.Id);
                 Assert.NotNull(result);
                 Assert.AreNotEqual(result.Id, 0);
-                Assert.NotNull(result.StartingSubPlan);
+                Assert.NotNull(result.StartingSubplan);
                 Assert.AreEqual(result.SubPlans.Count(), 1);
-                Assert.AreEqual(result.StartingSubPlan.ChildNodes.Count, 2);
+                Assert.AreEqual(result.StartingSubplan.ChildNodes.Count, 2);
             }
         }
 

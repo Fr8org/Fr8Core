@@ -29,14 +29,14 @@ namespace HealthMonitorUtility.Tools.Activities
             var dropboxGetFileListActivityDto = FixtureData.Get_File_List_v1_InitialConfiguration();
 
             var activityName = "Get_File_List";
-            var activityCategoryParam = new ActivityCategory[] { ActivityCategory.Receivers };
+            var activityCategoryParam = (int)ActivityCategory.Receivers;
             var activityTemplates = await _baseHubITest
-                .HttpPostAsync<ActivityCategory[], List<WebServiceActivitySetDTO>>(
-                _baseHubITest.GetHubApiBaseUrl() + "webservices/activities", activityCategoryParam);
+                .HttpGetAsync<List<WebServiceActivitySetDTO>>(
+                _baseHubITest.GetHubApiBaseUrl() + "webservices?id=" + activityCategoryParam);
             var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == activityName);
 
             dropboxGetFileListActivityDto.ActivityTemplate = apmActivityTemplate;
-            
+
             //connect current activity with a plan
             var subPlan = plan.Plan.SubPlans.FirstOrDefault();
             dropboxGetFileListActivityDto.ParentPlanNodeId = subPlan.SubPlanId;

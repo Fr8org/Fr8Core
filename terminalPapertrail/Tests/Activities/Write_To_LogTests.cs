@@ -40,7 +40,7 @@ namespace terminalPapertrail.Tests.Actions
                 .Returns(Task.FromResult(PreparePayloadDTOWithLogMessages()));
             ObjectFactory.Container.Inject(typeof(IRestfulServiceClient), restClientMock.Object);
 
-            _activity_under_test = new Write_To_Log_v1();
+            _activity_under_test = New<Write_To_Log_v1>();
         }
 
         [Test]
@@ -54,7 +54,8 @@ namespace terminalPapertrail.Tests.Actions
                     CrateStorage = new CrateStorage()
                 },
                 AuthorizationToken = null,
-                UserId = null
+                UserId = null,
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
             };
             await _activity_under_test.Configure(testAction);
             ActivityDTO resultActionDTO = Mapper.Map<ActivityDTO>(testAction.ActivityPayload);
@@ -81,6 +82,7 @@ namespace terminalPapertrail.Tests.Actions
                 {
                     CrateStorage = new CrateStorage()
                 },
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 AuthorizationToken = null,
                 UserId = null
             };
@@ -115,6 +117,7 @@ namespace terminalPapertrail.Tests.Actions
                 {
                     CrateStorage = new CrateStorage()
                 },
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 AuthorizationToken = null,
                 UserId = null
             };
@@ -149,6 +152,7 @@ namespace terminalPapertrail.Tests.Actions
                 {
                     CrateStorage = new CrateStorage()
                 },
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 AuthorizationToken = null,
                 UserId = null
             };

@@ -51,13 +51,14 @@ namespace terminalSalesforceTests.Activities
         [Test]
         public async Task Run_WhenMessageIsEmpty_ReturnsError()
         {
-            var activity = new Post_To_Chatter_v2();
+            var activity = New<Post_To_Chatter_v2>();
             var executionContext = new ContainerExecutionContext
             {
                 PayloadStorage = new CrateStorage(Crate.FromContent(string.Empty, new OperationalStateCM()))
             };
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage()
@@ -67,7 +68,13 @@ namespace terminalSalesforceTests.Activities
                 }
             };
             await activity.Configure(activityContext);
-            activity.ResetState();
+            
+            var helper = new ControlHelper(activityContext);
+
+            helper.GetControl<ControlDefinitionDTO>(helper.GetConfigurationControls(activityContext.ActivityPayload.CrateStorage), "FeedTextSource").Value = null;
+            
+            activity = New<Post_To_Chatter_v2>();
+            
             await activity.Run(activityContext, executionContext);
             var operationalState = new CrateManager().GetOperationalState(executionContext.PayloadStorage);
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalState.CurrentActivityResponse.Type, "Run must fail if message is empty");
@@ -76,13 +83,14 @@ namespace terminalSalesforceTests.Activities
         [Test]
         public async Task Run_WhenNoChatterSourceIsSelected_ReturnsError()
         {
-            var activity = new Post_To_Chatter_v2();
+            var activity = New<Post_To_Chatter_v2>();
             var executionContext = new ContainerExecutionContext
             {
                 PayloadStorage = new CrateStorage(Crate.FromContent(string.Empty, new OperationalStateCM()))
             };
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage()
@@ -92,12 +100,15 @@ namespace terminalSalesforceTests.Activities
                 }
             };
             await activity.Configure(activityContext);
-            activity.ResetState();
+            
             activityContext.ActivityPayload.CrateStorage.UpdateControls<Post_To_Chatter_v2.ActivityUi>(x =>
                                                                      {
                                                                          x.FeedTextSource.TextValue = "message";
                                                                          x.FeedTextSource.ValueSource = "specific";
                                                                      });
+
+            activity = New<Post_To_Chatter_v2>();
+
             await activity.Run(activityContext, executionContext);
             var operationalState = new CrateManager().GetOperationalState(executionContext.PayloadStorage);
             Assert.AreEqual(ActivityResponse.Error.ToString(), operationalState.CurrentActivityResponse.Type, "Run must fail if chatter is not specified is empty");
@@ -106,13 +117,14 @@ namespace terminalSalesforceTests.Activities
         [Test]
         public async Task Run_WhenQueriesSalesforceAndObjectsAreReturned_PostsToTheirChatters()
         {
-            var activity = new Post_To_Chatter_v2();
+            var activity = New<Post_To_Chatter_v2>();
             var executionContext = new ContainerExecutionContext
             {
                 PayloadStorage = new CrateStorage(Crate.FromContent(string.Empty, new OperationalStateCM()))
             };
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage()
@@ -122,7 +134,9 @@ namespace terminalSalesforceTests.Activities
                 }
             };
             await activity.Configure(activityContext);
-            activity.ResetState();
+
+            activity = New<Post_To_Chatter_v2>();
+
             activityContext.ActivityPayload.CrateStorage.UpdateControls<Post_To_Chatter_v2.ActivityUi>(x =>
                                                                      {
                                                                          x.FeedTextSource.TextValue = "message";
@@ -143,13 +157,14 @@ namespace terminalSalesforceTests.Activities
         [Test]
         public async Task Run_WhenQueriesSalesforceAndNothingIsReturned_ReturnsSuccessButNoPayload()
         {
-            var activity = new Post_To_Chatter_v2();
+            var activity = New<Post_To_Chatter_v2>();
             var executionContext = new ContainerExecutionContext
             {
                 PayloadStorage = new CrateStorage(Crate.FromContent(string.Empty, new OperationalStateCM()))
             };
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage()
@@ -159,7 +174,9 @@ namespace terminalSalesforceTests.Activities
                 }
             };
             await activity.Configure(activityContext);
-            activity.ResetState();
+
+            activity = New<Post_To_Chatter_v2>();
+
             activityContext.ActivityPayload.CrateStorage.UpdateControls<Post_To_Chatter_v2.ActivityUi>(x =>
             {
                 x.FeedTextSource.TextValue = "message";

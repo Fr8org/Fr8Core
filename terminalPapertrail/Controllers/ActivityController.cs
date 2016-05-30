@@ -10,7 +10,7 @@ using StructureMap;
 namespace terminalPapertrail.Controllers
 {    
     [RoutePrefix("activities")]
-    public class ActivityController : BaseTerminalController
+    public class ActivityController : ApiController
     {
         private const string curTerminal = "terminalPapertrail";
         private readonly ActivityExecutor _activityExecutor;

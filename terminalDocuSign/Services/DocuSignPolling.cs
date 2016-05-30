@@ -24,28 +24,25 @@ namespace terminalDocuSign.Services
     public class DocuSignPolling
     {
         private readonly IDocuSignManager _docuSignManager;
-        private readonly IHubCommunicator _hubCommunicator;
         private readonly IRestfulServiceClient _restfulServiceClient;
         private readonly ICrateManager _crateManager;
 
         public DocuSignPolling()
         {
-            _hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
             _docuSignManager = ObjectFactory.GetInstance<IDocuSignManager>();
             _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
             _crateManager = ObjectFactory.GetInstance<ICrateManager>();
-            _hubCommunicator.Configure("terminalDocuSign");
         }
 
-        public void SchedulePolling(string externalAccountId, string curFr8UserId)
+        public void SchedulePolling(IHubCommunicator hubCommunicator, string externalAccountId)
         {
             string pollingInterval = CloudConfigurationManager.GetSetting("terminalDocuSign.PollingInterval");
-            _hubCommunicator.ScheduleEvent(externalAccountId, curFr8UserId, pollingInterval);
+            hubCommunicator.ScheduleEvent(externalAccountId, pollingInterval);
         }
 
-        public async Task<bool> Poll(string externalAccountId, string curFr8UserId, string pollingInterval)
+        public async Task<bool> Poll(IHubCommunicator hubCommunicator, string externalAccountId, string pollingInterval)
         {
-            var authtoken = await _hubCommunicator.GetAuthToken(externalAccountId, curFr8UserId);
+            var authtoken = await hubCommunicator.GetAuthToken(externalAccountId);
             if (authtoken == null) return false;
             var config = _docuSignManager.SetUp(authtoken);
             EnvelopesApi api = new EnvelopesApi((Configuration)config.Configuration);

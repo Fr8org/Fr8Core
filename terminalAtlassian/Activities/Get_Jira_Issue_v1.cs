@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using StructureMap;
@@ -57,17 +58,18 @@ namespace terminalAtlassian.Actions
 
         private readonly AtlassianService _atlassianService;
 
-        public Get_Jira_Issue_v1() : base(true)
+        public Get_Jira_Issue_v1(ICrateManager crateManager, AtlassianService atlassianService) 
+            : base(true, crateManager)
         {
-            _atlassianService = ObjectFactory.GetInstance<AtlassianService>();
+            _atlassianService = atlassianService;
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             await Task.Yield();
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             var issueKey = ActivityUI.IssueNumber.GetValue(Storage);
             if (!string.IsNullOrEmpty(issueKey))
@@ -78,7 +80,7 @@ namespace terminalAtlassian.Actions
             await Task.Yield();
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             var issueKey = ActivityUI.IssueNumber.GetValue(Storage);
             if (!string.IsNullOrEmpty(issueKey))

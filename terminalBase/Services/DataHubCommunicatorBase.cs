@@ -4,6 +4,7 @@ using System.Configuration;
 using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
+using System.Xml.Schema;
 using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
@@ -21,22 +22,22 @@ namespace TerminalBase.Services
 {
     public abstract class DataHubCommunicatorBase : IHubCommunicator
     {
-        private readonly IRestfulServiceClient _restfulServiceClient;
-        private readonly IHMACService _hmacService;
         public ICrateManager Crate { get; set; }
         public string ExplicitData { get; set; }
         protected string TerminalSecret { get; set; }
         protected string TerminalId { get; set; }
 
+        private string _userId;
+
+        public string UserId => _userId;
+
         protected DataHubCommunicatorBase(string explicitData)
         {
             Crate = ObjectFactory.GetInstance<ICrateManager>();
-            _restfulServiceClient = ObjectFactory.GetInstance<IRestfulServiceClient>();
-            _hmacService = ObjectFactory.GetInstance<IHMACService>();
-            this.ExplicitData = explicitData;
+            ExplicitData = explicitData;
         }
-
-        public Task Configure(string terminalName)
+        
+        public void Configure(string terminalName, string userId)
         {
             if (string.IsNullOrEmpty(terminalName))
                 throw new ArgumentNullException(nameof(terminalName));
@@ -50,9 +51,8 @@ namespace TerminalBase.Services
                 TerminalSecret = ConfigurationManager.AppSettings[terminalName + "TerminalSecret"];
                 TerminalId = ConfigurationManager.AppSettings[terminalName + "TerminalId"];
             }
-
+            _userId = userId;
             IsConfigured = true;
-            return Task.FromResult<object>(null);
         }
 
         protected abstract string LabelPrefix { get; }
@@ -73,7 +73,7 @@ namespace TerminalBase.Services
             }
         }
 
-        public Task<PayloadDTO> GetPayload(Guid containerId, string userId)
+        public Task<PayloadDTO> GetPayload(Guid containerId)
         {
             var payload = new PayloadDTO(containerId)
             {
@@ -95,7 +95,7 @@ namespace TerminalBase.Services
             return Task.FromResult(payload);
         }
 
-        public Task<UserDTO> GetCurrentUser(string userId)
+        public Task<UserDTO> GetCurrentUser()
         {
             return Task.FromResult<UserDTO>(
                 new UserDTO()
@@ -108,7 +108,7 @@ namespace TerminalBase.Services
             );
         }
 
-        public Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(Guid activityId, CrateDirection direction, string userId)
+        public Task<List<Crate<TManifest>>> GetCratesByDirection<TManifest>(Guid activityId, CrateDirection direction)
         {
             var searchLabel = direction == CrateDirection.Upstream
                 ? LabelPrefix + "_UpstreamCrate"
@@ -124,7 +124,7 @@ namespace TerminalBase.Services
             return Task.FromResult(crates);
         }
 
-        public Task<List<Crate>> GetCratesByDirection(Guid activityId, CrateDirection direction, string userId)
+        public Task<List<Crate>> GetCratesByDirection(Guid activityId, CrateDirection direction)
         {
             var searchLabel = direction == CrateDirection.Upstream
                 ? LabelPrefix + "_UpstreamCrate"
@@ -140,12 +140,12 @@ namespace TerminalBase.Services
             return Task.FromResult(crates);
         }
 
-        public async Task CreateAlarm(AlarmDTO alarmDTO, string userId)
+        public async Task CreateAlarm(AlarmDTO alarmDTO)
         {
 
         }
 
-        public Task<FileDTO> SaveFile(string name, Stream stream, string userId)
+        public Task<FileDTO> SaveFile(string name, Stream stream)
         {
             var fileDO = new FileDTO
             {
@@ -155,7 +155,7 @@ namespace TerminalBase.Services
             return Task.FromResult(fileDO);
         }
 
-        public Task<List<ActivityTemplateDTO>> GetActivityTemplates(string userId, bool getLatestsVersionsOnly = false)
+        public Task<List<ActivityTemplateDTO>> GetActivityTemplates(bool getLatestsVersionsOnly = false)
         {
             var searchLabel = LabelPrefix + "_ActivityTemplate";
 
@@ -171,9 +171,9 @@ namespace TerminalBase.Services
             return Task.FromResult(activityTemplates);
         }
 
-        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category, string userId, bool getLatestsVersionsOnly = false)
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(ActivityCategory category, bool getLatestsVersionsOnly = false)
         {
-            var allTemplates = await GetActivityTemplates(userId);
+            var allTemplates = await GetActivityTemplates();
             var activityTemplates = allTemplates
                 .Where(x => x.Category == category)
                 .ToList();
@@ -181,9 +181,9 @@ namespace TerminalBase.Services
             return activityTemplates;
         }
 
-        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, string userId, bool getLatestsVersionsOnly = false)
+        public async Task<List<ActivityTemplateDTO>> GetActivityTemplates(string tag, bool getLatestsVersionsOnly = false)
         {
-            var allTemplates = await GetActivityTemplates(userId);
+            var allTemplates = await GetActivityTemplates();
             if (string.IsNullOrEmpty(tag))
             {
                 return allTemplates;
@@ -196,27 +196,27 @@ namespace TerminalBase.Services
             return activityTemplates;
         }
 
-        public Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields, string userId)
+        public Task<List<FieldValidationResult>> ValidateFields(List<FieldValidationDTO> fields)
         {
             return Task.FromResult(new List<FieldValidationResult>());
         }
 
-        public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability, string userId)
+        public async Task<FieldDescriptionsCM> GetDesignTimeFieldsByDirection(Guid activityId, CrateDirection direction, AvailabilityType availability)
         {
             //This code only supports integration testing scenarios
 
             var mergedFields = new FieldDescriptionsCM();
-            var availableData = await GetAvailableData(activityId, direction, availability, userId);
+            var availableData = await GetAvailableData(activityId, direction, availability);
 
             mergedFields.Fields.AddRange(availableData.AvailableFields);
 
             return mergedFields;
         }
 
-        public async Task<IncomingCratesDTO> GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability, string userId)
+        public async Task<IncomingCratesDTO> GetAvailableData(Guid activityId, CrateDirection direction, AvailabilityType availability)
         {
-            var fields = await GetCratesByDirection<FieldDescriptionsCM>(activityId, direction, userId);
-            var crates = await GetCratesByDirection<CrateDescriptionCM>(activityId, direction, userId);
+            var fields = await GetCratesByDirection<FieldDescriptionsCM>(activityId, direction);
+            var crates = await GetCratesByDirection<CrateDescriptionCM>(activityId, direction);
             var availableData = new IncomingCratesDTO();
 
             availableData.AvailableFields.AddRange(fields.SelectMany(x => x.Content.Fields).Where(x => availability == AvailabilityType.NotSet || (x.Availability & availability) != 0));
@@ -226,115 +226,107 @@ namespace TerminalBase.Services
             return availableData;
         }
 
-        public async Task ApplyNewToken(Guid activityId, Guid authTokenId, string userId)
+        public async Task ApplyNewToken(Guid activityId, Guid authTokenId)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload, string userId)
+        public Task<ActivityPayload> ConfigureActivity(ActivityPayload activityPayload)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload, string userId)
+        public Task<ActivityPayload> SaveActivity(ActivityPayload activityPayload)
         {
             throw new NotImplementedException();
         }
 
-        public Task<ActivityPayload> CreateAndConfigureActivity(Guid templateId, string userId, string name = null, int? order = null, Guid? parentNodeId = default(Guid?), bool createPlan = false, Guid? authorizationTokenId = null)
+        public Task<ActivityPayload> CreateAndConfigureActivity(Guid templateId, string name = null, int? order = null, Guid? parentNodeId = default(Guid?), bool createPlan = false, Guid? authorizationTokenId = null)
         {
             throw new NotImplementedException();
         }
 
-        public Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO, string userId)
+        public Task<PlanDTO> CreatePlan(PlanEmptyDTO planDTO)
         {
             throw new NotImplementedException();
         }
 
-        public Task RunPlan(Guid planId, List<CrateDTO> payload, string userId)
-        {
-            throw new NotImplementedException();
-        }
-        
-        public Task<IEnumerable<PlanDTO>> GetPlansByName(string name, string userId, PlanVisibility visibility = PlanVisibility.Standard)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<PlanDTO> GetPlansByActivity(string activityId, string userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan, string userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task NotifyUser(TerminalNotificationDTO notificationMessage, string userId)
-        {
-            return Task.FromResult(0);
-        }
-
-        public Task RenewToken(AuthorizationTokenDTO token, string userId)
-        {
-            return Task.FromResult(0);
-        }
-
-        public Task RenewToken(string id, string externalAccountId, string token, string userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        public Task DeletePlan(Guid planId, string userId)
-        {
-            throw new NotImplementedException();
-        }
-
-        private async Task<Dictionary<string, string>> GetHMACHeader(Uri requestUri, string userId)
-        {
-            if (!IsConfigured)
-                throw new InvalidOperationException("Please call Configure() before using the class.");
-
-            return await _hmacService.GenerateHMACHeader(requestUri, TerminalId, TerminalSecret, userId);
-        }
-
-        public async Task<Stream> DownloadFile(string filePath, string userId)
+        public Task RunPlan(Guid planId, List<CrateDTO> payload)
         {
             throw new NotImplementedException();
         }
         
-        public Task<IEnumerable<FileDTO>> GetFiles(string userId)
+        public Task<IEnumerable<PlanDTO>> GetPlansByName(string name, PlanVisibility visibility = PlanVisibility.Standard)
         {
             throw new NotImplementedException();
         }
 
-        public Task<Stream> DownloadFile(int fileId, string userId)
+        public Task<PlanDTO> GetPlansByActivity(string activityId)
         {
             throw new NotImplementedException();
         }
 
-        public Task DeleteExistingChildNodesFromActivity(Guid curActivityId, string userId)
+        public Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan)
         {
             throw new NotImplementedException();
         }
 
-        public Task DeleteActivity(Guid curActivityId, string userId)
+        public Task NotifyUser(TerminalNotificationDTO notificationMessage)
+        {
+            return Task.FromResult(0);
+        }
+
+        public Task RenewToken(AuthorizationTokenDTO token)
+        {
+            return Task.FromResult(0);
+        }
+
+        public Task RenewToken(string id, string externalAccountId, string token)
         {
             throw new NotImplementedException();
         }
 
-        public Task<List<CrateDTO>> GetStoredManifests(string currentFr8UserId, List<CrateDTO> cratesForMTRequest)
+        public Task DeletePlan(Guid planId)
+        {
+            throw new NotImplementedException();
+        }
+        
+        public async Task<Stream> DownloadFile(string filePath)
+        {
+            throw new NotImplementedException();
+        }
+        
+        public Task<IEnumerable<FileDTO>> GetFiles()
         {
             throw new NotImplementedException();
         }
 
-        public Task<AuthorizationToken> GetAuthToken(string authTokenId, string curFr8UserId)
+        public Task<Stream> DownloadFile(int fileId)
         {
             throw new NotImplementedException();
         }
 
-        public Task ScheduleEvent(string externalAccountId, string curFr8UserId, string minutes)
+        public Task DeleteExistingChildNodesFromActivity(Guid curActivityId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteActivity(Guid curActivityId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<CrateDTO>> GetStoredManifests(List<CrateDTO> cratesForMTRequest)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<AuthorizationToken> GetAuthToken(string authTokenId)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task ScheduleEvent(string externalAccountId, string minutes)
         {
             throw new NotImplementedException();
         }

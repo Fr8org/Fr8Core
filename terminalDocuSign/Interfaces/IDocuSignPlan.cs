@@ -1,4 +1,5 @@
 ﻿using System.Threading.Tasks;
+using TerminalBase.Infrastructure;
 using TerminalBase.Models;
 
 namespace terminalDocuSign.Interfaces
@@ -11,11 +12,11 @@ namespace terminalDocuSign.Interfaces
         /// <summary>
         /// Creates Monitor All DocuSign Events plan with Record DocuSign Events and Store MT Data actions.
         /// </summary>
-        Task CreatePlan_MonitorAllDocuSignEvents(string curFr8UserId, AuthorizationToken authToken);
+        Task CreatePlan_MonitorAllDocuSignEvents(IHubCommunicator hubCommunicator, AuthorizationToken authToken);
 
-        void CreateConnect(string curFr8UserId, AuthorizationToken authToken);
+        void CreateConnect(IHubCommunicator hubCommunicator, AuthorizationToken authToken);
 
-        void CreateOrUpdatePolling(string curFr8UserId, AuthorizationToken authToken);
+        void CreateOrUpdatePolling(IHubCommunicator hubCommunicator, AuthorizationToken authToken);
 
     }
 }
