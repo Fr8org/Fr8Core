@@ -10,7 +10,7 @@ using TerminalBase.Services;
 namespace terminalQuickBooks.Controllers
 {    
     [RoutePrefix("activities")]
-    public class ActivityController : BaseTerminalController
+    public class ActivityController : ApiController
     {
         private const string curTerminal = "terminalQuickBooks";
         private readonly ActivityExecutor _activityExecutor;

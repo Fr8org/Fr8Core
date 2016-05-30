@@ -2,6 +2,7 @@
 using StructureMap;
 using StructureMap.Configuration.DSL;
 using TerminalBase.Services;
+using Utilities;
 
 namespace TerminalBase.Infrastructure
 {
@@ -23,7 +24,8 @@ namespace TerminalBase.Infrastructure
         public class LiveMode : Registry
         {
             public LiveMode()
-            {                
+            {
+                For<IConfigRepository>().Use<ConfigRepository>();
                 For<IHubCommunicator>().Use<DefaultHubCommunicator>();
                 For<ICrateManager>().Use<CrateManager>();
                 For<ActivityExecutor>().Use<ActivityExecutor>();
@@ -34,6 +36,7 @@ namespace TerminalBase.Infrastructure
         {
             public TestMode()
             {
+                For<IConfigRepository>().Use<MockedConfigRepository>();
                 For<IHubCommunicator>().Use<DefaultHubCommunicator>();
                 For<ICrateManager>().Use<CrateManager>();
                 For<ActivityExecutor>().Use<ActivityExecutor>();

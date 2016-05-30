@@ -2,6 +2,7 @@
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using TerminalBase.BaseClasses;
@@ -35,24 +36,24 @@ namespace terminalBox.Actions
             }
         }
 
-        public GenerateTableActivity_v1()
-            : base(false)
+        public GenerateTableActivity_v1(ICrateManager crateManager) 
+            : base(false, crateManager)
         {
         }
-        
-        protected override Task InitializeETA()
+
+        public override Task Initialize()
         {
             ActivityUI.Header.Value = ActivityId.ToString();
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>("Table");
             return Task.FromResult(0);
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
             return Task.FromResult(0);
         }
 
-        protected override Task RunETA()
+        public override Task Run()
         {
             var tableCm = new StandardTableDataCM();
 

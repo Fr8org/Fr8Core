@@ -9,10 +9,12 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Managers;
 using terminalDocuSign.Activities;
+using terminalDocuSign.Services.New_Api;
 using TerminalBase.Infrastructure;
 using TerminalBase.Infrastructure.Behaviors;
 using TerminalBase.Models;
@@ -50,6 +52,12 @@ namespace terminalDocuSign.Actions
 
        
         protected override string ActivityUserFriendlyName => SolutionName;
+
+
+        public Mail_Merge_Into_DocuSign_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+            : base(crateManager, docuSignManager)
+        {
+        }
 
         /// <summary>
         /// Action processing infrastructure.
@@ -91,7 +99,7 @@ namespace terminalDocuSign.Actions
 
         private async Task<List<ListItem>> GetDataSourceListItems(string tag)
         {
-            var curActivityTemplates = await HubCommunicator.GetActivityTemplates(tag, CurrentUserId);
+            var curActivityTemplates = await HubCommunicator.GetActivityTemplates(tag);
             return curActivityTemplates.Select(at => new ListItem() { Key = at.Label, Value = at.Name }).ToList();
         }
 
@@ -106,33 +114,33 @@ namespace terminalDocuSign.Actions
             Storage.Add(configurationCrate);
                     }
 
-        protected override Task<bool> Validate()
+        protected override Task Validate()
         {
             var templateList = GetControl<DropDownList>("DocuSignTemplate");
-            if (!ValidationManager.ValidateControlExistance(templateList))
+
+            if (ValidationManager.ValidateControlExistance(templateList))
             {
-                return Task.FromResult(false);
-        }
-            ValidationManager.ValidateTemplateList(templateList);
+                ValidationManager.ValidateTemplateList(templateList);
+            }
+
             var sourceConfigControl = GetControl<DropDownList>("DataSource");
 
-            if (!ValidationManager.ValidateControlExistance(sourceConfigControl))
-        {
-                return Task.FromResult(false);
-            }
-            if (DocuSignValidationUtils.AtLeastOneItemExists(sourceConfigControl))
+            if (ValidationManager.ValidateControlExistance(sourceConfigControl))
             {
-                if (!DocuSignValidationUtils.ItemIsSelected(sourceConfigControl))
+                if (DocuSignValidationUtils.AtLeastOneItemExists(sourceConfigControl))
                 {
-                    ValidationManager.SetError("Data source is not selected", sourceConfigControl);
+                    if (!DocuSignValidationUtils.ItemIsSelected(sourceConfigControl))
+                    {
+                        ValidationManager.SetError("Data source is not selected", sourceConfigControl);
+                    }
+                }
+                else
+                {
+                    ValidationManager.SetError("No data source exists", sourceConfigControl);
                 }
             }
-            else
-            {
-                ValidationManager.SetError("No data source exists", sourceConfigControl);
-            }
 
-            return Task.FromResult(true);
+            return Task.FromResult(0);
         }
 
         /// <summary>
@@ -194,7 +202,7 @@ namespace terminalDocuSign.Actions
                 }
             };
 
-            var behavior = new ReconfigurationListBehavior(HubCommunicator, CurrentUserId);
+            var behavior = new ReconfigurationListBehavior();
             await behavior.ReconfigureActivities(ActivityPayload, AuthorizationToken, reconfigList);
         }
 
@@ -250,7 +258,7 @@ namespace terminalDocuSign.Actions
                 .Single(x => x.Ordering == 1);
 
             activity.CrateStorage = new CrateStorage();
-            activity = await HubCommunicator.ConfigureActivity(activity, CurrentUserId);
+            activity = await HubCommunicator.ConfigureActivity(activity);
             return activity;
         }
 

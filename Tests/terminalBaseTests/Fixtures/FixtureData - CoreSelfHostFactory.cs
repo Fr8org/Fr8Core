@@ -33,7 +33,7 @@ namespace terminalBaseTests.Fixtures
             public void Configuration(IAppBuilder app)
             {
                 var config = new HttpConfiguration();
-
+                config.Services.Replace(typeof(IHttpControllerSelector), new HubWeb.CustomSelector(config));
                 // Web API routes
                 config.Routes.MapHttpRoute(
                     name: "DefaultApiWithAction",

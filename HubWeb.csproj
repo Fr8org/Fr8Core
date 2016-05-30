@@ -389,7 +389,7 @@
     <Compile Include="Controllers\Api\AlarmsController.cs" />
     <Compile Include="Controllers\Api\AuthenticationController.cs" />
     <Compile Include="Controllers\Api\ConfigurationController.cs" />
-    <Compile Include="Controllers\Api\ManifestRegistryController.cs" />
+    <Compile Include="Controllers\Api\ManifestRegistriesController.cs" />
     <Compile Include="Controllers\Api\ManifestsController.cs" />
     <Compile Include="Controllers\Api\PlanTemplatesController.cs" />
     <Compile Include="Controllers\Api\SubPlansController.cs" />
@@ -480,7 +480,6 @@
     <Compile Include="ViewModels\ManageUserVM.cs" />
     <Compile Include="ViewModels\NavLinksHome.cs" />
     <Compile Include="ViewModels\NavLinksShared.cs" />
-    <Compile Include="ViewModels\PayloadVM.cs" />
     <Compile Include="ViewModels\ProcessCreateEventVM.cs" />
     <Compile Include="ViewModels\RegisterVM.cs" />
     <Compile Include="ViewModels\ResetPasswordVM.cs" />
@@ -1058,6 +1057,7 @@
     <TypeScriptCompile Include="Scripts\tests\unit\PlanDetailsControllerTests.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\UpstreamDataChooser.ts" />
     <TypeScriptCompile Include="Scripts\tests\unit\directives\controls\UpstreamDataChooser.spec.ts" />
+    <TypeScriptCompile Include="Scripts\tests\unit\services\ManifestRegistryServiceTests.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\directives\controls\fixture_UpstreamDataChooser.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\directives\controls\fixture_UpstreamFieldChooser.ts" />
     <TypeScriptCompile Include="Scripts\tests\utils\jpattern.ts" />

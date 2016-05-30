@@ -5,10 +5,12 @@ using Data.Interfaces;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using StructureMap;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
@@ -25,7 +27,8 @@ namespace terminalFr8Core.Activities
             Terminal = TerminalData.TerminalDTO
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
-        public SaveToFr8Warehouse_v1() : base(false)
+        public SaveToFr8Warehouse_v1(ICrateManager crateManager)
+            : base(false, crateManager)
         {
         }
 
@@ -62,7 +65,7 @@ namespace terminalFr8Core.Activities
             //TODO let's leave this like that until Alex decides what to do
             var upstreamLabelsCrate = CrateManager.CreateDesignTimeFieldsCrate("AvailableUpstreamLabels", new FieldDTO[] { });
             //var upstreamLabelsCrate = Crate.CreateDesignTimeFieldsCrate("AvailableUpstreamLabels", upstreamLabels);
-            var upstreamDescriptions = await GetCratesByDirection<ManifestDescriptionCM>(CrateDirection.Upstream);
+            var upstreamDescriptions = await HubCommunicator.GetCratesByDirection<ManifestDescriptionCM>(ActivityId, CrateDirection.Upstream);
             var upstreamRunTimeDescriptions = upstreamDescriptions.Where(c => c.Availability == AvailabilityType.RunTime);
             var fields = upstreamRunTimeDescriptions.Select(c => new FieldDTO(c.Content.Name, c.Content.Id));
             var upstreamManifestsCrate = CrateManager.CreateDesignTimeFieldsCrate("AvailableUpstreamManifests", fields.ToArray());

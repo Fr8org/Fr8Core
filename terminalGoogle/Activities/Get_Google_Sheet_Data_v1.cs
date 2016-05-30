@@ -5,6 +5,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using StructureMap;
@@ -91,9 +92,10 @@ namespace terminalGoogle.Activities
         private readonly IGoogleSheet _googleApi;
         private readonly IGoogleIntegration _googleIntegration;
 
-        public Get_Google_Sheet_Data_v1()
+        public Get_Google_Sheet_Data_v1(ICrateManager crateManager, IGoogleIntegration googleIntegration, IGoogleSheet googleSheet)
+            :base (crateManager, googleIntegration)
         {
-            _googleApi = ObjectFactory.GetInstance<IGoogleSheet>();
+            _googleApi = googleSheet;
         }
         //This property is used to store and retrieve user-selected spreadsheet and worksheet between configuration responses 
         //to avoid extra fetch from Google
@@ -120,14 +122,14 @@ namespace terminalGoogle.Activities
 
 
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             var spreadsheets = await _googleApi.GetSpreadsheets(GetGoogleAuthToken());
             ActivityUI.SpreadsheetList.ListItems = spreadsheets.Select(x => new ListItem { Key = x.Value, Value = x.Key }).ToList();
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel, true);
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             List<Crate> crates = new List<Crate>();
             Crate fieldsCrate = null;
@@ -238,7 +240,7 @@ namespace terminalGoogle.Activities
             return true;
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             if (string.IsNullOrEmpty(ActivityUI.SpreadsheetList.Value))
             {

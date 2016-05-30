@@ -13,6 +13,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 
@@ -67,13 +68,14 @@ namespace terminalFr8Core.Actions
 
         private async Task<List<ListItem>> GetCurrentUsersFiles()
         {
-            var curAccountFileList = await HubCommunicator.GetFiles(CurrentUserId);
+            var curAccountFileList = await HubCommunicator.GetFiles();
             //TODO where tags == Docusign files
             return curAccountFileList.Select(c => new ListItem() { Key = c.OriginalFileName, Value = c.Id.ToString(CultureInfo.InvariantCulture) }).ToList();
         }
         #endregion
 
-        public GetFileFromFr8Store_v1() : base(false)
+        public GetFileFromFr8Store_v1(ICrateManager crateManager)
+            : base(false, crateManager)
         {
         }
 
@@ -86,7 +88,7 @@ namespace terminalFr8Core.Actions
                 return;
             }
             //let's download this file
-            var file = await HubCommunicator.DownloadFile(int.Parse(fileSelector.Value), CurrentUserId);
+            var file = await HubCommunicator.DownloadFile(int.Parse(fileSelector.Value));
             if (file == null || file.Length < 1)
             {
                 RaiseError("Unable to download file from Hub");

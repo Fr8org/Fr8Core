@@ -5,12 +5,14 @@ using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using StructureMap;
 using terminalDocuSign.Services.New_Api;
 using TerminalBase.BaseClasses;
 using TerminalBase.Errors;
+using TerminalBase.Infrastructure;
 
 namespace terminalDocuSign.Activities
 {
@@ -19,9 +21,10 @@ namespace terminalDocuSign.Activities
         protected IDocuSignManager DocuSignManager;
 
 
-        public BaseDocuSignActivity() : base(true)
+        protected BaseDocuSignActivity(ICrateManager crateManager, IDocuSignManager docuSignManager)
+            : base(true, crateManager)
         {
-            DocuSignManager = ObjectFactory.GetInstance<IDocuSignManager>();
+            DocuSignManager = docuSignManager;
         }
 
         public override async Task Initialize()

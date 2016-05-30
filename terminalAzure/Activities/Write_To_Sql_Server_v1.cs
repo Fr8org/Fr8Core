@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using StructureMap;
@@ -13,6 +14,7 @@ using terminalAzure.Infrastructure;
 using terminalAzure.Services;
 using TerminalBase;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 using TerminalSqlUtilities;
 
 namespace terminalAzure.Activities
@@ -31,7 +33,9 @@ namespace terminalAzure.Activities
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        public Write_To_Sql_Server_v1() : base(false)
+
+        public Write_To_Sql_Server_v1(ICrateManager crateManager) 
+            : base(false, crateManager)
         {
         }
 
@@ -149,7 +153,7 @@ namespace terminalAzure.Activities
         }
         private void AddErrorToControl()
         {
-            var connStringTextBox = GetControl<TextBox>("connection_string", ControlTypes.TextBox);
+            var connStringTextBox = GetControl<TextBox>("connection_string");
             connStringTextBox.Value = "Incorrect Connection String";
         }
 

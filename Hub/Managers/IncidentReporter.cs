@@ -18,11 +18,9 @@ namespace Hub.Managers
         private readonly EventReporter _eventReporter;
         private readonly ITerminal _terminal;
         private readonly ISecurityServices _sercurity;
-        private readonly IActivityTemplate _activityTemplate;
 
-        public IncidentReporter(EventReporter eventReporter, ITerminal terminal, ISecurityServices securityService, IActivityTemplate activityTemplate)
+        public IncidentReporter(EventReporter eventReporter, ITerminal terminal, ISecurityServices securityService)
         {
-            _activityTemplate = activityTemplate;
             _eventReporter = eventReporter;
             _terminal = terminal;
             _sercurity = securityService;

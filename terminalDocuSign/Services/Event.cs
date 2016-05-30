@@ -12,6 +12,7 @@ using StructureMap;
 using Hub.Managers;
 using terminalDocuSign.Interfaces;
 using terminalDocuSign.Infrastructure;
+using TerminalBase.Infrastructure;
 using TerminalBase.Models;
 
 namespace terminalDocuSign.Services
@@ -35,19 +36,23 @@ namespace terminalDocuSign.Services
             {
                 var curFr8UserAndToken = ConfirmAuthentication(curExternalEventPayload);
 
+                var hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
+
+                hubCommunicator.Configure("terminalDocuSign", curFr8UserAndToken.Item1);
+
                 try
                 {
-                    _docuSignPlan.CreateConnect(curFr8UserAndToken.Item1, curFr8UserAndToken.Item2);
+                    _docuSignPlan.CreateConnect(hubCommunicator, curFr8UserAndToken.Item2);
                 }
                 catch
                 {
                     //create polling
-                    _docuSignPlan.CreateOrUpdatePolling(curFr8UserAndToken.Item1, curFr8UserAndToken.Item2);
+                    _docuSignPlan.CreateOrUpdatePolling(hubCommunicator, curFr8UserAndToken.Item2);
                 }
                 finally
                 {
                     //create MonitorAllDocuSignEvents plan
-                    await _docuSignPlan.CreatePlan_MonitorAllDocuSignEvents(curFr8UserAndToken.Item1, curFr8UserAndToken.Item2);
+                    await _docuSignPlan.CreatePlan_MonitorAllDocuSignEvents(hubCommunicator, curFr8UserAndToken.Item2);
                 }
             }
 

@@ -41,7 +41,7 @@ namespace terminalSalesforceTests.Actions
             }
 
             Mock<IHubCommunicator> hubCommunicatorMock = new Mock<IHubCommunicator>(MockBehavior.Default);
-            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<Guid>(), It.IsAny<string>()))
+            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<Guid>()))
                 .Returns(() => Task.FromResult(testPayloadDTO));
             ObjectFactory.Container.Inject(typeof(IHubCommunicator), hubCommunicatorMock.Object);
 
@@ -55,7 +55,7 @@ namespace terminalSalesforceTests.Actions
                 s => s.Query(SalesforceObjectType.Account, It.IsAny<IEnumerable<string>>(), It.IsAny<string>(), It.IsAny<AuthorizationToken>()))
                 .Returns(() => Task.FromResult(new StandardTableDataCM()));
 
-            _getData_v1 = new Get_Data_v1();
+            _getData_v1 = New<Get_Data_v1>();
         }
 
         [Test, Category("terminalSalesforceTests.Get_Data.Configure")]

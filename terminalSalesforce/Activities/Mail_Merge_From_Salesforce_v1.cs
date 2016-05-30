@@ -10,6 +10,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using ServiceStack;
@@ -95,12 +96,13 @@ namespace terminalSalesforce.Actions
 
         private readonly ISalesforceManager _salesforceManager;
 
-        public Mail_Merge_From_Salesforce_v1()
+        public Mail_Merge_From_Salesforce_v1(ICrateManager crateManager, ISalesforceManager salesforceManager)
+            : base(crateManager)
         {
-            _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
+            _salesforceManager = salesforceManager;
         }
 
-        protected override Task<bool> ValidateETA()
+        protected override Task Validate()
         {
             if (ActivityUI.RunMailMergeButton.Clicked)
             {
@@ -117,10 +119,10 @@ namespace terminalSalesforce.Actions
                 }
             }
 
-            return Task.FromResult(true);
+            return Task.FromResult(0);
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             if (ActivityUI.RunMailMergeButton.Clicked)
             {
@@ -151,7 +153,7 @@ namespace terminalSalesforce.Actions
                     ChildActivityIndex = 2
                 }
             };
-            var behavior = new ReconfigurationListBehavior(HubCommunicator, CurrentUserId);
+            var behavior = new ReconfigurationListBehavior();
             await behavior.ReconfigureActivities(ActivityPayload, AuthorizationToken, reconfigurationList);
         }
 
@@ -276,17 +278,17 @@ namespace terminalSalesforce.Actions
             this[nameof(ActivityUi.SalesforceObjectSelector)] = selectedObject;
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             ActivityUI.SalesforceObjectSelector.ListItems = _salesforceManager.GetSalesforceObjectTypes().Select(x => new ListItem { Key = x.Key, Value = x.Value }).ToList();
-            var activityTemplates = await HubCommunicator.GetActivityTemplates(Tags.EmailDeliverer, CurrentUserId, true);
+            var activityTemplates = await HubCommunicator.GetActivityTemplates(Tags.EmailDeliverer, true);
             activityTemplates.Sort((x, y) => x.Name.CompareTo(y.Name));
             ActivityUI.MailSenderActivitySelector.ListItems = activityTemplates
                                                                             .Select(x => new ListItem { Key = x.Label, Value = x.Id.ToString() })
                                                                             .ToList();
         }
 
-        protected override Task RunETA()
+        public override Task Run()
         {
             return Task.FromResult(0);
         }

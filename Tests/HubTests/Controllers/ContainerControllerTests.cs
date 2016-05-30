@@ -22,7 +22,7 @@ namespace HubTests.Controllers
     {
         private Fr8AccountDO _testUserAccount;
 
-        private Hub.Interfaces.IContainer _containerService;
+        private Hub.Interfaces.IContainerService _containerServiceService;
 
         [SetUp]
         public override void SetUp()
@@ -30,7 +30,7 @@ namespace HubTests.Controllers
             base.SetUp();
 
             _testUserAccount = FixtureData.TestDockyardAccount5();
-            _containerService = ObjectFactory.GetInstance<Hub.Interfaces.IContainer>();
+            _containerServiceService = ObjectFactory.GetInstance<Hub.Interfaces.IContainerService>();
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {

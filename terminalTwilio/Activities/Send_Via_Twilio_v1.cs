@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using PhoneNumbers;
@@ -33,11 +34,12 @@ namespace terminalTwilio.Activities
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
 
-        protected ITwilioService _twilio;
+        protected ITwilioService Twilio;
 
-        public Send_Via_Twilio_v1() : base(false)
+        public Send_Via_Twilio_v1(ICrateManager crateManager, ITwilioService twilioService)
+            : base(false, crateManager)
         {
-            _twilio = ObjectFactory.GetInstance<ITwilioService>();
+            Twilio = twilioService;
         }
 
         public override async Task Initialize()
@@ -49,7 +51,7 @@ namespace terminalTwilio.Activities
 
         private async Task<Crate> CreateAvailableFieldsCrate()
         {
-            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(ActivityId, CrateDirection.Upstream, AvailabilityType.RunTime, CurrentUserId) ?? new FieldDescriptionsCM();
+            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(ActivityId, CrateDirection.Upstream, AvailabilityType.RunTime) ?? new FieldDescriptionsCM();
 
             var availableFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(
                     "Upstream Terminal-Provided Fields",
@@ -72,7 +74,7 @@ namespace terminalTwilio.Activities
 
         private List<FieldDTO> GetRegisteredSenderNumbersData()
         {
-            return _twilio.GetRegisteredSenderNumbers().Select(number => new FieldDTO() { Key = number, Value = number }).ToList();
+            return Twilio.GetRegisteredSenderNumbers().Select(number => new FieldDTO() { Key = number, Value = number }).ToList();
         }
 
         public override async Task FollowUp()
@@ -98,7 +100,7 @@ namespace terminalTwilio.Activities
 
                 try
                 {
-                    curMessage = _twilio.SendSms(smsNumber, smsBody);
+                    curMessage = Twilio.SendSms(smsNumber, smsBody);
                     SendEventReport($"Twilio SMS Sent -> SMSBody: {smsBody} smsNumber: {smsNumber}");
                     var curFieldDTOList = CreateKeyValuePairList(curMessage);
                     Payload.Add(PackCrate_TwilioMessageDetails(curFieldDTOList));
@@ -133,7 +135,7 @@ namespace terminalTwilio.Activities
             return new FieldDTO(smsNumber, smsBody);
         }
 
-        protected override Task<bool> Validate()
+        protected override Task Validate()
         {
             ValidationManager.Reset();
             if (ConfigurationControls != null)
@@ -160,7 +162,7 @@ namespace terminalTwilio.Activities
                     }
                 }
             }
-            return Task.FromResult(true);
+            return Task.FromResult(0);
         }
 
 

@@ -10,6 +10,8 @@ using terminalSlack.Interfaces;
 using terminalSlack.Services;
 using TerminalBase.BaseClasses;
 using System;
+using Fr8Data.Managers;
+using TerminalBase.Infrastructure;
 
 namespace terminalSlack.Actions
 {
@@ -91,7 +93,8 @@ namespace terminalSlack.Actions
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
         
 
-        public Monitor_Channel_v1() : base(true)
+        public Monitor_Channel_v1(ICrateManager crateManager)
+            : base(true, crateManager)
         {
             _slackIntegration = new SlackIntegration();
         }
@@ -123,7 +126,7 @@ namespace terminalSlack.Actions
                                                                       new string[] { "Slack Outgoing Message" });
         }
 
-        protected override Task RunETA()
+        public override Task Run()
         {
             var incomingMessageContents = ExtractIncomingMessageContentFromPayload();
             var hasIncomingMessage = incomingMessageContents?.Fields.Count > 0;
@@ -138,12 +141,12 @@ namespace terminalSlack.Actions
                 }
                 else
                 {
-                    RequestHubExecutionTermination("Incoming message doesn't belong to specified channel. No downstream activities are executed");
+                    TerminateHubExecution("Incoming message doesn't belong to specified channel. No downstream activities are executed");
                 }                
             }
             else
             {
-                RequestHubExecutionTermination("Plan successfully activated. It will wait and respond to specified Slack postings");
+                TerminateHubExecution("Plan successfully activated. It will wait and respond to specified Slack postings");
             }
             return Task.FromResult(0);
         }
@@ -158,7 +161,7 @@ namespace terminalSlack.Actions
             return new FieldDescriptionsCM(eventReport.EventPayload.CrateContentsOfType<StandardPayloadDataCM>().SelectMany(x => x.AllValues()));
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             var oAuthToken = AuthorizationToken.Token;
             ActivityUI.ChannelList.ListItems = (await _slackIntegration.GetChannelList(oAuthToken, false))
@@ -170,7 +173,7 @@ namespace terminalSlack.Actions
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(ResultPayloadCrateLabel);
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
             return Task.FromResult(0);
         }

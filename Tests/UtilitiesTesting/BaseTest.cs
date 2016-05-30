@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
+using System.Reflection;
 using System.Security.Claims;
 using System.Security.Principal;
 using System.Web.Http;
@@ -37,9 +39,76 @@ namespace UtilitiesTesting
             
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>()) //Get the seeding done first
                 uow.SaveChanges();
+        }
 
-            
 
+        protected T New<T>()
+            where T : class
+        {
+            var type = typeof(T);
+
+            var firstConstructor = type.GetConstructors().OrderBy(x => x.GetParameters().Length).FirstOrDefault();
+
+            if (firstConstructor == null)
+            {
+                throw new Exception("Unable to find constructor for activity type: " + type);
+            }
+
+            var parameters = firstConstructor.GetParameters();
+            var paramArguments = new object[parameters.Length];
+
+            for (int index = 0; index < parameters.Length; index++)
+            {
+                var parameterInfo = parameters[index];
+                paramArguments[index] = ObjectFactory.GetInstance(parameterInfo.ParameterType);
+            }
+
+            var instance = firstConstructor.Invoke(paramArguments.ToArray()) as T;
+
+            if (instance == null)
+            {
+                throw new Exception("Unable to create instance of type: " + type);
+            }
+
+            return instance;
+        }
+        
+        public object Invoke<T>(string methodName, params object[] arguments)
+            where T : class 
+        {
+            try
+            {
+                MethodInfo curMethodInfo = typeof(T).GetMethod(methodName,
+                    BindingFlags.Default |
+                    BindingFlags.DeclaredOnly |
+                    BindingFlags.Instance |
+                    BindingFlags.Static |
+                    BindingFlags.Public |
+                    BindingFlags.NonPublic |
+                    BindingFlags.FlattenHierarchy |
+                    BindingFlags.InvokeMethod |
+                    BindingFlags.CreateInstance |
+                    BindingFlags.GetField |
+                    BindingFlags.SetField |
+                    BindingFlags.GetProperty |
+                    BindingFlags.SetProperty |
+                    BindingFlags.PutDispProperty |
+                    BindingFlags.PutRefDispProperty |
+                    BindingFlags.ExactBinding |
+                    BindingFlags.SuppressChangeType |
+                    BindingFlags.OptionalParamBinding |
+                    BindingFlags.IgnoreReturn
+                );
+
+                ParameterInfo[] curMethodParameters = curMethodInfo.GetParameters();
+                object curObject = New<T>();
+                var response = (object)curMethodInfo.Invoke(curObject, curMethodParameters.Length == 0 ? null : arguments);
+                return response;
+            }
+            catch (TargetInvocationException ex)
+            {
+                throw ex.InnerException;
+            }
         }
 
         [TearDown]

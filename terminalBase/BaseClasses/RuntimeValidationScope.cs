@@ -1,7 +1,5 @@
 ﻿using System;
 using Fr8Data.Crates;
-using Fr8Data.Managers;
-using Fr8Data.Manifests;
 using TerminalBase.Infrastructure;
 
 namespace TerminalBase.BaseClasses
@@ -13,8 +11,6 @@ namespace TerminalBase.BaseClasses
         public class RuntimeValidationScope : IDisposable
         {
             private readonly BaseTerminalActivity _that;
-            private readonly ICrateStorage _payloadStorage;
-            private readonly ValidationResultsCM _currentValidationResults;
 
             public readonly ValidationManager ValidationManager;
 
@@ -22,19 +18,15 @@ namespace TerminalBase.BaseClasses
 
             public RuntimeValidationScope(BaseTerminalActivity that, ICrateStorage payloadStorage)
             {
-                _currentValidationResults = new ValidationResultsCM();
-
                 _that = that;
-                _payloadStorage = payloadStorage;
-
-                ValidationManager = new ValidationManager(_currentValidationResults, payloadStorage);
+                ValidationManager = new ValidationManager(payloadStorage);
             }
 
             public void Dispose()
             {
                 if (ValidationManager.HasErrors)
                 {
-                    _that.RaiseError("Activity validation fails: " + _currentValidationResults);
+                    _that.RaiseError("Activity validation fails: " + ValidationManager.ValidationResults);
                 }
             }
         }

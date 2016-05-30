@@ -2,6 +2,7 @@
 using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using StructureMap;
@@ -81,32 +82,33 @@ namespace terminalFr8Core.Activities
             }
         }
 
-        public Send_Email_v1() : base(false)
+        public Send_Email_v1(ICrateManager crateManager)
+            : base(false, crateManager)
         {
             _emailPackager = ObjectFactory.GetInstance<IEmailPackager>();
         }
 
-        protected override Task InitializeETA()
+        public override Task Initialize()
         {
             return Task.FromResult(0);
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
             return Task.FromResult(0);
         }
 
         
-        protected override Task<bool> ValidateETA()
+        protected override Task Validate()
         {
             ValidationManager.ValidateTextSourceNotEmpty(ActivityUI.EmailAddress, "Email address can't be empty");
             ValidationManager.ValidateTextSourceNotEmpty(ActivityUI.EmailSubject, "Email subject can't be empty");
             ValidationManager.ValidateTextSourceNotEmpty(ActivityUI.EmailBody, "Email body can't be empty");
 
-            return Task.FromResult(true);
+            return Task.FromResult(0);
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             var fromAddress = CloudConfigurationManager.GetSetting("OutboundFromAddress");
 

@@ -2,9 +2,11 @@
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.States;
 using terminalFr8Core.Infrastructure;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
@@ -48,7 +50,8 @@ namespace terminalFr8Core.Activities
 
         #endregion Configuration.
 
-        public ManagePlan_v1() : base(false)
+        public ManagePlan_v1(ICrateManager crateManager)
+            : base(false, crateManager)
         {
 
         }
