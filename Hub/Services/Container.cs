@@ -101,9 +101,9 @@ namespace Hub.Services
                     nodeName = "Activity: " + ((ActivityDO)node).Name;
                 }
 
-                if (node is SubPlanDO)
+                if (node is SubplanDO)
                 {
-                    nodeName = "Subplan: " + ((SubPlanDO)node).Name;
+                    nodeName = "Subplan: " + ((SubplanDO)node).Name;
                 }
 
                 pathToRoot.Add(new OperationalStateCM.StackFrame

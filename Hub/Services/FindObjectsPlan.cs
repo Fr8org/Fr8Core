@@ -28,7 +28,7 @@ namespace Hub.Services
                 Tag = "Query"
             };
 
-            var subPlan = new SubPlanDO()
+            var subPlan = new SubplanDO()
             {
                 Id = Guid.NewGuid(),
                 ParentPlanNode = plan

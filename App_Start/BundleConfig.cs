@@ -224,7 +224,9 @@ namespace HubWeb.App_Start
                 .Include("~/bower_components/md-color-picker/dist/mdColorPicker.min.js")//not found on cdn
                 .Include("~/bower_components/angular-material-data-table/dist/md-data-table.min.js")
             );
-
+            bundles.Add(new ScriptBundle("~bundles/js/analytics")
+                .Include("~/Scripts/homejs/analytics.js")
+                );
 #if RELEASE || DEV
             BundleTable.EnableOptimizations = true;
 #endif

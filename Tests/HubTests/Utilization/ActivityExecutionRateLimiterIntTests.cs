@@ -62,7 +62,7 @@ namespace HubTests.Utilization
                     Id = FixtureData.GetTestGuidById(0),
                     ChildNodes =
                     {
-                        new SubPlanDO(true)
+                        new SubplanDO(true)
                         {
                             Id = FixtureData.GetTestGuidById(1),
                             ChildNodes =
@@ -102,7 +102,7 @@ namespace HubTests.Utilization
                 });
 
                 plan.PlanState = PlanState.Running;
-                plan.StartingSubPlan = (SubPlanDO) plan.ChildNodes[0];
+                plan.StartingSubplan = (SubplanDO) plan.ChildNodes[0];
                 plan.Fr8Account = userAcct;
 
                 uow.SaveChanges();

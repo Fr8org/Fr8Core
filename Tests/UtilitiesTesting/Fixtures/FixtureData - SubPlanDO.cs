@@ -4,9 +4,9 @@ namespace UtilitiesTesting.Fixtures
 {
     public partial class FixtureData
     {
-        public static SubPlanDO TestSubPlanDO1()
+        public static SubplanDO TestSubPlanDO1()
         {
-            var SubPlanDO = new SubPlanDO
+            var SubPlanDO = new SubplanDO
             {
                 Id = GetTestGuidById(50),
                 NodeTransitions =
@@ -15,9 +15,9 @@ namespace UtilitiesTesting.Fixtures
             return SubPlanDO;
         }
 
-        public static SubPlanDO TestSubPlanHealthDemo()
+        public static SubplanDO TestSubPlanHealthDemo()
         {
-            var SubPlanDO = new SubPlanDO
+            var SubPlanDO = new SubplanDO
             {
                 Id = GetTestGuidById(50),
                 ParentPlanNodeId = GetTestGuidById(23),
@@ -27,9 +27,9 @@ namespace UtilitiesTesting.Fixtures
             return SubPlanDO;
         }
 
-        public static SubPlanDO TestSubPlanDO2()
+        public static SubplanDO TestSubPlanDO2()
         {
-            SubPlanDO SubPlanDO = new SubPlanDO()
+            SubplanDO subplanDO = new SubplanDO()
             {
                 Id = GetTestGuidById(51),
                 Name = "TestName",
@@ -39,29 +39,29 @@ namespace UtilitiesTesting.Fixtures
                 RootPlanNodeId = GetTestGuidById(50),
                 StartingSubPlan = true
             };
-            return SubPlanDO;
+            return subplanDO;
         }
 
-        public static SubPlanDO TestSubPlanDO3()
+        public static SubplanDO TestSubPlanDO3()
         {
-            SubPlanDO SubPlanDO = new SubPlanDO()
+            SubplanDO subplanDO = new SubplanDO()
             {
                 Id = GetTestGuidById(50),
                 NodeTransitions =
                     "[{'TransitionKey':'true','ProcessNodeId':'3'},{'TransitionKey':'false','ProcessNodeId':'5'}]"
             };
-            return SubPlanDO;
+            return subplanDO;
         }
 
-        public static SubPlanDO TestSubPlanDO4()
+        public static SubplanDO TestSubPlanDO4()
         {
-            SubPlanDO SubPlanDO = new SubPlanDO()
+            SubplanDO subplanDO = new SubplanDO()
             {
                 Id = GetTestGuidById(1),
                 NodeTransitions =
                     "[{'TransitionKey':'true','ProcessNodeId':'3'},{'TransitionKey':'false','ProcessNodeId':'5'}]"
             };
-            return SubPlanDO;
+            return subplanDO;
         }
     }
 }

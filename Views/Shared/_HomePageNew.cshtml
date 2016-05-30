@@ -15,7 +15,7 @@
         i['GoogleAnalyticsObject'] = r; i[r] = i[r] || function () {
             (i[r].q = i[r].q || []).push(arguments)
         }, i[r].l = 1 * new Date(); a = s.createElement(o),
-                m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
+            m = s.getElementsByTagName(o)[0]; a.async = 1; a.src = g; m.parentNode.insertBefore(a, m)
     })(window, document, 'script', '//www.google-analytics.com/analytics.js', 'ga');
 
     ga('create', 'UA-52048536-1', 'kwasant.com');
@@ -30,7 +30,7 @@
     <meta name="description" content="">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel='shortcut icon' type='image/x-icon' href='~/Content/img/favicon.ico' />
-    
+
     <!-- Google Material Design -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
     <link rel="stylesheet" href="https://code.getmdl.io/1.1.1/material.indigo-pink.min.css">
@@ -38,24 +38,23 @@
 
     <!-- Fonts -->
     <link href="https://fonts.googleapis.com/css?family=Dosis:300,400,500,600,700|Open+Sans:300,400,400italic,600,700,800|Francois+One|Didact+Gothic|Droid+Sans|CabinFjalla+One|Cantarell|Ubuntu|Hind|Roboto|Roboto+Condensed:700|Nunito&subset=latin,cyrillic"
-        rel="stylesheet" type="text/css">
+          rel="stylesheet" type="text/css">
     <link href="~/Content/css/additionalcss/font-awesome/css/font-awesome.css" rel="stylesheet" type="text/css" />
     <link href="~/Content/css/additionalcss/font-awesome/css/style.css" rel="stylesheet" type="text/css" />
-    
+
     @Scripts.Render("~/bundles/js/jquery")
     @Scripts.Render("~/bundles/js/cookies")
     @Scripts.Render("~/bundles/js/customjs")
     @Styles.Render("~/bundles/css/colorbox")
     @Styles.Render("~/bundles/css/frontpage-new")
-    
+
     <!--[if lt IE 9]>
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <script src="~/Content/js/respond.min.js"></script>
     <![endif]-->
 
     <script type="text/javascript">
-        window.analytics = window.analytics || [], window.analytics.methods = ["identify", "group", "track", "page", "pageview", "alias", "ready", "on", "once", "off", "trackLink", "trackForm", "trackClick", "trackSubmit"], window.analytics.factory = function (t) { return function () { var a = Array.prototype.slice.call(arguments); return a.unshift(t), window.analytics.push(a), window.analytics } }; for (var i = 0; i < window.analytics.methods.length; i++) { var key = window.analytics.methods[i]; window.analytics[key] = window.analytics.factory(key) } window.analytics.load = function (t) { if (!document.getElementById("analytics-js")) { var a = document.createElement("script"); a.type = "text/javascript", a.id = "analytics-js", a.async = !0, a.src = ("https:" === document.location.protocol ? "https://" : "http://") + "cdn.segment.io/analytics.js/v1/" + t + "/analytics.min.js"; var n = document.getElementsByTagName("script")[0]; n.parentNode.insertBefore(a, n) } }, window.analytics.SNIPPET_VERSION = "2.0.9",
-                window.analytics.load("@(new ConfigRepository().Get("SegmentWriteKey"))");
+
         @{
             var userID = ObjectFactory.GetInstance<ISecurityServices>().GetCurrentUser();
             if (String.IsNullOrWhiteSpace(userID))
@@ -80,7 +79,7 @@
             }
         }
         $.cookie('sessionID', userID);
-        window.analytics.page('Home');
+
     </script>
 
     <script type="text/javascript">
@@ -146,5 +145,6 @@
     <script src="https://secure-a.vimeocdn.com/js/froogaloop2.min.js"></script>
     <script src="http://alvarotrigo.com/fullPage/jquery.fullPage.min.js"></script>
     @Scripts.Render("~/bundles/js/main")
+    @Scripts.Render("~/bundles/js/analytics")
 </body>
 </html>
