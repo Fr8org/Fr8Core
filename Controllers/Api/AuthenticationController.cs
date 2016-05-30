@@ -212,7 +212,8 @@ namespace HubWeb.Controllers
                             IsMain = y.IsMain
                         })
                         .OrderBy(y => y.ExternalAccountName)
-                        .ToList()
+                        .ToList(),
+                    AuthenticationType = x.AuthenticationType
                 })
                 .ToList();
 
