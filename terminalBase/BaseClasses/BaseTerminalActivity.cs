@@ -24,7 +24,7 @@ namespace TerminalBase.BaseClasses
 
         protected override void InitializeInternalState()
         {
-            CrateSignaller = new CrateSignaller(Storage, MyTemplate.Name);
+            CrateSignaller = new CrateSignaller(Storage, MyTemplate.Name, ActivityId);
         }
 
         protected string ExtractPayloadFieldValue(string fieldKey)
