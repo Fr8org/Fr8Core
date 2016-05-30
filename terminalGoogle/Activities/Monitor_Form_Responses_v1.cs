@@ -6,6 +6,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Newtonsoft.Json;
@@ -47,71 +48,86 @@ namespace terminalGoogle.Actions
         {
             get
             {
-                var storedValues = CurrentActivityStorage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == ConfigurationCrateLabel)?.Content;
+                var storedValues = Storage.FirstCrateOrDefault<FieldDescriptionsCM>(x => x.Label == ConfigurationCrateLabel)?.Content;
                 return storedValues?.Fields.First();
             }
             set
             {
                 if (value == null)
                 {
-                    CurrentActivityStorage.RemoveByLabel(ConfigurationCrateLabel);
+                    Storage.RemoveByLabel(ConfigurationCrateLabel);
                     return;
                 }
                 value.Availability = AvailabilityType.Configuration;
                 var newValues = Crate.FromContent(ConfigurationCrateLabel, new FieldDescriptionsCM(value), AvailabilityType.Configuration);
-                CurrentActivityStorage.ReplaceByLabel(newValues);
+                Storage.ReplaceByLabel(newValues);
             }
         }
-        public Monitor_Form_Responses_v1()
+
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "Monitor_Form_Responses",
+            Label = "Monitor Form Responses",
+            Version = "1",
+            Category = ActivityCategory.Monitors,
+            Terminal = TerminalData.TerminalDTO,
+            NeedsAuthentication = true,
+            WebService = TerminalData.WebServiceDTO,
+            MinPaneWidth = 300
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
+        public Monitor_Form_Responses_v1(ICrateManager crateManager, IGoogleIntegration googleIntegration)
+            : base(crateManager, googleIntegration)
         {
             _googleDrive = new GoogleDrive();
             _googleAppScript = new GoogleAppScript();
-            _googleIntegration = ObjectFactory.GetInstance<IGoogleIntegration>();
+            _googleIntegration = googleIntegration;
         }
 
-        protected override async Task Initialize(CrateSignaller crateSignaller)
+        public override async Task Initialize()
         {
             var googleAuth = GetGoogleAuthToken();
             var forms = await _googleDrive.GetGoogleForms(googleAuth);
-            ConfigurationControls.FormsList.ListItems = forms
+            ActivityUI.FormsList.ListItems = forms
                 .Select(x => new ListItem { Key = x.Value, Value = x.Key })
                 .ToList();
-            CurrentActivityStorage.Add(CreateEventSubscriptionCrate());
-            crateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
+            Storage.Add(CreateEventSubscriptionCrate());
+            CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(RunTimeCrateLabel);
         }
 
-        protected override async Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
+        public override async Task FollowUp()
         {
             var googleAuth = GetGoogleAuthToken();
             var forms = await _googleDrive.GetGoogleForms(googleAuth);
-            ConfigurationControls.FormsList.ListItems = forms
+            ActivityUI.FormsList.ListItems = forms
                 .Select(x => new ListItem { Key = x.Value, Value = x.Key })
                 .ToList();
-            var selectedSpreadsheet = ConfigurationControls.FormsList.selectedKey;
+            var selectedSpreadsheet = ActivityUI.FormsList.selectedKey;
             if (!string.IsNullOrEmpty(selectedSpreadsheet))
             {
-                bool any = ConfigurationControls.FormsList.ListItems.Any(x => x.Key == selectedSpreadsheet);
+                bool any = ActivityUI.FormsList.ListItems.Any(x => x.Key == selectedSpreadsheet);
                 if (!any)
                 {
-                    ConfigurationControls.FormsList.selectedKey = null;
-                    ConfigurationControls.FormsList.Value = null;
+                    ActivityUI.FormsList.selectedKey = null;
+                    ActivityUI.FormsList.Value = null;
                 }
             }
-            if (string.IsNullOrEmpty(ConfigurationControls.FormsList.selectedKey))
+            if (string.IsNullOrEmpty(ActivityUI.FormsList.selectedKey))
                 SelectedForm = null;
-            crateSignaller.ClearAvailableCrates();
-            crateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel)
+            CrateSignaller.ClearAvailableCrates();
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RunTimeCrateLabel)
                 .AddField("Full Name")
                 .AddField("TR ID")
                 .AddField("Email Address")
                 .AddField("Period of Availability");
         }
 
-        protected override async Task Activate()
+        public override async Task Activate()
         {
             var googleAuth = GetGoogleAuthToken();
             //get form id
-            var googleFormControl = ConfigurationControls.FormsList;
+            var googleFormControl = ActivityUI.FormsList;
             var formId = googleFormControl.Value;
             if (string.IsNullOrEmpty(formId))
                 throw new ArgumentNullException("Google Form selected is empty. Please select google form to receive.");
@@ -119,7 +135,7 @@ namespace terminalGoogle.Actions
             bool triggerEvent = false;
             try
             {
-                triggerEvent = await _googleDrive.CreateFr8TriggerForDocument(googleAuth, formId, CurrentFr8UserEmail);
+                triggerEvent = await _googleDrive.CreateFr8TriggerForDocument(googleAuth, formId, AuthorizationToken.ExternalAccountId);
             }
             finally
             {
@@ -136,17 +152,17 @@ namespace terminalGoogle.Actions
                         TerminalVersion = "1",
                         Message = "You need to create fr8 trigger on current form please go to this url and run Initialize function manually. Ignore this message if you completed this step before. " + scriptUrl,
                         Subject = "Trigger creation URL"
-                    }, CurrentFr8UserId);
+                    });
                 }
             }
         }
 
-        protected override Task RunCurrentActivity()
+        public override Task Run()
         {
-            var selectedForm = ConfigurationControls.FormsList.Value;
+            var selectedForm = ActivityUI.FormsList.Value;
             if (string.IsNullOrEmpty(selectedForm))
-                throw new ActivityExecutionException("Form is not selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
-            var payloadFields = ExtractPayloadFields(CurrentPayloadStorage);
+                RaiseError("Form is not selected", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+            var payloadFields = ExtractPayloadFields(Payload);
             // once we activate the plan we run it. When we run the plan manualy there is no payload with event data. 
             // Just return Success as a quick fix to avoid "Plan Failed" message.
             if (payloadFields == null)
@@ -163,7 +179,7 @@ namespace terminalGoogle.Actions
                 RequestHubExecutionTermination();
                 return Task.FromResult(0); ;
             }
-            CurrentPayloadStorage.Add(Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(formResponseFields)));
+            Payload.Add(Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(formResponseFields)));
             return Task.FromResult(0);
         }
 

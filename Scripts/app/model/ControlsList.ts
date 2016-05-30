@@ -84,6 +84,7 @@
         public availability: AvailabilityType;
         public tags: string;
         public sourceCrateLabel: string;
+        public sourceActivityId: string;
         public fieldType: string;
         public data: any;
         public sourceCrateManifest: {
@@ -123,6 +124,7 @@
         source: FieldSource;
         selectedKey: string;
         hasRefreshButton: boolean;
+        selectedItem: FieldDTO;
         
 
         constructor() {

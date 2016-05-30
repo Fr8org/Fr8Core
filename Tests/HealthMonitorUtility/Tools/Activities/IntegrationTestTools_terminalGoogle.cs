@@ -6,9 +6,10 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using HealthMonitor.Utility;
-using Hub.Managers;
+using Fr8Data.Managers;
 using NUnit.Framework;
 using terminalGoogle.Actions;
+using terminalGoogle.Activities;
 using UtilitiesTesting.Fixtures;
 
 namespace terminaBaselTests.Tools.Activities
@@ -47,7 +48,7 @@ namespace terminaBaselTests.Tools.Activities
 
             var expectedCrateDescription = upstreamCrateDescriptions.AvailableCrates.FirstOrDefault(x => x.ManifestType == manifestTypeToUse && x.Label == crateDescriptionLabelToUse);
             Assert.IsNotNull(expectedCrateDescription, $"{activityName}: upstream activities didn't provide expected runtime CrateDescription");
-            
+
             //Select the expected crate description
             using (var crateStorage = _baseHubITest.Crate.GetUpdatableStorage(saveToGoogleSheetActivityDTO))
             {
@@ -81,7 +82,7 @@ namespace terminaBaselTests.Tools.Activities
         {
             var activityName = "Get_Google_Sheet_Data";
 
-            var getFromGoogleSheetActivityDTO = await AddGoogleActivityToPlan(FixtureData.Get_Google_Sheet_Data_v1_InitialConfiguration(),plan, ordering, ActivityCategory.Receivers, activityName);
+            var getFromGoogleSheetActivityDTO = await AddGoogleActivityToPlan(FixtureData.Get_Google_Sheet_Data_v1_InitialConfiguration(), plan, ordering, ActivityCategory.Receivers, activityName);
 
             return await ConfigureGetFromGoogleSheetActivity(getFromGoogleSheetActivityDTO, spreadsheetName, includeFixtureAuthToken);
         }
@@ -156,9 +157,9 @@ namespace terminaBaselTests.Tools.Activities
         private async Task<ActivityDTO> AddGoogleActivityToPlan(ActivityDTO activity, PlanDTO plan, int ordering, ActivityCategory activityCategory, string activityName)
         {
             var googleActivityDTO = activity;
-            var activityCategoryParam = new[] { activityCategory };
-            var activityTemplates = await _baseHubITest.HttpPostAsync<ActivityCategory[], List<WebServiceActivitySetDTO>>(
-                                                                                                                          _baseHubITest.GetHubApiBaseUrl() + "webservices/activities", activityCategoryParam);
+            var activityCategoryParam = (int)activityCategory;
+            var activityTemplates = await _baseHubITest
+                .HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseHubITest.GetHubApiBaseUrl() + "webservices?id=" + activityCategoryParam);
             var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == activityName);
             googleActivityDTO.ActivityTemplate = apmActivityTemplate;
 
@@ -195,9 +196,9 @@ namespace terminaBaselTests.Tools.Activities
         private async Task<ActivityDTO> AddMonitorFormResponsesActivityToPlan(PlanDTO plan, int ordering, ActivityCategory activityCategory, string activityName)
         {
             var googleActivityDTO = FixtureData.Get_Google_Sheet_Data_v1_InitialConfiguration();
-            var activityCategoryParam = new[] { activityCategory };
-            var activityTemplates = await _baseHubITest.HttpPostAsync<ActivityCategory[], List<WebServiceActivitySetDTO>>(
-                                                                                                                          _baseHubITest.GetHubApiBaseUrl() + "webservices/activities", activityCategoryParam);
+            var activityCategoryParam = (int)activityCategory;
+            var activityTemplates = await _baseHubITest
+                .HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseHubITest.GetHubApiBaseUrl() + "webservices?id=" + activityCategoryParam);
             var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == activityName);
             googleActivityDTO.ActivityTemplate = apmActivityTemplate;
 

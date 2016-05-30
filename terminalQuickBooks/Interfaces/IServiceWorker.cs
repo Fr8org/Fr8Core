@@ -1,13 +1,11 @@
-﻿using System.Threading.Tasks;
-using Data.Entities;
-using Intuit.Ipp.Core;
-using Intuit.Ipp.DataService;
+﻿using Intuit.Ipp.DataService;
 using TerminalBase.Infrastructure;
+using TerminalBase.Models;
 
 namespace terminalQuickBooks.Interfaces
 {
     public interface IServiceWorker
     {
-        DataService GetDataService(AuthorizationTokenDO authTokenDO, string userId, IHubCommunicator hubCommunicator);
+        DataService GetDataService(AuthorizationToken authToken, IHubCommunicator hubCommunicator);
     }
 }

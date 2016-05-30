@@ -11,19 +11,19 @@ using System.Threading.Tasks;
 using Data.Infrastructure.Security;
 using Data.Repositories.Plan;
 using Data.Infrastructure.StructureMap;
-using Data.Interfaces.Manifests;
 using Data.States;
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
+using Fr8Infrastructure.Communication;
 using Hub.Exceptions;
 using Hub.Infrastructure;
 using Hub.Interfaces;
 using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using Hub.Managers.APIManagers.Transmitters.Terminal;
 using Utilities;
 using Hub.Exceptions;
@@ -93,7 +93,7 @@ namespace Hub.Services
             {
                 plan = ObjectFactory.GetInstance<IPlan>().Create(uow, name);
 
-                plan.ChildNodes.Add(parentNode = new SubPlanDO
+                plan.ChildNodes.Add(parentNode = new SubplanDO
                 {
                     StartingSubPlan = true,
                     Name = name + " #1"
@@ -105,9 +105,9 @@ namespace Hub.Services
 
                 if (parentNode is PlanDO)
                 {
-                    if (((PlanDO) parentNode).StartingSubPlan == null)
+                    if (((PlanDO) parentNode).StartingSubplan == null)
                     {
-                        parentNode.ChildNodes.Add(parentNode = new SubPlanDO
+                        parentNode.ChildNodes.Add(parentNode = new SubplanDO
                         {
                             StartingSubPlan = true,
                             Name = name + " #1"
@@ -115,7 +115,7 @@ namespace Hub.Services
                     }
                     else
                     {
-                        parentNode = ((PlanDO) parentNode).StartingSubPlan;
+                        parentNode = ((PlanDO) parentNode).StartingSubplan;
                     }
 
                 }
@@ -400,7 +400,7 @@ namespace Hub.Services
                 plan.ChildNodes.Remove(originalAction);
 
                 // Add child subplans.
-                foreach (var subPlan in originalAction.ChildNodes.OfType<SubPlanDO>())
+                foreach (var subPlan in originalAction.ChildNodes.OfType<SubplanDO>())
                 {
                     submittedActiviy.ChildNodes.Add(subPlan);
                 }

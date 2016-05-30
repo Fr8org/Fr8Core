@@ -1,14 +1,11 @@
-﻿using System;
-using System.Configuration;
+﻿using System.Configuration;
 using System.Security.Principal;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Http.Filters;
-using Hub.Infrastructure;
-using StructureMap;
-using Hub.Interfaces;
 using Utilities.Configuration.Azure;
 using System.Threading;
+using Fr8Infrastructure.Security;
 
 namespace TerminalBase.Infrastructure
 {

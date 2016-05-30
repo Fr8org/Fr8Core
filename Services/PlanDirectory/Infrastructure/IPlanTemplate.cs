@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Threading.Tasks;
 using PlanDirectory.Interfaces;
 
@@ -8,9 +8,7 @@ namespace PlanDirectory.Infrastructure
     {
         Task Initialize();
 
-        Task<SearchResultDTO> Search(SearchRequestDTO request);
-
-        Task Publish(PublishPlanTemplateDTO planTemplate);
-        Task Unpublish(PublishPlanTemplateDTO planTemplate);
+        Task CreateOrUpdate(string fr8AccountId, PublishPlanTemplateDTO planTemplate);
+        Task<PublishPlanTemplateDTO> Get(string fr8AccountId, Guid planId);
     }
 }

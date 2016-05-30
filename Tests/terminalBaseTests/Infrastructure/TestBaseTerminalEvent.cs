@@ -1,5 +1,5 @@
-﻿using Moq;
-using Hub.Managers.APIManagers.Transmitters.Restful;
+﻿using Fr8Infrastructure.Interfaces;
+using Moq;
 using TerminalBase.Infrastructure;
 
 namespace terminalBaseTests.Infrastructure

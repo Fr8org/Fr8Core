@@ -199,17 +199,17 @@ header#site-header {
     overflow: hidden;
 }
 
-    .navbar-header h1.site-logo {
-        float: left;
-        margin: 0;
-        padding: 0;
-    }
+.navbar-header h1.site-logo {
+    float: left;
+    margin: 0;
+    padding: 0;
+}
 
-        .navbar-header h1.site-logo > a.navbar-brand {
-            margin: 0;
-            padding: 0;
-            display: block;
-        }
+.navbar-header h1.site-logo > a.navbar-brand {
+    margin: 0;
+    padding: 10px;
+    display: block;
+}
 
 
 /*Main Menu Styles*/

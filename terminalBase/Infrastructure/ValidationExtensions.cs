@@ -1,7 +1,7 @@
-﻿using Data.Validations;
-using Fr8Data.Control;
+﻿using Fr8Data.Control;
 using Fr8Data.DataTransferObjects;
 using PhoneNumbers;
+using Utilities;
 
 namespace TerminalBase.Infrastructure
 {
@@ -9,7 +9,7 @@ namespace TerminalBase.Infrastructure
     {
         public static void ValidateEmail(this ValidationManager validationManager, ControlDefinitionDTO control, string errorMessage = null)
         {
-            if (!control.Value.IsValidEmailAddress())
+            if (!Utilities.RegexUtilities.IsValidEmailAddress(control.Value))
             {
                 validationManager.SetError(errorMessage ?? "Not a valid e-mail address", control);
             }
@@ -23,7 +23,7 @@ namespace TerminalBase.Infrastructure
                 return;
             }
             var value = textSource.CanGetValue(validationManager.Payload) ? textSource.GetValue(validationManager.Payload) : string.Empty;
-            if (!value.IsValidEmailAddress())
+            if (!RegexUtilities.IsValidEmailAddress(value))
             {
                 validationManager.SetError(errorMessage ?? "Not a valid e-mail address", textSource);
             }

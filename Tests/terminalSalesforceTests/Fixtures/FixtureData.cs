@@ -1,13 +1,18 @@
 ﻿using System;
 using System.Threading.Tasks;
 using Data.Entities;
+using Fr8Data.Crates;
 using Salesforce.Common;
+using TerminalBase.Models;
+using Fr8Data.DataTransferObjects;
+using StructureMap;
+using TerminalBase.Infrastructure;
 
 namespace terminalSalesforceTests.Fixtures
 {
     public class FixtureData
     {
-        public static async Task<AuthorizationTokenDO>  Salesforce_AuthToken()
+        public static async Task<AuthorizationToken>  Salesforce_AuthToken()
         {
             var auth = new AuthenticationClient();
             await auth.UsernamePasswordAsync(
@@ -16,16 +21,16 @@ namespace terminalSalesforceTests.Fixtures
                 "alex@dockyard.company",
                 "thales@123");
 
-            return new AuthorizationTokenDO()
+            return new AuthorizationToken()
             {
                 Token = auth.AccessToken,
-                AdditionalAttributes = string.Format("refresh_token=;instance_url={0};api_version={1}", auth.InstanceUrl, auth.ApiVersion)
+                AdditionalAttributes = $"refresh_token=;instance_url={auth.InstanceUrl};api_version={auth.ApiVersion}"
             };
         }
 
-        public static ActivityTemplateDO GetDataActivityTemplateDO()
+        public static ActivityTemplateDTO GetDataActivityTemplateDTO()
         {
-            return new ActivityTemplateDO
+            return new ActivityTemplateDTO
             {
                 Version = "1",
                 Name = "Get_Data",
@@ -34,9 +39,9 @@ namespace terminalSalesforceTests.Fixtures
             };
         }
 
-        public static ActivityTemplateDO SaveToSalesforceActivityTemplateDO()
+        public static ActivityTemplateDTO SaveToSalesforceActivityTemplateDTO()
         {
-            return new ActivityTemplateDO
+            return new ActivityTemplateDTO
             {
                 Version = "1",
                 Name = "Save_To_SalesforceDotCom",
@@ -56,35 +61,76 @@ namespace terminalSalesforceTests.Fixtures
             };
         }
 
-        public static ActivityDO GetFileListTestActivityDO1()
+        public static async Task<ActivityContext> GetFileListTestActivityContext1()
         {
-            var actionTemplate = GetDataActivityTemplateDO();
+            var actionTemplate = GetDataActivityTemplateDTO();
 
-            var activityDO = new ActivityDO()
+            var activityPayload = new ActivityPayload()
             {
                 Id = new Guid("8339DC87-F011-4FB1-B47C-FEC406E4100A"),
-                ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
-                CrateStorage = "",
-
+                CrateStorage = new CrateStorage()
             };
-            return activityDO;
+            var activityContext = new ActivityContext()
+            {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
+                ActivityPayload = activityPayload,
+                AuthorizationToken = await FixtureData.Salesforce_AuthToken()
+            };
+            return activityContext;
+        }
+        public static async Task<ActivityContext> GetFileListTestActivityContext2()
+        {
+            var actionTemplate = GetDataActivityTemplateDTO();
+
+            var activityPayload = new ActivityPayload()
+            {
+                Id = new Guid("8339DC87-F011-4FB1-B47C-FEC406E4100A"),
+                ActivityTemplate = actionTemplate,
+                CrateStorage = new CrateStorage()
+            };
+            var activityContext = new ActivityContext()
+            {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
+                ActivityPayload = activityPayload,
+                AuthorizationToken = await FixtureData.Salesforce_AuthToken()
+            };
+            return activityContext;
         }
 
-        public static ActivityDO SaveToSalesforceTestActivityDO1()
+        public static ActivityContext SaveToSalesforceTestActivityContext1()
         {
-            var actionTemplate = SaveToSalesforceActivityTemplateDO();
+            var actionTemplate = SaveToSalesforceActivityTemplateDTO();
 
-            var activityDO = new ActivityDO()
+            var activityPayload = new ActivityPayload()
             {
                 Id = new Guid("8339DC87-F011-4FB1-B47C-FEC406E4100A"),
-                ActivityTemplateId = actionTemplate.Id,
                 ActivityTemplate = actionTemplate,
-                CrateStorage = "",
-
+                CrateStorage = new CrateStorage(),
+            };
+            var activityContext = new ActivityContext()
+            {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
+                ActivityPayload = activityPayload
             };
 
-            return activityDO;
+            return activityContext;
+        }
+
+        public static async Task<ActivityContext> SaveToSalesforceTestActivityContext()
+        {
+            var activityTemplate = SaveToSalesforceActivityTemplateDTO();
+            return new ActivityContext
+            {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
+                AuthorizationToken = await Salesforce_AuthToken(),
+                ActivityPayload = new ActivityPayload
+                {
+                    CrateStorage = new CrateStorage(),
+                    Id = new Guid("8339DC87-F011-4FB1-B47C-FEC406E4100A"),
+                    ActivityTemplate = activityTemplate
+                },
+            };
         }
 
         public static ActivityDO PostToChatterTestActivityDO1()

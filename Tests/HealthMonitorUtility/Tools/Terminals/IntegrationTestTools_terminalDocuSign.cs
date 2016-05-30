@@ -66,13 +66,13 @@ namespace terminaBaselTests.Tools.Terminals
             //
             // Asociate token with action
             //
-            var applyToken = new ManageAuthToken_Apply()
+            var applyToken = new AuthenticationTokenGrantDTO()
             {
                 ActivityId = activityId,
                 AuthTokenId = tokenGuid,
                 IsMain = true
             };
-            await _baseHubITest.HttpPostAsync<ManageAuthToken_Apply[], string>(_baseHubITest.GetHubApiBaseUrl() + "ManageAuthToken/apply", new[] { applyToken });
+            await _baseHubITest.HttpPostAsync<AuthenticationTokenGrantDTO[], string>(_baseHubITest.GetHubApiBaseUrl() + "authentication/tokens/grant", new[] { applyToken });
 
             return tokenGuid;
         }

@@ -48,10 +48,10 @@ module dockyard.directives {
                             var windowSize = $(window).width(); // substracted from total width since we want activity to be shown center of the screen
 
                             $element.closest('.route-builder-container').animate({
-                                scrollLeft: leftPositionOfElement + leftPositionOfContainer - (windowSize/2)
+                                scrollLeft: leftPositionOfElement + leftPositionOfContainer - (windowSize / 2)
                             }, 100);
                         }, 500);
-                    }; 
+                    };
 
                     $scope.setActive = (actionCategoryId) => {
 
@@ -60,7 +60,7 @@ module dockyard.directives {
                         } else {
                             $scope.activeCategory = actionCategoryId;
                         }
-                        $scope.webServiceActionList = webServiceService.getActivities([$scope.activeCategory]);
+                        $scope.webServiceActionList = webServiceService.getActivities({ id: $scope.activeCategory });
                         $scope.activeTerminal = null;
                         scrollToActivityPicker();
                     };
@@ -84,12 +84,12 @@ module dockyard.directives {
                     $scope.setActiveTerminal = (terminal) => {
                         $scope.activeTerminal = terminal;
                     };
-                    
+
                     $scope.sortBuiltinServices = (service) => {
                         return (service.webServiceName === 'Built-In Services') ? -1 : 1;
                     };
 
-                  
+
                 }
             ]
         }

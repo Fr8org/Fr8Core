@@ -22,7 +22,7 @@ namespace Hub.Services
 
         private readonly IUtilizationDataProvider _utilizationDataProvider;
         private readonly IPusherNotifier _pusherNotifier;
-        private readonly Timer _utilizationRenewTimer;
+        private readonly ITimer _utilizationRenewTimer;
         private readonly HashSet<string> _overheatingUsers = new HashSet<string>();
         private readonly int _overheatingThreshold;
         private readonly TimeSpan _userBanTime;
@@ -31,7 +31,7 @@ namespace Hub.Services
        
         private bool _isInitialized;
 
-        public ActivityExecutionRateLimitingService(IUtilizationMonitoringService utilizationMonitoringService, IUtilizationDataProvider utilizationDataProvider, IPusherNotifier pusherNotifier)
+        public ActivityExecutionRateLimitingService(IUtilizationMonitoringService utilizationMonitoringService, IUtilizationDataProvider utilizationDataProvider, IPusherNotifier pusherNotifier, ITimer timer)
         {
             var renewInterval = Math.Max(GetSetting ("UtilizationSateRenewInterval", utilizationMonitoringService.AggregationUnitDuration / 2), MinimalRenewInterval);
 
@@ -42,7 +42,8 @@ namespace Hub.Services
             _utilizationDataProvider = utilizationDataProvider;
             _pusherNotifier = pusherNotifier;
 
-            _utilizationRenewTimer = new Timer(OnUtilizationStateRenewTick, this, renewInterval * 1000, renewInterval * 1000);
+            _utilizationRenewTimer = timer;
+            timer.Configure(OnUtilizationStateRenewTick, this, renewInterval * 1000, renewInterval * 1000);
         }
 
         private static int GetSetting(string settingKey, int defaultValue)

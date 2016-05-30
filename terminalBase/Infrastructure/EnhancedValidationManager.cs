@@ -1,12 +1,12 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Data.Interfaces.Manifests;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Helpers;
 using Fr8Data.Manifests;
 using TerminalBase.BaseClasses;
+using TerminalBase.Helpers;
 
 namespace TerminalBase.Infrastructure
 {
@@ -14,15 +14,20 @@ namespace TerminalBase.Infrastructure
     {
         private readonly TActivityUi _activityUi;
         //'Owner' in this context is the name of property holding the collection that contains particular control
-        private readonly Dictionary<IControlDefinition, string> _ownerNameByControl; 
-        public EnhancedValidationManager(ValidationResultsCM validationResults, EnhancedTerminalActivity<TActivityUi> activity,  ICrateStorage payload) : base(validationResults, payload)
+        private readonly Dictionary<IControlDefinition, string> _ownerNameByControl;
+
+
+        public EnhancedValidationManager(EnhancedTerminalActivity<TActivityUi> activity,  ICrateStorage payload) 
+            : base(payload)
         {
             if (activity == null)
             {
                 throw new ArgumentNullException(nameof(activity));
             }
-            _activityUi = activity.ConfigurationControls;
+
+            _activityUi = activity.ActivityUI;
             _ownerNameByControl = new Dictionary<IControlDefinition, string>();
+
             FillOwnerByControl();
         }
 

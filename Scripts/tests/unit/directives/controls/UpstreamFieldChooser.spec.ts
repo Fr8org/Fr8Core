@@ -75,7 +75,7 @@ module dockyard.tests.unit.directives.controls {
 
         it('should set new upstream field', () => {
             scope.createModal();
-            scope.setItem(scope.field.listItems[0].key);
+            scope.selectItem(scope.field.listItems[0]);
             expect(scope.field.value).toBe(scope.field.listItems[0].key);
         });
 
@@ -101,10 +101,10 @@ module dockyard.tests.unit.directives.controls {
 
             it('should not change the value of second control if first control value is changed', () => {
                 scope.createModal();
-                scope.setItem(scope.field.listItems[0].key);
+                scope.selectItem(scope.field.listItems[0]);
                 expect(scope.field.value).toBe(scope.field.listItems[0].key);
                 scope1.createModal();
-                scope1.setItem(scope1.field.listItems[1].key);
+                scope1.selectItem(scope1.field.listItems[1]);
                 expect(scope.field.value).toBe(scope.field.listItems[0].key);
                 expect(scope1.field.value).toBe(scope1.field.listItems[1].key);
             });

@@ -226,7 +226,7 @@ namespace Hub.Security
                 fr8AccountId = planNode.Fr8AccountId;
                 var mainPlan = uow.PlanRepository.GetById<PlanDO>(planNode.RootPlanNodeId);
                 if (mainPlan.Visibility == PlanVisibility.Internal) return true;
-                return mainPlan.ChildNodes.OfType<SubPlanDO>().Any(subPlan => subPlan.ChildNodes.OfType<ActivityDO>().Select(activity => activityTemplate.GetByKey(activity.ActivityTemplateId)).Any(template => template.Name == "AppBuilder"));
+                return mainPlan.ChildNodes.OfType<SubplanDO>().Any(subPlan => subPlan.ChildNodes.OfType<ActivityDO>().Select(activity => activityTemplate.GetByKey(activity.ActivityTemplateId)).Any(template => template.Name == "AppBuilder"));
             }
         }
 
@@ -377,6 +377,9 @@ namespace Hub.Security
             var viewAllData = permissionSet.FirstOrDefault(x => x == (int)PermissionType.ViewAllObjects);
             if (viewAllData != 0 && permissionType == PermissionType.ReadObject) return true;
             if (modifyAllData != 0) return true;
+
+            //double check for profiles
+            if (fr8AccountId == GetCurrentUser()) return true;
             
             return false;
         }

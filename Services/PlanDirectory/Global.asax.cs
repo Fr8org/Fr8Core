@@ -5,7 +5,6 @@ using Segment;
 using StructureMap;
 using Utilities;
 using Data.Infrastructure.AutoMapper;
-using Hub.StructureMap;
 using PlanDirectory.App_Start;
 using PlanDirectory.Infrastructure;
 
@@ -19,7 +18,8 @@ namespace PlanDirectory
             RouteConfig.RegisterRoutes(RouteTable.Routes);
 
             ObjectFactory.Initialize();
-            ObjectFactory.Configure(StructureMapBootStrapper.LiveConfiguration);
+            ObjectFactory.Configure(Fr8Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
+            ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
             ObjectFactory.Configure(PlanDirectoryBootStrapper.LiveConfiguration);
 
             DataAutoMapperBootStrapper.ConfigureAutoMapper();

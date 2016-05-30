@@ -18,6 +18,7 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Fr8Data.Managers;
 
 namespace Hub.Services
 {
@@ -116,9 +117,9 @@ namespace Hub.Services
                 var first_activities = planDescription.PlanNodeDescriptions.Where(a => a.ParentNode == null);
                 foreach (var startingActivity in first_activities)
                 {
-                    var subplan = new SubPlanDO() { Name = startingActivity.SubPlanName };
+                    var subplan = new SubplanDO() { Name = startingActivity.SubPlanName };
                     if (planDescription.StartingPlanNodeDescription.Id == startingActivity.Id)
-                        planDO.StartingSubPlan = subplan;
+                        planDO.StartingSubplan = subplan;
                     else
                         planDO.ChildNodes.Add(subplan);
                     BuildPlanNodes(userId, 1, subplan, planDescription, startingActivity, planDO, ref allNodesDictionary);
@@ -147,9 +148,9 @@ namespace Hub.Services
                 var template = related_templates.Where(a => a.Id == firstActivity.ActivityTemplateId).FirstOrDefault();
                 var node = CreatePlanNodeDescription(firstActivity, template);
 
-                if (nodeDO is SubPlanDO)
+                if (nodeDO is SubplanDO)
                 {
-                    node.SubPlanName = (nodeDO as SubPlanDO).Name;
+                    node.SubPlanName = (nodeDO as SubplanDO).Name;
                     node.SubPlanOriginalId = nodeDO.Id.ToString();
                 }
 
