@@ -36,9 +36,25 @@ namespace PlanDirectory.Controllers
         public async Task<IHttpActionResult> Get(Guid id)
         {
             var fr8AccountId = User.Identity.GetUserId();
-            await _planTemplate.Get(fr8AccountId, id);
+            var planTemplateDTO = await _planTemplate.Get(fr8AccountId, id);
 
-            return Ok();
+            return Ok(planTemplateDTO);
+        }
+
+        [HttpPost]
+        public IHttpActionResult Search(
+            string text, int? pageStart = null, int? pageSize = null)
+        {
+            // var searchRequest = new SearchRequestDTO()
+            // {
+            //     Text = text,
+            //     PageStart = pageStart.GetValueOrDefault(),
+            //     PageSize = pageSize.GetValueOrDefault()
+            // };
+            // 
+            // var searchResult = await _planTemplate.Search(searchRequest);
+
+            return Ok(new PublishPlanTemplateDTO[] { });
         }
 
         // TODO: FR-3539: remove this.

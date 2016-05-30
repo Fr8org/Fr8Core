@@ -38,10 +38,12 @@ namespace PlanDirectory.Infrastructure
                     throw new ApplicationException("Invalid Fr8AccountId.");
                 }
 
+                var planIdString = planTemplate.ParentPlanId.ToString();
+
                 var existingPlanTemplateCM = uow.MultiTenantObjectRepository
                     .Query<PlanTemplateCM>(
                         fr8AccountId,
-                        x => x.ParentPlanId == planTemplate.ParentPlanId
+                        x => x.ParentPlanId == planIdString
                     )
                     .FirstOrDefault();
 
@@ -54,7 +56,7 @@ namespace PlanDirectory.Infrastructure
                 uow.MultiTenantObjectRepository.AddOrUpdate(
                     fr8AccountId,
                     planTemplateCM,
-                    x => x.ParentPlanId == planTemplate.ParentPlanId
+                    x => x.ParentPlanId == planIdString
                 );
 
                 uow.SaveChanges();
@@ -67,8 +69,10 @@ namespace PlanDirectory.Infrastructure
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
+                var planIdString = planId.ToString();
+
                 var planTemplateCM = uow.MultiTenantObjectRepository
-                    .Query<PlanTemplateCM>(fr8AccountId, x => x.ParentPlanId == planId)
+                    .Query<PlanTemplateCM>(fr8AccountId, x => x.ParentPlanId == planIdString)
                     .FirstOrDefault();
 
                 if (planTemplateCM == null)
@@ -87,6 +91,7 @@ namespace PlanDirectory.Infrastructure
             {
                 Name = dto.Name,
                 Description = dto.Description,
+                ParentPlanId = dto.ParentPlanId.ToString(),
                 PlanContents = JsonConvert.SerializeObject(dto.PlanContents),
                 Version = existing?.Version ?? 1,
                 OwnerId = account.Id,
@@ -100,7 +105,7 @@ namespace PlanDirectory.Infrastructure
             {
                 Name = planTemplate.Name,
                 Description = planTemplate.Description,
-                ParentPlanId = planTemplate.ParentPlanId,
+                ParentPlanId = Guid.Parse(planTemplate.ParentPlanId),
                 PlanContents = JsonConvert.DeserializeObject<JToken>(planTemplate.PlanContents)
             };
         }

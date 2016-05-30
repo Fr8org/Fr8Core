@@ -33,6 +33,6 @@ namespace Fr8Data.Manifests
         public string PlanContents { get; set; }
 
         [MtPrimaryKey]
-        public Guid ParentPlanId { get; set; }
+        public string ParentPlanId { get; set; }
     }
 }
