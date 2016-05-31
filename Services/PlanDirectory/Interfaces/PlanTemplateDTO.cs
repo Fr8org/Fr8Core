@@ -3,7 +3,7 @@ using Newtonsoft.Json.Linq;
 
 namespace PlanDirectory.Interfaces
 {
-    public class PublishPlanTemplateDTO
+    public class PlanTemplateDTO
     {
         public string Name { get; set; }
         public string Description { get; set; }
