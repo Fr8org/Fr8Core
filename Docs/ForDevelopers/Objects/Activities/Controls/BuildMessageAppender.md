@@ -10,4 +10,4 @@ The BuildMessageAppender extends the [TextArea](TextArea.md) class which include
 
 __IsReadOnly__: boolean field with getter and setter which is used to set the "disabled" attribute on the fendered HTML element.
 
-![alt text](images/build_message_appender.PNG "Build Message Appender UI")
+<img src="images/build_message_appender.PNG" alt="Build Message Appender UI"/>

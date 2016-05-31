@@ -6,4 +6,20 @@ The Checkbox control is a basic control class which renders an HTML button eleme
 
 The Checkbox class extends the [ControlDefinitionDTO](../DataTransfer/ControlDefinitinDTO.md) class and adds no additional properties.
 
-![alt text](images/checkbox.PNG "Checkbox UI")
+<img src="images/checkbox.PNG" alt="Checkbox UI" width="200"/>
+
+##Example Control Payload
+```json
+{
+      "type": "CheckBox",
+      "name": "Event_Envelope_Sent",
+      "value": null,
+      "label": "Envelope Sent",
+      "events": [
+        {
+          "name": "onSelect",
+          "handler": "requestConfig"
+        }
+      ]
+}
+```

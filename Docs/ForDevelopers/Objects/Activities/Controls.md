@@ -90,7 +90,7 @@ The TextBlock control renders a span element with a text-block CSS class.
 
 *[TextBox](Controls/TextBox.md)*
 
-The TextBox control renders an input tag with type = "text"
+The TextBox control renders an input tag with type | "text"
 
 *[TextBoxBig](Controls/TextBoxBig.md)*
 
@@ -111,3 +111,37 @@ The UpstreamDataChooser is a composite control which allows a user to select dat
 *[UpstreamFieldChooser](Controls/UpstreamFieldChooser.md)*
 
 The UpstreamFieldChooser is a composite control which allos a user to select dynamically generated fields
+
+##<a name="control-types"></a>Consolidated List of ControlType names
+
+ControlType | Name
+:---:|:---:
+TextBox | "TextBox"
+TextBoxBig | "TextBoxBig"
+CheckBox | "CheckBox"
+DropDownList | "DropDownList"
+RadioButtonGroup | "RadioButtonGroup"
+FilterPane | "FilterPane"
+MappingPane | "MappingPane"
+TextBlock | "TextBlock"
+FilePicker | "FilePicker"
+Routing | "Routing"
+FieldList | "FieldList"
+Button | "Button"
+TextSource | "TextSource"
+TextArea | "TextArea"
+QueryBuilder | "QueryBuilder"
+ManagePlan | "ManagePlan"
+Duration | "Duration"
+RunPlanButton | "RunPlanButton"
+UpstreamDataChooser | "UpstreamDataChooser"
+UpstreamFieldChooser | "UpstreamFieldChooser"
+UpstreamCrateChooser | "UpstreamCrateChooser"
+DatePicker | "DatePicker"
+CrateChooser | "CrateChooser"
+ContainerTransition | "ContainerTransition"
+MetaControlContainer | "MetaControlContainer"
+ControlList | "ControlList"
+SelectData | "SelectData"
+ExternalObjectChooser | "ExternalObjectChooser"
+BuildMessageAppender | "BuildMessageAppender"

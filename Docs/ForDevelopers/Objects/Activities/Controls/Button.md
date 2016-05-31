@@ -10,5 +10,22 @@ __CssClass__: optional String element which is used to add an additional class t
 
 __Clicked__: indicates whether the button has been clicked
 
+<img src="images/button.PNG" alt="Button UI" width="200"/>
 
-![alt text](images/button.PNG "Button UI")
+##Example Control Payload
+```json
+{
+      "type": "Button",
+      "name": "Continue",
+      "required": false,
+      "value": null,
+      "label": "Prepare Mail Merge",
+      "clicked": false,
+      "events": [
+        {
+          "name": "onClick",
+          "handler": "requestConfig"
+        }
+      ]
+}
+```
