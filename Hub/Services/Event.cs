@@ -60,8 +60,13 @@ namespace Hub.Services
 
         public async Task ProcessInboundEvents(Crate curCrateStandardEventReport)
         {
-            var eventReportMS = curCrateStandardEventReport.Get<EventReportCM>();
-
+            var inboundEvent = curCrateStandardEventReport.Get<EventReportCM>();
+            if (string.IsNullOrWhiteSpace(inboundEvent.ExternalDomainId) && string.IsNullOrWhiteSpace(inboundEvent.ExternalAccountId))
+            {
+                Logger.LogError($"External event has no information about external account or external domain. Processing is cancelled. Event names - {inboundEvent.EventNames}, " +
+                                $"source - {inboundEvent.Source}, manufacturer - {inboundEvent.Manufacturer} ");
+                return;
+            }
             // Fetching values from Config file is not working on CI.
             //var configRepository = ObjectFactory.GetInstance<IConfigRepository>();
             //string systemUserEmail = configRepository.Get("SystemUserEmail");
@@ -70,8 +75,8 @@ namespace Hub.Services
 
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                Logger.LogInfo($"Received external event for account '{eventReportMS.ExternalAccountId}'");
-                if (eventReportMS.ExternalAccountId == systemUserEmail)
+                Logger.LogInfo($"Received external event for account '{inboundEvent.ExternalAccountId}'");
+                if (inboundEvent.ExternalAccountId == systemUserEmail)
                 {
                     try
                     {
@@ -104,24 +109,30 @@ namespace Hub.Services
                 }
                 else
                 {
-                    //find the corresponding DockyardAccount
-                    //For team-wide events we use ExternalDomainId property (e.g. received Slack message should run all plans for respective Slack team)
-                    var authTokenList = uow.AuthorizationTokenRepository
-                        .GetPublicDataQuery()
-                        .Where(x => x.ExternalAccountId == eventReportMS.ExternalAccountId
-                                || (x.ExternalDomainId != null && x.ExternalDomainId == eventReportMS.ExternalDomainId))
-                        .ToArray();
-                    var planOwnerIds = authTokenList.Select(x => x.UserID).Distinct().ToArray();
-                    Logger.LogInfo($"External event for account '{eventReportMS.ExternalAccountId}' relates to {authTokenList.Length} auth tokens of {planOwnerIds.Length} user(s)");
-                    if (string.IsNullOrEmpty(eventReportMS.ExternalDomainId) && planOwnerIds.Length > 1)
+                    //Find the corresponding Fr8 accounts
+                    var authTokens = uow.AuthorizationTokenRepository.GetPublicDataQuery();
+                    if (!string.IsNullOrWhiteSpace(inboundEvent.ExternalDomainId))
                     {
-                        Logger.LogWarning($"Multiple users are identified as owners of plans related to external account '{eventReportMS.ExternalAccountId}'");
+                        authTokens = authTokens.Where(x => x.ExternalDomainId == inboundEvent.ExternalDomainId);
+                    }
+                    //If external account Id doesn't exist it means that event is domain-wide i.e. it relates to all accounts that belong to specified domain
+                    if (!string.IsNullOrWhiteSpace(inboundEvent.ExternalAccountId))
+                    {
+                        authTokens = authTokens.Where(x => x.ExternalAccountId == inboundEvent.ExternalAccountId);
+                    }
+                    //Checking both domain and account is additional way to protect from running plans not related to the event as account Id is often an email and can be the same across
+                    //multiple terminals
+                    var planOwnerIds = authTokens.Select(x => x.UserID).Distinct().ToArray();
+                    Logger.LogInfo($"External event for domain '{inboundEvent.ExternalDomainId}' and account '{inboundEvent.ExternalAccountId}' relates to {planOwnerIds.Length} user(s)");
+                    if (string.IsNullOrEmpty(inboundEvent.ExternalDomainId) && planOwnerIds.Length > 1)
+                    {
+                        Logger.LogWarning($"Multiple users are identified as owners of plans related to external domain '{inboundEvent.ExternalDomainId}' and account '{inboundEvent.ExternalAccountId}'");
                     }
                     foreach (var planOwnerId in planOwnerIds)
                     {
                         try
                         {
-                            FindAndExecuteAccountPlans(uow, eventReportMS, curCrateStandardEventReport, planOwnerId);
+                            FindAndExecuteAccountPlans(uow, inboundEvent, curCrateStandardEventReport, planOwnerId);
                         }
                         catch (Exception ex)
                         {
@@ -145,8 +156,10 @@ namespace Hub.Services
 
             Logger.LogInfo($"Upon receiving event for account '{eventReportMS.ExternalAccountId}' {subscribingPlans.Count} of {initialPlansList.Count} will be notified");
             //When there's a match, it means that it's time to launch a new Process based on this Plan, 
-            //so make the existing call to Plan#LaunchProcess.
-            _plan.Enqueue(subscribingPlans.Where(p => p.PlanState != PlanState.Inactive).ToList(),  curCrateStandardEventReport);
+            foreach (var plan in subscribingPlans.Where(p => p.PlanState != PlanState.Inactive))
+            {
+                _plan.Enqueue(plan.Id, curCrateStandardEventReport);
+            }
         }
 
         public Task LaunchProcess(PlanDO curPlan, Crate curEventData = null)

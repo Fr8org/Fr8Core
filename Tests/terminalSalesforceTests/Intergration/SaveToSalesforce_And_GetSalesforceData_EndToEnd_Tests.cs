@@ -32,7 +32,7 @@ namespace terminalSalesforceTests.Intergration
         [Test]
         public async Task SaveToSalesforce_And_GetSalesforceData_EndToEnd()
         {
-            /*
+            
             AuthorizationTokenDO authTokenDO = null;
             AuthorizationToken authorizationToken = null;
             Guid initialPlanId = Guid.Empty;
@@ -42,6 +42,10 @@ namespace terminalSalesforceTests.Intergration
                 authTokenDO = await Fixtures.HealthMonitor_FixtureData.CreateSalesforceAuthToken();
                 authorizationToken = new AuthorizationToken
                 {
+                    UserId = authTokenDO.UserID,
+                    ExternalAccountId = authTokenDO.ExternalAccountId,
+                    ExternalDomainId = authTokenDO.ExternalDomainId,
+                    AdditionalAttributes = authTokenDO.AdditionalAttributes,
                     Token = authTokenDO.Token,
                     Id = authTokenDO.Id.ToString()
                 };
@@ -92,13 +96,13 @@ namespace terminalSalesforceTests.Intergration
             {
                 await CleanUp(authorizationToken, initialPlanId, newLeadId);
             }
-            */
+            
         }
 
         private async Task<Guid> CreatePlan_SaveAndGetDataFromSalesforce(AuthorizationTokenDO authToken)
         {
             //get required activity templates
-            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "plannodes/available");
+            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "activity_templates");
             var atSave = activityTemplates.Single(at => at.Name.Equals("Forwarders")).Activities.Single(a => a.Name.Equals("Save_To_SalesforceDotCom"));
             var atGet = activityTemplates.Single(at => at.Name.Equals("Receivers")).Activities.Single(a => a.Name.Equals("Get_Data"));
             Assert.IsNotNull(atSave, "Save to Salesforce.com activity is not available");
@@ -152,7 +156,7 @@ namespace terminalSalesforceTests.Intergration
 
             if (authToken != null)
             {
-                await HttpPostAsync<string>(_baseUrl + "manageauthtoken/revoke?id=" + authToken.Id, null);
+                await HttpPostAsync<string>(_baseUrl + "authentication/tokens/revoke?id=" + authToken.Id, null);
             }
         }
 
@@ -192,18 +196,24 @@ namespace terminalSalesforceTests.Intergration
         {
             var getDataActivity = plan.Plan.SubPlans.First().Activities.Last();
             //set lead and do the follow up config
-            var crateStorage = Crate.GetStorage(getDataActivity);
-            crateStorage.UpdateControls<Get_Data_v1.ActivityUi>(x =>
+            using (var crateStorage = Crate.GetUpdatableStorage(getDataActivity))
             {
-                x.SalesforceObjectSelector.selectedKey = SalesforceObjectType.Lead.ToString();
-            });
+                crateStorage.UpdateControls<Get_Data_v1.ActivityUi>(x =>
+                {
+                    x.SalesforceObjectSelector.selectedKey = SalesforceObjectType.Lead.ToString();
+                });
+            }
             getDataActivity = await ConfigureActivity(getDataActivity);
             Debug.WriteLine("Get Data Follow up config is successfull with Lead selected");
             //set the lead required fields.
-            crateStorage.UpdateControls<Get_Data_v1.ActivityUi>(x =>
+            using (var crateStorage = Crate.GetUpdatableStorage(getDataActivity))
             {
-                x.SalesforceObjectFilter.Value = JsonConvert.SerializeObject(new List <FilterConditionDTO> { new FilterConditionDTO { Field = "LastName", Operator = "eq", Value = "Unit" } });
-            });
+                crateStorage.UpdateControls<Get_Data_v1.ActivityUi>(x =>
+                {
+                    x.SalesforceObjectFilter.Value = JsonConvert.SerializeObject(new List<FilterConditionDTO> {new FilterConditionDTO {Field = "LastName", Operator = "eq", Value = "Unit"}});
+                });
+            }
+
             getDataActivity = await ConfigureActivity(getDataActivity);
             Debug.WriteLine("Get Data Follow up config is successfull with selection query fields set.");
             plan.Plan.SubPlans.First().Activities[1] = getDataActivity;

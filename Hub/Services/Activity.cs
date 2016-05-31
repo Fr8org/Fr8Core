@@ -93,7 +93,7 @@ namespace Hub.Services
             {
                 plan = ObjectFactory.GetInstance<IPlan>().Create(uow, name);
 
-                plan.ChildNodes.Add(parentNode = new SubPlanDO
+                plan.ChildNodes.Add(parentNode = new SubplanDO
                 {
                     StartingSubPlan = true,
                     Name = name + " #1"
@@ -105,9 +105,9 @@ namespace Hub.Services
 
                 if (parentNode is PlanDO)
                 {
-                    if (((PlanDO) parentNode).StartingSubPlan == null)
+                    if (((PlanDO) parentNode).StartingSubplan == null)
                     {
-                        parentNode.ChildNodes.Add(parentNode = new SubPlanDO
+                        parentNode.ChildNodes.Add(parentNode = new SubplanDO
                         {
                             StartingSubPlan = true,
                             Name = name + " #1"
@@ -115,7 +115,7 @@ namespace Hub.Services
                     }
                     else
                     {
-                        parentNode = ((PlanDO) parentNode).StartingSubPlan;
+                        parentNode = ((PlanDO) parentNode).StartingSubplan;
                     }
 
                 }
@@ -400,7 +400,7 @@ namespace Hub.Services
                 plan.ChildNodes.Remove(originalAction);
 
                 // Add child subplans.
-                foreach (var subPlan in originalAction.ChildNodes.OfType<SubPlanDO>())
+                foreach (var subPlan in originalAction.ChildNodes.OfType<SubplanDO>())
                 {
                     submittedActiviy.ChildNodes.Add(subPlan);
                 }

@@ -16,6 +16,7 @@ module dockyard.services {
         update: (data: { id: string, name: string }) => interfaces.IPlanVM;
         run: (id: string) => ng.IPromise<model.ContainerDTO>;
         runAndProcessClientAction: (id: string) => ng.IPromise<model.ContainerDTO>;
+        share: (id: string) => ng.IPromise<any>;
     }
 
     export interface ISubPlanService extends ng.resource.IResourceClass<interfaces.ISubPlanVM> {
@@ -28,7 +29,7 @@ module dockyard.services {
         getByPlan: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
         create: (args: { activityTemplateId: number, name: string, label: string, parentNodeId: number }) => ng.resource.IResource<model.ActivityDTO>;
         //TODO make resource class do this operation
-        deleteById: (id: { id: string; confirmed: boolean }) => ng.resource.IResource<string>;
+        deleteById: (id: { id: string }) => ng.resource.IResource<string>;
         batchSave: (actionList: interfaces.IActivityDTO[]) => ng.resource.IResource<interfaces.IActionVM>;
     }
 
@@ -160,6 +161,21 @@ module dockyard.services {
                     }
                 });
 
+            resource.share = (id: string): ng.IPromise<any> => {
+                var url = '/api/plans/share?planId=' + id;
+                var d = $q.defer();
+
+                $http.post(url, null)
+                    .then((res: any) => {
+                        d.resolve();
+                    })
+                    .catch((err: any) => {
+                        d.reject(err);
+                    });
+
+                return d.promise;
+            };
+
             resource.run = (id: string): ng.IPromise<model.ContainerDTO> => {
                 var url = '/api/plans/run?planId=' + id;
 
@@ -265,12 +281,12 @@ module dockyard.services {
     ]);
 
     app.factory('ActionTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActionService =>
-        <IActionService>$resource('/api/actiontemplates/', null,
+        <IActionService>$resource('/api/activity_templates/', null,
             {
                 'available': {
                     method: 'GET',
                     isArray: true,
-                    url: '/api/plannodes/getAvailableActivitiesWithTag',
+                    url: '/api/activity_templates?tag=:tag',
                     params: {
                         tag: '@tag'
                     }
@@ -311,7 +327,7 @@ module dockyard.services {
                 },
                 'deleteById': {
                     method: 'DELETE',
-                    url: '/api/activities?id=:id&confirmed=:confirmed'
+                    url: '/api/activities?id=:id'
                 },
                 'create': {
                     method: 'POST',
@@ -364,11 +380,11 @@ module dockyard.services {
     ]);
 
     app.factory('ActivityTemplateService', ['$resource', ($resource: ng.resource.IResourceService): IActivityTemplateService =>
-        <IActivityTemplateService>$resource('/api/activityTemplates/:id', { id: '@id' },
+        <IActivityTemplateService>$resource('/api/activity_templates/:id', { id: '@id' },
             {
                 'getAvailableActivities': {
                     method: 'GET',
-                    url: '/api/plannodes/available/',
+                    url: '/api/activity_templates',
                     isArray: true
                 }
             })

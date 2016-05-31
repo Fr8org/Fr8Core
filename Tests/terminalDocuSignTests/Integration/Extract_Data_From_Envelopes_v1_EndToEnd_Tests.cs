@@ -86,16 +86,16 @@ namespace terminalDocuSignTests.Integration
             //
             if (monitorDocuSignEnvelopeActivity.ActivityTemplate.NeedsAuthentication)
             {
-                var applyToken = new ManageAuthToken_Apply()
+                var applyToken = new AuthenticationTokenGrantDTO()
                 {
                     ActivityId = monitorDocuSignEnvelopeActivity.Id,
                     AuthTokenId = authTokenId,
                     IsMain = false
                 };
 
-                await HttpPostAsync<ManageAuthToken_Apply[], string>(
-                    _baseUrl + "ManageAuthToken/apply",
-                    new ManageAuthToken_Apply[] { applyToken }
+                await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(
+                    _baseUrl + "authentication/tokens/grant",
+                    new AuthenticationTokenGrantDTO[] { applyToken }
                 );
             }
 
@@ -164,16 +164,16 @@ namespace terminalDocuSignTests.Integration
 
             if (sendEnvelopeAction.ActivityTemplate.NeedsAuthentication)
             {
-                var applyToken = new ManageAuthToken_Apply()
+                var applyToken = new AuthenticationTokenGrantDTO()
                 {
                     ActivityId = sendEnvelopeAction.Id,
                     AuthTokenId = authTokenId,
                     IsMain = false
                 };
 
-                await HttpPostAsync<ManageAuthToken_Apply[], string>(
-                    _baseUrl + "ManageAuthToken/apply",
-                    new ManageAuthToken_Apply[] { applyToken }
+                await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(
+                    _baseUrl + "authentication/tokens/grant",
+                    new AuthenticationTokenGrantDTO[] { applyToken }
                 );
             }
 
@@ -236,8 +236,8 @@ namespace terminalDocuSignTests.Integration
             await HttpDeleteAsync(_baseUrl + "activities?id=" + _solution.ChildrenActivities[0].Id);
 
             // Add Add Payload Manually action
-            var activityCategoryParam = new ActivityCategory[] { ActivityCategory.Processors };
-            var activityTemplates = await HttpPostAsync<ActivityCategory[], List<WebServiceActivitySetDTO>>(_baseUrl + "webservices/activities", activityCategoryParam);
+            var activityCategoryParam =(int)ActivityCategory.Processors;
+            var activityTemplates = await HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseUrl + "webservices?id="+ activityCategoryParam);
             var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == "AddPayloadManually");
 
             var apmAction = new ActivityDTO()
@@ -297,8 +297,8 @@ namespace terminalDocuSignTests.Integration
             if (stAuthCrate != null)
             {
                 var terminalsAndTokens =
-                    await HttpGetAsync<ManageAuthToken_Terminal[]>(
-                        _baseUrl + "manageauthtoken/"
+                    await HttpGetAsync<AuthenticationTokenTerminalDTO[]>(
+                        _baseUrl + "authentication/tokens"
                     );
 
                 var terminalDocuSign = terminalsAndTokens
@@ -338,16 +338,16 @@ namespace terminalDocuSignTests.Integration
 
             if (solution.ActivityTemplate.NeedsAuthentication)
             {
-                var applyToken = new ManageAuthToken_Apply()
+                var applyToken = new AuthenticationTokenGrantDTO()
                 {
                     ActivityId = solution.Id,
                     AuthTokenId = tokenGuid.Value,
                     IsMain = false
                 };
 
-                await HttpPostAsync<ManageAuthToken_Apply[], string>(
-                    _baseUrl + "ManageAuthToken/apply",
-                    new ManageAuthToken_Apply[] { applyToken }
+                await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(
+                    _baseUrl + "authentication/tokens/grant",
+                    new AuthenticationTokenGrantDTO[] { applyToken }
                 );
             }
 

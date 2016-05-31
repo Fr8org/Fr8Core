@@ -36,12 +36,12 @@ namespace UtilitiesTesting.Fixtures
             };
         }
 
-        public static SubPlanDO SubPlan_TerminalIntegration()
+        public static SubplanDO SubPlan_TerminalIntegration()
         {
-            return new SubPlanDO()
+            return new SubplanDO()
             {
                 Id = GetTestGuidById(1001),
-                Name = "Test SubPlan"
+                Name = "Test Subplan"
             };
         }
 

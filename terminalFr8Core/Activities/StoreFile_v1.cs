@@ -7,6 +7,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Managers;
@@ -50,7 +51,7 @@ namespace terminalFr8Core.Activities
                 Storage.Remove(curUpstreamFieldsCrate);
             }
 
-            var upstreamFileCrates = await GetCratesByDirection<StandardFileDescriptionCM>(CrateDirection.Upstream);
+            var upstreamFileCrates = await HubCommunicator.GetCratesByDirection<StandardFileDescriptionCM>(ActivityId, CrateDirection.Upstream);
 
             var curUpstreamFields = upstreamFileCrates.Select(c => new FieldDTO(c.Label, c.Label)).ToArray();
 
@@ -70,7 +71,8 @@ namespace terminalFr8Core.Activities
             return PackControlsCrate(fileNameTextBox, textSource);
         }
 
-        public StoreFile_v1() : base(false)
+        public StoreFile_v1(ICrateManager crateManager)
+            : base(false, crateManager)
         {
         }
 
@@ -104,7 +106,7 @@ namespace terminalFr8Core.Activities
             using (var stream = GenerateStreamFromString(fileContents))
             {
                 //TODO what to do with this fileDO??
-                var fileDO = await HubCommunicator.SaveFile(fileNameField.Value, stream, CurrentUserId);
+                var fileDO = await HubCommunicator.SaveFile(fileNameField.Value, stream);
             }
 
 

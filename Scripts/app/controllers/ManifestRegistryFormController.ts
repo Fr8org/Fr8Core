@@ -37,14 +37,14 @@ module dockyard.controllers {
 
             if (descriptionName !== undefined) {
                 
-                ManifestRegistryService.getDescriptionWithLastVersion({ name: descriptionName.value }).$promise.then(data => {
+                ManifestRegistryService.getDescriptionWithLastVersion({name: descriptionName.value }).$promise.then(data => {
                     this.$scope.manifestDescription = data;
                 });
             }
 
             $scope.submit = isValid => {
 
-                this.ManifestRegistryService.checkVersionAndName({ version: this.$scope.manifestDescription.version }, { name: this.$scope.manifestDescription.name }).$promise
+                this.ManifestRegistryService.checkVersionAndName( {version:this.$scope.manifestDescription.version,  name: this.$scope.manifestDescription.name }).$promise
                     .then(result => {
                     $scope.isNameVersionOk = result.value;
                         if (isValid && $scope.isNameVersionOk) {

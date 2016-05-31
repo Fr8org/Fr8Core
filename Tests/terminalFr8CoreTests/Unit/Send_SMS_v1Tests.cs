@@ -29,24 +29,13 @@ namespace terminalTests.Unit
         public override void SetUp()
         {
             base.SetUp();
-
-            var activityContext = new ActivityContext
-            {
-                ActivityPayload = new ActivityPayload
-                {
-                    CrateStorage = new CrateStorage()
-
-                }
-            };
-            var storage = activityContext.ActivityPayload.CrateStorage;
-            storage.Add(Crate.FromContent(string.Empty, new OperationalStateCM()));
-
+            
             var fileds = new FieldDescriptionsCM(new FieldDTO[] { });
 
             var hubCommunicatorMock = new Mock<IHubCommunicator>();
             //hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<Guid>(), It.IsAny<string>())).Returns(Task.FromResult(payload));
             hubCommunicatorMock.Setup(h => h.GetDesignTimeFieldsByDirection(It.IsAny<Guid>(), It.IsAny<CrateDirection>(), 
-                                        It.IsAny<AvailabilityType>(), It.IsAny<string>())).Returns(Task.FromResult(fileds));
+                                        It.IsAny<AvailabilityType>())).Returns(Task.FromResult(fileds));
             ObjectFactory.Container.Inject(hubCommunicatorMock);
             ObjectFactory.Container.Inject(hubCommunicatorMock.Object);
 
@@ -61,11 +50,12 @@ namespace terminalTests.Unit
         public async Task Initialize__CheckConfigControls()
         {
             //Arrage
-            _sendSmsActivity = new Send_SMS_v1();
+            _sendSmsActivity = New<Send_SMS_v1>();
 
             //Act
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage()
@@ -84,11 +74,12 @@ namespace terminalTests.Unit
         public async Task Initialize__CheckAvailableFields()
         {
             //Arrage
-            _sendSmsActivity = new Send_SMS_v1();
+            _sendSmsActivity = New<Send_SMS_v1>();
 
             //Act
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage()
@@ -108,9 +99,10 @@ namespace terminalTests.Unit
         public async Task Run_CheckSendCalledOnlyOnce()
         {
             //Arrage
-            _sendSmsActivity = new Send_SMS_v1();
+            _sendSmsActivity = New<Send_SMS_v1>();
             var activityContext = new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = new ActivityPayload
                 {
                     CrateStorage = new CrateStorage()

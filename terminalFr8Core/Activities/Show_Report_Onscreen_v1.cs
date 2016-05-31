@@ -6,6 +6,7 @@ using Data.Entities;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Managers;
@@ -54,7 +55,7 @@ namespace terminalFr8Core.Activities
         private async Task<Crate> FindTables()
         {
             var fields = new List<FieldDTO>();
-            foreach (var table in (await GetCratesByDirection<FieldDescriptionsCM>(CrateDirection.Upstream))
+            foreach (var table in (await HubCommunicator.GetCratesByDirection<FieldDescriptionsCM>(ActivityId, CrateDirection.Upstream))
                                              .Select(x => x.Content)
                                              .SelectMany(x => x.Fields)
                                              .Where(x => x.Availability == AvailabilityType.RunTime && x.Value == "Table"))
@@ -66,7 +67,8 @@ namespace terminalFr8Core.Activities
         }
 
 
-        public Show_Report_Onscreen_v1() : base(false)
+        public Show_Report_Onscreen_v1(ICrateManager crateManager)
+            : base(false, crateManager)
         {
         }
 

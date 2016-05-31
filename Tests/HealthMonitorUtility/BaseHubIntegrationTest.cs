@@ -52,6 +52,7 @@ namespace HealthMonitor.Utility
         {
             ObjectFactory.Initialize();
             ObjectFactory.Configure(Hub.StructureMap.StructureMapBootStrapper.LiveConfiguration);
+            ObjectFactory.Configure(Fr8Infrastructure.StructureMap.StructureMapBootStrapper.LiveConfiguration);
 
             // Use a common HttpClient for all REST operations within testing session 
             // to ensure the presense of the authentication cookie. 
@@ -110,8 +111,8 @@ namespace HealthMonitor.Utility
 
         protected async Task RevokeTokens(string terminalName)
         {
-            var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(
-                _baseUrl + "manageauthtoken/"
+            var tokens = await HttpGetAsync<IEnumerable<AuthenticationTokenTerminalDTO>>(
+                _baseUrl + "authentication/tokens"
             );
 
             if (tokens != null)
@@ -122,7 +123,7 @@ namespace HealthMonitor.Utility
                     foreach (var token in docusignTokens.AuthTokens)
                     {
                         await HttpPostAsync<string>(
-                            _baseUrl + "manageauthtoken/revoke?id=" + token.Id.ToString(),
+                            _baseUrl + "authentication/tokens/revoke?id=" + token.Id.ToString(),
                             null
                         );
                     }
@@ -145,12 +146,12 @@ namespace HealthMonitor.Utility
 
         public async Task<IncomingCratesDTO> GetRuntimeCrateDescriptionsFromUpstreamActivities(Guid curActivityId)
         {
-            var url = $"{GetHubApiBaseUrl()}/plannodes/available_data/?id={curActivityId}";
+            var url = $"{GetHubApiBaseUrl()}/plan_nodes/signals/?id={curActivityId}";
             return await HttpGetAsync<IncomingCratesDTO>(url);
         }
         protected async Task<Guid> ExtractTerminalDefaultToken(string terminalName)
         {
-            var tokens = await HttpGetAsync<IEnumerable<ManageAuthToken_Terminal>>(GetHubApiBaseUrl() + "manageauthtoken/");
+            var tokens = await HttpGetAsync<IEnumerable<AuthenticationTokenTerminalDTO>>(GetHubApiBaseUrl() + "manageauthtoken/");
             Assert.NotNull(tokens, "No authorization tokens were found for the integration testing user.");
             var terminal = tokens.FirstOrDefault(x => x.Name == terminalName);
             Assert.NotNull(terminal, $"No authorization tokens were found for the {terminalName}");

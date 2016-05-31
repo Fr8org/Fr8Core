@@ -49,7 +49,7 @@ namespace terminalIntegrationTests.EndToEnd
         [Test, Category("Integration.terminalSalesforce")]
         public async Task MailMergeFromSalesforceEndToEnd()
         {
-            /*
+          
             await RevokeTokens("terminalDocuSign");
             var salesforceAuthToken = await HealthMonitor_FixtureData.CreateSalesforceAuthToken();
             //Create Case object in Salesforce
@@ -105,7 +105,7 @@ namespace terminalIntegrationTests.EndToEnd
                 //    await HttpDeleteAsync($"{_baseUrl}plans?id={plan.Plan.Id}");
                 //}
             }
-            */
+            
         }
 
         private void AssertEnvelopeContents(Guid docuSignTokenId, string expectedName)
@@ -180,13 +180,13 @@ namespace terminalIntegrationTests.EndToEnd
 
         private async Task ApplyAuthTokenToSolution(ActivityDTO solution, AuthorizationTokenDO salesforceAuthToken)
         {
-            var applyToken = new ManageAuthToken_Apply()
+            var applyToken = new AuthenticationTokenGrantDTO()
             {
                 ActivityId = solution.Id,
                 AuthTokenId = salesforceAuthToken.Id,
                 IsMain = true
             };
-            await HttpPostAsync<ManageAuthToken_Apply[], string>(GetHubApiBaseUrl() + "ManageAuthToken/apply", new[] { applyToken });
+            await HttpPostAsync<AuthenticationTokenGrantDTO[], string>(GetHubApiBaseUrl() + "authentication/tokens/grant", new[] { applyToken });
         }
 
         private async Task<PlanDTO> CreatePlan()

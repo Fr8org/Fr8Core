@@ -8,6 +8,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using ServiceStack;
@@ -83,18 +84,19 @@ namespace terminalSalesforce.Actions
 
         readonly ISalesforceManager _salesforceManager;
 
-        public Monitor_Salesforce_Event_v1()
+        public Monitor_Salesforce_Event_v1(ICrateManager crateManager, ISalesforceManager salesforceManager)
+            : base(crateManager)
         {
-            _salesforceManager = ObjectFactory.GetInstance<ISalesforceManager>();
+            _salesforceManager = salesforceManager;
         }
 
-        protected override Task InitializeETA()
+        public override Task Initialize()
         {
             ActivitiesHelper.GetAvailableFields(ActivityUI.SalesforceObjectList);
             return Task.FromResult(0);
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             string curSfChosenObject = ActivityUI.SalesforceObjectList.selectedKey;
 
@@ -110,7 +112,7 @@ namespace terminalSalesforce.Actions
             CrateSignaller.MarkAvailableAtRuntime<StandardTableDataCM>(GenerateRuntimeDataLabel(), true).AddFields(selectedObjectProperties);
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             //get the event payload from the Salesforce notification event
             var sfEventPayloads = Payload.CratesOfType<EventReportCM>().ToList().SelectMany(er => er.Content.EventPayload).ToList();

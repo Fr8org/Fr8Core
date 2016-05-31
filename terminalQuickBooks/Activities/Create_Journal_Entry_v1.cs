@@ -4,6 +4,7 @@ using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using TerminalBase.BaseClasses;
 using StructureMap;
@@ -32,18 +33,20 @@ namespace terminalQuickBooks.Actions
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        public Create_Journal_Entry_v1()
+
+        public Create_Journal_Entry_v1(ICrateManager crateManager, IJournalEntry journalEntry)
+            : base(crateManager)
         {
-            _journalEntry = ObjectFactory.GetInstance<IJournalEntry>();
+            _journalEntry = journalEntry;
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             if (ActivityId == Guid.Empty)
                 throw new ArgumentException("Configuration requires the submission of an Action that has a real ActionId");
 
             //get StandardAccountingTransactionCM
-            var upstreamCrates = await GetCratesByDirection<StandardAccountingTransactionCM>(CrateDirection.Upstream);
+            var upstreamCrates = await HubCommunicator.GetCratesByDirection<StandardAccountingTransactionCM>(ActivityId, CrateDirection.Upstream);
             TextBlock textBlock;
             if (upstreamCrates.Count > 0)
             {
@@ -51,13 +54,13 @@ namespace terminalQuickBooks.Actions
             }
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
             // No extra configuration required
             return Task.FromResult(0);
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             //Obtain the crate of type StandardAccountingTransactionCM that holds the required information
             var curStandardAccountingTransactionCM = Payload.CratesOfType<StandardAccountingTransactionCM>().Single().Content;
@@ -69,11 +72,11 @@ namespace terminalQuickBooks.Actions
             //Get the list of the StandardAccountingTransactionDTO
             var curTransactionList = curStandardAccountingTransactionCM.AccountingTransactions;
             //Take StandardAccountingTransactionDTO from curTransactionList using core function GetCurrentElement
-            var curStandardAccountingTransactionDTO = (StandardAccountingTransactionDTO)GetCurrentElement(curTransactionList, LoopIndex);
+            var curStandardAccountingTransactionDTO = curTransactionList[LoopIndex];
             //Check that all required fields exists in the StandardAccountingTransactionDTO object
             StandardAccountingTransactionCM.ValidateAccountingTransation(curStandardAccountingTransactionDTO);
             //Use service to create Journal Entry Object
-            _journalEntry.Create(curStandardAccountingTransactionDTO, AuthorizationToken, CurrentUserId, HubCommunicator);
+            _journalEntry.Create(curStandardAccountingTransactionDTO, AuthorizationToken, HubCommunicator);
         }
     }
 }

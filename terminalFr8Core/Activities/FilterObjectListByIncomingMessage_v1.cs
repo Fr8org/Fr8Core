@@ -8,11 +8,13 @@ using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Helpers;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Hub.Services;
 using TerminalBase.BaseClasses;
 using TerminalBase.Errors;
+using TerminalBase.Infrastructure;
 using TerminalBase.Services;
 using Utilities;
 
@@ -91,26 +93,27 @@ namespace terminalFr8Core.Activities
 
         private static readonly TimeSpan CacheExpirationTime = TimeSpan.FromHours(1.0);
 
-        public FilterObjectListByIncomingMessage_v1() : base(false)
+        public FilterObjectListByIncomingMessage_v1(ICrateManager crateManager)
+            : base(false, crateManager)
         {
             //ActivityName = "Match Incoming Text and Build Object List";
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
-            var activityTemplates = await HubCommunicator.GetActivityTemplates(Tags.TableDataGenerator, CurrentUserId);
+            var activityTemplates = await HubCommunicator.GetActivityTemplates(Tags.TableDataGenerator);
             activityTemplates.Sort((x, y) => x.Name.CompareTo(y.Name));
             ActivityUI.DataSourceSelector.ListItems = activityTemplates
                                                                  .Select(x => new ListItem { Key = x.Label, Value = x.Id.ToString() })
                                                                  .ToList();
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             //Remove child activity if its not specified or add it if is not yet added
             if (string.IsNullOrEmpty(ActivityUI.DataSourceSelector.Value))
             {
-                await HubCommunicator.DeleteExistingChildNodesFromActivity(ActivityId, CurrentUserId);
+                await HubCommunicator.DeleteExistingChildNodesFromActivity(ActivityId);
                 ActivityContext.ActivityPayload.ChildrenActivities.Clear();
                 PreviousSelectedDataSourceId = null;
                 CachedData = null;
@@ -118,7 +121,7 @@ namespace terminalFr8Core.Activities
             else if (string.IsNullOrEmpty(PreviousSelectedDataSourceId) || PreviousSelectedDataSourceId != ActivityUI.DataSourceSelector.Value)
             {
                 var activityTemplate = await GetActivityTemplate(Guid.Parse(ActivityUI.DataSourceSelector.Value));
-                await HubCommunicator.DeleteExistingChildNodesFromActivity(ActivityId, CurrentUserId);
+                await HubCommunicator.DeleteExistingChildNodesFromActivity(ActivityId);
                 ActivityContext.ActivityPayload.ChildrenActivities.Clear();
                 await AddAndConfigureChildActivity(ActivityId, activityTemplate, order: 1);
                 PreviousSelectedDataSourceId = ActivityUI.DataSourceSelector.Value;
@@ -126,7 +129,7 @@ namespace terminalFr8Core.Activities
             }
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             if (IsInitialRun)
             {
@@ -154,7 +157,7 @@ namespace terminalFr8Core.Activities
             RequestSkipChildren();
         }
 
-        protected override Task RunChildActivities()
+        public override Task RunChildActivities()
         {
             //We want to run our activity in filtering mode after child activity is completed
             RequestJumpToActivity(ActivityId);

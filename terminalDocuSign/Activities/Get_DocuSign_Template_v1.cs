@@ -5,10 +5,13 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
+using terminalDocuSign.Services.New_Api;
+using TerminalBase.Infrastructure;
 
 namespace terminalDocuSign.Activities
 {
@@ -28,6 +31,12 @@ namespace terminalDocuSign.Activities
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
         protected override string ActivityUserFriendlyName => "Get DocuSign Template";
+
+
+        public Get_DocuSign_Template_v1(ICrateManager crateManager, IDocuSignManager docuSignManager) 
+            : base(crateManager, docuSignManager)
+        {
+        }
 
         protected override async Task RunDS()
         {
@@ -75,15 +84,16 @@ namespace terminalDocuSign.Activities
             return Task.FromResult(0);
         }
 
-        protected override Task<bool> Validate()
+        protected override Task Validate()
         {
             var templateList = GetControl<DropDownList>("Available_Templates");
-            if (!ValidationManager.ValidateControlExistance(templateList))
+
+            if (ValidationManager.ValidateControlExistance(templateList))
             {
-                return Task.FromResult(false);
+                ValidationManager.ValidateTemplateList(templateList);
             }
-            ValidationManager.ValidateTemplateList(templateList);
-            return Task.FromResult(true);
+
+            return Task.FromResult(0);
         }
 
         private Crate CreateControlsCrate()

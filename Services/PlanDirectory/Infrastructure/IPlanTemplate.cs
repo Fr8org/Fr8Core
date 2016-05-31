@@ -1,16 +1,13 @@
-﻿using System.Collections.Generic;
+﻿using System;
 using System.Threading.Tasks;
-using PlanDirectory.Interfaces;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 
 namespace PlanDirectory.Infrastructure
 {
     public interface IPlanTemplate
     {
-        Task Initialize();
-
-        Task<SearchResultDTO> Search(SearchRequestDTO request);
-
-        Task Publish(PublishPlanTemplateDTO planTemplate);
-        Task Unpublish(PublishPlanTemplateDTO planTemplate);
+        Task<PlanTemplateCM> CreateOrUpdate(string fr8AccountId, PublishPlanTemplateDTO planTemplate);
+        Task<PublishPlanTemplateDTO> Get(string fr8AccountId, Guid planId);
     }
 }

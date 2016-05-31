@@ -23,7 +23,7 @@ namespace terminalDocuSignTests.Activities
         public async Task ActivityIsValid_WhenIsNotConfigured_ReturnsFalse()
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
-            var target = new Monitor_DocuSign_Envelope_Activity_v1();
+            var target = New<Monitor_DocuSign_Envelope_Activity_v1>();
             var activityContext = FixtureData.TestActivityContext1();
             var result = await Validate(target, activityContext); 
             Assert.AreNotEqual(ValidationResult.Success, result);
@@ -35,7 +35,7 @@ namespace terminalDocuSignTests.Activities
         public async Task ActivityIsValid_WhenNoNotificationIsSelected_ReturnsFalse()
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
-            var target = new Monitor_DocuSign_Envelope_Activity_v1();
+            var target = New<Monitor_DocuSign_Envelope_Activity_v1>();
             var activityContext = FixtureData.TestActivityContext1();
             await target.Configure(activityContext);
             SetRecipientConditionSelected(activityContext.ActivityPayload);
@@ -49,7 +49,7 @@ namespace terminalDocuSignTests.Activities
         public async Task ActivityIsValid_WhenNoEnvelopeConditionIsSelected_ReturnsFalse()
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
-            var target = new Monitor_DocuSign_Envelope_Activity_v1();
+            var target = New<Monitor_DocuSign_Envelope_Activity_v1>();
             var activityContext = FixtureData.TestActivityContext1();
             await target.Configure(activityContext);
             SetNotificationSelected(activityContext.ActivityPayload);
@@ -62,7 +62,7 @@ namespace terminalDocuSignTests.Activities
         public async Task ActivityIsValid_WhenTemplateMustBeSetButThereAreNoTemplates_ReturnsFalse()
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
-            var target = new Monitor_DocuSign_Envelope_Activity_v1();
+            var target = New<Monitor_DocuSign_Envelope_Activity_v1>();
             var activityContext = FixtureData.TestActivityContext1();
             await target.Configure(activityContext);
             SetNotificationSelected(activityContext.ActivityPayload);
@@ -76,7 +76,7 @@ namespace terminalDocuSignTests.Activities
         public async Task ActivityIsValid_WhenTemplateMustBeSetButItIsNot_ReturnsFalse()
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithTemplates()));
-            var target = new Monitor_DocuSign_Envelope_Activity_v1();
+            var target = New<Monitor_DocuSign_Envelope_Activity_v1>();
             var activityDO = FixtureData.TestActivity1();
             var activityContext = FixtureData.TestActivityContext1();
             await target.Configure(activityContext);
@@ -90,7 +90,7 @@ namespace terminalDocuSignTests.Activities
         public async Task ActivityIsValid_WhenAllFieldsAreSet_ReturnsTrue()
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithTemplates()));
-            var target = new Monitor_DocuSign_Envelope_Activity_v1();
+            var target = New<Monitor_DocuSign_Envelope_Activity_v1>();
             var activityDO = FixtureData.TestActivity1();
             var activityContext = FixtureData.TestActivityContext1();
             await target.Configure(activityContext);

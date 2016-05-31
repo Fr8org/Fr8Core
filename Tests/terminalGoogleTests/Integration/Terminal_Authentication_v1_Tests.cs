@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 using Fr8Data.DataTransferObjects;
 using Fr8Infrastructure.Communication;
+using Fr8Infrastructure.Interfaces;
 using HealthMonitor.Utility;
 using NUnit.Framework;
+using StructureMap;
 using terminalGoogle.DataTransferObjects;
 using terminalGoogle.Services.Authorization;
 
@@ -51,7 +53,7 @@ namespace terminalGoogleTests.Integration
                  RefreshToken = refreshToken,
                  Expires = expires
             };
-            var sut = new GoogleIntegration();
+            var sut = new GoogleIntegration(ObjectFactory.GetInstance<IRestfulServiceClient>());
             
             // Act
             var result = await sut.IsTokenInfoValid(invalidToken);
