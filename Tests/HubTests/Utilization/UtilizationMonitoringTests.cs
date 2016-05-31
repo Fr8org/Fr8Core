@@ -184,7 +184,7 @@ namespace HubTests.Utilization
 
                 uow.SaveChanges();
 
-                await Plan.Run(uow, plan, null);
+                await Plan.Run(plan.Id, null, null);
 
                 _timerService.Tick();
                 _timerService.Tick();
