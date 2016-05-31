@@ -188,12 +188,18 @@ namespace terminalSalesforce.Actions
             var loopActivity = await AddAndConfigureChildActivity(context.SolutionActivity, await GetActivityTemplate("terminalFr8Core", "Loop"), "Loop", "Loop", 2);
             var crateStorage = loopActivity.CrateStorage;
             var loopConfigControls = ControlHelper.GetConfigurationControls(crateStorage);
-                var crateChooser = loopConfigControls.Controls.OfType<CrateChooser>().Single();
-                var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(x => x.ManifestId == (int)MT.StandardTableData);
-                if (tableDescription != null)
-                {
-                    tableDescription.Selected = true;
-                }
+            var crateChooser = loopConfigControls.Controls.OfType<CrateChooser>().Single();
+            var firstActivity = context.SolutionActivity.ChildrenActivities.OrderBy(x => x.Ordering).First();
+            var firstActivityCrates = firstActivity.CrateStorage.CrateContentsOfType<CrateDescriptionCM>().FirstOrDefault();
+
+            crateChooser.CrateDescriptions = firstActivityCrates?.CrateDescriptions;
+
+            var tableDescription = crateChooser.CrateDescriptions?.FirstOrDefault(x => x.ManifestId == (int)MT.StandardTableData);
+            if (tableDescription != null)
+            {
+                tableDescription.Selected = true;
+            }
+
             var solutionActivityUi = new ActivityUi().ClonePropertiesFrom(context.SolutionActivity.CrateStorage.FirstCrate<StandardConfigurationControlsCM>().Content) as ActivityUi;
             var mailSenderActivityTemplate = await GetActivityTemplate(Guid.Parse(solutionActivityUi.MailSenderActivitySelector.Value));
             var sendEmailActivity = await AddAndConfigureChildActivity(loopActivity, mailSenderActivityTemplate, order: 1);

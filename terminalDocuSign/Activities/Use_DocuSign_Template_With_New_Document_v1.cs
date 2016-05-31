@@ -20,7 +20,7 @@ using TerminalBase.Infrastructure;
 
 namespace terminalDocuSign.Activities
 {
-    public class Use_DocuSign_Template_With_New_Document_v1 : Send_DocuSign_Envelope_v1
+   /* public class Use_DocuSign_Template_With_New_Document_v1 : Send_DocuSign_Envelope_v1
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -185,5 +185,5 @@ namespace terminalDocuSign.Activities
 
             return Task.FromResult(0);
         }
-    }
+    }*/
 }

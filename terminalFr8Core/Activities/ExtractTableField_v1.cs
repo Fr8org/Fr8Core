@@ -13,7 +13,7 @@ using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
-    public class ExtractTableField_v1 : BaseTerminalActivity
+  /*  public class ExtractTableField_v1 : BaseTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -315,10 +315,7 @@ namespace terminalFr8Core.Activities
                 chosenCellDd.ListItems = listItems;
             }
             ((DropDownList)tempChosenCellList.TemplateContainer.Template.First()).ListItems = listItems;
-            /*
-            crateStorage.RemoveByLabel(AvailableCellsCrateLabel);
-            crateStorage.Add(CrateManager.CreateDesignTimeFieldsCrate(AvailableCellsCrateLabel, AvailabilityType.Configuration, tableFields.ToArray()));
-            */
+         
             var chosenCellList = GetControl<ControlList>("extractor_list");
             //let's publish our data - that this will be available during runtime
             var extractedFields = new List<FieldDTO>();
@@ -338,5 +335,5 @@ namespace terminalFr8Core.Activities
             crate.Availability = AvailabilityType.RunTime;
             Storage.Add(crate);
         }
-    }
+    }*/
 }

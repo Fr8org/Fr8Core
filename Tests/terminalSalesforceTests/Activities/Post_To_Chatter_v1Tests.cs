@@ -46,8 +46,8 @@ namespace terminalSalesforceTests.Actions
                 .Returns(() => Task.FromResult(testPayloadDTO));
 
 
-            hubCommunicatorMock.Setup(h => h.GetDesignTimeFieldsByDirection(It.IsAny<Guid>(), It.IsAny<CrateDirection>(), 
-                It.IsAny<AvailabilityType>())).Returns(() => Task.FromResult(new FieldDescriptionsCM()));
+           /* hubCommunicatorMock.Setup(h => h.GetDesignTimeFieldsByDirection(It.IsAny<Guid>(), It.IsAny<CrateDirection>(), 
+                It.IsAny<AvailabilityType>())).Returns(() => Task.FromResult(new FieldDescriptionsCM()));*/
 
             ObjectFactory.Container.Inject(typeof(IHubCommunicator), hubCommunicatorMock.Object);
 

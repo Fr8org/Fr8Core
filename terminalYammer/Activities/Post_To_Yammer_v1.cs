@@ -91,11 +91,9 @@ namespace terminalYammer.Actions
             var oauthToken = AuthorizationToken.Token;
             var groups = await _yammer.GetGroupsList(oauthToken);
             var crateAvailableGroups = CreateAvailableGroupsCrate(groups);
-            var crateAvailableFields = await CreateAvailableFieldsCrate();
             Storage.Clear();
             Storage.Add(PackControls(new ActivityUi()));
             Storage.Add(crateAvailableGroups);
-            Storage.Add(crateAvailableFields);
         }
 
         public override async Task Run()
@@ -144,22 +142,7 @@ namespace terminalYammer.Actions
             return groupMessage;
         }
 
-        private async Task<Crate> CreateAvailableFieldsCrate()
-        {
-            var curUpstreamFields =
-                (await HubCommunicator.GetCratesByDirection<FieldDescriptionsCM>(ActivityId, CrateDirection.Upstream))
-
-                .Where(x => x.Label != "Available Groups")
-                .SelectMany(x => x.Content.Fields)
-                .ToArray();
-
-            var availableFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(
-                    "Available Fields",
-                    curUpstreamFields
-                );
-
-            return availableFieldsCrate;
-        }
+       
 
         private void ValidateYammerActivity(string value, string exceptionMessage)
         {

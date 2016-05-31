@@ -25,7 +25,7 @@ namespace terminalQuickBooksTests.Integration
         /// Validate correct crate-storage structure in initial configuration response.
         /// </summary>
         [Test, Category("Integration.terminalQuickBooks")]
-        public async Task Terminal_Slack_Discover()
+        public async Task Quickbooks_Discover()
         {
             var discoverUrl = GetTerminalDiscoverUrl();
             var terminalDiscoverResponse = await HttpGetAsync<StandardFr8TerminalCM>(discoverUrl);

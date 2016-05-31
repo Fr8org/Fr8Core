@@ -41,6 +41,7 @@ namespace terminalFr8Core.Activities
             return stream;
         }
 
+        /*
         public async Task UpdateUpstreamFileCrates()
         {
             // Build a crate with the list of available upstream fields
@@ -58,7 +59,7 @@ namespace terminalFr8Core.Activities
             curUpstreamFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Upstream Terminal-Provided File Crates", curUpstreamFields);
             Storage.Add(curUpstreamFieldsCrate);
             
-        }
+        }*/
 
         private Crate CreateControlsCrate()
         {
@@ -118,7 +119,7 @@ namespace terminalFr8Core.Activities
             //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
             Storage.Add(configurationControlsCrate);
-            await UpdateUpstreamFileCrates();
+           // await UpdateUpstreamFileCrates();
         }
 
         public override Task FollowUp()

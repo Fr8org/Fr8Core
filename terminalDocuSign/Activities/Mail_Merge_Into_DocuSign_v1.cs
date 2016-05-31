@@ -325,11 +325,17 @@ namespace terminalDocuSign.Actions
                 var loopActivity = await AddAndConfigureChildActivity(context.SolutionActivity, loopAT, "Loop", "Loop", 2);
                 var loopConfigControls = ControlHelper.GetConfigurationControls(loopActivity.CrateStorage);
                 var crateChooser = ControlHelper.GetControl<CrateChooser>(loopConfigControls, "Available_Crates");
-                    var tableDescription = crateChooser.CrateDescriptions.FirstOrDefault(c => c.ManifestId == (int)MT.StandardTableData);
-                    if (tableDescription != null)
-                    {
-                        tableDescription.Selected = true;
-                    }
+                var firstActivity = context.SolutionActivity.ChildrenActivities.OrderBy(x => x.Ordering).First();
+                var firstActivityCrates = firstActivity.CrateStorage.CrateContentsOfType<CrateDescriptionCM>().FirstOrDefault();
+
+                crateChooser.CrateDescriptions = firstActivityCrates?.CrateDescriptions;
+
+                var tableDescription = crateChooser.CrateDescriptions?.FirstOrDefault(c => c.ManifestId == (int)MT.StandardTableData);
+                if (tableDescription != null)
+                {
+                    tableDescription.Selected = true;
+                }
+
                 parentActivity = loopActivity;
                 activityIndex = 1;
             }

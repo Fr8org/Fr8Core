@@ -16,7 +16,7 @@ using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
-    public class BuildQuery_v1 : BaseTerminalActivity
+   /* public class BuildQuery_v1 : BaseTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -273,7 +273,7 @@ namespace terminalFr8Core.Activities
 
         public override async Task Initialize()
         {
-            var columnDefinitions = await ExtractColumnDefinitions();
+            //var columnDefinitions = await ExtractColumnDefinitions();
             List<FieldDTO> tablesList = null;
             if (columnDefinitions != null)
             {
@@ -316,5 +316,5 @@ namespace terminalFr8Core.Activities
             UpdateSelectedObjectCrate(selectedObject);
             UpdateSelectedQueryCrate();
         }
-    }
+    }*/
 }
