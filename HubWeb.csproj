@@ -4486,6 +4486,7 @@
     <Content Include="Views\AngularTemplate\_AddPayloadModal.cshtml" />
     <None Include="Views\DocusignAuthCallback\Login.cshtml" />
     <TypeScriptCompile Include="Scripts\tests\utils\services\fixture_CrateHelper.ts" />
+    <TypeScriptCompile Include="Scripts\typings\angular-ui-bootstrap.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angular-ui-router\angular-ui-router.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-mocks.d.ts" />
     <TypeScriptCompile Include="Scripts\typings\angularjs\angular-resource.d.ts" />
