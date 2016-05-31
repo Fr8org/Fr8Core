@@ -160,14 +160,20 @@ namespace HubWeb.Controllers
         public IHttpActionResult Get([FromUri] PlansGetParams parameters)
         {
 
+            if (parameters.include_children && parameters.id.HasValue)
+            {
+                return GetFullPlan((Guid)parameters.id);
+            }
+
             return Get(parameters.id);
         }
 
-        [Fr8ApiAuthorize]
+        //[Fr8ApiAuthorize]
         //[Route("full/{id:guid}")]
-        [ActionName("full")]
+        //[ActionName("full")]
         [ResponseType(typeof(PlanDTO))]
         [HttpGet]
+        [NonAction]
         public IHttpActionResult GetFullPlan(Guid id)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())

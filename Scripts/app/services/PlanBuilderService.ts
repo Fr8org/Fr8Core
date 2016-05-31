@@ -96,7 +96,7 @@ module dockyard.services {
                     'getFull': {
                         method: 'GET',
                         isArray: false,
-                        url: '/api/plans/full/:id',
+                        url: '/api/plans?id=:id',
                         params: {
                             id: '@id'
                         }

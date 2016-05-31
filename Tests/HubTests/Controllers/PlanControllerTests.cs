@@ -320,7 +320,14 @@ namespace HubTests.Controllers
                 uow.SaveChanges();
             }
 
-            var curResult = curPlanController.GetFullPlan(curPlanDO.Id) as OkNegotiatedContentResult<PlanDTO>;
+            //var curResult = curPlanController.GetFullPlan(curPlanDO.Id) as OkNegotiatedContentResult<PlanDTO>;
+            var curResult = curPlanController.Get( new PlansGetParams()
+            {
+                id = curPlanDO.Id,
+                include_children = true
+            })
+                as OkNegotiatedContentResult<PlanDTO>;
+
             var curPlanDTO = curResult.Content.Plan;
 
             Assert.AreEqual(curPlanDO.Name, curPlanDTO.Name);

@@ -120,6 +120,7 @@ namespace HubTests.Controllers
             Mock<IPlan> planMock = new Mock<IPlan>();
             planMock.Setup(x => x.Run(It.IsAny<IUnitOfWork>(), It.IsAny<PlanDO>(), It.IsAny<Crate[]>())).ReturnsAsync(new ContainerDO());
             planMock.Setup(x => x.Activate(It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(new ActivateActivitiesDTO());
+
             planMock.Setup(x=> x.GetFullPlan(uowMock.Object, (It.IsAny<Guid>()))).Returns(new PlanDO()
             {
                 Fr8Account = FixtureData.TestDockyardAccount1(),
