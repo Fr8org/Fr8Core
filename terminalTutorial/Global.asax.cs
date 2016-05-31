@@ -1,10 +1,10 @@
 ﻿using System.Web.Http;
 using TerminalBase.Infrastructure;
 
-namespace terminalSlack
+namespace terminalTutorial
 {
     public class WebApiApplication : System.Web.HttpApplication
     {
-        
+
     }
 }

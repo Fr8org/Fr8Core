@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+VisualStudioVersion = 14.0.24720.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "HubWeb", "HubWeb.csproj", "{F7BD7117-4F1D-4215-B338-61EBDD0D0BFE}"
 EndProject
@@ -142,6 +142,8 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fr8Data", "Fr8Data\Fr8Data.csproj", "{A3178D71-A2C3-45B9-8334-ADCC7C313541}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Fr8Infrastructure", "Infrastructure\Fr8Infrastructure.csproj", "{9F4B5C92-3535-4D4C-B1E4-37BEB1AE5C42}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "terminalTutorial", "terminalTutorial\terminalTutorial.csproj", "{62F909E6-22A9-4F92-B5F7-6EF42F694DF2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -1036,6 +1038,26 @@ Global
 		{9F4B5C92-3535-4D4C-B1E4-37BEB1AE5C42}.Release|Any CPU.Build.0 = Release|Any CPU
 		{9F4B5C92-3535-4D4C-B1E4-37BEB1AE5C42}.Release|x86.ActiveCfg = Release|Any CPU
 		{9F4B5C92-3535-4D4C-B1E4-37BEB1AE5C42}.Release|x86.Build.0 = Release|Any CPU
+		{62F909E6-22A9-4F92-B5F7-6EF42F694DF2}.alexlocal|Any CPU.ActiveCfg = Release|Any CPU
+		{62F909E6-22A9-4F92-B5F7-6EF42F694DF2}.alexlocal|Any CPU.Build.0 = Release|Any CPU
+		{62F909E6-22A9-4F92-B5F7-6EF42F694DF2}.alexlocal|x86.ActiveCfg = Release|Any CPU
+		{62F909E6-22A9-4F92-B5F7-6EF42F694DF2}.alexlocal|x86.Build.0 = Release|Any CPU
+		{62F909E6-22A9-4F92-B5F7-6EF42F694DF2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{62F909E6-22A9-4F92-B5F7-6EF42F694DF2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{62F909E6-22A9-4F92-B5F7-6EF42F694DF2}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{62F909E6-22A9-4F92-B5F7-6EF42F694DF2}.Debug|x86.Build.0 = Debug|Any CPU
+		{62F909E6-22A9-4F92-B5F7-6EF42F694DF2}.Demo|Any CPU.ActiveCfg = Debug|Any CPU
+		{62F909E6-22A9-4F92-B5F7-6EF42F694DF2}.Demo|Any CPU.Build.0 = Debug|Any CPU
+		{62F909E6-22A9-4F92-B5F7-6EF42F694DF2}.Demo|x86.ActiveCfg = Debug|Any CPU
+		{62F909E6-22A9-4F92-B5F7-6EF42F694DF2}.Demo|x86.Build.0 = Debug|Any CPU
+		{62F909E6-22A9-4F92-B5F7-6EF42F694DF2}.Dev|Any CPU.ActiveCfg = Debug|Any CPU
+		{62F909E6-22A9-4F92-B5F7-6EF42F694DF2}.Dev|Any CPU.Build.0 = Debug|Any CPU
+		{62F909E6-22A9-4F92-B5F7-6EF42F694DF2}.Dev|x86.ActiveCfg = Debug|Any CPU
+		{62F909E6-22A9-4F92-B5F7-6EF42F694DF2}.Dev|x86.Build.0 = Debug|Any CPU
+		{62F909E6-22A9-4F92-B5F7-6EF42F694DF2}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{62F909E6-22A9-4F92-B5F7-6EF42F694DF2}.Release|Any CPU.Build.0 = Release|Any CPU
+		{62F909E6-22A9-4F92-B5F7-6EF42F694DF2}.Release|x86.ActiveCfg = Release|Any CPU
+		{62F909E6-22A9-4F92-B5F7-6EF42F694DF2}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -1084,5 +1106,6 @@ Global
 		{B1B470AE-2161-4DC6-80B1-3A8EDBA4C729} = {95890593-84B1-4CF8-A31B-542B143B4C73}
 		{2B78433B-BA79-470B-BEF6-DBA5C1904865} = {43A55C9F-CC6B-42C7-BE5A-0FBE635A0C02}
 		{1ABD6365-E04D-4971-8D0D-5364C896113F} = {6CF6EAFB-0D62-4D76-8B2C-FA9C6BBB073B}
+		{62F909E6-22A9-4F92-B5F7-6EF42F694DF2} = {9A01CAA2-30D9-45B5-9FF3-A0DDF12551F2}
 	EndGlobalSection
 EndGlobal
