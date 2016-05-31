@@ -309,7 +309,7 @@ namespace HubWeb.Controllers
         [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
         [Fr8HubWebHMACAuthenticate]
         [HttpPost]
-        public async Task<IHttpActionResult> Run(Guid planId, [FromBody]CrateDTO[] payload)
+        public async Task<IHttpActionResult> Run(Guid planId, [FromBody] CrateDTO[] payload)
         {
             Crate[] crates = null;
 
@@ -319,6 +319,14 @@ namespace HubWeb.Controllers
             }
 
             var result = await _plan.Run(planId, crates, null);
+
+            if (result == null)
+            {
+                return BadRequest();
+            }
+
+            return Ok(result);
+        }
 
         [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
         [Fr8HubWebHMACAuthenticate]
@@ -367,7 +375,5 @@ namespace HubWeb.Controllers
                 throw;
             }
         }
-
-    
     }
 }
