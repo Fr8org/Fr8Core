@@ -376,14 +376,13 @@ namespace Hub.Services
                 .OrderBy(c => c.Key)
                 .Select(c => new ActivityTemplateCategoryDTO
                 {
-                    Activities = c.Select(Mapper.Map<ActivityTemplateDTO>).ToList(),
+                    Activities = c.GroupBy(x => x.Name)
+                                  .Select(x => x.OrderByDescending(y => int.Parse(y.Version)).First())
+                                  .Select(Mapper.Map<ActivityTemplateDTO>).ToList(),
                     Name = c.Key.ToString()
                 })
                 .ToList();
-
-
             return curActivityTemplates;
         }
-
     }
 }

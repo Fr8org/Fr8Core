@@ -705,9 +705,12 @@ namespace Hub.Services
             var solutionNameList = new List<string>();
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
-                var curActivities = uow.ActivityTemplateRepository.GetAll()
-                    .Where(a => a.Terminal.Name == terminalName
-                                && a.Category == ActivityCategory.Solution)
+                var curActivities = uow.ActivityTemplateRepository
+                    .GetQuery()
+                    .Where(x => x.Terminal.Name == terminalName && x.Category == ActivityCategory.Solution)
+                    .GroupBy(x => x.Name)
+                    .AsEnumerable()
+                    .Select(x => x.OrderByDescending(y => int.Parse(y.Version)).First())
                     .ToList();
                 solutionNameList.AddRange(curActivities.Select(activity => activity.Name));
             }
