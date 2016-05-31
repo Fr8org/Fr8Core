@@ -233,7 +233,6 @@
     <Compile Include="Infrastructure\PlanDirectoryBootStrapper.cs" />
     <Compile Include="Infrastructure\SearchProvider.Impl.cs" />
     <Compile Include="Interfaces\CreatePlanDTO.cs" />
-    <Compile Include="Interfaces\PlanTemplateDTO.cs" />
     <Compile Include="Interfaces\SearchItemDTO.cs" />
     <Compile Include="Interfaces\SearchRequestDTO.cs" />
     <Compile Include="Interfaces\SearchResultDTO.cs" />

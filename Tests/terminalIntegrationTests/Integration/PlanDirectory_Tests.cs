@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using PlanDirectory.Interfaces;
+using Fr8Data.DataTransferObjects;
 using HealthMonitor.Utility;
 
 namespace terminalIntegrationTests.Integration
@@ -11,9 +11,9 @@ namespace terminalIntegrationTests.Integration
     [Explicit]
     public class PlanDirectory_Tests : BasePlanDirectoryIntegrationTest
     {
-        private static PlanTemplateDTO PlanTemplateDTO_1()
+        private static PublishPlanTemplateDTO PlanTemplateDTO_1()
         {
-            return new PlanTemplateDTO()
+            return new PublishPlanTemplateDTO()
             {
                 Name = "Test PlanTemplate Name 1",
                 Description = "Test PlanTemplate Description 1",
@@ -26,9 +26,9 @@ namespace terminalIntegrationTests.Integration
         public async Task PlanDirectory_PlanTemplateApi_Create_Update_Extract()
         {
             var planTemplateDTO = PlanTemplateDTO_1();
-            await HttpPostAsync<PlanTemplateDTO, string>(_baseUrl + "plantemplates/", planTemplateDTO);
+            await HttpPostAsync<PublishPlanTemplateDTO, string>(_baseUrl + "plantemplates/", planTemplateDTO);
 
-            var returnedPlanTemplateDTO = await HttpGetAsync<PlanTemplateDTO>(
+            var returnedPlanTemplateDTO = await HttpGetAsync<PublishPlanTemplateDTO>(
                 _baseUrl + "plantemplates/?id=" + planTemplateDTO.ParentPlanId.ToString()
             );
 
@@ -44,9 +44,9 @@ namespace terminalIntegrationTests.Integration
                 JsonConvert.SerializeObject(new { subplans = new string[] { } })
             );
 
-            await HttpPostAsync<PlanTemplateDTO, string>(_baseUrl + "plantemplates/", planTemplateDTO);
+            await HttpPostAsync<PublishPlanTemplateDTO, string>(_baseUrl + "plantemplates/", planTemplateDTO);
 
-            returnedPlanTemplateDTO = await HttpGetAsync<PlanTemplateDTO>(
+            returnedPlanTemplateDTO = await HttpGetAsync<PublishPlanTemplateDTO>(
                 _baseUrl + "plantemplates/?id=" + planTemplateDTO.ParentPlanId.ToString()
             );
 

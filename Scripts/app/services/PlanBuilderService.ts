@@ -16,6 +16,7 @@ module dockyard.services {
         update: (data: { id: string, name: string }) => interfaces.IPlanVM;
         run: (id: string) => ng.IPromise<model.ContainerDTO>;
         runAndProcessClientAction: (id: string) => ng.IPromise<model.ContainerDTO>;
+        share: (id: string) => ng.IPromise<any>;
     }
 
     export interface ISubPlanService extends ng.resource.IResourceClass<interfaces.ISubPlanVM> {
@@ -159,6 +160,21 @@ module dockyard.services {
                         }
                     }
                 });
+
+            resource.share = (id: string): ng.IPromise<any> => {
+                var url = '/api/plans/share?planId=' + id;
+                var d = $q.defer();
+
+                $http.post(url, null)
+                    .then((res: any) => {
+                        d.resolve();
+                    })
+                    .catch((err: any) => {
+                        d.reject(err);
+                    });
+
+                return d.promise;
+            };
 
             resource.run = (id: string): ng.IPromise<model.ContainerDTO> => {
                 var url = '/api/plans/run?planId=' + id;

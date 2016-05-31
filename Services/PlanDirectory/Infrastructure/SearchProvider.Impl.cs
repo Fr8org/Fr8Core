@@ -5,6 +5,8 @@ using System.Threading.Tasks;
 using Microsoft.Azure.Search;
 using Microsoft.Azure.Search.Models;
 using Utilities.Configuration.Azure;
+using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using PlanDirectory.Interfaces;
 
 namespace PlanDirectory.Infrastructure
@@ -61,7 +63,8 @@ namespace PlanDirectory.Infrastructure
                 {
                     new Field("parentPlanId", DataType.String) { IsKey = true },
                     new Field("name", DataType.String) { IsSearchable = true, IsFilterable = true, IsSortable = true },
-                    new Field("description", DataType.String) { IsSearchable = true, IsFilterable = true }
+                    new Field("description", DataType.String) { IsSearchable = true, IsFilterable = true },
+                    new Field("owner", DataType.String) { IsSearchable = true, IsFilterable = true }
                 }
             };
 
@@ -118,7 +121,7 @@ namespace PlanDirectory.Infrastructure
             }
         }
 
-        public async Task CreateOrUpdate(PlanTemplateDTO planTemplate)
+        public async Task CreateOrUpdate(PlanTemplateCM planTemplate)
         {
             using (var searchClient = CreateAzureSearchClient())
             {
@@ -139,13 +142,14 @@ namespace PlanDirectory.Infrastructure
         }
 
 
-        private Document ConvertToSearchDocument(PlanTemplateDTO dto)
+        private Document ConvertToSearchDocument(PlanTemplateCM cm)
         {
             var document = new Document()
             {
-                { "parentPlanId", dto.ParentPlanId.ToString() },
-                { "name", dto.Name },
-                { "description", dto.Description }
+                { "parentPlanId", cm.ParentPlanId.ToString() },
+                { "name", cm.Name },
+                { "description", cm.Description },
+                { "owner", cm.OwnerName }
             };
 
             return document;
@@ -157,7 +161,8 @@ namespace PlanDirectory.Infrastructure
             {
                 ParentPlanId = Guid.Parse((string)document["parentPlanId"]),
                 Name = (string)document["name"],
-                Description = (string)document["description"]
+                Description = (string)document["description"],
+                Owner = (string)document["owner"]
             };
 
             return dto;

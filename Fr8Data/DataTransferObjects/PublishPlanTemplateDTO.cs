@@ -1,9 +1,9 @@
 ﻿using System;
 using Newtonsoft.Json.Linq;
 
-namespace PlanDirectory.Interfaces
+namespace Fr8Data.DataTransferObjects
 {
-    public class PlanTemplateDTO
+    public class PublishPlanTemplateDTO
     {
         public string Name { get; set; }
         public string Description { get; set; }

@@ -11,10 +11,16 @@ namespace Hub.Interfaces
 {
     public interface IPlanTemplates
     {
-        PlanTemplateDTO SavePlan(Guid planId, string curFr8UserId);
-        List<PlanTemplateDTO> GetTemplates(string userId);
-        string LoadPlan(int planDescriptionId, string userId);
-        PlanTemplateDTO GetTemplate(int planDescriptionId, string userId);
-        void DeleteTemplate(int id, string userId);
+        PlanTemplateDTO GetPlanTemplate(Guid planId, string fr8UserId);
+        PlanDO LoadPlan(PlanTemplateDTO planTemplate, string fr8UserId);
+
+        // Commented out by yakov.gnusin,
+        // since we're using new approach described in https://maginot.atlassian.net/wiki/display/SH/Plan+Directory+Architecture
+
+        // PlanTemplateDTO SavePlan(Guid planId, string curFr8UserId);
+        // List<PlanTemplateDTO> GetTemplates(string userId);
+        // string LoadPlan(int planDescriptionId, string userId);
+        // PlanTemplateDTO GetTemplate(int planDescriptionId, string userId);
+        // void DeleteTemplate(int id, string userId);
     }
 }

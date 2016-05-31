@@ -6,14 +6,14 @@ using Newtonsoft.Json.Linq;
 using StructureMap;
 using Data.Entities;
 using Data.Interfaces;
+using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
-using PlanDirectory.Interfaces;
 
 namespace PlanDirectory.Infrastructure
 {
     public class PlanTemplate : IPlanTemplate
     {
-        public async Task CreateOrUpdate(string fr8AccountId, PlanTemplateDTO planTemplate)
+        public Task<PlanTemplateCM> CreateOrUpdate(string fr8AccountId, PublishPlanTemplateDTO planTemplate)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -45,10 +45,12 @@ namespace PlanDirectory.Infrastructure
                 );
 
                 uow.SaveChanges();
+
+                return Task.FromResult(planTemplateCM);
             }
         }
 
-        public Task<PlanTemplateDTO> Get(string fr8AccountId, Guid planId)
+        public Task<PublishPlanTemplateDTO> Get(string fr8AccountId, Guid planId)
         {
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
             {
@@ -60,14 +62,14 @@ namespace PlanDirectory.Infrastructure
 
                 if (planTemplateCM == null)
                 {
-                    return Task.FromResult<PlanTemplateDTO>(null);
+                    return Task.FromResult<PublishPlanTemplateDTO>(null);
                 }
 
                 return Task.FromResult(CreatePlanTemplateDTO(planTemplateCM));
             }
         }
 
-        private PlanTemplateCM CreatePlanTemplateCM(PlanTemplateDTO dto,
+        private PlanTemplateCM CreatePlanTemplateCM(PublishPlanTemplateDTO dto,
             PlanTemplateCM existing, Fr8AccountDO account)
         {
             return new PlanTemplateCM()
@@ -82,9 +84,9 @@ namespace PlanDirectory.Infrastructure
             };
         }
 
-        private PlanTemplateDTO CreatePlanTemplateDTO(PlanTemplateCM planTemplate)
+        private PublishPlanTemplateDTO CreatePlanTemplateDTO(PlanTemplateCM planTemplate)
         {
-            return new PlanTemplateDTO()
+            return new PublishPlanTemplateDTO()
             {
                 Name = planTemplate.Name,
                 Description = planTemplate.Description,
