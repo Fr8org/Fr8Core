@@ -1,9 +1,8 @@
-﻿using System.Web.Http;
-using System.Web.Http.ExceptionHandling;
+﻿using System.Net.Http;
+using System.Web.Http;
 using System.Web.Http.Routing;
-using System.Net.Http;
 
-namespace PlanDirectory.App_Start
+namespace PlanDirectory
 {
 	public static class WebApiConfig
 	{

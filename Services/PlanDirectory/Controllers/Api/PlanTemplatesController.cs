@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Threading.Tasks;
 using System.Web.Http;
-using StructureMap;
 using Hub.Infrastructure;
 using Microsoft.AspNet.Identity;
 using PlanDirectory.Infrastructure;
 using PlanDirectory.Interfaces;
+using StructureMap;
 
-namespace PlanDirectory.Controllers
+namespace PlanDirectory.Controllers.Api
 {
     public class PlanTemplatesController : ApiController
     {

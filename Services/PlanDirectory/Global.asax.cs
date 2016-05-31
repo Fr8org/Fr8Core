@@ -5,7 +5,6 @@ using Segment;
 using StructureMap;
 using Utilities;
 using Data.Infrastructure.AutoMapper;
-using PlanDirectory.App_Start;
 using PlanDirectory.Infrastructure;
 
 namespace PlanDirectory
