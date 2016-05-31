@@ -14,7 +14,6 @@ using Fr8Data.Manifests;
 using Fr8Data.States;
 using Fr8Infrastructure.Interfaces;
 using RestSharp.Extensions;
-using TerminalBase.Infrastructure;
 
 namespace terminalUtilities.Excel
 {
