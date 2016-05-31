@@ -321,14 +321,16 @@ namespace TerminalBase.Services
 
         public async Task DeleteExistingChildNodesFromActivity(Guid curActivityId)
         {
-            var hubAlarmsUrl = $"{GetHubUrlWithApiVersion()}/activities/deletechildnodes?activityId={curActivityId}";
+            //var hubAlarmsUrl = $"{GetHubUrlWithApiVersion()}/activities/deletechildnodes?activityId={curActivityId}";
+            var hubAlarmsUrl = $"{GetHubUrlWithApiVersion()}/activities?id={curActivityId}&delete_child_nodes=true";
             var uri = new Uri(hubAlarmsUrl);
             await _restfulServiceClient.DeleteAsync(uri, null, await GetHMACHeader(uri));
         }
 
         public async Task DeleteActivity(Guid curActivityId)
         {
-            var hubDeleteUrl = $"{GetHubUrlWithApiVersion()}/activities/deleteactivity?id={curActivityId}";
+            //var hubDeleteUrl = $"{GetHubUrlWithApiVersion()}/activities/deleteactivity?id={curActivityId}";
+            var hubDeleteUrl = $"{GetHubUrlWithApiVersion()}/activities?id={curActivityId}";
             var uri = new Uri(hubDeleteUrl);
             var headers = await GetHMACHeader(uri);
             await _restfulServiceClient.DeleteAsync(uri, null, headers);
