@@ -146,14 +146,8 @@ namespace Hub.Services
                             {
                                 if (field.SourceCrateLabel == null)
                                 {
-                                    if (x.Content.CrateDescriptions[0].Label == null)
-                                    {
-                                        field.SourceCrateLabel = x.Content.CrateDescriptions[0].ProducedBy;
-                                    }
-                                    else
-                                    {
-                                        field.SourceCrateLabel = x.Content.CrateDescriptions[0].Label;
-                                    }
+                                    field.SourceCrateLabel = x.Content.CrateDescriptions[0].Label ?? x.Content.CrateDescriptions[0].ProducedBy;
+                                    field.SourceActivityId = x.SourceActivityId;
                                 }
                             }
                         }

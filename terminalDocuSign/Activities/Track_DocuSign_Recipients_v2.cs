@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using System.Threading.Tasks;
 using Data.Entities;
 using Data.Interfaces;
@@ -38,7 +39,7 @@ namespace terminalDocuSign.Activities
         {
             private const string TakenDeliveryEnvelopeOption = "Taken Delivery";
 
-            private const string EnvelopeSignedEnvelopeOption = "Envelope Signed";
+            private const string EnvelopeSignedEnvelopeOption = "Signed";
 
             public RadioButtonGroup EnvelopeTypeSelectionGroup { get; set; }
 
@@ -97,8 +98,8 @@ namespace terminalDocuSign.Activities
                     Name = nameof(RecipientEventSelector),
                     ListItems = new List<ListItem>
                                 {
-                                    new ListItem { Key = TakenDeliveryEnvelopeOption, Value = TakenDeliveryEnvelopeOption },
-                                    new ListItem { Key = EnvelopeSignedEnvelopeOption, Value = EnvelopeSignedEnvelopeOption }
+                                    new ListItem { Key = "Taken Delivery", Value = TakenDeliveryEnvelopeOption },
+                                    new ListItem { Key = "Signed Envelope", Value = EnvelopeSignedEnvelopeOption }
                                 }
                 };
                 NotifierSelector = new DropDownList
@@ -142,6 +143,8 @@ namespace terminalDocuSign.Activities
 
         private const string DelayTimeProperty = "DelayTime";
 
+        private const string NotificationMessageLabel = "NotificationMessage";
+
         public Track_DocuSign_Recipients_v2(ICrateManager crateManager, IDocuSignManager docuSignManager)
             : base(crateManager, docuSignManager)
         {
@@ -154,6 +157,9 @@ namespace terminalDocuSign.Activities
                                                                           .Select(x => new ListItem { Key = x.Key, Value = x.Value }));
             ActivityUI.NotifierSelector.ListItems.AddRange((await HubCommunicator.GetActivityTemplates(Tags.Notifier, true))
                 .Select(x => new ListItem { Key = x.Label, Value = x.Id.ToString() }));
+            CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeCrateLabel, true)
+                          .AddField(DelayTimeProperty)
+                          .AddField(ActionBeingTrackedProperty);
         }
 
         public override async Task FollowUp()
@@ -207,7 +213,38 @@ namespace terminalDocuSign.Activities
         {
             var template = activityTemplates.First(x => x.Id == NotifierActivityTemplateId);
             var activity = await AddAndConfigureChildActivity(ActivityPayload.RootPlanNodeId.Value, template, order: previousNotifierOrdering);
-            //TODO: configure notifier activity properly
+            if (activity.ActivityTemplate.Name == "SendEmailViaSendGrid" && activity.ActivityTemplate.Version == "1")
+            {
+                var configControls = ControlHelper.GetConfigurationControls(activity.CrateStorage);
+                var emailBodyField = ControlHelper.GetControl<TextSource>(configControls, "EmailBody", ControlTypes.TextSource);
+                emailBodyField.ValueSource = "upstream";
+                emailBodyField.Value = NotificationMessageLabel;
+                emailBodyField.selectedKey = NotificationMessageLabel;
+                var emailSubjectField = ControlHelper.GetControl<TextSource>(configControls, "EmailSubject", ControlTypes.TextSource);
+                emailSubjectField.ValueSource = "specific";
+                emailSubjectField.TextValue = "Fr8 Notification Message";
+            }
+            else if (activity.ActivityTemplate.Name == "Send_Via_Twilio" && activity.ActivityTemplate.Version == "1")
+            {
+                var configControls = ControlHelper.GetConfigurationControls(activity.CrateStorage);
+                var emailBodyField = ControlHelper.GetControl<TextSource>(configControls, "SMS_Body", ControlTypes.TextSource);
+                emailBodyField.ValueSource = "upstream";
+                emailBodyField.Value = NotificationMessageLabel;
+                emailBodyField.selectedKey = NotificationMessageLabel;
+            }
+            else if (activity.ActivityTemplate.Name == "Publish_To_Slack" && activity.ActivityTemplate.Version == "2")
+            {
+                if (activity.CrateStorage.FirstCrateOrDefault<StandardAuthenticationCM>() == null)
+                {
+                    var configControls = ControlHelper.GetConfigurationControls(activity.CrateStorage);
+                    var messageField = ControlHelper.GetControl<TextSource>(configControls, "MessageSource", ControlTypes.TextSource);
+                    messageField.ValueSource = "upstream";
+                    messageField.Value = NotificationMessageLabel;
+                    messageField.selectedKey = NotificationMessageLabel;
+                    messageField.SelectedItem = new FieldDTO { Key = NotificationMessageLabel, Value = NotificationMessageLabel };
+                    activity = await HubCommunicator.ConfigureActivity(activity);
+                }
+            }
             return activity.Id;
         }
 
@@ -319,7 +356,56 @@ namespace terminalDocuSign.Activities
 
         public override Task Run()
         {
-            throw new NotImplementedException();
+            var resultFields = new List<FieldDTO>();
+            var delayActivity = ActivityPayload.ChildrenActivities.FirstOrDefault(x => x.ActivityTemplate.Name == "SetDelay" && x.ActivityTemplate.Version == "1");
+            if (delayActivity != null)
+            {
+                var delayControl = delayActivity.CrateStorage.FirstCrate<StandardConfigurationControlsCM>().Content.Controls.OfType<Duration>().First();
+                resultFields.Add(new FieldDTO(DelayTimeProperty, GetDelayDescription(delayControl), AvailabilityType.RunTime));
+            }
+            var filterActivity = ActivityPayload.ChildrenActivities.FirstOrDefault(x => x.ActivityTemplate.Name == "TestIncomingData" && x.ActivityTemplate.Version == "1");
+            if (filterActivity != null)
+            {
+                var filterPane = filterActivity.CrateStorage.FirstCrate<StandardConfigurationControlsCM>().Content.Controls.OfType<FilterPane>().First();
+                var conditions = JsonConvert.DeserializeObject<FilterDataDTO>(filterPane.Value);
+                var statusField = conditions.Conditions.FirstOrDefault(c => c.Field == "Status");
+                if (statusField != null)
+                {
+                    resultFields.Add(new FieldDTO(ActionBeingTrackedProperty, statusField.Value, AvailabilityType.RunTime));
+                }
+            }
+            Payload.Add(Crate<StandardPayloadDataCM>.FromContent(RuntimeCrateLabel, new StandardPayloadDataCM(resultFields)));
+            return Task.FromResult(0);
+        }
+
+        private string GetDelayDescription(Duration delayControl)
+        {
+            if (delayControl.Days == 0 && delayControl.Hours == 0 && delayControl.Minutes == 0)
+            {
+                return "none";
+            }
+            var result = new StringBuilder();
+            if (delayControl.Days != 0)
+            {
+                result.Append($"{delayControl.Days} day{(delayControl.Days == 1 ? string.Empty : "s")}");
+            }
+            if (delayControl.Hours != 0)
+            {
+                if (result.Length > 0)
+                {
+                    result.Append(' ');
+                }
+                result.Append($"{delayControl.Hours} hour{(delayControl.Hours == 1 ? string.Empty : "s")}");
+            }
+            if (delayControl.Minutes != 0)
+            {
+                if (result.Length > 0)
+                {
+                    result.Append(' ');
+                }
+                result.Append($"{delayControl.Minutes} minute{(delayControl.Minutes == 1 ? string.Empty : "s")}");
+            }
+            return result.ToString();
         }
 
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
