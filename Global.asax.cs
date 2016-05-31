@@ -74,13 +74,14 @@ namespace HubWeb
                 Utilities.Server.ServerPhysicalPath = Server.MapPath("~");
                 var segmentWriteKey =
                     Utilities.Configuration.Azure.CloudConfigurationManager.GetSetting("SegmentWriteKey");
-                Analytics.Initialize(segmentWriteKey);
+                if (!segmentWriteKey.IsNullOrEmpty())
+                    Analytics.Initialize(segmentWriteKey);
             }
 
             EventReporter curReporter = ObjectFactory.GetInstance<EventReporter>();
             curReporter.SubscribeToAlerts();
 
-            IncidentReporter incidentReporter = ObjectFactory.GetInstance <IncidentReporter>();
+            IncidentReporter incidentReporter = ObjectFactory.GetInstance<IncidentReporter>();
             incidentReporter.SubscribeToAlerts();
 
             ModelBinders.Binders.Add(typeof(DateTimeOffset), new KwasantDateBinder());
@@ -152,9 +153,9 @@ namespace HubWeb
         /// Make sure that User is accessing the website using correct and secure URL
         /// </summary>
         private void NormalizeUrl()
-        {  
+        {
             // Ignore requests to dev and API since API clients usually cannot process 301 redirects
-            if (Request.Url.PathAndQuery.ToLower().StartsWith("/api") 
+            if (Request.Url.PathAndQuery.ToLower().StartsWith("/api")
                 || Request.Url.PathAndQuery.ToLower().StartsWith("/authenticationcallback")
                 || Request.Url.Host.ToLower().Contains("dev"))
                 return;
