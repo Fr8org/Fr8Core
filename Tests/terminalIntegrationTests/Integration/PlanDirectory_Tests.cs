@@ -3,7 +3,7 @@ using System.Threading.Tasks;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using NUnit.Framework;
-using PlanDirectory.Interfaces;
+using Fr8Data.DataTransferObjects;
 using HealthMonitor.Utility;
 
 namespace terminalIntegrationTests.Integration
@@ -37,7 +37,6 @@ namespace terminalIntegrationTests.Integration
             Assert.AreEqual(planTemplateDTO.Description, returnedPlanTemplateDTO.Description, "Returned PlanTemplateDTO does not match original PlanTemplateDTO (Description)");
             Assert.AreEqual(planTemplateDTO.ParentPlanId, returnedPlanTemplateDTO.ParentPlanId, "Returned PlanTemplateDTO does not match original PlanTemplateDTO (ParentPlanId)");
             Assert.AreEqual(JsonConvert.SerializeObject(planTemplateDTO.PlanContents), JsonConvert.SerializeObject(returnedPlanTemplateDTO.PlanContents), "Returned PlanTemplateDTO does not match original PlanTemplateDTO (ParentPlanId)");
-
 
             planTemplateDTO.Name = "Test PlanTemplate Name 1 (Updated)";
             planTemplateDTO.Description = "Test PlanTemplate Description 1 (Updated)";

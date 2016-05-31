@@ -25,10 +25,14 @@ using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.DataTransferObjects.Helpers;
+using Fr8Data.DataTransferObjects.PlanTemplates;
 using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using HubWeb.Infrastructure_HubWeb;
+using Fr8Infrastructure.Interfaces;
+using Utilities.Configuration.Azure;
+using Newtonsoft.Json.Linq;
 
 namespace HubWeb.Controllers
 {
@@ -46,6 +50,7 @@ namespace HubWeb.Controllers
         private readonly ICrateManager _crate;
         private readonly IPusherNotifier _pusherNotifier;
         private readonly IContainerService _container;
+        private readonly IPlanTemplates _planTemplates;
 
         public PlansController()
         {
@@ -57,6 +62,7 @@ namespace HubWeb.Controllers
             _pusherNotifier = ObjectFactory.GetInstance<IPusherNotifier>();
             _activityTemplate = ObjectFactory.GetInstance<IActivityTemplate>();
             _activity = ObjectFactory.GetInstance<IActivity>();
+            _planTemplates = ObjectFactory.GetInstance<IPlanTemplates>();
         }
 
         [HttpPost]
@@ -308,6 +314,54 @@ namespace HubWeb.Controllers
             return Run(planId, crates, null);
         }
 
+        [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
+        [Fr8HubWebHMACAuthenticate]
+        [HttpPost]
+        public async Task<IHttpActionResult> Share(Guid planId)
+        {
+            var planTemplateDTO = _planTemplates.GetPlanTemplate(planId, User.Identity.GetUserId());
+
+            var hmacService = ObjectFactory.GetInstance<IHMACService>();
+            var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+
+            var dto = new PublishPlanTemplateDTO()
+            {
+                Name = planTemplateDTO.Name,
+                Description = planTemplateDTO.Description,
+                ParentPlanId = planId,
+                PlanContents = JsonConvert.DeserializeObject<JToken>(JsonConvert.SerializeObject(planTemplateDTO))
+            };
+
+            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/plantemplates/");
+            var headers = await hmacService.GenerateHMACHeader(
+                uri,
+                "PlanDirectory",
+                CloudConfigurationManager.GetSetting("PlanDirectorySecret"),
+                User.Identity.GetUserId(),
+                dto
+            );
+
+            await client.PostAsync<PublishPlanTemplateDTO>(uri, dto, headers: headers);
+
+            return Ok();
+        }
+
+        [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
+        [Fr8HubWebHMACAuthenticate]
+        [HttpPost]
+        public IHttpActionResult Load(PlanTemplateDTO dto)
+        {
+            try
+            {
+                var planDO = _planTemplates.LoadPlan(dto, User.Identity.GetUserId());
+                return Ok(Mapper.Map<PlanEmptyDTO>(planDO));
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
+        }
+
         // We don't have place in activity configuration pane to display activity-wide configuration errors that are not binded to specific controls.
         // Report them via Action Stream.
         private void ReportGenericValidationErrors(string activityLabel, string planName, ValidationErrorsDTO validationErrors)
@@ -533,7 +587,6 @@ namespace HubWeb.Controllers
 
             var message = String.Format("Plan \"{0}\" failed. {1}", planDO.Name, messageToNotify);
             _pusherNotifier.NotifyUser(message, NotificationChannel.GenericFailure, username);
-
         }
     }
 }
