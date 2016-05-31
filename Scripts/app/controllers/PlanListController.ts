@@ -107,8 +107,6 @@ module dockyard.controllers {
             $scope.removeInactiveFilter = <() => void>angular.bind(this, this.removeInactiveFilter);
             $scope.removeActiveFilter = <() => void>angular.bind(this, this.removeActiveFilter);
 
-            $scope.createTemplate = <(plan: interfaces.IPlanVM)=> void>angular.bind(this,this.createTemplate);
-
             $scope.$watch('inActiveQuery.filter', (newValue, oldValue) => {
                 var bookmark: number = 1;
                 if (!oldValue) {
@@ -261,21 +259,6 @@ module dockyard.controllers {
             }
         }
 
-        private createTemplate(plan: interfaces.IPlanVM) {
-
-            let planFull = this.PlanService.getFull({id:plan.id});
-            let modalInstance = this.$modal.open({
-                animation: true,
-                templateUrl: '/AngularTemplate/PlanTemplateModal',
-                controller: 'PlanTemplateModalController',
-                resolve: {
-                    plan: () => {
-                        return planFull;
-                    }
-                }
-            });    
-            
-        }
 
         private goToPlanPage(planId) {
             this.$state.go('planBuilder', { id: planId });

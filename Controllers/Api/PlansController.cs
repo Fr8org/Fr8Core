@@ -362,6 +362,16 @@ namespace HubWeb.Controllers
             }
         }
 
+        [Fr8ApiAuthorize("Admin", "Customer", "Terminal")]
+        [Fr8HubWebHMACAuthenticate]
+        [HttpPost]
+        public IHttpActionResult LoadFromJson()
+        {
+
+
+            return Ok();
+        }
+
         // We don't have place in activity configuration pane to display activity-wide configuration errors that are not binded to specific controls.
         // Report them via Action Stream.
         private void ReportGenericValidationErrors(string activityLabel, string planName, ValidationErrorsDTO validationErrors)

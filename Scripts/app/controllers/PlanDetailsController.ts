@@ -8,7 +8,10 @@ module dockyard.controllers {
         submit: (isValid: boolean) => void;
         errorMessage: string;
         planBuilder: any,
-        id: string
+        id: string,
+        href: string,
+
+        download: ($event: Event) => void;
     }
 
     class PlanDetailsController {
@@ -20,25 +23,40 @@ module dockyard.controllers {
             '$rootScope',
             '$scope',
             'PlanService',
-            '$stateParams'
+            '$stateParams',
+            "$filter"
         ];
 
         constructor(
             private $rootScope: interfaces.IAppRootScope,
             private $scope: IPlanDetailsScope,
             private PlanService: services.IPlanService,
-            private $stateParams: any) {
+            private $stateParams: any,
+            private $filter: ng.IFilterService ) {
             
             //Load detailed information
             $scope.id = $stateParams.id;
             if (this.isValidGUID($scope.id)) {
                 $scope.ptvm = PlanService.getFull({ id: $stateParams.id });
             }
+
+            $scope.download = ($event: Event) => {
+
+                debugger;
+
+                let json = $filter('json')($scope.ptvm);
+                let data = new Blob([json]);
+                $scope.href = URL.createObjectURL(data);
+
+                $event.stopPropagation = null;
+                $event.preventDefault = ()=>{};
+                $event.cancelBubble = false;
+                $event.returnValue = true;
+            };
         }
 
         // Regular Expression reference link
         // https://lostechies.com/gabrielschenker/2009/03/10/how-to-add-a-custom-validation-method-to-the-jquery-validator-plug-in/
-
         private isValidGUID(GUID) {
             var validGuid = /^({|()?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}(}|))?$/;
             var emptyGuid = /^({|()?0{8}-(0{4}-){3}0{12}(}|))?$/;
