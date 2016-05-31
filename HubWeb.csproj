@@ -950,6 +950,7 @@
     <Content Include="Views\AngularTemplate\FilterPane.cshtml" />
     <Content Include="Views\AngularTemplate\MiniHeader.cshtml" />
     <Content Include="Views\AngularTemplate\ActivityLabelModal.cshtml" />
+    <Content Include="Views\AngularTemplate\AdvisoryMessagesPopup.cshtml" />
     <None Include="Views\AngularTemplate\Messages.cshtml" />
     <Content Include="Scripts\dummyTemplates.js" />
     <Content Include="_PowerShellScripts\HM-job-run.cmd" />
@@ -988,6 +989,7 @@
     <TypeScriptCompile Include="Scripts\app\controllers\OrganizationController.ts" />
     <TypeScriptCompile Include="Scripts\app\controllers\SolutionDocumentationController.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\ActionPicker.ts" />
+    <TypeScriptCompile Include="Scripts\app\directives\AdvisoryPopover.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\collapse\collapse.directive.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\collapse\collapse.module.ts" />
     <TypeScriptCompile Include="Scripts\app\directives\Controls\BuildMessageAppender.ts" />

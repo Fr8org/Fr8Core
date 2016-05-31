@@ -1,11 +1,12 @@
 ﻿<div id="ap-pane" class="pane-configure-action" block-if="processing === true" ng-click="reloadConfiguration()">
+    <button popover-placement="right" popover-html-unsafe="On the <b>Top!</b>" class="btn btn-default">Top</button>
     <div ng-if="!(currentAction.activityTemplate.category==='Solution' && mode !== 'solution')">
         <div ng-if="!currentAction.currentView" ng-repeat="field in currentAction.configurationControls.fields">
-            <configuration-control plan="plan" current-action="currentAction" field="field" ng-if="!field.isHidden" />
+            <configuration-control plan="plan" current-action="currentAction" field="field" ng-if="!field.isHidden"/>
         </div>
         <div ng-if="currentAction.currentView">
             <div ng-repeat="field in currentAction.configurationControls.fields">
-                <configuration-control plan="plan" current-action="currentAction" field="field" ng-if="!field.isHidden && field.fieldLabel==currentAction.currentView" />
+                <configuration-control plan="plan" current-action="currentAction" field="field" ng-if="!field.isHidden && field.fieldLabel==currentAction.currentView"/>
             </div>
         </div>
     </div>

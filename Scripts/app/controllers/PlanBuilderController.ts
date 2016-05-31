@@ -163,6 +163,7 @@ module dockyard.controllers {
                     ActionService.save(action);
                 });
             }
+
             this.$scope.chooseAuthToken = (action: model.ActivityDTO) => {
                 this.chooseAuthToken(action);
             };
@@ -842,7 +843,15 @@ module dockyard.controllers {
         }
 
         private PaneConfigureAction_ShowAdvisoryMessages(showAdvisoryMessagesEventArgs: pca.ShowAdvisoryMessagesEventArgs) {
-            alert("Plan Builder Message!");
+
+            this.$modal.open({
+                animation: true,
+                templateUrl: 'AngularTemplate/AdvisoryMessagesPopup',
+                controller: 'AdvisoryMessagesPopupController',
+                resolve: {
+                    advisories: showAdvisoryMessagesEventArgs.advisories
+                }
+            });
         }
 
         private getActionSubPlan(activity: interfaces.IActivityDTO): any {
@@ -905,5 +914,13 @@ module dockyard.controllers {
             $modalInstance.dismiss();
         };
 
+    }]);
+
+    app.controller('AdvisoryMessagesPopupController', ['$scope', '$window', 'advisories', ($scope: any, $modalInstance: any, advisories: model.AdvisoryMessages): void => {
+        $scope.advisories = advisories;
+
+        $scope.close = () => {
+            $modalInstance.close();
+        };
     }]);
 }

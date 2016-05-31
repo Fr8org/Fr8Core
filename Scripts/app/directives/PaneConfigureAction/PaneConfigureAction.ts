@@ -140,6 +140,7 @@ module dockyard.directives.paneConfigureAction {
         populateAllActivities: () => void;
         allActivities: Array<interfaces.IActivityDTO>;
         view: string;
+        showAdvisoryPopup: boolean;
     }
     
     export class CancelledEventArgs extends CancelledEventArgsBase { }
@@ -201,6 +202,8 @@ module dockyard.directives.paneConfigureAction {
             $scope.setSolutionMode = <() => void>angular.bind(this, this.setSolutionMode);
             $scope.populateAllActivities = <() => void>angular.bind(this, this.populateAllActivities);
             $scope.allActivities = Array<model.ActivityDTO>();
+
+            $scope.showAdvisoryPopup = false;
 
             $scope.$on(MessageType[MessageType.PaneConfigureAction_Reconfigure], (event: ng.IAngularEvent, reConfigureActionEventArgs: ActionReconfigureEventArgs) => {
                 //this might be a general reconfigure command
@@ -635,6 +638,7 @@ module dockyard.directives.paneConfigureAction {
                         .findByManifestType(this.$scope.currentAction.crateStorage, 'Advisory Messages');
                     var advisoryMessages = (<model.AdvisoryMessages>advisoryCrate.contents);
                     if (advisoryMessages && advisoryMessages.advisories.length > 0) {
+                        this.$scope.showAdvisoryPopup = true;
                         this.$scope.$emit(MessageType[MessageType.PaneConfigureAction_ShowAdvisoryMessages], new ShowAdvisoryMessagesEventArgs(this.$scope.currentAction.id, advisoryMessages));
                     }
                 }

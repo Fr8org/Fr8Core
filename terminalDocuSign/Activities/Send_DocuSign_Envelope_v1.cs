@@ -259,7 +259,7 @@ namespace terminalDocuSign.Actions
             var userDefinedFields = tabsandfields.Item1.Where(a => a.Tags.Contains(DocuSignConstants.DocuSignTabTag));
 
             //check for DocuSign default template names and add advisory json
-            var hasDefaultNames = DocuSignManager.DocuSignTemplateDefaultNames(userDefinedFields);
+            var hasDefaultNames = DocuSignManager.DocuSignTemplateDefaultNames(tabsandfields.Item2);
             if (hasDefaultNames)
             {
                 AddAdvisoryCrate("DocuSign Template Warning", "In your selected template you have fields with default values. Those can be changes inside advanced DocuSign UI to frendlier label.");

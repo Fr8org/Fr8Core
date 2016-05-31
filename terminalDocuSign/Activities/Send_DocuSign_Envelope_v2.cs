@@ -121,7 +121,7 @@ namespace terminalDocuSign.Actions
             var envelopeData = tabsAndFields.Item2.ToLookup(x => x.Fr8DisplayType);
 
             //check for DocuSign default template names and add advisory json
-            var hasDefaultNames = DocuSignManager.DocuSignTemplateDefaultNames(userDefinedFields);
+            var hasDefaultNames = DocuSignManager.DocuSignTemplateDefaultNames(tabsAndFields.Item2);
             if (hasDefaultNames)
             {
                 AddAdvisoryCrate("DocuSign Template Warning", "In your selected template you have fields with default values. Those can be changes inside advanced DocuSign UI to frendlier label.");
