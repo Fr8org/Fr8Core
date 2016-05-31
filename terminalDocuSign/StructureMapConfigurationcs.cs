@@ -32,7 +32,7 @@ namespace terminalDocuSign
         {
             public LiveMode()
             {
-                //For<IDocuSignFolder>().Use<DocuSignFolder>();
+                For<IDocuSignFolders>().Use<DocuSignFoldersWrapper>();
                 For<IDocuSignPlan>().Use<DocuSignPlan>();
                 For<IDocuSignManager>().Use<DocuSignManager>();
                 For<IDocuSignConnect>().Use<DocuSignConnect>();
