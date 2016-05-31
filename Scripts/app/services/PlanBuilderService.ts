@@ -28,7 +28,7 @@ module dockyard.services {
         getByPlan: (id: Object) => ng.resource.IResource<Array<interfaces.IActionVM>>;
         create: (args: { activityTemplateId: number, name: string, label: string, parentNodeId: number }) => ng.resource.IResource<model.ActivityDTO>;
         //TODO make resource class do this operation
-        deleteById: (id: { id: string; confirmed: boolean }) => ng.resource.IResource<string>;
+        deleteById: (id: { id: string }) => ng.resource.IResource<string>;
         batchSave: (actionList: interfaces.IActivityDTO[]) => ng.resource.IResource<interfaces.IActionVM>;
     }
 
@@ -311,7 +311,7 @@ module dockyard.services {
                 },
                 'deleteById': {
                     method: 'DELETE',
-                    url: '/api/activities?id=:id&confirmed=:confirmed'
+                    url: '/api/activities?id=:id'
                 },
                 'create': {
                     method: 'POST',
