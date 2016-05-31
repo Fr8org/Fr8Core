@@ -14,13 +14,9 @@ namespace Fr8Data.Manifests
         // here we cache primary key property list for each manifest type
         private static readonly Dictionary<Type, string[]> PkCache = new Dictionary<Type, string[]>();
 
-        private readonly CrateManifestType _manifestType;
-
         [JsonIgnore]
-        public CrateManifestType ManifestType
-        {
-            get { return _manifestType; }
-        }
+        [ManifestField(IsHidden = true)]
+        public CrateManifestType ManifestType { get; }
 
         protected Manifest(MT manifestType)
             : this((int)manifestType, manifestType.GetEnumDisplayName())
@@ -34,7 +30,7 @@ namespace Fr8Data.Manifests
 
         protected Manifest(CrateManifestType manifestType)
         {
-            _manifestType = manifestType;
+            ManifestType = manifestType;
         }
 
         // default implementation of GetPrimaryKey will return list of manifest properites marked with MtPrimaryKeyAttribute

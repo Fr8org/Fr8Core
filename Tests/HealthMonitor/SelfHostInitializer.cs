@@ -63,17 +63,26 @@ namespace HealthMonitor
                         // termianls and the Hub.
                         StartHub(app, connectionString);
                     }
-                    else {
-                        var terminal = terminals.FirstOrDefault(t => t.Name == app.Name && t.Version == CURRENT_TERMINAL_VERSION.ToString());
-                        if (terminal != null)
+                    else
+                    {
+                        if (string.Equals(app.Name, "PlanDirectory", StringComparison.InvariantCultureIgnoreCase))
                         {
-                            app.Endpoint = terminal.Endpoint;
+                            app.Endpoint = ConfigurationManager.AppSettings["PlanDirectoryBaseUrl"];
                         }
                         else
                         {
-                            throw new ApplicationException(
-                                String.Format("Cannot find terminal {0}, version {1} in the Terminals table.", app.Name, CURRENT_TERMINAL_VERSION));
+                            var terminal = terminals.FirstOrDefault(t => t.Name == app.Name && t.Version == CURRENT_TERMINAL_VERSION.ToString());
+                            if (terminal != null)
+                            {
+                                app.Endpoint = terminal.Endpoint;
+                            }
+                            else
+                            {
+                                throw new ApplicationException(
+                                    String.Format("Cannot find terminal {0}, version {1} in the Terminals table.", app.Name, CURRENT_TERMINAL_VERSION));
+                            }
                         }
+
                         app.Endpoint = Utility.Utilities.NormalizeSchema(app.Endpoint);
                         MethodInfo curMethodInfo = calledType.GetMethod("CreateServer", BindingFlags.Static | BindingFlags.Public);
                         _selfHostedTerminals.Add((IDisposable)curMethodInfo.Invoke(null, new string[] { app.Endpoint }));

@@ -1,7 +1,12 @@
 ﻿using System;
+using System.Net;
+using System.Net.Http;
 using System.Web.Http;
 using Microsoft.AspNet.Identity;
+using Microsoft.Owin.Security;
 using StructureMap;
+using Data.Interfaces;
+using Data.Infrastructure.StructureMap;
 using Hub.Infrastructure;
 using PlanDirectory.Infrastructure;
 
@@ -15,6 +20,40 @@ namespace PlanDirectory.Controllers.Api
         public AuthenticationController()
         {
             _authTokenManager = ObjectFactory.GetInstance<IAuthTokenManager>();
+        }
+
+        [HttpPost]
+        public IHttpActionResult LogIn([FromUri]string username, [FromUri]string password)
+        {
+            Request.GetOwinContext().Authentication.SignOut();
+
+            using (IUnitOfWork uow = ObjectFactory.GetInstance<IUnitOfWork>())
+            {
+                var fr8AccountDO = uow.UserRepository.FindOne(x => x.UserName == username);
+                if (fr8AccountDO != null)
+                {
+                    var passwordHasher = new PasswordHasher();
+                    if (passwordHasher.VerifyHashedPassword(fr8AccountDO.PasswordHash, password) ==
+                        PasswordVerificationResult.Success)
+                    {
+                        var security = ObjectFactory.GetInstance<ISecurityServices>();
+                        var identity = security.GetIdentity(uow, fr8AccountDO);
+                        Request.GetOwinContext()
+                            .Authentication
+                            .SignIn(
+                                new AuthenticationProperties
+                                {
+                                    IsPersistent = true
+                                },
+                                identity
+                            );
+
+                        return Ok();
+                    }
+                }
+            }
+
+            return StatusCode(HttpStatusCode.Forbidden);
         }
 
         [HttpPost]
