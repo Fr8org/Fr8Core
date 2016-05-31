@@ -24,7 +24,7 @@
         constructor(
             private $scope: IAuthenticationDialogScope,
             private $http: ng.IHttpService,
-            private $window: ng.IWindowService,
+            private $window,
             private $modal: any,
             private urlPrefix: string
         ) {
@@ -50,6 +50,8 @@
             $scope.apply = () => {
                 if (!$scope.isAllSelected()) {
                     return;
+                } else {
+                    $window['analytics'].track('Auth Dialog Ok');
                 }
 
                 var data = [];
@@ -91,7 +93,6 @@
                         return false;
                     }
                 }
-
                 return true;
             };
 
