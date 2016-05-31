@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
@@ -13,14 +14,19 @@ namespace TerminalBase.Services
         public class FieldConfigurator
         {
             private readonly List<FieldDTO> _fields;
+
             private readonly string _label;
+
             private readonly CrateManifestType _manifestType;
-            
-            public FieldConfigurator(List<FieldDTO> fields, string label, CrateManifestType manifestType)
+
+            private readonly Guid _sourceActivityId;
+
+            public FieldConfigurator(List<FieldDTO> fields, string label, CrateManifestType manifestType, Guid sourceActivityId)
             {
                 _fields = fields;
                 _label = label;
                 _manifestType = manifestType;
+                _sourceActivityId = sourceActivityId;
             }
 
             public FieldConfigurator AddFields(IEnumerable<FieldDTO> fields)
@@ -35,11 +41,12 @@ namespace TerminalBase.Services
 
             public FieldConfigurator AddField(FieldDTO field)
             {
+                field = field.Clone();
                 field.SourceCrateLabel = _label;
                 field.SourceCrateManifest = _manifestType;
-
+                field.SourceActivityId = _sourceActivityId.ToString();
+                field.Availability = AvailabilityType.RunTime;
                 _fields.Add(field);
-
                 return this;
             }
 
@@ -48,20 +55,27 @@ namespace TerminalBase.Services
                 return AddField(new FieldDTO(name, AvailabilityType.RunTime)
                 {
                     SourceCrateManifest = _manifestType,
-                    SourceCrateLabel = _label
+                    SourceCrateLabel = _label,
+                    SourceActivityId = _sourceActivityId.ToString()
                 });
             }
         }
 
         private readonly ICrateStorage _crateStorage;
-        private readonly string _owner;
-        public const string RuntimeCrateDescriptionsCrateLabel = "Runtime Available Crates";
-        private CrateDescriptionCM _runtimeAvailableData;
 
-        public CrateSignaller(ICrateStorage crateStorage, string owner)
+        private readonly string _owner;
+
+        private readonly Guid _sourceActivityId;
+
+        public const string RuntimeCrateDescriptionsCrateLabel = "Runtime Available Crates";
+
+        private CrateDescriptionCM _runtimeAvailableData;
+        
+        public CrateSignaller(ICrateStorage crateStorage, string owner, Guid sourceActivityId)
         {
             _crateStorage = crateStorage;
             _owner = owner;
+            _sourceActivityId = sourceActivityId;
         }
 
         private void EnsureRuntimeDataCrate()
@@ -120,7 +134,7 @@ namespace TerminalBase.Services
                 Fields = fields
             });
 
-            return new FieldConfigurator(fields, label, manifestType);
+            return new FieldConfigurator(fields, label, manifestType, _sourceActivityId);
         }
     }
 }
