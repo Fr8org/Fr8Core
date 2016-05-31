@@ -1,24 +1,24 @@
 ﻿<div class="modal-header">
-    @*baden baden - you can don't repeat twice :)*@
-    <h3 class="modal-title">{{plan.plan.name}}</h3>
+    <h3 class="modal-title">Load plan from JSON file</h3>
 </div>
-<div class="modal-body">
-    <textarea class="form-control" name="planDescription" cols="" rows="">{{plan.plan.description}}</textarea>
-</div>
-<div class="modal-footer">
-    <button class="btn btn-primary" type="button" ng-click="publish()">Publish plan template</button>
-    <a id="downloadJson" download='{{plan.plan.name}}.json' href="{{href}}" ng-click="download($event)" class="btn btn-primary" type='application/json'>Download as JSON file</a>
-    <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
-</div>
-@*<div class="hidden" id="planJson">{{plan | json}}</div>
+<form name="loadPlan" ng-submit="loadPlan()">
+    <div class="modal-body clearfix">
+        <div class="col-xs-12">
+            <md-input-container class="fr8-full-width">
+                <label>Plan name</label>
+                <input name="planName" required>
+            </md-input-container>    
+        </div>
+        <div class="col-xs-12">
+            <md-button class="md-raised">
+                Chose .JSON file to upload
+                <input type="file" style="opacity: 0; display: block; position: absolute; left: 0; right: 0; top: 0;bottom: 0" name="planFile" required accept=".json">
+            </md-button>    
+        </div>
 
-<script>
-    // bed... very bed practice
-    //function download() {
-    //    var json = document.getElementById('planJson').innerText;
-    //    var data = new Blob([json]);
-    //    var a = document.getElementById('downloadJson');
-    //    a.href = URL.createObjectURL(data);
-    //}
-    
-</script>*@
+    </div>
+    <div class="modal-footer">
+        <button class="btn btn-primary" type="submit">Load plan</button>
+        <button class="btn btn-warning" type="reset" ng-click="cancel()">Cancel</button>
+    </div>
+</form>

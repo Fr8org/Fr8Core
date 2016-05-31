@@ -7,7 +7,7 @@ module dockyard.controllers {
         plan: interfaces.IPlanFullDTO;
         href: string;
 
-        publish: ()=> void;
+        loadPlan: ()=> void;
         download: ($event: Event) => void;
         cancel: () => void;
     }
@@ -35,21 +35,10 @@ module dockyard.controllers {
         //$scope.plan = plan;
 
 
-        $scope.publish = () => { };
-        $scope.download = ($event:Event) => {
-
-            //let json = $filter('json')(plan);
-            //let data = new Blob([json]);
-            //$scope.href = URL.createObjectURL(data);
-
-            $event.stopPropagation = null;
-            $event.preventDefault = null;
-            $event.cancelBubble = false;
-            $event.returnValue = true;
-
-            $modalInstance.dismiss();
+        $scope.loadPlan = () => {
+            
         };
-
+       
         $scope.cancel = () => { $modalInstance.dismiss(); }
 
        }

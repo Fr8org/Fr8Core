@@ -15,12 +15,14 @@ module dockyard.controllers {
         // See http://docs.angularjs.org/guide/di
         public static $inject = [
             '$scope',
-            '$modal'
+            '$modal',
+            'Upload'
         ];
 
         constructor(
             private $scope: IPlanUploadScope,
-            private $modal
+            private $modal,
+            private Upload
         ) {
 
             $scope.showModal = () => {
