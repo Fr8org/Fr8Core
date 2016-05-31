@@ -23,11 +23,9 @@ namespace Fr8Data.Crates
         
         /**********************************************************************************/
 
-        public string Label
-        {
-            get; 
-            set;
-        }
+        public string Label { get; set; }
+
+        public string SourceActivityId { get; set; }
 
         public AvailabilityType Availability { get; set; }
 
