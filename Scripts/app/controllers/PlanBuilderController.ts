@@ -566,7 +566,7 @@ module dockyard.controllers {
         private deleteAction(action: model.ActivityDTO) {
             var self = this;
             self.startLoader();
-            self.ActionService.deleteById({ id: action.id, confirmed: false }).$promise.then((response) => {
+            self.ActionService.deleteById({ id: action.id }).$promise.then((response) => {
                 self.reloadPlan();
                 self.stopLoader();
             }, (error) => {
@@ -580,7 +580,7 @@ module dockyard.controllers {
                     .openConfirmationModal(alertMessage)
                     .then(() => {
                         self.startLoader();
-                        self.ActionService.deleteById({ id: action.id, confirmed: true }).$promise.then(() => {
+                        self.ActionService.deleteById({ id: action.id }).$promise.then(() => {
                             self.reloadPlan();
                             self.stopLoader();
                         });
