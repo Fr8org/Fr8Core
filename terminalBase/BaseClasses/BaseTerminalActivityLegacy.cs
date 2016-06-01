@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
 using Fr8Data.Crates;
@@ -40,11 +41,11 @@ namespace TerminalBase.BaseClasses
 
         protected abstract ActivityTemplateDTO MyTemplate { get; }
 
-        protected BaseTerminalActivityLegacy(bool isAuthenticationRequired, ICrateManager crateManager)
+        protected BaseTerminalActivityLegacy(ICrateManager crateManager)
         {
             _eventLogger = new BaseTerminalEvent();
             CrateManager = crateManager;
-            IsAuthenticationRequired = isAuthenticationRequired;
+            IsAuthenticationRequired = MyTemplate.NeedsAuthentication;
         }
 
         protected override void InitializeInternalState()
