@@ -580,7 +580,7 @@ module dockyard.directives.paneConfigureAction {
                     this.$scope.currentAction.configurationControls = new model.ControlsList();
                     // startAuthentication($scope.currentAction.id);
                     if (!(<any>authCrate.contents).Revocation) {
-                        this.AuthService.enqueue(this.$scope.currentAction.id);
+                        this.AuthService.enqueue(this.$scope.currentAction);
 
                         var errorText = 'Please provide credentials to access your desired account.';
                         var control = new model.TextBlock(errorText, '');

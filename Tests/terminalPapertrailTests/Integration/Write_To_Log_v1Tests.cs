@@ -9,10 +9,10 @@ using Fr8Data.DataTransferObjects;
 using Fr8Data.DataTransferObjects.Helpers;
 using Fr8Data.Manifests;
 using HealthMonitor.Utility;
-using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
 using NUnit.Framework;
 using terminalPapertrailTests.Fixtures;
+using Fr8Data.Managers;
+using Fr8Infrastructure.Communication;
 
 namespace terminalPapertrailTests.Integration
 {
@@ -188,11 +188,6 @@ namespace terminalPapertrailTests.Integration
         /// Should throw expcetion
         /// </summary>
         [Test]
-        [ExpectedException(
-            ExpectedException = typeof(RestfulServiceException),
-            ExpectedMessage = @"{""status"":""terminal_error"",""message"":""Sequence contains no elements""}",
-            MatchType = MessageMatch.Contains
-            )]
         public async Task Write_To_Log_Run_WithoutLogMessageInUpstreamActivity_ShouldThrowException()
         {
             //Arrange
@@ -201,8 +196,14 @@ namespace terminalPapertrailTests.Integration
             //prepare action DTO with valid target URL
             var activityDTO = await GetActivityDTO_LogToPapertrailIntegrationTest();
             var dataDTO = new Fr8DataDTO { ActivityDTO = activityDTO };
+            AddOperationalStateCrate(dataDTO, new OperationalStateCM());
             //Act
             var responsePayloadDTO = await HttpPostAsync<Fr8DataDTO, PayloadDTO>(runUrl, dataDTO);
+
+            var storage = Crate.GetStorage(responsePayloadDTO.CrateStorage);
+            var opState = storage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
+            ErrorDTO error = opState.CurrentActivityResponse.TryParseErrorDTO(out error) ? error : null;
+            Assert.IsTrue(error.Message.Contains("Sequence contains no elements"), $"Invalid error message: {error.Message}");
         }
 
         private void AssertCrateTypes(ICrateStorage crateStorage)

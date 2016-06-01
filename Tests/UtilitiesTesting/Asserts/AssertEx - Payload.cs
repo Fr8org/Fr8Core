@@ -4,16 +4,14 @@ using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.DataTransferObjects.Helpers;
 using Fr8Data.Manifests;
-using Hub.Managers;
 using NUnit.Framework;
 
 namespace UtilitiesTesting.Asserts
 {
     public static partial class AssertEx
     {
-        public static void AssertPayloadHasAuthenticationError(PayloadDTO payload)
+        public static void AssertPayloadHasAuthenticationError(ICrateStorage storage)
         {
-            var storage = new CrateManager().GetStorage(payload);
             var operationalStateCM = storage.CrateContentsOfType<OperationalStateCM>().Single();
             ErrorDTO errorMessage;
             operationalStateCM.CurrentActivityResponse.TryParseErrorDTO(out errorMessage);
@@ -22,9 +20,8 @@ namespace UtilitiesTesting.Asserts
             Assert.AreEqual("No AuthToken provided.", errorMessage.Message);
         }
 
-        public static void AssertPayloadHasError(PayloadDTO payload)
+        public static void AssertPayloadHasError(ICrateStorage storage)
         {
-            var storage = new CrateManager().GetStorage(payload);
             var operationalStateCM = storage.CrateContentsOfType<OperationalStateCM>().Single();
             ErrorDTO errorMessage;
             Assert.IsTrue(operationalStateCM.CurrentActivityResponse.TryParseErrorDTO(out errorMessage));

@@ -5,6 +5,7 @@ using NUnit.Framework;
 using Hub.Infrastructure;
 using HubWeb.Infrastructure;
 using UtilitiesTesting;
+using HubWeb.Infrastructure_HubWeb;
 
 namespace HubTests.Controllers.Api
 {

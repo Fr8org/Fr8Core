@@ -234,6 +234,7 @@
     <Compile Include="EndToEnd\WarehouseSearch_Tests.cs" />
     <Compile Include="Fixtures\FixtureData - CoreSelfHostFactory.cs" />
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
+    <Compile Include="Integration\PlanDirectory_Tests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -252,6 +253,14 @@
     <ProjectReference Include="..\..\Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Infrastructure\Fr8Infrastructure.csproj">
+      <Project>{9F4B5C92-3535-4D4C-B1E4-37BEB1AE5C42}</Project>
+      <Name>Fr8Infrastructure</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Services\PlanDirectory\PlanDirectory.csproj">
+      <Project>{2b78433b-ba79-470b-bef6-dba5c1904865}</Project>
+      <Name>PlanDirectory</Name>
     </ProjectReference>
     <ProjectReference Include="..\..\terminalAzure\terminalAzure.csproj">
       <Project>{d019b112-55a8-4661-aff5-329f998d9e28}</Project>

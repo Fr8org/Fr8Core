@@ -10,11 +10,11 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using HealthMonitor.Utility;
 using NUnit.Framework;
 using terminalFr8CoreTests.Fixtures;
-using Hub.Managers;
 using StructureMap;
 
 namespace terminalFr8CoreTests.Integration

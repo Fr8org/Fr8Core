@@ -5,9 +5,8 @@ using System.Threading.Tasks;
 using Fr8Data.Crates;
 using Fr8Data.Crates.Helpers;
 using Fr8Data.DataTransferObjects;
-using Hub.Crates.Helpers;
-using Hub.Managers;
-using Hub.Managers.APIManagers.Transmitters.Restful;
+using Fr8Data.Managers;
+using Fr8Infrastructure.Interfaces;
 using Utilities.Configuration.Azure;
 
 namespace TerminalBase.Infrastructure
@@ -40,7 +39,7 @@ namespace TerminalBase.Infrastructure
 
             _eventReportCrateFactory = new EventReportCrateFactory();
             _loggingDataCrateFactory = new LoggingDataCrateFactory();
-            _crateManager = ObjectFactory.GetInstance<CrateManager>();
+            _crateManager = ObjectFactory.GetInstance<ICrateManager>();
         }
 
 

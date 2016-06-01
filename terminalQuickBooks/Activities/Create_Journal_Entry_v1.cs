@@ -1,16 +1,16 @@
 ﻿using System;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.States;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
-using Hub.Managers;
 using TerminalBase.BaseClasses;
 using StructureMap;
 using terminalQuickBooks.Interfaces;
 using TerminalBase.Infrastructure;
+using Fr8Data.States;
 
 namespace terminalQuickBooks.Actions
 {
@@ -19,52 +19,64 @@ namespace terminalQuickBooks.Actions
         public class ActivityUi : StandardConfigurationControlsCM { }
 
         private readonly IJournalEntry _journalEntry;
-        public Create_Journal_Entry_v1()
+
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            _journalEntry = ObjectFactory.GetInstance<IJournalEntry>();
+            Version = "1",
+            Name = "Create_Journal_Entry",
+            Label = "Create Journal Entry",
+            Category = ActivityCategory.Forwarders,
+            Terminal = TerminalData.TerminalDTO,
+            NeedsAuthentication = true,
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
+
+        public Create_Journal_Entry_v1(ICrateManager crateManager, IJournalEntry journalEntry)
+            : base(crateManager)
+        {
+            _journalEntry = journalEntry;
         }
 
-        protected override async Task Initialize(CrateSignaller crateSignaller)
+        public override async Task Initialize()
         {
-            if (CurrentActivity.Id == Guid.Empty)
+            if (ActivityId == Guid.Empty)
                 throw new ArgumentException("Configuration requires the submission of an Action that has a real ActionId");
 
             //get StandardAccountingTransactionCM
-            var upstreamCrates = await GetCratesByDirection<StandardAccountingTransactionCM>(
-                CurrentActivity,
-                CrateDirection.Upstream);
+            var upstreamCrates = await HubCommunicator.GetCratesByDirection<StandardAccountingTransactionCM>(ActivityId, CrateDirection.Upstream);
             TextBlock textBlock;
             if (upstreamCrates.Count > 0)
             {
-                CurrentActivityStorage.Add(upstreamCrates.First());
+                Storage.Add(upstreamCrates.First());
             }
         }
 
-        protected override Task Configure(CrateSignaller crateSignaller, ValidationManager validationManager)
+        public override Task FollowUp()
         {
             // No extra configuration required
             return Task.FromResult(0);
         }
 
-        protected override async Task RunCurrentActivity()
+        public override async Task Run()
         {
             //Obtain the crate of type StandardAccountingTransactionCM that holds the required information
-            var curStandardAccountingTransactionCM = CurrentPayloadStorage.CratesOfType<StandardAccountingTransactionCM>().Single().Content;
+            var curStandardAccountingTransactionCM = Payload.CratesOfType<StandardAccountingTransactionCM>().Single().Content;
             //Obtain the crate of type OperationalStateCM to extract the correct StandardAccountingTransactionDTO
-            var curOperationalStateCM = CurrentPayloadStorage.CratesOfType<OperationalStateCM>().Single().Content;
+            var curOperationalStateCM = Payload.CratesOfType<OperationalStateCM>().Single().Content;
             //Get the LoopId that is equal to the Action.Id for to obtain the correct StandardAccountingTransactionDTO
             //Validate fields of the StandardAccountingTransactionCM crate
             StandardAccountingTransactionCM.Validate(curStandardAccountingTransactionCM);
             //Get the list of the StandardAccountingTransactionDTO
             var curTransactionList = curStandardAccountingTransactionCM.AccountingTransactions;
-            //Get the current index of Accounting Transactions
-            var currentIndexOfTransactions = GetLoopIndex(curOperationalStateCM);
             //Take StandardAccountingTransactionDTO from curTransactionList using core function GetCurrentElement
-            var curStandardAccountingTransactionDTO = (StandardAccountingTransactionDTO)GetCurrentElement(curTransactionList, currentIndexOfTransactions);
+            var curStandardAccountingTransactionDTO = curTransactionList[LoopIndex];
             //Check that all required fields exists in the StandardAccountingTransactionDTO object
             StandardAccountingTransactionCM.ValidateAccountingTransation(curStandardAccountingTransactionDTO);
             //Use service to create Journal Entry Object
-            _journalEntry.Create(curStandardAccountingTransactionDTO, GetQuickbooksAuthToken(), CurrentFr8UserId, HubCommunicator);
+            _journalEntry.Create(curStandardAccountingTransactionDTO, AuthorizationToken, HubCommunicator);
         }
     }
 }

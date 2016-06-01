@@ -10,6 +10,7 @@ using terminalDocuSign.Services;
 using UtilitiesTesting;
 using UtilitiesTesting.Fixtures;
 using Data.Entities;
+using TerminalBase.Infrastructure;
 
 namespace terminalDocuSign.Tests.Services
 {
@@ -29,11 +30,20 @@ namespace terminalDocuSign.Tests.Services
             _activity = ObjectFactory.GetInstance<IActivity>();
         }
 
+        private IHubCommunicator CreateHubCommunicator(string userId)
+        {
+            var hubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>();
+
+            hubCommunicator.Configure("terminalDocuSign", userId);
+
+            return hubCommunicator;
+        }
+
         [Test, Category("DocuSignPlan_CreatePlan")]
         public async Task CreatePlan_InitialAuthenticationSuccessful_MonitorAllDocuSignEvents_PlanCreatedWithTwoActivities()
         {
             //Act
-            await _curDocuSignPlan.CreatePlan_MonitorAllDocuSignEvents(FixtureData.TestDeveloperAccount().Id, null);
+            await _curDocuSignPlan.CreatePlan_MonitorAllDocuSignEvents(CreateHubCommunicator(FixtureData.TestDeveloperAccount().Id), null);
 
             //Assert
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -52,11 +62,11 @@ namespace terminalDocuSign.Tests.Services
         public async Task CreatePlan_SameUserAuthentication_MonitorAllDocuSignEvents_PlanCreatedOnlyOnce()
         {
             //call for first time auth successfull
-            await _curDocuSignPlan.CreatePlan_MonitorAllDocuSignEvents(FixtureData.TestDeveloperAccount().Id, null);
+            await _curDocuSignPlan.CreatePlan_MonitorAllDocuSignEvents(CreateHubCommunicator(FixtureData.TestDeveloperAccount().Id), null);
 
             //Act
             //if we call second time, the plan should not be created again.
-            await _curDocuSignPlan.CreatePlan_MonitorAllDocuSignEvents(FixtureData.TestDeveloperAccount().Id, null);
+            await _curDocuSignPlan.CreatePlan_MonitorAllDocuSignEvents(CreateHubCommunicator(FixtureData.TestDeveloperAccount().Id), null);
 
             //Assert
             using (var uow = ObjectFactory.GetInstance<IUnitOfWork>())
@@ -102,7 +112,7 @@ namespace terminalDocuSign.Tests.Services
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {
-                                var subPlan = uow1.PlanRepository.GetById<SubPlanDO>(uow1.PlanRepository.GetNodesQueryUncached().OfType<SubPlanDO>().First().Id);
+                                var subPlan = uow1.PlanRepository.GetById<SubplanDO>(uow1.PlanRepository.GetNodesQueryUncached().OfType<SubplanDO>().First().Id);
                                 subPlan.ChildNodes.Add(recordDocuSignAction);
 
                                 uow1.SaveChanges();
@@ -115,7 +125,7 @@ namespace terminalDocuSign.Tests.Services
                         {
                             using (var uow1 = ObjectFactory.GetInstance<IUnitOfWork>())
                             {
-                                var subPlan = uow1.PlanRepository.GetById<SubPlanDO>(uow1.PlanRepository.GetNodesQueryUncached().OfType<SubPlanDO>().First().Id);
+                                var subPlan = uow1.PlanRepository.GetById<SubplanDO>(uow1.PlanRepository.GetNodesQueryUncached().OfType<SubplanDO>().First().Id);
                                 subPlan.ChildNodes.Add(storeMtDataAction);
 
                                 uow1.SaveChanges();

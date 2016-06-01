@@ -6,16 +6,16 @@ using Data.Interfaces;
 namespace Hub.Interfaces
 {
     /// <summary>
-    /// SubPlan service.
+    /// Subplan service.
     /// </summary>
-    public interface ISubPlan
+    public interface ISubplan
     {
-        void Update(IUnitOfWork uow, SubPlanDO subPlan);
-        void Create(IUnitOfWork uow, SubPlanDO subPlan);
+        void Update(IUnitOfWork uow, SubplanDO subplan);
+        void Create(IUnitOfWork uow, SubplanDO subplan);
         Task Delete(IUnitOfWork uow, Guid id);
 
         /// <summary>
-        /// Extract first activity from subplan by SubPlan.Id.
+        /// Extract first activity from subplan by Subplan.Id.
         /// </summary>
        ActivityDO GetFirstActivity(IUnitOfWork uow, Guid subPlanId);
     }

@@ -64,6 +64,7 @@ module dockyard.directives.textSource {
             $scope.onUpStreamChange = (field) => {
                 $scope.field.valueSource = 'upstream';
                 $scope.field.selectedKey = field.value;
+                $scope.field.selectedItem = field.selectedItem;
                 $scope.onFocus(field);
                 $scope.onChange(field);
             }

@@ -1,59 +1,46 @@
-﻿using System;
-using System.Threading.Tasks;
-using Data.Entities;
+﻿using System.Threading.Tasks;
+using Fr8Data.Constants;
 using Fr8Data.Control;
-using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
-using Hub.Managers;
+using Fr8Data.Managers;
+using Fr8Data.States;
+using terminalFr8Core.Infrastructure;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
-using terminalFr8Core.Infrastructure;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
 
     public class ManagePlan_v1 : BaseTerminalActivity
-
     {
+
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "ManagePlan",
+            Label = "Manage Plan",
+            Category = ActivityCategory.Processors,
+            Version = "1",
+            Tags = Tags.Internal,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
         private readonly FindObjectHelper _findObjectHelper = new FindObjectHelper();
 
 
         #region Configuration.
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
+        private void AddRunNowButton()
         {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-
-            {
-                return ConfigurationRequestType.Initial;
-            }
-            else
-            {
-                return ConfigurationRequestType.Followup;
-            }
-        }
-
-        protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                AddRunNowButton(crateStorage);
-            }
-
-            return Task.FromResult(curActivityDO);
-
-        }
-
-        private void AddRunNowButton(ICrateStorage crateStorage)
-        {
-            AddControl(crateStorage,
+            AddControl(
                 new RunPlanButton()
                 {
                     Name = "RunPlan",
                     Label = "Run Plan",
                 });
 
-            AddControl(crateStorage,
+            AddControl(
                 new ControlDefinitionDTO(ControlTypes.ManagePlan)
                 {
                     Name = "ManagePlan",
@@ -63,14 +50,27 @@ namespace terminalFr8Core.Actions
 
         #endregion Configuration.
 
-
-        #region Execution.
-
-        public async Task<PayloadDTO> Run(ActivityDO curActionDTO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public ManagePlan_v1(ICrateManager crateManager)
+            : base(false, crateManager)
         {
-            return Success(await GetPayload(curActionDTO, containerId));
+
         }
 
-        #endregion Execution.
+        public override Task Run()
+        {
+            Success();
+            return Task.FromResult(0);
+        }
+
+        public override Task Initialize()
+        {
+            AddRunNowButton();
+            return Task.FromResult(0);
+        }
+
+        public override Task FollowUp()
+        {
+            return Task.FromResult(0);
+        }
     }
 }

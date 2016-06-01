@@ -10,7 +10,6 @@ using TerminalBase.Errors;
 using Utilities;
 using Microsoft.ApplicationInsights;
 using System.Collections.Generic;
-using Hub.Exceptions;
 
 namespace TerminalBase
 {
@@ -30,13 +29,7 @@ namespace TerminalBase
             var curTerminalError = actionExecutedContext.Exception;
             var curController = actionExecutedContext.ActionContext.ControllerContext.Controller;
             var terminalName = GetTerminalName(curController);
-            bool integrationTestMode = false;
-
-            if (curController as BaseTerminalController != null)
-            {
-                integrationTestMode = ((BaseTerminalController)curController).IntegrationTestMode;
-            }
-
+            
             HttpStatusCode statusCode = HttpStatusCode.InternalServerError;
 
             if (curTerminalError is AuthorizationTokenExpiredOrInvalidException)
@@ -54,26 +47,24 @@ namespace TerminalBase
                 }
             }
 
-            if (!integrationTestMode)
+            //Post exception information to AppInsights
+            Dictionary<string, string> properties = new Dictionary<string, string>();
+            foreach (KeyValuePair<string, object> arg in actionExecutedContext.ActionContext.ActionArguments)
             {
-                //Post exception information to AppInsights
-                Dictionary<string, string> properties = new Dictionary<string, string>();
-                foreach (KeyValuePair<string, object> arg in actionExecutedContext.ActionContext.ActionArguments)
-                {
-                    properties.Add(arg.Key, JsonConvert.SerializeObject(arg.Value));
-                }
-                properties.Add("Terminal", terminalName);
-                new TelemetryClient().TrackException(curTerminalError, properties);
-
-                string userId = null;
-                if(!String.IsNullOrEmpty(actionExecutedContext.ActionContext.ControllerContext.RequestContext.Principal.Identity.AuthenticationType))
-                {
-                    userId = actionExecutedContext.ActionContext.ControllerContext.RequestContext.Principal.Identity.AuthenticationType;
-                }
-
-                //POST event to fr8 about this terminal error
-                new BaseTerminalController().ReportTerminalError(terminalName, curTerminalError,userId);
+                properties.Add(arg.Key, JsonConvert.SerializeObject(arg.Value));
             }
+            properties.Add("Terminal", terminalName);
+            new TelemetryClient().TrackException(curTerminalError, properties);
+
+            string userId = null;
+            if(!String.IsNullOrEmpty(actionExecutedContext.ActionContext.ControllerContext.RequestContext.Principal.Identity.AuthenticationType))
+            {
+                userId = actionExecutedContext.ActionContext.ControllerContext.RequestContext.Principal.Identity.AuthenticationType;
+            }
+
+            //POST event to fr8 about this terminal error
+            new BaseTerminalController().ReportTerminalError(terminalName, curTerminalError,userId);
+            
 
             //prepare the response JSON based on the exception type
             actionExecutedContext.Response = new HttpResponseMessage(statusCode);

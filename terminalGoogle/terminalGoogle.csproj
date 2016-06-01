@@ -151,6 +151,10 @@
       <HintPath>..\packages\Microsoft.Owin.3.0.1\lib\net45\Microsoft.Owin.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=3.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.3.0.1\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="Microsoft.Owin.Hosting">
       <HintPath>..\packages\Microsoft.Owin.Hosting.3.0.1\lib\net45\Microsoft.Owin.Hosting.dll</HintPath>
       <Private>True</Private>
@@ -299,6 +303,7 @@
     <Compile Include="Services\Authorization\GoogleIntegration.cs" />
     <Compile Include="Services\GoogleSheet.cs" />
     <Compile Include="Startup.cs" />
+    <Compile Include="TerminalData.cs" />
     <Compile Include="TerminalGoogleBootstrapper.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -313,6 +318,10 @@
     <ProjectReference Include="..\Hub\Hub.csproj">
       <Project>{9891496c-8512-4708-925a-ee9d0f9199d4}</Project>
       <Name>Hub</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\Infrastructure\Fr8Infrastructure.csproj">
+      <Project>{9f4b5c92-3535-4d4c-b1e4-37beb1ae5c42}</Project>
+      <Name>Fr8Infrastructure</Name>
     </ProjectReference>
     <ProjectReference Include="..\terminalBase\TerminalBase.csproj">
       <Project>{D6A0A493-E926-439A-9CE2-E093E75132CD}</Project>

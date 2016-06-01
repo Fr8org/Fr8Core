@@ -4,75 +4,48 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
 using Data.Entities;
 using Data.Infrastructure;
-using Data.States;
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using Hub.Managers;
+using Newtonsoft.Json;
 using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class TestIncomingData_v1 : BaseTerminalActivity
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "TestIncomingData",
+            Label = "Test Incoming Data",
+            Category = ActivityCategory.Processors,
+            Version = "1",
+            MinPaneWidth = 550,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        public TestIncomingData_v1()
+        public TestIncomingData_v1(ICrateManager crateManager)
+            : base(false, crateManager)
         {
         }
 
-        /// <summary>
-        /// Action processing infrastructure.
-        /// </summary>
-        public virtual async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        protected List<FieldDTO> GetAllPayloadFields()
         {
-            var curPayloadDTO = await GetPayload(curActivityDO, containerId);
-
-            var controlsMS = GetControlsManifest(curActivityDO);
-
-            ControlDefinitionDTO filterPaneControl = controlsMS.Controls.FirstOrDefault(x => x.Type == ControlTypes.FilterPane);
-            if (filterPaneControl == null)
-            {
-                return Error(curPayloadDTO, "No control found with Type == \"filterPane\"");
-            }
-
-            var curValues = GetAllPayloadFields(curPayloadDTO);
-            // Prepare envelope data.
-
-            // Evaluate criteria using Contents json body of found Crate.
-            bool result = false;
-            try
-            {
-                result = Evaluate(filterPaneControl.Value, curPayloadDTO.ContainerId, curValues);
-            }
-            catch (Exception e)
-            {
-            }
-
-            if (!result)
-            {
-                return TerminateHubExecution(curPayloadDTO);
-            }
-
-            return Success(curPayloadDTO);
-        }
-
-        protected List<FieldDTO> GetAllPayloadFields(PayloadDTO curPayloadDTO)
-        {
-            var valuesCrates = CrateManager.FromDto(curPayloadDTO.CrateStorage).CrateContentsOfType<StandardPayloadDataCM>();
+            var valuesCrates = Payload.CrateContentsOfType<StandardPayloadDataCM>();
             var curValues = new List<FieldDTO>();
-
             foreach (var valuesCrate in valuesCrates)
             {
                 curValues.AddRange(valuesCrate.AllValues());
             }
-
             return curValues;
         }
 
@@ -200,83 +173,6 @@ namespace terminalFr8Core.Actions
             return whereCallExpression;
         }
 
-        /*
-        protected Expression ParseCriteriaExpression(
-            IEnumerable<FilterConditionDTO> conditions,
-            IQueryable<FieldDTO> queryableData)
-        {
-            var curType = typeof(FieldDTO);
-
-            Expression criteriaExpression = null;
-            var pe = Expression.Parameter(curType, "p");
-
-            foreach (var condition in conditions)
-            {
-                var namePropInfo = curType.GetProperty("Key");
-                var valuePropInfo = curType.GetProperty("Value");
-
-                var nameLeftExpr = Expression.Property(pe, namePropInfo);
-                var nameRightExpr = Expression.Constant(condition.Field);
-                var nameExpression = Expression.Equal(nameLeftExpr, nameRightExpr);
-
-                var valueLeftExpr = Expression.Invoke(TryMakeDecimalExpression.Value, Expression.Property(pe, valuePropInfo));
-                var valueRightExpr = Expression.Invoke(TryMakeDecimalExpression.Value, Expression.Constant(condition.Value));
-                var comparisionExpr = Expression.Call(valueLeftExpr, "CompareTo", null, valueRightExpr);
-                var zero = Expression.Constant(0);
-
-                var op = condition.Operator;
-                Expression criterionExpression;
-
-                switch (op)
-                {
-                    case "eq":
-                        criterionExpression = Expression.Equal(comparisionExpr, zero);
-                        break;
-                    case "neq":
-                        criterionExpression = Expression.NotEqual(comparisionExpr, zero);
-                        break;
-                    case "gt":
-                        criterionExpression = Expression.GreaterThan(comparisionExpr, zero);
-                        break;
-                    case "gte":
-                        criterionExpression = Expression.GreaterThanOrEqual(comparisionExpr, zero);
-                        break;
-                    case "lt":
-                        criterionExpression = Expression.LessThan(comparisionExpr, zero);
-                        break;
-                    case "lte":
-                        criterionExpression = Expression.LessThanOrEqual(comparisionExpr, zero);
-                        break;
-                    default:
-                        throw new NotSupportedException(string.Format("Not supported operator: {0}", op));
-                }
-                
-                if (criteriaExpression == null)
-                {
-                    criteriaExpression = Expression.And(nameExpression, criterionExpression);
-                }
-                else
-                {
-                    criteriaExpression = Expression.AndAlso(criteriaExpression, Expression.And(nameExpression, criterionExpression));
-                }
-            }
-
-            if (criteriaExpression == null)
-            {
-                criteriaExpression = Expression.Constant(true);
-            }
-
-            var whereCallExpression = Expression.Call(
-                typeof(Queryable),
-                "Where",
-                new[] { curType },
-                queryableData.Expression,
-                Expression.Lambda<Func<FieldDTO, bool>>(criteriaExpression, new[] { pe })
-            );
-
-            return whereCallExpression;
-        }*/
-
         private static readonly Lazy<Expression<Func<string, IComparable>>> TryMakeDecimalExpression =
             new Lazy<Expression<Func<string, IComparable>>>(() =>
             {
@@ -294,14 +190,6 @@ namespace terminalFr8Core.Actions
                     returnValue);
                 return Expression.Lambda<Func<string, IComparable>>(func, "TryMakeDecimal", new[] { value });
             });
-
-        /// <summary>
-        /// Configure infrastructure.
-        /// </summary>
-        public override async Task<ActivityDO> Configure(ActivityDO curActivityDO, AuthorizationTokenDO authToken)
-        {
-            return await ProcessConfigurationRequest(curActivityDO, ConfigurationEvaluator, authToken);
-        }
 
         protected virtual Crate CreateControlsCrate()
         {
@@ -322,82 +210,9 @@ namespace terminalFr8Core.Actions
             return PackControlsCrate(fieldFilterPane);
         }
 
-        /// <summary>
-        /// Looks for first Create with Id == "Standard Design-Time" among all upcoming Actions.
-        /// </summary>
-        protected override async Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            var curUpstreamFields =
-                (await GetDesignTimeFields(curActivityDO, CrateDirection.Upstream, AvailabilityType.RunTime))
-                .Fields
-                .ToArray();
-
-            //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
-            // var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
-            var queryFieldsCrate = Crate.FromContent(
-                "Queryable Criteria",
-                new FieldDescriptionsCM(curUpstreamFields)
-            );
-
-            //build a controls crate to render the pane
-            var configurationControlsCrate = CreateControlsCrate();
-
-            using (var crateStorage = CrateManager.UpdateStorage(() => curActivityDO.CrateStorage))
-            {
-                crateStorage.Replace(AssembleCrateStorage(queryFieldsCrate, configurationControlsCrate));
-            }
-
-            return curActivityDO;
-        }
-
-        protected override async Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            var curUpstreamFields =
-                (await GetDesignTimeFields(curActivityDO, CrateDirection.Upstream, AvailabilityType.RunTime))
-                .Fields
-                .ToArray();
-
-            //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
-            // var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
-            var queryFieldsCrate = Crate.FromContent(
-                "Queryable Criteria",
-                new FieldDescriptionsCM(curUpstreamFields)
-            );
-
-            using (var crateStorage = CrateManager.UpdateStorage(() => curActivityDO.CrateStorage))
-            {
-                crateStorage.RemoveByLabel("Queryable Criteria");
-                crateStorage.Add(queryFieldsCrate);
-            }
-
-            return curActivityDO;
-        }
-
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActionDataPackageDO)
-        {
-            if (CrateManager.IsStorageEmpty(curActionDataPackageDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            var hasControlsCrate = GetCratesByManifestType<StandardConfigurationControlsCM>(curActionDataPackageDO) != null;
-
-            var hasQueryFieldsCrate = GetCratesByManifestType<FieldDescriptionsCM>(curActionDataPackageDO) != null;
-
-            if (hasControlsCrate && hasQueryFieldsCrate)
-            {
-                return ConfigurationRequestType.Followup;
-            }
-            else
-            {
-                return ConfigurationRequestType.Initial;
-            }
-        }
-
         protected async Task<Crate> ValidateFields(List<FieldValidationDTO> requiredFieldList)
         {
-            var result = await HubCommunicator.ValidateFields(requiredFieldList, CurrentFr8UserId);
-
+            var result = await HubCommunicator.ValidateFields(requiredFieldList);
             var validationErrorList = new List<FieldDTO>();
             //lets create necessary validationError crates
             for (var i = 0; i < result.Count; i++)
@@ -408,75 +223,90 @@ namespace terminalFr8Core.Actions
                     validationErrorList.Add(new FieldDTO() { Key = requiredFieldList[i].FieldName, Value = "Required" });
                 }
             }
-
             if (validationErrorList.Any())
             {
                 return CrateManager.CreateDesignTimeFieldsCrate("Validation Errors", validationErrorList.ToArray());
             }
-
             return null;
         }
 
-        protected async Task<CrateDTO> ValidateByStandartDesignTimeFields(ActivityDO curActivityDO, FieldDescriptionsCM designTimeFields)
+        protected async Task<CrateDTO> ValidateByStandartDesignTimeFields(FieldDescriptionsCM designTimeFields)
         {
             var fields = designTimeFields.Fields;
-            var validationList = fields.Select(f => new FieldValidationDTO(curActivityDO.Id, f.Key)).ToList();
+            var validationList = fields.Select(f => new FieldValidationDTO(ActivityId, f.Key)).ToList();
             return CrateManager.ToDto(await ValidateFields(validationList));
         }
 
-
-        protected async Task<CrateDTO> ValidateActivity(ActivityDO curActivityDO)
+        protected async Task<CrateDTO> ValidateActivity()
         {
-            return await ValidateByStandartDesignTimeFields(curActivityDO, CrateManager.GetStorage(curActivityDO).FirstCrate<FieldDescriptionsCM>(x => x.Label == "Queryable Criteria").Content);
+            return await ValidateByStandartDesignTimeFields(Storage.FirstCrate<FieldDescriptionsCM>(x => x.Label == "Queryable Criteria").Content);
         }
 
-        /// <summary>
-        ///  Returns true, if at least one row has been fully configured.
-        /// </summary>
-        /// <param name="curActionDataPackageDTO"></param>
-        /// <returns></returns>
-//        private bool HasValidConfiguration(ActionDTO curActionDataPackageDTO)
-//        {
-//            // STANDARD_CONF_CONTROLS_NANIFEST_NAME can't be deseralized to RadioButtonOption.
 
-////            var crateDTO = GetCratesByManifestType(curActionDataPackageDTO, CrateManifests.STANDARD_CONF_CONTROLS_NANIFEST_NAME);
-////
-////            if (crateDTO != null)
-////            {
-////                RadioButtonOption radioButtonOption = JsonConvert.DeserializeObject<RadioButtonOption>(crateDTO.Contents);
-////                if (radioButtonOption != null)
-////                {
-////                    foreach (ControlDefinitionDTO controlDefinitionDTO in radioButtonOption.Controls)
-////                    {
-////                        if (!string.IsNullOrEmpty(controlDefinitionDTO.Value))
-////                        {
-////                            FilterDataDTO filterDataDTO = JsonConvert.DeserializeObject<FilterDataDTO>(controlDefinitionDTO.Value);
-////                            return filterDataDTO.Conditions.Any(x =>
-////                                  x.Field != null && x.Field != "" &&
-////                                  x.Operator != null && x.Operator != "" &&
-////                                  x.Value != null && x.Value != "");
-////                        }
-////                    }
-////                }
-////
-////            }
-//            return false;
-//        }
-
-        private Crate<TManifest> GetCratesByManifestType<TManifest>(ActivityDO curActionDataPackageDO)
+        public override async Task Run()
         {
-            string curLabel = string.Empty;
+            await RunTests();
+        }
 
-            if (typeof(TManifest) == typeof(FieldDescriptionsCM))
+        public virtual async Task RunTests()
+        {
+            var filterPaneControl = GetControl<FilterPane>("Selected_Filter");
+            if (filterPaneControl == null)
             {
-                curLabel = "Queryable Criteria";
-            } 
-            else if (typeof(TManifest) == typeof(StandardConfigurationControlsCM))
+                RaiseError("No control found with Type == \"filterPane\"");
+            }
+            var curValues = GetAllPayloadFields();
+            // Prepare envelope data.
+            // Evaluate criteria using Contents json body of found Crate.
+            bool result = false;
+            try
             {
-                curLabel = "Configuration_Controls";
+                result = Evaluate(filterPaneControl.Value, ExecutionContext.ContainerId, curValues);
+            }
+            catch (Exception e)
+            {
             }
 
-            return CrateManager.GetStorage(curActionDataPackageDO).FirstCrateOrDefault<TManifest>(x => x.Label == curLabel);
+            if (!result)
+            {
+                TerminateHubExecution();
+                return;
+            }
+
+            Success();
+        }
+
+        public override async Task Initialize()
+        {
+            var curUpstreamFields = (await GetDesignTimeFields(CrateDirection.Upstream, AvailabilityType.RunTime))
+                .Fields
+                .ToArray();
+            //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
+            // var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
+            var queryFieldsCrate = Crate.FromContent(
+                "Queryable Criteria",
+                new FieldDescriptionsCM(curUpstreamFields)
+            );
+
+            //build a controls crate to render the pane
+            var configurationControlsCrate = CreateControlsCrate();
+            Storage.Add(configurationControlsCrate);
+            Storage.Add(queryFieldsCrate);
+        }
+
+        public override async Task FollowUp()
+        {
+            var curUpstreamFields = (await GetDesignTimeFields(CrateDirection.Upstream, AvailabilityType.RunTime))
+                .Fields
+                .ToArray();
+            //2) Pack the merged fields into a new crate that can be used to populate the dropdownlistbox
+            // var queryFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate("Queryable Criteria", curUpstreamFields);
+            var queryFieldsCrate = Crate.FromContent(
+                "Queryable Criteria",
+                new FieldDescriptionsCM(curUpstreamFields)
+            );
+            Storage.RemoveByLabel("Queryable Criteria");
+            Storage.Add(queryFieldsCrate);
         }
     }
 }

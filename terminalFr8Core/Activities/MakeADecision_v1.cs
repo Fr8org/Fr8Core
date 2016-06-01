@@ -2,19 +2,32 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
-using Hub.Managers;
+using Fr8Data.States;
 using TerminalBase.Infrastructure;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class MakeADecision_v1 : TestIncomingData_v1
     {
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
+        {
+            Name = "MakeADecision",
+            Label = "Make a Decision",
+            Version = "1",
+            Category = ActivityCategory.Processors,
+            NeedsAuthentication = false,
+            MinPaneWidth = 550,
+            WebService = TerminalData.WebServiceDTO,
+            Terminal = TerminalData.TerminalDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+
 #if DEBUG
         private const int SmoothRunLimit = 5;
         private const int SlowRunLimit = 10;
@@ -25,34 +38,23 @@ namespace terminalFr8Core.Actions
 
         private const int MinAllowedElapsedTimeInSeconds = 12;
 
-        public override async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+
+        public MakeADecision_v1(ICrateManager crateManager) 
+            : base(crateManager)
         {
-            var curPayloadDTO = await GetPayload(curActivityDO, containerId);
+        }
 
+        public override async Task RunTests()
+        {
             //let's check current branch status
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curPayloadDTO))
-            {
-                var operationsCrate = crateStorage.CrateContentsOfType<OperationalStateCM>().FirstOrDefault();
-                if (operationsCrate == null)
-                {
-                    Error(crateStorage, "This Action can't run without OperationalStateCM crate", ActivityErrorCode.PAYLOAD_DATA_MISSING);
-                    return curPayloadDTO;
-                }
-
-                var currentBranch = operationsCrate.CallStack.GetLocalData<OperationalStateCM.BranchStatus>("Branch");
-                if (currentBranch == null)
-                {
-                    currentBranch = CreateBranch();
-                }
-
+            var currentBranch = OperationalState.CallStack.GetLocalData<OperationalStateCM.BranchStatus>("Branch") ??
+                                CreateBranch();
                 currentBranch.Count += 1;
-
                 if (currentBranch.Count >= SlowRunLimit)
                 {
-                    Error(crateStorage, "This container hit a maximum loop count and was stopped because we're afraid it might be an infinite loop");
-                    return curPayloadDTO;
+                RaiseError("This container hit a maximum loop count and was stopped because we're afraid it might be an infinite loop");
+                return;
                 }
-
                 if (currentBranch.Count >= SmoothRunLimit)
                 {
                     //it seems we need to slow down things
@@ -64,15 +66,10 @@ namespace terminalFr8Core.Actions
                 }
 
                 currentBranch.LastBranchTime = DateTime.UtcNow;
+            OperationalState.CallStack.StoreLocalData("Branch", currentBranch);
                 
-                operationsCrate.CallStack.StoreLocalData("Branch", currentBranch);
-            }
-
-            var payloadFields = GetAllPayloadFields(curPayloadDTO).Where(f => !string.IsNullOrEmpty(f.Key) && !string.IsNullOrEmpty(f.Value)).AsQueryable();
-
-            var configControls = GetConfigurationControls(curActivityDO);
-            var containerTransition = (ContainerTransition)configControls.Controls.Single();
-
+            var payloadFields = GetAllPayloadFields().Where(f => !string.IsNullOrEmpty(f.Key) && !string.IsNullOrEmpty(f.Value)).AsQueryable();
+            var containerTransition = (ContainerTransition)ConfigurationControls.Controls.Single();
             foreach (var containerTransitionField in containerTransition.Transitions)
             {
                 if (CheckConditions(containerTransitionField.Conditions, payloadFields))
@@ -83,36 +80,44 @@ namespace terminalFr8Core.Actions
                         case ContainerTransitions.JumpToActivity:
                             if (!containerTransitionField.TargetNodeId.HasValue)
                             {
-                                return Error(curPayloadDTO, "Target Activity for transition is not specified. Please choose it in the Make a Decision activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                                RaiseError("Target Activity for transition is not specified. Please choose it in the Make a Decision activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                                return;
                             }
-                            return JumpToActivity(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
+                            RequestJumpToActivity(containerTransitionField.TargetNodeId.Value);
+                            return;
                         case ContainerTransitions.LaunchAdditionalPlan:
                             if (!containerTransitionField.TargetNodeId.HasValue)
                             {
-                                return Error(curPayloadDTO, "Target Additional Plan for transition is not specified. Please choose it in the Make a Decision activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                                RaiseError("Target Additional Plan for transition is not specified. Please choose it in the Make a Decision activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                                return;
                             }
-                            return LaunchAdditionalPlan(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
+                            LaunchPlan(containerTransitionField.TargetNodeId.Value);
+                            return;
                         case ContainerTransitions.JumpToSubplan:
                             if (!containerTransitionField.TargetNodeId.HasValue)
                             {
-                                return Error(curPayloadDTO, "Target SubPlan for transition is not specified. Please choose it in the Make a Decision activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                                RaiseError("Target Subplan for transition is not specified. Please choose it in the Make a Decision activity settings and re-run the Plan.", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                                return;
                             }
-                            return JumpToSubplan(curPayloadDTO, containerTransitionField.TargetNodeId.Value);
+                            RequestJumpToSubplan(containerTransitionField.TargetNodeId.Value);
+                            return;
                         case ContainerTransitions.ProceedToNextActivity:
-                            return Success(curPayloadDTO);
+                            Success();
+                            return;
                         case ContainerTransitions.StopProcessing:
-                            return TerminateHubExecution(curPayloadDTO);
+                            TerminateHubExecution();
+                            return;
                         case ContainerTransitions.SuspendProcessing:
                             throw new NotImplementedException();
 
                         default:
-                            return Error(curPayloadDTO, "Invalid data was selected on MakeADecision_v1#Run", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                            RaiseError("Invalid data was selected on MakeADecision_v1#Run", ActivityErrorCode.DESIGN_TIME_DATA_MISSING);
+                            return;
                     }
                 }
             }
-
             //none of them matched let's continue normal execution
-            return Success(curPayloadDTO);
+            Success();
         }
 
         private OperationalStateCM.BranchStatus CreateBranch()
@@ -161,30 +166,6 @@ namespace terminalFr8Core.Actions
 
 
             return PackControlsCrate(transition);
-        }
-
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
-        {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            var controlsMS = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-
-            if (controlsMS == null)
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            var durationControl = controlsMS.Controls.FirstOrDefault(x => x.Type == ControlTypes.ContainerTransition && x.Name == "transition");
-
-            if (durationControl == null)
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            return ConfigurationRequestType.Followup;
         }
     }
 }

@@ -1,104 +1,77 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using TerminalBase.Infrastructure;
-using TerminalBase.BaseClasses;
-using Data.Entities;
 using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
-using Hub.Managers;
+using Newtonsoft.Json;
+using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 using Utilities;
 
-namespace terminalFr8Core.Actions
+namespace terminalFr8Core.Activities
 {
     public class AddPayloadManually_v1 : BaseTerminalActivity
     {
-
-        private const string RunTimeCrateLabel = "ManuallyAddedPayload";
-
-        public async Task<PayloadDTO> Run(ActivityDO curActivityDO, Guid containerId, AuthorizationTokenDO authTokenDO)
+        public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
-            var payloadCrates = await GetPayload(curActivityDO, containerId);
+            Name = "AddPayloadManually",
+            Label = "Add Payload Manually",
+            Category = ActivityCategory.Processors,
+            Terminal = TerminalData.TerminalDTO,
+            Version = "1",
+            MinPaneWidth = 330,
+            WebService = TerminalData.WebServiceDTO
+        };
+        protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
+        private const string RunTimeCrateLabel = "ManuallyAddedPayload";
+        private const string CrateSignalLabel = "Available Run Time Crates";
 
-            var controlsMS = CrateManager.GetStorage(curActivityDO.CrateStorage).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
+        public AddPayloadManually_v1(ICrateManager crateManager)
+            : base(false, crateManager)
+        {
 
-            if (controlsMS == null)
-            {
-                return Error(payloadCrates, "Could not find ControlsConfiguration crate.");
-            }
+        }
 
-            var fieldListControl = controlsMS.Controls
-                .SingleOrDefault(x => x.Type == ControlTypes.FieldList);
-
+        public override Task Run()
+        {
+            var fieldListControl = GetControl<FieldList>("Selected_Fields");
             if (fieldListControl == null)
             {
-                return Error(payloadCrates, "Could not find FieldListControl.");
+                RaiseError("Could not find FieldListControl.");
+                return Task.FromResult(0);
             }
-
             var userDefinedPayload = JsonConvert.DeserializeObject<List<FieldDTO>>(fieldListControl.Value);
-
-            using (var crateStorage = CrateManager.UpdateStorage(() => payloadCrates.CrateStorage))
-            {
-                crateStorage.Add(Fr8Data.Crates.Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(userDefinedPayload)));
-            }
-            //
-            //            var cratePayload = Crate.Create(
-            //                "Manual Payload Data",
-            //                JsonConvert.SerializeObject(userDefinedPayload),
-            //                CrateManifests.STANDARD_PAYLOAD_MANIFEST_NAME,
-            //                CrateManifests.STANDARD_PAYLOAD_MANIFEST_ID
-            //                );
-            //
-            //            processPayload.UpdateCrateStorageDTO(new List<CrateDTO>() { cratePayload });
-
-            return Success(payloadCrates);
+            Payload.Add(Crate.FromContent(RunTimeCrateLabel, new StandardPayloadDataCM(userDefinedPayload)));
+            Success();
+            return Task.FromResult(0);
         }
 
-        public override async Task<ActivityDO> Configure(ActivityDO curActionDataPackageDO, AuthorizationTokenDO authTokenDO)
+        public override Task Initialize()
         {
-            return await ProcessConfigurationRequest(curActionDataPackageDO, ConfigurationEvaluator, authTokenDO);
-        }
-
-        protected override Task<ActivityDO> InitialConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
-        {
-            //build a controls crate to render the pane
             var configurationControlsCrate = CreateControlsCrate();
+            Storage.Add(configurationControlsCrate);
+            //TODO do this with crateSignaller
+            var availableRunTimeCrates = Crate.FromContent(CrateSignalLabel, new CrateDescriptionCM(
+                new CrateDescriptionDTO
+                {
+                    ManifestType = MT.StandardPayloadData.GetEnumDisplayName(),
+                    Label = RunTimeCrateLabel,
+                    ManifestId = (int)MT.StandardPayloadData,
+                    ProducedBy = "AddPayloadManually_v1"
+                }), AvailabilityType.RunTime);
 
-            using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-            {
-                crateStorage.Replace(AssembleCrateStorage(configurationControlsCrate));
-                var availableRunTimeCrates = Crate.FromContent("Available Run Time Crates", new CrateDescriptionCM(
-                    new CrateDescriptionDTO
-                    {
-                        ManifestType = MT.StandardPayloadData.GetEnumDisplayName(),
-                        Label = RunTimeCrateLabel,
-                        ManifestId = (int)MT.StandardPayloadData,
-                        ProducedBy = "AddPayloadManually_v1"
-                    }), AvailabilityType.RunTime);
-
-                crateStorage.Add(availableRunTimeCrates);
-            }
-
-            return Task.FromResult(curActivityDO);
+            Storage.Add(availableRunTimeCrates);
+            return Task.FromResult(0);
         }
 
-        protected override Task<ActivityDO> FollowupConfigurationResponse(ActivityDO curActivityDO, AuthorizationTokenDO authTokenDO)
+        public override Task FollowUp()
         {
-            var controlsMS = CrateManager.GetStorage(curActivityDO).CrateContentsOfType<StandardConfigurationControlsCM>().FirstOrDefault();
-
-            if (controlsMS == null)
-            {
-                throw new ApplicationException("Could not find ControlsConfiguration crate.");
-            }
-
-            var fieldListControl = controlsMS.Controls.SingleOrDefault(x => x.Type == ControlTypes.FieldList);
-
+            var fieldListControl = GetControl<FieldList>("Selected_Fields");
             if (fieldListControl == null)
             {
                 throw new ApplicationException("Could not find FieldListControl.");
@@ -110,20 +83,16 @@ namespace terminalFr8Core.Actions
                 userDefinedPayload.ForEach(x =>
                 {
                     x.Value = x.Key;
-                    x.Availability = Fr8Data.States.AvailabilityType.RunTime;
+                    x.Availability = AvailabilityType.RunTime;
                 });
-
-                using (var crateStorage = CrateManager.GetUpdatableStorage(curActivityDO))
-                {
-                    crateStorage.RemoveByLabel(RunTimeCrateLabel);
-                    var crate = Fr8Data.Crates.Crate.FromContent(RunTimeCrateLabel, new FieldDescriptionsCM() { Fields = userDefinedPayload });
-                    crate.Availability = Fr8Data.States.AvailabilityType.RunTime;
-                    crateStorage.Add(crate);
-                }
-
+                
+                Storage.RemoveByLabel(RunTimeCrateLabel);
+                var crate = Crate.FromContent(RunTimeCrateLabel, new FieldDescriptionsCM() { Fields = userDefinedPayload });
+                crate.Availability = AvailabilityType.RunTime;
+                Storage.Add(crate);
             }
 
-            return Task.FromResult(curActivityDO);
+            return Task.FromResult(0);
         }
 
         private Crate CreateControlsCrate()
@@ -139,14 +108,6 @@ namespace terminalFr8Core.Actions
             return PackControlsCrate(fieldFilterPane);
         }
 
-        public override ConfigurationRequestType ConfigurationEvaluator(ActivityDO curActivityDO)
-        {
-            if (CrateManager.IsStorageEmpty(curActivityDO))
-            {
-                return ConfigurationRequestType.Initial;
-            }
-
-            return ConfigurationRequestType.Followup;
-        }
+        
     }
 }
