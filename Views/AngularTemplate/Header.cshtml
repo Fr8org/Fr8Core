@@ -23,7 +23,7 @@
                 <ul class="nav navbar-nav pull-right">
                     <!-- BEGIN USER LOGIN DROPDOWN -->
                     @using Data.States
-@using HubWeb.Infrastructure_HubWeb
+                    @using HubWeb.Infrastructure_HubWeb
                     @using Microsoft.AspNet.Identity
                     @if (Request.IsAuthenticated) {
                         <li class="dropdown dropdown-user dropdown-dark">
@@ -141,7 +141,7 @@
                     <li class="menu-dropdown classic-menu-dropdown">
                         <a data-toggle="dropdown" href="javascript:;" class="dropdown-toggle">Developer <i class="fa fa-angle-down"></i></a>
                         <ul class="dropdown-menu">
-                            <li><a href="http://documentation.fr8.co">Developer Home</a></li>
+                            <li><a href="https://github.com/Fr8org/Fr8Core/blob/master/Docs/Home.md">Developer Home</a></li>
                             <li><a href="/Documentation/RestAPIGuide.html">Fr8 Development Resources - DocuSign</a></li>
                             <li><a ng-click="goToPlanDirectory('@System.Configuration.ConfigurationManager.AppSettings["PlanDirectoryUrl"]')">Plan Directory</a></li>
                         </ul>

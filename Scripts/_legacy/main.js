@@ -101,11 +101,7 @@ $(document).ready(function () {
     if ($('.video-frame').length) {
         var iframe = $('.video-frame')[0];
         var player = $f(iframe);
-    }       
-
-	if($('input, textarea').length) {
-		$('input, textarea').placeholder();
-	}
+    }
 	
 	someResize();
 	

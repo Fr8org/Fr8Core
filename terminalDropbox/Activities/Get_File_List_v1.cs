@@ -56,7 +56,7 @@ namespace terminalDropbox.Actions
       
 
         public Get_File_List_v1(ICrateManager crateManager, IDropboxService dropboxService)
-            : base(true, crateManager)
+            : base(crateManager)
         {
             _dropboxService = dropboxService;
         }
