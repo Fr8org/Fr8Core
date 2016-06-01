@@ -137,47 +137,106 @@ So the Hub will iteratively call the terminal until the latter replies with stat
 
 ### AuthenticationController
 -----------------------------------
-#### **Path:**	*/authentication/authenticate*
-**Type:**	*POST*    
+
+#### **Path:**	*/authentication/login*  
+**Type:** *POST*   
+**HTTP Authentication:** *must provide Fr8 authentication headers*  
 **Input Parameters:**   
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---  
-credentials |	CredentialsDTO	| | |		Credentials of the user to login   
-**Return Values:**	IHttpActionResult   
-**Description:**	Gets the user credentials an provides necessary authentication. Returns authorazition token, terminal id and error message if there is any.   
+username | string | no | | Fr8 account name, QueryString parameter
+password | string | no | | Fr8 account password, Querytring parameter
 
-#### **Path:**	*/authentication/initial_url*
-**Type:**		*GET*   
-**Input Parameters:**   
+**Return Values:** none   
+**Description:** Perform cookie-based authentication on Fr8 Hub. HTTP response will contain authentication cookies.
 
-Name |	Type |	Nullable	| Default |	Description   
---- | --- | --- | --- | ---  
-terminal |	[FromUri(Name = terminal)] string		| | |
-version |	[FromUri(Name = version)] string		| | |
-
-**Return Values:**	string
-**Description:** none
 
 #### **Path:**	*/authentication/getAuthToken*  
 **Type:**		*GET*   
+**HTTP Authentication:** *must provide Fr8 authentication headers*  
 **Input Parameters:**   
 
 Name |	Type |	Nullable	| Default |	Description   
 --- | --- | --- | --- | ---  
-curFr8UserId |	string			| | |
-externalAccountId |	string			| | |
-terminalId |	string			| | |
+curFr8UserId |	string			| | | Fr8 Account ID, QueryString parameter
+externalAccountId |	string			| | | Account name of remote service for searched authentication token, QueryString parameter
+terminalId |	string			| | | Terminal ID for searched authentication token, QueryString parameter
 
-**Return Values:**	AuthorizationTokenDO    
-**Description:** none
+**Return Values:**	AuthenticationToken structure    
+Response JSON sample:
+```javascript
+{
+  "id": "00000000-0000-0000-0000-000000000001",            // Authentication token ID;
+  "externalAccountId": "john.smith@somehost.com",          // Account name of remote service;
+  "externalAccountName": "John Smith",                     // Account display name of remove service;
+  "externalDomainId": "somehost.com",                      // Host of remote service;
+  "externalDomainName": "This is somehost.com service",    // Domain description of remote service;
+  "isMain": false                                          // Flag which indicates whether current auth-token is default or not.
+}
+```
+**Description:** Extract authentication token information for specified terminal and externalAccountId.
+
+
+#### **Path:**	*/authentication/initial_url*
+**Type:**		*GET*   
+**HTTP Authentication:** *must provide Fr8 authentication headers*  
+**Input Parameters:**   
+
+Name |	Type |	Nullable	| Default |	Description   
+--- | --- | --- | --- | ---  
+terminal | string		| | | Terminal name, QueryString parameter
+version |	string		| | | Terminal version, QueryString parameter
+
+**Return Values:**	InitialUrl structure   
+Response JSON sample:
+```javascript
+{
+  "url": "https://oauth.someservice.com/",                 // URL to be called to perform OAuth flow;
+}
+```
+
+**Description:** Extract initial URL for specified terminal in order to perform further OAuth authorization flow.
+
+
+#### **Path:**	*/authentication/token*
+**Type:**	*POST*    
+**HTTP Authentication:** *must provide Fr8 authentication headers*  
+**Input Parameters:** Credentials structure   
+Request JSON sample:
+```javascript
+{
+  "terminal": {
+    "name": "terminalSample",
+    "version": "1"
+  },
+  "username": "john.smith@somehost.com",      // Remote service account name;
+  "password": "pa$$word",                     // Remote service account password;
+  "domain": "somehost.com",                   // Remote service domain;
+  "isDemoAccount": true                       // Flag which indicates whether this is demo account or not.
+}
+```
+
+**Return Values:**	InternalAuthToken structure    
+Response JSON sample:
+```javascript
+{
+  "terminalId": 1001,                                      // Terminal ID;
+  "terminalName": "terminalSample",                        // Terminal name;
+  "authTokenId": "00000000-0000-0000-0000-000000000001",   // Authentication token ID;
+  "error": null                                            // Error text, null if no error occured;
+}
+```
+
+**Description:**	Gets the user credentials an provides necessary authentication. Returns authorazition token, terminal id and error message if there is any.   
+
 
 #### **Path:**	*/authentication/tokens/*  
 **Type:**	*GET*   
-**HTTP Authentication:** *must provide authentication headers*  
+**HTTP Authentication:** *must provide Fr8 authentication headers*  
 **Input Parameters:** *none*  
 
-**Return Values:**	Array of AuthenticationTokenTerminal structures
+**Return Values:**	Array of AuthenticationTokenTerminal structures    
 Response JSON sample:
 ```javascript
 [
@@ -207,7 +266,7 @@ Response JSON sample:
 
 #### **Path:**	*/authentication/tokens/revoke/{id}*  
 **Type:**	*POST*   
-**HTTP Authentication:** *must provide authentication headers*  
+**HTTP Authentication:** *must provide Fr8 authentication headers*  
 **Input Parameters:**
 
 Name |	Type |	Nullable	| Default |	Description   
@@ -219,9 +278,9 @@ id | Guid | no | | Authentication Token ID
 
 #### **Path:**	*/authentication/tokens/grant*  
 **Type:**	*POST*   
-**HTTP Authentication:** *must provide authentication headers*  
+**HTTP Authentication:** *must provide Fr8 authentication headers*  
 **Input Parameters:**
-Array of AuthenticationTokenGrant structures.
+Array of AuthenticationTokenGrant structures.   
 Request JSON example:
 ```javascript
 [
