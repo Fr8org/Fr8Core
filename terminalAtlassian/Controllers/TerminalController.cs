@@ -1,6 +1,5 @@
 ﻿using System.Web.Http;
 using System.Collections.Generic;
-using Utilities.Configuration.Azure;
 using System.Web.Http.Description;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
