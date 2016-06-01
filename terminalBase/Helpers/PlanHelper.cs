@@ -1,7 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
 using AutoMapper;
 using Fr8Data.DataTransferObjects;
@@ -12,21 +9,20 @@ namespace TerminalBase.Helpers
     public class PlanHelper
     {
         private readonly IHubCommunicator _hubCommunicator;
-        private readonly string _currentUserId;
-        public PlanHelper(IHubCommunicator hubCommunicator, string currentUserId)
+
+        public PlanHelper(IHubCommunicator hubCommunicator)
         {
             _hubCommunicator = hubCommunicator;
-            _currentUserId = currentUserId;
         }
 
         protected async Task<PlanDTO> GetPlansByActivity(string activityId)
         {
-            return await _hubCommunicator.GetPlansByActivity(activityId, _currentUserId);
+            return await _hubCommunicator.GetPlansByActivity(activityId);
         }
 
         protected async Task<PlanDTO> UpdatePlan(PlanEmptyDTO plan)
         {
-            return await _hubCommunicator.UpdatePlan(plan, _currentUserId);
+            return await _hubCommunicator.UpdatePlan(plan);
         }
 
         /// <summary>

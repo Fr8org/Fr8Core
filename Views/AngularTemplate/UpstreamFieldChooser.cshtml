@@ -11,7 +11,7 @@
                 </a>
             </td>
         </tr>
-        <tr ng-hide="group.$hideRows" ng-repeat="row in group.data" ng-repeat-end groupable="sourceCrateLabel" ng-click="setItem(row.key)" ng-class="{ 'active': selectedFieldValue === row.key }">
+        <tr ng-hide="group.$hideRows" ng-repeat="row in group.data" ng-repeat-end groupable="sourceCrateLabel" ng-click="selectItem(row)" ng-class="{ 'active': selectedFieldValue === row.key }">
             <td>{{row.key}}</td>
         </tr>
     </table>

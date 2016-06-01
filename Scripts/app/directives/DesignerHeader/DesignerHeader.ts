@@ -12,6 +12,7 @@ module dockyard.directives.designerHeader {
         runPlan(): void;
         deactivatePlan(): void;
         resetPlanStatus(): void;
+        sharePlan(): void;
         plan: model.PlanDTO;
         kioskMode: boolean;
     }
@@ -25,6 +26,7 @@ module dockyard.directives.designerHeader {
             $scope: IDesignerHeaderScope,
             element: ng.IAugmentedJQuery,
             attrs: ng.IAttributes,
+            $http: ng.IHttpService,
             ngToast: any,
             PlanService: services.IPlanService
         ) => void;
@@ -50,6 +52,7 @@ module dockyard.directives.designerHeader {
                 $scope: IDesignerHeaderScope,
                 $element: ng.IAugmentedJQuery,
                 $attrs: ng.IAttributes,
+                $http: ng.IHttpService,
                 ngToast: any,
                 PlanService: services.IPlanService) => {
 
@@ -80,7 +83,17 @@ module dockyard.directives.designerHeader {
                     result.$promise.then(() => { });
                 };
 
-                $scope.runPlan = () => {                   
+                $scope.sharePlan = () => {
+                    PlanService.share($scope.plan.id)
+                        .then(() => {
+                            console.log('sharePlan: Success');
+                        })
+                        .catch(() => {
+                            console.log('sharePlan: Failure');
+                        });
+                };
+
+                $scope.runPlan = () => {
                     // mark plan as Active
                     $scope.plan.planState = 2;                   
                     var promise = PlanService.runAndProcessClientAction($scope.plan.id);
@@ -149,7 +162,7 @@ module dockyard.directives.designerHeader {
                 };
             };
 
-            DesignerHeader.prototype.controller['$inject'] = ['$rootScope', '$scope', '$element', '$attrs', 'ngToast', 'PlanService'];
+            DesignerHeader.prototype.controller['$inject'] = ['$rootScope', '$scope', '$element', '$attrs', '$http', 'ngToast', 'PlanService'];
         }
 
         //The factory function returns Directive object as per Angular requirements

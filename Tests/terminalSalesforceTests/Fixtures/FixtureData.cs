@@ -5,6 +5,8 @@ using Fr8Data.Crates;
 using Salesforce.Common;
 using TerminalBase.Models;
 using Fr8Data.DataTransferObjects;
+using StructureMap;
+using TerminalBase.Infrastructure;
 
 namespace terminalSalesforceTests.Fixtures
 {
@@ -71,6 +73,7 @@ namespace terminalSalesforceTests.Fixtures
             };
             var activityContext = new ActivityContext()
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = activityPayload,
                 AuthorizationToken = await FixtureData.Salesforce_AuthToken()
             };
@@ -88,6 +91,7 @@ namespace terminalSalesforceTests.Fixtures
             };
             var activityContext = new ActivityContext()
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = activityPayload,
                 AuthorizationToken = await FixtureData.Salesforce_AuthToken()
             };
@@ -106,6 +110,7 @@ namespace terminalSalesforceTests.Fixtures
             };
             var activityContext = new ActivityContext()
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 ActivityPayload = activityPayload
             };
 
@@ -117,6 +122,7 @@ namespace terminalSalesforceTests.Fixtures
             var activityTemplate = SaveToSalesforceActivityTemplateDTO();
             return new ActivityContext
             {
+                HubCommunicator = ObjectFactory.GetInstance<IHubCommunicator>(),
                 AuthorizationToken = await Salesforce_AuthToken(),
                 ActivityPayload = new ActivityPayload
                 {

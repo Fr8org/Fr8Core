@@ -6,12 +6,14 @@ using Data.Infrastructure;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using PhoneNumbers;
 using StructureMap;
 using terminalUtilities.Twilio;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 using Twilio;
 
 namespace terminalFr8Core.Activities
@@ -68,17 +70,18 @@ namespace terminalFr8Core.Activities
             }
         }
 
-        public Send_SMS_v1() : base(false)
+        public Send_SMS_v1(ICrateManager crateManager)
+            : base(crateManager)
         {
             _twilio = ObjectFactory.GetInstance<ITwilioService>();
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             Storage.Add(await CreateAvailableFieldsCrate());
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             Storage.RemoveByLabel("Upstream Terminal-Provided Fields");
             Storage.Add(await CreateAvailableFieldsCrate());
@@ -91,7 +94,7 @@ namespace terminalFr8Core.Activities
         /// <returns></returns>
         protected async Task<Crate> CreateAvailableFieldsCrate()
         {
-            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(ActivityId, CrateDirection.Upstream, AvailabilityType.RunTime, CurrentUserId) ?? new FieldDescriptionsCM();
+            var curUpstreamFields = await HubCommunicator.GetDesignTimeFieldsByDirection(ActivityId, CrateDirection.Upstream, AvailabilityType.RunTime) ?? new FieldDescriptionsCM();
 
             var availableFieldsCrate = CrateManager.CreateDesignTimeFieldsCrate(
                     "Upstream Terminal-Provided Fields",
@@ -101,7 +104,7 @@ namespace terminalFr8Core.Activities
             return availableFieldsCrate;
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             Message curMessage;
             try

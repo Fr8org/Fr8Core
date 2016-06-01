@@ -54,8 +54,6 @@ namespace terminalSalesforceTests.Intergration
                 (configControls.Content.Controls.Single(c => c.Name.Equals(nameof(Get_Data_v1.ActivityUi.SalesforceObjectFilter))) as QueryBuilder).Value = JsonConvert.SerializeObject(conditionQuery);
                 }
                 getData = await ConfigureActivity(getData);
-            Assert.IsTrue(getData.CrateStorage.Crates.Any(c => c.Label.Equals(Get_Data_v1.SalesforceObjectFieldsCrateLabel)), 
-                              "Follow up configuration is not getting any Salesforce Object Fields");
                 Debug.WriteLine("Get Lead using condition is successful in the Follow Up Configure");
 
                 //prepare the send email activity controls.
@@ -96,7 +94,7 @@ namespace terminalSalesforceTests.Intergration
         private async Task<Guid> CreatePlan_GetSalesforceDataIntoSendEmail(AuthorizationTokenDO authToken)
         {
             //get required activity templates
-            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "plannodes/available");
+            var activityTemplates = await HttpGetAsync<IEnumerable<ActivityTemplateCategoryDTO>>(_baseUrl + "activity_templates");
             var getData = activityTemplates.Single(at => at.Name.Equals("Receivers")).Activities.Single(a => a.Name.Equals("Get_Data"));
             var sendEmail = activityTemplates.Single(at => at.Name.Equals("Forwarders")).Activities.Single(a => a.Name.Equals("SendEmailViaSendGrid"));
             Assert.IsNotNull(getData, "Get Salesforce Data activity is not available");

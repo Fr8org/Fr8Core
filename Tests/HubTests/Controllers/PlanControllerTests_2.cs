@@ -14,6 +14,7 @@ using Data.States;
 using Fr8Data.Constants;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Manifests;
 using HubTests.Services.Container;
 using UtilitiesTesting.Fixtures;
 
@@ -36,7 +37,7 @@ namespace HubTests.Controllers
                     Id = FixtureData.GetTestGuidById(0),
                     ChildNodes =
                     {
-                        new SubPlanDO(true)
+                        new SubplanDO(true)
                         {
                             Id = FixtureData.GetTestGuidById(1),
                             ChildNodes =
@@ -67,7 +68,7 @@ namespace HubTests.Controllers
                 ActivityService.CustomActivities[FixtureData.GetTestGuidById(3)] = new SuspenderActivityMock(CrateManager);
 
                 plan.PlanState = PlanState.Running;
-                plan.StartingSubPlan = (SubPlanDO)plan.ChildNodes[0];
+                plan.StartingSubplan = (SubplanDO)plan.ChildNodes[0];
                 var userAcct = FixtureData.TestUser1();
                 uow.UserRepository.Add(userAcct);
                 plan.Fr8Account = userAcct;
@@ -75,7 +76,7 @@ namespace HubTests.Controllers
 
                 var controller = new PlansController();
                 // Act
-                var container = await controller.Run(plan.Id, null);
+                var container = await controller.Run(plan.Id);
 
                 AssertExecutionSequence(new[]
                 {
@@ -86,7 +87,7 @@ namespace HubTests.Controllers
                 Assert.NotNull(container); // Get not empty result
                 Assert.IsInstanceOf<OkNegotiatedContentResult<ContainerDTO>>(container); // Result of correct HTTP response type with correct payload
 
-                container = await controller.Run(plan.Id, null, ((OkNegotiatedContentResult<ContainerDTO>)container).Content.Id);
+                container = await controller.Run(plan.Id, ((OkNegotiatedContentResult<ContainerDTO>)container).Content.Id);
 
                 Assert.NotNull(container); // Get not empty result
                 Assert.IsInstanceOf<OkNegotiatedContentResult<ContainerDTO>>(container); // Result of correct HTTP response type with correct payload
@@ -110,19 +111,19 @@ namespace HubTests.Controllers
             rrMock.Setup(x => x.GetById<PlanDO>(It.IsAny<Guid>())).Returns(new PlanDO()
             {
                 Fr8Account = FixtureData.TestDockyardAccount1(),
-                StartingSubPlan = new SubPlanDO()
+                StartingSubplan = new SubplanDO()
             });
 
             Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
             uowMock.Setup(x => x.PlanRepository).Returns(rrMock.Object);
 
             Mock<IPlan> planMock = new Mock<IPlan>();
-            planMock.Setup(x => x.Run(It.IsAny<Guid>(), It.IsAny<Crate[]>())).ReturnsAsync(new ContainerDO());
+            planMock.Setup(x => x.Run(It.IsAny<Guid>(), It.IsAny<Crate[]>(), It.IsAny<Guid?>())).ReturnsAsync(new ContainerDTO());
             planMock.Setup(x => x.Activate(It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(new ActivateActivitiesDTO());
             planMock.Setup(x=> x.GetFullPlan(uowMock.Object, (It.IsAny<Guid>()))).Returns(new PlanDO()
             {
                 Fr8Account = FixtureData.TestDockyardAccount1(),
-                StartingSubPlan = new SubPlanDO()
+                StartingSubplan = new SubplanDO()
             });
 
             Mock<IPusherNotifier> pusherMock = new Mock<IPusherNotifier>();
@@ -136,47 +137,14 @@ namespace HubTests.Controllers
             var controller = new PlansController();
 
             // Act
-            var result = controller.Run(Guid.NewGuid(), null);
+            var result = controller.Run(Guid.NewGuid());
 
             // Assert
             Assert.NotNull(result.Result);                                                  // Get not empty result
             Assert.IsInstanceOf<OkNegotiatedContentResult<ContainerDTO>>(result.Result);    // Result of correct HTTP response type with correct payload
         }
 
-        [Test]
-        public void PlanController_RunWouldReturn400WhenCalledWithInvalidPayload()
-        {
-            // Arrange
-            Mock<IPlanRepository> rrMock = new Mock<IPlanRepository>();
-            rrMock.Setup(x => x.GetById<PlanDO>(It.IsAny<Guid>())).Returns(new PlanDO()
-            {
-                StartingSubPlan = new SubPlanDO()
-            });
-
-            Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
-            uowMock.Setup(x => x.PlanRepository).Returns(rrMock.Object);
-
-            Mock<IPlan> planMock = new Mock<IPlan>();
-            planMock.Setup(x => x.Run(It.IsAny<Guid>(), It.IsAny<Crate[]>())).ReturnsAsync(new ContainerDO());
-            planMock.Setup(x => x.Activate(It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(new ActivateActivitiesDTO());
-
-            Mock<IPusherNotifier> pusherMock = new Mock<IPusherNotifier>();
-            pusherMock.Setup(x => x.Notify(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<object>()));
-
-            ObjectFactory.Container.Inject(typeof(IUnitOfWork), uowMock.Object);
-            ObjectFactory.Container.Inject(typeof(IPlan), planMock.Object);
-            ObjectFactory.Container.Inject(typeof(IPusherNotifier), pusherMock.Object);
-
-            var controller = new PlansController();
-
-            // Act
-            var result = controller.Run(Guid.NewGuid(), new PayloadVM { Payload = "Some crap data" });
-
-            // Assert
-            Assert.NotNull(result.Result);                              // Get not empty result
-            Assert.IsInstanceOf<BadRequestErrorMessageResult>(result.Result);       // Result of correct HTTP response type
-        }
-
+       
         [Test]
         public void PlanController_RunWouldBeExecutedWithAValidPayload()
         {
@@ -185,19 +153,19 @@ namespace HubTests.Controllers
             rrMock.Setup(x => x.GetById<PlanDO>(It.IsAny<Guid>())).Returns(new PlanDO()
             {
                 Fr8Account = FixtureData.TestDockyardAccount1(),
-                StartingSubPlan = new SubPlanDO()
+                StartingSubplan = new SubplanDO()
             });
 
             Mock<IUnitOfWork> uowMock = new Mock<IUnitOfWork>();
             uowMock.Setup(x => x.PlanRepository).Returns(rrMock.Object);
 
             Mock<IPlan> planMock = new Mock<IPlan>();
-            planMock.Setup(x => x.Run(It.IsAny<Guid>(), It.IsAny<Crate[]>())).ReturnsAsync(new ContainerDO());
+            planMock.Setup(x => x.Run(It.IsAny<Guid>(), It.IsAny<Crate[]>(), It.IsAny<Guid?>())).ReturnsAsync(new ContainerDTO());
             planMock.Setup(x => x.Activate(It.IsAny<Guid>(), It.IsAny<bool>())).ReturnsAsync(new ActivateActivitiesDTO());
             planMock.Setup(x => x.GetFullPlan(uowMock.Object, (It.IsAny<Guid>()))).Returns(new PlanDO()
             {
                 Fr8Account = FixtureData.TestDockyardAccount1(),
-                StartingSubPlan = new SubPlanDO()
+                StartingSubplan = new SubplanDO()
             });
 
             Mock<IPusherNotifier> pusherMock = new Mock<IPusherNotifier>();
@@ -210,30 +178,9 @@ namespace HubTests.Controllers
 
             var controller = new PlansController();
 
-            // Act
-            var payload = new PayloadVM
-            {
-                Payload =
-                    "{ \"id\": \"eb2b56e9-daa2-4a7c-bfa2-20cea72b2302\", " +
-                    "\"label\": \"Upstream Terminal-Provided Fields\", " +
-                    "\"contents\": { " +
-                    "\"Fields\": [ " +
-                    "{ \"key\": \"Medical_Form_v2\", \"value\": \"ea2258b2-2d80-4eca-9f40-6c5b5d5c5dda\"}," +
-                    "{ \"key\": \"Template_For_DocuSignTemplateTests\", \"value\": \"9a318240-3bee-475c-9721-370d1c22cec4\" }, " +
-                    "{ \"key\": \"Untitled Oct 29th 2015\", \"value\": \"a4fba1d5-9fad-41ab-9e23-f5ad5f4097df\" }, " +
-                    "{ \"key\": \"Medical_Form_v1\", \"value\": \"58521204-58af-4e65-8a77-4f4b51fef626\" }, " +
-                    "{ \"key\": \"Untitled Oct 16th 2015\", \"value\": \"5dac4b56-89af-435b-b7b9-a8d0c8922e37\" }," +
-                    "{ \"key\": \"\", \"value\": \"6b1aaa7d-94a3-40a1-a091-1360a2032e23\" }, " +
-                    "{ \"key\": \"EnvelopeId\", \"value\": \"\" }] " +
-                    "}, " +
-                    "\"parentCrateId\": null, " +
-                    "\"manifestType\": \"Standard Design-Time Fields\"," +
-                    "\"manifestId\": 3," +
-                    "\"manufacturer\": null, " +
-                    "\"createTime\": \"0001-01-01T00:00:00\" }"
-            };
+            var crate = Crate.FromContent("Payload", new StandardPayloadDataCM(new FieldDTO("I'm", "payload")));
 
-            var result = controller.Run(Guid.NewGuid(), payload);
+            var result = controller.Run(Guid.NewGuid(), new[] {CrateStorageSerializer.Default.ConvertToDto(crate)});
             // Assert
             Assert.NotNull(result.Result);                                                  // Get not empty result
             Assert.IsInstanceOf<OkNegotiatedContentResult<ContainerDTO>>(result.Result);    // Result of correct HTTP response type with correct payload

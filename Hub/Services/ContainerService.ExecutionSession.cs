@@ -18,7 +18,7 @@ using StructureMap;
 
 namespace Hub.Services
 {
-    partial class Container
+    partial class ContainerService
     {
         // class handling execution of the particular plan
         private class ExecutionSession
@@ -89,9 +89,9 @@ namespace Hub.Services
                     nodeName = "Activity: " + ((ActivityDO) node).Name;
                 }
 
-                if (node is SubPlanDO)
+                if (node is SubplanDO)
                 {
-                    nodeName = "Subplan: " + ((SubPlanDO) node).Name;
+                    nodeName = "Subplan: " + ((SubplanDO) node).Name;
                 }
 
                 var frame = new OperationalStateCM.StackFrame
@@ -496,7 +496,7 @@ namespace Hub.Services
                 {
                     var activityPayloadStroage = _crate.FromDto(payload.CrateStorage);
 
-                    SyncPayload(activityPayloadStroage, payloadStorage);
+                    SyncPayload(activityPayloadStroage, payloadStorage, currentActivity.Id.ToString());
                 }
             }
 
@@ -511,16 +511,24 @@ namespace Hub.Services
             // But once again, implementation details of the activities mentioned about requires us to grand some limited access to the stack frames: we allow activity to store some
             // custom data "binded" to the its own stack frame. But we still don't allow activity to rearrage stack frames, otherwise Hub will lose control over the execution.
             // The following methods exists to enfore described constrainsts: it allow to change  custom data, but do not allow rearranging the stack frames.
-            private void SyncPayload(ICrateStorage activityPayloadStorage, IUpdatableCrateStorage containerStorage)
+            // FR-3560 we also want to mark crates with the Id of activity that produced it and we don't want activities to break it
+            private void SyncPayload(ICrateStorage activityPayloadStorage, IUpdatableCrateStorage containerStorage, string currentActivityId)
             {
                 if (activityPayloadStorage == null)
                 {
                     return;
                 }
-
+                //Save the info about crates that already existed in payload
+                var containerCrateSources = containerStorage.Where(x => x.ManifestType.Id != (int)Fr8Data.Constants.MT.OperationalStatus)
+                                                            .ToDictionary(x => x.Id, x => x.SourceActivityId);
                 // Update container payload with the payload returned from the activity.
                 containerStorage.Replace(activityPayloadStorage);
-
+                // Update source activity Id info for all crates and if it is a crate produced by current activity then mark it with its Id
+                foreach (var crate in containerStorage.Where(x => x.ManifestType.Id != (int)Fr8Data.Constants.MT.OperationalStatus))
+                {
+                    string sourceActivityId;
+                    crate.SourceActivityId = containerCrateSources.TryGetValue(crate.Id, out sourceActivityId) ? sourceActivityId : currentActivityId;
+                }
                 // get OperationalStateCM after update.
                 _operationalState = GetOperationalState(containerStorage);
 

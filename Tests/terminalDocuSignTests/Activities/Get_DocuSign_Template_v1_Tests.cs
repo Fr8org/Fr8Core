@@ -28,7 +28,7 @@ namespace terminalDocuSignTests.Activities
         public async Task ActivityIsValid_WhenIsNotConfigured_ReturnsFalse()
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
-            var target = new Get_DocuSign_Template_v1();
+            var target = New<Get_DocuSign_Template_v1>();
             var activityContext = FixtureData.TestActivityContext1();
             var result = await Validate(target, activityContext);
             AssertErrorMessage(result, DocuSignValidationUtils.ControlsAreNotConfiguredErrorMessage);
@@ -38,7 +38,7 @@ namespace terminalDocuSignTests.Activities
         public async Task ActivityIsValid_WhenThereAreNoTemplates_ReturnsFalse()
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithoutTemplates()));
-            var target = new Get_DocuSign_Template_v1();
+            var target = New<Get_DocuSign_Template_v1>();
             var activityDO = FixtureData.TestActivity1();
 
             var activityContext = FixtureData.TestActivityContext1();
@@ -54,7 +54,7 @@ namespace terminalDocuSignTests.Activities
         public async Task ActivityIsValid_WhenTemplateIsNotSelected_ReturnsFalse()
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithTemplates()));
-            var target = new Get_DocuSign_Template_v1();
+            var target = New<Get_DocuSign_Template_v1>();
             var activityDO = FixtureData.TestActivity1();
 
             var activityContext = FixtureData.TestActivityContext1();
@@ -70,7 +70,7 @@ namespace terminalDocuSignTests.Activities
         public async Task ActivityIsValid_WhenTemplatetIsSelected_ReturnsTrue()
         {
             ObjectFactory.Configure(x => x.For<IDocuSignManager>().Use(DocuSignActivityFixtureData.DocuSignManagerWithTemplates()));
-            var target = new Get_DocuSign_Template_v1();
+            var target = New<Get_DocuSign_Template_v1>();
             var activityContext = FixtureData.TestActivityContext1();
             await target.Configure(activityContext);
 

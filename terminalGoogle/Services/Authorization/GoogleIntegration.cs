@@ -18,12 +18,11 @@ namespace terminalGoogle.Services.Authorization
 {
     public class GoogleIntegration : IGoogleIntegration
     {
-
         private readonly IRestfulServiceClient _client;
 
-        public GoogleIntegration()
+        public GoogleIntegration(IRestfulServiceClient serviceClient)
         {
-            _client = ObjectFactory.GetInstance<IRestfulServiceClient>();
+            _client = serviceClient;
         }
 
         public OAuth2Parameters CreateOAuth2Parameters(

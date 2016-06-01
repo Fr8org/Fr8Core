@@ -8,6 +8,7 @@ using Fr8Data.Constants;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.Manifests.Helpers;
 using Fr8Data.States;
@@ -131,17 +132,18 @@ namespace terminalExcel.Actions
         private const string SelectedSpreadsheetCrateLabel = "Selected Spreadsheet";
 
 
-        public Save_To_Excel_v1() : base(false)
+        public Save_To_Excel_v1(ICrateManager crateManager)
+            : base(crateManager)
         {
         }
 
-        protected override async Task InitializeETA()
+        public override async Task Initialize()
         {
             CrateSignaller.MarkAvailableAtRuntime<StandardFileDescriptionCM>("StoredFile");
             ActivityUI.ExistingSpreadsheetsList.ListItems = await GetCurrentUsersFiles();
         }
 
-        protected override async Task ConfigureETA()
+        public override async Task FollowUp()
         {
             //If different existing spreadsheet is selected then we have to load worksheet list for it
             if (ActivityUI.UseExistingSpreadsheetOption.Selected && !string.IsNullOrEmpty(ActivityUI.ExistingSpreadsheetsList.Value))
@@ -173,7 +175,7 @@ namespace terminalExcel.Actions
         private async Task<List<ListItem>> GetWorksheets(int fileId, string fileName)
         {
             //let's download this file
-            Stream file = await HubCommunicator.DownloadFile(fileId, CurrentUserId);
+            Stream file = await HubCommunicator.DownloadFile(fileId);
             var fileBytes = ExcelUtils.StreamToByteArray(file);
 
             //TODO: Optimize this to retrieve spreadsheet list only. Now it reads and loads into memory whole file. 
@@ -210,7 +212,7 @@ namespace terminalExcel.Actions
         };
         protected override ActivityTemplateDTO MyTemplate => ActivityTemplateDTO;
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             if (!ActivityUI.UpstreamCrateChooser.CrateDescriptions.Any(x => x.Selected))
             {
@@ -255,8 +257,7 @@ namespace terminalExcel.Actions
             else
             {
                 var existingFileStream = await HubCommunicator.DownloadFile(
-                    Int32.Parse(ActivityUI.ExistingSpreadsheetsList.Value),
-                    CurrentUserId
+                    Int32.Parse(ActivityUI.ExistingSpreadsheetsList.Value)
                 );
 
                 byte[] existingFileBytes;
@@ -300,7 +301,7 @@ namespace terminalExcel.Actions
                     fileName += ".xlsx";
                 }
 
-                var file = await HubCommunicator.SaveFile(fileName, stream, CurrentUserId);
+                var file = await HubCommunicator.SaveFile(fileName, stream);
                 Payload.Add(Crate.FromContent("StoredFile", new StandardFileDescriptionCM
                 {
                     Filename = file.Id.ToString(), // dirty hack
@@ -313,7 +314,7 @@ namespace terminalExcel.Actions
 
         private async Task<List<ListItem>> GetCurrentUsersFiles()
         {
-            var curAccountFileList = await HubCommunicator.GetFiles(CurrentUserId);
+            var curAccountFileList = await HubCommunicator.GetFiles();
             //TODO where tags == Docusign files
             return curAccountFileList.Select(c => new ListItem() { Key = c.OriginalFileName, Value = c.Id.ToString(CultureInfo.InvariantCulture) }).ToList();
         }

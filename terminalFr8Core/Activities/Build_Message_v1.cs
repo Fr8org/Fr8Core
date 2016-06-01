@@ -6,9 +6,11 @@ using System.Threading.Tasks;
 using Fr8Data.Control;
 using Fr8Data.Crates;
 using Fr8Data.DataTransferObjects;
+using Fr8Data.Managers;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using TerminalBase.BaseClasses;
+using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
@@ -60,7 +62,8 @@ namespace terminalFr8Core.Activities
             }
         }
 
-        public Build_Message_v1() : base(false)
+        public Build_Message_v1(ICrateManager crateManager)
+            : base(crateManager)
         {
         }
 
@@ -72,12 +75,12 @@ namespace terminalFr8Core.Activities
 
         private static readonly Regex FieldPlaceholdersRegex = new Regex(@"\[.*?\]");
 
-        protected override Task InitializeETA()
+        public override Task Initialize()
         {
             return Task.FromResult(0);
         }
 
-        protected override Task ConfigureETA()
+        public override Task FollowUp()
         {
             CrateSignaller.MarkAvailableAtRuntime<StandardPayloadDataCM>(RuntimeCrateLabel, true)
                                .AddField(ActivityUI.Name.Value);
@@ -85,7 +88,7 @@ namespace terminalFr8Core.Activities
             return Task.FromResult(0);
         }
 
-        protected override async Task RunETA()
+        public override async Task Run()
         {
             await Task.Factory.StartNew(RunCurrentActivityImpl);
         }

@@ -42,12 +42,12 @@ namespace terminalSalesforceTests.Actions
 
             Mock<IHubCommunicator> hubCommunicatorMock = new Mock<IHubCommunicator>(MockBehavior.Default);
 
-            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<Guid>(), It.IsAny<string>()))
+            hubCommunicatorMock.Setup(h => h.GetPayload(It.IsAny<Guid>()))
                 .Returns(() => Task.FromResult(testPayloadDTO));
 
 
             hubCommunicatorMock.Setup(h => h.GetDesignTimeFieldsByDirection(It.IsAny<Guid>(), It.IsAny<CrateDirection>(), 
-                It.IsAny<AvailabilityType>(), It.IsAny<string>())).Returns(() => Task.FromResult(new FieldDescriptionsCM()));
+                It.IsAny<AvailabilityType>())).Returns(() => Task.FromResult(new FieldDescriptionsCM()));
 
             ObjectFactory.Container.Inject(typeof(IHubCommunicator), hubCommunicatorMock.Object);
 
@@ -57,7 +57,7 @@ namespace terminalSalesforceTests.Actions
             salesforceIntegrationMock.Setup(si => si.PostToChatter(It.IsAny<string>(), It.IsAny<string>(), 
                 It.IsAny<AuthorizationToken>())).Returns(() => Task.FromResult("SomeValue"));
 
-            postToChatter_v1 = new Post_To_Chatter_v1();
+            postToChatter_v1 = New<Post_To_Chatter_v1>();
         }
 
         [Test, Category("terminalSalesforceTests.Post_To_Chatter_v1.Configure")]

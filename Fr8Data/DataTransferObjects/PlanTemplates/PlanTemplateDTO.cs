@@ -8,11 +8,11 @@ namespace Fr8Data.DataTransferObjects.PlanTemplates
 {
     public  class PlanTemplateDTO
     {
-        public int Id { get; set; }
+        public Guid Id { get; set; }
 
         public string Name { get; set; }
 
-        public int? StartingPlanNodeDescriptionId { get; set; }
+        public Guid? StartingPlanNodeDescriptionId { get; set; }
 
         public List<PlanNodeDescriptionDTO> PlanNodeDescriptions { get; set; }
 

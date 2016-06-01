@@ -236,8 +236,8 @@ namespace terminalDocuSignTests.Integration
             await HttpDeleteAsync(_baseUrl + "activities?id=" + _solution.ChildrenActivities[0].Id);
 
             // Add Add Payload Manually action
-            var activityCategoryParam = new ActivityCategory[] { ActivityCategory.Processors };
-            var activityTemplates = await HttpPostAsync<ActivityCategory[], List<WebServiceActivitySetDTO>>(_baseUrl + "webservices/activities", activityCategoryParam);
+            var activityCategoryParam =(int)ActivityCategory.Processors;
+            var activityTemplates = await HttpGetAsync<List<WebServiceActivitySetDTO>>(_baseUrl + "webservices?id="+ activityCategoryParam);
             var apmActivityTemplate = activityTemplates.SelectMany(a => a.Activities).Single(a => a.Name == "AddPayloadManually");
 
             var apmAction = new ActivityDTO()
