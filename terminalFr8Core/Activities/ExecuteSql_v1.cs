@@ -16,7 +16,7 @@ using TerminalSqlUtilities;
 
 namespace terminalFr8Core.Activities
 {
-    /*public class ExecuteSql_v1 : BaseTerminalActivity
+    public class ExecuteSql_v1 : BaseTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -169,5 +169,5 @@ namespace terminalFr8Core.Activities
         {
             return Task.FromResult(0);
         }
-    }*/
+    }
 }

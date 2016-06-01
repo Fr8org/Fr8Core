@@ -260,7 +260,6 @@
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="Activities\MapFields_v1.cs" />
     <Compile Include="Infrastructure\FindObjectHelper.cs" />
     <Compile Include="Interfaces\IEvent.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -164,7 +164,6 @@
     <Compile Include="Integration\Terminal_Authentication_v1_Tests.cs" />
     <Compile Include="Integration\Terminal_Discover_v1Tests.cs" />
     <Compile Include="Fixtures\HealthMonitor_FixtureData.cs" />
-    <Compile Include="Integration\MapFields_v1_Tests.cs" />
     <Compile Include="Integration\Select_Fr8_Object_v1Tests.cs" />
     <Compile Include="Unit\Loop_v1Tests.cs" />
     <Compile Include="Unit\Send_Email_v1Tests.cs" />

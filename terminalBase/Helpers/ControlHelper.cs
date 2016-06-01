@@ -52,7 +52,7 @@ namespace TerminalBase.Helpers
         /// <param name="requestUpstream"></param>
         /// <param name="requestConfig"></param>
         /// <returns></returns>
-        public async Task<CrateChooser> GenerateCrateChooser(
+        public CrateChooser GenerateCrateChooser(
             string name,
             string label,
             bool singleManifest,

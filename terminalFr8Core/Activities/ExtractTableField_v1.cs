@@ -13,7 +13,7 @@ using TerminalBase.Infrastructure;
 
 namespace terminalFr8Core.Activities
 {
-  /*  public class ExtractTableField_v1 : BaseTerminalActivity
+    public class ExtractTableField_v1 : BaseTerminalActivity
     {
         public static ActivityTemplateDTO ActivityTemplateDTO = new ActivityTemplateDTO
         {
@@ -163,7 +163,7 @@ namespace terminalFr8Core.Activities
 
         private async Task<Crate> CreateControlsCrate()
         {
-            var crateChooser = await ControlHelper.GenerateCrateChooser("TableChooser", "Select Upstream Data", true, true, true);
+            var crateChooser = ControlHelper.GenerateCrateChooser("TableChooser", "Select Upstream Data", true, true, true);
             //this cell's list items will be filled on followup configuration
             var cellDdTemplate =  new DropDownList()
             {
@@ -335,5 +335,5 @@ namespace terminalFr8Core.Activities
             crate.Availability = AvailabilityType.RunTime;
             Storage.Add(crate);
         }
-    }*/
+    }
 }

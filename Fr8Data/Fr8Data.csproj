@@ -147,7 +147,6 @@
     <Compile Include="DataTransferObjects\AuthenticationTokenDTO.cs" />
     <Compile Include="DataTransferObjects\ManifestDescriptionDTO.cs" />
     <Compile Include="DataTransferObjects\ManufacturerDTO.cs" />
-    <Compile Include="DataTransferObjects\MappingFieldConfigurationDTO.cs" />
     <Compile Include="DataTransferObjects\OrganizationDTO.cs" />
     <Compile Include="DataTransferObjects\PayloadDTO.cs" />
     <Compile Include="DataTransferObjects\PlanDTO.cs" />

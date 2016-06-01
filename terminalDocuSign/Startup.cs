@@ -48,7 +48,7 @@ namespace terminalDocuSign
             ActivityStore.RegisterActivity<Get_DocuSign_Envelope_v1>(Get_DocuSign_Envelope_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Send_DocuSign_Envelope_v1>(Send_DocuSign_Envelope_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Send_DocuSign_Envelope_v2>(Send_DocuSign_Envelope_v2.ActivityTemplateDTO);
-          //  ActivityStore.RegisterActivity<Use_DocuSign_Template_With_New_Document_v1>(Use_DocuSign_Template_With_New_Document_v1.ActivityTemplateDTO);
+            ActivityStore.RegisterActivity<Use_DocuSign_Template_With_New_Document_v1>(Use_DocuSign_Template_With_New_Document_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Prepare_DocuSign_Events_For_Storage_v1>(Prepare_DocuSign_Events_For_Storage_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Mail_Merge_Into_DocuSign_v1>(Mail_Merge_Into_DocuSign_v1.ActivityTemplateDTO);
             ActivityStore.RegisterActivity<Extract_Data_From_Envelopes_v1>(Extract_Data_From_Envelopes_v1.ActivityTemplateDTO);

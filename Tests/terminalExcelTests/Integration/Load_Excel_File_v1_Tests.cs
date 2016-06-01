@@ -43,7 +43,7 @@ namespace terminalExcelTests.Integration
             }
 
             var configureUrl = GetTerminalConfigureUrl();
-            var dataDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_Fr8DataDTO(Guid.NewGuid());
+            var dataDTO = HealthMonitor_FixtureData.Load_Excel_File_v1_InitialConfiguration_Fr8DataDTO(Guid.NewGuid());
             if (existingActivity == null)
             {
                 existingActivity = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, dataDTO);
@@ -57,7 +57,7 @@ namespace terminalExcelTests.Integration
                     var controlsCrate = _crateManager.GetStorage(existingActivity).FirstCrate<StandardConfigurationControlsCM>();
                     activityUi.SyncWith(controlsCrate.Content);
                     activityUi.FilePicker.Value = fileUri;
-                    storage.ReplaceByLabel(Fr8Data.Crates.Crate.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray()), controlsCrate.Availability));
+                    storage.ReplaceByLabel(Fr8Data.Crates.Crate.FromContent(controlsCrate.Label, new StandardConfigurationControlsCM(activityUi.Controls.ToArray())));
                 }
             }
             dataDTO.ActivityDTO = existingActivity;
@@ -65,11 +65,11 @@ namespace terminalExcelTests.Integration
         }
 
         [Test]
-        public async Task Load_Table_Data_v1_Initial_Configuration_Check_Crate_Structure()
+        public async Task Load_Excel_File_v1_Initial_Configuration_Check_Crate_Structure()
         {
             // Arrange
             var configureUrl = GetTerminalConfigureUrl();
-            var requestActionDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_Fr8DataDTO(Guid.NewGuid());
+            var requestActionDTO = HealthMonitor_FixtureData.Load_Excel_File_v1_InitialConfiguration_Fr8DataDTO(Guid.NewGuid());
 
             // Act
             var responseActionDTO = await HttpPostAsync<Fr8DataDTO, ActivityDTO>(configureUrl, requestActionDTO);
@@ -85,7 +85,7 @@ namespace terminalExcelTests.Integration
         }
 
         [Test]
-        public async Task Load_Table_Data_v1_FollowUp_Configuration_WithFileSelected_CheckCrateStructure()
+        public async Task Load_Excel_File_v1_FollowUp_Configuration_WithFileSelected_CheckCrateStructure()
         {
             // Act
             var responseFollowUpActionDTO = await ConfigureFollowUp(true);
@@ -104,7 +104,7 @@ namespace terminalExcelTests.Integration
         }
 
         [Test]
-        public async Task Load_Table_Data_v1_FollowUp_Configuration_WithFileSelected_OneRow_CheckCrateStructure()
+        public async Task Load_Excel_File_v1_FollowUp_Configuration_WithFileSelected_OneRow_CheckCrateStructure()
         {
             // Act
             var responseFollowUpActionDTO = await ConfigureFollowUp(true, HealthMonitor_FixtureData.GetFilePath_OneRowWithWithHeader());
@@ -129,7 +129,7 @@ namespace terminalExcelTests.Integration
         }
 
         [Test]
-        public async Task Load_Table_Data_v1_FollowUp_Configuration_WithoutFileSet_CheckCrateStructure()
+        public async Task Load_Excel_File_v1_FollowUp_Configuration_WithoutFileSet_CheckCrateStructure()
         {
             // Act
             var responseFollowUpActionDTO = await ConfigureFollowUp();
@@ -148,7 +148,7 @@ namespace terminalExcelTests.Integration
         }
 
         [Test]
-        public async Task Load_Table_Data_v1_Run_WhenFileIsNotSelected_ResponseContainsErrorMessage()
+        public async Task Load_Excel_File_v1_Run_WhenFileIsNotSelected_ResponseContainsErrorMessage()
         {
             var activityDTO = await ConfigureFollowUp();
             var runUrl = GetTerminalRunUrl();
@@ -163,7 +163,7 @@ namespace terminalExcelTests.Integration
         }
 
         [Test]
-        public async Task Load_Table_Data_v1_Run_WhenFileIsSelected_ResponseContainsTableData()
+        public async Task Load_Excel_File_v1_Run_WhenFileIsSelected_ResponseContainsTableData()
         {
             var activityDTO = await ConfigureFollowUp(true);
             var runUrl = GetTerminalRunUrl();
@@ -176,7 +176,7 @@ namespace terminalExcelTests.Integration
         }
 
         [Test]
-        public async Task Load_Table_Data_v1_Run_WhenFileIsSelected_OneRow_ResponseContainsExtractedFields()
+        public async Task Load_Excel_File_v1_Run_WhenFileIsSelected_OneRow_ResponseContainsExtractedFields()
         {
             var activityDTO = await ConfigureFollowUp(true, HealthMonitor_FixtureData.GetFilePath_OneRowWithWithHeader());
             var runUrl = GetTerminalRunUrl();
@@ -197,7 +197,7 @@ namespace terminalExcelTests.Integration
             var configureUrl = GetTerminalActivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_Fr8DataDTO(Guid.NewGuid());
+            var requestActionDTO = HealthMonitor_FixtureData.Load_Excel_File_v1_InitialConfiguration_Fr8DataDTO(Guid.NewGuid());
             using (var storage = _crateManager.GetUpdatableStorage(requestActionDTO.ActivityDTO))
             {
                 storage.Add(Fr8Data.Crates.Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new StandardConfigurationControlsCM(new Load_Excel_File_v1.ActivityUi().Controls.ToArray()), AvailabilityType.Configuration));
@@ -222,7 +222,7 @@ namespace terminalExcelTests.Integration
             var configureUrl = GetTerminalDeactivateUrl();
 
             HealthMonitor_FixtureData fixture = new HealthMonitor_FixtureData();
-            var requestActionDTO = HealthMonitor_FixtureData.Load_Table_Data_v1_InitialConfiguration_Fr8DataDTO(Guid.NewGuid());
+            var requestActionDTO = HealthMonitor_FixtureData.Load_Excel_File_v1_InitialConfiguration_Fr8DataDTO(Guid.NewGuid());
             using (var storage = _crateManager.GetUpdatableStorage(requestActionDTO.ActivityDTO))
             {
                 storage.Add(Fr8Data.Crates.Crate.FromContent(BaseTerminalActivity.ConfigurationControlsLabel, new StandardConfigurationControlsCM(new Load_Excel_File_v1.ActivityUi().Controls.ToArray()), AvailabilityType.Configuration));

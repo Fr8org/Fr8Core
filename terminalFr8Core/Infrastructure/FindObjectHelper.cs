@@ -3,13 +3,10 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
-using Data.Entities;
-using Data.States;
 using Fr8Data.DataTransferObjects;
 using Fr8Data.Manifests;
 using Fr8Data.States;
 using TerminalSqlUtilities;
-using TerminalBase.BaseClasses;
 using TerminalBase.Infrastructure;
 using TerminalBase.Models;
 
@@ -19,7 +16,7 @@ namespace terminalFr8Core.Infrastructure
     {
         private const string DefaultDbProvider = "System.Data.SqlClient";
 
-        /*public async Task<Dictionary<string, DbType>> ExtractColumnTypes(
+        public async Task<Dictionary<string, DbType>> ExtractColumnTypes(
             IHubCommunicator hubCommunicator, ActivityContext activityContext)
         {
             var upstreamCrates = await hubCommunicator.GetCratesByDirection<FieldDescriptionsCM>(activityContext.ActivityPayload.Id, CrateDirection.Upstream);
@@ -40,7 +37,7 @@ namespace terminalFr8Core.Infrastructure
 
             var columnTypeMap = GetColumnTypeMap(columnTypeFields);
             return columnTypeMap;
-        }*/
+        }
 
         public string ConvertValueToString(object value, DbType dbType)
         {
