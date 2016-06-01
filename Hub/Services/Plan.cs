@@ -594,13 +594,13 @@ namespace Hub.Services
                                     NotificationChannel.GenericSuccess,
                                     userName);
 
-                                new ContainerDTO
+                                return new ContainerDTO
                                 {
                                     CurrentPlanType = currentPlanType,
                                     PlanId = planId
                                 };
                             }
-
+                           
                             _pusher.NotifyUser($"Launching a new Container for Plan \"{plan.Name}\"",
                                 NotificationChannel.GenericSuccess,
                                 userName);
