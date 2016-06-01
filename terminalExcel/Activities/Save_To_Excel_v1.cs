@@ -133,7 +133,7 @@ namespace terminalExcel.Actions
 
 
         public Save_To_Excel_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
 

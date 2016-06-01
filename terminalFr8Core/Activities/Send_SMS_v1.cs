@@ -71,7 +71,7 @@ namespace terminalFr8Core.Activities
         }
 
         public Send_SMS_v1(ICrateManager crateManager)
-            : base(false, crateManager)
+            : base(crateManager)
         {
             _twilio = ObjectFactory.GetInstance<ITwilioService>();
         }

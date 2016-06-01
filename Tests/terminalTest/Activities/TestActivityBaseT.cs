@@ -13,7 +13,7 @@ namespace terminalTest.Actions
         where T: StandardConfigurationControlsCM
     {
         protected TestActivityBase(ICrateManager crateManager) 
-            : base(false, crateManager)
+            : base(crateManager)
         {
         }
         
