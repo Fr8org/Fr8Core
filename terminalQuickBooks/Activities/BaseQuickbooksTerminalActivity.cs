@@ -11,7 +11,7 @@ namespace terminalQuickBooks.Actions
         where T : StandardConfigurationControlsCM
     {
         protected BaseQuickbooksTerminalActivity(ICrateManager crateManager)
-            : base(true, crateManager)
+            : base(crateManager)
         {
         }
 
