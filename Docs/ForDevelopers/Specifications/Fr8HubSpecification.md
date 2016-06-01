@@ -12,7 +12,7 @@ Name |	Type |	Nullable	| Default |	Description
 --- | --- | --- | --- | ---   
 actionTemplateId |	Guid	|  |  |		id of the activity template of the activity instance that will be created   
 label |	string |		null |  |	Label that will be shown on the header   
-order |	int |	true |	null |  |	Hierarchical order of the activity according to parent-children relation   
+order |	int |	true |	null |  Hierarchical order of the activity according to parent-children relation   
 parentNodeId |	Guid |	true |	null | If it is a child activity, that is the parent activity id of the instance that will be created   
 authorizationTokenId |	Guid |	true |	null |	 To get authorization tokens for the outside systems such as slack, docusign etc..  
 
