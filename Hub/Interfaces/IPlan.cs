@@ -28,7 +28,7 @@ namespace Hub.Interfaces
         bool IsMonitoringPlan(IUnitOfWork uow, PlanDO planDo);
 
         void Enqueue(Guid curPlanId, params Crate[] curEventReport);
-        Task<ContainerDO> Run(IUnitOfWork uow, PlanDO plan, Crate[] curPayload);
+        Task<ContainerDTO> Run(Guid planId, Crate[] payload, Guid? containerId);
         PlanDO Clone(Guid planId);
     }
 }

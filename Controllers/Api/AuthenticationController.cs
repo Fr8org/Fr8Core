@@ -153,7 +153,7 @@ namespace HubWeb.Controllers
             var hmacService = ObjectFactory.GetInstance<IHMACService>();
             var client = ObjectFactory.GetInstance<IRestfulServiceClient>();
 
-            var uri = new Uri(ConfigurationManager.AppSettings["PlanDirectoryUrl"] + "/api/authentication/token");
+            var uri = new Uri(CloudConfigurationManager.GetSetting("PlanDirectoryUrl") + "/api/authentication/token");
             var headers =
                 await
                     hmacService.GenerateHMACHeader(uri, "PlanDirectory",
@@ -212,7 +212,9 @@ namespace HubWeb.Controllers
                             IsMain = y.IsMain
                         })
                         .OrderBy(y => y.ExternalAccountName)
-                        .ToList()
+                        .ToList(),
+                    AuthenticationType = x.AuthenticationType,
+                    Version = x.Version
                 })
                 .ToList();
 
