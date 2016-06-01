@@ -401,6 +401,12 @@ module dockyard.controllers {
             planPromise.$promise.then(this.onPlanLoad.bind(this, mode));
         }
 
+        private reloadFirstActions() {
+            this.$timeout(() => {
+                this.$scope.current.plan.subPlans.forEach(plan => this.$scope.reConfigureAction(plan.activities[0]));
+            }, 1500);
+        }
+
         private onPlanLoad(mode: string, curPlan: interfaces.IPlanFullDTO) {
             this.AuthService.setCurrentPlan(<interfaces.IPlanVM>curPlan.plan);
             this.AuthService.clear();
@@ -412,7 +418,7 @@ module dockyard.controllers {
                 this.setAdvancedEditingMode();
             }
             this.renderPlan(<interfaces.IPlanVM>curPlan.plan);
-            this.$state.go('planBuilder', { id: curPlan.plan.id,  viewMode: mode });
+            this.$state.go('planBuilder', { id: curPlan.plan.id, viewMode: mode }).then(this.reloadFirstActions.bind(this));
         }
 
         /*
