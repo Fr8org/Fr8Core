@@ -9,8 +9,9 @@ namespace PlanDirectory.Infrastructure
         {
             public LiveMode()
             {
-                For<IPlanTemplate>().Use<PlanTemplate>();
                 For<IAuthTokenManager>().Use<AuthTokenManager>();
+                For<IPlanTemplate>().Use<PlanTemplate>();
+                For<ISearchProvider>().Use<SearchProvider>();
             }
         }
 
