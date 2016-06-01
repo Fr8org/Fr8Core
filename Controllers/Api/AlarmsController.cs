@@ -61,10 +61,14 @@ namespace HubWeb.Controllers
         public async Task Polling(string job_id, string fr8_account_id, string minutes, string terminal_id)
         {
             string jobId = job_id.GetHashCode().ToString();
-            RecurringJob.AddOrUpdate(jobId, () => ExecuteSchedulledJob(job_id, fr8_account_id, minutes, terminal_id), "*/" + minutes + " * * * *");
+            RecurringJob.AddOrUpdate(jobId, () => SchedullerHelper.ExecuteSchedulledJob(job_id, fr8_account_id, minutes, terminal_id), "*/" + minutes + " * * * *");
         }
+    }
 
-        public void ExecuteSchedulledJob(string job_id, string fr8AccountId, string minutes, string terminal_id)
+
+    public static class SchedullerHelper
+    {
+        public static void ExecuteSchedulledJob(string job_id, string fr8AccountId, string minutes, string terminal_id)
         {
             var request = RequestPolling(job_id, fr8AccountId, minutes, terminal_id);
             var result = request.Result;
@@ -72,7 +76,7 @@ namespace HubWeb.Controllers
                 RecurringJob.RemoveIfExists(job_id.GetHashCode().ToString());
         }
 
-        private async Task<bool> RequestPolling(string job_id, string fr8_account_id, string minutes, string terminal_id)
+        private static async Task<bool> RequestPolling(string job_id, string fr8_account_id, string minutes, string terminal_id)
         {
             try
             {
@@ -87,7 +91,6 @@ namespace HubWeb.Controllers
                         var response = await client.PostAsync(url, null);
                         return response.StatusCode == System.Net.HttpStatusCode.OK;
                     }
-
                 }
             }
             catch
