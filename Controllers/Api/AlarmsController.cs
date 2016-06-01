@@ -64,7 +64,7 @@ namespace HubWeb.Controllers
             RecurringJob.AddOrUpdate(jobId, () => ExecuteSchedulledJob(job_id, fr8_account_id, minutes, terminal_id), "*/" + minutes + " * * * *");
         }
 
-        private void ExecuteSchedulledJob(string job_id, string fr8AccountId, string minutes, string terminal_id)
+        public void ExecuteSchedulledJob(string job_id, string fr8AccountId, string minutes, string terminal_id)
         {
             var request = RequestPolling(job_id, fr8AccountId, minutes, terminal_id);
             var result = request.Result;
