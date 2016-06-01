@@ -4,12 +4,15 @@ module dockyard.controllers {
     'use strict';
 
     export interface IPlanUploadModalScope extends ng.IScope {
-        plan: interfaces.IPlanFullDTO;
-        href: string;
+        planName: string;
+        planFile: any;
+        fileSelected: boolean;
+        fileName: string;
+        uploadFlag: boolean;
 
-        loadPlan: ()=> void;
-        download: ($event: Event) => void;
+        loadPlan: (file:any)=> void;
         cancel: () => void;
+        fileChanged: (input: any)=>void;
     }
 
 
@@ -21,21 +24,44 @@ module dockyard.controllers {
     public static $inject = [
         '$scope',
         '$modalInstance',
-        '$filter',
-        'PlanService'
+        'Upload',
+        '$state'
     ];
 
     constructor(
         private $scope: IPlanUploadModalScope,
         private $modalInstance: ng.ui.bootstrap.IModalServiceInstance,
-        private $filter:ng.IFilterService,
-        private PlanService: services.IPlanService
+        private Upload,
+        private $state: ng.ui.IStateService
     ) {
+
+        $scope.fileChanged = () => {
+            if ($scope.planFile) {
+                $scope.fileSelected = true;
+                $scope.fileName = $scope.planFile.name;
+            }
+        }
         
-        //$scope.plan = plan;
+        $scope.loadPlan = (file) => {
 
+            $scope.uploadFlag = true;
+            Upload.upload({
+                url: '/api/plans/loadplan?planName=' + $scope.planName,
+                file: file 
+            }).then((response) => {
+                
+                if ($state.current.name === "planList") {
+                    $state.reload();
+                } else {
+                    $state.go("planList");    
+                }
+                    $scope.uploadFlag = false;
+                    $modalInstance.dismiss();
+                }, (error) => {
 
-        $scope.loadPlan = () => {
+                    $modalInstance.dismiss();
+                    $scope.uploadFlag = false;  
+            });
             
         };
        

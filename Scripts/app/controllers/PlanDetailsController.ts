@@ -9,8 +9,10 @@ module dockyard.controllers {
         errorMessage: string;
         planBuilder: any,
         id: string,
-        href: string,
 
+        digestFlag:boolean;
+
+        sharePlan: () => void;
         download: ($event: Event) => void;
     }
 
@@ -40,18 +42,44 @@ module dockyard.controllers {
                 $scope.ptvm = PlanService.getFull({ id: $stateParams.id });
             }
 
+            $scope.sharePlan = () => {
+                
+                PlanService.share($stateParams.id)
+                    .then(() => {
+                        console.log('sharePlan: Success');
+                    })
+                    .catch(() => {
+                        console.log('sharePlan: Failure');
+                    });
+            };
+
             $scope.download = ($event: Event) => {
 
-                debugger;
+                if (!$scope.digestFlag) {
+                    $scope.digestFlag = true;
 
-                let json = $filter('json')($scope.ptvm);
-                let data = new Blob([json]);
-                $scope.href = URL.createObjectURL(data);
+                    var promise = PlanService.createTemplate($scope.ptvm.plan.id);
+                    var element = $event.srcElement;
 
+                    promise.then((template) => {
+                        let json = $filter('json')(template);
+                        let data = new Blob([json]);
+                        let href = URL.createObjectURL(data);
+
+                        (element as HTMLAnchorElement).href = href;
+                        window.setTimeout(() => {
+                                (element as HTMLAnchorElement).click();
+                                $scope.digestFlag = false;
+                                (element as HTMLAnchorElement).removeAttribute("href");
+                            },
+                            100);
+
+                    });
+                }
                 $event.stopPropagation = null;
-                $event.preventDefault = ()=>{};
+                $event.preventDefault = () => { };
                 $event.cancelBubble = false;
-                $event.returnValue = true;
+                $event.returnValue = true;    
             };
         }
 

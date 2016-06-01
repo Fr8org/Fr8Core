@@ -12,7 +12,7 @@ module dockyard.directives.designerHeader {
         runPlan(): void;
         deactivatePlan(): void;
         resetPlanStatus(): void;
-        sharePlan(): void;
+        //sharePlan(): void;
         plan: model.PlanDTO;
         kioskMode: boolean;
     }
@@ -66,15 +66,17 @@ module dockyard.directives.designerHeader {
                     result.$promise.then(() => { });
                 };
 
-                $scope.sharePlan = () => {
-                    PlanService.share($scope.plan.id)
-                        .then(() => {
-                            console.log('sharePlan: Success');
-                        })
-                        .catch(() => {
-                            console.log('sharePlan: Failure');
-                        });
-                };
+
+                //moved to PlanDetailsController
+                //$scope.sharePlan = () => {
+                //    PlanService.share($scope.plan.id)
+                //        .then(() => {
+                //            console.log('sharePlan: Success');
+                //        })
+                //        .catch(() => {
+                //            console.log('sharePlan: Failure');
+                //        });
+                //};
 
                 $scope.runPlan = () => {
                     // mark plan as Active
