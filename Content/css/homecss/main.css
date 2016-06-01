@@ -5108,6 +5108,7 @@ img.mfp-img {
 }
 .hero-unit .hero-content .hero-buttons #btn-about {
   padding: 15px 41px;
+  border-color: #d9534f;
 }
 .hero-unit .hero-content .hero-buttons #btn-contact {
   padding: 15px 30px;
