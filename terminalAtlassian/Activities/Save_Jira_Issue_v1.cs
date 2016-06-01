@@ -199,7 +199,7 @@ namespace terminalAtlassian.Actions
         private readonly AtlassianService _atlassianService;
 
         public Save_Jira_Issue_v1(ICrateManager crateManager, AtlassianService atlassianService)
-            : base(true, crateManager)
+            : base(crateManager)
         {
             _atlassianService = atlassianService;
         }

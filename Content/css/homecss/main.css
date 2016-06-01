@@ -13,7 +13,6 @@ body {
   /*font-family: 'Roboto', sans-serif;*/
   /*font-family: 'Nunito', sans-serif;*/
   font-size: 16px;
-  /*font-weight: 300;*/
   color: #444C58;
   background-color: #fff !important;
   line-height: 1.6;
@@ -31,7 +30,6 @@ body.fullscreen-image-background {
 }
 
 h1, h2, h3, h4, h5, h6 {
-  /*font-family: "Dosis", sans-serif;*/
   font-family: 'Francois One', sans-serif;
   /*font-family: 'Droid Sans', sans-serif;*/
   /*font-family: 'Fjalla One', sans-serif;*/
@@ -83,9 +81,15 @@ body #jpreBar {
   background-color: #fafafa;
   padding: 70px 0;
 }
+
+.section.contact#contact {
+    padding: 50px 0 30px 0;
+}
+
 .section.darker {
   background-color: #f5f5f5;
 }
+
 .section.most-dark {
   background-color: #4d4d4d;
   color: #fafafa;
@@ -95,17 +99,17 @@ body #jpreBar {
   text-align: center;
   margin-bottom: 50px;
 }
-.section-heading h2, .section-heading p {
-  /*font-family: "Dosis", sans-serif;*/
-}
+
 .section-heading h2 {
   font-size: 3em;
   color: #26A599;
 }
+
 .section-heading p {
   font-size: 1.7em;
   color: #444C58;
 }
+
 .section-heading hr {
   display: inline-block;
   vertical-align: middle;
@@ -126,8 +130,8 @@ body #jpreBar {
 
 .section-content p {
   font-size: 1em;
-  /*color: #c2c2c2;*/
 }
+
 .section-content .sub-section {
   margin-top: 30px;
 }
@@ -5792,6 +5796,7 @@ img.mfp-img {
 /* --------------------- */
 /* CONTACT FORM
 /* --------------------- */
+
 .contact-form {
   overflow: hidden;
   margin-bottom: 40px;
